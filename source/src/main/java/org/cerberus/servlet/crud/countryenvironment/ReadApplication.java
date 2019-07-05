@@ -114,12 +114,12 @@ public class ReadApplication extends HttpServlet {
                     String application = policy.sanitize(request.getParameter("application"));
                     answer = findApplicationByKey(application, appContext, userHasPermissions);
                     jsonResponse = (JSONObject) answer.getItem();
-                } else if (!Strings.isNullOrEmpty(columnName)&&request.getParameter("system") != null) {
+                } else if (!Strings.isNullOrEmpty(columnName) && request.getParameter("system") != null) {
                     String system = policy.sanitize(request.getParameter("system"));
                     answer = findDistinctValuesOfColumn(system, appContext, request, columnName);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (request.getParameter("system") != null) {
-                    String system = policy.sanitize(request.getParameter("system"));
+                    List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
                     answer = findApplicationList(system, appContext, userHasPermissions, request);
                     jsonResponse = (JSONObject) answer.getItem();
                 }
@@ -185,7 +185,7 @@ public class ReadApplication extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findApplicationList(String system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem findApplicationList(List<String> system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -207,11 +207,11 @@ public class ReadApplication extends HttpServlet {
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
-                } 
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
+                }
             }
         }
 
@@ -269,14 +269,14 @@ public class ReadApplication extends HttpServlet {
         JSONObject object = new JSONObject();
 
         applicationService = appContext.getBean(IApplicationService.class);
-        
+
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "Application,Description,sort,type,system,subsystem,svnurl,bugtrackerurl,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
 
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         for (int a = 0; a < columnToSort.length; a++) {
-            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }

@@ -127,13 +127,13 @@ public class ReadLabel extends HttpServlet {
                     answer = findDistinctValuesOfColumn(request.getParameter("system"), appContext, request, columnName);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (request.getParameter("system") != null) {
-                    String system = policy.sanitize(request.getParameter("system"));
+                    List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
                     answer = findLabelList(system, appContext, userHasPermissions, request);
                     jsonResponse = (JSONObject) answer.getItem();
                 }
             }
             if ((request.getParameter("withHierarchy") != null)) {
-                String system = policy.sanitize(request.getParameter("system"));
+                    List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
                 answer1 = getLabelHierarchy(system, appContext, userHasPermissions, request);
                 JSONObject jsonHierarchy = (JSONObject) answer1.getItem();
                 jsonResponse.put("labelHierarchy", jsonHierarchy);
@@ -200,7 +200,7 @@ public class ReadLabel extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findLabelList(String system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem findLabelList(List<String> system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -230,7 +230,7 @@ public class ReadLabel extends HttpServlet {
                 }
             }
         }
-        AnswerList resp = labelService.readByVariousByCriteria(new ArrayList<>(asList(system)), strictSystemFilter, new ArrayList<>(), startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList resp = labelService.readByVariousByCriteria(system, strictSystemFilter, new ArrayList<>(), startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -254,7 +254,7 @@ public class ReadLabel extends HttpServlet {
         return item;
     }
 
-    private AnswerItem getLabelHierarchy(String system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem getLabelHierarchy(List<String> system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -276,13 +276,13 @@ public class ReadLabel extends HttpServlet {
         return item;
     }
 
-    private JSONArray getTree(String system, String type, ApplicationContext appContext) throws JSONException {
+    private JSONArray getTree(List<String> system, String type, ApplicationContext appContext) throws JSONException {
         labelService = appContext.getBean(LabelService.class);
         testCaseLabelService = appContext.getBean(TestCaseLabelService.class);
         TreeNode node;
         JSONArray jsonArray = new JSONArray();
 
-        AnswerList resp = labelService.readByVarious(new ArrayList<>(asList(system)), new ArrayList<>(asList(type)));
+        AnswerList resp = labelService.readByVarious(system, new ArrayList<>(asList(type)));
 
         // Building tree Structure;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

@@ -22,6 +22,7 @@ package org.cerberus.service.email.impl;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -64,7 +65,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             
             String bugURL = "";
 
-            List<Application> appliList = applicationService.convert(applicationService.readBySystem(system));
+            List<Application> appliList = applicationService.convert(applicationService.readBySystem(Arrays.asList(system)));
 
             buildContentTable = "Here are the last modifications since last change (" + lastBuild + "/" + lastRevision + ") :";
             buildContentTable = buildContentTable + "<table>";
@@ -199,7 +200,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
         		Statement stmtBuildContent = conn.createStatement();
                 Statement stmtCountryList = conn.createStatement();) {
 
-            List<Application> appliList = applicationService.convert(applicationService.readBySystem(system));
+            List<Application> appliList = applicationService.convert(applicationService.readBySystem(Arrays.asList(system)));
             String inSQL = SqlUtil.getInSQLClause(appliList);
 
             String contentSQL = "SELECT i.gp1, count(*) nb_exe, OK.c nb_exe_OK, format(OK.c/count(*)*100,0)  per_OK"

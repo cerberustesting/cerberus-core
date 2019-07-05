@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.config.Property;
+import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
@@ -53,6 +54,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "ReadMyUser", urlPatterns = {"/ReadMyUser"})
 public class ReadMyUser extends HttpServlet {
 
+    private IInvariantService invariantService;
+    private IUserService userService;
+    private IFactoryUser userFactory;
+    private IUserSystemService userSystemService;
+    private IUserGroupService userGroupService;
+
     private static final Logger LOG = LogManager.getLogger(ReadMyUser.class);
 
     /**
@@ -69,6 +76,7 @@ public class ReadMyUser extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IUserService userService = appContext.getBean(UserService.class);
         IFactoryUser userFactory = appContext.getBean(IFactoryUser.class);
+        IInvariantService invariantService = appContext.getBean(IInvariantService.class);
         IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
         IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
 
@@ -86,7 +94,7 @@ public class ReadMyUser extends HttpServlet {
             String authMode = "";
             if (System.getProperty(Property.AUTHENTIFICATION) != null) {
                 authMode = System.getProperty(Property.AUTHENTIFICATION);
-                LOG.debug("Authentification JAVA parameter "+Property.AUTHENTIFICATION+" for keycloak value : '" + authMode + "'");
+                LOG.debug("Authentification JAVA parameter " + Property.AUTHENTIFICATION + " for keycloak value : '" + authMode + "'");
                 if (authMode.equals(Property.AUTHENTIFICATION_VALUE_KEYCLOAK)) {
                     if (!userService.isUserExist(user)) {
                         User myUser = userFactory.create(0, user, "NOAUTH", "N", "", "", "", "en", "", "", "", "", "", "", "", "", "", "");
@@ -161,10 +169,19 @@ public class ReadMyUser extends HttpServlet {
 
             JSONArray systems = new JSONArray();
             List<UserSystem> userSysList = userSystemService.findUserSystemByUser(myUser.getLogin());
-            for (UserSystem sys : userSysList) {
-                systems.put(sys.getSystem());
+            if (request.isUserInRole("Administrator")) {
+                // If user is Administrator, he has access to all groups.
+                List<Invariant> invList = invariantService.readByIdName("SYSTEM");
+                for (Invariant invariant : invList) {
+                    systems.put(invariant.getValue());
+                }
+            } else {
+                for (UserSystem sys : userSysList) {
+                    systems.put(sys.getSystem());
+                }
             }
             data.put("system", systems);
+
             HttpSession session = request.getSession();
             session.setAttribute("MySystem", myUser.getDefaultSystem());
             session.setAttribute("MySystemsAllow", userSysList);

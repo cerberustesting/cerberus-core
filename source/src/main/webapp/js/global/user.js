@@ -28,6 +28,11 @@ function readUserFromDatabase() {
         dataType: 'json',
         success: function (data) {
             try {
+                var systemQuery = "";
+                for (var s in data.system) {
+                    systemQuery += "&system=" + data.system[s];
+                }
+                data.systemQuery = systemQuery;
                 var jsonSys = JSON.parse(data.defaultSystem);
                 data.defaultSystem = jsonSys[0];
                 data.defaultSystems = jsonSys;

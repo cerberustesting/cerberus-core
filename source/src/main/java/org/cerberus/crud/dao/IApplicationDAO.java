@@ -58,7 +58,7 @@ public interface IApplicationDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList<Application> readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Application> readBySystemByCriteria(List<String> system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *

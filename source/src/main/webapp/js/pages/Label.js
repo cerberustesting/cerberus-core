@@ -107,7 +107,7 @@ function initPage() {
     });
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("labelsTable", "ReadLabel?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("labelsTable"), [2, 'asc']);
+    var configurations = new TableConfigurationsServerSide("labelsTable", "ReadLabel?q=1" + getUser().defaultSystemsQuery, "contentTable", aoColumnsFunc("labelsTable"), [2, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForLabel, "#labelList", undefined, true);
 }
 
@@ -154,7 +154,7 @@ function displayPageLabel() {
 }
 
 function generateLabelTree() {
-    $.when($.ajax("ReadLabel?system=" + getUser().defaultSystem + "&withHierarchy=true")).then(function (data) {
+    $.when($.ajax("ReadLabel?q=1" + getUser().defaultSystemsQuery + "&withHierarchy=true")).then(function (data) {
 
         $('#mainTreeS').treeview({data: data.labelHierarchy.stickers, enableLinks: false, showTags: true});
         $('#mainTreeB').treeview({data: data.labelHierarchy.batteries, enableLinks: false, showTags: true});

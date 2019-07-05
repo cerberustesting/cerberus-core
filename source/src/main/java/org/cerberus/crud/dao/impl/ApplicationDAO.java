@@ -131,7 +131,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public AnswerList<Application> readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<Application> readBySystemByCriteria(List<String> system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -169,8 +169,9 @@ public class ApplicationDAO implements IApplicationDAO {
             searchSQL.append(" )");
         }
 
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System` = ? )");
+        if (system != null && !system.isEmpty()) {
+            searchSQL.append(" and ");
+            searchSQL.append(SqlUtil.generateInClause("`System`", system));
         }
         query.append(searchSQL);
 
@@ -209,8 +210,10 @@ public class ApplicationDAO implements IApplicationDAO {
                 for (String individualColumnSearchValue : individalColumnSearchValues) {
                     preStat.setString(i++, individualColumnSearchValue);
                 }
-                if (!StringUtil.isNullOrEmpty(system)) {
-                    preStat.setString(i++, system);
+                if (system != null && !system.isEmpty()) {
+                    for (String syst : system) {
+                        preStat.setString(i++, syst);
+                    }
                 }
                 ResultSet resultSet = preStat.executeQuery();
                 try {

@@ -80,7 +80,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
         $("#addStepModal [name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
 
 
-        fillTestAndTestCaseSelect(".testTestCase #test", "#testCaseSelect", test, testcase)
+        fillTestAndTestCaseSelect(".testTestCase #test", "#testCaseSelect", test, testcase, false)
 
         $("#testCaseSelect").bind("change", function (event) {
             window.location.href = "./TestCaseScript.jsp?test=" + test + "&testcase=" + $(this).val();
@@ -121,7 +121,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                 success: function (data) {
 
                     // manage error
-                    if(data.messageType != undefined && data.messageType === "KO") {
+                    if(data.messageType !== undefined && data.messageType === "KO") {
                         showUnexpectedError(null, "ERROR", data.message);
                         return;
                     }
