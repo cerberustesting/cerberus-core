@@ -66,6 +66,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadTestDataLib extends HttpServlet {
 
     private ITestDataLibService testDataLibService;
+    private ITestCaseService tcService;
+    
     private static final Logger LOG = LogManager.getLogger(ReadTestDataLib.class);
 
     @Override
@@ -201,7 +203,6 @@ public class ReadTestDataLib extends HttpServlet {
 
         List<String> systems = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
 
-
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         List<String> individualLike = new ArrayList<>(Arrays.asList(request.getParameter("sLike").split(",")));
 
@@ -253,10 +254,10 @@ public class ReadTestDataLib extends HttpServlet {
         AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
-        ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
+        testDataLibService = appContext.getBean(ITestDataLibService.class);
 
         //finds the testdatalib        
-        AnswerItem answer = testDataService.readByKey(testDatalib);
+        AnswerItem answer = testDataLibService.readByKey(testDatalib);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
@@ -288,8 +289,8 @@ public class ReadTestDataLib extends HttpServlet {
 
         JSONObject object = new JSONObject();
 
-        ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
-        AnswerList ansList = testDataService.readNameListByName(nameToSearch, limit, like);
+        testDataLibService = appContext.getBean(ITestDataLibService.class);
+        AnswerList ansList = testDataLibService.readNameListByName(nameToSearch, limit, like);
 
         JSONArray jsonArray = new JSONArray();
         if (ansList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -328,7 +329,7 @@ public class ReadTestDataLib extends HttpServlet {
         JSONObject object = new JSONObject();
         JSONArray objectArray = new JSONArray();
         AnswerItem ansItem = new AnswerItem<>();
-        ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
+        tcService = appContext.getBean(ITestCaseService.class);
 
         AnswerList ansList = tcService.findTestCasesThatUseTestDataLib(testDataLibId, name, country);
 

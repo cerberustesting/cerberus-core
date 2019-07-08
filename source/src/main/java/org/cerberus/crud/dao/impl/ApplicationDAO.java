@@ -650,7 +650,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -665,8 +665,9 @@ public class ApplicationDAO implements IApplicationDAO {
         query.append(" as distinctValues FROM application ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System` = ? )");
+        if (system != null && !system.isEmpty()) {
+            searchSQL.append(" AND ");
+            searchSQL.append(SqlUtil.generateInClause("`System`", system));
         }
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -703,8 +704,10 @@ public class ApplicationDAO implements IApplicationDAO {
                 Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(system)) {
-                preStat.setString(i++, system);
+            if (system != null && !system.isEmpty()) {
+                for (String string : system) {
+                    preStat.setString(i++, string);
+                }
             }
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");

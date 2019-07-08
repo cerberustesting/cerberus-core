@@ -301,7 +301,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return testCaseExecutionDao.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
     }
 

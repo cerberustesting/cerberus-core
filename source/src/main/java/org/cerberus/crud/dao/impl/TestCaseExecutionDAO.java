@@ -44,7 +44,6 @@ import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
@@ -820,7 +819,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             LOG.debug("SQL.param.tag : " + tag);
         }
 
-
         return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
                 preStat -> {
                     int i = 1;
@@ -974,7 +972,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         return result;
     }
 
-
     @Override
     public List<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -983,10 +980,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         final StringBuffer query = new StringBuffer();
 
-        query.append("SELECT * FROM testcaseexecution exe ");
-        query.append("left join testcase tec on exe.Test = tec.Test and exe.TestCase = tec.TestCase ");
-        query.append("left join application as app on tec.application = app.application ");
-        query.append("where exe.`start`> '").append(DateUtil.getMySQLTimestampTodayDeltaMinutes(-360000)).append("' ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcaseexecution exe ");
+        query.append("where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             query.append("and (exe.`id` like ? ");
@@ -1028,12 +1023,11 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" ) ");
         }
 
-        if(system != null && ! system.isEmpty()) {
-            system.add(""); // authorize tranversal object
-            query.append( " and " + SqlUtil.generateInClause("app.system", system) + " ");
+        if (system != null && !system.isEmpty()) {
+            query.append(" and " + SqlUtil.generateInClause("exe.system", system) + " ");
         }
 
-        query.append( " AND " + UserSecurity.getSystemAllowForSQL("app.system"));
+        query.append(" AND " + UserSecurity.getSystemAllowForSQL("exe.system"));
 
         if (!StringUtil.isNullOrEmpty(sort)) {
             query.append(" order by ").append(sort);
@@ -1049,7 +1043,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-
 
         return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
                 preStat -> {
@@ -1089,15 +1082,14 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                         preStat.setString(i++, individualColumnSearchValue);
                     }
 
-                    if(system != null && ! system.isEmpty()) {
-                        for(String sys : system) {
+                    if (system != null && !system.isEmpty()) {
+                        for (String sys : system) {
                             preStat.setString(i++, sys);
                         }
                     }
                 },
                 rs -> loadFromResultSet(rs)
         );
-
 
     }
 
@@ -1413,7 +1405,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -1425,7 +1417,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append("SELECT distinct ");
         query.append(columnName);
         query.append(" as distinctValues FROM testcaseexecution exe ");
-        query.append("where exe.`start`> '").append(DateUtil.getMySQLTimestampTodayDeltaMinutes(-360000)).append("' ");
+        query.append("where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchParameter)) {
             query.append("and (exe.`id` like ? ");

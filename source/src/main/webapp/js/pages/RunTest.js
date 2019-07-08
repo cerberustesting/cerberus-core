@@ -306,7 +306,7 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
-        data: "filter=true&" + $("#filters").serialize() + testURL + testCaseURL + lengthURL,
+        data: "filter=true" + getUser().defaultSystemsQuery + $("#filters").serialize() + testURL + testCaseURL + lengthURL,
         datatype: "json",
         async: true,
         success: function (data) {
@@ -1008,13 +1008,13 @@ function loadTestCaseFilterData(system) {
     $.when(
             loadMultiSelect("ReadTest", "", "test", ["test", "description"], "test"),
             loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
-            loadMultiSelect("ReadApplication", "", "application", ["application"], "application"),
+            loadMultiSelect("ReadApplication", "e=1" + getUser().defaultSystemsQuery, "application", ["application"], "application"),
             loadMultiSelect("ReadUserPublic", "", "creator", ["login"], "login"),
             loadMultiSelect("ReadUserPublic", "", "implementer", ["login"], "login"),
             loadMultiSelect("ReadCampaign", "", "campaign", ["campaign"], "campaign"),
-            loadMultiSelect("ReadBuildRevisionInvariant", "level=1&system=" + system, "targetSprint", ["versionName"], "versionName"),
-            loadMultiSelect("ReadBuildRevisionInvariant", "level=2&system=" + system, "targetRev", ["versionName"], "versionName"),
-            loadMultiSelect("ReadLabel", "system=" + system, "labelid", ["label"], "id"),
+            loadMultiSelect("ReadBuildRevisionInvariant", "level=1" + getUser().defaultSystemsQuery, "targetSprint", ["versionName"], "versionName"),
+            loadMultiSelect("ReadBuildRevisionInvariant", "level=2" + getUser().defaultSystemsQuery, "targetRev", ["versionName"], "versionName"),
+            loadMultiSelect("ReadLabel", "e=1" + getUser().defaultSystemsQuery, "labelid", ["label"], "id"),
             loadInvariantMultiSelect("system", "SYSTEM"),
             loadInvariantMultiSelect("priority", "PRIORITY"),
             loadInvariantMultiSelect("group", "GROUP"),

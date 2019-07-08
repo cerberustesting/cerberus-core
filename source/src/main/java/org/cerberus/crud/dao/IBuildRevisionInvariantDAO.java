@@ -68,7 +68,7 @@ public interface IBuildRevisionInvariantDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList readByVariousByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList readByVariousByCriteria(List<String> system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -86,6 +86,9 @@ public interface IBuildRevisionInvariantDAO {
 
     /**
      *
+     * @param system
+     * @param level
+     * @param seq
      * @param buildRevisionInvariant
      * @return
      */
@@ -100,12 +103,12 @@ public interface IBuildRevisionInvariantDAO {
     BuildRevisionInvariant loadFromResultSet(ResultSet resultSet) throws SQLException;
 
     /**
-     * 
+     *
      * @param system
      * @param searchParameter
      * @param individualSearch
      * @param columnName
-     * @return 
+     * @return
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

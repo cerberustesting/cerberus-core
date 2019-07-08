@@ -115,7 +115,7 @@ public class ReadApplication extends HttpServlet {
                     answer = findApplicationByKey(application, appContext, userHasPermissions);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (!Strings.isNullOrEmpty(columnName) && request.getParameter("system") != null) {
-                    String system = policy.sanitize(request.getParameter("system"));
+                    List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
                     answer = findDistinctValuesOfColumn(system, appContext, request, columnName);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (request.getParameter("system") != null) {
@@ -264,7 +264,7 @@ public class ReadApplication extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+    private AnswerItem findDistinctValuesOfColumn(List<String> system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
         AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 

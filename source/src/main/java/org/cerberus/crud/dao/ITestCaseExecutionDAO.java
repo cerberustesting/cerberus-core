@@ -226,6 +226,6 @@ public interface ITestCaseExecutionDAO {
      * @param columnName Name of the column
      * @return object {@link TestCaseExecution}
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

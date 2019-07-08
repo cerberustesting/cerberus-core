@@ -135,7 +135,7 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return ApplicationDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
 

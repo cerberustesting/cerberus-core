@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -36,10 +35,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.BuildRevisionInvariant;
-
-import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.crud.service.impl.BuildRevisionInvariantService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
@@ -124,7 +122,8 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
             msg.setDescription(msg.getDescription().replace("%REASON%", "id must be an integer value."));
             seqid_error = true;
         }
-        String system = policy.sanitize(request.getParameter("system"));
+        List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
+        String systemUnic = policy.sanitize(request.getParameter("system"));
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
@@ -136,7 +135,7 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
         try {
             JSONObject jsonResponse = new JSONObject();
             if ((request.getParameter("system") != null) && (request.getParameter("level") != null) && !(lvlid_error) && (request.getParameter("seq") != null) && !(seqid_error)) { // ID parameter is specified so we return the unique record of object.
-                answer = findBuildRevisionInvariantByKey(system, lvlid, seqid, appContext, userHasPermissions);
+                answer = findBuildRevisionInvariantByKey(systemUnic, lvlid, seqid, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(columnName)) {
                 answer = findDistinctValuesOfColumn(system, appContext, request, columnName);
@@ -205,7 +204,7 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findBuildRevisionInvariantList(String system, Integer level, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem findBuildRevisionInvariantList(List<String> system, Integer level, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -285,7 +284,7 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+    private AnswerItem findDistinctValuesOfColumn(List<String> system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
         AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 

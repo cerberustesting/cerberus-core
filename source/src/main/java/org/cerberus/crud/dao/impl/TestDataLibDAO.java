@@ -506,12 +506,14 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         }
         query.append(searchSQL);
 
-        if(systems != null && ! systems.isEmpty()) {
+        if (systems != null && !systems.isEmpty()) {
             // authorize transversal object
             systems.add("");
-            query.append( " and " + SqlUtil.generateInClause("tdl.`system`", systems) + " ");
+            query.append(" AND ");
+            query.append(SqlUtil.generateInClause("tdl.`system`", systems));
         }
-        query.append( " AND " + UserSecurity.getSystemAllowForSQL("tdl.`system`"));
+        query.append(" AND ");
+        query.append(UserSecurity.getSystemAllowForSQL("tdl.`system`"));
 
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
@@ -573,8 +575,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                     preStat.setString(i++, type);
                 }
 
-                if(systems != null && ! systems.isEmpty()) {
-                    for(String sys : systems) {
+                if (systems != null && !systems.isEmpty()) {
+                    for (String sys : systems) {
                         preStat.setString(i++, sys);
                     }
                 }
@@ -958,13 +960,13 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         answer.setResultMessage(msg);
         return answer;
     }
-       
+
     @Override
     public Answer bulkRenameDataLib(String oldName, String newName) {
         Answer answer = new Answer();
         MessageEvent msg;
-        
-        String query ="UPDATE testdatalib SET `name`=? ";
+
+        String query = "UPDATE testdatalib SET `name`=? ";
         query += " WHERE `name`=? ";
 
         // Debug message on SQL.
@@ -972,10 +974,9 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             LOG.debug("SQL : " + query);
         }
 
-        
-        try ( Connection connection = this.databaseSpring.connect() ){   
-            try ( PreparedStatement preStat = connection.prepareStatement(query) ) {
-            	int i = 1;
+        try (Connection connection = this.databaseSpring.connect()) {
+            try (PreparedStatement preStat = connection.prepareStatement(query)) {
+                int i = 1;
                 preStat.setString(i++, newName);
                 preStat.setString(i++, oldName);
 
@@ -983,7 +984,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 // Message to customize : X datalib updated using the rowsUpdated variable
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE").replace("success!", "success! - Row(s) updated : "+String.valueOf(rowsUpdated)));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE").replace("success!", "success! - Row(s) updated : " + String.valueOf(rowsUpdated)));
 
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString(), exception);
@@ -1099,7 +1100,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!Strings.isNullOrEmpty(searchTerm)) {
@@ -1123,15 +1124,14 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");){
-            	//gets the data
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
 
                 //get the total number of rows
-                
                 int nrTotalRows = 0;
 
                 if (rowSet != null && rowSet.next()) {
@@ -1151,7 +1151,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException e) {
+            } catch (SQLException e) {
                 LOG.warn("Unable to execute query : " + e.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                         e.toString());

@@ -73,7 +73,7 @@ public interface ITestDataLibService {
     /**
     *
     * @param id
-    * @param files
+    * @param file
     * @return
     */
    Answer uploadFile(int id, FileItem file);
@@ -81,7 +81,7 @@ public interface ITestDataLibService {
     /**
      *
      * @param name
-     * @param system
+     * @param systems
      * @param environment
      * @param country
      * @param type

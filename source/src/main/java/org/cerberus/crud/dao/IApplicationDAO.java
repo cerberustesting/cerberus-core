@@ -114,6 +114,6 @@ public interface IApplicationDAO {
      * @param columnName
      * @return
      */
-    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }
