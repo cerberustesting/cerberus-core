@@ -58,10 +58,6 @@ function loadTable() {
 
 }
 
-function afterTableLoad() {
-    $("#testCaseExecutionTable_paginate").hide();
-}
-
 function displayPageLabel() {
     var doc = new Doc();
 

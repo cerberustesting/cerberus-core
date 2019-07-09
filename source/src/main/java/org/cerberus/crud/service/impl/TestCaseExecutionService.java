@@ -177,7 +177,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public List<TestCaseExecution>  readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException {
+    public AnswerList<TestCaseExecution>  readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException {
         return testCaseExecutionDao.readByCriteria(start, amount, sort, searchTerm, individualSearch, individualLike, system);
     }
 
