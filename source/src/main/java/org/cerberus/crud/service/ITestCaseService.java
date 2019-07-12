@@ -286,5 +286,13 @@ public interface ITestCaseService {
      * @return
      */
     public AnswerList findTestCasesThatUseService(String service);
+    
+    /**
+     * 
+     * @param testCase 
+     * @param cerberusVersion 
+     * @throws org.cerberus.exception.CerberusException 
+     */
+    public void importWithDependency(TestCase testCase, String cerberusVersion) throws CerberusException;
 
 }

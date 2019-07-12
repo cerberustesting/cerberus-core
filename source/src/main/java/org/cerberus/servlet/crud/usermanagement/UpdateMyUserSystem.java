@@ -76,7 +76,7 @@ public class UpdateMyUserSystem extends HttpServlet {
         try {
             myUser = userService.findUserByKey(login);
             myUser.setDefaultSystem(sysArray.toString());
-            request.getSession().setAttribute("MySystem", sysArray);
+            request.getSession().setAttribute("MySystem", sysArray.toString());
             try {
                 userService.updateUser(myUser);
 

@@ -2012,6 +2012,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaselist','activationCriteria','','fr','Critères d\\'activation','',NULL)");
         b.append(",('page_testcaselist','btn_create','','en','Create Test Case',NULL,NULL)");
         b.append(",('page_testcaselist','btn_create','','fr','Créer un Cas de Test',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import','','en','Import Test Case',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import','','fr','Importer un Cas de Test',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_export','','en','Export Test Case',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_export','','fr','Exporter un Cas de Test',NULL,NULL)");
         b.append(",('page_testcaselist','btn_delete','','en','Delete Test Case','',NULL)");
         b.append(",('page_testcaselist','btn_delete','','fr','Supprimer le Cas de Test','',NULL)");
         b.append(",('page_testcaselist','btn_duplicate','','en','Duplicate Test Case','',NULL)");

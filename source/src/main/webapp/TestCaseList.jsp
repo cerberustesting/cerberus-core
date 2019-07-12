@@ -43,6 +43,7 @@
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/transversalobject/TestCase.html"%>
             <%@ include file="include/pages/testcaselist/massActionTestCase.html"%>
+            <%@ include file="include/pages/testcaselist/importTestCase.html"%>
 
             <h1 class="page-title-line" id="title">Test Case List</h1>
 
