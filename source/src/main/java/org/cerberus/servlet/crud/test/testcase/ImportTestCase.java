@@ -91,6 +91,9 @@ public class ImportTestCase extends HttpServlet {
 
                     JSONObject json = new JSONObject(fileContent);
                     String cerberusVersion = json.getString("cerberus_version");
+                    String user = json.getString("user");
+                    json.remove("cerberus_version");
+                    json.remove("user");
 
                     ObjectMapper mapper = new ObjectMapper();
 
@@ -107,7 +110,7 @@ public class ImportTestCase extends HttpServlet {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase " + tcInfo.getTest() + " - " + tcInfo.getTestCase())
                                 .replace("%OPERATION%", "Import")
-                                .replace("%REASON%", ex.getMessage()));
+                                .replace("%REASON%", ex.getMessageError().getDescription()));
                         ans.setResultMessage(msg);
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                     }

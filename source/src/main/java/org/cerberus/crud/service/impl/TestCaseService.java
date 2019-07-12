@@ -528,7 +528,9 @@ public class TestCaseService implements ITestCaseService {
         //insert testcase
         Answer testCaseImported = this.create(testCase);
         if (!testCaseImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-            throw new CerberusException(new MessageGeneral(testCaseImported.getResultMessage().getMessage()));
+            MessageGeneral msg = new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR);
+            msg.setDescription(testCaseImported.getResultMessage().getDescription());
+            throw new CerberusException(msg);
         }
         
         //for tcstep, insert steps
