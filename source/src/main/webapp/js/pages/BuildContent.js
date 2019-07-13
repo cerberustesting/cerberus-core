@@ -17,6 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+var currentSystem = getUser().defaultSystem;
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
@@ -35,29 +38,38 @@ function initPage() {
     var urlApplication = GetURLParameter('application', 'ALL');
 
     // Filter combo
-    displayBuildList('#selectBuild', getUser().defaultSystem, "1", urlBuild, "Y", "Y", true);
-    displayBuildList('#selectRevision', getUser().defaultSystem, "2", urlRevision, "Y", "Y", true);
+    displayBuildList('#selectBuild', currentSystem, "1", urlBuild, "Y", "Y", true);
+    displayBuildList('#selectRevision', currentSystem, "2", urlRevision, "Y", "Y", true);
 
     // Combo in install instruction Modal
-    displayBuildList('#selectBuildFrom', getUser().defaultSystem, "1", urlBuild, "N", "N", false);
-    displayBuildList('#selectRevisionFrom', getUser().defaultSystem, "2", urlRevision, "N", "Y", false);
-    displayBuildList('#selectBuildTo', getUser().defaultSystem, "1", urlBuild, "N", "N", false);
-    displayBuildList('#selectRevisionTo', getUser().defaultSystem, "2", urlRevision, "N", "N", false);
+    displayBuildList('#selectBuildFrom', currentSystem, "1", urlBuild, "N", "N", false);
+    displayBuildList('#selectRevisionFrom', currentSystem, "2", urlRevision, "N", "Y", false);
+    displayBuildList('#selectBuildTo', currentSystem, "1", urlBuild, "N", "N", false);
+    displayBuildList('#selectRevisionTo', currentSystem, "2", urlRevision, "N", "N", false);
 
     // Add and edit Modal combo
-    displayBuildList('#addBuild', getUser().defaultSystem, "1", urlBuild, "N", "Y", false);
-    displayBuildList('#addRevision', getUser().defaultSystem, "2", urlRevision, "N", "Y", false);
-    displayBuildList('#editBuild', getUser().defaultSystem, "1", urlBuild, "N", "Y", false);
-    displayBuildList('#editRevision', getUser().defaultSystem, "2", urlRevision, "N", "Y", false);
+    displayBuildList('#addBuild', currentSystem, "1", urlBuild, "N", "Y", false);
+    displayBuildList('#addRevision', currentSystem, "2", urlRevision, "N", "Y", false);
+    displayBuildList('#editBuild', currentSystem, "1", urlBuild, "N", "Y", false);
+    displayBuildList('#editRevision', currentSystem, "2", urlRevision, "N", "Y", false);
 
     // Mass Action Modal combo
-    displayBuildList('#massBuild', getUser().defaultSystem, "1", null, "N", "Y", false);
-    displayBuildList('#massRevision', getUser().defaultSystem, "2", null, "N", "Y", false);
+    displayBuildList('#massBuild', currentSystem, "1", null, "N", "Y", false);
+    displayBuildList('#massRevision', currentSystem, "2", null, "N", "Y", false);
 
     // Feed Application combo with Application list.
     var select = $('#selectApplication');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
-    displayApplicationList("application", getUser().defaultSystem, urlApplication);
+    displayApplicationList("application", undefined, urlApplication);
+
+    $("#selectApplication").on('change', function (data) {
+        console.info($("#selectApplication").val());
+        var jqxhr = $.getJSON("ReadApplication", "application=" + $("#selectApplication").val());
+        $.when(jqxhr).then(function (result) {
+            console.info(result["contentTable"].system);
+        }).fail(handleErrorAjaxAfterTimeout);
+
+    });
 
     displayProjectList("project");
     displayUserList("releaseowner");
@@ -65,11 +77,11 @@ function initPage() {
     var table = loadBCTable(urlBuild, urlRevision, urlApplication);
     // React on table redraw
     table.on(
-        'draw.dt',
-        function () {
-            // Un-check the select all checkbox
-            $('#selectAll')[0].checked = false;
-        }
+            'draw.dt',
+            function () {
+                // Un-check the select all checkbox
+                $('#selectAll')[0].checked = false;
+            }
     );
 
     // handle the click for specific action buttons
@@ -736,17 +748,17 @@ function aoColumnsFunc(tableId) {
             "sWidth": "80px",
             "title": doc.getDocOnline("buildrevisionparameters", "project")},
         {"data": "ticketIdFixed",
-            "like":true,
+            "like": true,
             "sName": "ticketIdFixed",
             "sWidth": "80px",
             "title": doc.getDocOnline("buildrevisionparameters", "TicketIDFixed")},
         {"data": "bugIdFixed",
-            "like":true,
+            "like": true,
             "sName": "bugIdFixed",
             "sWidth": "80px",
             "title": doc.getDocOnline("buildrevisionparameters", "BugIDFixed")},
         {"data": "link",
-            "like":true,
+            "like": true,
             "sName": "link",
             "sWidth": "250px",
             "title": doc.getDocOnline("buildrevisionparameters", "Link"),
@@ -764,31 +776,31 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("buildrevisionparameters", "subject")},
         {"data": "datecre",
             "sName": "datecre",
-            "like":true,
+            "like": true,
             "sWidth": "150px",
             "title": doc.getDocOnline("buildrevisionparameters", "datecre")},
         {"data": "jenkinsBuildId",
-            "like":true,
+            "like": true,
             "sName": "jenkinsBuildId",
             "sWidth": "80px",
             "title": doc.getDocOnline("buildrevisionparameters", "jenkinsBuildId")},
         {"data": "mavenGroupId",
-            "like":true,
+            "like": true,
             "sName": "mavenGroupId",
             "sWidth": "80px",
             "title": doc.getDocOnline("buildrevisionparameters", "mavenGroupId")},
         {"data": "mavenArtifactId",
-            "like":true,	
+            "like": true,
             "sName": "mavenArtifactId",
             "sWidth": "80px",
             "title": doc.getDocOnline("buildrevisionparameters", "mavenArtifactId")},
         {"data": "mavenVersion",
-            "like":true,	
+            "like": true,
             "sName": "mavenVersion",
             "sWidth": "80px",
             "title": doc.getDocOnline("buildrevisionparameters", "mavenVersion")},
         {"data": "repositoryUrl",
-            "like":true,
+            "like": true,
             "sName": "repositoryUrl",
             "sWidth": "200px",
             "title": doc.getDocOnline("buildrevisionparameters", "repositoryUrl")}

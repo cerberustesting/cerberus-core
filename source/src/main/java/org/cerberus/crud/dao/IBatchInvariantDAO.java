@@ -49,7 +49,7 @@ public interface IBatchInvariantDAO {
      * @param individualSearch
      * @return
      */
-    public AnswerList<BatchInvariant> readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    public AnswerList<BatchInvariant> readBySystemByCriteria(List<String> system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -81,5 +81,5 @@ public interface IBatchInvariantDAO {
      * @param columnName 
      * @return  
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

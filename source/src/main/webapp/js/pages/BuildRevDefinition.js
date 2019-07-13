@@ -38,7 +38,7 @@ function initPage() {
     $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, buttonCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("buildrevdefinitionsTable", "ReadBuildRevisionInvariant?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("buildrevdefinitionsTable"), [2,'asc']);
+    var configurations = new TableConfigurationsServerSide("buildrevdefinitionsTable", "ReadBuildRevisionInvariant", "contentTable", aoColumnsFunc("buildrevdefinitionsTable"), [2, 'asc']);
 
     var table = createDataTableWithPermissions(configurations, renderOptionsForBuildRevDefinition, "#buildrevdefinition", undefined, true);
 

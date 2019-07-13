@@ -136,6 +136,7 @@ function applyFiltersOnMultipleColumns(tableId, searchColumns, fromURL) {
             var searchObject = {
                 param: searchColumns[searchColumn],
                 values: param};
+            console.info(searchObject);
             searchArray.push(searchObject);
         }
     }
@@ -211,7 +212,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     }
     
     //Build the Message that appear when filter is fed
-    var showFilteredColumnsAlertMessage = "<div id='filterAlertDiv' class='col-sm-12 alert alert-warning' style='padding:0px'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='pull-right glyphicon glyphicon-remove-sign'  style='cursor:pointer;padding:15px'></span></div>";
+    var showFilteredColumnsAlertMessage = "<br><div id='filterAlertDiv' class='row alert alert-warning pull-center' style='padding:0px; margin-top: 50px;'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='pull-right glyphicon glyphicon-remove-sign'  style='cursor:pointer;padding:15px'></span></div>";
     $("#filterAlertDiv").remove();
     if ($("#" + tableId + "_paginate").length !== 0) {
         //Hide filtered alert message displayed when filtered column
@@ -361,7 +362,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
 
         	                //Check if URL already contains parameters
         	                var urlSeparator = contentUrl.indexOf("?") > -1 ? "&" : "?";
-        	                var url = './' + contentUrl + urlSeparator + 'columnName=' + title + '&system=' + getSys();
+        	                var url = './' + contentUrl + urlSeparator + 'columnName=' + title + getUser().defaultSystemsQuery;
         	                var result;
         	                
         	                var params = table.ajax.params()

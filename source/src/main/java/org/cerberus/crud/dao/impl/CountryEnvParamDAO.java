@@ -410,7 +410,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS cev.*, inv.value FROM countryenvparam cev");
+        query.append("SELECT SQL_CALC_FOUND_ROWS cev.*, inv.* FROM countryenvparam cev");
 
         searchSQL.append(" LEFT OUTER JOIN invariant inv on inv.idname='ENVIRONMENT' and inv.value=cev.environment ");
 
@@ -969,30 +969,8 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         return new Answer(msg);
     }
 
-    private CountryEnvParam loadFromResultSet(ResultSet resultSet) throws SQLException {
-        String system = resultSet.getString("cev.System");
-        String count = resultSet.getString("cev.Country");
-        String env = resultSet.getString("cev.Environment");
-        String description = resultSet.getString("cev.Description");
-        String build = resultSet.getString("cev.Build");
-        String revision = resultSet.getString("cev.Revision");
-        String chain = resultSet.getString("cev.chain");
-        String distribList = resultSet.getString("cev.distribList");
-        String eMailBodyRevision = resultSet.getString("cev.eMailBodyRevision");
-        String type = resultSet.getString("cev.type");
-        String eMailBodyChain = resultSet.getString("cev.eMailBodyChain");
-        String eMailBodyDisableEnvironment = resultSet.getString("cev.eMailBodyDisableEnvironment");
-        boolean active = StringUtil.parseBoolean(resultSet.getString("cev.active"));
-        boolean maintenanceAct = StringUtil.parseBoolean(resultSet.getString("cev.maintenanceact"));
-        String maintenanceStr = resultSet.getString("cev.maintenancestr");
-        String maintenanceEnd = resultSet.getString("cev.maintenanceend");
-        String envGp = resultSet.getString("inv.value");
-        return factoryCountryEnvParam.create(system, count, env, description, build, revision, chain, distribList, eMailBodyRevision,
-                type, eMailBodyChain, eMailBodyDisableEnvironment, active, maintenanceAct, maintenanceStr, maintenanceEnd, envGp);
-    }
-
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -1012,8 +990,9 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System` = ? )");
+        if (system != null && !system.isEmpty()) {
+            searchSQL.append(" and ");
+            searchSQL.append(SqlUtil.generateInClause("`System`", system));
         }
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -1056,8 +1035,10 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                 Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(system)) {
-                preStat.setString(i++, system);
+            if (system != null && !system.isEmpty()) {
+                for (String sys : system) {
+                    preStat.setString(i++, sys);
+                }
             }
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -1125,6 +1106,28 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         answer.setResultMessage(msg);
         answer.setDataList(distinctValues);
         return answer;
+    }
+
+    private CountryEnvParam loadFromResultSet(ResultSet resultSet) throws SQLException {
+        String system = resultSet.getString("cev.System");
+        String count = resultSet.getString("cev.Country");
+        String env = resultSet.getString("cev.Environment");
+        String description = resultSet.getString("cev.Description");
+        String build = resultSet.getString("cev.Build");
+        String revision = resultSet.getString("cev.Revision");
+        String chain = resultSet.getString("cev.chain");
+        String distribList = resultSet.getString("cev.distribList");
+        String eMailBodyRevision = resultSet.getString("cev.eMailBodyRevision");
+        String type = resultSet.getString("cev.type");
+        String eMailBodyChain = resultSet.getString("cev.eMailBodyChain");
+        String eMailBodyDisableEnvironment = resultSet.getString("cev.eMailBodyDisableEnvironment");
+        boolean active = StringUtil.parseBoolean(resultSet.getString("cev.active"));
+        boolean maintenanceAct = StringUtil.parseBoolean(resultSet.getString("cev.maintenanceact"));
+        String maintenanceStr = resultSet.getString("cev.maintenancestr");
+        String maintenanceEnd = resultSet.getString("cev.maintenanceend");
+        String envGp = resultSet.getString("inv.gp1");
+        return factoryCountryEnvParam.create(system, count, env, description, build, revision, chain, distribList, eMailBodyRevision,
+                type, eMailBodyChain, eMailBodyDisableEnvironment, active, maintenanceAct, maintenanceStr, maintenanceEnd, envGp);
     }
 
 }
