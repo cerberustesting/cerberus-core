@@ -91,8 +91,8 @@ public class TestCaseStepAction {
     public static final String ACTION_INSTALLAPP = "installApp";
     public static final String ACTION_REMOVEAPP = "removeApp";
     public static final String ACTION_DRAGANDDROP = "dragAndDrop";
-    public static final String ACTION_LONG_CLICK = "longPress";
-    public static final String ACTION_CLEAR = "clearField";
+    public static final String ACTION_LONGPRESS = "longPress";
+    public static final String ACTION_CLEARFIELD = "clearField";
 
 
     // DEPRECATED

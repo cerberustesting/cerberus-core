@@ -318,11 +318,14 @@ function displayDataLibList(selectName, defaultValue, data) {
  * @param {String} selectName value name of the select tag in the html
  * @param {String} system [optional] value name of the system in order to filter the application list
  * @param {String} defaultValue to be selected
+ * @param {String} extraValue add an aditional option if <> undefined
  * @returns {void}
  */
-function displayApplicationList(selectName, system, defaultValue) {
+function displayApplicationList(selectName, system, defaultValue, extraValue) {
     var myData = "";
-    $("[name='" + selectName + "']").append($("<option value=''></option>").text(""));
+    if (extraValue !== undefined) {
+        $("[name='" + selectName + "']").append($("<option value='" + extraValue + "'></option>").text(extraValue));
+    }
 
     if ((system !== "") && (system !== undefined) && (system !== null)) {
         myData = "system=" + system;
