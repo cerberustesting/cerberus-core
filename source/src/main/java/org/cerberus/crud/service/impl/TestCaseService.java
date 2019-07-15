@@ -162,12 +162,12 @@ public class TestCaseService implements ITestCaseService {
             }
             newTcase.setTestCaseStep(tcsToAdd);
 
-            List<TestCaseDep> testCaseDependendies = testCaseDepService.readByTestAndTestCase(test, testCase);
+            List<TestCaseDep> testCaseDependendies = testCaseDepService.readByTestAndTestCase(initialTest, initialTc);
             newTcase.setTestCaseDep(testCaseDependendies);
 
-            List<TestCaseLabel> testCaseLabel = testCaseLabelService.readByTestTestCase(test, testCase, null).getDataList();
+            List<TestCaseLabel> testCaseLabel = testCaseLabelService.readByTestTestCase(initialTest, initialTc, null).getDataList();
             newTcase.setTestCaseLabel(testCaseLabel);
-
+            
         }
         return newTcase;
     }
