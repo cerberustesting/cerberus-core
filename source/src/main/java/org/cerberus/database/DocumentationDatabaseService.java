@@ -2018,6 +2018,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaselist','btn_export','','fr','Exporter un Cas de Test',NULL,NULL)");
         b.append(",('page_testcaselist','btn_delete','','en','Delete Test Case','',NULL)");
         b.append(",('page_testcaselist','btn_delete','','fr','Supprimer le Cas de Test','',NULL)");
+        b.append(",('page_testcaselist','btn_delete_all','','en','Delete all these Test Case : ','',NULL)");
+        b.append(",('page_testcaselist','btn_delete_all','','fr','Supprimer ces Cas de Test : ','',NULL)");
         b.append(",('page_testcaselist','btn_duplicate','','en','Duplicate Test Case','',NULL)");
         b.append(",('page_testcaselist','btn_duplicate','','fr','Dupliquer le Cas de Test','',NULL)");
         b.append(",('page_testcaselist','btn_edit','','en','Edit Test Case Header','',NULL)");
@@ -2032,6 +2034,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaselist','btn_view','','fr','Voir Cas de Test','',NULL)");
         b.append(",('page_testcaselist','filters','','en','Filters','Test filter',NULL)");
         b.append(",('page_testcaselist','filters','','fr','Filtres','Filtre des tests',NULL)");
+        b.append(",('page_testcaselist','import_testcase_msg','','en','Select testcase files to import','',NULL)");
+        b.append(",('page_testcaselist','import_testcase_msg','','fr','Selectionner des fichiers de cas de test à importer','',NULL)");
         b.append(",('page_testcaselist','link','','en','Bug Link','',NULL)");
         b.append(",('page_testcaselist','link','','fr','Lien vers le Bug','',NULL)");
         b.append(",('page_testcaselist','massAction','','en','Massively update the selected test cases','',NULL)");

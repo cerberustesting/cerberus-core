@@ -25,7 +25,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -43,8 +45,10 @@ import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.VersionComparator;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerUtil;
+import org.cerberus.version.Infos;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -90,31 +94,40 @@ public class ImportTestCase extends HttpServlet {
                 for (String fileContent : files) {
 
                     JSONObject json = new JSONObject(fileContent);
-                    String cerberusVersion = json.getString("cerberus_version");
-                    String user = json.getString("user");
-                    json.remove("cerberus_version");
-                    json.remove("user");
 
-                    ObjectMapper mapper = new ObjectMapper();
-
-                    TestCase tcInfo = mapper.readValue(json.toString(), TestCase.class);
-                    try {
-                        tcService.importWithDependency(tcInfo, cerberusVersion);
+                    if (isCompatible(json)) {
                         
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase " + tcInfo.getTest() + " - " + tcInfo.getTestCase())
-                                .replace("%OPERATION%", "Import"));
-                        ans.setResultMessage(msg);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-                    } catch (CerberusException ex) {
+                        //Remove attribute not in the Object
+                        json.remove("cerberus_version");
+                        json.remove("user");
+
+                        ObjectMapper mapper = new ObjectMapper();
+
+                        TestCase tcInfo = mapper.readValue(json.toString(), TestCase.class);
+                        try {
+                            tcService.importWithDependency(tcInfo);
+
+                            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                            msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase " + tcInfo.getTest() + " - " + tcInfo.getTestCase())
+                                    .replace("%OPERATION%", "Import"));
+                            ans.setResultMessage(msg);
+                            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        } catch (CerberusException ex) {
+                            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                            msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase " + tcInfo.getTest() + " - " + tcInfo.getTestCase())
+                                    .replace("%OPERATION%", "Import")
+                                    .replace("%REASON%", ex.getMessageError().getDescription()));
+                            ans.setResultMessage(msg);
+                            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        }
+                    } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase " + tcInfo.getTest() + " - " + tcInfo.getTestCase())
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase ")
                                 .replace("%OPERATION%", "Import")
-                                .replace("%REASON%", ex.getMessageError().getDescription()));
+                                .replace("%REASON%", "File you're trying to import is not supported or in a compatible version."));
                         ans.setResultMessage(msg);
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                     }
-
                 }
 
                 jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
@@ -206,5 +219,32 @@ public class ImportTestCase extends HttpServlet {
         }
         return result;
     }
+
+    private boolean isCompatible(JSONObject json) {
+
+        try {
+            String fileVersion = json.getString("cerberus_version");
+            String projectVersion = Infos.getInstance().getProjectVersion();
+            
+            //Compatibility Matrix. To update if testcase (including dependencies) model change.
+            Map<String, String> compatibilityMatrix = new HashMap();
+            compatibilityMatrix.put("1.0", "4.0");
+            compatibilityMatrix.put("4.1", "100.0");
+            
+            //Check fileVersion and projectVersion are in the same rank in the compatibility Matrix
+            for (Map.Entry<String,String> entry : compatibilityMatrix.entrySet()){  
+                if(VersionComparator.compare(fileVersion, entry.getKey())*VersionComparator.compare(fileVersion, entry.getValue())<0){
+                    return VersionComparator.compare(projectVersion, entry.getKey())*VersionComparator.compare(projectVersion, entry.getValue())<0;
+                }
+            }
+            return false;
+            
+        } catch (JSONException ex) {
+            LOG.warn(ex);
+            return false;
+        }
+    }
+    
+    
 
 }

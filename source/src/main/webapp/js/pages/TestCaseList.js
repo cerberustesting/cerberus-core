@@ -332,7 +332,9 @@ function massActionModalSaveHandler_export() {
 function massActionModalSaveHandler_delete() {
     clearResponseMessage($('#massActionTestCaseModal'));
 
-    var messageComplete = "Delete all these testcase ?</br></br>";
+    var doc = new Doc();
+    var messageComplete = doc.getDocLabel("page_testcase", "message_delete_all");
+    messageComplete += "</br></br>";
     
     $("input[data-line=select]:checked").each(function (index, file) {
         var t = $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
@@ -451,6 +453,11 @@ function importTestCaseClick() {
     $("#importTestCaseButton").click(function () {
         confirmImportTestCaseModalHandler();
     });
+    
+    var doc = new Doc();
+    var text = doc.getDocLabel("page_testcaselist", "import_testcase_msg");
+    $('#importTestCaseModalText').text(text);
+    
     $('#importTestCaseModal').modal('show');
 }
 

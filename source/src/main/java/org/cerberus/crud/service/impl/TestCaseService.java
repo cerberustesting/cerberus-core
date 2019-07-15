@@ -518,11 +518,10 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public void importWithDependency(TestCase testCase, String cerberusVersion) throws CerberusException {
+    public void importWithDependency(TestCase testCase) throws CerberusException {
 
         //TODO ------------------------
         //Check Cerberus version compatibility. If not stop
-        //Check if test exist, if not, create
         //-------------------------------
         
         //insert testcase

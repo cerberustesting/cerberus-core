@@ -293,6 +293,6 @@ public interface ITestCaseService {
      * @param cerberusVersion 
      * @throws org.cerberus.exception.CerberusException 
      */
-    public void importWithDependency(TestCase testCase, String cerberusVersion) throws CerberusException;
+    public void importWithDependency(TestCase testCase) throws CerberusException;
 
 }
