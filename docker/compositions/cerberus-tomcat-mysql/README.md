@@ -15,8 +15,11 @@ The `cerberus-tomcat-mysql` Docker composition runs Cerberus under the Tomcat ap
 _Note: Optionaly adapt it according to your local config._
 
  2. Execute at the root path
-	
-        docker-compose -f docker-compose.yml up
+
+```
+wget https://raw.githubusercontent.com/cerberustesting/cerberus-source/master/docker/compositions/cerberus-tomcat-mysql/docker-compose.yml
+docker-compose -f docker-compose.yml up
+```
 
  3. Wait for the images to startup
 
