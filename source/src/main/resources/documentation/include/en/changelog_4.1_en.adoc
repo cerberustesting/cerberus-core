@@ -2,8 +2,8 @@
 [square]
 * Closing depencies even when previous execution ended in QE Queue Error. #1973
 * Adding dependency on testcase modal when test has more than 1 space now works. #1976
-* Fixed issue when adding new attributes on Invvariant Modal. #1987
-* SQL optimisations on executions with dependencies and shorter SQL when retreiving labals from ReportByTag and TestCaseList pages
+* Fixed issue when adding new attributes on Invariant Modal. #1987
+* SQL optimisations on executions with dependencies and shorter SQL when retreiving labels from ReportByTag and TestCaseList pages
 * Fixed error message when executor does not exist on a robot
 
 *Improvements / New features*
