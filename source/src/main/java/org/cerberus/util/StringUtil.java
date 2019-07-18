@@ -412,7 +412,7 @@ public final class StringUtil {
         }
 
         String firstPart = "";
-        String seccondPart = "";
+        String seccondPart = url;
 
         if(url.contains("http://") ) {
             firstPart = "http://";
