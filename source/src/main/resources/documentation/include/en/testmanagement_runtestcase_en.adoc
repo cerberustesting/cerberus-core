@@ -25,13 +25,24 @@ image:campaignselection.png[CampaignSelection]
 
 === Environment & Country
 
-For manual selection, no country and environment are selected. 
+By default, in automatic mode, you can select the preconfigured environment.
 
-For campaign selection, some environments and countries can be checked if they are configured in the Test Campaigns
+Warning: The environment and countries must be configured for the related applications. Besides, the testcase attributes override the configuration (e.g. Active in PROD)
 
-image:envcountries.png[EnvironmentCountries]
+image:runenvselect.png[EnvironmentCountries]
 
-Warning: the environment and countries must be configured for the related applications. Besides, the testcase attributes override the configuration (e.g. Active in PROD)
+You can also define yourself the url of the application to test. In that case, the environment still needs to be defined in order to determine which data for the property calculation to use.
+url can have different format :
+
+* simple string : http://host
+* Composed string for multiple applications using : and ; separators : APP1:qa.cerberus-testing.org;APP2:toto.cerberus-testing.org
+* Composed string for multiple applications using JSON format : {"APP1":"https://qa.cerberus-testing.org:443","APP2":"http://toto.cerberus-testing.org"}
+
+image:runenvselect2.png[EnvironmentCountries]
+
+Last you need to select one or more countries.
+
+image:runcountryselect.png[EnvironmentCountries]
 
 === Robots settings
 
