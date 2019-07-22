@@ -300,7 +300,8 @@ public enum MessageEventEnum {
     ACTION_FAILED_DRAGANDDROP_NO_SUCH_ELEMENT(299, "FA", "Failed to dragAndDrop because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_WAITINGFORMANUALEXECUTION(240, "WE", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_FAILED_CLEAR_NO_SUCH_ELEMENT(267, "FA", "Failed to long clicked because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
-
+    ACTION_FAILED_EXECUTECOMMAND_MISSINGPARAMETER(289, "FA", "Failed to launch the command due to the empty parameter : %PARAM%", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    
     // *********** EXECUTION CONTROLS ***********
     CONTROL_SUCCESS(300, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS_EQUAL(300, "OK", "'%STRING1%' is equal to '%STRING2%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),

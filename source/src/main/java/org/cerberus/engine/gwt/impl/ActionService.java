@@ -445,7 +445,15 @@ public class ActionService implements IActionService {
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_BAT)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
-                return executeCommand(command, args);
+                
+                // PENDING FEATURE
+                
+                message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                message.setDescription(message.getDescription().replace("%ACTION%", "executeCommand"));
+                message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+                return message;
+                
+                //return executeCommand(command, args);
             } else {
                 message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 message.setDescription(message.getDescription().replace("%ACTION%", "executeCommand"));
@@ -461,29 +469,81 @@ public class ActionService implements IActionService {
         }
     }
 
+    /**
+     * This method can be used in order to execute a script that is located on
+     * the application server.
+     *
+     * @param command script file name (with extention)
+     * @param args (optionnal) arguments
+     *
+     * @return
+     */
     private MessageEvent executeCommand(String command, String args) {
 
         MessageEvent message;
-        String fullCommand;
+        String inputCommand;
 
         // command and args check
         if (command.isEmpty()) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
-            message.setDescription(message.getDescription().replace("%EXCEPTION%", "no command defined.."));
+            message.setDescription(message.getDescription().replace("%EXCEPTION%", "no command defined"));
             return message;
-        } else if (!args.isEmpty()) {
-            fullCommand = command + args;
         } else {
-            fullCommand = command;
+            // if the first character isn't an antislash, add it
+            String firstChar = Character.toString(command.charAt(0));
+            if (firstChar != "/") {
+                command = "/" + command;
+            }
+            // store the script file name
+            inputCommand = command;
+
         }
 
-        ProcessBuilder processBuilder = new ProcessBuilder();
+        // hardcoded parameters : user & folder
+        // waiting for new parameters validation
+        String folderPath = "\"/CerberusScripts";
+        String scriptUser = "cerberus";
+
+        // cerberus parameters check
+        /*
+        if (parameterService.getParameterStringByKey("cerberus_script_user", "", "ALL").isEmpty() == true) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_MISSINGPARAMETER);
+            message.setDescription(message.getDescription().replace("%PARAM%", "cerberus_script_user"));
+            return message;
+        } else {
+            scriptUser = parameterService.getParameterStringByKey("cerberus_script_user", "", "ALL");
+        }
+
+        if (parameterService.getParameterStringByKey("cerberus_script_folderpath", "", "ALL").isEmpty() == true) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_MISSINGPARAMETER);
+            message.setDescription(message.getDescription().replace("%PARAM%", "cerberus_script_folderpath"));
+            return message;
+        } else {
+            folderPath = parameterService.getParameterStringByKey("cerberus_script_folderpath", "", "ALL");
+        }
+         */
+        
+        String[] commandToRun;
+        
         boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
         if (isWindows) {
-            processBuilder.command("cmd.exe", "/c", fullCommand);
+            commandToRun = new String[]{"cmd.exe", "/c", "su - " + scriptUser, folderPath + inputCommand + "\""};
         } else {
-            processBuilder.command("bash", "-c", fullCommand);
+            commandToRun = new String[]{"bash", "su - " + scriptUser, "-c", folderPath + inputCommand + "\""};
         }
+
+        if (!args.isEmpty()) {
+            // TO DO
+        }
+
+        ProcessBuilder processBuilder = new ProcessBuilder(commandToRun);
+
+        StringBuilder sb = new StringBuilder();
+        for (String s : commandToRun) {
+            sb.append(s);
+            sb.append(" ");
+        }
+        String commandExecuted = sb.toString();
 
         try {
             Process process = processBuilder.start();
@@ -497,11 +557,11 @@ public class ActionService implements IActionService {
             int exitVal = process.waitFor();
             if (exitVal == 0) {
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTECOMMAND);
-                message.setDescription(message.getDescription().replace("%LOG%", fullCommand + " Output : " + output));
+                message.setDescription(message.getDescription().replace("%LOG%", commandExecuted + " Output : " + output));
                 return message;
             } else {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
-                message.setDescription(message.getDescription().replace("%EXCEPTION%", fullCommand));
+                message.setDescription(message.getDescription().replace("%EXCEPTION%", commandExecuted));
                 return message;
             }
         } catch (IOException e) {
