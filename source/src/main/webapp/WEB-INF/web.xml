@@ -789,6 +789,10 @@
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>ImportTestCase</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.test.testcase.ImportTestCase</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>springrest</servlet-name>
         <url-pattern>/api/*</url-pattern>
@@ -1538,6 +1542,10 @@
     <servlet-mapping>
         <servlet-name>DeleteScheduleEntry</servlet-name>
         <url-pattern>/DeleteScheduleEntry</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ImportTestCase</servlet-name>
+        <url-pattern>/ImportTestCase</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>

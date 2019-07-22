@@ -52,6 +52,7 @@ public interface IAppServiceDAO {
      * @param sort
      * @param searchParameter the string to search in the {@link AppService}
      * @param individualSearch the string to search for each column
+     * @param systems
      * @return
      */
     AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems);
@@ -99,6 +100,6 @@ public interface IAppServiceDAO {
      * @param rs the {@link ResultSet}
      */
     AppService loadFromResultSet(ResultSet rs) throws SQLException;
-    
+
     Answer uploadFile(String service, FileItem file);
 }

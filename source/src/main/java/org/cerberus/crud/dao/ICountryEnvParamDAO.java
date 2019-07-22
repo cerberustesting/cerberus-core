@@ -64,7 +64,7 @@ public interface ICountryEnvParamDAO {
 
     /**
      *
-     * @param system
+     * @param systems
      * @param country
      * @param environment
      * @param build
@@ -129,6 +129,6 @@ public interface ICountryEnvParamDAO {
      * @param columnName
      * @return 
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

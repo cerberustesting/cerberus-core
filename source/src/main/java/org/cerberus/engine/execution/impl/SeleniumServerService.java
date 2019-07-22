@@ -193,7 +193,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             String hubUrl = StringUtil.cleanHostURL(
                     SeleniumServerService.getBaseUrl(StringUtil.formatURLCredential(
                             tCExecution.getSession().getHostUser(),
-                            tCExecution.getSession().getHostPassword()) + session.getHost(),
+                            tCExecution.getSession().getHostPassword(), session.getHost()),
                             session.getPort())) + "/wd/hub";
             LOG.debug(logPrefix + "Hub URL :" + hubUrl);
             URL url = new URL(hubUrl);

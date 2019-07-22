@@ -294,11 +294,11 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_DRAGANDDROP:
                     res = this.doActionDragAndDrop(tCExecution, value1, value2);
                     break;
-                case TestCaseStepAction.ACTION_LONG_CLICK:
-                    res = this.doActionLongClick(tCExecution, value1, value2);
+                case TestCaseStepAction.ACTION_LONGPRESS:
+                    res = this.doActionLongPress(tCExecution, value1, value2);
                     break;
-                case TestCaseStepAction.ACTION_CLEAR:
-                    res = this.doActionClear(tCExecution, value1);
+                case TestCaseStepAction.ACTION_CLEARFIELD:
+                    res = this.doActionClearField(tCExecution, value1);
                     break;
                 /**
                  * DEPRECATED ACTIONS FROM HERE.
@@ -1643,14 +1643,14 @@ public class ActionService implements IActionService {
                 .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
     }
 
-    private MessageEvent doActionLongClick(TestCaseExecution tCExecution, String value1, String value2) {
+    private MessageEvent doActionLongPress(TestCaseExecution tCExecution, String value1, String value2) {
         String element;
         try {
             /**
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(value1, value2, TestCaseStepAction.ACTION_LONG_CLICK, tCExecution);
+            element = getElementToUse(value1, value2, TestCaseStepAction.ACTION_LONGPRESS, tCExecution);
             /**
              * Get Identifier (identifier, locator) and check it's valid
              */
@@ -1679,26 +1679,25 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionClear(TestCaseExecution tCExecution, String object) {
+    private MessageEvent doActionClearField(TestCaseExecution tCExecution, String value1) {
         String element;
         try {
             /**
              * Check object and property are not null for GUI/APK/IPA Check
              * property is not null for FAT Application
              */
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                if (object == null) {
-                    return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
+                if (value1 == null) {
+                    return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLEARFIELD);
                 }
             }
             /**
              * Get Identifier (identifier, locator) if object not null
              */
             Identifier identifier = new Identifier();
-            if (object != null) {
-                identifier = identifierService.convertStringToIdentifier(object);
+            if (value1 != null) {
+                identifier = identifierService.convertStringToIdentifier(value1);
             }
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {

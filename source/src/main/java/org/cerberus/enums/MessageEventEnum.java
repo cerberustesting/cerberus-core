@@ -295,6 +295,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_TIMEOUT(298, "FA", "Timeout exceeded when performing the action : %TIMEOUT% milliseconds", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_GENERIC(298, "FA", "Action Failed. %DETAIL%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_DRAGANDDROP(299, "FA", "Failed to drag and drop because could not find element '%ELEMENT%'!\" .", true, true, false, MessageGeneralEnum.EXECUTION_FA),
+    ACTION_FAILED_CLEARFIELD(257, "FA", "Value1 is ‘null’. Parameter is mandatory in order to perform the action clearField.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_PENDING(299, "PE", "Doing Action...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_FAILED_DRAGANDDROP_NO_SUCH_ELEMENT(299, "FA", "Failed to dragAndDrop because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_WAITINGFORMANUALEXECUTION(240, "WE", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),

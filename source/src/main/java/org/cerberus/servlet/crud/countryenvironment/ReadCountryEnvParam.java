@@ -323,7 +323,9 @@ public class ReadCountryEnvParam extends HttpServlet {
             }
         }
 
-        AnswerList cepList = cepService.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
+        List<String> systems = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
+        
+        AnswerList cepList = cepService.readDistinctValuesByCriteria(systems, searchParameter, individualSearch, columnName);
 
         object.put("distinctValues", cepList.getDataList());
 

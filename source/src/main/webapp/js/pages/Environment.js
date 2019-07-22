@@ -34,28 +34,10 @@ function initPage() {
     var urlRevision = GetURLParameter('revision', 'ALL'); // Feed Revision combo with Revision list.
     var urlEnvGp = GetURLParameter('envgp', 'ALL'); // Feed Environment Group combo with Environment list.
     var urlActive = GetURLParameter('active', 'ALL'); // Feed Active combo with Active list.
-    
+
+    var urlSystem = GetURLParameter('system', 'ALL'); // Feed Environment combo with Environment list.
     var urlCountry = GetURLParameter('country', 'ALL'); // Feed Country combo with Country list.
     var urlEnvironment = GetURLParameter('environment', 'ALL'); // Feed Environment combo with Environment list.
-
-//    appendBuildList("build", "1", urlBuild);
-//    appendBuildList("revision", "2", urlRevision);
-//
-//    var select = $('#selectCountry');
-//    select.append($('<option></option>').text("-- ALL --").val("ALL"));
-//    displayInvariantList("country", "COUNTRY", false, urlCountry);
-//
-//    var select = $('#selectEnvironment');
-//    select.append($('<option></option>').text("-- ALL --").val("ALL"));
-//    displayInvariantList("environment", "ENVIRONMENT", false, urlEnvironment);
-//
-//    var select = $('#selectEnvGp');
-//    select.append($('<option></option>').text("-- ALL --").val("ALL"));
-//    displayInvariantList("envGp", "ENVGP", false, urlEnvGp);
-//
-//    var select = $('#selectActive');
-//    select.append($('<option></option>').text("-- ALL --").val("ALL"));
-//    displayInvariantList("active", "ENVACTIVE", false, urlActive);
 
     displayInvariantList("system", "SYSTEM", false);
     displayInvariantList("country", "COUNTRY", false);
@@ -65,16 +47,11 @@ function initPage() {
     displayInvariantList("maintenanceAct", "MNTACTIVE", false, "N");
     displayInvariantList("chain", "CHAIN", false, "Y");
     displayBatchInvariantList('batch', getUser().defaultSystem);
-    
-//    var toto = new Array;
-//    toto.push("active=[\"Y\"]");
-//    toto.push("system=cerberus");
-//    generateFiltersOnMultipleColumns("environmentsTable", toto);
 
     displayBuildList('#newBuild', getUser().defaultSystem, "1", "", "", "");
     displayBuildList('#newRevision', getUser().defaultSystem, "2", "", "", "");
 
-    var table = loadEnvTable(urlCountry, urlEnvironment, urlBuild, urlRevision, urlEnvGp, urlActive);
+    var table = loadEnvTable(urlCountry, urlEnvironment, urlBuild, urlRevision, urlEnvGp, urlActive, urlSystem);
 
     // Load the select needed in localStorage cache.
     getSelectApplication(getUser().defaultSystem, true);
@@ -187,9 +164,9 @@ function displayPageLabel() {
     $("[name='applicationHeader']").html(doc.getDocOnline("application", "Application"));
     $("[name='ipHeader']").html(doc.getDocOnline("countryenvironmentparameters", "IP") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
     $("[name='urlHeader']").html(doc.getDocOnline("countryenvironmentparameters", "URL") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "domain"));
-    $("#var1Header").html(doc.getDocOnline("countryenvironmentparameters", "Var1") 
+    $("#var1Header").html(doc.getDocOnline("countryenvironmentparameters", "Var1")
             + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var2"));
-    $("#var3Header").html(doc.getDocOnline("countryenvironmentparameters", "Var3") 
+    $("#var3Header").html(doc.getDocOnline("countryenvironmentparameters", "Var3")
             + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var4"));
     $("#poolSizeHeader").html(doc.getDocOnline("countryenvironmentparameters", "poolSize"));
 
@@ -207,8 +184,7 @@ function displayPageLabel() {
     displayFooter(doc);
 }
 
-function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevision, selectEnvGp, selectActive) {
-
+function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevision, selectEnvGp, selectActive, selectSystem) {
 
     //clear the old report content before reloading it
     $("#environmentList").empty();
@@ -216,29 +192,45 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
                                             </table><div class="marginBottom20"></div>');
 
     //configure and create the dataTable
-    var contentUrl = "ReadCountryEnvParam?forceList=Y&system=" + getUser().defaultSystem;
-//    if ((selectEnvironment!==null) && (selectEnvironment !== 'ALL')) {
-//        contentUrl = contentUrl + "&environment=" + selectEnvironment;
-//    }
-//    if ((selectCountry!==null) && (selectCountry !== 'ALL')) {
-//        contentUrl = contentUrl + "&country=" + selectCountry;
-//    }
-//    if ((selectBuild!==null) && (selectBuild !== 'ALL')) {
-//        contentUrl = contentUrl + "&build=" + selectBuild;
-//    }
-//    if ((selectRevision!==null) && (selectRevision !== 'ALL')) {
-//        contentUrl = contentUrl + "&revision=" + selectRevision;
-//    }
-//    if ((selectEnvGp!==null) && (selectEnvGp !== 'ALL')) {
-//        contentUrl = contentUrl + "&envgp=" + selectEnvGp;
-//    }
-//    if ((selectActive!==null) && (selectActive !== 'ALL')) {
-//        contentUrl = contentUrl + "&active=" + selectActive;
-//    }
+    var contentUrl = "ReadCountryEnvParam?forceList=Y";
 
     var configurations = new TableConfigurationsServerSide("environmentsTable", contentUrl, "contentTable", aoColumnsFunc("environmentsTable"), [3, 'asc']);
 
     var table = createDataTableWithPermissions(configurations, renderOptionsForEnv, "#environmentList", undefined, true);
+
+    var searchArray = [];
+    var searchObject = {param: "col", values: "val"};
+
+    if ((selectEnvironment !== null) && (selectEnvironment !== 'ALL')) {
+        searchObject = {param: "environment", values: selectEnvironment};
+        searchArray.push(searchObject);
+    }
+    if ((selectCountry !== null) && (selectCountry !== 'ALL')) {
+        searchObject = {param: "country", values: selectCountry};
+        searchArray.push(searchObject);
+    }
+    if ((selectBuild !== null) && (selectBuild !== 'ALL')) {
+        searchObject = {param: "build", values: selectBuild};
+        searchArray.push(searchObject);
+    }
+    if ((selectRevision !== null) && (selectRevision !== 'ALL')) {
+        searchObject = {param: "revision", values: selectRevision};
+        searchArray.push(searchObject);
+    }
+    if ((selectEnvGp !== null) && (selectEnvGp !== 'ALL')) {
+        searchObject = {param: "envGp", values: selectEnvGp};
+        searchArray.push(searchObject);
+    }
+    if ((selectActive !== null) && (selectActive !== 'ALL')) {
+        searchObject = {param: "active", values: selectActive};
+        searchArray.push(searchObject);
+    }
+    if ((selectSystem !== null) && (selectSystem !== 'ALL')) {
+        searchObject = {param: "system", values: selectSystem};
+        searchArray.push(searchObject);
+    }
+    applyFiltersOnMultipleColumns("environmentsTable", searchArray, false);
+
     return table;
 }
 
@@ -321,20 +313,6 @@ function addEntryModalSaveHandler() {
     clearResponseMessage($('#addEnvModal'));
     var formAdd = $("#addEnvModal #addEnvModalForm");
 
-//    var nameElement = formAdd.find("#build");
-//    var nameElementEmpty = nameElement.prop("value") === '';
-//    if (nameElementEmpty) {
-//        var localMessage = new Message("danger", "Please specify the name of the build!");
-//        nameElement.parents("div.form-group").addClass("has-error");
-//        showMessage(localMessage, $('#addEnvModal'));
-//    } else {
-//        nameElement.parents("div.form-group").removeClass("has-error");
-//    }
-//
-//    // verif if all mendatory fields are not empty
-//    if (nameElementEmpty)
-//        return;
-
     // Get the header data from the form.
     var dataForm = convertSerialToJSONObject(formAdd.serialize());
 
@@ -342,7 +320,6 @@ function addEntryModalSaveHandler() {
     var jqxhr = $.post("CreateCountryEnvParam", dataForm);
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#addEnvModal');
-        console.log(data.messageType);
         if (getAlertType(data.messageType) === 'success') {
             var oTable = $("#environmentsTable").dataTable();
             oTable.fnDraw(false);
@@ -1229,7 +1206,7 @@ function aoColumnsFunc(tableId) {
             "sWidth": "100px",
             "title": doc.getDocOnline("invariant", "ENVIRONMENT")},
         {"data": "description",
-            "like":true,
+            "like": true,
             "sName": "description",
             "sWidth": "150px",
             "title": doc.getDocOnline("countryenvparam", "Description")},

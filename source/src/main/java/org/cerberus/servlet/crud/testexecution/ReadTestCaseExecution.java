@@ -460,20 +460,19 @@ public class ReadTestCaseExecution extends HttpServlet {
             }
         }
 
-        testCaseExecutionList = testCaseExecutionService.readByCriteria(startPosition, length, columnName.concat(" ").concat(sort), searchParameter, individualSearch, individualLike, system);
+        AnswerList resp = testCaseExecutionService.readByCriteria(startPosition, length, columnName.concat(" ").concat(sort), searchParameter, individualSearch, individualLike, system);
 
         JSONArray jsonArray = new JSONArray();
-        for (TestCaseExecution testCaseExecution : testCaseExecutionList) {
-            jsonArray.put(testCaseExecution.toJson(true).put("hasPermissions", userHasPermissions));
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (TestCaseExecution testCaseExecution : (List<TestCaseExecution>) resp.getDataList()) {
+                jsonArray.put(testCaseExecution.toJson(true).put("hasPermissions", userHasPermissions));
+            }
         }
 
         object.put("contentTable", jsonArray);
         object.put("hasPermissions", userHasPermissions);
-        object.put("iTotalRecords", testCaseExecutionList.size());
-        object.put("iTotalDisplayRecords", testCaseExecutionList.size());
-        // Put back the navigation.
-//        object.put("iTotalRecords", resp.getTotalRows());
-//        object.put("iTotalDisplayRecords", resp.getTotalRows());
+        object.put("iTotalRecords", resp.getTotalRows());
+        object.put("iTotalDisplayRecords", resp.getTotalRows());
 
         answer.setItem(object);
         answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK_GENERIC));

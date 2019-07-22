@@ -318,11 +318,14 @@ function displayDataLibList(selectName, defaultValue, data) {
  * @param {String} selectName value name of the select tag in the html
  * @param {String} system [optional] value name of the system in order to filter the application list
  * @param {String} defaultValue to be selected
+ * @param {String} extraValue add an aditional option if <> undefined
  * @returns {void}
  */
-function displayApplicationList(selectName, system, defaultValue) {
+function displayApplicationList(selectName, system, defaultValue, extraValue) {
     var myData = "";
-    $("[name='" + selectName + "']").append($("<option value=''></option>").text(""));
+    if (extraValue !== undefined) {
+        $("[name='" + selectName + "']").append($("<option value='" + extraValue + "'></option>").text(extraValue));
+    }
 
     if ((system !== "") && (system !== undefined) && (system !== null)) {
         myData = "system=" + system;
@@ -1332,7 +1335,7 @@ function showUnexpectedError(jqXHR, textStatus, errorThrown) {
  * @param {Function} callbackFunction callback function to be called after table creation (only on server side)
  * @param {String} objectWaitingLayer object that will report the waiting layer when external calls. Ex : #logViewer
  * @param {Array} filtrableColumns array of parameter name that can trigger filter on columns
- * @param {Boolean} checkPermisson boolean that define if user permission need to be checked
+ * @param {Boolean} checkPermissions boolean that define if user permission need to be checked
  * @param {type} userCallbackFunction
  * @param {Function} createdRowCallback callback function to be called after each row
  * @return {Object} Return the dataTable object to use the api

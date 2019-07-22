@@ -41,7 +41,7 @@ function initModalAppService() {
     
     displayInvariantList("type", "SRVTYPE", false, "REST");
     displayInvariantList("method", "SRVMETHOD", false, "GET");
-    displayApplicationList("application", "", "");
+    displayApplicationList("application", "", "", "");
 
     $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "btn_edit"));
     $("[name='addEntryField']").html(doc.getDocLabel("page_global", "btn_add"));

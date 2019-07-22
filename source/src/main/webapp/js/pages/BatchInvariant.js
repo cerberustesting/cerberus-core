@@ -38,7 +38,7 @@ function initPage() {
     $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, buttonCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("batchinvariantsTable", "ReadBatchInvariant?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("batchinvariantsTable"), [1,'asc']);
+    var configurations = new TableConfigurationsServerSide("batchinvariantsTable", "ReadBatchInvariant", "contentTable", aoColumnsFunc("batchinvariantsTable"), [1, 'asc']);
 
     createDataTableWithPermissions(configurations, renderOptionsForBatchInvariant, "#batchinvariant", undefined, true);
 }
@@ -168,7 +168,7 @@ function editEntryClick(batch) {
 }
 
 function saveEntry(servletName, modalID, form) {
-        // Get the header data from the form.
+    // Get the header data from the form.
     var dataForm = convertSerialToJSONObject(form.serialize());
 
     var jqxhr = $.post(servletName, dataForm);
@@ -228,6 +228,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "batch",
+            "like": true,
             "sName": "batch",
             "sWidth": "50px",
             "title": doc.getDocOnline("batchinvariant", "Batch")},
@@ -238,7 +239,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("batchinvariant", "system")},
         {
             "data": "description",
-            "like":true,
+            "like": true,
             "sName": "description",
             "sWidth": "100px",
             "title": doc.getDocOnline("batchinvariant", "Description")}

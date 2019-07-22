@@ -50,6 +50,8 @@
                         <div class="panel-body">
                             <div class="form-inline">
                                 <div class="marginBottom10">
+                                    <label for="selectSystem" name="systemField">System :</label>
+                                    <select class="form-control" id="selectSystem" name="system" style="width: 25%"></select>
                                     <label for="selectApplication" name="applicationField">Application :</label>
                                     <select class="form-control" id="selectApplication" name="application" style="width: 25%"></select>
                                     <label for="selectBuild" name="buildField">Build :</label>

@@ -81,6 +81,7 @@ public class TestCase {
     private List<TestCaseStep> testCaseStep;
     private List<TestCaseStepBatch> testCaseStepBatch;
     private List<TestCaseLabel> testCaseLabel;
+    private List<TestCaseDep> testCaseDep;
 
     public static final String GROUP_MANUAL = "MANUAL";
     public static final String GROUP_AUTOMATED = "AUTOMATED";
@@ -416,6 +417,14 @@ public class TestCase {
         this.testCaseLabel = testCaseLabel;
     }
 
+    public List<TestCaseDep> getTestCaseDep() {
+        return testCaseDep;
+    }
+
+    public void setTestCaseDep(List<TestCaseDep> testCaseDep) {
+        this.testCaseDep = testCaseDep;
+    }
+    
     public String getUserAgent() {
         return userAgent;
     }
@@ -455,7 +464,7 @@ public class TestCase {
             result.put("tcActive", this.getTcActive());
             result.put("conditionOper", this.getConditionOper());
             result.put("conditionValue1", this.getConditionVal1());
-            result.put("conditionValue2", this.getConditionVal1());
+            result.put("conditionValue2", this.getConditionVal2());
             result.put("group", this.getGroup());
             result.put("origine", this.getOrigine());
             result.put("refOrigine", this.getRefOrigine());
@@ -492,5 +501,5 @@ public class TestCase {
         }
         return result;
     }
-
+   
 }
