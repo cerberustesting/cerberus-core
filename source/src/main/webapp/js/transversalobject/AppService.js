@@ -43,12 +43,13 @@ function initModalAppService() {
     displayInvariantList("method", "SRVMETHOD", false, "GET");
     displayApplicationList("application", "", "", "");
 
-    $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "btn_edit"));
+    $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
     $("[name='addEntryField']").html(doc.getDocLabel("page_global", "btn_add"));
     $("[name='confirmationField']").html(doc.getDocLabel("page_global", "btn_delete"));
     $("[name='editEntryField']").html(doc.getDocLabel("page_global", "btn_edit"));
     $("[name='applicationField']").html(doc.getDocOnline("page_applicationObject", "Application"));
     $("[name='soapLibraryField']").html(doc.getDocLabel("appservice", "service"));
+    $("[name='groupField']").html(doc.getDocLabel("appservice", "group"));
     $("[name='typeField']").html(doc.getDocLabel("appservice", "type"));
     $("[name='descriptionField']").html(doc.getDocLabel("appservice", "description"));
     $("[name='servicePathField']").html(doc.getDocOnline("appservice", "servicePath"));

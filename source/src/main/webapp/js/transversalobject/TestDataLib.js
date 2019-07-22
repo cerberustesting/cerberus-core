@@ -108,8 +108,7 @@ function openModalDataLib(element, dataLibEntry, mode, id) {
 
     $("#editDataLibButton").off("click");
     $("#editDataLibButton").click(function () {
-        $("#SubdataTable_edit").find("button").click
-
+        $("#SubdataTable_edit").find("button").click;
         confirmDataLibModalHandler(element, "EDIT", id);
     });
 
@@ -198,7 +197,7 @@ function initModalDataLib() {
     $("#cancelDuplicateTestDataLib").text(doc.getDocLabel("page_global", "btn_cancel"));
     $("#duplicateDataLibButton").text(doc.getDocLabel("page_global", "btn_duplicate"));
     //cancel + add buttons
-    $("#editDataLibButton").text(doc.getDocLabel("page_global", "buttonAdd"));
+    $("#editDataLibButton").text(doc.getDocLabel("page_global", "buttonEdit"));
     $("#cancelTestDataLibButton").text(doc.getDocLabel("page_global", "btn_cancel"));
     $("#closeButton").text(doc.getDocLabel("page_global", "buttonClose"));
     //tabs, tab2 is updated when the entries are managed
