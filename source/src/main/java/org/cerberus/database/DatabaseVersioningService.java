@@ -8158,6 +8158,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1416
         a.add("ALTER TABLE `user` CHANGE COLUMN `DefaultSystem` `DefaultSystem` MEDIUMTEXT NULL DEFAULT NULL ;");
 
+        // Add the "longPress" and "clearField" Action
+        // 1417
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + "('', 'cerberus_smtp_isSetTls', 'true', 'Boolean defining if the TLS is set or not for the email!<br>true / false');");
+
         return a;
     }
 

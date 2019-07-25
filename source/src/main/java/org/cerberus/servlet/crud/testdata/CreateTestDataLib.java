@@ -141,6 +141,7 @@ public class CreateTestDataLib extends HttpServlet {
             String databaseCsv = policy.sanitize(fileData.get("databaseCsv"));
             // Parameter that needs to be secured --> We SECURE+DECODE them
             String name = fileData.get("name"); //this is mandatory
+            String privateData = fileData.get("privateData");
             String group = fileData.get("group");
             String description = fileData.get("libdescription");
             String service = fileData.get("service");
@@ -172,7 +173,7 @@ public class CreateTestDataLib extends HttpServlet {
                 ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
                 IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
 
-                TestDataLib lib = factoryLibService.create(0, name, system, environment, country, group,
+                TestDataLib lib = factoryLibService.create(0, name, system, environment, country, privateData, group,
                         type, database, script, databaseUrl, service, servicePath, method, envelope, databaseCsv, csvUrl, separator, description,
                         request.getRemoteUser(), null, "", null, null, null, null, null);
 
@@ -228,7 +229,7 @@ public class CreateTestDataLib extends HttpServlet {
                         }
                         tdldList.add(firstLineLibData);
                         for (String item : firstLineSubData) {
-                            TestDataLibData tdld = tdldFactory.create(null, dataLibWithUploadedFile.getTestDataLibID(), item + "_" + y, secondLineSubData[i], item, null, Integer.toString(y), null);
+                            TestDataLibData tdld = tdldFactory.create(null, dataLibWithUploadedFile.getTestDataLibID(), item + "_" + y,"N", secondLineSubData[i], item, null, Integer.toString(y), null);
                             tdldList.add(tdld);
                             i++;
                             y++;
@@ -279,6 +280,7 @@ public class CreateTestDataLib extends HttpServlet {
             // NONE
             // Parameter that we cannot secure as we need the html --> We DECODE them
             String subdata = ParameterParserUtil.parseStringParam(objectJson.getString("subData"), "");
+            String encrypt = ParameterParserUtil.parseStringParam(objectJson.getString("encrypt"), "");
             String value = ParameterParserUtil.parseStringParam(objectJson.getString("value"), "");
             String column = ParameterParserUtil.parseStringParam(objectJson.getString("column"), "");
             String parsingAnswer = ParameterParserUtil.parseStringParam(objectJson.getString("parsingAnswer"), "");
@@ -286,7 +288,7 @@ public class CreateTestDataLib extends HttpServlet {
             String description = ParameterParserUtil.parseStringParam(objectJson.getString("description"), "");
 
             if (!delete) {
-                TestDataLibData tdld = tdldFactory.create(testDataLibDataId, testDataLibId, subdata, value, column, parsingAnswer, columnPosition, description);
+                TestDataLibData tdld = tdldFactory.create(testDataLibDataId, testDataLibId, subdata, encrypt, value, column, parsingAnswer, columnPosition, description);
                 tdldList.add(tdld);
             }
         }

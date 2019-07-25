@@ -173,8 +173,10 @@ function initModalDataLib() {
     $("[name='lbl_csvUrl']").html(doc.getDocOnline("testdatalib", "csvUrl"));
     $("[name='lbl_separator']").html(doc.getDocOnline("testdatalib", "separator"));
     $("[name='lbl_group']").html(doc.getDocOnline("testdatalib", "group"));
+    $("[name='lbl_privateData']").html(doc.getDocOnline("testdatalib", "privateData"));
     // Sub Data content
     $("[name='subdataHeader']").html(doc.getDocOnline("testdatalibdata", "subData"));
+    $("[name='encryptHeader']").html(doc.getDocOnline("testdatalibdata", "encrypt"));
     $("[name='valueHeader']").html(doc.getDocOnline("testdatalibdata", "value"));
     $("[name='columnHeader']").html(doc.getDocOnline("testdatalibdata", "column"));
     $("[name='parsingAnswerHeader']").html(doc.getDocOnline("testdatalibdata", "parsingAnswer"));
@@ -339,8 +341,11 @@ function confirmDataLibModalHandler(element, mode, id) {
     var file = $("#editTestDataLibModal input[type=file]");
     files = file.prop("files")[0]
 
+    dataForm.privateData = $('#editTestDataLibModal #privateData').prop("checked");
+
     var sa = formEdit.serializeArray();
     var formData = new FormData();
+
 
     for (var i in dataForm) {
         formData.append(i, dataForm[i]);
@@ -427,6 +432,7 @@ function feedDataLibModal(serviceName, modalId, mode) {
         DataObj1.databaseCsv = "";
         DataObj1.databaseUrl = "";
         DataObj1.envelope = "";
+        DataObj1.privateData = false;
         DataObj1.group = "";
         DataObj1.method = "";
         DataObj1.name = serviceName;
@@ -495,6 +501,23 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         $('#editTestDataLibModal #environment').find('option[value="' + obj.environment + '"]').prop("selected", true);
         $('#editTestDataLibModal #country').find('option[value="' + obj.country + '"]').prop("selected", true);
 
+        obj.privateData === "Y" ? obj.privateData = true : obj.privateData = false;
+        var disabled = hasPermissionsUpdate ? "" : "disabled";
+        $('#editTestDataLibModal #privateData').prop("checked", obj.privateData).prop("disabled", disabled);
+
+        $('#editTestDataLibModal #messagePrivate').empty();
+        if (obj.privateData) {
+            $('#editTestDataLibModal #messagePrivate').html("This data is modifiable by " + obj.creator + " Only");
+        }
+
+        $('#editTestDataLibModal #privateData').click(function () {
+            if ($('#editTestDataLibModal #privateData').prop("checked")) {
+                $('#messagePrivate').html("This data will be modifiable by " + obj.creator + " Only");
+            } else {
+                $('#messagePrivate').empty();
+            }
+        });
+
         //loads the information for the entries
         $('#editTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
 
@@ -550,7 +573,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
             $('#editDataLibButton').attr('class', '');
             $('#editDataLibButton').attr('hidden', 'hidden');
         }
-        
+
         //Highlight envelop on modal loading
         var editor = ace.edit($("#editTestDataLibModal #envelope")[0]);
         editor.setTheme("ace/theme/chrome");
@@ -604,7 +627,10 @@ function appendSubDataRow(subdata, targetTableBody) {
         var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
         var subDataInput = $("<input onkeydown=\"return dtl_keyispressed(event);\" maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "subData") + " --\">").addClass("form-control input-sm").val(subdata.subData);
     }
-    var valueInput = $("<input placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "value") + " --\">").addClass("form-control input-sm").val(subdata.value);
+    subdata.encrypt === "Y" ? subdata.encrypt = true : subdata.encrypt = false;
+    var encryptInput = $("<input type='checkbox' \">").prop("checked", subdata.encrypt);
+    var typeStyle = subdata.encrypt === true ? "password" : "";
+    var valueInput = $("<input type=\"" + typeStyle + "\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "value") + " --\">").addClass("form-control input-sm").val(subdata.value);
     var columnInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "column") + " --\">").addClass("form-control input-sm").val(subdata.column);
     var parsingAnswerInput = $("<input placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "parsingAnswer") + " --\">").addClass("form-control input-sm").val(subdata.parsingAnswer);
     var columnPositionInput = $("<input  maxlength=\"45\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "columnPosition") + " --\">").addClass("form-control input-sm").val(subdata.columnPosition);
@@ -615,6 +641,7 @@ function appendSubDataRow(subdata, targetTableBody) {
     var row = $("<tr></tr>");
     var deleteBtnRow = $("<td></td>").append(deleteBtn);
     var subData = $("<td></td>").append(subDataInput);
+    var encrypt = $("<td></td>").append(encryptInput);
     var value = $("<td></td>").append(valueInput);
     var column = $("<td></td>").append(columnInput);
     var parsingAnswer = $("<td></td>").append(parsingAnswerInput);
@@ -631,6 +658,14 @@ function appendSubDataRow(subdata, targetTableBody) {
     });
     subDataInput.change(function () {
         subdata.subData = $(this).val();
+    });
+    encryptInput.change(function () {
+        subdata.encrypt = $(this).prop("checked");
+        if ($(this).prop("checked")) {
+            $(this).parent().next().find("input").prop("type", "password");
+        } else {
+            $(this).parent().next().find("input").prop("type", "");
+        }
     });
     valueInput.change(function () {
         subdata.value = $(this).val();
@@ -650,6 +685,7 @@ function appendSubDataRow(subdata, targetTableBody) {
 
     row.append(deleteBtnRow);
     row.append(subData);
+    row.append(encrypt);
     row.append(value);
     row.append(column);
     row.append(parsingAnswer);
@@ -664,6 +700,7 @@ function addNewSubDataRow(dataTableBody) {
     var nbRows = $("#" + dataTableBody + " tr").size();
     var newSubData = {
         subData: "SUBDATA" + nbRows,
+        encrypt: false,
         value: "",
         column: "",
         parsingAnswer: "",
@@ -678,6 +715,7 @@ function addNewSubDataRow(dataTableBody) {
 function addNewSubDataKeyRow(dataTableBody) {
     var newSubData = {
         subData: "",
+        encrypt: false,
         value: "",
         column: "",
         parsingAnswer: "",

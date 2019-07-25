@@ -28,6 +28,7 @@ public class TestDataLibData {
 
     private Integer testDataLibID;
     private String subData;
+    private String encrypt;
     private String value;
     private String column;
     private String parsingAnswer;
@@ -59,6 +60,14 @@ public class TestDataLibData {
         this.subData = subData;
     }
 
+    public String getEncrypt() {
+        return encrypt;
+    }
+
+    public void setEncrypt(String encrypt) {
+        this.encrypt = encrypt;
+    }
+    
     public String getValue() {
         return value;
     }
@@ -124,6 +133,7 @@ public class TestDataLibData {
         int hash = 3;
         hash = 29 * hash + (this.testDataLibID != null ? this.testDataLibID.hashCode() : 0);
         hash = 29 * hash + (this.subData != null ? this.subData.hashCode() : 0);
+        hash = 29 * hash + (this.encrypt != null ? this.encrypt.hashCode() : 0);
         hash = 29 * hash + (this.value != null ? this.value.hashCode() : 0);
         hash = 29 * hash + (this.column != null ? this.column.hashCode() : 0);
         hash = 29 * hash + (this.columnPosition != null ? this.columnPosition.hashCode() : 0);
@@ -145,6 +155,9 @@ public class TestDataLibData {
             return false;
         }
         if ((this.subData == null) ? (other.subData != null) : !this.subData.equals(other.subData)) {
+            return false;
+        }
+        if ((this.encrypt == null) ? (other.encrypt != null) : !this.encrypt.equals(other.encrypt)) {
             return false;
         }
         if ((this.value == null) ? (other.value != null) : !this.value.equals(other.value)) {

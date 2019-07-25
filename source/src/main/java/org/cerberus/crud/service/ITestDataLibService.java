@@ -181,5 +181,13 @@ public interface ITestDataLibService {
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
-
+    
+    /**
+     * 
+     * @param lib
+     * @param userName
+     * @return 
+     */
+    boolean userHasPermission(TestDataLib lib, String userName);
+    
 }

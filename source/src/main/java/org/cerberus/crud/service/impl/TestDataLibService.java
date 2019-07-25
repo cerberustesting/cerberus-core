@@ -194,5 +194,15 @@ public class TestDataLibService implements ITestDataLibService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
+    
+    @Override
+    public boolean userHasPermission(TestDataLib lib, String userName) {
+        if ("Y".equals(lib.getPrivateData())) {
+            if (!userName.equals(lib.getCreator())) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 }

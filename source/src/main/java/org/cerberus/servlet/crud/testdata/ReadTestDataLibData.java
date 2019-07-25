@@ -29,9 +29,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse; 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.service.ITestDataLibDataService;  
+import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.enums.MessageEventEnum; 
 import org.cerberus.util.answer.AnswerItem; 
 import org.cerberus.util.answer.AnswerList; 
@@ -106,15 +108,19 @@ public class ReadTestDataLibData extends HttpServlet {
             JSONObject jsonResponse;
             if (request.getParameter("testdatalibid") != null && !testdatalibid_error) {
                 //returns sub-data entries with basis on the test data library id
-                answer = readById(appContext, testdatalibid);                   
-            } else if (request.getParameter("name") != null) {
-                //return sub-data entries with basis on the name
-                String name = policy.sanitize(request.getParameter("name"));
-                answer = readByName(appContext, name);
-            } else {
-                //return all entries
-                answer = readAll(appContext);                
-            }
+                answer = readById(appContext, testdatalibid, request);                   
+            } 
+//           TODO : WARN : this methods can allow to access private data.
+//              check if used, else, remove with the associated methods 
+//            
+//            else if (request.getParameter("name") != null) {
+//                //return sub-data entries with basis on the name
+//                String name = policy.sanitize(request.getParameter("name"));
+//                answer = readByName(appContext, name);
+//            } else {
+//                //return all entries
+//                answer = readAll(appContext);                
+//            }
  
             jsonResponse = (JSONObject) answer.getItem();
             
@@ -168,15 +174,30 @@ public class ReadTestDataLibData extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem readById(ApplicationContext appContext, int testDatalib) throws JSONException {
+    private AnswerItem readById(ApplicationContext appContext, int testDatalib, HttpServletRequest request) throws JSONException {
         JSONObject jsonResponse = new JSONObject();
+        ITestDataLibService testDataLibService = appContext.getBean(ITestDataLibService.class);
         ITestDataLibDataService testDataLibDataService = appContext.getBean(ITestDataLibDataService.class);
+        
+        
+        AnswerItem datalib = testDataLibService.readByKey(testDatalib);
         AnswerList answer = testDataLibDataService.readByVarious(testDatalib, null, null, null);
 
+        boolean hasPermissionToSeePrivateValue = false;
+        
+        if (datalib.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item and convert it to JSONformat
+            TestDataLib lib = (TestDataLib) datalib.getItem();
+            hasPermissionToSeePrivateValue = testDataLibService.userHasPermission(lib, request.getUserPrincipal().getName());
+        }
+        
         //retrieves the data for the entry
         JSONArray jsonArray = new JSONArray();
 
         for (TestDataLibData subdata : (List<TestDataLibData>) answer.getDataList()) {
+            if (!hasPermissionToSeePrivateValue && "Y".equals(subdata.getEncrypt())){
+                subdata.setValue("XXXXXXXX");
+            }
             jsonArray.put(convertTestDataLibDataToJSONObject(subdata));
         }
 
@@ -196,48 +217,48 @@ public class ReadTestDataLibData extends HttpServlet {
         return result;
     }
 
-    private AnswerItem readByName(ApplicationContext appContext, String testDataLibName) throws JSONException {
-        JSONObject jsonResponse = new JSONObject();
-        ITestDataLibDataService testDataLibDataService = appContext.getBean(ITestDataLibDataService.class);
-        AnswerList answer = testDataLibDataService.readByName(testDataLibName);
-
-        //retrieves the data for the entry
-        JSONArray jsonArray = new JSONArray();
-
-        for (TestDataLibData subdata : (List<TestDataLibData>) answer.getDataList()) {
-            jsonArray.put(convertTestDataLibDataToJSONObject(subdata));
-        }
-
-        jsonResponse.put("contentTable", jsonArray);
-        jsonResponse.put("iTotalRecords", answer.getTotalRows());
-        jsonResponse.put("iTotalDisplayRecords", answer.getTotalRows());
-
-        AnswerItem item = new AnswerItem<>();
-        item.setItem(jsonResponse);
-        item.setResultMessage(answer.getResultMessage());
-
-        return item;
-    }
-
-     
-    private AnswerItem readAll(ApplicationContext appContext) throws JSONException {
-        JSONObject jsonResponse = new JSONObject();
-        ITestDataLibDataService testDataLibDataService = appContext.getBean(ITestDataLibDataService.class);
-        AnswerList answer = testDataLibDataService.readAll();
-
-        //retrieves the data for the entry
-        JSONArray jsonArray = new JSONArray();
-        Gson gson = new Gson();
-        for (TestDataLibData subData : (List<TestDataLibData>) answer.getDataList()) {
-            jsonArray.put(new JSONObject(gson.toJson(subData)));
-        }
-
-        jsonResponse.put("contentTable", jsonArray);
-
-        AnswerItem item = new AnswerItem<>();
-        item.setItem(jsonResponse);
-        item.setResultMessage(answer.getResultMessage());
-
-        return item;
-    }
+//    private AnswerItem readByName(ApplicationContext appContext, String testDataLibName) throws JSONException {
+//        JSONObject jsonResponse = new JSONObject();
+//        ITestDataLibDataService testDataLibDataService = appContext.getBean(ITestDataLibDataService.class);
+//        AnswerList answer = testDataLibDataService.readByName(testDataLibName);
+//
+//        //retrieves the data for the entry
+//        JSONArray jsonArray = new JSONArray();
+//
+//        for (TestDataLibData subdata : (List<TestDataLibData>) answer.getDataList()) {
+//            jsonArray.put(convertTestDataLibDataToJSONObject(subdata));
+//        }
+//
+//        jsonResponse.put("contentTable", jsonArray);
+//        jsonResponse.put("iTotalRecords", answer.getTotalRows());
+//        jsonResponse.put("iTotalDisplayRecords", answer.getTotalRows());
+//
+//        AnswerItem item = new AnswerItem<>();
+//        item.setItem(jsonResponse);
+//        item.setResultMessage(answer.getResultMessage());
+//
+//        return item;
+//    }
+//
+//     
+//    private AnswerItem readAll(ApplicationContext appContext) throws JSONException {
+//        JSONObject jsonResponse = new JSONObject();
+//        ITestDataLibDataService testDataLibDataService = appContext.getBean(ITestDataLibDataService.class);
+//        AnswerList answer = testDataLibDataService.readAll();
+//
+//        //retrieves the data for the entry
+//        JSONArray jsonArray = new JSONArray();
+//        Gson gson = new Gson();
+//        for (TestDataLibData subData : (List<TestDataLibData>) answer.getDataList()) {
+//            jsonArray.put(new JSONObject(gson.toJson(subData)));
+//        }
+//
+//        jsonResponse.put("contentTable", jsonArray);
+//
+//        AnswerItem item = new AnswerItem<>();
+//        item.setItem(jsonResponse);
+//        item.setResultMessage(answer.getResultMessage());
+//
+//        return item;
+//    }
 }

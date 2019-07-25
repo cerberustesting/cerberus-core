@@ -136,6 +136,7 @@ public class UpdateTestDataLib extends HttpServlet {
         String databaseCsv = policy.sanitize(fileData.get("databaseCsv"));
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String name = fileData.get("name"); //this is mandatory
+        String privateData = "true".equals(fileData.get("privateData"))?"Y":"N";
         String group = fileData.get("group");
         String description = fileData.get("libdescription");
         String service = fileData.get("service");
@@ -215,6 +216,7 @@ public class UpdateTestDataLib extends HttpServlet {
 
                     lib.setName(name);
                     lib.setType(type);
+                    lib.setPrivateData(privateData);
                     lib.setGroup(group);
                     lib.setDescription(description);
                     lib.setSystem(system);
@@ -272,7 +274,7 @@ public class UpdateTestDataLib extends HttpServlet {
                             int i = 1;
                             for (String item : subData) {
                                 String subdataName = "SUBDATA" + i;
-                                TestDataLibData tdld = tdldFactory.create(null, testdatalibid, subdataName, item, null, null, Integer.toString(i), null);
+                                TestDataLibData tdld = tdldFactory.create(null, testdatalibid, subdataName, "N", item, null, null, Integer.toString(i), null);
                                 tdldList.add(tdld);
                                 i++;
                             }
@@ -315,6 +317,7 @@ public class UpdateTestDataLib extends HttpServlet {
             // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
             boolean delete = objectJson.getBoolean("toDelete");
             Integer testDataLibDataId = objectJson.getInt("testDataLibDataID");
+            String encrypt = objectJson.getBoolean("encrypt") ? "Y" : "N";
             // Parameter that needs to be secured --> We SECURE+DECODE them
             // NONE
             // Parameter that we cannot secure as we need the html --> We DECODE them
@@ -326,7 +329,7 @@ public class UpdateTestDataLib extends HttpServlet {
             String description = ParameterParserUtil.parseStringParam(objectJson.getString("description"), "");
 
             if (!delete) {
-                TestDataLibData tdld = tdldFactory.create(testDataLibDataId, testDataLibId, subdata, value, column, parsingAnswer, columnPosition, description);
+                TestDataLibData tdld = tdldFactory.create(testDataLibDataId, testDataLibId, subdata, encrypt, value, column, parsingAnswer, columnPosition, description);
                 tdldList.add(tdld);
             }
         }

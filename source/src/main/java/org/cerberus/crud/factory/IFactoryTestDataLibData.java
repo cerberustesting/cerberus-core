@@ -32,6 +32,7 @@ public interface IFactoryTestDataLibData {
      * @param testDataLibDataID
      * @param testDataLibID
      * @param subData
+     * @param encrypt
      * @param value
      * @param column
      * @param parsingAnswer
@@ -39,7 +40,7 @@ public interface IFactoryTestDataLibData {
      * @param description
      * @return a TestData
      */
-    TestDataLibData create(Integer testDataLibDataID, Integer testDataLibID, String subData, String value,
+    TestDataLibData create(Integer testDataLibDataID, Integer testDataLibID, String subData, String encrypt, String value,
             String column, String parsingAnswer, String columnPosition, String description);
 
 }

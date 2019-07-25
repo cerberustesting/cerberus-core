@@ -781,6 +781,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalib','method','','fr','Operation','<p>Operation à appeler pour la Requête SOAP.</p>','_librairie_de_données')");
         b.append(",('testdatalib','name','','en','Name','<p>Name of the entry. It is a <b>mandatory</b> attribute.</p><p><b><u>Note</u></b>: The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> can be duplicated when the type is STATIC in order to allow a list of data to be available.</p>','_data_library')");
         b.append(",('testdatalib','name','','fr','Nom','<p>Nom de la donnée</p>','_librairie_de_données')");
+        b.append(",('testdatalib','privateData','','en','Private','<p>Determine if the data is private or not.</p><p><b><u>Note</u></b>: If the data is private, only the Creator will be able to modify it.</p>','_data_library')");
+        b.append(",('testdatalib','privateData','','fr','Privé','<p>Défini si la donnée est privée ou non</p><p><b><u>Note</u></b>: Une donnée privée ne peut être modifiée que par le créateur.</p>','_librairie_de_données')");
         b.append(",('testdatalib','script','','en','Script','<p>SQL commands that should be executed to retrieve test data.</p><p>Examples:</p><table><tr><td>select * from table;</td></tr><tr><td>select * from table where column = %COLUMN%;</td></tr></table>','_data_library')");
         b.append(",('testdatalib','script','','fr','Scenario',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','separator','','en','Separator','<p>Separator used parsing a CSV.</p>','_data_library')");
@@ -805,6 +807,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalibdata','columnPosition','','fr','Position','<p>Position [1,2,3…] de la valeur à obtenir lors du décryptage du CSV.</p>','_librairie_de_données')");
         b.append(",('testdatalibdata','description','','en','Description','<p>Textual description for the sub-data entry.</p>','_data_library')");
         b.append(",('testdatalibdata','description','','fr','Description',NULL,'_librairie_de_données')");
+        b.append(",('testdatalibdata','encrypt','','en','Encrypt','<p>Encrypt STATIC value and value calculated during the execution.</p>','_data_library')");
+        b.append(",('testdatalibdata','encrypt','','fr','Crypter','<p>Crypte la valeur STATIC, ainsi que la valeur calculée lors de l\\'execution.</p>','_librairie_de_données')");
         b.append(",('testdatalibdata','parsingAnswer','','en','Parsing Answer','<p>XPath or JsonPath expression that allows the user to parse data from the SERVICE response.</p>','_data_library')");
         b.append(",('testdatalibdata','parsingAnswer','','fr','Analyse de la réponse',NULL,'_librairie_de_données')");
         b.append(",('testdatalibdata','subData','','en','Sub-data ','<p>Unique name for a sub-data entry. For a test data library entry, this value should be unique.</p>','_data_library')");

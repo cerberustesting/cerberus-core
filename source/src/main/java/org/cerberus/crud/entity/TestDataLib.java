@@ -33,6 +33,7 @@ public class TestDataLib {
     private String system;
     private String environment;
     private String country;
+    private String privateData;
     private String group;
     private String type;
     private String database;
@@ -136,6 +137,14 @@ public class TestDataLib {
         this.country = country;
     }
 
+    public String getPrivateData() {
+        return privateData;
+    }
+
+    public void setPrivateData(String privateData) {
+        this.privateData = privateData;
+    }
+    
     public String getGroup() {
         return group;
     }

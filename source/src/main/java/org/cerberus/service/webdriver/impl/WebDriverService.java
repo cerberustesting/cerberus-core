@@ -1392,6 +1392,12 @@ public class WebDriverService implements IWebDriverService {
         }
         return null;
     }
+    
+    @Override
+    public Integer getNumberOfElements(Session session, Identifier identifier) {
+        By locator = this.getBy(identifier);
+        return session.getDriver().findElements(locator).size();
+    } 
 
     @Override
     public List<String> getSeleniumLog(Session session) {

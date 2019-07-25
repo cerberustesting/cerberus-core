@@ -81,6 +81,8 @@ public interface IWebDriverService {
     String getAttributeFromHtml(Session session, Identifier identifier, String attribute);
 
     String getFromCookie(Session session, String cookieName, String cookieParameter);
+    
+    Integer getNumberOfElements(Session session, Identifier object); 
 
     File takeScreenShotFile(Session session);
 

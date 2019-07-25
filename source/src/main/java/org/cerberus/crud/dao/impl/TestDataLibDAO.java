@@ -466,6 +466,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (tdl.`name` like ?");
+            searchSQL.append(" or tdl.`privateData` like ?");
             searchSQL.append(" or tdl.`group` like ?");
             searchSQL.append(" or tdl.`type` like ?");
             searchSQL.append(" or tdl.`database` like ?");
@@ -541,6 +542,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             try {
                 int i = 1;
                 if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -723,12 +725,12 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         AnswerItem answer = new AnswerItem<>();
         StringBuilder query = new StringBuilder();
         TestDataLib createdTestDataLib;
-        query.append("INSERT INTO testdatalib (`name`, `system`, `environment`, `country`, `group`, `type`, `database`, `script`, `databaseUrl`, ");
+        query.append("INSERT INTO testdatalib (`name`, `system`, `environment`, `country`, `privateData`, `group`, `type`, `database`, `script`, `databaseUrl`, ");
         query.append("`service`, `servicePath`, `method`, `envelope`, `databaseCsv`, `csvUrl`,`separator`, `description`, `creator`) ");
         if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
-            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         } else {
-            query.append("VALUES (?,?,?,?,?,?,?,?,?,null,?,?,?,?,?,?,?,?)");
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,null,?,?,?,?,?,?,?,?)");
 
         }
 
@@ -747,6 +749,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getSystem()));
                 preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getEnvironment()));
                 preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getCountry()));
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getPrivateData()));
                 preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getGroup()));
                 preStat.setString(i++, testDataLib.getType());
                 preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDatabase()));
@@ -878,7 +881,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     public Answer update(TestDataLib testDataLib) {
         Answer answer = new Answer();
         MessageEvent msg;
-        String query = "UPDATE testdatalib SET `name`=?, `type`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
+        String query = "UPDATE testdatalib SET `name`=?, `type`=?, `privateData`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
                 + "`databaseUrl`= ? , `servicepath`= ? , `method`= ? , `envelope`= ? , `DatabaseCsv` = ? , `csvUrl` = ? ,`separator`= ?,  `description`= ? , `LastModifier`= ?, `LastModified` = NOW() ";
         if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
             query += " ,`service` = ? ";
@@ -901,6 +904,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 int i = 1;
                 preStat.setString(i++, testDataLib.getName());
                 preStat.setString(i++, testDataLib.getType());
+                preStat.setString(i++, testDataLib.getPrivateData());
                 preStat.setString(i++, testDataLib.getGroup());
                 preStat.setString(i++, testDataLib.getSystem());
                 preStat.setString(i++, testDataLib.getEnvironment());
@@ -1014,6 +1018,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         String environment = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.environment"));
         String country = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.country"));
         String group = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.group"));
+        String privateData = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.privateData"));
         String type = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.type"));
         String database = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.database"));
         String script = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.script"));
@@ -1043,7 +1048,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             LOG.warn(ex.toString());
         }
 
-        return factoryTestDataLib.create(testDataLibID, name, system, environment, country, group, type, database, script, databaseUrl, service, servicePath,
+        return factoryTestDataLib.create(testDataLibID, name, system, environment, country, privateData, group, type, database, script, databaseUrl, service, servicePath,
                 method, envelope, databaseCsv, csvUrl, separator, description, creator, created, lastModifier, lastModified, subDataValue, subDataColumn, subDataParsingAnswer, subDataColumnPosition);
     }
 
@@ -1067,6 +1072,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (tdl.`name` like ?");
+            searchSQL.append(" or tdl.`privateData` like ?");
             searchSQL.append(" or tdl.`group` like ?");
             searchSQL.append(" or tdl.`type` like ?");
             searchSQL.append(" or tdl.`database` like ?");
@@ -1104,6 +1110,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
             int i = 1;
             if (!Strings.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
