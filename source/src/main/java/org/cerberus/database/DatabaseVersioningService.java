@@ -8162,6 +8162,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1417
         a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
                 + "('', 'cerberus_smtp_isSetTls', 'true', 'Boolean defining if the TLS is set or not for the email!<br>true / false');");
+        
+        // Add the "longPress" and "clearField" Action
+        // 1418
+        a.add("ALTER TABLE `testdatalib` ADD COLUMN `PrivateData` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `Country`;");
 
         return a;
     }
