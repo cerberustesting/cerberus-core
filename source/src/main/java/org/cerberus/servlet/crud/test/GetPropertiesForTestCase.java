@@ -61,8 +61,7 @@ public class GetPropertiesForTestCase extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         
-        ServletUtil.fixHeaders(response);
-        
+
         try {
 
             String test = request.getParameter("test");

@@ -1335,7 +1335,7 @@ function showUnexpectedError(jqXHR, textStatus, errorThrown) {
  * @param {Function} callbackFunction callback function to be called after table creation (only on server side)
  * @param {String} objectWaitingLayer object that will report the waiting layer when external calls. Ex : #logViewer
  * @param {Array} filtrableColumns array of parameter name that can trigger filter on columns
- * @param {Boolean} checkPermisson boolean that define if user permission need to be checked
+ * @param {Boolean} checkPermissions boolean that define if user permission need to be checked
  * @param {type} userCallbackFunction
  * @param {Function} createdRowCallback callback function to be called after each row
  * @return {Object} Return the dataTable object to use the api

@@ -413,6 +413,9 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         int nbrobotmissing = 0;
         boolean tagAlreadyAdded = false;
 
+        Map<String, String> myHostMap = new HashMap<>();
+        myHostMap = getManualHostMap(manualHost);
+
         int nbrobot = 0;
         Map<String, Robot> robotsMap = new HashMap<>();
         if (StringUtil.isNullOrEmpty(robotIP)) {
@@ -498,7 +501,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                             }
 
                                             // manage manual host for this execution
-                                            String manualHostforThisApplication = getManualHostForThisApplication(manualHost, app.getApplication());
+                                            String manualHostforThisApplication = getManualHostForThisApplication(myHostMap, app.getApplication());
 
                                             if ((app != null)
                                                     && (app.getType() != null)
@@ -679,35 +682,72 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     }
 
     /**
-     * manual host can be just 'manualHost1' (case 1) or
-     * `applicationname1:manualhost1;applicationname2:manualhost2;...` (cases 2)
-     *
      * @param manualHost
      * @param application
      * @return
      */
-    private String getManualHostForThisApplication(String manualHost, String application) {
-        String newManualHost = "";
-        // Remove the http:// and https:// in order to avoid conflict with : split that will be done
-        if (!StringUtil.isNullOrEmpty(manualHost)) {
-            newManualHost = manualHost.replace("http://", "|ZZZHTTPZZZ|");
-            newManualHost = newManualHost.replace("https://", "|ZZZHTTPSZZZ|");
+    private String getManualHostForThisApplication(Map<String, String> manualHost, String application) {
+
+        if (manualHost.containsKey("")) {
+            return manualHost.get("");
         }
-        if (!StringUtil.isNullOrEmpty(manualHost) && !newManualHost.contains(":")) {
-            return manualHost; // if no :, just return manual host (case 1)
-        }
-        // (case 2)
-        if (!StringUtil.isNullOrEmpty(manualHost)) {
-            String[] manualHostByApp = newManualHost.split(";");
-            for (String appManualHost : manualHostByApp) {
-                String[] appAndHost = appManualHost.split(":");
-                if (appAndHost.length >= 2 && appAndHost[0].equals(application)) {
-                    // Put back the http:// and https://
-                    return appAndHost[1].replace("|ZZZHTTPZZZ|", "http://").replace("|ZZZHTTPSZZZ|", "https://");
-                }
-            }
+        if (manualHost.containsKey(application)) {
+            return manualHost.get(application);
         }
         return "";
+    }
+
+    /**
+     * Convert manualhost parameter to MAP. manual host can be just
+     * 'manualHost1' (case 1) or
+     * `applicationname1:manualhost1;applicationname2:manualhost2;...` (cases 2)
+     * or a json string in format : { "applicationname1" : "manualhost1",
+     * "applicationname2" : "manualhost2" } (case 3)
+     *
+     * @param manualHost
+     * @return a Map of application : url
+     */
+    private Map<String, String> getManualHostMap(String manualHost) {
+        Map<String, String> myHostMap = new HashMap<>();
+        if (StringUtil.isNullOrEmpty(manualHost)) {
+            LOG.debug("Converting from empty.");
+            myHostMap.put("", "");
+            return myHostMap;
+        }
+        try {
+            JSONObject myJSONObj = new JSONObject(manualHost);
+            Iterator<String> nameItr = myJSONObj.keys();
+            LOG.debug("Converting from JSON.");
+            while (nameItr.hasNext()) {
+                String name = nameItr.next();
+                myHostMap.put(name, myJSONObj.getString(name));
+            }
+            return myHostMap;
+        } catch (JSONException ex) {
+            // parameter could not be converted to JSON Array so we try with the : and ; separators.
+            String newManualHost = "";
+            // Remove the http:// and https:// in order to avoid conflict with : split that will be done
+            if (!StringUtil.isNullOrEmpty(manualHost)) {
+                newManualHost = manualHost.replace("http://", "|ZZZHTTPZZZ|");
+                newManualHost = newManualHost.replace("https://", "|ZZZHTTPSZZZ|");
+            }
+            if (!StringUtil.isNullOrEmpty(manualHost) && !newManualHost.contains(":")) {
+                LOG.debug("Converting from string.");
+                myHostMap.put("", manualHost);
+                return myHostMap; // if no :, just return manual host (case 1)
+            }
+            // (case 2)
+            if (!StringUtil.isNullOrEmpty(manualHost)) {
+                LOG.debug("Converting from separator.");
+                String[] manualHostByApp = newManualHost.split(";");
+                for (String appManualHost : manualHostByApp) {
+                    String[] appAndHost = appManualHost.split(":");
+                    myHostMap.put(appAndHost[0], appAndHost[1].replace("|ZZZHTTPZZZ|", "http://").replace("|ZZZHTTPSZZZ|", "https://"));
+                }
+                return myHostMap;
+            }
+        }
+        return myHostMap;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
