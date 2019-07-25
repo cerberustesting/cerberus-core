@@ -28,6 +28,7 @@
 * Sorted end of tag notification email detail table by prio (valid ci prio first.), test folder and test case ID.
 * Tag variable are also decoded from runtest page.
 * myhost parameter on AddToExecutionQueueV003 for multiple application can be defined in JSON string format (don't forget to encode URL).
+* cors : add FRONT_URL en variable to enable CORS on this URL. If FRONT_URL doesn't exist, CORS is disable
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
