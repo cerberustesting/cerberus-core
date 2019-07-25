@@ -8166,6 +8166,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Add the "longPress" and "clearField" Action
         // 1418
         a.add("ALTER TABLE `testdatalib` ADD COLUMN `PrivateData` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `Country`;");
+        
+        // Add the "longPress" and "clearField" Action
+        // 1419
+        a.add("ALTER TABLE `testdatalibdata` ADD COLUMN `Encrypt` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `SubData`;");
 
         return a;
     }
