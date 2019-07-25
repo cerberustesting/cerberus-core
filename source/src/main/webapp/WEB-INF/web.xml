@@ -2081,18 +2081,19 @@
             <role-name>Administrator</role-name>
         </auth-constraint>
     </security-constraint>
+    <!--
     <login-config>
         <auth-method>BASIC</auth-method>
         <realm-name>Enable this in order to activate KeyCloak</realm-name>
     </login-config>
-    <!--
+    -->
     <login-config>
         <auth-method>FORM</auth-method>
         <form-login-config>
             <form-login-page>/Login.jsp</form-login-page>
             <form-error-page>/Login.jsp?error=1</form-error-page>
         </form-login-config>
-    </login-config>-->
+    </login-config>
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>/WEB-INF/applicationContext.xml</param-value>
