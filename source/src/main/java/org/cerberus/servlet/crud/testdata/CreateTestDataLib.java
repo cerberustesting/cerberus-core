@@ -141,7 +141,7 @@ public class CreateTestDataLib extends HttpServlet {
             String databaseCsv = policy.sanitize(fileData.get("databaseCsv"));
             // Parameter that needs to be secured --> We SECURE+DECODE them
             String name = fileData.get("name"); //this is mandatory
-            String privateData = fileData.get("privateData");
+            String privateData = "true".equals(fileData.get("privateData")) ? "Y" : "N";
             String group = fileData.get("group");
             String description = fileData.get("libdescription");
             String service = fileData.get("service");
@@ -280,7 +280,7 @@ public class CreateTestDataLib extends HttpServlet {
             // NONE
             // Parameter that we cannot secure as we need the html --> We DECODE them
             String subdata = ParameterParserUtil.parseStringParam(objectJson.getString("subData"), "");
-            String encrypt = ParameterParserUtil.parseStringParam(objectJson.getString("encrypt"), "");
+            String encrypt = objectJson.getBoolean("encrypt") ? "Y" : "N";
             String value = ParameterParserUtil.parseStringParam(objectJson.getString("value"), "");
             String column = ParameterParserUtil.parseStringParam(objectJson.getString("column"), "");
             String parsingAnswer = ParameterParserUtil.parseStringParam(objectJson.getString("parsingAnswer"), "");
