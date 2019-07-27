@@ -27,89 +27,94 @@ import org.springframework.web.context.request.*;
 import javax.servlet.http.*;
 import java.util.*;
 import java.util.stream.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class UserSecurity {
-
+    
+    private static final Logger LOG = LogManager.getLogger(UserSecurity.class);
+    
     public static boolean systemIsAllow(String system) {
         return UserSecurity.systemIsAllow(Stream.of(system).collect(Collectors.toList()));
     }
-
+    
     public static boolean systemIsAllow(List<String> systems) {
         List<String> systemsAllow = UserSecurity.getSystemAllow();
-
-        for(String system : systems) {
-            if( ! systemsAllow.contains(system) ) return false;
+        
+        for (String system : systems) {
+            if (!systemsAllow.contains(system)) {
+                return false;
+            }
         }
-
+        
         return true;
-
+        
     }
-
 
     /**
      * Return all system allow for the current user
+     *
      * @return
      */
     public static List<String> getSystemAllow() {
+        LOG.debug("Get Allowed system for : " + getCurrentHttpRequest().getRemoteUser());
+        
         // RG, if it is an administrator, he can access to all system
-        if(getCurrentHttpRequest().isUserInRole("Administrator")) {
+        if (getCurrentHttpRequest().isUserInRole("Administrator")) {
             return null;
         }
-
-
+        
         List<UserSystem> userSystemList = (List<UserSystem>) getSession().getAttribute("MySystemsAllow");
 
         // if systemAllow is null, request come from RunTestCaseV001 or AddToExecutionQueue
         // => authorize all system in this case
-        if(userSystemList == null) {
+        if (userSystemList == null) {
             return null;
         }
-
+        
         List<String> res = new LinkedList<>();
-        for(UserSystem systemUser : userSystemList) {
+        for (UserSystem systemUser : userSystemList) {
             res.add(systemUser.getSystem());
         }
-
+        
         return res;
     }
-
-
+    
     public static String getSystemAllowForSQL(String systemAttributeName) {
         StringBuilder st = new StringBuilder();
         boolean firstSys = true;
-
+        
         List<String> systemAllow = getSystemAllow();
-
-        if(systemAllow == null) {
+        
+        if (systemAllow == null) {
             return " 1=1 ";
         }
-
+        
         for (String sys : getSystemAllow()) {
-            st.append(  (!firstSys ? "," : "")  + "'" + StringEscapeUtils.escapeHtml4(escapeSql(sys)) + "'");
+            st.append((!firstSys ? "," : "") + "'" + StringEscapeUtils.escapeHtml4(escapeSql(sys)) + "'");
             firstSys = false;
         }
         return systemAttributeName + " in (''," + st.toString() + ")";
     }
-
-
+    
     public static boolean isAdministrator() {
         return getCurrentHttpRequest().isUserInRole("Administrator");
     }
-
+    
     private static HttpSession getSession() {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         return attr.getRequest().getSession(true); // true == allow create
     }
-
-    private static HttpServletRequest getCurrentHttpRequest(){
+    
+    private static HttpServletRequest getCurrentHttpRequest() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         if (requestAttributes instanceof ServletRequestAttributes) {
-            HttpServletRequest request = ((ServletRequestAttributes)requestAttributes).getRequest();
+            HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
             return request;
         }
         return null;
     }
-
+    
     private static String escapeSql(String str) {
         if (str == null) {
             return null;

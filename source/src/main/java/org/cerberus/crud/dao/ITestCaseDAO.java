@@ -130,6 +130,12 @@ public interface ITestCaseDAO {
     public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
             String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length);
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @return
+     */
     public AnswerItem readByKey(String test, String testCase);
 
     /**
