@@ -59,11 +59,11 @@ RUN yum install -y dos2unix
 # Get and extract the Cerberus package
 # Use RUN instead of ADD to avoid re-download (see https://github.com/docker/docker/issues/15717)
 
-#RUN curl -L -o /tmp/${CERBERUS_PACKAGE_NAME}.zip https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-${CERBERUS_VERSION}/Cerberus-${CERBERUS_VERSION}.zip && \
-#    unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip
+RUN curl -L -o /tmp/${CERBERUS_PACKAGE_NAME}.zip https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-${CERBERUS_VERSION}/Cerberus-${CERBERUS_VERSION}.zip && \
+    unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip
 
-COPY Cerberus.zip /tmp/${CERBERUS_PACKAGE_NAME}.zip
-RUN unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip
+#COPY Cerberus.zip /tmp/${CERBERUS_PACKAGE_NAME}.zip
+#RUN unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip
 
 # Get and extract the MySQL connector library
 # Use RUN instead of ADD to avoid re-download (see https://github.com/docker/docker/issues/15717)
