@@ -290,7 +290,6 @@ function selectionManual(test, testcase, environment, country) {
 
 function loadTestCaseFromFilter(defTest, defTestcase) {
 
-//    console.debug("loadTestCaseFromFilter Called" + defTest + defTestcase);
     showLoader("#chooseTest");
     var testURL = "";
     var testCaseURL = "";
@@ -303,16 +302,19 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
     }
     // Get the requested result size value
     var lengthURL = '&length=' + $("#lengthFilter").find(':selected').val();
+    var serialize = "";
+    if ($("#filters").serialize() != "") {
+        serialize = "&" + $("#filters").serialize();
+    }
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
-        data: "filter=true" + getUser().defaultSystemsQuery + $("#filters").serialize() + testURL + testCaseURL + lengthURL,
+        data: "filter=true" + getUser().defaultSystemsQuery + serialize + testURL + testCaseURL + lengthURL,
         datatype: "json",
         async: true,
         success: function (data) {
 
             var testCaseList = $("#testCaseList");
-
             testCaseList.empty();
 
             if (data.contentTable === undefined) {
@@ -750,7 +752,6 @@ function loadHardDefinedSingleSelect(selectName, values, initialSelectionIndex) 
 
 function loadSelect(idName, selectName, forceReload, defaultValue) {
 
-//    console.debug("display Invariant " + idName + " " + forceReload);
     if (forceReload === undefined) {
         forceReload = false;
     }
@@ -968,7 +969,6 @@ function applyRobotPref(browser) {
             $("#robotSettings #robot").val(pref.robot);
             $("#robotSettingsForm #seleniumIP").val(pref.ss_ip);
             $("#robotSettingsForm #seleniumPort").val(pref.ss_p);
-//            console.debug(browser);
             if (browser !== null) { // if browser defined from URL we take that value.
                 $("#robotSettingsForm #browser").val(browser);
             } else {
