@@ -170,7 +170,7 @@ public class UpdateRobot extends HttpServlet {
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "There is at least one duplicated executor. Please edit or remove it to continue."));
             ans.setResultMessage(msg);
-        }  else if (executorMap.size() <1) {
+        } else if (executorMap.size() < 1) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
                     .replace("%OPERATION%", "Create")
@@ -256,19 +256,22 @@ public class UpdateRobot extends HttpServlet {
             String deviceName = reJson.getString("deviceName");
             String deviceUdid = reJson.getString("deviceUdid");
             String deviceLockUnlock = reJson.getBoolean("deviceLockUnlock") ? "Y" : "N";
-            String executorProxyHost = reJson.getString("executorProxyHost");
+            String executorProxyHost = "";
+            if (reJson.has("executorProxyHost") && !StringUtil.isNullOrEmpty(reJson.getString("executorProxyHost"))) {
+                executorProxyHost = reJson.getString("executorProxyHost");
+            }
             Integer executorProxyPort = null;
-            if(reJson.has("executorProxyPort") && !StringUtil.isNullOrEmpty(reJson.getString("executorProxyPort"))) {
+            if (reJson.has("executorProxyPort") && !StringUtil.isNullOrEmpty(reJson.getString("executorProxyPort"))) {
                 executorProxyPort = reJson.getInt("executorProxyPort");
             }
             String executorProxyActive = reJson.getBoolean("executorProxyActive") ? "Y" : "N";
             Integer executorExtensionPort = null;
-            if(reJson.has("executorExtensionPort") && !StringUtil.isNullOrEmpty(reJson.getString("executorExtensionPort"))) {
+            if (reJson.has("executorExtensionPort") && !StringUtil.isNullOrEmpty(reJson.getString("executorExtensionPort"))) {
                 executorExtensionPort = reJson.getInt("executorExtensionPort");
             }
 
             Integer devicePort = null;
-            if(reJson.has("devicePort") && !StringUtil.isNullOrEmpty(reJson.getString("devicePort"))) {
+            if (reJson.has("devicePort") && !StringUtil.isNullOrEmpty(reJson.getString("devicePort"))) {
                 devicePort = reJson.getInt("devicePort");
             }
 
@@ -286,7 +289,7 @@ public class UpdateRobot extends HttpServlet {
             }
 
             if (!delete) {
-                RobotExecutor reo = reFactory.create(i, robot, executor, active, rank, host, port, host_user, host_password, deviceUdid, deviceName, devicePort, deviceLockUnlock, executorExtensionPort, executorProxyHost,  executorProxyPort, executorProxyActive,description, "", null, "", null);
+                RobotExecutor reo = reFactory.create(i, robot, executor, active, rank, host, port, host_user, host_password, deviceUdid, deviceName, devicePort, deviceLockUnlock, executorExtensionPort, executorProxyHost, executorProxyPort, executorProxyActive, description, "", null, "", null);
                 reList.add(reo);
             }
         }
