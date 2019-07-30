@@ -15,3 +15,17 @@ Distribution list can be configured.
 Email from, subject and body can be configured by changing parameters that start by _cerberus_notification_tagexecutionend_ and _cerberus_notification_tagexecutionstart_
 
 image:testcampaign.png[Campaign]
+
+=== Schedule campaign
+
+The campaigns can be scheduled through the modal. Open the scheduler tab and pass the Quartz-CRON expressions that will plan the execution.
+
+image:testcampaign_scheduler.png[Campaign]
+
+Cron is an expression format that will allow you to define a frequency of execution. 
+To generate one easily use the following site:
+http://www.cronmaker.com/
+
+you can add as many CRON entries as you want
+
+
