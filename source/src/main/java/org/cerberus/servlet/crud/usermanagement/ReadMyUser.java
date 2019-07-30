@@ -126,7 +126,7 @@ public class ReadMyUser extends HttpServlet {
             JSONObject menu = new JSONObject();
             if (Property.isKeycloak()) {
                 // Name displayed in menu
-                menu.put("nameDisplay", StringUtil.getLeftString(user, 8) + "...");
+                menu.put("nameDisplay", user);
 
                 String keyCloakUrl = StringUtil.addSuffixIfNotAlready(System.getProperty(Property.KEYCLOAKURL), "/");
 
