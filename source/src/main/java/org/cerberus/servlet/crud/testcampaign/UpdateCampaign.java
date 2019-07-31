@@ -174,13 +174,12 @@ public class UpdateCampaign extends HttpServlet {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Scheduler").replace("%OPERATION%", "No Insert"));
                 schedAns.setResultMessage(msg);
-                if (!schList.isEmpty()) {
-                    IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
-                    schedAns = scheduleentryservice.compareSchedListAndUpdateInsertDeleteElements(c, schList);
-                    if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
-                        myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
-                    }
+
+                IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
+                schedAns = scheduleentryservice.compareSchedListAndUpdateInsertDeleteElements(c, schList);
+                if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
+                    myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
                 }
 
                 if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -257,10 +256,8 @@ public class UpdateCampaign extends HttpServlet {
         IFactoryScheduleEntry scheFactory = appContext.getBean(IFactoryScheduleEntry.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
-
         for (int i = 0; i < json.length(); i++) {
             JSONObject tcsaJson = json.getJSONObject(i);
-
             // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
             boolean delete = tcsaJson.getBoolean("toDelete");
             String cronExpression = policy.sanitize(tcsaJson.getString("cronDefinition"));
