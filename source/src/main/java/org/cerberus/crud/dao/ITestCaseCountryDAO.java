@@ -62,7 +62,7 @@ public interface ITestCaseCountryDAO {
      * @param testCaseList
      * @return
      */
-    AnswerList<TestCaseCountry> readByVarious1(String system, String test, String testCase, List<TestCase> testCaseList);
+    AnswerList<TestCaseCountry> readByVarious1(List<String> system, String test, String testCase, List<TestCase> testCaseList);
 
     /**
      *

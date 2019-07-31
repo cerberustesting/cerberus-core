@@ -97,7 +97,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         });
 
         //configure and create the dataTable
-        var jqxhr = $.getJSON("Homepage", "system=" + getSys());
+        var jqxhr = $.getJSON("Homepage", "e=1" + getUser().defaultSystemsQuery);
 
         $.when(jqxhr).then(function (result) {
             var configurations = new TableConfigurationsClientSide("homePageTable", result["aaData"], aoColumnsFunc(), true);
@@ -122,10 +122,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
         loadBuildRevTable();
 
         // Display Changelog;
-        $("#documentationFrame").attr("src", "./documentation/changelog_4.1_en.html");
+        $("#documentationFrame").attr("src", "./documentation/changelog_4.2_en.html");
         var windowsHeight = $(window).height() + 'px';
         $('#documentationFrame').css('height', '400px');
-        $("#changelogLabel").html("Changelog 4.1");
+        $("#changelogLabel").html("Changelog 4.2");
 
         //close all sidebar menu
         closeEveryNavbarMenu();
@@ -144,6 +144,7 @@ function displayPageLabel() {
     $("#title").html(doc.getDocLabel("homepage", "title"));
 
     $("#reportStatus").html(doc.getDocOnline("page_integrationstatus", "environmentStatus"));
+    $("#systemHeader").html(doc.getDocOnline("invariant", "SYSTEM"));
     $("#buildHeader").html(doc.getDocOnline("buildrevisioninvariant", "versionname01"));
     $("#revisionHeader").html(doc.getDocOnline("buildrevisioninvariant", "versionname02"));
     $("#devHeader").html(doc.getDocOnline("page_integrationstatus", "DEV"));
@@ -274,7 +275,7 @@ function readLastTagExec(searchString) {
         paramExe = 5;
     }
 
-    var myUrl = "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=" + paramExe;
+    var myUrl = "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=" + paramExe + getUser().defaultSystemsQuery;
     if (!isEmpty(searchString)) {
         myUrl = myUrl + "&sSearch=" + searchString;
     }
@@ -305,11 +306,11 @@ function getCountryFilter() {
 
 
 function aoColumnsFunc() {
-	var doc = new Doc();
+    var doc = new Doc();
     var mDoc = getDoc();
     var status = readStatus();
     var statusLen = status.length;
-    console.log(doc.getDocOnline("application", "Application"));
+
     var aoColumns = [
         {"data": "Application", "bSortable": true, "sName": "Application", "title": doc.getDocOnline("application", "Application"), "sWidth": "50px",
             "mRender": function (data, type, oObj) {
@@ -340,7 +341,7 @@ function aoColumnsFunc() {
 function loadBuildRevTable() {
     $('#envTableBody tr').remove();
     selectSystem = "VC";
-    var jqxhr = $.getJSON("GetEnvironmentsPerBuildRevision", "system=" + getUser().defaultSystem);
+    var jqxhr = $.getJSON("GetEnvironmentsPerBuildRevision", "q=1" + getUser().defaultSystemsQuery);
     $.when(jqxhr).then(function (result) {
         if (result["contentTable"].length > 0) {
             $.each(result["contentTable"], function (idx, obj) {
@@ -353,11 +354,11 @@ function loadBuildRevTable() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function counterFormated(nb, build, revision, envGP) {
+function counterFormated(system, nb, build, revision, envGP) {
     if (nb === 0) {
         return "";
     } else {
-        return "<a href=\"Environment.jsp?&build=" + build + "&revision=" + revision + "&envgp=" + envGP + "&active=Y\">" + nb + "</a>"
+        return "<a href=\"Environment.jsp?" + "&system=" + system + "&build=" + build + "&revision=" + revision + "&envgp=" + envGP + "&active=Y\">" + nb + "</a>"
     }
 }
 
@@ -368,15 +369,17 @@ function appendBuildRevRow(dtb) {
     var toto = counterFormated(dtb.nbEnvDEV);
 
     var row = $("<tr></tr>");
-    var buildRow = $("<td></td>").append(dtb.build);
-    var revRow = $("<td></td>").append(dtb.revision);
-    var nbdev = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.nbEnvDEV, dtb.build, dtb.revision, "DEV"));
-    var nbqa = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.nbEnvQA, dtb.build, dtb.revision, "QA"));
-    var nbuat = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.nbEnvUAT, dtb.build, dtb.revision, "UAT"));
-    var nbprod = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.nbEnvPROD, dtb.build, dtb.revision, "PROD"));
+    var systemCel = $("<td></td>").append(dtb.system);
+    var buildCel = $("<td></td>").append(dtb.build);
+    var revCel = $("<td></td>").append(dtb.revision);
+    var nbdev = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.system, dtb.nbEnvDEV, dtb.build, dtb.revision, "DEV"));
+    var nbqa = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.system, dtb.nbEnvQA, dtb.build, dtb.revision, "QA"));
+    var nbuat = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.system, dtb.nbEnvUAT, dtb.build, dtb.revision, "UAT"));
+    var nbprod = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.system, dtb.nbEnvPROD, dtb.build, dtb.revision, "PROD"));
 
-    row.append(buildRow);
-    row.append(revRow);
+    row.append(systemCel);
+    row.append(buildCel);
+    row.append(revCel);
     row.append(nbdev);
     row.append(nbqa);
     row.append(nbuat);

@@ -50,6 +50,7 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -76,7 +77,6 @@ public class AppServiceDAO implements IAppServiceDAO {
     private final String OBJECT_NAME = "AppService";
     private final int MAX_ROW_SELECTED = 100000;
     private final String SQL_DUPLICATED_CODE = "23000";
-
 
     @Override
     public AppService findAppServiceByKey(String service) throws CerberusException {
@@ -154,7 +154,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
 
             try {
-                preStat.setString(1, "%"+service+"%");
+                preStat.setString(1, "%" + service + "%");
                 preStat.setInt(2, limit);
 
                 ResultSet resultSet = preStat.executeQuery();
@@ -174,7 +174,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                     }
                     response = new AnswerList<>(objectList, nrTotalRows);
                 } catch (SQLException exception) {
-                     LOG.warn("Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
@@ -201,7 +201,7 @@ public class AppServiceDAO implements IAppServiceDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, List<String> systems) {
 
         AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -214,6 +214,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM appservice srv ");
+        query.append("left outer JOIN application app ON srv.application = app.application");
 
         query.append(" WHERE 1=1");
 
@@ -248,7 +249,17 @@ public class AppServiceDAO implements IAppServiceDAO {
         }
 
         query.append(searchSQL);
-        
+
+        if (systems != null && !systems.isEmpty()) {
+            systems.add(""); // authorize tranversal object
+            query.append(" and ( app.Application is null or ");
+            query.append(SqlUtil.generateInClause("app.system", systems));
+            query.append(" ) ");
+        }
+
+        query.append(" AND ( app.Application is null or ");
+        query.append(UserSecurity.getSystemAllowForSQL("app.system"));
+        query.append(" ) ");
 
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
@@ -288,6 +299,12 @@ public class AppServiceDAO implements IAppServiceDAO {
                 }
                 for (String individualColumnSearchValue : individalColumnSearchValues) {
                     preStat.setString(i++, individualColumnSearchValue);
+                }
+
+                if (systems != null && !systems.isEmpty()) {
+                    for (String sys : systems) {
+                        preStat.setString(i++, sys);
+                    }
                 }
 
                 ResultSet resultSet = preStat.executeQuery();
@@ -380,7 +397,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, key);
-                try(ResultSet resultSet = preStat.executeQuery();) {
+                try (ResultSet resultSet = preStat.executeQuery();) {
                     if (resultSet.first()) {
                         result = loadFromResultSet(resultSet);
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -421,132 +438,109 @@ public class AppServiceDAO implements IAppServiceDAO {
     }
 
     @Override
-    public AppService loadFromResultSet(ResultSet rs) throws SQLException {
-        String service = ParameterParserUtil.parseStringParam(rs.getString("srv.Service"), "");
-        String group = ParameterParserUtil.parseStringParam(rs.getString("srv.Group"), "");
-        String servicePath = ParameterParserUtil.parseStringParam(rs.getString("srv.ServicePath"), "");
-        String operation = ParameterParserUtil.parseStringParam(rs.getString("srv.Operation"), "");
-        String serviceRequest = ParameterParserUtil.parseStringParam(rs.getString("srv.ServiceRequest"), "");
-        String attachementURL = ParameterParserUtil.parseStringParam(rs.getString("srv.AttachementURL"), "");
-        String description = ParameterParserUtil.parseStringParam(rs.getString("srv.Description"), "");
-        String type = ParameterParserUtil.parseStringParam(rs.getString("srv.Type"), "");
-        String method = ParameterParserUtil.parseStringParam(rs.getString("srv.Method"), "");
-        String application = ParameterParserUtil.parseStringParam(rs.getString("srv.Application"), "");
-        String usrModif = rs.getString("srv.UsrModif");
-        String usrCreated = rs.getString("srv.UsrCreated");
-        Timestamp dateCreated = rs.getTimestamp("srv.DateCreated");
-        Timestamp dateModif = rs.getTimestamp("srv.DateModif");
-        String fileName = ParameterParserUtil.parseStringParam(rs.getString("srv.FileName"), "");
-        //TODO remove when working in test with mockito and autowired
-        factoryAppService = new FactoryAppService();
-        return factoryAppService.create(service, type, method, application, group, serviceRequest, description, servicePath, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif, fileName);
-    }
-
-    @Override
     public AnswerList readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-    	AnswerList answer = new AnswerList<>();
-    	MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-    	msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-    	List<String> distinctValues = new ArrayList<>();
-    	StringBuilder searchSQL = new StringBuilder();
-    	List<String> individalColumnSearchValues = new ArrayList<String>();
-    	StringBuilder query = new StringBuilder();
+        AnswerList answer = new AnswerList<>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<String> distinctValues = new ArrayList<>();
+        StringBuilder searchSQL = new StringBuilder();
+        List<String> individalColumnSearchValues = new ArrayList<String>();
+        StringBuilder query = new StringBuilder();
 
-    	query.append("SELECT distinct ");
-    	query.append(columnName);
-    	query.append(" as distinctValues FROM appservice srv");
-    	query.append(" where 1=1");
+        query.append("SELECT distinct ");
+        query.append(columnName);
+        query.append(" as distinctValues FROM appservice srv");
+        query.append(" where 1=1");
 
-    	if (!StringUtil.isNullOrEmpty(searchTerm)) {
-    		searchSQL.append(" and (srv.Service like ?");
-    		searchSQL.append(" or srv.Group like ?");
-    		searchSQL.append(" or srv.ServicePath like ?");
-    		searchSQL.append(" or srv.Operation like ?");
-    		searchSQL.append(" or srv.AttachementURL like ?");
-    		searchSQL.append(" or srv.Description like ?");
-    		searchSQL.append(" or srv.ServiceRequest like ?)");
-    	}
-    	if (individualSearch != null && !individualSearch.isEmpty()) {
-    		searchSQL.append(" and ( 1=1 ");
-    		for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
-    			searchSQL.append(" and ");
-    			searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
-    			individalColumnSearchValues.addAll(entry.getValue());
-    		}
-    		searchSQL.append(" )");
-    	}
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            searchSQL.append(" and (srv.Service like ?");
+            searchSQL.append(" or srv.Group like ?");
+            searchSQL.append(" or srv.ServicePath like ?");
+            searchSQL.append(" or srv.Operation like ?");
+            searchSQL.append(" or srv.AttachementURL like ?");
+            searchSQL.append(" or srv.Description like ?");
+            searchSQL.append(" or srv.ServiceRequest like ?)");
+        }
+        if (individualSearch != null && !individualSearch.isEmpty()) {
+            searchSQL.append(" and ( 1=1 ");
+            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+                searchSQL.append(" and ");
+                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                individalColumnSearchValues.addAll(entry.getValue());
+            }
+            searchSQL.append(" )");
+        }
 
-    	query.append(searchSQL);
-    	query.append(" group by ifnull(").append(columnName).append(",'')");
-    	query.append(" order by ").append(columnName).append(" asc");
+        query.append(searchSQL);
+        query.append(" group by ifnull(").append(columnName).append(",'')");
+        query.append(" order by ").append(columnName).append(" asc");
 
-    	// Debug message on SQL.
-    	if (LOG.isDebugEnabled()) {
-    		LOG.debug("SQL : " + query.toString());
-    	}
-    	try (Connection connection = databaseSpring.connect();
-    			PreparedStatement preStat = connection.prepareStatement(query.toString());
-    			Statement stm = connection.createStatement();) {
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement();) {
 
-    		int i = 1;
-    		if (!StringUtil.isNullOrEmpty(searchTerm)) {
-    			preStat.setString(i++, "%" + searchTerm + "%");
-    			preStat.setString(i++, "%" + searchTerm + "%");
-    			preStat.setString(i++, "%" + searchTerm + "%");
-    			preStat.setString(i++, "%" + searchTerm + "%");
-    			preStat.setString(i++, "%" + searchTerm + "%");
-    			preStat.setString(i++, "%" + searchTerm + "%");
-    			preStat.setString(i++, "%" + searchTerm + "%");
-    		}
-    		for (String individualColumnSearchValue : individalColumnSearchValues) {
-    			preStat.setString(i++, individualColumnSearchValue);
-    		}
-    		
-    		try(ResultSet resultSet = preStat.executeQuery();
-    				ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-    			
-    			//gets the data
-        		while (resultSet.next()) {
-        			distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
-        		}
+            int i = 1;
+            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+            }
+            for (String individualColumnSearchValue : individalColumnSearchValues) {
+                preStat.setString(i++, individualColumnSearchValue);
+            }
 
-        		//get the total number of rows
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
 
-        		int nrTotalRows = 0;
+                //gets the data
+                while (resultSet.next()) {
+                    distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
+                }
 
-        		if (rowSet != null && rowSet.next()) {
-        			nrTotalRows = rowSet.getInt(1);
-        		}
+                //get the total number of rows
+                int nrTotalRows = 0;
 
-        		if (distinctValues.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-        			LOG.error("Partial Result in the query.");
-        			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-        			msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-        			answer = new AnswerList<>(distinctValues, nrTotalRows);
-        		} else if (distinctValues.size() <= 0) {
-        			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-        			answer = new AnswerList<>(distinctValues, nrTotalRows);
-        		} else {
-        			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        			msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-        			answer = new AnswerList<>(distinctValues, nrTotalRows);
-        		}
-    			
-    		}catch(SQLException e) {
-    			LOG.warn(e.toString());
-    		}
-    	} catch (Exception e) {
-    		LOG.warn("Unable to execute query : " + e.toString());
-    		msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-    				e.toString());
-    	} finally {
-    		// We always set the result message
-    		answer.setResultMessage(msg);
-    	}
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
 
-    	answer.setResultMessage(msg);
-    	answer.setDataList(distinctValues);
-    	return answer;
+                if (distinctValues.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
+                } else if (distinctValues.size() <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
+                }
+
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        } catch (Exception e) {
+            LOG.warn("Unable to execute query : " + e.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            // We always set the result message
+            answer.setResultMessage(msg);
+        }
+
+        answer.setResultMessage(msg);
+        answer.setDataList(distinctValues);
+        return answer;
     }
 
     @Override
@@ -648,7 +642,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                 preStat.setString(i++, object.getType());
                 preStat.setString(i++, object.getMethod());
                 preStat.setString(i++, object.getUsrModif());
-                preStat.setString(i++, object.getFileName());                
+                preStat.setString(i++, object.getFileName());
                 if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
                     preStat.setString(i++, object.getApplication());
                 }
@@ -720,7 +714,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         }
         return new Answer(msg);
     }
-    
+
     @Override
     public Answer uploadFile(String service, FileItem file) {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -742,7 +736,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             }
             if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 deleteFolder(appDir, false);
-                File picture = new File(uploadPath + File.separator +service + File.separator + file.getName());
+                File picture = new File(uploadPath + File.separator + service + File.separator + file.getName());
                 try {
                     file.write(picture);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
@@ -760,7 +754,29 @@ public class AppServiceDAO implements IAppServiceDAO {
         a.setResultMessage(msg);
         return a;
     }
-    
+
+    @Override
+    public AppService loadFromResultSet(ResultSet rs) throws SQLException {
+        String service = ParameterParserUtil.parseStringParam(rs.getString("srv.Service"), "");
+        String group = ParameterParserUtil.parseStringParam(rs.getString("srv.Group"), "");
+        String servicePath = ParameterParserUtil.parseStringParam(rs.getString("srv.ServicePath"), "");
+        String operation = ParameterParserUtil.parseStringParam(rs.getString("srv.Operation"), "");
+        String serviceRequest = ParameterParserUtil.parseStringParam(rs.getString("srv.ServiceRequest"), "");
+        String attachementURL = ParameterParserUtil.parseStringParam(rs.getString("srv.AttachementURL"), "");
+        String description = ParameterParserUtil.parseStringParam(rs.getString("srv.Description"), "");
+        String type = ParameterParserUtil.parseStringParam(rs.getString("srv.Type"), "");
+        String method = ParameterParserUtil.parseStringParam(rs.getString("srv.Method"), "");
+        String application = ParameterParserUtil.parseStringParam(rs.getString("srv.Application"), "");
+        String usrModif = rs.getString("srv.UsrModif");
+        String usrCreated = rs.getString("srv.UsrCreated");
+        Timestamp dateCreated = rs.getTimestamp("srv.DateCreated");
+        Timestamp dateModif = rs.getTimestamp("srv.DateModif");
+        String fileName = ParameterParserUtil.parseStringParam(rs.getString("srv.FileName"), "");
+        //TODO remove when working in test with mockito and autowired
+        factoryAppService = new FactoryAppService();
+        return factoryAppService.create(service, type, method, application, group, serviceRequest, description, servicePath, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif, fileName);
+    }
+
     private static void deleteFolder(File folder, boolean deleteit) {
         File[] files = folder.listFiles();
         if (files != null) {

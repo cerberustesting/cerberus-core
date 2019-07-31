@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,7 @@ import org.cerberus.crud.factory.IFactoryScheduleEntry;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.stereotype.Repository;
 import org.cerberus.crud.dao.IScheduleEntryDAO;
+import org.cerberus.util.answer.Answer;
 
 /**
  *
@@ -48,36 +50,39 @@ import org.cerberus.crud.dao.IScheduleEntryDAO;
  */
 @Repository
 public class ScheduleEntryDAO implements IScheduleEntryDAO {
-
+    
     @Autowired
     private DatabaseSpring databaseSpring;
-
+    
     @Autowired
     IFactoryScheduleEntry factoryscheduleentry = new FactoryScheduleEntry();
     
     private static final Logger LOG = LogManager.getLogger(ScheduleEntryDAO.class);
     private final String OBJECT_NAME = "Scheduler";
-
+    private final String SQL_DUPLICATED_CODE = "23000";
+    private final int MAX_ROW_SELECTED = 100000;
+    
     @Override
-    public AnswerItem<ScheduleEntry> readByKey(String name) {
+    public AnswerItem<ScheduleEntry> readByKey(Integer id) {
+        LOG.debug(id);
         AnswerItem<ScheduleEntry> ans = new AnswerItem<>();
         ScheduleEntry result = null;
-        final String query = "SELECT * FROM `scheduleentry` AS sce WHERE `name` = ?";
+        final String query = "SELECT * FROM `scheduleentry` WHERE `id` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.SchedulerDAO : " + name);
+            LOG.debug("SQL.param.SchedulerDAO : " + id);
         }
-
+        
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                //LOG.debug(name);
-                preStat.setString(1, name);
+                int i = 1;
+                preStat.setInt(i++, id);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
@@ -121,12 +126,77 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
     }
     
     @Override
+    public AnswerItem<List> readByName(String name) {
+        //LOG.debug("readAllActive is running");
+        AnswerItem<List> ans = new AnswerItem();
+        List<ScheduleEntry> objectList = new ArrayList<ScheduleEntry>();
+        final String query = "SELECT * FROM `scheduleentry` WHERE `name` = ?";
+        MessageEvent msg = null;
+        // Debug message on SQL.        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setString(i++, name);
+                try {
+                    ResultSet resultSet = preStat.executeQuery();
+                    try {
+                        objectList = new ArrayList<ScheduleEntry>();
+                        while (resultSet.next()) {
+                            objectList.add(this.loadFromResultSet(resultSet));
+                        }
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    } catch (SQLException exception) {
+                        LOG.error("Unable to execute query : " + exception.toString());
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                        
+                    } finally {
+                        resultSet.close();
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    preStat.close();
+                }
+            } catch (Exception exception) {
+                LOG.debug("Failed to construct request for read schduler");
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn(exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            }
+        }
+        ans.setResultMessage(msg);
+        ans.setItem(objectList);
+        //sets the message
+        return ans;
+    }
+    
+    @Override
     public AnswerItem<List> readAllActive() {
         //LOG.debug("readAllActive is running");
         AnswerItem<List> ans = new AnswerItem();
         List<ScheduleEntry> objectList = new ArrayList<ScheduleEntry>();
         final String query = "SELECT * FROM `scheduleentry` WHERE `active` = 'Y'";
-        MessageEvent msg; 
+        MessageEvent msg;
         // Debug message on SQL.        
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
@@ -147,7 +217,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
                     LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                  
+                    
                 } finally {
                     resultSet.close();
                 }
@@ -178,7 +248,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
         //sets the message
         return ans;
     }
-
+    
     private ScheduleEntry loadFromResultSet(ResultSet rs) throws SQLException {
         //LOG.debug("loadFromResultSet scheduleentry");
         int schedulerId = ParameterParserUtil.parseIntegerParam(rs.getString("scheduleentry.ID"), 0);
@@ -190,41 +260,213 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("scheduleentry.UsrModif"), "");
         Timestamp lastExecution = rs.getTimestamp("scheduleentry.lastExecution");
         Timestamp dateModif = rs.getTimestamp("scheduleentry.DateModif");
-        Timestamp dateCreated = rs.getTimestamp("scheduleentry.DateCreated"); 
+        Timestamp dateCreated = rs.getTimestamp("scheduleentry.DateCreated");
         ScheduleEntry newScheduleEntry = factoryscheduleentry.create(schedulerId, type, name, cronDefinition, lastExecution, active, usrCreated, dateCreated, usrModif, dateModif);
-        //LOG.debug("id             : " + newScheduleEntry.getID());
-        //LOG.debug("type           : " + newScheduleEntry.getType());
-        //LOG.debug("name           : " + newScheduleEntry.getName());
-        //LOG.debug("active         : " + newScheduleEntry.getActive());
-        //LOG.debug("usrCreated     : " + newScheduleEntry.getUsrCreated());
-        //LOG.debug("dateCreated    : " + newScheduleEntry.getDateCreated());
-        //LOG.debug("usrModif       : " + newScheduleEntry.getUsrModif());
-        //LOG.debug("dateModif      : " + newScheduleEntry.getDateModif());
-        //LOG.debug("lastExecution  : " + newScheduleEntry.getLastExecution());
-        //LOG.debug("CronDefinition : " + newScheduleEntry.getCronDefinition());
         return newScheduleEntry;
-
+        
     }
-
+    
     @Override
-    public boolean create(ScheduleEntry scheduler) {
-        final StringBuilder query = new StringBuilder("INSERT INTO `scheduleentry` (`type`, `name`,`cronDefinition`,`lastExecution`,`active`,`UsrCreated`,`DateCreated`,`UsrModif`,`DateModif`) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-
-        try (Connection connection = this.databaseSpring.connect();
-            PreparedStatement preStat = connection.prepareStatement(query.toString());) {
-            preStat.setString(1, scheduler.getType());
-            preStat.setString(2, scheduler.getName());
-            preStat.setString(3, scheduler.getCronDefinition());
-            preStat.setString(4, scheduler.getLastExecution().toString());
-            preStat.setString(5, scheduler.getActive());
-            preStat.setString(6, scheduler.getUsrCreated());
-            preStat.setString(7, scheduler.getDateCreated().toString());
-            preStat.setString(8, scheduler.getUsrModif());
-            preStat.setString(7, scheduler.getDateModif().toString());
-            return (preStat.executeUpdate() == 1);
+    public AnswerItem<Integer> create(ScheduleEntry scheduler) {
+        LOG.debug("SCHEDULE ENTRY DAO CALL");
+        MessageEvent msg = null;
+        AnswerItem<Integer> ans = new AnswerItem();
+        final StringBuilder query = new StringBuilder("INSERT INTO `scheduleentry` (`type`, `name`,`cronDefinition`,`active`,`UsrCreated`) VALUES ( ?, ?, ?, ?, ?);");
+        
+        Connection connection = this.databaseSpring.connect();
+        try {
+            
+            PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+            
+            try {
+                int i = 1;
+                preStat.setString(i++, scheduler.getType());
+                preStat.setString(i++, scheduler.getName());
+                preStat.setString(i++, scheduler.getCronDefinition());
+                preStat.setString(i++, scheduler.getActive());
+                preStat.setString(i++, scheduler.getUsrCreated());
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+                ans.setItem(MAX_ROW_SELECTED);
+                ResultSet resultSet = preStat.getGeneratedKeys();
+                
+                try {
+                    if (resultSet.first()) {
+                        LOG.debug("ID of new job " + resultSet.getInt(1));
+                        ans.setItem(resultSet.getInt(1));
+                    }
+                } catch (Exception e) {
+                    LOG.debug("Exception catch :", e);
+                } finally {
+                    resultSet.close();
+                }
+                
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                
+                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                }
+            } finally {
+                preStat.close();
+            }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to close connection : " + exception.toString());
+            }
         }
-        return false;
+        ans.setResultMessage(msg);
+        return ans;
+    }
+    
+    @Override
+    public Answer update(ScheduleEntry scheduleEntryObject) {
+        MessageEvent msg = null;
+        String query = "UPDATE scheduleentry SET type = ? , name = ?, cronDefinition = ?,lastExecution = ?, active = ?, DateModif = CURRENT_TIMESTAMP, UsrModif = ? WHERE ID = ?";
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.scheduleEntryObject : " + scheduleEntryObject.getName());
+            
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                
+                int i = 1;
+                preStat.setString(i++, scheduleEntryObject.getType());
+                preStat.setString(i++, scheduleEntryObject.getName());
+                preStat.setString(i++, scheduleEntryObject.getCronDefinition());
+                preStat.setTimestamp(i++, scheduleEntryObject.getLastExecution());
+                preStat.setString(i++, scheduleEntryObject.getActive());
+                preStat.setString(i++, scheduleEntryObject.getUsrModif());
+                preStat.setInt(i++, scheduleEntryObject.getID());
+                
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+                LOG.debug(msg.getDescription());
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : ", exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+    
+    @Override
+    public Answer updateLastExecution(Integer schedulerId, Timestamp lastExecution) {
+        MessageEvent msg = null;
+        LOG.debug("lastExecution : " + lastExecution);
+        LOG.debug("SchedulerId : " + schedulerId);
+        String query = "UPDATE scheduleentry SET lastExecution = ? WHERE ID = ?";
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);           
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                
+                int i = 1;
+                preStat.setTimestamp(i++, lastExecution);
+                preStat.setInt(i++, schedulerId);
+                
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+                LOG.debug(msg.getDescription());
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : ", exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+    
+    @Override
+    public Answer delete(ScheduleEntry object) {
+        MessageEvent msg = null;
+        final String query = "DELETE FROM scheduleentry WHERE id = ? ";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setInt(1, object.getID());
+                
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
     }
 }

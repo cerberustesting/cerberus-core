@@ -89,6 +89,7 @@
                                     <table class="table table-bordered table-hover nomarginbottom dataTable" id="envTable">
                                         <thead>
                                             <tr>
+                                                <th class="text-center" id="systemHeader" name="systemHeader">System</th>
                                                 <th class="text-center" id="buildHeader" name="buildHeader">Build</th>
                                                 <th class="text-center" id="revisionHeader" name="revisionHeader">Revision</th>
                                                 <th class="text-center" id="devHeader" name="devHeader">DEV</th>

@@ -19,9 +19,8 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ICountryEnvParamDAO;
@@ -113,13 +112,13 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, String envGp, int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        return countryEnvParamDao.readByVariousByCriteria(system, country, environment, build, revision, active, envGp, start, amount, colName, dir, searchTerm, individualSearch);
+    public AnswerList readByVariousByCriteria(List<String> systems, String country, String environment, String build, String revision, String active, String envGp, int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        return countryEnvParamDao.readByVariousByCriteria(systems, country, environment, build, revision, active, envGp, start, amount, colName, dir, searchTerm, individualSearch);
     }
 
     @Override
-    public AnswerList readByVarious(String system, String country, String environment, String build, String revision, String active) {
-        return countryEnvParamDao.readByVariousByCriteria(system, country, environment, build, revision, active, null, 0, 0, null, null, null, null);
+    public AnswerList readByVarious(String system , String country, String environment, String build, String revision, String active) {
+        return countryEnvParamDao.readByVariousByCriteria(new ArrayList<>(Arrays.asList(system)), country, environment, build, revision, active, null, 0, 0, null, null, null, null);
     }
 
     @Override
@@ -176,7 +175,7 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return countryEnvParamDao.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
 }

@@ -52,17 +52,17 @@ public class BuildRevisionInvariantService implements IBuildRevisionInvariantSer
     }
 
     @Override
-    public AnswerList readBySystemByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList readBySystemByCriteria(List<String> system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return BuildRevisionInvariantDAO.readByVariousByCriteria(system, level, start, amount, column, dir, searchTerm, individualSearch);
     }
 
     @Override
-    public AnswerList readBySystemLevel(String system, Integer level) {
+    public AnswerList readBySystemLevel(List<String> system, Integer level) {
         return BuildRevisionInvariantDAO.readByVariousByCriteria(system, level, 0, 0, null, null, null, null);
     }
 
     @Override
-    public AnswerList readBySystem(String system) {
+    public AnswerList readBySystem(List<String> system) {
         return BuildRevisionInvariantDAO.readByVariousByCriteria(system, -1, 0, 0, null, null, null, null);
     }
 
@@ -121,7 +121,7 @@ public class BuildRevisionInvariantService implements IBuildRevisionInvariantSer
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return BuildRevisionInvariantDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
 

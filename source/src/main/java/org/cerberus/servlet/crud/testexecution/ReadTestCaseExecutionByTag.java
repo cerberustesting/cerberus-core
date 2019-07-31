@@ -25,38 +25,39 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import static java.util.Arrays.asList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import com.google.gson.JsonObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import javax.json.Json;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.*;
 import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILabelService;
 import org.cerberus.crud.service.ITagService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.crud.service.impl.InvariantService;
-import org.cerberus.dto.SummaryStatisticsDTO;
+import org.cerberus.crud.service.impl.LabelService;
 import org.cerberus.dto.SummaryStatisticsBugTrackerDTO;
+import org.cerberus.dto.SummaryStatisticsDTO;
+import org.cerberus.dto.TreeNode;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.servlet.ServletUtil;
@@ -66,10 +67,6 @@ import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.JavaScriptUtils;
-import org.cerberus.crud.service.ITestCaseExecutionQueueService;
-import org.cerberus.crud.service.impl.LabelService;
-import org.cerberus.dto.TreeNode;
-import org.cerberus.util.StringUtil;
 
 /**
  *
@@ -467,13 +464,42 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         }
 
         Gson gson = new Gson();
-        jsonResult.put("axis", axisMap.values());
+        List<JSONObject> axisList = new ArrayList<>();
+
+        for (Map.Entry<String, JSONObject> entry : axisMap.entrySet()) {
+            String key = entry.getKey();
+            JSONObject value = entry.getValue();
+            axisList.add(value);
+        }
+        Collections.sort(axisList, new SortExecution());
+        jsonResult.put("axis", axisList);
         jsonResult.put("tag", tag);
         jsonResult.put("globalEnd", gson.toJson(new Timestamp(globalEndL)).replace("\"", ""));
         jsonResult.put("globalStart", globalStart);
         jsonResult.put("globalStatus", globalStatus);
 
         return jsonResult;
+    }
+
+    class SortExecution implements Comparator<JSONObject> {
+        // Used for sorting in ascending order of 
+        // name value. 
+
+        @Override
+        public int compare(JSONObject a, JSONObject b) {
+            if (a != null && b != null) {
+                try {
+                    String aS = (String) a.get("name");
+                    String bS = (String) b.get("name");
+                    return aS.compareToIgnoreCase(bS);
+                } catch (JSONException ex) {
+                    LOG.error("JSON Error Exception", ex);
+                    return 1;
+                }
+            } else {
+                return 1;
+            }
+        }
     }
 
     private JSONObject generateStats(HttpServletRequest request, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter, boolean splitStats) throws JSONException {

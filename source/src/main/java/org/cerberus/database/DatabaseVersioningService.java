@@ -7898,7 +7898,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(",('STEPCONDITIONOPER', 'ifTextNotInElement', 280, 'Only execute if text is not present in element.')");
         a.add(b.toString());
 
-        //Missing invariant on manual URL.
+        // Missing invariant on manual URL.
         // 1384
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ('MANUALURL', '2', 300, 'Activate Application URL Manual definition only on defined parameters.')");
 
@@ -7954,7 +7954,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + ",('', 'cerberus_automaticqueuecancellationjob_active', 'Y', 'Y in order to activate the job that will cancel old queue entries that are still running.')"
                 + ",('', 'cerberus_automaticqueuecancellationjob_timeout', '3600', 'Nb of Second after which a queue entry will be moved to CANCELLED state automaticly (3600 default).');");
 
-        //Insert the invariant IfTextInElement and IfTextNotInElement for Condition-Control
+        // Insert the invariant IfTextInElement and IfTextNotInElement for Condition-Control
         // 1391
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
@@ -8100,24 +8100,79 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
         a.add(b.toString());
 
-        //Post campaign scheduler in myversion
-        //1407
+        // Post campaign scheduler in myversion
+        // 1407
         a.add("INSERT into myversion values('scheduler_version',0,'INIT');");
 
-        //1407 New constrain at application level.
+        // 1408 New constrain at application level.
         a.add("ALTER TABLE `application` ADD COLUMN `poolSize` INT NULL AFTER `BugTrackerNewUrl`;");
 
         // Add new Action to keypress inside a popup
-        // 1408
+        // 1409
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'manageDialogKeypress', '5600', 'Keypress on a popup dialog.', 'Popup Keypress')");
 
-        // Add the "longPress" Action
+        // Adding columns for proxy management.
         // 1410
-        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'longPress', '3100', 'Long tap on element', 'longPress')");
+        b = new StringBuilder();
+        b.append("ALTER TABLE `robotexecutor` ");
+        b.append("ADD COLUMN `executorExtensionPort` INT(8) NULL DEFAULT NULL AFTER `deviceLockUnlock`,");
+        b.append("ADD COLUMN `executorProxyHost` VARCHAR(255) NULL DEFAULT NULL AFTER `executorExtensionPort`,");
+        b.append("ADD COLUMN `executorProxyPort` INT(8) NULL DEFAULT NULL AFTER `executorProxyHost`,");
+        b.append("ADD COLUMN `executorProxyActive` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `executorProxyPort`;");
+        a.add(b.toString());
 
-        // Add the "clearField" Action
-        // 1411
-        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'clearField', '11500', 'Clear a Field', 'clearField')");
+        // 1411-1412
+        a.add("ALTER TABLE `scheduledexecution` DROP FOREIGN KEY FK_scheduledexecution_01;");
+        a.add("ALTER TABLE `scheduledexecution` ADD CONSTRAINT `FK_scheduledexecution_01` FOREIGN KEY (`schedulerID`) REFERENCES `scheduleentry` (`ID`) ON UPDATE CASCADE ON DELETE CASCADE");
+
+        // 1413
+        b = new StringBuilder();
+        b.append("ALTER TABLE `testcaseexecutionqueuedep` ");
+        b.append("ADD COLUMN `QueueID` BIGINT(20) UNSIGNED NULL DEFAULT NULL AFTER `ExeID`, ");
+        b.append("ADD INDEX `IX_testcaseexecutiondep_05` (`QueueID` ASC);");
+        a.add(b.toString());
+
+        // Add the "longPress" and "clearField" Action
+        // 1414
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        b.append("('ACTION', 'longPress', '3100', 'Long tap on element', 'longPress'),");
+        b.append("('ACTION', 'clearField', '11500', 'Clear a Field', 'clearField')");
+        a.add(b.toString());
+
+        // Insert the invariant verifyStringNotContains and ifPropertyNotExist
+        // 1415
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        b.append("('CONTROL', 'verifyStringNotContains', 1420, 'verifyStringNotContains.')");
+        b.append(",('ACTIONCONDITIONOPER', 'ifStringNotContains', 445, 'Only execute if value1 does not contains value2.')");
+        b.append(",('CONTROLCONDITIONOPER', 'ifStringNotContains', 445, 'Only execute if value1 does not contains value2.')");
+        b.append(",('STEPCONDITIONOPER', 'ifStringNotContains', 445, 'Only execute if value1 does not contains value2.')");
+        b.append(",('TESTCASECONDITIONOPER', 'ifStringNotContains', 445, 'Only execute if value1 does not contains value2.')");
+        b.append(",('ACTIONCONDITIONOPER', 'ifPropertyNotExist', 210, 'Only execute if property does not exist for the execution.')");
+        b.append(",('CONTROLCONDITIONOPER', 'ifPropertyNotExist', 210, 'Only execute if property does not exist for the execution.')");
+        b.append(",('STEPCONDITIONOPER', 'ifPropertyNotExist', 210, 'Only execute if property does not exist for the execution.')");
+        b.append(",('TESTCASECONDITIONOPER', 'ifPropertyNotExist', 210, 'Only execute if property does not exist for the execution.')");
+        a.add(b.toString());
+
+        // 1416
+        a.add("ALTER TABLE `user` CHANGE COLUMN `DefaultSystem` `DefaultSystem` MEDIUMTEXT NULL DEFAULT NULL ;");
+
+        // Add the "longPress" and "clearField" Action
+        // 1417
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_smtp_isSetTls', 'true', 'Boolean defining if the TLS is set or not for the email!<br>true / false');");
+
+        // Add the "longPress" and "clearField" Action
+        // 1418
+        a.add("ALTER TABLE `testdatalib` ADD COLUMN `PrivateData` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `Country`;");
+
+        // Add the "longPress" and "clearField" Action
+        // 1419
+        a.add("ALTER TABLE `testdatalibdata` ADD COLUMN `Encrypt` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `SubData`;");
+
+        // Add the "longPress" and "clearField" Action
+        // 1420
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_appium_action_longpress_wait', '8000', 'Integer value that correspond to the nb of ms of the longpress Appium action.');");
 
         return a;
     }

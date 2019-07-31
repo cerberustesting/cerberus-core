@@ -388,7 +388,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 + " FROM testcaseexecutionqueue exq"
                 + " inner join testcaseexecutionqueuedep eqd on eqd.ExeQueueID = exq.ID"
                 + " inner join testcaseexecutiondata exd on eqd.ExeID = exd.ID"
-                + " WHERE exq.ExeID=?";
+                + " WHERE exq.ExeID=? and exd.index=1";
 
         return RequestDbUtils.executeQueryList(databaseSpring, query,
                 ps -> {

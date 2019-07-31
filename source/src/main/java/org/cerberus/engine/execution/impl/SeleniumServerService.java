@@ -23,11 +23,14 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.LocksDevice;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +74,7 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -140,7 +144,7 @@ public class SeleniumServerService implements ISeleniumServerService {
              * level, set the selenium & appium wait element with this value,
              * else, take the one from parameter
              */
-            Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, cerberus_selenium_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout;
+            Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, cerberus_selenium_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout,cerberus_appium_action_longpress_wait;
             boolean cerberus_selenium_autoscroll;
 
             if (!tCExecution.getTimeout().isEmpty()) {
@@ -156,6 +160,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             cerberus_selenium_setScriptTimeout = parameterService.getParameterIntegerByKey("cerberus_selenium_setScriptTimeout", system, 90000);
             cerberus_selenium_action_click_timeout = parameterService.getParameterIntegerByKey("cerberus_selenium_action_click_timeout", system, 90000);
             cerberus_selenium_autoscroll = parameterService.getParameterBooleanByKey("cerberus_selenium_autoscroll", system, false);
+            cerberus_appium_action_longpress_wait = parameterService.getParameterIntegerByKey("cerberus_appium_action_longpress_wait", system, 8000);
             LOG.debug(logPrefix + "TimeOut defined on session : " + cerberus_selenium_wait_element);
 
             Session session = new Session();
@@ -165,6 +170,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             session.setCerberus_selenium_wait_element(cerberus_selenium_wait_element);
             session.setCerberus_appium_wait_element(cerberus_appium_wait_element);
             session.setCerberus_selenium_action_click_timeout(cerberus_selenium_action_click_timeout);
+            session.setCerberus_appium_action_longpress_wait(cerberus_appium_action_longpress_wait);
             session.setHost(tCExecution.getSeleniumIP());
             session.setHostUser(tCExecution.getSeleniumIPUser());
             session.setHostPassword(tCExecution.getSeleniumIPPassword());
@@ -187,7 +193,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             String hubUrl = StringUtil.cleanHostURL(
                     SeleniumServerService.getBaseUrl(StringUtil.formatURLCredential(
                             tCExecution.getSession().getHostUser(),
-                            tCExecution.getSession().getHostPassword()) + session.getHost(),
+                            tCExecution.getSession().getHostPassword(), session.getHost()),
                             session.getPort())) + "/wd/hub";
             LOG.debug(logPrefix + "Hub URL :" + hubUrl);
             URL url = new URL(hubUrl);
@@ -249,7 +255,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                         // Appium does not support connection from HTTPCommandExecutor. When connecting from Executor, it stops to work after a couple of instructions.
                         appiumDriver = new AndroidDriver(url, caps);
                         driver = (WebDriver) appiumDriver;
-                    } else if (caps.getPlatform().is(Platform.IOS)||caps.getPlatform().is(Platform.MAC)) {
+                    } else if (caps.getPlatform().is(Platform.IOS) || caps.getPlatform().is(Platform.MAC)) {
                         appiumDriver = new IOSDriver(url, caps);
                         driver = (WebDriver) appiumDriver;
                     } else {
@@ -444,7 +450,7 @@ public class SeleniumServerService implements ISeleniumServerService {
         if (!StringUtil.isNullOrEmpty(tCExecution.getPlatform())) {
             if ((caps.getCapability("platform") == null)
                     || ((caps.getCapability("platform") != null) && (caps.getCapability("platform").toString().equals("ANY") || caps.getCapability("platform").toString().equals("")))) {
-                caps.setCapability("platform", tCExecution.getPlatform());
+                caps.setCapability("platformName", tCExecution.getPlatform());
             }
         }
         if (!StringUtil.isNullOrEmpty(tCExecution.getVersion())) {
@@ -615,6 +621,16 @@ public class SeleniumServerService implements ISeleniumServerService {
                 if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
                     options.addArguments("--user-agent=" + usedUserAgent);
                 }
+
+                // Add the WebDriver proxy capability.
+                if ("Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                    this.startRemoteProxy(tCExecution);
+                    Proxy proxy = new Proxy();
+                    proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                    proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                    options.setCapability("proxy", proxy);
+                }
+
                 capabilities.setCapability(ChromeOptions.CAPABILITY, options);
 //                additionalCapabilities.add(factoryRobotCapability.create(0, "", ChromeOptions.CAPABILITY, options.toString()));
 
@@ -697,6 +713,29 @@ public class SeleniumServerService implements ISeleniumServerService {
                 ((LocksDevice) session.getAppiumDriver()).lockDevice();
             }
 
+            /**
+             * We record Selenium log at the end of the execution.
+             */
+            try {
+                //getHarFile
+                //if proxy started and parameter verbose >  =1 activated
+                if ("Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())
+                        && tce.getVerbose() >= 1) {
+                    String url = "http://" + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + tce.getRemoteProxyUUID();
+                    tce.addFileList(recorderService.recordHarLog(tce, url));
+                }
+
+                //if proxy started
+                if ("Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())) {
+                    String urlStop = "http://" + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/stopProxy?uuid=" + tce.getRemoteProxyUUID();
+                    InputStream is = new URL(urlStop).openStream();
+                    is.close();
+                }
+
+            } catch (Exception ex) {
+                LOG.error("Exception Getting Selenium Logs " + tce.getId() + " Exception :" + ex.toString(), ex);
+            }
+
             LOG.info("Stop execution session");
             session.quit();
             return true;
@@ -770,5 +809,27 @@ public class SeleniumServerService implements ISeleniumServerService {
         }
 
         return baseurl;
+    }
+
+    private void startRemoteProxy(TestCaseExecution tce) {
+
+        String url = "http://" + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/startProxy";
+
+        try ( InputStream is = new URL(url).openStream()) {
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+            StringBuilder sb = new StringBuilder();
+            int cp;
+            while ((cp = rd.read()) != -1) {
+                sb.append((char) cp);
+            }
+            String jsonText = sb.toString();
+
+            JSONObject json = new JSONObject(jsonText);
+            tce.setRemoteProxyPort(json.getInt("port"));
+            tce.setRemoteProxyUUID(json.getString("uuid"));
+        } catch (Exception ex) {
+            LOG.error("Exception Starting Remote Proxy " + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString(), ex);
+        }
+
     }
 }

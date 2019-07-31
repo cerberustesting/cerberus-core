@@ -19,10 +19,7 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.fileupload.FileItem;
 import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
@@ -89,8 +86,8 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        return testDataLibDAO.readByVariousByCriteria(name, system, environment, country, type, start, amount, column, dir, searchTerm, individualSearch);
+    public AnswerList readByVariousByCriteria(String name, List<String> systems, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        return testDataLibDAO.readByVariousByCriteria(name, systems, environment, country, type, start, amount, column, dir, searchTerm, individualSearch);
     }
 
     @Override
@@ -120,7 +117,7 @@ public class TestDataLibService implements ITestDataLibService {
         } else {
             maxFetch = maxSecurityFetch;
         }
-        answer = this.readByVariousByCriteria(dataName, dataSystem, dataEnvironment, dataCountry, "INTERNAL", 0, maxFetch, null, null, null, null);
+        answer = this.readByVariousByCriteria(dataName, new ArrayList<>(Arrays.asList(dataSystem)), dataEnvironment, dataCountry, "INTERNAL", 0, maxFetch, null, null, null, null);
         List<TestDataLib> objectList = new ArrayList<TestDataLib>();
         objectList = answer.getDataList();
         for (TestDataLib tdl : objectList) {
@@ -196,6 +193,16 @@ public class TestDataLibService implements ITestDataLibService {
             return;
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+    
+    @Override
+    public boolean userHasPermission(TestDataLib lib, String userName) {
+        if ("Y".equals(lib.getPrivateData())) {
+            if (!userName.equals(lib.getCreator())) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

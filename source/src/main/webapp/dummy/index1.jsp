@@ -147,7 +147,7 @@
         <br>
         <br>
         <p>Below is part to test iframe switching</p>
-        <iframe id="iframeCerberusWebsite" src="https://www.cerberus-testing.org/index.php/en/" height="500" width="500">
+        <iframe id="iframeCerberusWebsite" src="https://qa.cerberus-testing.org/dummy/index2.jsp" height="500" width="500">
 
         </iframe>
     </body>

@@ -44,7 +44,6 @@ import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
@@ -820,7 +819,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             LOG.debug("SQL.param.tag : " + tag);
         }
 
-
         return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
                 preStat -> {
                     int i = 1;
@@ -974,19 +972,17 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         return result;
     }
 
-
     @Override
-    public List<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException {
+    public AnswerList<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList<>();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        AnswerList response = new AnswerList<>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
+        List<TestCaseExecution> objectList = new ArrayList<>();
 
         final StringBuffer query = new StringBuffer();
 
-        query.append("SELECT * FROM testcaseexecution exe ");
-        query.append("left join testcase tec on exe.Test = tec.Test and exe.TestCase = tec.TestCase ");
-        query.append("left join application as app on tec.application = app.application ");
-        query.append("where exe.`start`> '").append(DateUtil.getMySQLTimestampTodayDeltaMinutes(-360000)).append("' ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcaseexecution exe ");
+        query.append("where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             query.append("and (exe.`id` like ? ");
@@ -1028,12 +1024,11 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" ) ");
         }
 
-
-        if(system != null && ! system.isEmpty()) {
-            query.append( " and " + SqlUtil.generateInClause("app.system", system) + " ");
+        if (system != null && !system.isEmpty()) {
+            query.append(" and " + SqlUtil.generateInClause("exe.system", system) + " ");
         }
 
-        query.append( " AND " + UserSecurity.getSystemAllowForSQL("app.system"));
+        query.append(" AND " + UserSecurity.getSystemAllowForSQL("exe.system"));
 
         if (!StringUtil.isNullOrEmpty(sort)) {
             query.append(" order by ").append(sort);
@@ -1050,55 +1045,121 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             LOG.debug("SQL : " + query.toString());
         }
 
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                int i = 1;
+                if (!Strings.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
 
-        return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
-                preStat -> {
-                    int i = 1;
-                    if (!Strings.isNullOrEmpty(searchTerm)) {
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
-                        preStat.setString(i++, "%" + searchTerm + "%");
+                }
+                for (String individualColumnSearchValue : individalColumnSearchValues) {
+                    preStat.setString(i++, individualColumnSearchValue);
+                }
 
+                if (system != null && !system.isEmpty()) {
+                    for (String sys : system) {
+                        preStat.setString(i++, sys);
                     }
-                    for (String individualColumnSearchValue : individalColumnSearchValues) {
-                        preStat.setString(i++, individualColumnSearchValue);
+                }
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    //gets the data
+                    while (resultSet.next()) {
+                        objectList.add(this.loadFromResultSet(resultSet));
                     }
 
-                    if(system != null && ! system.isEmpty()) {
-                        for(String sys : system) {
-                            preStat.setString(i++, sys);
-                        }
+                    //get the total number of rows
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                    int nrTotalRows = 0;
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
                     }
-                },
-                rs -> loadFromResultSet(rs)
-        );
 
+                    if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                        LOG.error("Partial Result in the query.");
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList<>(objectList, nrTotalRows);
+                    } else if (objectList.size() <= 0) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                        response = new AnswerList<>(objectList, nrTotalRows);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        response = new AnswerList<>(objectList, nrTotalRows);
+                    }
 
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString(), exception);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString(), exception);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString(), exception);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        response.setResultMessage(msg);
+        response.setDataList(objectList);
+        return response;
     }
 
     @Override
@@ -1413,7 +1474,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -1425,7 +1486,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append("SELECT distinct ");
         query.append(columnName);
         query.append(" as distinctValues FROM testcaseexecution exe ");
-        query.append("where exe.`start`> '").append(DateUtil.getMySQLTimestampTodayDeltaMinutes(-360000)).append("' ");
+        query.append("where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchParameter)) {
             query.append("and (exe.`id` like ? ");

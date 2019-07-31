@@ -80,7 +80,7 @@ public interface ITestDataLibDAO {
     /**
      *
      * @param name filter by Name. null to disable the filter.
-     * @param system filter by System. null to disable the filter.
+     * @param systems filter by List of Systems. null to disable the filter.
      * @param environment filter by Environment. null to disable the filter.
      * @param country filter by Country. null to disable the filter.
      * @param type filter by Type. null to disable the filter.
@@ -93,7 +93,7 @@ public interface ITestDataLibDAO {
      * resultSet
      * @return
      */
-    AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList readByVariousByCriteria(String name, List<String> systems, String environment, String country, String type, int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *

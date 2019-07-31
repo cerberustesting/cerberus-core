@@ -5,5 +5,6 @@
     "resource": "${org.cerberus.keycloak.client}",
     "public-client": true,
     "confidential-port": 0,
-    "principal-attribute" : "preferred_username"
+    "principal-attribute" : "preferred_username",
+    "enable-cors" : true
 }

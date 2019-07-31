@@ -58,7 +58,7 @@ function initPage() {
 
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationsTable"), [3, 'asc']);
+    var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication", "contentTable", aoColumnsFunc("applicationsTable"), [3, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplication, "#applicationList", undefined, true);
 }
 
@@ -469,7 +469,7 @@ function appendEnvironmentRow(env) {
     row.append(td1);
     row.append(td2);
     row.append(td3);
-    
+
     env.environment = selectEnvironment.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     env.country = selectCountry.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     row.data("environment", env);
@@ -634,3 +634,16 @@ function aoColumnsFunc_object(tableId) {
     ];
     return aoColumns;
 }
+
+function app_keyispressed(e, modalName) {
+    var idname = $('#' + modalName + 'ApplicationModal #application').val();
+    var toto = "|\"|'|&|";
+    var charval = "|" + e.key + "|";
+    if (toto.indexOf(charval) !== -1) {
+        var localMessage = new Message("WARNING", "Character '" + e.key + "' is not allowed for application names.");
+        showMessage(localMessage, $('#' + modalName + 'ApplicationModal'), false, 1000);
+        return false;
+    }
+    return true;
+}
+

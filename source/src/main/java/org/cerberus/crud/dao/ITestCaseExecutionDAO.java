@@ -176,10 +176,12 @@ public interface ITestCaseExecutionDAO {
      * @param sort
      * @param searchTerm
      * @param individualSearch
+     * @param individualLike
+     * @param system
      * @return
      * @throws CerberusException
      */
-    List<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException;
+    AnswerList<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException;
 
     /**
      *
@@ -226,6 +228,6 @@ public interface ITestCaseExecutionDAO {
      * @param columnName Name of the column
      * @return object {@link TestCaseExecution}
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

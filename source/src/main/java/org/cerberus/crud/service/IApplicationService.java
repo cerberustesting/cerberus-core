@@ -52,7 +52,7 @@ public interface IApplicationService {
      * @param System
      * @return
      */
-    AnswerList readBySystem(String System);
+    AnswerList readBySystem(List<String> System);
 
     /**
      *
@@ -77,14 +77,14 @@ public interface IApplicationService {
      * @param individualSearch
      * @return
      */
-    AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList readBySystemByCriteria(List<String> system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
      * @param system
      * @return
      */
-    AnswerItem readTestCaseCountersBySystemByStatus(String system);
+    AnswerItem readTestCaseCountersBySystemByStatus(List<String> system);
 
     /**
      *
@@ -146,12 +146,12 @@ public interface IApplicationService {
     void convert(Answer answer) throws CerberusException;
 
     /**
-     * 
+     *
      * @param system
      * @param searchParameter
      * @param individualSearch
      * @param columnName
-     * @return 
+     * @return
      */
-    AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

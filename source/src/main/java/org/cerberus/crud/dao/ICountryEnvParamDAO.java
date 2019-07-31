@@ -64,7 +64,7 @@ public interface ICountryEnvParamDAO {
 
     /**
      *
-     * @param system
+     * @param systems
      * @param country
      * @param environment
      * @param build
@@ -79,7 +79,7 @@ public interface ICountryEnvParamDAO {
      * @param string
      * @return
      */
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> string);
+    public AnswerList readByVariousByCriteria(List<String> systems, String country, String environment, String build, String revision, String active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> string);
 
     /**
      *
@@ -129,6 +129,6 @@ public interface ICountryEnvParamDAO {
      * @param columnName
      * @return 
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

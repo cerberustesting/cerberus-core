@@ -22,7 +22,6 @@ package org.cerberus.servlet.crud.test.testcase;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,9 +32,8 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.*;
 import org.cerberus.crud.service.*;
 import org.cerberus.engine.entity.MessageEvent;
@@ -78,7 +76,6 @@ public class ReadTestCase extends AbstractCrudTestCase {
     @Autowired
     private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
 
-
     private static final Logger LOG = LogManager.getLogger(ReadTestCase.class);
 
     /**
@@ -100,7 +97,6 @@ public class ReadTestCase extends AbstractCrudTestCase {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        ServletUtil.fixHeaders(response);
 
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -110,7 +106,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
          * Parsing and securing all required parameters.
          */
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
-        String system = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("system"), "");
+        List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
         String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), null);
         String campaign = ParameterParserUtil.parseStringParam(request.getParameter("campaign"), "");
         boolean getMaxTC = ParameterParserUtil.parseBooleanParam(request.getParameter("getMaxTC"), false);
@@ -154,8 +150,9 @@ public class ReadTestCase extends AbstractCrudTestCase {
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
-            if(jsonResponse == null)
+            if (jsonResponse == null) {
                 jsonResponse = new JSONObject();
+            }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
@@ -211,7 +208,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findTestCaseByTest(String system, String test, HttpServletRequest request) throws JSONException, CerberusException {
+    private AnswerItem findTestCaseByTest(List<String> system, String test, HttpServletRequest request) throws JSONException, CerberusException {
         AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
@@ -276,7 +273,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
          */
         List<TestCaseDep> testCaseDepList = testCaseDepService.readByTestAndTestCase(testCaseList.getDataList());
         LinkedHashMap<String, JSONArray> testCaseWithDep = new LinkedHashMap();
-        for(TestCaseDep testCaseDep : testCaseDepList) {
+        for (TestCaseDep testCaseDep : testCaseDepList) {
             String key = testCaseDep.getTest() + "_" + testCaseDep.getTestCase();
 
             JSONObject jo = convertToJSONObject(testCaseDep);
@@ -287,8 +284,6 @@ public class ReadTestCase extends AbstractCrudTestCase {
                 testCaseWithDep.put(key, new JSONArray().put(jo));
             }
         }
-
-
 
         /**
          * Find the list of labels
@@ -390,11 +385,10 @@ public class ReadTestCase extends AbstractCrudTestCase {
             // list of dependencies
             List<TestCaseDep> testCaseDepList = testCaseDepService.readByTestAndTestCase(test, testCase);
             JSONArray testCaseWithDep = new JSONArray();
-            for(TestCaseDep testCaseDep : testCaseDepList) {
+            for (TestCaseDep testCaseDep : testCaseDepList) {
                 testCaseWithDep.put(convertToJSONObject(testCaseDep));
             }
             response.put("dependencyList", testCaseWithDep);
-
 
             // Label List feed.
             JSONArray labelArray = new JSONArray();
@@ -491,11 +485,10 @@ public class ReadTestCase extends AbstractCrudTestCase {
         //finds the testcase     
         AnswerItem answer = testCaseService.readByKey(test, testCase);
 
-        if(answer.getItem() == null) {
+        if (answer.getItem() == null) {
             answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_NOT_FOUND_OR_NOT_AUTHORIZE));
             return answer;
         }
-
 
         AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
         AnswerList testCaseStepList = testCaseStepService.readByTestTestCase(test, testCase);
@@ -632,7 +625,6 @@ public class ReadTestCase extends AbstractCrudTestCase {
         return result;
     }
 
-
     private JSONObject convertToJSONObject(TestCaseDep testCaseDep) throws JSONException {
         return new JSONObject()
                 .put("id", testCaseDep.getId())
@@ -659,7 +651,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(String system, String test, HttpServletRequest request, String columnName) throws JSONException {
+    private AnswerItem findDistinctValuesOfColumn(List<String> system, String test, HttpServletRequest request, String columnName) throws JSONException {
         AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 

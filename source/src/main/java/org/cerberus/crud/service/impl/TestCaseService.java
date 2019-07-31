@@ -33,6 +33,8 @@ import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.crud.entity.TestCaseDep;
+import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
@@ -43,6 +45,8 @@ import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseCountryService;
+import org.cerberus.crud.service.ITestCaseDepService;
+import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.crud.service.ITestCaseStepActionService;
@@ -97,6 +101,10 @@ public class TestCaseService implements ITestCaseService {
     private IParameterService parameterService;
     @Autowired
     private IExecutionCheckService executionCheckService;
+    @Autowired
+    private ITestCaseDepService testCaseDepService;
+    @Autowired
+    private ITestCaseLabelService testCaseLabelService;
 
     @Override
     public TestCase findTestCaseByKey(String test, String testCase) throws CerberusException {
@@ -153,6 +161,13 @@ public class TestCaseService implements ITestCaseService {
                 tcsToAdd.add(step);
             }
             newTcase.setTestCaseStep(tcsToAdd);
+
+            List<TestCaseDep> testCaseDependendies = testCaseDepService.readByTestAndTestCase(initialTest, initialTc);
+            newTcase.setTestCaseDep(testCaseDependendies);
+
+            List<TestCaseLabel> testCaseLabel = testCaseLabelService.readByTestTestCase(initialTest, initialTc, null).getDataList();
+            newTcase.setTestCaseLabel(testCaseLabel);
+            
         }
         return newTcase;
     }
@@ -390,7 +405,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList readByTestByCriteria(List<String> system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch) {
         return testCaseDao.readByTestByCriteria(system, test, start, amount, sortInformation, searchTerm, individualSearch);
     }
 
@@ -416,7 +431,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return testCaseDao.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
     }
 
@@ -500,6 +515,68 @@ public class TestCaseService implements ITestCaseService {
     public boolean hasPermissionsDelete(TestCase testCase, HttpServletRequest request) {
         // Access right calculation.
         return request.isUserInRole("TestAdmin");
+    }
+
+    @Override
+    public void importWithDependency(TestCase testCase) throws CerberusException {
+
+        //TODO ------------------------
+        //Check Cerberus version compatibility. If not stop
+        //-------------------------------
+        
+        //insert testcase
+        Answer testCaseImported = this.create(testCase);
+        if (!testCaseImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+            MessageGeneral msg = new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR);
+            msg.setDescription(testCaseImported.getResultMessage().getDescription());
+            throw new CerberusException(msg);
+        }
+        
+        //for tcstep, insert steps
+        for (TestCaseStep tcs : testCase.getTestCaseStep()) {
+            Answer testCaseStepImported = testCaseStepService.create(tcs);
+            if (!testCaseStepImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                throw new CerberusException(new MessageGeneral(testCaseStepImported.getResultMessage().getMessage()));
+            }
+            for (TestCaseStepAction tcsa : tcs.getTestCaseStepAction()) {
+                Answer testCaseStepActionImported = testCaseStepActionService.create(tcsa);
+                if (!testCaseStepActionImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                    throw new CerberusException(new MessageGeneral(testCaseStepActionImported.getResultMessage().getMessage()));
+                }
+                for (TestCaseStepActionControl tcsac : tcsa.getTestCaseStepActionControl()) {
+                    Answer testCaseStepActionControlImported = testCaseStepActionControlService.create(tcsac);
+                    if (!testCaseStepActionControlImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                        throw new CerberusException(new MessageGeneral(testCaseStepActionControlImported.getResultMessage().getMessage()));
+                    }
+                }
+            }
+        }
+        
+        //insert tccountry, insert countries
+        for (TestCaseCountry tcc : testCase.getTestCaseCountry()) {
+            Answer testCaseCountryImported = testCaseCountryService.create(tcc);
+            if (!testCaseCountryImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                throw new CerberusException(new MessageGeneral(testCaseCountryImported.getResultMessage().getMessage()));
+            }
+
+            for (TestCaseCountryProperties tccp : tcc.getTestCaseCountryProperty()) {
+                Answer testCaseCountryPropertiesImported = testCaseCountryPropertiesService.create(tccp);
+                if (!testCaseCountryPropertiesImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                    throw new CerberusException(new MessageGeneral(testCaseCountryPropertiesImported.getResultMessage().getMessage()));
+                }
+            }
+        }
+
+        //insert testcasedependencies
+        for (TestCaseDep tcd : testCase.getTestCaseDep()) {
+            testCaseDepService.create(tcd);
+        }
+
+        //insert testcaselabel
+        for (TestCaseLabel tcl : testCase.getTestCaseLabel()) {
+            testCaseLabelService.create(tcl);
+        }
+
     }
 
 }

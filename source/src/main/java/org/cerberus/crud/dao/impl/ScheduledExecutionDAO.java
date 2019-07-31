@@ -37,6 +37,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -59,7 +60,8 @@ public class ScheduledExecutionDAO implements IScheduledExecutionDAO {
     private static final Logger LOG = LogManager.getLogger(ScheduledExecutionDAO.class);
 
     @Override
-    public Answer create(ScheduledExecution object) {
+    public AnswerItem<Integer> create(ScheduledExecution object) {
+        AnswerItem<Integer> ans = new AnswerItem<>();
         LOG.debug("working to insert : " + object.getScheduleName() + " scheduledexecution in database");
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
@@ -87,9 +89,11 @@ public class ScheduledExecutionDAO implements IScheduledExecutionDAO {
 
                 preStat.executeUpdate();
                 ResultSet resultSet = preStat.getGeneratedKeys();
+
                 try {
                     if (resultSet.first()) {
-                        LOG.debug(resultSet.getInt(1));
+                        LOG.debug("ID of job triggered " + resultSet.getInt(1));
+                        ans.setItem(resultSet.getInt(1));
                     }
                 } catch (Exception e) {
                     LOG.debug("Exception catch :", e);
@@ -128,7 +132,8 @@ public class ScheduledExecutionDAO implements IScheduledExecutionDAO {
                 LOG.error("Unable to close connection : " + exception.toString());
             }
         }
-        return new Answer(msg);
+        ans.setResultMessage(msg);
+        return ans;
     }
 
     @Override
@@ -145,19 +150,18 @@ public class ScheduledExecutionDAO implements IScheduledExecutionDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-
                 int i = 1;
                 preStat.setString(i++, scheduledExecutionObject.getStatus());
-                preStat.setString(i++, scheduledExecutionObject.getComment());
-                preStat.setString(i++, scheduledExecutionObject.getID().toString());
-
-                LOG.debug("6");
-
+                preStat.setString(i++, scheduledExecutionObject.getComment().replace("'", ""));
+                preStat.setInt(i++, scheduledExecutionObject.getID());
+                
+                LOG.debug("status : " + scheduledExecutionObject.getStatus());
+                LOG.debug("comment : " + scheduledExecutionObject.getComment());
+                LOG.debug("id : " + scheduledExecutionObject.getID());
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
-                LOG.debug("7");
-
+                LOG.debug(msg.getDescription());
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);

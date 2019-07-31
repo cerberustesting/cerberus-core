@@ -316,16 +316,10 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             tag = mCampaign.getTag();
         } else if (tag == null || tag.isEmpty()) {
             if (request.getRemoteUser() != null) {
-                tag = request.getRemoteUser();
-            }
-            if (tag.length() > 0) {
-                tag += ".";
+                tag = request.getRemoteUser() + ".";
             }
             if (campaign != null) {
-                tag += campaign;
-            }
-            if (tag.length() > 0) {
-                tag += ".";
+                tag += campaign + ".";
             }
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             String mytimestamp = sdf.format(timestamp);
@@ -336,7 +330,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             errorMessage.append("Error - Parameter ").append(PARAMETER_TAG).append(" is too big. Maximum size if 255. Current size is : ").append(tag.length()).append("\n");
             error = true;
         }
-        
+
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String mytimestamp = sdf.format(timestamp);
         String myuser = request.getRemoteUser();
@@ -418,6 +412,9 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         int nbenvnotexist = 0;
         int nbrobotmissing = 0;
         boolean tagAlreadyAdded = false;
+
+        Map<String, String> myHostMap = new HashMap<>();
+        myHostMap = getManualHostMap(manualHost);
 
         int nbrobot = 0;
         Map<String, Robot> robotsMap = new HashMap<>();
@@ -504,7 +501,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                             }
 
                                             // manage manual host for this execution
-                                            String manualHostforThisApplicatin = getManualHostForThisApplication(manualHost, app.getApplication());
+                                            String manualHostforThisApplication = getManualHostForThisApplication(myHostMap, app.getApplication());
 
                                             if ((app != null)
                                                     && (app.getType() != null)
@@ -532,7 +529,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                                         test, testCase, country.getCountry(), environment,
                                                                         robot.getRobot(), robotDecli, robotIP, robotPort, browser,
                                                                         browserVersion, platform, screenSize, manualURL,
-                                                                        manualHostforThisApplicatin, manualContextRoot,
+                                                                        manualHostforThisApplication, manualContextRoot,
                                                                         manualLoginRelativeURL, manualEnvData, tag,
                                                                         screenshot, verbose, timeout, pageSource,
                                                                         seleniumLog, 0, retries, manualExecution, priority,
@@ -554,7 +551,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                     LOG.debug("Insert Queue Entry.");
                                                     toInserts.add(inQueueFactoryService.create(app.getSystem(), test,
                                                             testCase, country.getCountry(), environment, "", "", "", "",
-                                                            "", "", "", "", manualURL, manualHostforThisApplicatin, manualContextRoot,
+                                                            "", "", "", "", manualURL, manualHostforThisApplication, manualContextRoot,
                                                             manualLoginRelativeURL, manualEnvData, tag, screenshot,
                                                             verbose, timeout, pageSource, seleniumLog, 0, retries,
                                                             manualExecution, priority, user, null, null, null));
@@ -638,9 +635,6 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             // Message that everything went fine.
             msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
 
-        } else {
-            // In case of errors, we display the help message.
-//            errorMessage.append(helpMessage);
         }
 
         // Init Answer with potencial error from Parsing parameter.
@@ -652,7 +646,10 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     JSONObject jsonResponse = new JSONObject();
                     jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
                     jsonResponse.put("message", errorMessage.toString());
-                    jsonResponse.put("helpMessage", helpMessage);
+                    if (error) {
+                        // Only display help message if error.
+                        jsonResponse.put("helpMessage", helpMessage);
+                    }
                     jsonResponse.put("tag", tag);
                     jsonResponse.put("nbExe", nbExe);
                     jsonResponse.put("nbErrorTCNotActive", nbtestcasenotactive);
@@ -682,36 +679,75 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 response.getWriter().print(errorMessage.toString());
         }
 
-//        } catch (Exception e) {
-//            LOG.error(e);
-//            out.println(helpMessage);
-//            out.println(e.toString());
-//        }
     }
 
     /**
-     * manual host can be just 'manualHost1' (case 1) or
-     * `applicationname1:manualhost1;applicationname2:manualhost2;...` (cases 2)
-     *
      * @param manualHost
      * @param application
      * @return
      */
-    private String getManualHostForThisApplication(String manualHost, String application) {
-        if (!StringUtil.isNullOrEmpty(manualHost) && !manualHost.contains(":")) {
-            return manualHost; // if no :, just return manual host (case 1)
+    private String getManualHostForThisApplication(Map<String, String> manualHost, String application) {
+
+        if (manualHost.containsKey("")) {
+            return manualHost.get("");
         }
-        // (case 2)
-        if (!StringUtil.isNullOrEmpty(manualHost)) {
-            String[] manualHostByApp = manualHost.split(";");
-            for (String appManualHost : manualHostByApp) {
-                String[] appAndHost = appManualHost.split(":");
-                if (appAndHost.length >= 2 && appAndHost[0].equals(application)) {
-                    return appAndHost[1];
-                }
-            }
+        if (manualHost.containsKey(application)) {
+            return manualHost.get(application);
         }
         return "";
+    }
+
+    /**
+     * Convert manualhost parameter to MAP. manual host can be just
+     * 'manualHost1' (case 1) or
+     * `applicationname1:manualhost1;applicationname2:manualhost2;...` (cases 2)
+     * or a json string in format : { "applicationname1" : "manualhost1",
+     * "applicationname2" : "manualhost2" } (case 3)
+     *
+     * @param manualHost
+     * @return a Map of application : url
+     */
+    private Map<String, String> getManualHostMap(String manualHost) {
+        Map<String, String> myHostMap = new HashMap<>();
+        if (StringUtil.isNullOrEmpty(manualHost)) {
+            LOG.debug("Converting from empty.");
+            myHostMap.put("", "");
+            return myHostMap;
+        }
+        try {
+            JSONObject myJSONObj = new JSONObject(manualHost);
+            Iterator<String> nameItr = myJSONObj.keys();
+            LOG.debug("Converting from JSON.");
+            while (nameItr.hasNext()) {
+                String name = nameItr.next();
+                myHostMap.put(name, myJSONObj.getString(name));
+            }
+            return myHostMap;
+        } catch (JSONException ex) {
+            // parameter could not be converted to JSON Array so we try with the : and ; separators.
+            String newManualHost = "";
+            // Remove the http:// and https:// in order to avoid conflict with : split that will be done
+            if (!StringUtil.isNullOrEmpty(manualHost)) {
+                newManualHost = manualHost.replace("http://", "|ZZZHTTPZZZ|");
+                newManualHost = newManualHost.replace("https://", "|ZZZHTTPSZZZ|");
+            }
+            if (!StringUtil.isNullOrEmpty(manualHost) && !newManualHost.contains(":")) {
+                LOG.debug("Converting from string.");
+                myHostMap.put("", manualHost);
+                return myHostMap; // if no :, just return manual host (case 1)
+            }
+            // (case 2)
+            if (!StringUtil.isNullOrEmpty(manualHost)) {
+                LOG.debug("Converting from separator.");
+                String[] manualHostByApp = newManualHost.split(";");
+                for (String appManualHost : manualHostByApp) {
+                    String[] appAndHost = appManualHost.split(":");
+                    myHostMap.put(appAndHost[0], appAndHost[1].replace("|ZZZHTTPZZZ|", "http://").replace("|ZZZHTTPSZZZ|", "https://"));
+                }
+                return myHostMap;
+            }
+        }
+        return myHostMap;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -80,7 +80,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
         $("#addStepModal [name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
 
 
-        fillTestAndTestCaseSelect(".testTestCase #test", "#testCaseSelect", test, testcase)
+        fillTestAndTestCaseSelect(".testTestCase #test", "#testCaseSelect", test, testcase, false)
 
         $("#testCaseSelect").bind("change", function (event) {
             window.location.href = "./TestCaseScript.jsp?test=" + test + "&testcase=" + $(this).val();
@@ -121,7 +121,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                 success: function (data) {
 
                     // manage error
-                    if(data.messageType != undefined && data.messageType === "KO") {
+                    if(data.messageType !== undefined && data.messageType === "KO") {
                         showUnexpectedError(null, "ERROR", data.message);
                         return;
                     }
@@ -414,7 +414,6 @@ function displayPageLabel(doc) {
     $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
     $("[name='groupField']").html(doc.getDocOnline("invariant", "GROUP"));
     $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
-    $("[name='countryList']").html(doc.getDocOnline("testcase", "countryList"));
     $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
     $("[name='activeField']").html(doc.getDocOnline("testcase", "TcActive"));
@@ -3058,7 +3057,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "Unknown", "object": null, "property": null},
             {"type": "dragAndDrop", "object": "Chemin de l'élement", "property": "destination de l'élément"},
             {"type": "click", "object": "Chemin vers l'élement à cliquer", "property": null},
-            {"type": "longPress", "object": "Chemin vers l'élement à cliquer", "property": "Valeur (ms) : 8000 par défaut"},
+            {"type": "longPress", "object": "Chemin vers l'élement à cliquer", "property": "[opt] Valeur (ms) : 8000 par défaut"},
             {"type": "mouseLeftButtonPress", "object": "Chemin vers l'élement à cibler", "property": null},
             {"type": "mouseLeftButtonRelease", "object": "Chemin vers l'élement", "property": null},
             {"type": "doubleClick", "object": "Chemin vers l'élement à double-cliquer", "property": null},
@@ -3098,7 +3097,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "Unknown", "object": null, "property": null},
             {"type": "dragAndDrop", "object": "Element path", "property": "Destination Element Path"},
             {"type": "click", "object": "Element path", "property": null},
-            {"type": "longPress", "object": "Element path", "property": "Duration (ms) : 8000 by default"},
+            {"type": "longPress", "object": "Element path", "property": "[opt] Duration (ms) : 8000 by default"},
             {"type": "mouseLeftButtonPress", "object": "Element path", "property": null},
             {"type": "mouseLeftButtonRelease", "object": "Element path", "property": null},
             {"type": "doubleClick", "object": "Element path", "property": null},
@@ -3167,7 +3166,8 @@ function setPlaceholderCondition(conditionElement) {
     var placeHoldersList = {
         "fr": [
             {"type": "always", "object": null, "property": null},
-            {"type": "ifPropertyExist", "object": "Property (ex : data-cerberus=fieldTest)", "property": null},
+            {"type": "ifPropertyExist", "object": "Propriété (ex : PROP1)", "property": null},
+            {"type": "ifPropertyNotExist", "object": "Propriété (ex : PROP1)", "property": null},
             {"type": "ifElementPresent", "object": "Element", "property": null},
             {"type": "ifElementNotPresent", "object": "Element (ex : data-cerberus=fieldTest)", "property": null},
             {"type": "ifTextInElement", "object": "Element", "property": "Texte"},
@@ -3182,11 +3182,13 @@ function setPlaceholderCondition(conditionElement) {
             {"type": "ifStringDifferent", "object": "String1", "property": "String2"},
             {"type": "ifStringGreater", "object": "String1 (ex : ZZZ)", "property": "String2 (ex : AAA)"},
             {"type": "ifStringMinor", "object": "String2 (ex : AAA)", "property": "String2 (ex : ZZZ)"},
-            {"type": "ifStringContains", "object": "String1 (ex : ot)", "property": "String2 (ex : toto)"},
+            {"type": "ifStringContains", "object": "String1 (ex : toto)", "property": "String2 (ex : ot)"},
+            {"type": "ifStringNotContains", "object": "String1 (ex : toto)", "property": "String2 (ex : zot)"},
             {"type": "Never", "object": null, "property": null}            
         ], "en": [
             {"type": "always", "object": null, "property": null},
-            {"type": "ifPropertyExist", "object": "Property", "property": null},
+            {"type": "ifPropertyExist", "object": "Property name  (ex : PROP1)", "property": null},
+            {"type": "ifPropertyNotExist", "object": "Property name  (ex : PROP1)", "property": null},
             {"type": "ifElementPresent", "object": "Element (ex : data-cerberus=fieldTest)", "property": null},
             {"type": "ifElementNotPresent", "object": "Element (ex : data-cerberus=fieldTest)", "property": null},
             {"type": "ifTextInElement", "object": "Element", "property": "Text"},
@@ -3201,7 +3203,8 @@ function setPlaceholderCondition(conditionElement) {
             {"type": "ifStringDifferent", "object": "String1", "property": "String2"},
             {"type": "ifStringGreater", "object": "String1 (ex : ZZZ)", "property": "String2 (ex : AAA)"},
             {"type": "ifStringMinor", "object": "String1 (ex : AAA)", "property": "String (ex : ZZZ)"},
-            {"type": "ifStringContains", "object": "String1 (ex : ot)", "property": "String2 (ex : toto)"},
+            {"type": "ifStringContains", "object": "String1 (ex : toto)", "property": "String2 (ex : ot)"},
+            {"type": "ifStringNotContains", "object": "String1 (ex : toto)", "property": "String2 (ex : zot)"},
             {"type": "never", "object": null, "property": null}       
         ]
     };
@@ -3293,8 +3296,14 @@ function setPlaceholderControl(controlElement) {
             },
             {
                 "type": "verifyStringContains",
-                "controlValue": "String2 (ex : toto)",
-                "controlProp": "String1 (ex : ot)",
+                "controlValue": "String2 (ex : ot)",
+                "controlProp": "String1 (ex : toto)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyStringNotContains",
+                "controlValue": "String2 (ex : zot)",
+                "controlProp": "String1 (ex : toto)",
                 "fatal": ""
             },
             {"type": "verifyNumericEquals", "controlValue": "Integer2", "controlProp": "Integer1", "fatal": ""},
@@ -3406,8 +3415,14 @@ function setPlaceholderControl(controlElement) {
             },
             {
                 "type": "verifyStringContains",
-                "controlValue": "String2 (ex : toto)",
-                "controlProp": "String1 (ex : ot)",
+                "controlValue": "String2 (ex : ot)",
+                "controlProp": "String1 (ex : toto)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyStringNotContains",
+                "controlValue": "String2 (ex : zot)",
+                "controlProp": "String1 (ex : toto)",
                 "fatal": ""
             },
             {"type": "verifyNumericEquals", "controlValue": "Integer2", "controlProp": "Integer1", "fatal": ""},

@@ -143,10 +143,11 @@ public interface ITestCaseExecutionService {
      * @param searchTerm
      * @param individualSearch
      * @param individualLike
+     * @param system
      * @return
      * @throws CerberusException
      */
-    List<TestCaseExecution>  readByCriteria( int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException;
+    AnswerList<TestCaseExecution>  readByCriteria( int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException;
 
     /**
      *
@@ -223,7 +224,16 @@ public interface ITestCaseExecutionService {
      */
     void convert(Answer answer) throws CerberusException;
 
-    public AnswerList readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    /**
+     *
+     * @param system
+     * @param test
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return
+     */
+    public AnswerList readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      *

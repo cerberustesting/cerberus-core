@@ -41,7 +41,7 @@ function openModalTestCase(test, testcase, mode, tab) {
     if (!isEmpty(tab)) {
         $('.nav-tabs a[href="#' + tab + '"]').tab('show');
     }
-    
+
     if (mode === "EDIT") {
         editTestCaseClick(test, testcase);
     } else if (mode === "DUPLICATE") {
@@ -142,22 +142,22 @@ function initModalTestCase() {
     $('#editTestCaseModal').find("#function").autocomplete({
         source: availableFunctions
     });
-    $("#select_all").change(function(){  //"select all" change
+    $("#select_all").change(function () {  //"select all" change
         $("#countryList input").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
     });
 
-    $("#addTestCaseDependencyButton").click(function() {
+    $("#addTestCaseDependencyButton").click(function () {
 
         var test = $("#selectTest").val();
         var testCase = $("#selectTestCase").val();
-        var testCaseTxt = $( "#selectTestCase option:selected" ).text();
+        var testCaseTxt = $("#selectTestCase option:selected").text();
 
         var indexTest = $("#selectTest").prop('selectedIndex')
         var indexTestCase = $("#selectTestCase").prop('selectedIndex')
 
-        if($('#' + getHtmlIdForTestCase(test, testCase)).length > 0) {
+        if ($('#' + getHtmlIdForTestCase(test, testCase)).length > 0) {
             showMessage(new Message("KO", 'Test case is already added'), $('#editTestCaseModal'));
-        } else if(indexTest === 0 || indexTestCase === 0) {
+        } else if (indexTest === 0 || indexTestCase === 0) {
             showMessage(new Message("KO", 'Select a test case'), $('#editTestCaseModal'));
         } else {
             addHtmlForDependencyLine(0, test, testCase, testCaseTxt, true, "")
@@ -167,28 +167,29 @@ function initModalTestCase() {
 
 function addHtmlForDependencyLine(id, test, testCase, testCaseTxt, activate, description) {
     let checked = "";
-    if(activate)  checked = "checked";
+    if (activate)
+        checked = "checked";
     $("#depenencyTable").append(
-        '<tr role="row" class="odd" id="' + getHtmlIdForTestCase(test, testCase) + '"  test="' + test + '" testcase="' + testCase + '" testcaseid="' + id + '">' +
+            '<tr role="row" class="odd" id="' + getHtmlIdForTestCase(test, testCase) + '"  test="' + test + '" testcase="' + testCase + '" testcaseid="' + id + '">' +
             '<td class="sorting_1" style="width: 100px;">' +
-                '<div class="center btn-group">' +
-                    '<button id="removeTestparameter" onclick="removeTestCaseDependency(\'' + test + '\',\'' + testCase + '\');" class="removeTestparameter btn btn-default btn-xs margin-right5" name="removeTestparameter" title="Remove Test Case Dependency" type="button">' +
-                        '<span class="glyphicon glyphicon-trash"></span>' +
-                    '</button>' +
-                '</div>' +
+            '<div class="center btn-group">' +
+            '<button id="removeTestparameter" onclick="removeTestCaseDependency(\'' + test + '\',\'' + testCase + '\');" class="removeTestparameter btn btn-default btn-xs margin-right5" name="removeTestparameter" title="Remove Test Case Dependency" type="button">' +
+            '<span class="glyphicon glyphicon-trash"></span>' +
+            '</button>' +
+            '</div>' +
             '</td>' +
             '<td>' + test + ' - ' + testCaseTxt + '</td>' +
-            '<td style="width: 100px;">  <input type="checkbox"  name="activate" '+checked+'/></td>' +
-            '<td>  <input class="form-control input-sm" name="description" value="'+description+'"/></td>' +
-        '</tr>'
-    );
+            '<td style="width: 100px;">  <input type="checkbox"  name="activate" ' + checked + '/></td>' +
+            '<td>  <input class="form-control input-sm" name="description" value="' + description + '"/></td>' +
+            '</tr>'
+            );
 }
 
 function getHtmlIdForTestCase(test, testCase) {
-    return (test +'-' + testCase).replace(" ","_").replace(".","_")
+    return (test + '-' + testCase).replace(/ /g, '_').replace(/./g, '_')
 }
 
-function removeTestCaseDependency(test,testCase) {
+function removeTestCaseDependency(test, testCase) {
     $('#' + getHtmlIdForTestCase(test, testCase)).remove();
 }
 
@@ -389,38 +390,38 @@ function confirmTestCaseModalHandler(mode) {
 
     var nameElement = formEdit.find("#application");
     var nameElementEmpty = nameElement.prop("value") === '';
-    
+
     var testElement = formEdit.find("#test");
     var testElementInvalid = testElement.prop("value").search("&");
     var testElementEmpty = testElement.prop("value") === '';
-    
+
     var testIdElement = formEdit.find("#testCase");
     var testIdElementInvalid = testIdElement.prop("value").search("&");
     var testIdElementEmpty = testIdElement.prop("value") === '';
-    	
+
     if (nameElementEmpty) {
         var localMessage = new Message("danger", "Please specify the name of the application!");
         nameElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
-    } else if(testElementInvalid != -1) { 
-    	var localMessage = new Message("danger", "The test name cannot contains the symbol : &");
+    } else if (testElementInvalid != -1) {
+        var localMessage = new Message("danger", "The test name cannot contains the symbol : &");
         // only the Test label will be put in red
-    	testElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#editTestCaseModal'));
-    }else if(testIdElementInvalid != -1){
-        var localMessage = new Message("danger", "The testcase id name cannot contains the symbol : &");
-    	// only the TestId label will be put in red
-    	testIdElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#editTestCaseModal'));
-    }else if(testElementEmpty){
-    	var localMessage = new Message("danger", "Please specify the name of the test!");
         testElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
-    }else if(testIdElementEmpty){
-    	var localMessage = new Message("danger", "Please specify the name of the Testcase Id!");
+    } else if (testIdElementInvalid != -1) {
+        var localMessage = new Message("danger", "The testcase id name cannot contains the symbol : &");
+        // only the TestId label will be put in red
         testIdElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
-    }else{
+    } else if (testElementEmpty) {
+        var localMessage = new Message("danger", "Please specify the name of the test!");
+        testElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else if (testIdElementEmpty) {
+        var localMessage = new Message("danger", "Please specify the name of the Testcase Id!");
+        testIdElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else {
         nameElement.parents("div.form-group").removeClass("has-error");
     }
 
@@ -446,19 +447,18 @@ function confirmTestCaseModalHandler(mode) {
     var countryList = $("#countryList input");
     var table_country = [];
     for (var i = 0; i < countryList.length; i++) {
-            if (countryList[i].checked === true) {
-                var countryValue = {
-                    country: $(countryList[i]).attr("name"),
-                    toDelete: false
-                }
+        if (countryList[i].checked === true) {
+            var countryValue = {
+                country: $(countryList[i]).attr("name"),
+                toDelete: false
             }
-            else {
-                countryValue = {
-                        country: $(countryList[i]).attr("name"),
-                        toDelete: true
-                }
+        } else {
+            countryValue = {
+                country: $(countryList[i]).attr("name"),
+                toDelete: true
             }
-            table_country.push(countryValue)
+        }
+        table_country.push(countryValue)
     }
 
     // Getting Data from Label List
@@ -475,11 +475,11 @@ function confirmTestCaseModalHandler(mode) {
     // Getting Dependency data
     let testcaseDependency = []
     $("#depenencyTable").find("tr")
-        .each( (t,  v) =>
-            testcaseDependency.push(
-                { id: $(v).attr("testcaseid"), test: $(v).attr("test"), testcase: $(v).attr("testcase"), description: $(v).find("[name='description']").val(), active: $(v).find("[name='activate']").is(":checked") }
+            .each((t, v) =>
+                testcaseDependency.push(
+                        {id: $(v).attr("testcaseid"), test: $(v).attr("test"), testcase: $(v).attr("testcase"), description: $(v).find("[name='description']").val(), active: $(v).find("[name='activate']").is(":checked")}
+                )
             )
-        )
 
 
     // Get the header data from the form.
@@ -580,7 +580,7 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
     var formEdit = $('#' + modalId);
 
 
-    var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase) + "&system="+  encodeURIComponent(getSys()) );
+    var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
     $.when(jqxhr).then(function (data) {
 
         var testCase = data.contentTable;
@@ -624,22 +624,28 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
         formEdit.modal('show');
     });
 
-    fillTestAndTestCaseSelect("#selectTest", "#selectTestCase")
+    fillTestAndTestCaseSelect("#selectTest", "#selectTestCase", undefined, undefined, true)
     $("#selectTest").change(function () {
-        fillTestCaseSelect("#selectTestCase", $("#selectTest").val());
-    } )
+        fillTestCaseSelect("#selectTestCase", $("#selectTest").val(), undefined, true);
+    })
 
 
 }
 
 
 
-function fillTestCaseSelect(selectorTestCaseSelect, test, testcase) {
+function fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases) {
     var doc = new Doc()
     var system = getSys()
-    if (test !== null) {
+    var url1 = "";
+    if (allTestCases) {
+        url1 = getUser().systemQuery;
+    } else {
+        url1 = getUser().defaultSystemsQuery;
+    }
+    if (test !== null && test !== undefined) {
         $.ajax({
-            url: "ReadTestCase?test=" + encodeURIComponent(test)+"&system="+encodeURIComponent(system),
+            url: "ReadTestCase?test=" + encodeURIComponent(test) + url1,
             async: true,
             success: function (data) {
                 data.contentTable.sort(function (a, b) {
@@ -675,11 +681,11 @@ function fillTestCaseSelect(selectorTestCaseSelect, test, testcase) {
  * @param test   auto select this test
  * @param testcase  auto select this testcase
  */
-function fillTestAndTestCaseSelect(selectorTestSelect, selectorTestCaseSelect, test, testcase) {
+function fillTestAndTestCaseSelect(selectorTestSelect, selectorTestCaseSelect, test, testcase, allTestCases) {
     var doc = new Doc()
     var system = getSys()
     $.ajax({
-        url: "ReadTest?system="+encodeURIComponent(system),
+        url: "ReadTest",
         async: true,
         success: function (data) {
             data.contentTable.sort(function (a, b) {
@@ -707,7 +713,7 @@ function fillTestAndTestCaseSelect(selectorTestSelect, selectorTestCaseSelect, t
         }
     });
 
-    fillTestCaseSelect(selectorTestCaseSelect, test, testcase)
+    fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases)
 }
 
 
@@ -957,7 +963,7 @@ function appendBuildRevListOnTestCase(system, editData) {
 function appendTestCaseDepList(testCase) {
     $("#depenencyTable").find("tr").remove() // clean the table
 
-    testCase.dependencyList.forEach( (dep) =>
+    testCase.dependencyList.forEach((dep) =>
         addHtmlForDependencyLine(dep.id, dep.depTest, dep.depTestCase, dep.depTestCase + " - " + dep.depDescription, dep.active, dep.description)
     )
 }
@@ -977,13 +983,13 @@ function appendTestCaseCountryList(testCase, isReadOnly) {
                                 <input class="countrycb" type="checkbox" ' + ' name="' + country + '"/>' + country + '\
                                 </label>');
         }
-        $("[class='countrycb']").click(function(){
+        $("[class='countrycb']").click(function () {
             //uncheck "select all", if one of the listed checkbox item is unchecked
-            if(false == $(this).prop("checked")){ //if this item is unchecked
+            if (false == $(this).prop("checked")) { //if this item is unchecked
                 $("#select_all").prop('checked', false); //change "select all" checked status to false
             }
             //check "select all" if all checkbox items are checked
-            if ($("[class='countrycb']:checked").length == $("[class='countrycb']").length ){
+            if ($("[class='countrycb']:checked").length == $("[class='countrycb']").length) {
                 $("#select_all").prop('checked', true);
             }
         });
@@ -991,17 +997,17 @@ function appendTestCaseCountryList(testCase, isReadOnly) {
         if (!(testCase === undefined)) {
             // Init the values from the object value.
             for (var myCountry in testCase.countryList) {
-                $("#countryList [name='"+ testCase.countryList[myCountry].country +"']").prop("checked","checked");
+                $("#countryList [name='" + testCase.countryList[myCountry].country + "']").prop("checked", "checked");
             }
         }
         if (testCase === undefined) {
-            $("#countryList input").attr('checked',true);
-            $("#select_all").attr('checked',true);
+            $("#countryList input").attr('checked', true);
+            $("#select_all").attr('checked', true);
         }
 
         if (isReadOnly) {
-            $("#countryList input").attr('disabled',true);
-            $("#select_all").attr('disabled',true);
+            $("#countryList input").attr('disabled', true);
+            $("#select_all").attr('disabled', true);
         }
     });
 }
@@ -1092,7 +1098,7 @@ function appendApplicationList(defautValue, mySystem) {
         targetSystem = getUser().defaultSystem;
     }
 
-    var jqxhr = $.getJSON("ReadApplication");
+    var jqxhr = $.getJSON("ReadApplication", "q=1" + getUser().systemQuery);
     $.when(jqxhr).then(function (data) {
         var applicationList = $("[name=application]");
 

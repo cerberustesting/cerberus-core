@@ -110,7 +110,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                 String value = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
                 String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
                 String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
-                String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
+                List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
                 long executionId = ParameterParserUtil.parseLongParam(request.getParameter("executionId"), 0);
                 boolean likeColumn = ParameterParserUtil.parseBooleanParam(request.getParameter("likeColumn"), false);
                 // Switch Parameters.
@@ -157,7 +157,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                 jsonResponse.put("message", answer.getResultMessage().getDescription());
 
                 response.getWriter().print(jsonResponse.toString());
-            } catch(CerberusException ce) {
+            } catch (CerberusException ce) {
                 AnswerItem answer = AnswerUtil.convertToAnswerItem(() -> {
                     throw ce;
                 });
@@ -448,29 +448,31 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
-        
+
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
                 }
             }
         }
-        
-        testCaseExecutionList = testCaseExecutionService.readByCriteria(startPosition, length, columnName.concat(" ").concat(sort), searchParameter, individualSearch, individualLike, system);
+
+        AnswerList resp = testCaseExecutionService.readByCriteria(startPosition, length, columnName.concat(" ").concat(sort), searchParameter, individualSearch, individualLike, system);
 
         JSONArray jsonArray = new JSONArray();
-        for (TestCaseExecution testCaseExecution : testCaseExecutionList) {
-            jsonArray.put(testCaseExecution.toJson(true).put("hasPermissions", userHasPermissions));
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (TestCaseExecution testCaseExecution : (List<TestCaseExecution>) resp.getDataList()) {
+                jsonArray.put(testCaseExecution.toJson(true).put("hasPermissions", userHasPermissions));
+            }
         }
 
         object.put("contentTable", jsonArray);
         object.put("hasPermissions", userHasPermissions);
-        object.put("iTotalRecords", testCaseExecutionList.size());
-        object.put("iTotalDisplayRecords", testCaseExecutionList.size());
+        object.put("iTotalRecords", resp.getTotalRows());
+        object.put("iTotalDisplayRecords", resp.getTotalRows());
 
         answer.setItem(object);
         answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK_GENERIC));
@@ -615,7 +617,7 @@ public class ReadTestCaseExecution extends HttpServlet {
      * @return
      * @throws JSONException
      */
-    private AnswerItem findValuesForColumnFilter(String system, String test, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+    private AnswerItem findValuesForColumnFilter(List<String> system, String test, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
         AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
         AnswerList values = new AnswerList<>();
@@ -664,18 +666,18 @@ public class ReadTestCaseExecution extends HttpServlet {
                     /**
                      *
                      */
-                    AnswerList<Invariant> invariants = invariantService.readByIdname(columnName.replace("exe.", ""));
-                    List<Invariant> invariantList = invariantService.convert(invariants);
+                    List<Invariant> invariantList = invariantService.readByIdName(columnName.replace("exe.", ""));
                     List<String> stringResult = new ArrayList<>();
                     for (Invariant inv : invariantList) {
                         stringResult.add(inv.getValue());
                     }
                     values.setDataList(stringResult);
                     values.setTotalRows(invariantList.size());
-                    values.setResultMessage(invariants.getResultMessage());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK_GENERIC);
+                    values.setResultMessage(msg);
 
                 } catch (CerberusException ex) {
-                    LOG.warn(ex);
+                    LOG.error(ex);
                 }
                 break;
             /**
@@ -684,7 +686,7 @@ public class ReadTestCaseExecution extends HttpServlet {
              */
             case "exe.build":
             case "exe.revision":
-            	individualSearch = new HashMap<>();
+                individualSearch = new HashMap<>();
                 individualSearch.put("level", new ArrayList<>(Arrays.asList(columnName.equals("exe.build") ? "1" : "2")));
                 values = buildRevisionInvariantService.readDistinctValuesByCriteria(system, "", individualSearch, "versionName");
                 break;
@@ -707,12 +709,12 @@ public class ReadTestCaseExecution extends HttpServlet {
                 individualSearch = new HashMap<>();
                 for (int a = 0; a < columnToSort.length; a++) {
                     if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-                    	List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                    	if(individualLike.contains(columnToSort[a])) {
-                        	individualSearch.put(columnToSort[a]+":like", search);
-                        }else {
-                        	individualSearch.put(columnToSort[a], search);
-                        } 
+                        List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                        if (individualLike.contains(columnToSort[a])) {
+                            individualSearch.put(columnToSort[a] + ":like", search);
+                        } else {
+                            individualSearch.put(columnToSort[a], search);
+                        }
                     }
                 }
                 values = testCaseExecutionService.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);

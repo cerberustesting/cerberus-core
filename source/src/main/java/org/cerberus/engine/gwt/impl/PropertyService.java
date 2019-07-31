@@ -146,6 +146,11 @@ public class PropertyService implements IPropertyService {
         }
 
         /**
+         * We start to decode properties from available executiondata List.
+         */
+        stringToDecode = decodeStringWithAlreadyCalculatedProperties(stringToDecode, tCExecution);
+
+        /**
          * Look at all the potencial properties still contained in
          * StringToDecode (considering that properties are between %).
          */
@@ -186,7 +191,7 @@ public class PropertyService implements IPropertyService {
              * First create testCaseExecutionData object
              */
             now = new Date().getTime();
-            tcExeData = factoryTestCaseExecutionData.create(tCExecution.getId(), eachTccp.getProperty(), 1, eachTccp.getDescription(), null, eachTccp.getType(), eachTccp.getRank(), 
+            tcExeData = factoryTestCaseExecutionData.create(tCExecution.getId(), eachTccp.getProperty(), 1, eachTccp.getDescription(), null, eachTccp.getType(), eachTccp.getRank(),
                     eachTccp.getValue1(), eachTccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
                     eachTccp.getRetryNb(), eachTccp.getRetryPeriod(), eachTccp.getDatabase(), eachTccp.getValue1(), eachTccp.getValue2(), eachTccp.getLength(),
                     eachTccp.getLength(), eachTccp.getRowLimit(), eachTccp.getNature(), tCExecution.getApplicationObj().getSystem(), tCExecution.getEnvironment(), tCExecution.getCountry(), "", null, "N");
@@ -579,7 +584,7 @@ public class PropertyService implements IPropertyService {
                     if (data != null) {
                         useCache = true;
                     }
-                } catch(CerberusException e) {
+                } catch (CerberusException e) {
                     // do nothing, useCache will be false
                 }
             }
@@ -731,6 +736,10 @@ public class PropertyService implements IPropertyService {
                         case TestCaseCountryProperties.TYPE_GETELEMENTPOSITION:
                             testCaseExecutionData = this.property_getElementPosition(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                             break;
+                        case TestCaseCountryProperties.TYPE_GETFROMNETWORKTRAFFIC:
+                            testCaseExecutionData = this.property_getFromNetworkTraffic(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
+                            break;
+
                         // DEPRECATED Property types.
                         case TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB: // DEPRECATED
                             testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
@@ -865,7 +874,6 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-
     private TestCaseExecutionData property_getElementPosition(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceRecalculation) {
         // Check if script has been correctly defined
         String script = testCaseExecutionData.getValue1();
@@ -920,6 +928,40 @@ public class PropertyService implements IPropertyService {
             return testCaseExecutionData;
         }
         testCaseExecutionData = this.property_getFromSql(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceCalculation);
+        return testCaseExecutionData;
+    }
+
+    private TestCaseExecutionData property_getFromNetworkTraffic(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
+        if (tCExecution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
+
+            try {
+                //TODO : check if HAR is the same than the last one to avoid to download same har file several times
+                // String remoteHarMD5 = "http://" + tCExecution.getRobotExecutorObj().getHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHarMD5?uuid="+tCExecution.getRemoteProxyUUID();
+
+                //getHarFile
+                String url = "http://" + tCExecution.getRobotExecutorObj().getHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + tCExecution.getRemoteProxyUUID();
+                //tCExecution.addFileList(recorderService.recordHarLog(tCExecution, url));
+                testCaseExecutionData.setValue2(url);
+                testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, tCExecution, forceCalculation);
+
+            } catch (Exception ex) {
+                LOG.warn(ex);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_SQLLIB_NOTEXIT);
+
+                res.setDescription(res.getDescription().replace("%SQLLIB%", testCaseExecutionData.getValue1()));
+                testCaseExecutionData.setPropertyResultMessage(res);
+
+                testCaseExecutionData.setEnd(
+                        new Date().getTime());
+                return testCaseExecutionData;
+            }
+        } else {
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
+            res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getApplicationObj().getType()));
+            res.setDescription(res.getDescription().replace("%PROPTYPE%", testCaseExecutionData.getType()));
+
+        }
+
         return testCaseExecutionData;
     }
 
@@ -1026,11 +1068,11 @@ public class PropertyService implements IPropertyService {
         String script = testCaseExecutionData.getValue1();
         String valueFromJS;
         String message = "";
-        if(tCExecution.getManualExecution().equals("Y")) {
-        	MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_NOTPOSSIBLE);
-        	testCaseExecutionData.setPropertyResultMessage(mes);
-        }else {
-        	try {
+        if (tCExecution.getManualExecution().equals("Y")) {
+            MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_NOTPOSSIBLE);
+            testCaseExecutionData.setPropertyResultMessage(mes);
+        } else {
+            try {
                 valueFromJS = this.webdriverService.getValueFromJS(tCExecution.getSession(), script);
             } catch (Exception e) {
                 message = e.getMessage().split("\n")[0];
@@ -1048,7 +1090,7 @@ public class PropertyService implements IPropertyService {
                 res.setDescription(res.getDescription().replace("%EXCEPTION%", message));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
-        }     
+        }
         return testCaseExecutionData;
     }
 

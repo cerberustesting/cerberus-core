@@ -57,9 +57,10 @@ public interface IAppServiceService {
      * @param sort
      * @param searchParameter the string to search in the {@link AppService}
      * @param individualSearch the string to search for each column
+     * @param systems
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems);
 
     /**
      * Get the {@link AppService} of the given key
@@ -149,9 +150,10 @@ public interface IAppServiceService {
      * @return
      */
     String convertContentListToQueryString(List<AppServiceContent> serviceContent);
-    
+
     /**
      * this method will store local file into application server
+     *
      * @param service
      * @param file
      * @return

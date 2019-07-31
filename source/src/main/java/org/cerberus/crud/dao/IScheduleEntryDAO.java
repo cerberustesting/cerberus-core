@@ -20,8 +20,10 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import org.cerberus.crud.entity.ScheduleEntry;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 
 /**
@@ -30,10 +32,17 @@ import org.cerberus.util.answer.AnswerItem;
  */
 public interface IScheduleEntryDAO {
 
-    public AnswerItem<ScheduleEntry> readByKey(String name);
+    public AnswerItem<ScheduleEntry> readByKey(Integer id);
 
-    public boolean create(ScheduleEntry scheduler);
+    public AnswerItem<Integer> create(ScheduleEntry scheduler);
     
     public AnswerItem<List> readAllActive();
     
+    public Answer update(ScheduleEntry scheduleEntryObject);
+    
+    public Answer delete(ScheduleEntry object);
+    
+    public AnswerItem<List> readByName(String name);
+    
+    public Answer updateLastExecution(Integer schedulerId, Timestamp lastExecution);
 }

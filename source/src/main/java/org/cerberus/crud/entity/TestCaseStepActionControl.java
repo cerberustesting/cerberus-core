@@ -54,6 +54,7 @@ public class TestCaseStepActionControl {
     public static final String CONTROL_VERIFYSTRINGGREATER = "verifyStringGreater";
     public static final String CONTROL_VERIFYSTRINGMINOR = "verifyStringMinor";
     public static final String CONTROL_VERIFYSTRINGCONTAINS = "verifyStringContains";
+    public static final String CONTROL_VERIFYSTRINGNOTCONTAINS = "verifyStringNotContains";
     public static final String CONTROL_VERIFYNUMERICEQUALS = "verifyNumericEquals";
     public static final String CONTROL_VERIFYNUMERICDIFFERENT = "verifyNumericDifferent";
     public static final String CONTROL_VERIFYNUMERICGREATER = "verifyNumericGreater";

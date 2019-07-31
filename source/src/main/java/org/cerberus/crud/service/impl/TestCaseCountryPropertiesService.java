@@ -142,35 +142,35 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     @Override
     public List<TestCaseCountryProperties> findAllWithDependencies(String test, String testcase, String country, String system, String build, String Revision) throws CerberusException {
 
-
         // Heritage is done at property level.
         List<TestCaseCountryProperties> tccpList = new ArrayList<>();
         List<TestCase> tcList = new ArrayList<>();
         TestCase mainTC = testCaseService.findTestCaseByKey(test, testcase);
 
         /**
-         * We load here all the properties countries from all related
-         * testcases linked with test/testcase The order the load is done is
-         * important as it will define the priority of each property.
-         * properties coming from Pre Testing is the lower prio then, the
-         * property coming from the useStep and then, top priority is the
-         * property on the test + testcase.
+         * We load here all the properties countries from all related testcases
+         * linked with test/testcase The order the load is done is important as
+         * it will define the priority of each property. properties coming from
+         * Pre Testing is the lower prio then, the property coming from the
+         * useStep and then, top priority is the property on the test +
+         * testcase.
          */
-
         //find all properties of preTests
+        LOG.debug("Getting properties definition from PRE-TESTING.");
         tcList.addAll(testCaseService.getTestCaseForPrePostTesting(Test.TEST_PRETESTING, mainTC.getApplication(), country, system, build, Revision));
-        //find all properties of preTests
+        //find all properties of postTests
+        LOG.debug("Getting properties definition from POST-TESTING.");
         tcList.addAll(testCaseService.getTestCaseForPrePostTesting(Test.TEST_POSTTESTING, mainTC.getApplication(), country, system, build, Revision));
-        // find all properties for potentiel dependencies used step
-        List<TestCaseDep> dependencies = testCaseDepService.readByTestAndTestCase(mainTC.getTest(), mainTC.getTestCase());
         // find all properties of the used step
+        LOG.debug("Getting properties definition from Used Step.");
         tcList.addAll(testCaseService.findUseTestCaseList(test, testcase));
-        for (TestCaseDep tcd : dependencies) {
-            tcList.addAll(testCaseService.findUseTestCaseList(tcd.getDepTest(),tcd.getDepTestCase()));
-        }
+        // find all properties for potentiel dependencies used step
+//        List<TestCaseDep> dependencies = testCaseDepService.readByTestAndTestCase(mainTC.getTest(), mainTC.getTestCase());
+//        for (TestCaseDep tcd : dependencies) {
+//            tcList.addAll(testCaseService.findUseTestCaseList(tcd.getDepTest(), tcd.getDepTestCase()));
+//        }
         // add this TC
         tcList.add(mainTC);
-
 
         if (parameterService.getParameterBooleanByKey("cerberus_property_countrylevelheritage", "", false)) {
             List<TestCaseCountryProperties> tccpListPerCountry = new ArrayList<>();

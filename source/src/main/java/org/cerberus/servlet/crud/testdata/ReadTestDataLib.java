@@ -66,6 +66,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadTestDataLib extends HttpServlet {
 
     private ITestDataLibService testDataLibService;
+    private ITestCaseService tcService;
+
     private static final Logger LOG = LogManager.getLogger(ReadTestDataLib.class);
 
     @Override
@@ -140,7 +142,7 @@ public class ReadTestDataLib extends HttpServlet {
                     answer = getTestCasesUsingTestDataLib(testDataLibId, name, country, appContext, userHasPermissions);
                 } else {
                     //gets a lib by id
-                    answer = findTestDataLibByID(testDataLibId, appContext, userHasPermissions);
+                    answer = findTestDataLibByID(testDataLibId, appContext, userHasPermissions, request.getUserPrincipal().getName());
                 }
             } else if (request.getParameter("name") != null && request.getParameter("limit") != null && request.getParameter("like") != null) {
                 answer = findTestDataLibNameList(name, limit, like, appContext);
@@ -199,21 +201,23 @@ public class ReadTestDataLib extends HttpServlet {
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
 
+        List<String> systems = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
+
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         List<String> individualLike = new ArrayList<>(Arrays.asList(request.getParameter("sLike").split(",")));
 
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
                 }
             }
         }
 
-        AnswerList resp = testDataLibService.readByVariousByCriteria(null, null, null, null, null, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList resp = testDataLibService.readByVariousByCriteria(null, systems, null, null, null, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         boolean userHasPermissions = request.isUserInRole("TestDataManager");
@@ -246,19 +250,20 @@ public class ReadTestDataLib extends HttpServlet {
      * that matches the identifier
      * @throws JSONException
      */
-    private AnswerItem findTestDataLibByID(int testDatalib, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem findTestDataLibByID(int testDatalib, ApplicationContext appContext, boolean userHasPermissions, String userName) throws JSONException {
         AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
-        ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
+        testDataLibService = appContext.getBean(ITestDataLibService.class);
 
         //finds the testdatalib        
-        AnswerItem answer = testDataService.readByKey(testDatalib);
+        AnswerItem answer = testDataLibService.readByKey(testDatalib);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             TestDataLib lib = (TestDataLib) answer.getItem();
             JSONObject response = convertTestDataLibToJSONObject(lib, true);
+            userHasPermissions = userHasPermissions && testDataLibService.userHasPermission(lib, userName);
             object.put("testDataLib", response);
         }
 
@@ -285,8 +290,8 @@ public class ReadTestDataLib extends HttpServlet {
 
         JSONObject object = new JSONObject();
 
-        ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
-        AnswerList ansList = testDataService.readNameListByName(nameToSearch, limit, like);
+        testDataLibService = appContext.getBean(ITestDataLibService.class);
+        AnswerList ansList = testDataLibService.readNameListByName(nameToSearch, limit, like);
 
         JSONArray jsonArray = new JSONArray();
         if (ansList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -325,7 +330,7 @@ public class ReadTestDataLib extends HttpServlet {
         JSONObject object = new JSONObject();
         JSONArray objectArray = new JSONArray();
         AnswerItem ansItem = new AnswerItem<>();
-        ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
+        tcService = appContext.getBean(ITestCaseService.class);
 
         AnswerList ansList = tcService.findTestCasesThatUseTestDataLib(testDataLibId, name, country);
 
@@ -443,12 +448,12 @@ public class ReadTestDataLib extends HttpServlet {
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-            	List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-            	if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
-                } 
+                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
+                }
             }
         }
 

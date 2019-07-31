@@ -19,7 +19,6 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +69,9 @@ public class RobotExecutorService implements IRobotExecutorService {
     public RobotExecutor readBestByKey(String robot) throws CerberusException {
         List<RobotExecutor> lst = robotExecutorDAO.readBestByKey(robot);
 
-        if(lst.size() > 0) return lst.get(0);
+        if (lst.size() > 0) {
+            return lst.get(0);
+        }
 
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GUI_NO_ROBOT_EXECUTOR_AVAILABLE)
                 .resolveDescription("ROBOT", robot));

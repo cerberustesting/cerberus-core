@@ -68,6 +68,7 @@ public class TestCaseCountryProperties {
     public static final String TYPE_GETFROMGROOVY = "getFromGroovy";
     public static final String TYPE_GETFROMCOMMAND = "getFromCommand";
     public static final String TYPE_GETELEMENTPOSITION = "getElementPosition";
+    public static final String TYPE_GETFROMNETWORKTRAFFIC = "getFromNetworkTraffic";
 
     // DEPRECATED
     public static final String TYPE_EXECUTESQLFROMLIB = "executeSqlFromLib";

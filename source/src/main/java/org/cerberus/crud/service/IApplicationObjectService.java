@@ -90,7 +90,7 @@ public interface IApplicationObjectService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByApplicationByCriteria(String application, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList readByApplicationByCriteria(String application, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems);
 
     /**
      *

@@ -19,7 +19,9 @@
  */
 package org.cerberus.engine.gwt.impl;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import org.apache.logging.log4j.Logger;
@@ -60,6 +62,7 @@ import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.openqa.selenium.Platform;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -291,11 +294,11 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_DRAGANDDROP:
                     res = this.doActionDragAndDrop(tCExecution, value1, value2);
                     break;
-                case TestCaseStepAction.ACTION_LONG_CLICK:
-                    res = this.doActionLongClick(tCExecution, value1, value2);
+                case TestCaseStepAction.ACTION_LONGPRESS:
+                    res = this.doActionLongPress(tCExecution, value1, value2);
                     break;
-                case TestCaseStepAction.ACTION_CLEAR:
-                    res = this.doActionClear(tCExecution, value1);
+                case TestCaseStepAction.ACTION_CLEARFIELD:
+                    res = this.doActionClearField(tCExecution, value1);
                     break;
                 /**
                  * DEPRECATED ACTIONS FROM HERE.
@@ -355,8 +358,6 @@ public class ActionService implements IActionService {
         testCaseStepActionExecution.setEnd(new Date().getTime());
         return testCaseStepActionExecution;
     }
-
-
 
     private MessageEvent doActionInstallApp(TestCaseExecution tCExecution, String appPath) {
         MessageEvent message;
@@ -439,20 +440,137 @@ public class ActionService implements IActionService {
         MessageEvent message;
 
         try {
-
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 return androidAppiumService.executeCommand(tCExecution.getSession(), command, args);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_BAT)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
+                
+                // PENDING FEATURE
+                
+                message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                message.setDescription(message.getDescription().replace("%ACTION%", "executeCommand"));
+                message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+                return message;
+                
+                //return executeCommand(command, args);
+            } else {
+                message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                message.setDescription(message.getDescription().replace("%ACTION%", "executeCommand"));
+                message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+                return message;
             }
-
-            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "executeJS"));
-            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
-            return message;
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
             String messageString = e.getMessage().split("\n")[0];
             message.setDescription(message.getDescription().replace("%EXCEPTION%", messageString));
             LOG.debug("Exception Running Shell :" + messageString, e);
+            return message;
+        }
+    }
+
+    /**
+     * This method can be used in order to execute a script that is located on
+     * the application server.
+     *
+     * @param command script file name (with extention)
+     * @param args (optionnal) arguments
+     *
+     * @return
+     */
+    private MessageEvent executeCommand(String command, String args) {
+
+        MessageEvent message;
+        String inputCommand;
+
+        // command and args check
+        if (command.isEmpty()) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
+            message.setDescription(message.getDescription().replace("%EXCEPTION%", "no command defined"));
+            return message;
+        } else {
+            // if the first character isn't an antislash, add it
+            String firstChar = Character.toString(command.charAt(0));
+            if (firstChar != "/") {
+                command = "/" + command;
+            }
+            // store the script file name
+            inputCommand = command;
+
+        }
+
+        // hardcoded parameters : user & folder
+        // waiting for new parameters validation
+        String folderPath = "\"/CerberusScripts";
+        String scriptUser = "cerberus";
+
+        // cerberus parameters check
+        /*
+        if (parameterService.getParameterStringByKey("cerberus_script_user", "", "ALL").isEmpty() == true) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_MISSINGPARAMETER);
+            message.setDescription(message.getDescription().replace("%PARAM%", "cerberus_script_user"));
+            return message;
+        } else {
+            scriptUser = parameterService.getParameterStringByKey("cerberus_script_user", "", "ALL");
+        }
+
+        if (parameterService.getParameterStringByKey("cerberus_script_folderpath", "", "ALL").isEmpty() == true) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_MISSINGPARAMETER);
+            message.setDescription(message.getDescription().replace("%PARAM%", "cerberus_script_folderpath"));
+            return message;
+        } else {
+            folderPath = parameterService.getParameterStringByKey("cerberus_script_folderpath", "", "ALL");
+        }
+         */
+        
+        String[] commandToRun;
+        
+        boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+        if (isWindows) {
+            commandToRun = new String[]{"cmd.exe", "/c", "su - " + scriptUser, folderPath + inputCommand + "\""};
+        } else {
+            commandToRun = new String[]{"bash", "su - " + scriptUser, "-c", folderPath + inputCommand + "\""};
+        }
+
+        if (!args.isEmpty()) {
+            // TO DO
+        }
+
+        ProcessBuilder processBuilder = new ProcessBuilder(commandToRun);
+
+        StringBuilder sb = new StringBuilder();
+        for (String s : commandToRun) {
+            sb.append(s);
+            sb.append(" ");
+        }
+        String commandExecuted = sb.toString();
+
+        try {
+            Process process = processBuilder.start();
+            StringBuilder output = new StringBuilder();
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line + "\n");
+            }
+            int exitVal = process.waitFor();
+            if (exitVal == 0) {
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTECOMMAND);
+                message.setDescription(message.getDescription().replace("%LOG%", commandExecuted + " Output : " + output));
+                return message;
+            } else {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
+                message.setDescription(message.getDescription().replace("%EXCEPTION%", commandExecuted));
+                return message;
+            }
+        } catch (IOException e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
+            message.setDescription(message.getDescription().replace("%EXCEPTION%", e.toString()));
+            return message;
+        } catch (InterruptedException e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
+            message.setDescription(message.getDescription().replace("%EXCEPTION%", e.toString()));
             return message;
         }
     }
@@ -471,6 +589,11 @@ public class ActionService implements IActionService {
             Identifier identifier = identifierService.convertStringToIdentifier(element);
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+//                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.MAC.toString())
+//                        || tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.IOS.toString())) {
+//                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+//                    return iosAppiumService.click(tCExecution.getSession(), identifier);
+//                } else {
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                     return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
                 } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
@@ -479,6 +602,7 @@ public class ActionService implements IActionService {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                     return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
                 }
+//                }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return androidAppiumService.click(tCExecution.getSession(), identifier);
@@ -972,6 +1096,12 @@ public class ActionService implements IActionService {
             Identifier objectIdentifier = identifierService.convertStringToIdentifier(value1);
 
             if (appType.equalsIgnoreCase(Application.TYPE_GUI)) {
+                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.MAC.toString())
+                        || tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.IOS.toString())) {
+                    return iosAppiumService.keyPress(tCExecution.getSession(), value2);
+                } else if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
+                    return androidAppiumService.keyPress(tCExecution.getSession(), value2);
+                }
                 if (objectIdentifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                     return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), objectIdentifier.getLocator(), value2);
                 } else {
@@ -1513,14 +1643,14 @@ public class ActionService implements IActionService {
                 .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
     }
 
-    private MessageEvent doActionLongClick(TestCaseExecution tCExecution, String value1, String value2) {
+    private MessageEvent doActionLongPress(TestCaseExecution tCExecution, String value1, String value2) {
         String element;
         try {
             /**
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(value1, value2, TestCaseStepAction.ACTION_CLICK, tCExecution);
+            element = getElementToUse(value1, value2, TestCaseStepAction.ACTION_LONGPRESS, tCExecution);
             /**
              * Get Identifier (identifier, locator) and check it's valid
              */
@@ -1532,28 +1662,12 @@ public class ActionService implements IActionService {
             }
             Identifier identifier = identifierService.convertStringToIdentifier(element);
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
-                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
-                } else {
-                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
-                }
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return androidAppiumService.longPress(tCExecution.getSession(), identifier, longPressTime);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return iosAppiumService.longPress(tCExecution.getSession(), identifier, longPressTime);
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                identifierService.checkSikuliIdentifier(identifier.getIdentifier());
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
-                } else {
-                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
-                }
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "Long Click")
@@ -1565,45 +1679,33 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionClear(TestCaseExecution tCExecution, String object) {
+    private MessageEvent doActionClearField(TestCaseExecution tCExecution, String value1) {
+        String element;
         try {
             /**
              * Check object and property are not null for GUI/APK/IPA Check
              * property is not null for FAT Application
              */
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                if (object == null) {
-                    return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
+                if (value1 == null) {
+                    return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLEARFIELD);
                 }
             }
             /**
              * Get Identifier (identifier, locator) if object not null
              */
             Identifier identifier = new Identifier();
-            if (object != null) {
-                identifier = identifierService.convertStringToIdentifier(object);
+            if (value1 != null) {
+                identifier = identifierService.convertStringToIdentifier(value1);
             }
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
-                } else {
-                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, "", "");
-                }
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return androidAppiumService.clearField(tCExecution.getSession(), identifier);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return iosAppiumService.clearField(tCExecution.getSession(), identifier);
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                String locator = "";
-                if (!StringUtil.isNullOrEmpty(object)) {
-                    identifierService.checkSikuliIdentifier(identifier.getIdentifier());
-                    locator = identifier.getLocator();
-                }
-                return sikuliService.doSikuliActionClick(tCExecution.getSession(), locator, "");
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "ClearField")

@@ -290,7 +290,6 @@ function selectionManual(test, testcase, environment, country) {
 
 function loadTestCaseFromFilter(defTest, defTestcase) {
 
-//    console.debug("loadTestCaseFromFilter Called" + defTest + defTestcase);
     showLoader("#chooseTest");
     var testURL = "";
     var testCaseURL = "";
@@ -303,16 +302,19 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
     }
     // Get the requested result size value
     var lengthURL = '&length=' + $("#lengthFilter").find(':selected').val();
+    var serialize = "";
+    if ($("#filters").serialize() != "") {
+        serialize = "&" + $("#filters").serialize();
+    }
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
-        data: "filter=true&" + $("#filters").serialize() + testURL + testCaseURL + lengthURL,
+        data: "filter=true" + getUser().defaultSystemsQuery + serialize + testURL + testCaseURL + lengthURL,
         datatype: "json",
         async: true,
         success: function (data) {
 
             var testCaseList = $("#testCaseList");
-
             testCaseList.empty();
 
             if (data.contentTable === undefined) {
@@ -463,53 +465,53 @@ function loadCampaignParameter(campaign) {
                 loadRobotInfo(robot);
             }
         });
-        
+
         $.ajax({
-            url: "ReadCampaign?campaign="+campaign,
+            url: "ReadCampaign?campaign=" + campaign,
             method: "GET",
             data: {campaign: campaign},
             datatype: "json",
             async: true,
             success: function (data) {
-            	if (data.contentTable != null) {       
-            		if (data.contentTable.Screenshot != null && data.contentTable.Screenshot != "") {
-            			$('#screenshot option[value="'+data.contentTable.Screenshot+'"]').prop('selected', true);
-            		}
-            		
-            		if (data.contentTable.Verbose != null && data.contentTable.Verbose != "") {
-            			$('#verbose option[value="'+data.contentTable.Verbose+'"]').prop('selected', true);
-            		}
-            		
-            		if (data.contentTable.Tag != null && data.contentTable.Tag != "") {
-            			$("#tag").val(data.contentTable.Tag);
-            		}
-            		
-            		if (data.contentTable.Priority != null && data.contentTable.Priority != "") {
-            			$("#priority").val(data.contentTable.Priority);
-            		}
-	                  
-            		if (data.contentTable.PageSource != null && data.contentTable.PageSource != "") {
-            			$('#pageSource option[value="'+data.contentTable.PageSource+'"]').prop('selected', true);
-            		}
-	                
-            		if (data.contentTable.RobotLog != null && data.contentTable.RobotLog != "") {
-            			$('#seleniumLog option[value="'+data.contentTable.RobotLog+'"]').prop('selected', true);
-            		}
-            		
-            		if (data.contentTable.Timeout != null && data.contentTable.Timeout != "") {
-            			$("#timeout").val(data.contentTable.Timeout);
-            		}
-            		
-            		if (data.contentTable.Retries != null && data.contentTable.Retries != "") {
-            			$('#retries option[value="'+data.contentTable.Retries+'"]').prop('selected', true);
-            		}
-            		
-            		if (data.contentTable.ManualExecution != null && data.contentTable.ManualExecution != "") {
-            			$('#manualExecution option[value="'+data.contentTable.ManualExecution+'"]').prop('selected', true);
-            		}
-            	}
+                if (data.contentTable != null) {
+                    if (data.contentTable.Screenshot != null && data.contentTable.Screenshot != "") {
+                        $('#screenshot option[value="' + data.contentTable.Screenshot + '"]').prop('selected', true);
+                    }
+
+                    if (data.contentTable.Verbose != null && data.contentTable.Verbose != "") {
+                        $('#verbose option[value="' + data.contentTable.Verbose + '"]').prop('selected', true);
+                    }
+
+                    if (data.contentTable.Tag != null && data.contentTable.Tag != "") {
+                        $("#tag").val(data.contentTable.Tag);
+                    }
+
+                    if (data.contentTable.Priority != null && data.contentTable.Priority != "") {
+                        $("#priority").val(data.contentTable.Priority);
+                    }
+
+                    if (data.contentTable.PageSource != null && data.contentTable.PageSource != "") {
+                        $('#pageSource option[value="' + data.contentTable.PageSource + '"]').prop('selected', true);
+                    }
+
+                    if (data.contentTable.RobotLog != null && data.contentTable.RobotLog != "") {
+                        $('#seleniumLog option[value="' + data.contentTable.RobotLog + '"]').prop('selected', true);
+                    }
+
+                    if (data.contentTable.Timeout != null && data.contentTable.Timeout != "") {
+                        $("#timeout").val(data.contentTable.Timeout);
+                    }
+
+                    if (data.contentTable.Retries != null && data.contentTable.Retries != "") {
+                        $('#retries option[value="' + data.contentTable.Retries + '"]').prop('selected', true);
+                    }
+
+                    if (data.contentTable.ManualExecution != null && data.contentTable.ManualExecution != "") {
+                        $('#manualExecution option[value="' + data.contentTable.ManualExecution + '"]').prop('selected', true);
+                    }
+                }
             }
-        
+
         });
     }
 }
@@ -661,7 +663,7 @@ function appendCampaignList() {
 }
 
 function multiSelectConf(name) {
-    this.maxHeight = 150;
+    this.maxHeight = 450;
     this.checkboxName = name;
     this.buttonWidth = "100%";
     this.enableFiltering = true;
@@ -750,7 +752,6 @@ function loadHardDefinedSingleSelect(selectName, values, initialSelectionIndex) 
 
 function loadSelect(idName, selectName, forceReload, defaultValue) {
 
-//    console.debug("display Invariant " + idName + " " + forceReload);
     if (forceReload === undefined) {
         forceReload = false;
     }
@@ -835,7 +836,7 @@ function loadRobotInfo(robot) {
     if (!(robot instanceof Array)) {
         robot = [robot]
     }
-    
+
     if (robot[0] !== "" && robot[0] !== "CustomConfiguration") {
         // We can edit Robot.
         $("#robotEdit").removeClass("disabled");
@@ -968,7 +969,6 @@ function applyRobotPref(browser) {
             $("#robotSettings #robot").val(pref.robot);
             $("#robotSettingsForm #seleniumIP").val(pref.ss_ip);
             $("#robotSettingsForm #seleniumPort").val(pref.ss_p);
-//            console.debug(browser);
             if (browser !== null) { // if browser defined from URL we take that value.
                 $("#robotSettingsForm #browser").val(browser);
             } else {
@@ -1008,13 +1008,13 @@ function loadTestCaseFilterData(system) {
     $.when(
             loadMultiSelect("ReadTest", "", "test", ["test", "description"], "test"),
             loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
-            loadMultiSelect("ReadApplication", "", "application", ["application"], "application"),
+            loadMultiSelect("ReadApplication", "e=1" + getUser().defaultSystemsQuery, "application", ["application"], "application"),
             loadMultiSelect("ReadUserPublic", "", "creator", ["login"], "login"),
             loadMultiSelect("ReadUserPublic", "", "implementer", ["login"], "login"),
             loadMultiSelect("ReadCampaign", "", "campaign", ["campaign"], "campaign"),
-            loadMultiSelect("ReadBuildRevisionInvariant", "level=1&system=" + system, "targetSprint", ["versionName"], "versionName"),
-            loadMultiSelect("ReadBuildRevisionInvariant", "level=2&system=" + system, "targetRev", ["versionName"], "versionName"),
-            loadMultiSelect("ReadLabel", "system=" + system, "labelid", ["label"], "id"),
+            loadMultiSelect("ReadBuildRevisionInvariant", "level=1" + getUser().defaultSystemsQuery, "targetSprint", ["versionName"], "versionName"),
+            loadMultiSelect("ReadBuildRevisionInvariant", "level=2" + getUser().defaultSystemsQuery, "targetRev", ["versionName"], "versionName"),
+            loadMultiSelect("ReadLabel", "e=1" + getUser().defaultSystemsQuery, "labelid", ["label"], "id"),
             loadInvariantMultiSelect("system", "SYSTEM"),
             loadInvariantMultiSelect("priority", "PRIORITY"),
             loadInvariantMultiSelect("group", "GROUP"),

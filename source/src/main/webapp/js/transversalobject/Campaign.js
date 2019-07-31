@@ -22,6 +22,7 @@ tinymce.init({
 });
 
 
+
 function renderOptionsForCampaign_Label(tableId) {
     var doc = new Doc();
     var data = getSelectInvariant("SYSTEM", false, true, "");
@@ -310,7 +311,6 @@ function editEntryClick(param) {
         var obj = data["contentTable"];
         var parameters = []
         var criterias = []
-
         for (var i = 0; i < obj.parameter.length; i++)
         {
             if ((obj.parameter[i].parameter === "BROWSER")
@@ -427,9 +427,12 @@ function editEntryClick(param) {
 
         hideLoader("#testcampaignList");
 
+        /* SCHEDULER */
         $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
         formEdit.modal('show');
-
+        $('#addscheduler').off('click');
+        $('#addscheduler').click(addNewSchedulerRow);
+        loadSchedulerTable(param);
 
     });
 
@@ -445,6 +448,14 @@ function editEntryModalSaveHandler() {
     for (var i in sa) {
         data[sa[i].name] = sa[i].value;
     }
+
+    // Getting Data from Scheduler TAB
+    var table1 = $("#parameterSchedulerTable tr.dataField");
+    var table_scheduler = [];
+    for (var i = 0; i < table1.length; i++) {
+        table_scheduler.push($(table1[i]).data("scheduler"));
+    }
+    console.log(table_scheduler);
 
     var labels = null;
     if ($("#labelTestcampaignsTable_wrapper").length > 0) {
@@ -495,7 +506,8 @@ function editEntryModalSaveHandler() {
             Timeout: data.timeout,
             Retries: data.retries,
             Priority: data.priority,
-            ManualExecution: data.manualExecution
+            ManualExecution: data.manualExecution,
+            SchedulerList: JSON.stringify(table_scheduler)
         },
         success: function (data) {
 //            data = JSON.parse(data);
@@ -511,6 +523,7 @@ function editEntryModalSaveHandler() {
         },
         error: showUnexpectedError
     });
+
 
 }
 
@@ -569,6 +582,9 @@ function addEntryClick() {
     $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
     $('#editTestcampaignModal').modal('show');
 
+    $('#parameterScheduler tr').remove();
+    $('#addscheduler').off('click');
+    $('#addscheduler').click(addNewSchedulerRow);
 }
 
 function addEntryModalSaveHandler() {
@@ -580,6 +596,14 @@ function addEntryModalSaveHandler() {
     for (var i in sa) {
         data[sa[i].name] = sa[i].value;
     }
+
+    // Getting Data from Scheduler TAB
+    var table1 = $("#parameterSchedulerTable tr.dataField");
+    var table_scheduler = [];
+    for (var i = 0; i < table1.length; i++) {
+        table_scheduler.push($(table1[i]).data("scheduler"));
+    }
+    console.log(table_scheduler);
 
     var labels = null;
     if ($("#labelTestcampaignsTable_wrapper").length > 0) {
@@ -634,7 +658,10 @@ function addEntryModalSaveHandler() {
             Timeout: data.timeout,
             Retries: data.retries,
             Priority: data.priority,
-            ManualExecution: data.manualExecution
+            ManualExecution: data.manualExecution,
+            SchedulerList: JSON.stringify(table_scheduler)
+
+
         },
         success: function (data) {
 //            data = JSON.parse(data);
@@ -999,4 +1026,103 @@ function getDuration(tag) {
         return "";
     }
     return (roundDiff);
+}
+
+function loadSchedulerTable(name) {
+    $('#parameterScheduler tr').remove();
+    var table = $('#parameterSchedulerTable')
+    var deleteBtn = $('<div id="deleteBtnFirst"></div>').addClass("h6").text("Delete");
+    var cronEntry = $('<div id="cronExpression"></div>').addClass("h6").text("CronExpression");
+    var active = $('<div id="active"></div>').addClass("h6").text("Active");
+    var lastExec = $('<div id="lastExec"></div>').addClass("h6").text("Last Execution");
+    var row = $("<tr></tr>");
+    var td1 = $("<td class='row form-group col-sm-1'></td>").append(deleteBtn);
+    var td2 = $("<td class='row form-group col-sm-5'></td>").append(cronEntry);
+    var td3 = $("<td class='row form-group col-sm-1'></td>").append(active);
+    var td4 = $("<td class='row form-group col-sm-5'></td>").append(lastExec);
+
+
+    row.append(td1);
+    row.append(td2);
+    row.append(td3);
+    row.append(td4);
+    table.append(row);
+
+    var jqxhr = $.getJSON("ReadScheduleEntry", "&name=" + name);
+    $.when(jqxhr).then(function (result) {
+        $.each(result["contentTable"], function (idx, obj) {
+            obj.toDelete = false;
+            appendSchedulerRow(obj);
+        });
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function appendSchedulerRow(scheduler) {
+
+    var doc = new Doc();
+    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-s").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var var1Input = $("<input maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel('scheduler', 'cronDefinition') + " --\">").addClass("form-control input-sm");
+    var active = $("<input type='checkbox' id='activeCheckBox" + scheduler.ID + "'>");
+    var table = $('#parameterSchedulerTable')
+    var lastExec = $('<div id="lastExecution"></div>').addClass("h6").text(" " + scheduler.lastExecution);
+    var row = $("<tr class='dataField'></tr>");
+
+
+    var cronDefinition = $("<div class='form-group col-sm-12'></div>").append(var1Input.val(scheduler.cronDefinition))
+    var drow01 = $("<div></div>").append(cronDefinition);
+    var td1 = $("<td class='row'></td>").append(drow01);
+    var td2 = $("<td class='row form-group col-sm-1'></td>").append(deleteBtn);
+    var td3 = $("<td class='row form-group col-sm-1'></td>").append(active)
+    var td4 = $("<td class='row form-group col-sm-5'></td>").append(lastExec)
+    deleteBtn.click(function () {
+        scheduler.toDelete = (scheduler.toDelete) ? false : true;
+        if (scheduler.toDelete) {
+            console.log("toDelete - Danger");
+            console.log(scheduler.toDelete);
+            row.addClass("danger");
+        } else {
+            console.log(scheduler.toDelete);
+            console.log("Not delete");
+            row.removeClass("danger");
+        }
+    });
+
+    cronDefinition.change(function () {
+        scheduler.cronDefinition = $(var1Input).val();
+    })
+
+    active.change(function () {
+        if (scheduler.active != "Y") {
+            scheduler.active = "Y";
+            console.log("scheduler active statement  : " + scheduler.active);
+        } else {
+            scheduler.active = "N";
+            console.log("scheduler active statement : " + scheduler.active);
+        }
+    })
+
+    row.append(td2);
+    row.append(td1);
+    row.append(td3);
+    row.append(td4);
+    row.data("scheduler", scheduler);
+    table.append(row);
+
+    if (scheduler.active == "Y") {
+        $('#activeCheckBox' + scheduler.ID).prop('checked', true);
+    } else {
+        $('#activeCheckBox' + scheduler.ID).prop('checked', false);
+    }
+}
+
+function addNewSchedulerRow() {
+    var newScheduler = {
+        cronDefinition: $('#schedulerinput').val(),
+        active: "N",
+        lastExecution: "",
+        ID: "0",
+        toDelete: false
+    }
+    appendSchedulerRow(newScheduler)
+
 }

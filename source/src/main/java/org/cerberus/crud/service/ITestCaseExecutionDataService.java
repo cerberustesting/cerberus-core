@@ -41,8 +41,9 @@ public interface ITestCaseExecutionDataService {
      * @param property
      * @param index
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
-    TestCaseExecutionData readByKey(long id, String property, int index) throws CerberusException ;
+    TestCaseExecutionData readByKey(long id, String property, int index) throws CerberusException;
 
     /**
      *
@@ -54,8 +55,9 @@ public interface ITestCaseExecutionDataService {
      * @param searchTerm
      * @param individualSearch
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
-    List<TestCaseExecutionData> readByIdByCriteria(long id, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException ;
+    List<TestCaseExecutionData> readByIdByCriteria(long id, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
     /**
      *
@@ -65,22 +67,25 @@ public interface ITestCaseExecutionDataService {
      * @param property
      * @param cacheExpire
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
-    TestCaseExecutionData readLastCacheEntry(String system, String environment, String country, String property, int cacheExpire) throws CerberusException ;
+    TestCaseExecutionData readLastCacheEntry(String system, String environment, String country, String property, int cacheExpire) throws CerberusException;
 
     /**
      *
      * @param id
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
-    List<TestCaseExecutionData> readById(long id) throws CerberusException ;
+    List<TestCaseExecutionData> readById(long id) throws CerberusException;
 
     /**
      *
      * @param id
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
-    List<TestCaseExecutionData> readByIdWithDependency(long id) throws CerberusException ;
+    List<TestCaseExecutionData> readByIdWithDependency(long id) throws CerberusException;
 
     /**
      *
@@ -88,8 +93,9 @@ public interface ITestCaseExecutionDataService {
      * @param property
      * @param index
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
-    boolean exist(long id, String property, int index) throws CerberusException ;
+    boolean exist(long id, String property, int index) throws CerberusException;
 
     /**
      *
@@ -101,8 +107,9 @@ public interface ITestCaseExecutionDataService {
      * @param environment
      * @param country
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
-    List<String> getPastValuesOfProperty(long id, String propName, String test, String testCase, String build, String environment, String country) throws CerberusException ;
+    List<String> getPastValuesOfProperty(long id, String propName, String test, String testCase, String build, String environment, String country) throws CerberusException;
 
     /**
      *
@@ -112,29 +119,30 @@ public interface ITestCaseExecutionDataService {
      * @param country
      * @param timeoutInSecond
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
-    List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond) throws CerberusException ;
+    List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond) throws CerberusException;
 
     /**
      *
      * @param object
-     * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     void create(TestCaseExecutionData object) throws CerberusException;
 
     /**
      *
      * @param object
-     * @return
+     * @throws org.cerberus.exception.CerberusException
      */
-    void delete(TestCaseExecutionData object) throws CerberusException ;
+    void delete(TestCaseExecutionData object) throws CerberusException;
 
     /**
      *
      * @param object
-     * @return
+     * @throws org.cerberus.exception.CerberusException
      */
-    public void update(TestCaseExecutionData object) throws CerberusException ;
+    public void update(TestCaseExecutionData object) throws CerberusException;
 
     /**
      *
@@ -164,10 +172,11 @@ public interface ITestCaseExecutionDataService {
      * @param object
      * @throws org.cerberus.exception.CerberusException
      */
-    void save(TestCaseExecutionData object) throws CerberusException ;
+    void save(TestCaseExecutionData object) throws CerberusException;
 
     /**
      * Load All ExecutionData of testcases that this execution depends
+     *
      * @param testCaseExecution
      * @throws org.cerberus.exception.CerberusException
      */

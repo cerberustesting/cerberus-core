@@ -33,7 +33,7 @@ public class FactoryTestDataLib implements IFactoryTestDataLib {
 
     @Override
     public TestDataLib create(Integer testDataLibID, String name, String system, String environment,
-            String country, String group, String type, String database,
+            String country, String privateData, String group, String type, String database,
             String script, String databaseUrl, String service, String servicePath, String method,
             String envelope, String databaseCsv, String csvUrl, String separator, String description, String creator, Timestamp created,
             String LastModifier, Timestamp lastModified, String subDataValue, String subDataColumn, String subDataParsingAnswer, String subDataColumnPosition) {
@@ -46,6 +46,7 @@ public class FactoryTestDataLib implements IFactoryTestDataLib {
         newData.setSystem(system);
         newData.setCountry(country);
         newData.setEnvironment(environment);
+        newData.setPrivateData(privateData);
         newData.setGroup(group);
         newData.setDescription(description);
         newData.setDatabase(database);

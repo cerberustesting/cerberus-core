@@ -1,0 +1,11 @@
+*Bug fixes*
+[square]
+* Filter in runtest bug
+
+*Improvements / New features*
+[square]
+* Scheduled campaign with cron expression throught campaign modal
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* none

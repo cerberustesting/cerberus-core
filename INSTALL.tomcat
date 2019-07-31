@@ -1,8 +1,25 @@
-In lib folder, Copy 'mariadb-java-client-2.1.2.jar' file.
+# DB DRIVER INSTALLATION
+You need to manually download the DB connector corresponding to your choice (mysql or mariadb)
 
-In bin folder, create 'setenv.sh' file  with content :
+Paste the .jar file in the /lib folder of your tomcat directory.
+Examples: 
+- 'mariadb-java-client-2.1.2.jar'
+- 'mysql-connector-java-8.0.16.jar'
 
-CATALINA_OPTS="-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=none -Xmx1024m"
+# SET ENVIRONMENT VARIABLE
+Depending on your OS (Mac, Linux or Windows) this process is different.
+
+Mac/Linux
+
+create 'setenv.sh' file in /bin folder
+edit it with this content : CATALINA_OPTS="-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=none -Xmx1024m"
+
+Windows
+
+declare the variable CATALINA_OPTS in the system variable with the following value :
+-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=none -Xmx1024m
+
+# TOMCAT CONFIGURATION
 
 In conf folder, in 'server.xml' add the following sections (remove mariadb/mysql depending on database engine choosen) :
 
@@ -43,7 +60,8 @@ Sample config files can be found in docs/Tomcat Folder : (https://github.com/cer
 
 ----------------
 
-KeyCloak setup
+# KEYCLOAK SETUP
+
 Download Server and Tomcat client adapter from :
 https://www.keycloak.org/downloads.html
 
@@ -57,6 +75,8 @@ Also secure the path variable match your contextroot.
 <Context path="/Cerberus">
       <Valve className="org.keycloak.adapters.tomcat.KeycloakAuthenticatorValve"/>
 </Context>
+
+You can also set the KC activation on Cerberus side, choose the other method if you don't want to modify Cerberus source
 
 On Cerberus source, uncomment following line from WEB-INF/web.xml
     <login-config>
@@ -72,9 +92,12 @@ and comment
         </form-login-config>
     </login-config>
 
-On Tomcat, in bin folder, modify 'setenv.sh' file  with content :
+Environment variable needs to be modified, follow the method above (#SET ENVIRONMENT VARIABLE)
 
+(Max, Linux)
 CATALINA_OPTS="-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=keycloak -Dorg.cerberus.keycloak.realm=Cerberus -Dorg.cerberus.keycloak.client=cerberus -Dorg.cerberus.keycloak.url=http://localhost:8080/auth -Xmx1024m"
+(Windows)
+-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=keycloak -Dorg.cerberus.keycloak.realm=Cerberus -Dorg.cerberus.keycloak.client=cerberus -Dorg.cerberus.keycloak.url=http://localhost:8080/auth -Xmx1024m
 
 On Tomcat, in conf folder, modify 'server.xml' in order to Change port to 8180 :
 
@@ -85,5 +108,3 @@ On Tomcat, in conf folder, modify 'server.xml' in order to Change port to 8180 :
 On Tomcat, in lib folder, unzip all jar from 'keycloak-tomcat8-adapter-dist-4.7.0.Final.tar.gz'
 
 Please also consult user migration documentation : (https://github.com/cerberustesting/cerberus-source/blob/master/docs/KeycloakMigration/README.md).
-
-

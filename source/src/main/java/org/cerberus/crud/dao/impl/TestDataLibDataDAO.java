@@ -33,6 +33,7 @@ import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.factory.IFactoryTestDataLibData;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.service.encryption.EncryptionService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -576,8 +577,8 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
     public Answer create(TestDataLibData object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testdatalibdata (`TestDataLibID`, `subData`, `value`, `column`, `parsinganswer`, `columnPosition`,`description`) ");
-        query.append("VALUES (?,?,?,?,?,?,?)");
+        query.append("INSERT INTO testdatalibdata (`TestDataLibID`, `subData`, `encrypt`, `value`, `column`, `parsinganswer`, `columnPosition`,`description`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -588,13 +589,15 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setInt(1, object.getTestDataLibID());
-                preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(object.getSubData()));
-                preStat.setString(3, ParameterParserUtil.returnEmptyStringIfNull(object.getValue()));
-                preStat.setString(4, ParameterParserUtil.returnEmptyStringIfNull(object.getColumn()));
-                preStat.setString(5, ParameterParserUtil.returnEmptyStringIfNull(object.getParsingAnswer()));
-                preStat.setString(6, ParameterParserUtil.returnEmptyStringIfNull(object.getColumnPosition()));
-                preStat.setString(7, ParameterParserUtil.returnEmptyStringIfNull(object.getDescription()));
+                int i = 1;
+                preStat.setInt(i++, object.getTestDataLibID());
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(object.getSubData()));
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(object.getEncrypt()));
+                preStat.setString(i++, "Y".equals(object.getEncrypt()) ? EncryptionService.encrypt(ParameterParserUtil.returnEmptyStringIfNull(object.getValue())) : ParameterParserUtil.returnEmptyStringIfNull(object.getValue()));
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(object.getColumn()));
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(object.getParsingAnswer()));
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(object.getColumnPosition()));
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(object.getDescription()));
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -632,7 +635,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
     @Override
     public Answer update(TestDataLibData object) {
         MessageEvent msg = null;
-        final String query = "UPDATE testdatalibdata SET `value`= ? , `column`= ? , `parsinganswer`= ? , `columnPosition`= ? , `description`= ? WHERE `testdatalibdataid`= ? ";
+        final String query = "UPDATE testdatalibdata SET `encrypt`= ?, `value`= ? , `column`= ? , `parsinganswer`= ? , `columnPosition`= ? , `description`= ? WHERE `testdatalibdataid`= ? ";
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
@@ -641,12 +644,14 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, object.getValue());
-                preStat.setString(2, object.getColumn());
-                preStat.setString(3, object.getParsingAnswer());
-                preStat.setString(4, object.getColumnPosition());
-                preStat.setString(5, object.getDescription());
-                preStat.setInt(6, object.getTestDataLibDataID());
+                int i = 1;
+                preStat.setString(i++, object.getEncrypt());
+                preStat.setString(i++, "Y".equals(object.getEncrypt()) ? EncryptionService.encrypt(object.getValue()) : object.getValue());
+                preStat.setString(i++, object.getColumn());
+                preStat.setString(i++, object.getParsingAnswer());
+                preStat.setString(i++, object.getColumnPosition());
+                preStat.setString(i++, object.getDescription());
+                preStat.setInt(i++, object.getTestDataLibDataID());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -720,12 +725,15 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         Integer testDataLibDataID = resultSet.getInt("TestDataLibDataID");
         Integer testDataLibID = resultSet.getInt("TestDataLibID");
         String subData = resultSet.getString("SubData");
-        String value = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("Value"));
+        String encrypt = resultSet.getString("Encrypt");
+        String value = "Y".equals(encrypt) ? 
+                EncryptionService.decrypt(ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("Value"))) : 
+                ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("Value"));
         String column = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("Column"));
         String parsingAnswer = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("ParsingAnswer"));
         String columnPosition = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("columnPosition"));
         String description = resultSet.getString("Description");
 
-        return factoryTestDataLibData.create(testDataLibDataID, testDataLibID, subData, value, column, parsingAnswer, columnPosition, description);
+        return factoryTestDataLibData.create(testDataLibDataID, testDataLibID, subData, encrypt, value, column, parsingAnswer, columnPosition, description);
     }
 }

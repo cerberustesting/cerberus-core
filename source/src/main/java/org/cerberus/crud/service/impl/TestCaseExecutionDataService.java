@@ -19,6 +19,9 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -36,9 +39,13 @@ import org.cerberus.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.crud.service.ITestCaseExecutionFileService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -164,8 +171,29 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
         // We then dedup it per property name.
         TreeMap<String, TestCaseExecutionData> newExeDataMap = new TreeMap<>();
         for (TestCaseExecutionData data : testCaseExecutionData) {
+            data.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RETRIEVE_BY_DEPENDENCY).resolveDescription("EXEID", String.valueOf(data.getId())));
             data.setId(testCaseExecution.getId());
-            data.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RETRIEVE_BY_DEPENDENCY));
+            if (!StringUtil.isNullOrEmpty(data.getJsonResult())) {
+                try {
+                    JSONArray array = new JSONArray(data.getJsonResult());
+                    List<HashMap<String, String>> libRawData = new ArrayList<>();
+                    for (int i = 0; i < array.length(); i++) {
+                        HashMap<String, String> hashJson = new HashMap<>();
+                        JSONObject obj = array.getJSONObject(i);
+                        Iterator<String> nameItr = obj.keys();
+                        while (nameItr.hasNext()) {
+                            String name = nameItr.next();
+                            hashJson.put(name, obj.getString(name));
+                        }
+                        libRawData.add(hashJson);
+                    }
+                    data.setDataLibRawData(libRawData);
+                } catch (JSONException ex) {
+                    LOG.warn("Exception when converting JSON Object '" + data.getJsonResult() + "' from database", ex);
+                    data.setDataLibRawData(null);
+                }
+            }
+
             newExeDataMap.put(data.getProperty(), data);
         }
 

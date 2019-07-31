@@ -38,11 +38,34 @@ public interface IBuildRevisionInvariantService {
 
     AnswerItem readByKey(String system, Integer level, String versionName);
 
-    AnswerList readBySystemByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    /**
+     *
+     * @param system
+     * @param level
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    AnswerList readBySystemByCriteria(List<String> system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
-    AnswerList readBySystemLevel(String system, Integer level);
+    /**
+     *
+     * @param system
+     * @param level
+     * @return
+     */
+    AnswerList readBySystemLevel(List<String> system, Integer level);
 
-    AnswerList readBySystem(String system);
+    /**
+     *
+     * @param system
+     * @return
+     */
+    AnswerList readBySystem(List<String> system);
 
     boolean exist(String system, Integer level, Integer seq);
 
@@ -78,12 +101,12 @@ public interface IBuildRevisionInvariantService {
     void convert(Answer answer) throws CerberusException;
 
     /**
-     * 
+     *
      * @param system
      * @param searchParameter
      * @param individualSearch
      * @param columnName
-     * @return 
+     * @return
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

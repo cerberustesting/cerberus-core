@@ -65,12 +65,6 @@ public class UserSystemDAO implements IUserSystemDAO {
     private static interface Query {
 
         /**
-         * Get list of {@link UserSystem} associated with the given
-         * {@link User}'s name
-         */
-        String READ_BY_USER = "SELECT * FROM usersystem uss WHERE uss.`login` = ? ";
-
-        /**
          * Create a new {@link UserSystem}
          */
         String CREATE = "INSERT INTO `usersystem` (`login`, `system`) VALUES (?, ?)";
@@ -95,7 +89,14 @@ public class UserSystemDAO implements IUserSystemDAO {
     @Override
     public UserSystem findUserSystemByKey(String login, String system) throws CerberusException {
         UserSystem result = null;
-        final String query = "SELECT * FROM usersystem u WHERE u.`login` = ? and u.`system` = ?";
+        final String query = "SELECT uss.* FROM usersystem u WHERE u.`login` = ? and u.`system` = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.login : " + login);
+            LOG.debug("SQL.param.system : " + system);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -136,7 +137,12 @@ public class UserSystemDAO implements IUserSystemDAO {
     @Override
     public List<UserSystem> findallUser() throws CerberusException {
         List<UserSystem> list = null;
-        final String query = "SELECT * FROM usersystem ORDER BY `login`";
+        final String query = "SELECT uss.* FROM usersystem uss ORDER BY `login`";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -176,7 +182,13 @@ public class UserSystemDAO implements IUserSystemDAO {
     @Override
     public List<UserSystem> findUserSystemByUser(String login) throws CerberusException {
         List<UserSystem> list = null;
-        final String query = "SELECT * FROM usersystem u WHERE u.`login` = ? ";
+        final String query = "SELECT uss.* FROM usersystem uss JOIN invariant inv ON inv.value=uss.system and inv.idname='SYSTEM' WHERE  uss.`login` = ? order by inv.sort;";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.login : " + login);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -218,7 +230,13 @@ public class UserSystemDAO implements IUserSystemDAO {
     @Override
     public List<UserSystem> findUserSystemBySystem(String system) throws CerberusException {
         List<UserSystem> list = null;
-        final String query = "SELECT * FROM usersystem u WHERE u.`system` = ? ";
+        final String query = "SELECT uss.* FROM usersystem uss WHERE uss.`system` = ? ";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.system : " + system);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -261,6 +279,11 @@ public class UserSystemDAO implements IUserSystemDAO {
     public void insertUserSystem(UserSystem userSystem) throws CerberusException {
         final String query = "INSERT INTO usersystem (`login`, `system`) VALUES (?, ?)";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query);) {
             try {
@@ -280,6 +303,11 @@ public class UserSystemDAO implements IUserSystemDAO {
     @Override
     public void deleteUserSystem(UserSystem userSystem) throws CerberusException {
         final String query = "DELETE FROM usersystem WHERE `login` = ? and `system` = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query);) {
@@ -306,11 +334,19 @@ public class UserSystemDAO implements IUserSystemDAO {
     public AnswerList<UserSystem> readByUser(String login) {
         AnswerList ans = new AnswerList<>();
         MessageEvent msg = null;
+        String query = "SELECT uss.* FROM usersystem uss JOIN invariant inv ON inv.value=uss.system and inv.idname='SYSTEM' WHERE  uss.`login` = ? order by inv.sort;";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.login : " + login);
+        }
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_USER)) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setString(1, login);
+
             try (ResultSet resultSet = preStat.executeQuery();) {
                 // Parse query
                 List<UserSystem> result = new ArrayList<>();
@@ -445,6 +481,11 @@ public class UserSystemDAO implements IUserSystemDAO {
         Answer ans = new Answer();
         MessageEvent msg = null;
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + Query.DELETE);
+        }
+
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
             // Prepare and execute query
@@ -467,8 +508,8 @@ public class UserSystemDAO implements IUserSystemDAO {
     }
 
     private UserSystem loadUserSystemFromResultSet(ResultSet rs) throws SQLException {
-        String login = ParameterParserUtil.parseStringParam(rs.getString("login"), "");
-        String system = ParameterParserUtil.parseStringParam(rs.getString("system"), "");
+        String login = ParameterParserUtil.parseStringParam(rs.getString("uss.login"), "");
+        String system = ParameterParserUtil.parseStringParam(rs.getString("uss.system"), "");
         return factoryUserSystem.create(login, system);
     }
 

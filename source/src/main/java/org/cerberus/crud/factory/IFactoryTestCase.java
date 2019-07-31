@@ -27,6 +27,7 @@ import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepBatch;
+import org.json.JSONObject;
 
 /**
  * @author bcivel
@@ -150,5 +151,5 @@ public interface IFactoryTestCase {
      * @return
      */
     TestCase create(String test, String testCase, String description);
-
+    
 }

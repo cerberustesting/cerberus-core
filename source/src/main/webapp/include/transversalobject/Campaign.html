@@ -38,7 +38,7 @@
                             <li><a data-toggle="tab" href="#tabsCreate-7" id="createTab7Text" name="tabParameters">Execution Settings</a></li>
                             <li><a data-toggle="tab" href="#tabsCreate-2" id="createTab2Text" name="tabNotifications">Notifications</a></li>
                             <li><a data-toggle="tab" href="#tabsEdit-5" id="tab5Text" name="tabsEdit5">Tracability</a></li>
-
+                            <li style="display : none"><a data-toggle="tab" href="#tabsEdit-8" id="createTab8Text" name="tabsEdit8">Scheduler</a></li>
                         </ul>
 
                         <div class="tab-content">
@@ -250,9 +250,31 @@
                                     </div>
                                 </div>  
                             </div>  
+                            <div class="center marginTop25 tab-pane fade in" id="tabsEdit-8">
+                                <div class="row">
+                                    <div class="col-xs-12">
 
+                                        <div class="form-group col-sm-12">
+                                            <label name="lbl_cronexp" for="cronexp">Cron Expression</label>
+                                            <div class="input-group col-sm-6">
+                                                <input type="text" class="form-control" id='schedulerinput'>
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default" type="button" id='addscheduler'>Add</button>
+                                                </span>
+                                            </div>
+                                            <br>
+                                            <br>
+                                                <div id="parameterScheduler">
+                                                    <table id="parameterSchedulerTable" class="table table-bordered table-hover display" name="parameterTestcaseTable"></table>
+                                                    <div class="marginBottom20"></div>
+                                                </div>
+                                            </div>
+
+                                        </div>   
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
                 </form>
             </div>
             <div class="modal-footer">

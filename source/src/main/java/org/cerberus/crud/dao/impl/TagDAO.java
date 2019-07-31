@@ -192,7 +192,7 @@ public class TagDAO implements ITagDAO {
     }
 
     @Override
-    public AnswerList<Tag> readByVariousByCriteria(String campaign, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<Tag> readByVariousByCriteria(String campaign, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, List<String> systems) {
         AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -203,9 +203,13 @@ public class TagDAO implements ITagDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM tag tag ");
-
-        searchSQL.append(" where 1=1 ");
+        if (systems != null && !systems.isEmpty()) {
+            query.append("SELECT SQL_CALC_FOUND_ROWS tag.* FROM tag tag JOIN tagsystem tas ON tas.tag=tag.tag WHERE ");
+            searchSQL.append(SqlUtil.generateInClause("tas.system", systems));
+        } else {
+            query.append("SELECT SQL_CALC_FOUND_ROWS * FROM tag tag ");
+            searchSQL.append(" where 1=1 ");
+        }
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (tag.`id` like ?");
@@ -247,6 +251,12 @@ public class TagDAO implements ITagDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
+                if (systems != null && !systems.isEmpty()) {
+                    for (String system : systems) {
+                        preStat.setString(i++, system);
+                    }
+                }
+
                 if (!StringUtil.isNullOrEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");

@@ -104,6 +104,11 @@ public class ConditionService implements IConditionService {
                 mes = ans.getResultMessage();
                 break;
 
+            case TestCaseStepAction.CONDITIONOPER_IFPROPERTYNOTEXIST:
+                ans = evaluateCondition_ifPropertyNotExist(conditionOper, conditionValue1, tCExecution);
+                mes = ans.getResultMessage();
+                break;
+
             case TestCaseStepAction.CONDITIONOPER_IFNUMERICEQUAL:
             case TestCaseStepAction.CONDITIONOPER_IFNUMERICDIFFERENT:
             case TestCaseStepAction.CONDITIONOPER_IFNUMERICGREATER:
@@ -136,6 +141,11 @@ public class ConditionService implements IConditionService {
 
             case TestCaseStepAction.CONDITIONOPER_IFSTRINGCONTAINS:
                 ans = evaluateCondition_ifStringContains(conditionOper, conditionValue1, conditionValue2);
+                mes = ans.getResultMessage();
+                break;
+
+            case TestCaseStepAction.CONDITIONOPER_IFSTRINGNOTCONTAINS:
+                ans = evaluateCondition_ifStringNotContains(conditionOper, conditionValue1, conditionValue2);
                 mes = ans.getResultMessage();
                 break;
 
@@ -256,6 +266,43 @@ public class ConditionService implements IConditionService {
                 mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFPROPERTYEXIST);
+                mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
+                mes.setDescription(mes.getDescription().replace("%PROP%", conditionValue1));
+                mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
+            }
+        }
+        ans.setResultMessage(mes);
+        return ans;
+    }
+
+    private AnswerItem<Boolean> evaluateCondition_ifPropertyNotExist(String conditionOper, String conditionValue1, TestCaseExecution tCExecution) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if property Does not Exist");
+        }
+        AnswerItem ans = new AnswerItem<>();
+        MessageEvent mes;
+
+        if (StringUtil.isNullOrEmpty(conditionValue1)) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFPROPERTYNOTEXIST_MISSINGPARAMETER);
+            mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
+
+        } else {
+            String myCountry = tCExecution.getCountry();
+            String myProperty = conditionValue1;
+            boolean execute_Action = true;
+            for (TestCaseCountryProperties prop : tCExecution.getTestCaseCountryPropertyList()) {
+                LOG.debug(prop.getCountry() + " - " + myCountry + " - " + prop.getProperty() + " - " + myProperty);
+                if ((prop.getCountry().equals(myCountry)) && (prop.getProperty().equals(myProperty))) {
+                    execute_Action = false;
+                }
+            }
+            if (execute_Action == false) {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFPROPERTYNOTEXIST);
+                mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
+                mes.setDescription(mes.getDescription().replace("%PROP%", conditionValue1));
+                mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFPROPERTYNOTEXIST);
                 mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
                 mes.setDescription(mes.getDescription().replace("%PROP%", conditionValue1));
                 mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
@@ -416,7 +463,7 @@ public class ConditionService implements IConditionService {
                     String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
 
                     switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
-                        
+
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
                             if (!xmlUnitService.isElementPresent(responseBody, conditionValue1)) {
                                 condition_result = true;
@@ -585,12 +632,42 @@ public class ConditionService implements IConditionService {
                     .replace("%COND%", conditionOper)
                     .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
             );
+//            execute_Action = true;
         } else {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STRINGCONTAINS);
             mes.setDescription(mes.getDescription()
                     .replace("%COND%", conditionOper)
                     .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
             );
+//            execute_Action = false;
+        }
+        ans.setItem(execute_Action);
+        ans.setResultMessage(mes);
+        return ans;
+    }
+
+    private AnswerItem<Boolean> evaluateCondition_ifStringNotContains(String conditionOper, String conditionValue1, String conditionValue2) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if String Does Not Contains");
+        }
+        AnswerItem ans = new AnswerItem<>();
+        MessageEvent mes;
+
+        boolean execute_Action = true;
+        if (conditionValue1.contains(conditionValue2)) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STRINGCONTAINS);
+            mes.setDescription(mes.getDescription()
+                    .replace("%COND%", conditionOper)
+                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+            );
+            execute_Action = false;
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_STRINGCONTAINS);
+            mes.setDescription(mes.getDescription()
+                    .replace("%COND%", conditionOper)
+                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+            );
+            execute_Action = true;
         }
         ans.setItem(execute_Action);
         ans.setResultMessage(mes);

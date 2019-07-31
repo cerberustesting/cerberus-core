@@ -62,8 +62,8 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    public AnswerList readBySystem(String System) {
-        return ApplicationDAO.readBySystemByCriteria(System, 0, 0, "sort", "asc", null, null);
+    public AnswerList readBySystem(List<String> system) {
+        return ApplicationDAO.readBySystemByCriteria(system, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
@@ -72,12 +72,12 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    public AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList readBySystemByCriteria(List<String> system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return ApplicationDAO.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerItem readTestCaseCountersBySystemByStatus(String system) {
+    public AnswerItem readTestCaseCountersBySystemByStatus(List<String> system) {
         return this.ApplicationDAO.readTestCaseCountersBySystemByStatus(system);
     }
 
@@ -135,7 +135,7 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return ApplicationDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
 

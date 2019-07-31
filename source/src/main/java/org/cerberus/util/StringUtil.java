@@ -401,7 +401,7 @@ public final class StringUtil {
         return result;
     }
 
-    public static String formatURLCredential(String user, String pass) {
+    public static String formatURLCredential(String user, String pass, String url) {
         String credential = "";
         if (!StringUtil.isNullOrEmpty(user)) {
             if (!StringUtil.isNullOrEmpty(pass)) {
@@ -410,7 +410,20 @@ public final class StringUtil {
                 credential = user + "@";
             }
         }
-        return credential;
+
+        String firstPart = "";
+        String seccondPart = url;
+
+        if(url.contains("http://") ) {
+            firstPart = "http://";
+            seccondPart = url.split("http://")[1];
+        }
+        else if (url.contains("https://")) {
+            firstPart = "https://";
+            seccondPart = url.split("https://")[1];
+        }
+
+        return firstPart + credential + seccondPart;
     }
 
     /**

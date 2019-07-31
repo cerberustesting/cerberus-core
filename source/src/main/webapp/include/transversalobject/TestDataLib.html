@@ -56,7 +56,7 @@
                             <select class="form-control"  id="country" name="country">
                             </select>  
                         </div>            
-                    </div>    
+                    </div> 
                     <!-- tabs definition-->
                     <ul id="edittabs" class="nav nav-tabs" data-tabs="tabs">
                         <li class="active"><a data-toggle="tab" id="tab1Text" name="tab1Text" href="#tabsedit-1">Definition</a></li>
@@ -186,10 +186,15 @@
                             </div>
                             <!--group infomation -->
                             <div class="row">
-                                <div class="form-group col-xs-6">
+                                <div class="form-group col-sm-6">
                                     <label name="lbl_group"  for="groupedit">or enter new group</label>
                                     <input id="group" name="group" class="form-control" />     
                                 </div>                  
+                                <div class="form-group col-sm-6">
+                                    <label name="lbl_privateData" for="privateData">Private</label><br>
+                                    <input class="col-xs-2" type="checkbox" id="privateData" name="privateData"/>
+                                    <p class="text-warning col-xs-10" ><strong id="messagePrivate"></strong></p>
+                                </div>
                             </div>
 
                             <!--description-->
@@ -209,6 +214,7 @@
                                                 <tr>
                                                     <th style="width: 5%;"></th>
                                                     <th class="text-center" id="subdataHeader" name="subdataHeader">Sub Data</th>
+                                                    <th class="text-center" id="encryptHeader" name="encryptHeader">Encrypt</th>
                                                     <th class="text-center" id="valueHeader" name="valueHeader">Value</th>
                                                     <th class="text-center" id="columnHeader" name="columnHeader">Column</th>
                                                     <th class="text-center" id="parsingAnswerHeader" name="parsingAnswerHeader">Parsing Answer</th>

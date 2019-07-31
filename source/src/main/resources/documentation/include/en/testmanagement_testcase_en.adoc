@@ -229,6 +229,7 @@ The keycodes (see. keypress action) also changes from GUI to FAT type. The synta
 | verifyIntegerMinor | *[green]#OK#* if the *[red]#Integer1#* is lower than the *[red]#Integer2#*. | 
 | verifyRegexInElement | TBD | 
 | verifyStringContains | *[green]#OK#* if Property *[red]#String1#* contains the *[red]#String2#*. | 
+| verifyStringNotContains | *[green]#OK#* if Property *[red]#String1#* do not contains the *[red]#String2#*. | 
 | verifyStringEqual | *[green]#OK#* if the *[red]#String1#* is equal to the *[red]#String2#*. | 
 | verifyStringGreater | *[green]#OK#* if the *[red]#String1#* is greater than to the *[red]#String2#* (After in a dictonnary) | *[red]#String1#* : ZZZ  *[red]#String2#* : AAA
 | verifyStringMinor |  *[green]#OK#* if the *[red]#String1#* is minor than to the *[red]#String2#* (before in a dictonnary) | *[red]#String1#* : AAA  *[red]#String2#* : ZZZ 

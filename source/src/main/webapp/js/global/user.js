@@ -27,6 +27,25 @@ function readUserFromDatabase() {
         async: false,
         dataType: 'json',
         success: function (data) {
+            try {
+                var systemQuery = "";
+                for (var s in data.system) {
+                    systemQuery += "&system=" + data.system[s];
+                }
+                data.systemQuery = systemQuery;
+                var jsonSys = JSON.parse(data.defaultSystem);
+                data.defaultSystem = jsonSys[0];
+                data.defaultSystems = jsonSys;
+                var systemQuery = "";
+                for (var s in jsonSys) {
+                    systemQuery += "&system=" + jsonSys[s];
+                }
+                data.defaultSystemsQuery = systemQuery;
+            } catch (err) {
+                // defaultSystem column is not yet in JSON format so we leave the column unchanged
+                data.defaultSystems = JSON.parse("[ \"" + data.defaultSystem + "\" ]");
+                data.defaultSystemsQuery = "&system=" + data.defaultSystem;
+            }
             user = data;
             sessionStorage.setItem("user", JSON.stringify(user));
             loadUserPreferences(data);
