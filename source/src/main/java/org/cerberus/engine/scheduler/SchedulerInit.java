@@ -66,6 +66,14 @@ public class SchedulerInit {
     //Création du job
     JobDetail scheduledJob = JobBuilder.newJob(ScheduledJob.class).withIdentity("ScheduledJob", "group1").build();
 
+    public String getInstanceSchedulerVersion() {
+        return instanceSchedulerVersion;
+    }
+
+    public boolean isIsRunning() {
+        return isRunning;
+    }
+
     @PostConstruct
     public void init() {
         try {

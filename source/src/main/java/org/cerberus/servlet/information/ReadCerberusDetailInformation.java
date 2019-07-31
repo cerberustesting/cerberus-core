@@ -37,7 +37,7 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.database.IDatabaseVersioningService;
-import org.cerberus.util.StringUtil;
+import org.cerberus.engine.scheduler.SchedulerInit;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;
 import org.json.JSONArray;
@@ -75,6 +75,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ExecutionUUID euuid = appContext.getBean(ExecutionUUID.class);
         SessionCounter sc = appContext.getBean(SessionCounter.class);
+        SchedulerInit scInit = appContext.getBean(SchedulerInit.class);
         Infos infos = new Infos();
 
         try {
@@ -98,6 +99,13 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             jsonResponse.put("simultaneous_execution_list", executionArray);
             jsonResponse.put("simultaneous_session", sc.getTotalActiveSession());
             jsonResponse.put("active_users", sc.getActiveUsers());
+
+            JSONObject object = new JSONObject();
+            if (scInit != null) {
+                object.put("schedulerInstanceVersion", scInit.getInstanceSchedulerVersion());
+                object.put("schedulerReloadIsRunning", scInit.isIsRunning());
+            }
+            jsonResponse.put("Scheduler", object);
 
             cerberusDatabaseInformation = appContext.getBean(ICerberusInformationDAO.class);
 
