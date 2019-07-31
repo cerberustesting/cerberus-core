@@ -43,6 +43,7 @@ import org.cerberus.version.Infos;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.quartz.Trigger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -104,6 +105,20 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             if (scInit != null) {
                 object.put("schedulerInstanceVersion", scInit.getInstanceSchedulerVersion());
                 object.put("schedulerReloadIsRunning", scInit.isIsRunning());
+                //tester le contenu du scheduler
+                //creer un array JSON pour récupérer la liste des trigger qu
+                JSONArray object1 = new JSONArray();
+                for (Trigger triggerSet : scInit.getMyTriggersSet() ) {
+                    LOG.debug("triggerSet : " + triggerSet.getNextFireTime());
+                    JSONObject objectTrig = new JSONObject();
+                    objectTrig.put("Trigger_Id", triggerSet.getJobDataMap().getInt("schedulerId"));
+                    objectTrig.put("Trigger_Campaign_Name", triggerSet.getJobDataMap().getString("name"));
+                    objectTrig.put("Trigger_Campaign_Type", triggerSet.getJobDataMap().getString("type"));
+                    objectTrig.put("Trigger_Campaign_UserCreated", triggerSet.getJobDataMap().getString("user"));
+                    objectTrig.put("Trigger_NextFiretime", triggerSet.getNextFireTime());
+                    object1.put(objectTrig);
+                }
+                object.put("schedulerTriggers", object1);
             }
             jsonResponse.put("Scheduler", object);
 
