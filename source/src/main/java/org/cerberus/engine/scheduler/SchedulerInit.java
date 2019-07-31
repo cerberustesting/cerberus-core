@@ -19,7 +19,6 @@
  */
 package org.cerberus.engine.scheduler;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -33,12 +32,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.MyVersion;
 import org.cerberus.crud.entity.ScheduleEntry;
-import org.cerberus.crud.entity.ScheduledExecution;
 import org.cerberus.crud.factory.IFactoryScheduleEntry;
-import org.cerberus.crud.factory.IFactoryScheduledExecution;
-import org.cerberus.crud.factory.impl.FactoryScheduledExecution;
 import org.cerberus.crud.service.IMyVersionService;
-import org.cerberus.crud.service.IParameterService;
 import org.cerberus.util.answer.AnswerItem;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
@@ -51,10 +46,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.cerberus.crud.service.IScheduleEntryService;
-import org.cerberus.crud.service.IScheduledExecutionService;
-import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.Answer;
 
 @Component
 public class SchedulerInit {

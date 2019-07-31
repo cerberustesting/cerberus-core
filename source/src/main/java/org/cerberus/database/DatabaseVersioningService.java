@@ -8160,16 +8160,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // Add the "longPress" and "clearField" Action
         // 1417
-        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
-                + "('', 'cerberus_smtp_isSetTls', 'true', 'Boolean defining if the TLS is set or not for the email!<br>true / false');");
-        
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_smtp_isSetTls', 'true', 'Boolean defining if the TLS is set or not for the email!<br>true / false');");
+
         // Add the "longPress" and "clearField" Action
         // 1418
         a.add("ALTER TABLE `testdatalib` ADD COLUMN `PrivateData` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `Country`;");
-        
+
         // Add the "longPress" and "clearField" Action
         // 1419
         a.add("ALTER TABLE `testdatalibdata` ADD COLUMN `Encrypt` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `SubData`;");
+
+        // Add the "longPress" and "clearField" Action
+        // 1420
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_appium_action_longpress_wait', '8000', 'Integer value that correspond to the nb of ms of the longpress Appium action.');");
 
         return a;
     }
