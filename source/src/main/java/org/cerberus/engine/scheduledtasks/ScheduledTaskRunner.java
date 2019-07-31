@@ -113,12 +113,12 @@ public class ScheduledTaskRunner {
     }
 
     private void performBatch3_SchedulerInit() {
-        try{
-        LOG.debug("SchedulerInit Task triggered.");
-        schedulerInit.init();
-        LOG.debug("SchedulerInit Task ended.");
-        }catch(Exception e){
-        LOG.debug("ScheduleEntry init from scheduletaskrunner failed : " + e);
+        try {
+            LOG.debug("SchedulerInit Task triggered.");
+            schedulerInit.init();
+            LOG.debug("SchedulerInit Task ended.");
+        } catch (Exception e) {
+            LOG.debug("ScheduleEntry init from scheduletaskrunner failed : " + e);
         }
 
     }

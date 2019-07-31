@@ -76,93 +76,93 @@ public class SchedulerInit {
 
     @PostConstruct
     public void init() {
-        try{
-        AnswerItem<List> ans = new AnswerItem();
-        List<ScheduleEntry> listSched = new ArrayList<ScheduleEntry>();
+        try {
+            AnswerItem<List> ans = new AnswerItem();
+            List<ScheduleEntry> listSched = new ArrayList<ScheduleEntry>();
 
-        // read myversion scheduler_version
-        MyVersion databaseSchedulerVersion;
-        try{
-        databaseSchedulerVersion = MyversionService.findMyVersionByKey("scheduler_version");
-        LOG.debug("Current version scheduler in Cerberus : " + instanceSchedulerVersion);
-        LOG.debug("Current version scheduler in DB       : " + databaseSchedulerVersion.getValueString());
+            // read myversion scheduler_version
+            MyVersion databaseSchedulerVersion;
+            try {
+                databaseSchedulerVersion = MyversionService.findMyVersionByKey("scheduler_version");
+                LOG.debug("Current version scheduler in Cerberus : " + instanceSchedulerVersion);
+                LOG.debug("Current version scheduler in DB       : " + databaseSchedulerVersion.getValueString());
 
-        //Compare version between database and instance
-        if (databaseSchedulerVersion.getValueString() == null || instanceSchedulerVersion.equalsIgnoreCase(databaseSchedulerVersion.getValueString())) {
-            LOG.debug("the current version is up to date");
-        } else {
-            if (isRunning == false) {
-                isRunning = true;
-                LOG.debug("Reload Scheduler entries from database.");
-                //Création d'une liste de Trigger
-                Set<Trigger> myTriggersSet = new HashSet();
-
-                try {
-                    // Get all active entry of scheduleentry
-                    ans = scheduleEntryService.readAllActive();
-                    listSched = ans.getItem();
-                    if (ans.getMessageCodeString().equalsIgnoreCase("OK")) {
-                        // Browse all entry
-                        for (ScheduleEntry sched : listSched) {
-                            LOG.debug("Add to trigger : " + sched.getName());
-                            //Get info of scheduler : cron, name, type to parameter trigger
-                            String cron = sched.getCronDefinition();
-                            String name = sched.getName();
-                            String type = sched.getType();
-                            String id = sched.getID().toString();
-                            int schedulerId = sched.getID();
-
-                            String user = "";
-                            if (!StringUtil.isNullOrEmpty(sched.getUsrModif())) {
-                                user = sched.getUsrModif();
-                            } else {
-                                user = sched.getUsrCreated();
-                            }
-                            //Build trigger with cron settings name and type
-                            Trigger myTrigger = TriggerBuilder.newTrigger().withIdentity(id, "group1").usingJobData("schedulerId", schedulerId).usingJobData("name", name).usingJobData("type", type).usingJobData("user", user).withSchedule(CronScheduleBuilder.cronSchedule(cron).inTimeZone(TimeZone.getTimeZone("UTC+2"))).forJob(scheduledJob).build();
-
-                            //Add trigger to list of trigger
-                            myTriggersSet.add(myTrigger);
-                        }
+                //Compare version between database and instance
+                if (databaseSchedulerVersion.getValueString() == null || instanceSchedulerVersion.equalsIgnoreCase(databaseSchedulerVersion.getValueString())) {
+                    LOG.debug("the current version is up to date");
+                } else {
+                    if (isRunning == false) {
+                        isRunning = true;
+                        LOG.info("Start of Reload Scheduler entries from database.");
+                        //Création d'une liste de Trigger
+                        Set<Trigger> myTriggersSet = new HashSet();
 
                         try {
-                            //Clean old entry
-                            closeScheduler();
+                            // Get all active entry of scheduleentry
+                            ans = scheduleEntryService.readAllActive();
+                            listSched = ans.getItem();
+                            if (ans.getMessageCodeString().equalsIgnoreCase("OK")) {
+                                // Browse all entry
+                                for (ScheduleEntry sched : listSched) {
+                                    LOG.debug("Add to trigger : " + sched.getName());
+                                    //Get info of scheduler : cron, name, type to parameter trigger
+                                    String cron = sched.getCronDefinition();
+                                    String name = sched.getName();
+                                    String type = sched.getType();
+                                    String id = sched.getID().toString();
+                                    int schedulerId = sched.getID();
 
-                            //Create scheduler
-                            myScheduler = schFactory.getScheduler();
+                                    String user = "";
+                                    if (!StringUtil.isNullOrEmpty(sched.getUsrModif())) {
+                                        user = sched.getUsrModif();
+                                    } else {
+                                        user = sched.getUsrCreated();
+                                    }
+                                    //Build trigger with cron settings name and type
+                                    Trigger myTrigger = TriggerBuilder.newTrigger().withIdentity(id, "group1").usingJobData("schedulerId", schedulerId).usingJobData("name", name).usingJobData("type", type).usingJobData("user", user).withSchedule(CronScheduleBuilder.cronSchedule(cron).inTimeZone(TimeZone.getTimeZone("UTC+2"))).forJob(scheduledJob).build();
 
-                            //run scheduler
-                            myScheduler.start();
+                                    //Add trigger to list of trigger
+                                    myTriggersSet.add(myTrigger);
+                                }
 
-                            //run job on list of trigger
-                            myScheduler.scheduleJob(scheduledJob, myTriggersSet, false);
-                            LOG.debug("end of Reload Scheduler entries from database.");
-                            LOG.debug("update of scheduler version from : " + instanceSchedulerVersion + " to : " + databaseSchedulerVersion.getValueString());
-                            instanceSchedulerVersion = databaseSchedulerVersion.getValueString();
+                                try {
+                                    //Clean old entry
+                                    closeScheduler();
+
+                                    //Create scheduler
+                                    myScheduler = schFactory.getScheduler();
+
+                                    //run scheduler
+                                    myScheduler.start();
+
+                                    //run job on list of trigger
+                                    myScheduler.scheduleJob(scheduledJob, myTriggersSet, false);
+                                    LOG.info("End of Reload Scheduler entries from database.");
+                                    LOG.info("Scheduler version updated from : " + instanceSchedulerVersion + " to : " + databaseSchedulerVersion.getValueString());
+                                    instanceSchedulerVersion = databaseSchedulerVersion.getValueString();
+
+                                } catch (Exception e) {
+                                    LOG.error("Failed to load scheduler table.");
+                                    LOG.error(e);
+                                }
+                            } else {
+                                LOG.debug("Select new result in base not working, catch exception : " + ans.getMessageCodeString());
+                            }
 
                         } catch (Exception e) {
-                            LOG.error("Failed to run scheduler Job");
-                            LOG.error(e);
+                            LOG.debug("Failed to load schedule entry : " + e);
+                        } finally {
+                            isRunning = false;
                         }
                     } else {
-                        LOG.debug("Select new result in base not working, catch exception : " + ans.getMessageCodeString());
+                        LOG.debug("Scheduler version is already in updating");
                     }
-
-                } catch (Exception e) {
-                    LOG.debug("Failed to load schedule entry : " + e);
-                } finally {
-                    isRunning = false;
                 }
-            } else {
-                LOG.debug("Scheduler version is already in updating");
+            } catch (Exception e) {
+                LOG.debug("failed to launch scheduler init :" + e);
             }
-        }
-        }catch(Exception e){
-        LOG.debug("failed to launch scheduler init :" + e);
-        }
-        }catch(Exception e){
-        LOG.debug("Execption : ", e);
+        } catch (Exception e) {
+            LOG.debug("Execption : ", e);
         }
     }
 
