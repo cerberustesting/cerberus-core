@@ -445,15 +445,7 @@ public class ActionService implements IActionService {
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_BAT)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
-                
-                // PENDING FEATURE
-                
-                message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-                message.setDescription(message.getDescription().replace("%ACTION%", "executeCommand"));
-                message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
-                return message;
-                
-                //return executeCommand(command, args);
+                return executeCommand(command, args);
             } else {
                 message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 message.setDescription(message.getDescription().replace("%ACTION%", "executeCommand"));
@@ -522,9 +514,8 @@ public class ActionService implements IActionService {
             folderPath = parameterService.getParameterStringByKey("cerberus_script_folderpath", "", "ALL");
         }
          */
-        
         String[] commandToRun;
-        
+
         boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
         if (isWindows) {
             commandToRun = new String[]{"cmd.exe", "/c", "su - " + scriptUser, folderPath + inputCommand + "\""};
