@@ -428,6 +428,9 @@ function editEntryClick(param) {
         hideLoader("#testcampaignList");
 
         /* SCHEDULER */
+        var doc = new Doc();
+        $("[name='lbl_cronexp']").html(doc.getDocOnline("scheduler", "cronexp"));
+
         $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
         formEdit.modal('show');
         $('#addscheduler').off('click');
@@ -585,6 +588,8 @@ function addEntryClick() {
     $('#parameterScheduler tr').remove();
     $('#addscheduler').off('click');
     $('#addscheduler').click(addNewSchedulerRow);
+    loadSchedulerTable("");
+
 }
 
 function addEntryModalSaveHandler() {

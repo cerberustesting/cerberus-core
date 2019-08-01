@@ -350,6 +350,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('project','description','','fr','Description','Description du projet',NULL)");
         b.append(",('project','idproject','','en','Project','This is the id of the project that provided the implementation of the <code class=\\'doc-crbvvoca\\'>test case</code>.',NULL)");
         b.append(",('project','idproject','','fr','Projet','Identifiant du projet qui est à l\\'origine de la création d\\'un <code class=\\'doc-crbvvoca\\'>cas de test</code>.',NULL)");
+        b.append(",('scheduler','cronexp','','en','Cron Expression','Scheduler use cron expression in quartz format to plan campaign execution. Example : 0 0 12 1/1 * ? * <br> everyday at noon',NULL)");
+        b.append(",('scheduler','cronexp','','fr','Cron Expression','Le plannificateur utilise les expressions CRON au format Quartz pour ordonnancer les campagnes. Exemple : 0 0 12 1/1 * ? * <br> Tout les jours à midi',NULL)");
         b.append(",('robot','active','','en','Active','Define if the robot is active or not.',NULL)");
         b.append(",('robot','active','','fr','Actif','Defini si le robot est actif ou non.',NULL)");
         b.append(",('robot','browser','','en','Browser','Broswer of the robot.',NULL)");

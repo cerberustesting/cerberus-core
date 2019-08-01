@@ -72,10 +72,23 @@ public class ScheduleEntryService implements IScheduleEntryService {
     @Override
     public Answer update(ScheduleEntry scheduleentry) {
         Answer response = new Answer();
-        Boolean validCron = org.quartz.CronExpression.isValidExpression(scheduleentry.getCronDefinition());
-        if (scheduleentry.getName().isEmpty() || scheduleentry.getCronDefinition().isEmpty() || !validCron) {
+        Boolean validCron = true;
+        if(!scheduleentry.getCronDefinition().isEmpty()){
+            validCron = org.quartz.CronExpression.isValidExpression(scheduleentry.getCronDefinition());
+        }
+        if (!validCron) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unvalid SchedulerEntry data"));
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", scheduleentry.getCronDefinition() + " is not a valid cron expression for Quartz format"));
+            response.setResultMessage(msg);
+        }
+        else if (scheduleentry.getCronDefinition().isEmpty()) {
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Cron definition is empty"));
+            response.setResultMessage(msg);
+        }
+        else if (scheduleentry.getName().isEmpty()) {
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Name of scheduledcampaign is empty"));
             response.setResultMessage(msg);
         } else {
             response = schedulerDao.update(scheduleentry);
@@ -116,10 +129,10 @@ public class ScheduleEntryService implements IScheduleEntryService {
         Answer ans = new Answer(null);
         List<ScheduleEntry> objectList = new ArrayList<ScheduleEntry>();
         objectList = this.readByName(name).getItem();
-        for (ScheduleEntry objectToDelete : objectList){
+        for (ScheduleEntry objectToDelete : objectList) {
             ans = this.delete(objectToDelete);
-            if(!ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) ){
-            return ans;
+            if (!ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                return ans;
             }
         }
         return ans;
@@ -137,11 +150,21 @@ public class ScheduleEntryService implements IScheduleEntryService {
         } else {
             for (ScheduleEntry objectToCreate : objectList) {
                 Boolean validCron = org.quartz.CronExpression.isValidExpression(objectToCreate.getCronDefinition());
-                if (objectToCreate.getName().isEmpty() || objectToCreate.getCronDefinition().isEmpty() || !validCron) {
+                
+                if (!validCron) {
                     MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unvalid SchedulerEntry data"));
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", objectToCreate.getCronDefinition() + " is not a valid cron expression for Quartz format"));
                     ans.setResultMessage(msg);
-                    return ans;
+                }
+                else if (objectToCreate.getCronDefinition().isEmpty()) {
+                    MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Cron definition is empty"));
+                    ans.setResultMessage(msg);
+                }
+                else if(objectToCreate.getName().isEmpty()) {
+                    MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Name of scheduledcampaign is empty"));
+                    ans.setResultMessage(msg);
                 } else {
                     LOG.debug("ScheduleEntry Created for : " + objectToCreate.getName() + "with Cron expression : " + objectToCreate.getCronDefinition());
                     ans = schedulerDao.create(objectToCreate);
@@ -204,12 +227,12 @@ public class ScheduleEntryService implements IScheduleEntryService {
         }
         return finalAnswer;
     }
-    
+
     @Override
-    public Answer updateLastExecution(Integer schedulerId, Timestamp lastExecution){
-    Answer ans = new Answer();
-    ans = schedulerDao.updateLastExecution(schedulerId, lastExecution);
-    return ans;
+    public Answer updateLastExecution(Integer schedulerId, Timestamp lastExecution) {
+        Answer ans = new Answer();
+        ans = schedulerDao.updateLastExecution(schedulerId, lastExecution);
+        return ans;
     }
 
 }
