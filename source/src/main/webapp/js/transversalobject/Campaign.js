@@ -435,6 +435,7 @@ function editEntryClick(param) {
         formEdit.modal('show');
         $('#addscheduler').off('click');
         $('#addscheduler').click(addNewSchedulerRow);
+        $('#schedulerinput').val('0 0 12 1/1 * ? *');
         loadSchedulerTable(param);
 
     });
@@ -588,6 +589,7 @@ function addEntryClick() {
     $('#parameterScheduler tr').remove();
     $('#addscheduler').off('click');
     $('#addscheduler').click(addNewSchedulerRow);
+    $('#schedulerinput').val('0 0 12 1/1 * ? *');
     loadSchedulerTable("");
 
 }
@@ -1123,7 +1125,7 @@ function appendSchedulerRow(scheduler) {
 function addNewSchedulerRow() {
     var newScheduler = {
         cronDefinition: $('#schedulerinput').val(),
-        active: "N",
+        active: "Y",
         lastExecution: "",
         ID: "0",
         toDelete: false
