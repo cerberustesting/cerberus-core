@@ -63,13 +63,12 @@ public class ScheduledJob implements Job {
     private IParameterService parameterService;
     @Autowired
     private IScheduleEntryService scheduleEntryService;
-    
+
     private static final Logger LOG = LogManager.getLogger(ScheduledJob.class);
     private static IFactoryScheduledExecution factoryScheduledExecution = new FactoryScheduledExecution();
 
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOG.debug("Job is starting.");
 
         // Get variable parameter to scheduledExecution
         Date date = new Date();
@@ -84,16 +83,12 @@ public class ScheduledJob implements Job {
         Timestamp scheduledDate = new Timestamp(arg0.getScheduledFireTime().getTime());
         Timestamp scheduleFireTime = new Timestamp(arg0.getFireTime().getTime());
         String convertDateFireTime = simpleDateFormat.format(scheduleFireTime);
-        LOG.debug("Convert date : " + convertDateFireTime);
         Timestamp factice = new Timestamp(System.currentTimeMillis());
-        try {
-            LOG.debug(scheduledExecutionService.toString());
-        } catch (Exception e) {
-            LOG.debug(e);
-        }
+
+        LOG.info("Job " + schedulerId + " for " + scheduleName + " campaign is starting.");
+
         try {
             ScheduledExecution scheduledExecutionObject = factoryScheduledExecution.create(1, schedulerId, scheduleName, "TOLAUNCH", "Job is created", user, "", scheduledDate, scheduleFireTime, factice, factice);
-            LOG.debug(scheduledExecutionObject.getScheduleName());
             //if execution have type campaign
             if (type.equalsIgnoreCase("CAMPAIGN")) {
                 try {
@@ -108,11 +103,10 @@ public class ScheduledJob implements Job {
                         String request = new String();
                         request = parameterService.getParameterStringByKey("cerberus_url", "", "") + "/AddToExecutionQueueV003?campaign=" + scheduleName + "&outputformat=json";
                         HttpGet requesthttp = new HttpGet(request);
-                        LOG.debug(request);
                         HttpResponse responsehttp = httpclient.execute(requesthttp);
                         int statusCode = responsehttp.getStatusLine().getStatusCode();
 
-                        LOG.debug("Execution statut : " + statusCode);
+                        LOG.info("Url called : '" + request + "' status code : " + statusCode);
                         try {
                             if (statusCode == 200 || statusCode == 201) {
                                 scheduledExecutionObject.setStatus("TRIGGERED");
@@ -123,10 +117,9 @@ public class ScheduledJob implements Job {
                                 LOG.debug("ERROR HTTP Response " + statusCode);
                                 LOG.debug("Sent request : " + request);
                             }
-                            
+
                             HttpEntity entity = responsehttp.getEntity();
-                            
-                        
+
                             if (entity != null) {
                                 String json_string = EntityUtils.toString(entity);
                                 JSONObject temp1 = new JSONObject(json_string);
