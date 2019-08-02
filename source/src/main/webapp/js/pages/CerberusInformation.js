@@ -79,7 +79,6 @@ function feedContent() {
         table.empty();
         var row = $("<tr></tr>");
         var cel1 = $("<td></td>").append(data.saaS);
-        console.info(data.saaS + " - " + data.isSaaS);
         var cel2 = $("<td></td>").append(data.isSaaS.toString());
         var cel3 = $("<td></td>").append(data.saasInstance);
         var cel4 = $("<td></td>").append(data.saasParallelrun);
@@ -153,10 +152,10 @@ function feedContent() {
         var table = $("#databaseTableBody");
         table.empty();
         var row = $("<tr></tr>");
-        var cel1 = $("<td></td>").append(data.DatabaseProductName);
-        var cel2 = $("<td></td>").append(data.DatabaseProductVersion);
-        var cel3 = $("<td></td>").append(data.DatabaseMajorVersion);
-        var cel4 = $("<td></td>").append(data.DatabaseMinorVersion);
+        var cel1 = $("<td></td>").append(data.databaseProductName);
+        var cel2 = $("<td></td>").append(data.databaseProductVersion);
+        var cel3 = $("<td></td>").append(data.databaseMajorVersion);
+        var cel4 = $("<td></td>").append(data.databaseMinorVersion);
         row.append(cel1);
         row.append(cel2);
         row.append(cel3);
@@ -166,10 +165,10 @@ function feedContent() {
         var table = $("#driverTableBody");
         table.empty();
         var row = $("<tr></tr>");
-        var cel1 = $("<td></td>").append(data.DriverName);
-        var cel2 = $("<td></td>").append(data.DriverVersion);
-        var cel3 = $("<td></td>").append(data.DriverMajorVersion);
-        var cel4 = $("<td></td>").append(data.DriverMinorVersion);
+        var cel1 = $("<td></td>").append(data.driverName);
+        var cel2 = $("<td></td>").append(data.driverVersion);
+        var cel3 = $("<td></td>").append(data.driverMajorVersion);
+        var cel4 = $("<td></td>").append(data.driverMinorVersion);
         row.append(cel1);
         row.append(cel2);
         row.append(cel3);
@@ -179,11 +178,36 @@ function feedContent() {
         var table = $("#jdbcTableBody");
         table.empty();
         var row = $("<tr></tr>");
-        var cel1 = $("<td></td>").append(data.JDBCMinorVersion);
-        var cel2 = $("<td></td>").append(data.JDBCMajorVersion);
+        var cel1 = $("<td></td>").append(data.jDBCMinorVersion);
+        var cel2 = $("<td></td>").append(data.jDBCMajorVersion);
         row.append(cel1);
         row.append(cel2);
         table.append(row);
+
+        var table = $("#schedulerTableBody");
+        table.empty();
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.scheduler.schedulerInstanceVersion);
+        var cel2 = $("<td></td>").append(data.scheduler.schedulerReloadIsRunning.toString());
+        row.append(cel1);
+        row.append(cel2);
+        table.append(row);
+
+        var table = $("#schDetTableBody");
+        table.empty();
+        $.each(data.scheduler["schedulerTriggers"], function (idx, obj) {
+            var row = $("<tr></tr>");
+            var cel1 = $("<td></td>").append(obj.triggerType);
+            row.append(cel1);
+            var cel1 = $("<td></td>").append(obj.triggerName);
+            row.append(cel1);
+            var cel1 = $("<td></td>").append(obj.triggerNextFiretime);
+            row.append(cel1);
+            var cel1 = $("<td></td>").append(obj.triggerUserCreated);
+            row.append(cel1);
+            table.append(row);
+        });
+
     });
 
 }

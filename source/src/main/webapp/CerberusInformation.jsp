@@ -42,7 +42,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading card clearfix" data-toggle="collapse" data-target="#cerberusActivity">
                         <span class="fa fa-tag fa-fw"></span>
-                        <label id="filters" name="filtersField">Cerberus Activity</label>
+                        <label id="filters" name="filtersField">Cerberus Instance Activity</label>
                         <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                     </div>
                     <div class="panel-body collapse in" id="cerberusActivity">
@@ -156,7 +156,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="form-group col-md-6">
                     <div class="" id="FiltersPanel">
                         <div class="panel panel-default">
@@ -215,64 +215,119 @@
                 </div>
             </div>
 
-            <div id="FiltersPanel">
-                <div class="panel panel-default">
-                    <div class="panel-heading card" data-toggle="collapse"  data-target="#dtbInformation">
-                        <span class="fa fa-tag fa-fw"></span>
-                        <label id="filters" name="filtersField">Database Information</label>
-                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                    </div>
-                    <div class="panel-body collapse in" id="dtbInformation">
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <table class="table table-bordered table-hover nomarginbottom dataTable" id="databaseTable">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center" id="systemHeader" name="systemHeader">Database</th>
-                                            <th class="text-center" id="systemHeader" name="systemHeader">Database Version</th>
-                                            <th class="text-center" id="systemHeader" name="systemHeader">Major Version</th>
-                                            <th class="text-center" id="systemHeader" name="systemHeader">Minor Version</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="databaseTableBody">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <table class="table table-bordered table-hover nomarginbottom dataTable" id="driverTable">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center" id="systemHeader" name="systemHeader">Driver Name</th>
-                                            <th class="text-center" id="systemHeader" name="systemHeader">Driver Version</th>
-                                            <th class="text-center" id="systemHeader" name="systemHeader">Major Version</th>
-                                            <th class="text-center" id="systemHeader" name="systemHeader">Minor Version</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="driverTableBody">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <table class="table table-bordered table-hover nomarginbottom dataTable" id="jdbcTable">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center" id="systemHeader" name="systemHeader">JDBC Minor Version</th>
-                                            <th class="text-center" id="systemHeader" name="systemHeader">JDBC Major Version</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="jdbcTableBody">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
+            <div class="row">
+                <div class="form-group col-md-6">
+
+                    <div id="FiltersPanel">
+                        <div class="panel panel-default">
+                            <div class="panel-heading card" data-toggle="collapse"  data-target="#dtbInformation">
+                                <span class="fa fa-tag fa-fw"></span>
+                                <label id="filters" name="filtersField">Database Information</label>
+                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                            </div>
+                            <div class="panel-body collapse in" id="dtbInformation">
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <table class="table table-bordered table-hover nomarginbottom dataTable" id="databaseTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Database</th>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Database Version</th>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Major Version</th>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Minor Version</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="databaseTableBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <table class="table table-bordered table-hover nomarginbottom dataTable" id="driverTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Driver Name</th>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Driver Version</th>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Major Version</th>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Minor Version</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="driverTableBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <table class="table table-bordered table-hover nomarginbottom dataTable" id="jdbcTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">JDBC Minor Version</th>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">JDBC Major Version</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="jdbcTableBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                
+                
+                <div class="form-group col-md-6">
+
+                    <div id="FiltersPanel">
+                        <div class="panel panel-default">
+                            <div class="panel-heading card" data-toggle="collapse"  data-target="#schInformation">
+                                <span class="fa fa-tag fa-fw"></span>
+                                <label id="schedulerfilters" name="filtersField">Scheduler Instance Information</label>
+                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                            </div>
+                            <div class="panel-body collapse in" id="schInformation">
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <table class="table table-bordered table-hover nomarginbottom dataTable" id="schedulerTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Version</th>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Reload Is Running</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="schedulerTableBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <table class="table table-bordered table-hover nomarginbottom dataTable" id="schDetTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Type</th>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Name</th>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Next Fire Time</th>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">User Created</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="schDetTableBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                
+                
+            </div>
 
 
             <footer class="footer">
