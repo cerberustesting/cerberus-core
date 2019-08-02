@@ -144,22 +144,16 @@ public class ScheduledJob implements Job {
                                 LOG.debug(updateScx.getMessageDescription());
                                 scheduleEntryService.updateLastExecution(scheduledExecutionObject.getSchedulerId(), scheduledExecutionObject.getScheduledDate());
                             } catch (Exception e) {
-                                LOG.debug("Failed to update scheduledExecution", e);
+                                LOG.error("Failed to update scheduledExecution", e);
                             }
                         } catch (Exception e) {
-                            LOG.debug("Failed to read result of AddToExecutionQueueV003 : ", e);
+                            LOG.error("Failed to read result of AddToExecutionQueueV003 : ", e);
                         }
                     } catch (Exception e) {
-                        LOG.debug("Failed to call AddToExecutionQueueV003, catch exception", e);
-                    }
-                    try {
-                        // Insert in queue 
-                        LOG.debug("Job running : " + scheduleName);
-                    } catch (Exception e) {
-                        LOG.error("Run job not working, catch exception :", e);
+                        LOG.error("Failed to call AddToExecutionQueueV003, catch exception", e);
                     }
                 } catch (Exception e) {
-                    LOG.debug("Cannot insert execution in database (Potentialy another instance of Cerberus already triggered the job), catch exception :", e);
+                    LOG.warn("Cannot insert execution in database (Potentialy another instance of Cerberus already triggered the job), catch exception :", e);
                     scheduledExecutionObject.setStatus("IGNORED");
                     Answer updateScx = scheduledExecutionService.update(scheduledExecutionObject);
                     LOG.debug(updateScx);
@@ -169,7 +163,7 @@ public class ScheduledJob implements Job {
 
         } catch (Exception e) {
             //Log if executionScheduled is already insert in base
-            LOG.debug("Cannot create object, catch exception :" + e);
+            LOG.error("Cannot create object, catch exception :" + e);
 
         }
 
