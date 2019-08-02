@@ -57,7 +57,6 @@ public class ScheduledExecutionDAO implements IScheduledExecutionDAO {
     @Override
     public AnswerItem<Integer> create(ScheduledExecution object) {
         AnswerItem<Integer> ans = new AnswerItem<>();
-        LOG.debug("working to insert : " + object.getScheduleName() + " scheduledexecution in database");
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO scheduledexecution (`schedulerID`, `scheduleName`, `scheduledDate`"
@@ -149,14 +148,9 @@ public class ScheduledExecutionDAO implements IScheduledExecutionDAO {
                 preStat.setString(i++, scheduledExecutionObject.getStatus());
                 preStat.setString(i++, scheduledExecutionObject.getComment().replace("'", ""));
                 preStat.setInt(i++, scheduledExecutionObject.getID());
-                
-                LOG.debug("status : " + scheduledExecutionObject.getStatus());
-                LOG.debug("comment : " + scheduledExecutionObject.getComment());
-                LOG.debug("id : " + scheduledExecutionObject.getID());
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
-                LOG.debug(msg.getDescription());
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);

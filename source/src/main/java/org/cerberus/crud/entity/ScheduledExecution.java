@@ -39,6 +39,14 @@ public class ScheduledExecution {
     private Timestamp dateCreated;
     private Timestamp dateModif;
 
+    /**
+     * Invariant PROPERTY TYPE String.
+     */
+    public static final String STATUS_TOLAUCH = "TOLAUCH";
+    public static final String STATUS_IGNORED = "IGNORED";
+    public static final String STATUS_TRIGGERED = "TRIGGERED";
+    public static final String STATUS_ERROR = "ERROR";
+
     // PRIVATE STATIC INVARIANTS STATUS : TOLAUNCH / IGNORED / TRIGGERED / ERROR
     public Integer getID() {
         return ID;
