@@ -19,7 +19,7 @@
  */
 package org.cerberus.engine.scheduler;
 
-import java.io.InputStream;
+import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -101,56 +101,59 @@ public class ScheduledJob implements Job {
                         httpclientBuilder = HttpClientBuilder.create();
                         httpclient = httpclientBuilder.build();
                         String request = new String();
-                        request = parameterService.getParameterStringByKey("cerberus_url", "", "") + "/AddToExecutionQueueV003?campaign=" + scheduleName + "&outputformat=json";
+                        String encodeName = URLEncoder.encode(scheduleName, "UTF-8");
+                        request = parameterService.getParameterStringByKey("cerberus_url", "", "") + "/AddToExecutionQueueV003?campaign=" + encodeName + "&outputformat=json";
+                        LOG.debug("Encoded request : " + request);
                         HttpGet requesthttp = new HttpGet(request);
                         HttpResponse responsehttp = httpclient.execute(requesthttp);
                         int statusCode = responsehttp.getStatusLine().getStatusCode();
 
                         LOG.info("Url called : '" + request + "' status code : " + statusCode);
+                        if (statusCode == 200 || statusCode == 201) {
+                            scheduledExecutionObject.setStatus("TRIGGERED");
+                        }
+                        //= Set comment from servlet
+                        if ((statusCode != 200) && (statusCode != 201)) {
+                            scheduledExecutionObject.setStatus("ERROR");
+                            LOG.error("Request " + request + " return http" + statusCode + "Error");
+                            scheduledExecutionObject.setStatus("ERROR");
+                            scheduledExecutionObject.setComment("Request : " + request + " return code : " + statusCode + "Error");
+                            Answer updateScx = scheduledExecutionService.update(scheduledExecutionObject);
+                        }
+
+                        HttpEntity entity = responsehttp.getEntity();
+
+                        if (entity != null) {
+                            String json_string = EntityUtils.toString(entity);
+                            JSONObject temp1 = new JSONObject(json_string);
+                            StringBuilder message = new StringBuilder();
+                            message.append(temp1.getString("message"));
+                            if (!StringUtil.isNullOrEmpty(temp1.getString("tag"))) {
+                                message.append(" Tag Execution : ");
+                                message.append(temp1.getString("tag"));
+                            }
+                            if (!StringUtil.isNullOrEmpty(message.toString())) {
+                                scheduledExecutionObject.setComment(message.toString());
+                            } else {
+                                LOG.debug("Failed to catch message from servlet response");
+                                scheduledExecutionObject.setComment("Empty comment, probably due to bug in execution submission");
+                            }
+                            LOG.debug(scheduledExecutionObject.getComment());
+                        }
                         try {
-                            if (statusCode == 200 || statusCode == 201) {
-                                scheduledExecutionObject.setStatus("TRIGGERED");
-                            }
-                            //= Set comment from servlet
-                            if ((statusCode != 200) && (statusCode != 201)) {
-                                scheduledExecutionObject.setStatus("ERROR");
-                                LOG.debug("ERROR HTTP Response " + statusCode);
-                                LOG.debug("Sent request : " + request);
-                            }
-
-                            HttpEntity entity = responsehttp.getEntity();
-
-                            if (entity != null) {
-                                String json_string = EntityUtils.toString(entity);
-                                JSONObject temp1 = new JSONObject(json_string);
-                                StringBuilder message = new StringBuilder();
-                                message.append(temp1.getString("message"));
-                                if (!StringUtil.isNullOrEmpty(temp1.getString("tag"))) {
-                                    message.append(" Tag Execution : ");
-                                    message.append(temp1.getString("tag"));
-                                }
-                                if (!StringUtil.isNullOrEmpty(message.toString())) {
-                                    scheduledExecutionObject.setComment(message.toString());
-                                } else {
-                                    LOG.debug("Failed to catch message from servlet response");
-                                    scheduledExecutionObject.setComment("Empty comment, probably due to bug in execution submission");
-                                }
-                                LOG.debug(scheduledExecutionObject.getComment());
-                            }
-                            try {
-                                scheduledExecutionObject.setID(createScx.getItem());
-                                Answer updateScx = new Answer();
-                                updateScx = scheduledExecutionService.update(scheduledExecutionObject);
-                                LOG.debug(updateScx.getMessageDescription());
-                                scheduleEntryService.updateLastExecution(scheduledExecutionObject.getSchedulerId(), scheduledExecutionObject.getScheduledDate());
-                            } catch (Exception e) {
-                                LOG.error("Failed to update scheduledExecution", e);
-                            }
+                            scheduledExecutionObject.setID(createScx.getItem());
+                            Answer updateScx = new Answer();
+                            updateScx = scheduledExecutionService.update(scheduledExecutionObject);
+                            LOG.debug(updateScx.getMessageDescription());
+                            scheduleEntryService.updateLastExecution(scheduledExecutionObject.getSchedulerId(), scheduledExecutionObject.getScheduledDate());
                         } catch (Exception e) {
-                            LOG.error("Failed to read result of AddToExecutionQueueV003 : ", e);
+                            LOG.error("Failed to update scheduledExecution", e);
                         }
                     } catch (Exception e) {
                         LOG.error("Failed to call AddToExecutionQueueV003, catch exception", e);
+                        scheduledExecutionObject.setStatus("ERROR");
+                        scheduledExecutionObject.setComment(e.getMessage());
+                        Answer updateScx = scheduledExecutionService.update(scheduledExecutionObject);
                     }
                 } catch (Exception e) {
                     LOG.warn("Cannot insert execution in database (Potentialy another instance of Cerberus already triggered the job), catch exception :", e);
