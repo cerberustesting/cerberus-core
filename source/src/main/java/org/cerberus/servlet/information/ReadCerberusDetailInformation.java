@@ -110,7 +110,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
                 JSONArray object1 = new JSONArray();
                 for (Trigger triggerSet : scInit.getMyTriggersSet()) {
                     JSONObject objectTrig = new JSONObject();
-                    objectTrig.put("triggerId", triggerSet.getJobDataMap().getInt("schedulerId"));
+                    objectTrig.put("triggerId", triggerSet.getJobDataMap().getLong("schedulerId"));
                     objectTrig.put("triggerName", triggerSet.getJobDataMap().getString("name"));
                     objectTrig.put("triggerType", triggerSet.getJobDataMap().getString("type"));
                     objectTrig.put("triggerUserCreated", triggerSet.getJobDataMap().getString("user"));

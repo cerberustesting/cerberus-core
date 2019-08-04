@@ -167,7 +167,7 @@ public final class StringUtil {
     }
 
     /**
-     * Generate a random string using current time and charset
+     * Return left part of the String.
      *
      * @param string1 String to treat.
      * @param length nb of characters to keep.
@@ -180,6 +180,24 @@ public final class StringUtil {
             return string1;
         } else {
             return string1.substring(0, length);
+        }
+    }
+
+    /**
+     * Return left part of the string adding ... at the end.
+     *
+     * @param string1 String to treat.
+     * @param length nb of characters to keep.
+     * @return the {length} first caracter of the string1.
+     */
+    public static String getLeftStringPretty(String string1, int length) {
+        int lengthminus3 = length - 3;
+        if (string1 == null) {
+            return "";
+        } else if (length >= string1.length()) {
+            return string1;
+        } else {
+            return string1.substring(0, lengthminus3) + "...";
         }
     }
 
@@ -414,11 +432,10 @@ public final class StringUtil {
         String firstPart = "";
         String seccondPart = url;
 
-        if(url.contains("http://") ) {
+        if (url.contains("http://")) {
             firstPart = "http://";
             seccondPart = url.split("http://")[1];
-        }
-        else if (url.contains("https://")) {
+        } else if (url.contains("https://")) {
             firstPart = "https://";
             seccondPart = url.split("https://")[1];
         }
@@ -493,7 +510,7 @@ public final class StringUtil {
             separator = ",";
         }
         boolean first = true;
-        if (listString == null){
+        if (listString == null) {
             return "";
         }
         for (String string : listString) {

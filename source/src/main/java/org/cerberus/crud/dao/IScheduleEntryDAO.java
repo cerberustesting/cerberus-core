@@ -18,8 +18,6 @@ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.crud.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import org.cerberus.crud.entity.ScheduleEntry;
@@ -32,17 +30,52 @@ import org.cerberus.util.answer.AnswerItem;
  */
 public interface IScheduleEntryDAO {
 
-    public AnswerItem<ScheduleEntry> readByKey(Integer id);
+    /**
+     *
+     * @param id
+     * @return
+     */
+    public AnswerItem<ScheduleEntry> readByKey(long id);
 
+    /**
+     *
+     * @param scheduler
+     * @return
+     */
     public AnswerItem<Integer> create(ScheduleEntry scheduler);
     
+    /**
+     *
+     * @return
+     */
     public AnswerItem<List> readAllActive();
     
+    /**
+     *
+     * @param scheduleEntryObject
+     * @return
+     */
     public Answer update(ScheduleEntry scheduleEntryObject);
     
+    /**
+     *
+     * @param object
+     * @return
+     */
     public Answer delete(ScheduleEntry object);
     
+    /**
+     *
+     * @param name
+     * @return
+     */
     public AnswerItem<List> readByName(String name);
     
-    public Answer updateLastExecution(Integer schedulerId, Timestamp lastExecution);
+    /**
+     *
+     * @param schedulerId
+     * @param lastExecution
+     * @return
+     */
+    public Answer updateLastExecution(long schedulerId, Timestamp lastExecution);
 }

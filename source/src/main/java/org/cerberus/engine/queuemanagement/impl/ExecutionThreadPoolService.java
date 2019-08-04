@@ -328,18 +328,18 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                             // Application require a robot so we can get the list of executors.
                             if (StringUtil.isNullOrEmpty(robot)) {
                                 exelist = new ArrayList<>();
-                                exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", "", "", null, "", 0, "",0,"", "", "", null, "", null));
+                                exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", "", "", null, "", 0, "", 0, "", "", "", null, "", null));
                             } else {
                                 exelist = robot_executor.get(robot);
                                 if (exelist == null || exelist.size() < 1) {
                                     exelist = new ArrayList<>();
-                                    exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", 0, "",0,"", "", "", null, "", null));
+                                    exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", 0, "", 0, "", "", "", null, "", null));
                                 }
                             }
                         } else {
                             // Application does not require a robot so we create a fake one with empty data.
                             exelist = new ArrayList<>();
-                            exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", 0, "",0,"", "", "", null, "", null));
+                            exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", 0, "", 0, "", "", "", null, "", null));
                         }
 
                         // Looping other every potential executor on the corresponding robot.
@@ -405,13 +405,13 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                             }
                             // Eval Constrain 3
                             boolean constMatch03;
-                            if (exe.getPoolSizeApplication()== 0) {
+                            if (exe.getPoolSizeApplication() == 0) {
                                 // if poolsize == 0, this means no constrain specified.
                                 constMatch03 = false;
                             } else {
                                 constMatch03 = (const03_current >= exe.getPoolSizeApplication());
                             }
-                            
+
                             // Eval Constrain 4
                             if (constrains_current.containsKey(const04_key)) {
                                 const04_current = constrains_current.get(const04_key);
@@ -499,7 +499,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                     notTriggeredExeMessage += "Robot Host contrain on '" + const04_key + "' reached. " + robothost_poolsize_final + " Execution(s) already in pool. ";
                                 }
                                 if (constMatch03) {
-                                    notTriggeredExeMessage += "Application contrain on '" + const03_key + "' reached . " + exe.getPoolSizeApplication()+ " Execution(s) already in pool. ";
+                                    notTriggeredExeMessage += "Application contrain on '" + const03_key + "' reached . " + exe.getPoolSizeApplication() + " Execution(s) already in pool. ";
                                 }
                                 if (constMatch02) {
                                     notTriggeredExeMessage += "Application Environment contrain on '" + const02_key + "' reached . " + exe.getPoolSizeAppEnvironment() + " Execution(s) already in pool. ";

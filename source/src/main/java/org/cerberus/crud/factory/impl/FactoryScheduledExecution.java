@@ -19,12 +19,8 @@ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 package org.cerberus.crud.factory.impl;
 
 import java.sql.Timestamp;
-import javax.annotation.Nullable;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.ScheduledExecution;
 import org.cerberus.crud.factory.IFactoryScheduledExecution;
-import org.cerberus.util.StringUtil;
 import org.springframework.stereotype.Service;
 
 /**
@@ -35,7 +31,7 @@ import org.springframework.stereotype.Service;
 public class FactoryScheduledExecution implements IFactoryScheduledExecution {
 
     @Override
-    public ScheduledExecution create(Integer ID, Integer schedulerId, String scheduleName, String status, String comment, String usrCreated, String usrModif, Timestamp scheduledDate, Timestamp scheduleFireTime, Timestamp dateCreated, Timestamp dateModif) {
+    public ScheduledExecution create(long ID, long schedulerId, String scheduleName, String status, String comment, String usrCreated, String usrModif, Timestamp scheduledDate, Timestamp scheduleFireTime, Timestamp dateCreated, Timestamp dateModif) {
         ScheduledExecution scheduledExecution = new ScheduledExecution();
         scheduledExecution.setID(ID);
         scheduledExecution.setSchedulerId(schedulerId);

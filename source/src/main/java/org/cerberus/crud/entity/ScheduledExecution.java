@@ -26,8 +26,8 @@ import java.sql.Timestamp;
  */
 public class ScheduledExecution {
 
-    private Integer ID; // to convert in long
-    private Integer schedulerId;
+    private long ID; // to convert in long
+    private long schedulerId;
     private String scheduleName;
     private String status;
     private String comment;
@@ -48,11 +48,11 @@ public class ScheduledExecution {
     public static final String STATUS_ERROR = "ERROR";
 
     // PRIVATE STATIC INVARIANTS STATUS : TOLAUNCH / IGNORED / TRIGGERED / ERROR
-    public Integer getID() {
+    public long getID() {
         return ID;
     }
 
-    public Integer getSchedulerId() {
+    public long getSchedulerId() {
         return schedulerId;
     }
 
@@ -92,11 +92,11 @@ public class ScheduledExecution {
         return dateModif;
     }
 
-    public void setID(Integer ID) {
+    public void setID(long ID) {
         this.ID = ID;
     }
 
-    public void setSchedulerId(Integer schedulerId) {
+    public void setSchedulerId(long schedulerId) {
         this.schedulerId = schedulerId;
     }
 

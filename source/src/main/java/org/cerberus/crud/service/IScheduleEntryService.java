@@ -30,25 +30,77 @@ import org.cerberus.util.answer.AnswerItem;
  */
 public interface IScheduleEntryService {
 
-    public AnswerItem<ScheduleEntry> readbykey(Integer id);
+    /**
+     *
+     * @param id
+     * @return
+     */
+    public AnswerItem<ScheduleEntry> readbykey(long id);
   
     public AnswerItem<List> readAllActive ();
     
-    public AnswerItem<Integer> create (ScheduleEntry scheduleentry);
+    /**
+     *
+     * @param scheduleentry
+     * @return
+     */
+    public Answer create (ScheduleEntry scheduleentry);
     
+    /**
+     *
+     * @param scheduleentry
+     * @return
+     */
     public Answer update (ScheduleEntry scheduleentry);
     
-     public Answer delete(ScheduleEntry object);
+    /**
+     *
+     * @param object
+     * @return
+     */
+    public Answer delete(ScheduleEntry object);
 
-     public AnswerItem<List> readByName(String name);
+    /**
+     *
+     * @param name
+     * @return
+     */
+    public AnswerItem<List> readByName(String name);
      
-     public Answer compareSchedListAndUpdateInsertDeleteElements(String campaign, List<ScheduleEntry> newList);
+    /**
+     *
+     * @param campaign
+     * @param newList
+     * @return
+     */
+    public Answer compareSchedListAndUpdateInsertDeleteElements(String campaign, List<ScheduleEntry> newList);
      
-     public Answer deleteListSched(List<ScheduleEntry> objectList);
+    /**
+     *
+     * @param objectList
+     * @return
+     */
+    public Answer deleteListSched(List<ScheduleEntry> objectList);
      
-     public Answer createListSched(List<ScheduleEntry> objectList);
+    /**
+     *
+     * @param objectList
+     * @return
+     */
+    public Answer createListSched(List<ScheduleEntry> objectList);
      
-     public Answer deleteByCampaignName(String name);
+    /**
+     *
+     * @param name
+     * @return
+     */
+    public Answer deleteByCampaignName(String name);
      
-     public Answer updateLastExecution(Integer schedulerId, Timestamp lastExecution);
+    /**
+     *
+     * @param schedulerId
+     * @param lastExecution
+     * @return
+     */
+    public Answer updateLastExecution(long schedulerId, Timestamp lastExecution);
 }

@@ -133,7 +133,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 ResultSet resultSet = preStat.getGeneratedKeys();
                 try {
                     if (resultSet.first()) {
-                        return resultSet.getInt(1);
+                        return resultSet.getLong(1);
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString(), exception);

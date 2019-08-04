@@ -30,7 +30,11 @@ import org.cerberus.crud.entity.ScheduledExecution;
 import org.cerberus.crud.factory.IFactoryScheduledExecution;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,14 +59,18 @@ public class ScheduledExecutionDAO implements IScheduledExecutionDAO {
     private static final Logger LOG = LogManager.getLogger(ScheduledExecutionDAO.class);
 
     @Override
-    public AnswerItem<Integer> create(ScheduledExecution object) {
-        AnswerItem<Integer> ans = new AnswerItem<>();
+    public long create(ScheduledExecution object) throws CerberusException {
+        boolean throwEx = false;
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO scheduledexecution (`schedulerID`, `scheduleName`, `scheduledDate`"
-                + ", `scheduleFireTime`, `status`, `comment`, `UsrCreated`"
-                + ")");
-        query.append("VALUES (?,?,?,?,?,?,?)");
+//        query.append("INSERT INTO scheduledexecution (`schedulerID`, `scheduleName`, `scheduledDate`"
+//                + ", `scheduleFireTime`, `status`, `comment`, `UsrCreated`"
+//                + ")");
+//        query.append("VALUES (?,?,?,?,?,?,?)");
+
+        query.append("INSERT INTO scheduledexecution (`schedulerID`, `scheduleName`, `scheduledDate`, `scheduleFireTime`, `status`, `comment`, `UsrCreated`) "
+                + "SELECT ?,?,?,?,?,?,? FROM scheduledexecution "
+                + "WHERE NOT EXISTS (SELECT ID FROM scheduledexecution WHERE `schedulerID`=? and scheduledDate = ?) LIMIT 1;");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -73,61 +81,53 @@ public class ScheduledExecutionDAO implements IScheduledExecutionDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
             try {
                 int i = 1;
-                preStat.setInt(i++, object.getSchedulerId());
+                preStat.setLong(i++, object.getSchedulerId());
                 preStat.setString(i++, object.getScheduleName());
                 preStat.setTimestamp(i++, object.getScheduledDate());
                 preStat.setTimestamp(i++, object.getScheduleFireTime());
                 preStat.setString(i++, object.getStatus());
                 preStat.setString(i++, object.getComment());
                 preStat.setString(i++, object.getUsrCreated());
+                preStat.setLong(i++, object.getSchedulerId());
+                preStat.setTimestamp(i++, object.getScheduledDate());
 
                 preStat.executeUpdate();
                 ResultSet resultSet = preStat.getGeneratedKeys();
 
                 try {
                     if (resultSet.first()) {
-                        LOG.debug("ID of job triggered " + resultSet.getInt(1));
-                        ans.setItem(resultSet.getInt(1));
+                        return resultSet.getLong(1);
+                    } else {
+                        return 0;
                     }
-                } catch (Exception e) {
-                    LOG.debug("Exception catch :", e);
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString(), exception);
+                    throwEx = true;
                 } finally {
                     resultSet.close();
                 }
 
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
-
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString(), exception);
-
-                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
-                } else {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                }
+                throwEx = true;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } catch (Exception exception) {
             LOG.error("Unable to execute query : " + exception.toString(), exception);
+            throwEx = true;
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
-            } catch (SQLException exception) {
-                LOG.error("Unable to close connection : " + exception.toString());
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
             }
         }
-        ans.setResultMessage(msg);
-        return ans;
+        if (throwEx) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
+        }
+        return 0;
     }
 
     @Override
@@ -138,7 +138,9 @@ public class ScheduledExecutionDAO implements IScheduledExecutionDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.ExecutionScheduled : " + scheduledExecutionObject.getScheduleName());
+            LOG.debug("SQL.param.id : " + scheduledExecutionObject.getID());
+            LOG.debug("SQL.param.status : " + scheduledExecutionObject.getStatus());
+            LOG.debug("SQL.param.comment : " + scheduledExecutionObject.getComment());
         }
         Connection connection = this.databaseSpring.connect();
         try {
@@ -146,8 +148,8 @@ public class ScheduledExecutionDAO implements IScheduledExecutionDAO {
             try {
                 int i = 1;
                 preStat.setString(i++, scheduledExecutionObject.getStatus());
-                preStat.setString(i++, scheduledExecutionObject.getComment().replace("'", ""));
-                preStat.setInt(i++, scheduledExecutionObject.getID());
+                preStat.setString(i++, StringUtil.getLeftStringPretty(scheduledExecutionObject.getComment().replace("'", ""), 250));
+                preStat.setLong(i++, scheduledExecutionObject.getID());
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));

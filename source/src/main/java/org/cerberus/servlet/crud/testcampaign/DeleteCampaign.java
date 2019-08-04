@@ -108,34 +108,38 @@ public class DeleteCampaign extends HttpServlet {
                         .replace("%REASON%", "Campaign can not be found"));
                 finalAnswer.setResultMessage(msg);
             } else {
-                IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Scheduler").replace("%OPERATION%", "No Insert"));
-                schedAns.setResultMessage(msg);
-                List<ScheduleEntry> schList = scheduleentryservice.readByName(key).getItem();
-                if (!schList.isEmpty()) {
-                    schedAns = scheduleentryservice.deleteByCampaignName(key);
+                Campaign camp = (Campaign) resp.getItem();
+                finalAnswer = campaignService.delete(camp);
+
+                if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Deteting scheduler entry as there are no integrity
+                     * referential Updating scheduler version if there were some
+                     * schedule entries.
+                     */
+                    // Checking if campaign has some scheduler entry before deleting it. This is to potentialy refresh the scheduler version. 
+                    IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Scheduler").replace("%OPERATION%", "No Insert"));
+                    schedAns.setResultMessage(msg);
+                    List<ScheduleEntry> schList = scheduleentryservice.readByName(key).getItem();
                     if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
-                        myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
+                        if (!schList.isEmpty()) {
+                            finalAnswer = scheduleentryservice.deleteByCampaignName(camp.getCampaign());
+                            IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
+                            myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
+                        }
+                    } else {
+                        finalAnswer = schedAns;
                     }
+                    /**
+                     * Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    logEventService.createForPrivateCalls("/DeleteCampaign", "DELETE", "Delete Campaign : " + key, request);
+
                 }
-                if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    Campaign camp = (Campaign) resp.getItem();
-                    finalAnswer = campaignService.delete(camp);
 
-                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        /**
-                         * Adding Log entry.
-                         */
-                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createForPrivateCalls("/DeleteCampaign", "DELETE", "Delete Campaign : " + key, request);
-
-                    }
-
-                } else {
-                    finalAnswer = schedAns;
-                }
             }
         }
 

@@ -15,23 +15,57 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.*/
-
 package org.cerberus.crud.service;
 
-import java.sql.ResultSet;
+import java.util.List;
 import org.cerberus.crud.entity.ScheduledExecution;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
  * @author cdelage
  */
-
-
 public interface IScheduledExecutionService {
-    
-    public AnswerItem<Integer> create(ScheduledExecution scheduledExecution);
+
+    /**
+     *
+     * @param scheduledExecution
+     * @return
+     * @throws org.cerberus.exception.CerberusException
+     */
+    public long create(ScheduledExecution scheduledExecution) throws CerberusException;
+
+    /**
+     *
+     * @param scheduledExecution
+     * @return
+     */
     public Answer update(ScheduledExecution scheduledExecution);
-    
+
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    ScheduledExecution convert(AnswerItem<ScheduledExecution> answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<ScheduledExecution> convert(AnswerList<ScheduledExecution> answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
+
 }
