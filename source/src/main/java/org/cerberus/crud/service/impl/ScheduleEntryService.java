@@ -110,7 +110,6 @@ public class ScheduleEntryService implements IScheduleEntryService {
     public Answer deleteListSched(List<ScheduleEntry> objectList) {
         Answer ans = new Answer(null);
         for (ScheduleEntry objectToDelete : objectList) {
-            LOG.debug("object to delete" + objectToDelete.getID());
             ans = schedulerDao.delete(objectToDelete);
         }
         return ans;
