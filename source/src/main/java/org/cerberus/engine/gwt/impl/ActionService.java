@@ -445,7 +445,15 @@ public class ActionService implements IActionService {
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_BAT)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
-                return executeCommand(command, args);
+                if (tCExecution.getDescription().contains("[test command]")) {
+                    LOG.warn("executeCommand action has been launched in development mode, be aware when using this hidden feature");
+                    return executeCommand(command, args);
+                } else {
+                    message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                    message.setDescription(message.getDescription().replace("%ACTION%", "executeCommand"));
+                    message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+                    return message;
+                }
             } else {
                 message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 message.setDescription(message.getDescription().replace("%ACTION%", "executeCommand"));
