@@ -641,10 +641,10 @@ function appendHeaderRow(content) {
     var descriptionName = $("<td></td>").append(descriptionInput);
     deleteBtn.click(function () {
         content.toDelete = (content.toDelete) ? false : true;
-
         if (content.toDelete) {
             row.addClass("danger");
         } else {
+            row.removeClass("danger");
         }
     });
     activeSelect.change(function () {

@@ -1066,40 +1066,40 @@ function loadSchedulerTable(name) {
 
 function appendSchedulerRow(scheduler) {
 
+    var activebool = true;
+    if (scheduler.active === "Y") {
+        activebool = true;
+    } else {
+        activebool = false;
+    }
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-s").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var var1Input = $("<input maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel('scheduler', 'cronDefinition') + " --\">").addClass("form-control input-sm");
-    var active = $("<input type='checkbox' id='activeCheckBox" + scheduler.ID + "'>");
-    var table = $('#parameterSchedulerTable')
+    var cronInput = $("<input maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel('scheduler', 'cronDefinition') + " --\">").addClass("form-control input-sm").val(scheduler.cronDefinition);
+    var active = $("<input type='checkbox'>").prop("checked", activebool);
     var lastExec = $('<div id="lastExecution"></div>').addClass("h6").text(" " + scheduler.lastExecution);
+    var table = $('#parameterSchedulerTable')
     var row = $("<tr class='dataField'></tr>");
 
+    var td1 = $("<td class='row form-group col-sm-1'></td>").append(deleteBtn);
+    var td2 = $("<td class='row form-group col-sm-5'></td>").append(cronInput);
+    var td3 = $("<td class='row form-group col-sm-1'></td>").append(active);
+    var td4 = $("<td class='row form-group col-sm-5'></td>").append(lastExec);
 
-    var cronDefinition = $("<div class='form-group col-sm-12'></div>").append(var1Input.val(scheduler.cronDefinition))
-    var drow01 = $("<div></div>").append(cronDefinition);
-    var td1 = $("<td class='row'></td>").append(drow01);
-    var td2 = $("<td class='row form-group col-sm-1'></td>").append(deleteBtn);
-    var td3 = $("<td class='row form-group col-sm-1'></td>").append(active)
-    var td4 = $("<td class='row form-group col-sm-5'></td>").append(lastExec)
     deleteBtn.click(function () {
         scheduler.toDelete = (scheduler.toDelete) ? false : true;
         if (scheduler.toDelete) {
-            console.log("toDelete - Danger");
-            console.log(scheduler.toDelete);
             row.addClass("danger");
         } else {
-            console.log(scheduler.toDelete);
-            console.log("Not delete");
             row.removeClass("danger");
         }
     });
 
-    cronDefinition.change(function () {
-        scheduler.cronDefinition = $(var1Input).val();
+    cronInput.change(function () {
+        scheduler.cronDefinition = $(this).val();
     })
 
     active.change(function () {
-        if (scheduler.active != "Y") {
+        if ($(this).prop("checked")) {
             scheduler.active = "Y";
             console.log("scheduler active statement  : " + scheduler.active);
         } else {
@@ -1108,18 +1108,12 @@ function appendSchedulerRow(scheduler) {
         }
     })
 
-    row.append(td2);
     row.append(td1);
+    row.append(td2);
     row.append(td3);
     row.append(td4);
     row.data("scheduler", scheduler);
     table.append(row);
-
-    if (scheduler.active == "Y") {
-        $('#activeCheckBox' + scheduler.ID).prop('checked', true);
-    } else {
-        $('#activeCheckBox' + scheduler.ID).prop('checked', false);
-    }
 }
 
 function addNewSchedulerRow() {
