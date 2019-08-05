@@ -8174,6 +8174,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1420
         a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_appium_action_longpress_wait', '8000', 'Integer value that correspond to the nb of ms of the longpress Appium action.');");
 
+        // Remove integrity on schedulerexecution table.
+        // 1421
+        a.add("ALTER TABLE `scheduledexecution` DROP FOREIGN KEY `FK_scheduledexecution_01`;");
+
         return a;
     }
 

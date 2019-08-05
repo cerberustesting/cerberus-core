@@ -58,30 +58,20 @@
         <title>Error</title>
     </head>
     <body>
-        <%
-            if ((request.getParameter("error") != null) && (request.getParameter("error").equals("403"))) {
-        %>
-        <br><br>
-        <h1 style="text-align: center">Not Authorised Resource...</h1>
-        <br><br>
-        <h2 style="text-align: center"> You don't have enough privilege to open this page, Please ask your Cerberus administrator to grant the access.</h2>
-        <%
-        } else {
-        %>
         <br><br>
         <h1 style="text-align: center">Oops...</h1>
         <br><br>
-        <h2 style="text-align: center">Sorry but an unexpected error occurred.</h2>
-        <%
-            }
-        %>
+        <h2 style="text-align: center">You don't have any authority to access to that Cerberus page (yet).</h2>
+        <h2 style="text-align: center">Ask your administrator to add you the necessary roles.</h2>
         <br><br>
+        <br>
         <h4 style="text-align: center">You can try to :</h4>
         <h4 style="text-align: center"><a href="./Logout.jsp">Logout</a></h4>
         <h4 style="text-align: center"><a href="./">Back to homepage</a></h4>
         <br>
+        <br>
         <div style="text-align: center"><%
-            out.print(display_footer(DatePageStart));%>            
+                out.print(display_footer(DatePageStart));%>            
         </div>
     </body>
 </html>

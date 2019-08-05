@@ -28,10 +28,8 @@ import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.cerberus.crud.dao.IScheduleEntryDAO;
-import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.service.IScheduleEntryService;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.engine.scheduler.SchedulerInit;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerUtil;
@@ -48,7 +46,7 @@ public class ScheduleEntryService implements IScheduleEntryService {
     private static final Logger LOG = LogManager.getLogger(ScheduleEntryService.class);
 
     @Override
-    public AnswerItem<ScheduleEntry> readbykey(Integer id) {
+    public AnswerItem<ScheduleEntry> readbykey(long id) {
         AnswerItem<ScheduleEntry> ans = new AnswerItem();
         ans = schedulerDao.readByKey(id);
         return ans;
@@ -62,9 +60,8 @@ public class ScheduleEntryService implements IScheduleEntryService {
     }
 
     @Override
-    public AnswerItem<Integer> create(ScheduleEntry scheduleentry) {
-        LOG.debug("scheduleentryservice.create");
-        AnswerItem<Integer> response = new AnswerItem();
+    public Answer create(ScheduleEntry scheduleentry) {
+        Answer response = new Answer();
         response = schedulerDao.create(scheduleentry);
         return response;
     }
@@ -73,26 +70,23 @@ public class ScheduleEntryService implements IScheduleEntryService {
     public Answer update(ScheduleEntry scheduleentry) {
         Answer response = new Answer();
         Boolean validCron = true;
-        if(!scheduleentry.getCronDefinition().isEmpty()){
+        if (!scheduleentry.getCronDefinition().isEmpty()) {
             validCron = org.quartz.CronExpression.isValidExpression(scheduleentry.getCronDefinition());
         }
         if (!validCron) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", scheduleentry.getCronDefinition() + " is not a valid cron expression for Quartz format"));
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "'" + scheduleentry.getCronDefinition() + "' is not in a valid Quartz cron expression."));
             response.setResultMessage(msg);
-        }
-        else if (scheduleentry.getCronDefinition().isEmpty()) {
+        } else if (scheduleentry.getCronDefinition().isEmpty()) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Cron definition is empty"));
             response.setResultMessage(msg);
-        }
-        else if (scheduleentry.getName().isEmpty()) {
+        } else if (scheduleentry.getName().isEmpty()) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Name of scheduledcampaign is empty"));
             response.setResultMessage(msg);
         } else {
             response = schedulerDao.update(scheduleentry);
-
         }
 
         return response;
@@ -105,8 +99,6 @@ public class ScheduleEntryService implements IScheduleEntryService {
         return response;
     }
 
-    ;
-    
     @Override
     public AnswerItem<List> readByName(String name) {
         AnswerItem<List> response = new AnswerItem();
@@ -141,7 +133,6 @@ public class ScheduleEntryService implements IScheduleEntryService {
     @Override
     public Answer createListSched(List<ScheduleEntry> objectList) {
         Answer ans = new Answer(null);
-        LOG.debug("createListSched" + objectList);
         if (objectList.isEmpty()) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unvalid SchedulerEntry data"));
@@ -150,23 +141,20 @@ public class ScheduleEntryService implements IScheduleEntryService {
         } else {
             for (ScheduleEntry objectToCreate : objectList) {
                 Boolean validCron = org.quartz.CronExpression.isValidExpression(objectToCreate.getCronDefinition());
-                
+
                 if (!validCron) {
                     MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", objectToCreate.getCronDefinition() + " is not a valid cron expression for Quartz format"));
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "'" + objectToCreate.getCronDefinition() + "' is not in a valid Quartz cron expression."));
                     ans.setResultMessage(msg);
-                }
-                else if (objectToCreate.getCronDefinition().isEmpty()) {
+                } else if (objectToCreate.getCronDefinition().isEmpty()) {
                     MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Cron definition is empty"));
                     ans.setResultMessage(msg);
-                }
-                else if(objectToCreate.getName().isEmpty()) {
+                } else if (objectToCreate.getName().isEmpty()) {
                     MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Name of scheduledcampaign is empty"));
                     ans.setResultMessage(msg);
                 } else {
-                    LOG.debug("ScheduleEntry Created for : " + objectToCreate.getName() + "with Cron expression : " + objectToCreate.getCronDefinition());
                     ans = schedulerDao.create(objectToCreate);
                 }
             }
@@ -196,7 +184,6 @@ public class ScheduleEntryService implements IScheduleEntryService {
                     ans = this.update(objectDifference);
                     finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                     listToUpdateOrInsert.remove(objectDifference);
-
                 }
             }
         }
@@ -229,7 +216,7 @@ public class ScheduleEntryService implements IScheduleEntryService {
     }
 
     @Override
-    public Answer updateLastExecution(Integer schedulerId, Timestamp lastExecution) {
+    public Answer updateLastExecution(long schedulerId, Timestamp lastExecution) {
         Answer ans = new Answer();
         ans = schedulerDao.updateLastExecution(schedulerId, lastExecution);
         return ans;

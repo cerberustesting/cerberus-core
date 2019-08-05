@@ -30,7 +30,7 @@ import java.sql.Timestamp;
 
 public class ScheduleEntry {
 
-    private Integer ID;
+    private long ID;
     private String type;
     private String name;
     private String cronDefinition;
@@ -41,7 +41,7 @@ public class ScheduleEntry {
     private String UsrModif;
     private Timestamp DateModif;
 
-    public Integer getID() {
+    public long getID() {
         return ID;
     }
 
@@ -81,7 +81,7 @@ public class ScheduleEntry {
         return DateModif;
     }
 
-    public void setID(Integer ID) {
+    public void setID(long ID) {
         this.ID = ID;
     }
 
@@ -128,8 +128,8 @@ public class ScheduleEntry {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        
-        if (getID() != obj.getID()){
+
+        if (getID() != obj.getID()) {
             return false;
         }
 
@@ -147,7 +147,7 @@ public class ScheduleEntry {
         if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
             return false;
         }
-        if ((this.ID == null) ? (other.ID != null) : !this.ID.equals(other.ID)) {
+        if (this.ID != other.ID) {
             return false;
         }
         if ((this.cronDefinition == null) ? (other.cronDefinition != null) : !this.cronDefinition.equals(other.cronDefinition)) {

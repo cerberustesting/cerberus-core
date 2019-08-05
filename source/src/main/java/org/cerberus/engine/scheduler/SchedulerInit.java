@@ -117,8 +117,8 @@ public class SchedulerInit {
                                     String cron = sched.getCronDefinition();
                                     String name = sched.getName();
                                     String type = sched.getType();
-                                    String id = sched.getID().toString();
-                                    int schedulerId = sched.getID();
+                                    String id = String.valueOf(sched.getID()); 
+                                    long schedulerId = sched.getID();
 
                                     String user = "";
                                     if (!StringUtil.isNullOrEmpty(sched.getUsrModif())) {

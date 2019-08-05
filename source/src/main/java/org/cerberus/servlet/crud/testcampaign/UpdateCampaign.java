@@ -124,9 +124,9 @@ public class UpdateCampaign extends HttpServlet {
         String manualExecution = ParameterParserUtil.parseStringParam(request.getParameter("ManualExecution"), "");
 
         // Getting list of application from JSON Call
-        JSONArray objApplicationArray = new JSONArray(request.getParameter("SchedulerList"));
+        JSONArray objSchedEntryArray = new JSONArray(request.getParameter("SchedulerList"));
         List<ScheduleEntry> schList = new ArrayList<>();
-        schList = getScheduleEntryListFromParameter(request, appContext, c, objApplicationArray);
+        schList = getScheduleEntryListFromParameter(request, appContext, c, objSchedEntryArray);
 
         if (StringUtil.isNullOrEmpty(c)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
@@ -282,11 +282,10 @@ public class UpdateCampaign extends HttpServlet {
             Timestamp timestampfactice = new Timestamp(System.currentTimeMillis());
 
             if (!delete) {
-                ScheduleEntry sch = scheFactory.create(id, type, name, cronExpression, timestampfactice, active, "", timestampfactice, "", timestampfactice);
+                ScheduleEntry sch = scheFactory.create(id, type, name, cronExpression, timestampfactice, active, request.getRemoteUser(), timestampfactice, request.getRemoteUser(), timestampfactice);
                 scheList.add(sch);
             }
         }
-        LOG.debug("scheList" + scheList);
         return scheList;
     }
 

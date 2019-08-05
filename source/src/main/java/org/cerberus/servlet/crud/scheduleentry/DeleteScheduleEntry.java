@@ -106,12 +106,15 @@ public class DeleteScheduleEntry extends HttpServlet {
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
+                 * Object created. Updating scheduler version.
+                 */
+                IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
+                myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
+                /**
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
-                myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
                 logEventService.createForPrivateCalls("/DeleteScheduleEntry", "DELETE", "Delete schedule entry : ['" + scheduleEntry.getName() + "']", request);
             }
         }

@@ -1,10 +1,11 @@
 *Bug fixes*
 [square]
-* Filter in runtest bug
+* Filter in runtest page issue
+* Robot update issue
 
 *Improvements / New features*
 [square]
-* Scheduled campaign with cron expression throught campaign modal
+* Scheduled campaign with Quartz cron expression through campaign modal
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

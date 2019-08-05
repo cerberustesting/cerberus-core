@@ -1569,11 +1569,11 @@
     </error-page>
     <error-page>
         <error-code>403</error-code>
-        <location>/ErrorPages/Error.jsp</location>
+        <location>/ErrorPages/Error403.jsp</location>
     </error-page>
     <error-page>
         <error-code>404</error-code>
-        <location>/ErrorPages/Error.jsp</location>
+        <location>/ErrorPages/Error404.jsp</location>
     </error-page>
     <error-page>
         <error-code>500</error-code>
@@ -1686,7 +1686,6 @@
             <description>jsp</description>
             <url-pattern>/SqlLibrary.jsp</url-pattern>
             <url-pattern>/TestDataLibList.jsp</url-pattern>
-            <url-pattern>/Label.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1717,7 +1716,6 @@
             <url-pattern>/UpdateTestCaseProperties</url-pattern>
             <url-pattern>/Thumbnailer</url-pattern>
             <url-pattern>/UpdateTestCaseField</url-pattern>
-            <url-pattern>/ReadLabel</url-pattern>
             <url-pattern>/SaveTestCaseLabel</url-pattern>
             <url-pattern>/ReadTestCaseLabel</url-pattern>
         </web-resource-collection>
@@ -1728,6 +1726,11 @@
     </security-constraint>
     <security-constraint>
         <display-name>Label</display-name>
+        <web-resource-collection>
+            <web-resource-name>jsp</web-resource-name>
+            <description/>
+            <url-pattern>/Label.jsp</url-pattern>
+        </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
@@ -2066,6 +2069,7 @@
             <url-pattern>/ExecuteNextInQueue</url-pattern>
             <url-pattern>/ReadDocumentation</url-pattern>
             <url-pattern>/ReadApplicationObjectImage</url-pattern>
+            <url-pattern>/ReadLabel</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description/>

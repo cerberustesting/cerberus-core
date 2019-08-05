@@ -30,6 +30,21 @@ import org.cerberus.crud.entity.ScheduledExecution;
 
 public interface IFactoryScheduledExecution {
     
-    public ScheduledExecution create(Integer ID, Integer schedulerId, String scheduleName, String status, String comment, String usrCreated, String usrModif, Timestamp scheduledDate, Timestamp scheduleFireTime, Timestamp dateCreated, Timestamp dateModif);
+    /**
+     *
+     * @param ID
+     * @param schedulerId
+     * @param scheduleName
+     * @param status
+     * @param comment
+     * @param usrCreated
+     * @param usrModif
+     * @param scheduledDate
+     * @param scheduleFireTime
+     * @param dateCreated
+     * @param dateModif
+     * @return
+     */
+    public ScheduledExecution create(long ID, long schedulerId, String scheduleName, String status, String comment, String usrCreated, String usrModif, Timestamp scheduledDate, Timestamp scheduleFireTime, Timestamp dateCreated, Timestamp dateModif);
     
 }

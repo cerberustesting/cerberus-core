@@ -108,19 +108,18 @@ public class ReadCerberusDetailInformation extends HttpServlet {
                 //tester le contenu du scheduler
                 //creer un array JSON pour récupérer la liste des trigger qu
                 JSONArray object1 = new JSONArray();
-                for (Trigger triggerSet : scInit.getMyTriggersSet() ) {
-                    LOG.debug("triggerSet : " + triggerSet.getNextFireTime());
+                for (Trigger triggerSet : scInit.getMyTriggersSet()) {
                     JSONObject objectTrig = new JSONObject();
-                    objectTrig.put("Trigger_Id", triggerSet.getJobDataMap().getInt("schedulerId"));
-                    objectTrig.put("Trigger_Campaign_Name", triggerSet.getJobDataMap().getString("name"));
-                    objectTrig.put("Trigger_Campaign_Type", triggerSet.getJobDataMap().getString("type"));
-                    objectTrig.put("Trigger_Campaign_UserCreated", triggerSet.getJobDataMap().getString("user"));
-                    objectTrig.put("Trigger_NextFiretime", triggerSet.getNextFireTime());
+                    objectTrig.put("triggerId", triggerSet.getJobDataMap().getLong("schedulerId"));
+                    objectTrig.put("triggerName", triggerSet.getJobDataMap().getString("name"));
+                    objectTrig.put("triggerType", triggerSet.getJobDataMap().getString("type"));
+                    objectTrig.put("triggerUserCreated", triggerSet.getJobDataMap().getString("user"));
+                    objectTrig.put("triggerNextFiretime", triggerSet.getNextFireTime());
                     object1.put(objectTrig);
                 }
                 object.put("schedulerTriggers", object1);
             }
-            jsonResponse.put("Scheduler", object);
+            jsonResponse.put("scheduler", object);
 
             cerberusDatabaseInformation = appContext.getBean(ICerberusInformationDAO.class);
 
@@ -128,18 +127,18 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             HashMap<String, String> cerberusInformation = (HashMap<String, String>) ans.getItem();
 
             // Database Informations.
-            jsonResponse.put("DatabaseProductName", cerberusInformation.get("DatabaseProductName"));
-            jsonResponse.put("DatabaseProductVersion", cerberusInformation.get("DatabaseProductVersion"));
-            jsonResponse.put("DatabaseMajorVersion", cerberusInformation.get("DatabaseMajorVersion"));
-            jsonResponse.put("DatabaseMinorVersion", cerberusInformation.get("DatabaseMinorVersion"));
+            jsonResponse.put("databaseProductName", cerberusInformation.get("DatabaseProductName"));
+            jsonResponse.put("databaseProductVersion", cerberusInformation.get("DatabaseProductVersion"));
+            jsonResponse.put("databaseMajorVersion", cerberusInformation.get("DatabaseMajorVersion"));
+            jsonResponse.put("databaseMinorVersion", cerberusInformation.get("DatabaseMinorVersion"));
 
-            jsonResponse.put("DriverName", cerberusInformation.get("DriverName"));
-            jsonResponse.put("DriverVersion", cerberusInformation.get("DriverVersion"));
-            jsonResponse.put("DriverMajorVersion", cerberusInformation.get("DriverMajorVersion"));
-            jsonResponse.put("DriverMinorVersion", cerberusInformation.get("DriverMinorVersion"));
+            jsonResponse.put("driverName", cerberusInformation.get("DriverName"));
+            jsonResponse.put("driverVersion", cerberusInformation.get("DriverVersion"));
+            jsonResponse.put("driverMajorVersion", cerberusInformation.get("DriverMajorVersion"));
+            jsonResponse.put("driverMinorVersion", cerberusInformation.get("DriverMinorVersion"));
 
-            jsonResponse.put("JDBCMajorVersion", cerberusInformation.get("JDBCMajorVersion"));
-            jsonResponse.put("JDBCMinorVersion", cerberusInformation.get("JDBCMinorVersion"));
+            jsonResponse.put("jDBCMajorVersion", cerberusInformation.get("JDBCMajorVersion"));
+            jsonResponse.put("jDBCMinorVersion", cerberusInformation.get("JDBCMinorVersion"));
 
             // Cerberus Informations.
             jsonResponse.put("projectName", infos.getProjectName());
