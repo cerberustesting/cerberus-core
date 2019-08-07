@@ -73,18 +73,18 @@ public interface ITestCaseDAO {
 
     /**
      * @param campaign the campaign name
-     * @param countries arrays of country
-     * @param withLabelOrBattery
-     * @param status status of test case
-     * @param system of test case
-     * @param application of test case
-     * @param priority of test case
-     * @param group
-     * @param maxReturn
+     * @param countries arrays of country to filter
+     * @param labelIdList
+     * @param status arrays of status to filter
+     * @param system arrays of system to filter
+     * @param application arrays of application to filter
+     * @param priority arrays of priority to filter
+     * @param group arrays of group to filter
+     * @param maxReturn nd max of records to return. (Prevent from returning too large list)
      * @return the list of TCase used in the campaign
      * @since 1.0.2
      */
-    AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, boolean withLabelOrBattery, String[] status, String[] system, String[] application, String[] priority, String[] group, Integer maxReturn);
+    AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, List<Integer> labelIdList, String[] status, String[] system, String[] application, String[] priority, String[] group, Integer maxReturn);
 
     public void updateTestCase(TestCase tc) throws CerberusException;
 

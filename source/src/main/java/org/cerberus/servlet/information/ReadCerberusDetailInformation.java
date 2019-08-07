@@ -21,7 +21,12 @@ package org.cerberus.servlet.information;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -105,9 +110,8 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             if (scInit != null) {
                 object.put("schedulerInstanceVersion", scInit.getInstanceSchedulerVersion());
                 object.put("schedulerReloadIsRunning", scInit.isIsRunning());
-                //tester le contenu du scheduler
-                //creer un array JSON pour récupérer la liste des trigger qu
-                JSONArray object1 = new JSONArray();
+                // We get here the list of triggers of Quartz scheduler.
+                List<JSONObject> triggerList = new ArrayList<>();
                 for (Trigger triggerSet : scInit.getMyTriggersSet()) {
                     JSONObject objectTrig = new JSONObject();
                     objectTrig.put("triggerId", triggerSet.getJobDataMap().getLong("schedulerId"));
@@ -115,8 +119,10 @@ public class ReadCerberusDetailInformation extends HttpServlet {
                     objectTrig.put("triggerType", triggerSet.getJobDataMap().getString("type"));
                     objectTrig.put("triggerUserCreated", triggerSet.getJobDataMap().getString("user"));
                     objectTrig.put("triggerNextFiretime", triggerSet.getNextFireTime());
-                    object1.put(objectTrig);
+                    triggerList.add(objectTrig);
                 }
+                Collections.sort(triggerList, new SortTriggers());
+                JSONArray object1 = new JSONArray(triggerList);
                 object.put("schedulerTriggers", object1);
             }
             jsonResponse.put("scheduler", object);
@@ -186,6 +192,60 @@ public class ReadCerberusDetailInformation extends HttpServlet {
 
         response.setContentType("application/json");
         response.getWriter().print(jsonResponse.toString());
+    }
+
+    class SortTriggers implements Comparator<JSONObject> {
+        // Used for sorting Triggers 
+        @Override
+        public int compare(JSONObject a, JSONObject b) {
+
+            if (a != null && b != null) {
+                String typeA;
+                String typeB;
+                try {
+                    typeA = a.getString("triggerType");
+                    typeB = b.getString("triggerType");
+                    if (typeA.equals(typeB)) {
+                        String nameA;
+                        String nameB;
+                        try {
+                            nameA = a.getString("triggerName");
+                            nameB = b.getString("triggerName");
+                            if (nameA.equals(nameB)) {
+                                Date dateA;
+                                Date dateB;
+                                try {
+                                    dateA = (Date) a.get("triggerNextFiretime");
+                                    dateB = (Date) b.get("triggerNextFiretime");
+                                    if (dateA.equals(dateB)) {
+
+                                    } else {
+                                        return (dateA.compareTo(dateB));
+                                    }
+                                } catch (JSONException ex) {
+                                    LOG.error("Exception on JSON Parse.", ex);
+                                }
+
+                            } else {
+                                return nameA.compareToIgnoreCase(nameB);
+                            }
+                        } catch (JSONException ex) {
+                            LOG.error("Exception on JSON Parse.", ex);
+                        }
+
+                    } else {
+                        return typeA.compareToIgnoreCase(typeB);
+                    }
+                } catch (JSONException ex) {
+                    LOG.error("Exception on JSON Parse.", ex);
+                }
+
+            } else {
+                return 1;
+            }
+
+            return 1;
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

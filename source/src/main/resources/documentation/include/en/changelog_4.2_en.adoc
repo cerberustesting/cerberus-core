@@ -5,7 +5,8 @@
 
 *Improvements / New features*
 [square]
-* Scheduled campaign with Quartz cron expression through campaign modal
+* Scheduled campaign with Quartz cron expression through campaign modal. You can now schedule your campaign directly inside Cerberus #1932
+* When defining a campaign, Label automaticly select all test cases from child labels. #1962
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

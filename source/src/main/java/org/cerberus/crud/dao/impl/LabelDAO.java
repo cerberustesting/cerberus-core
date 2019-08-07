@@ -264,6 +264,72 @@ public class LabelDAO implements ILabelDAO {
         }
         return response;
     }
+    @Override
+    public AnswerList<List<Label>> readAllLinks() {
+        AnswerList response = new AnswerList<>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<Label> objectList = new ArrayList<>();
+        StringBuilder searchSQL = new StringBuilder();
+        List<String> individalColumnSearchValues = new ArrayList<>();
+
+        StringBuilder query = new StringBuilder();
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+        //were applied -- used for pagination p
+        query.append("SELECT SQL_CALC_FOUND_ROWS id, parentlabelid from label lab where lab.ParentLabelID <> 0 ");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement();) {
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+
+                //gets the data
+                while (resultSet.next()) {
+                    objectList.add(this.loadLinkFromResultSet(resultSet));
+                }
+
+                int nrTotalRows = 0;
+
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
+
+                if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                    response = new AnswerList<>(objectList, nrTotalRows);
+                } else if (objectList.size() <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    response = new AnswerList<>(objectList, nrTotalRows);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    response = new AnswerList<>(objectList, nrTotalRows);
+                }
+                response.setDataList(objectList);
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+            }
+        } catch (Exception e) {
+            LOG.warn("Unable to readBySystemCriteria Label: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            response.setResultMessage(msg);
+        }
+        return response;
+    }
 
     @Override
     public Answer create(Label object) {
@@ -408,6 +474,13 @@ public class LabelDAO implements ILabelDAO {
         return labelObj;
     }
 
+    private Label loadLinkFromResultSet(ResultSet rs) throws SQLException {
+        Integer id = ParameterParserUtil.parseIntegerParam(rs.getString("lab.id"), 0);
+        Integer parentLabelid = ParameterParserUtil.parseIntegerParam(rs.getString("lab.parentLabelid"), 0);
+        Label labelObj = factoryLabel.create(id, null, null, null, null, parentLabelid, null, null, null, null, null, null, null, null, null);
+        return labelObj;
+    }
+    
     @Override
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         AnswerList answer = new AnswerList<>();

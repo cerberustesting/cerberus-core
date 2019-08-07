@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ILabelDAO;
@@ -52,6 +53,8 @@ public class LabelService implements ILabelService {
 
     @Autowired
     private ILabelDAO labelDAO;
+    @Autowired
+    private ILabelService labelService;
 
     private static final Logger LOG = LogManager.getLogger("LabelService");
 
@@ -65,6 +68,11 @@ public class LabelService implements ILabelService {
     @Override
     public AnswerList readAll() {
         return readByVariousByCriteria(new ArrayList<>(), false, new ArrayList<>(), 0, 0, "Label", "asc", null, null);
+    }
+
+    @Override
+    public AnswerList readAllLinks() {
+        return labelDAO.readAllLinks();
     }
 
     @Override
@@ -174,6 +182,58 @@ public class LabelService implements ILabelService {
             }
         }
         return null;
+    }
+
+    @Override
+    public List<Integer> enrichWithChild(List<Integer> labelIdList) {
+
+        try {
+            // Loading list of labelId into a map in order to dedup it.
+            HashMap<Integer, Integer> finalMap = new HashMap<>();
+            HashMap<Integer, Integer> initMap = new HashMap<>();
+            // Dedup list on a MAP
+            for (Integer labelId : labelIdList) {
+                finalMap.put(labelId, 0);
+                initMap.put(labelId, 0);
+            }
+
+            // Loading from database the list of links from parent to childs.
+            List<Label> labelLinkList = labelService.convert(labelService.readAllLinks());
+
+            // Looping of each campaign label and add the childs.
+            Integer initSize = initMap.size();
+            Integer finalSize = initSize;
+            Integer i = 0;
+            do {
+                for (Map.Entry<Integer, Integer> entry : finalMap.entrySet()) {
+                    Integer key = entry.getKey();
+                    initMap.put(key, 0);
+                }
+                initSize = initMap.size();
+                for (Map.Entry<Integer, Integer> entry : initMap.entrySet()) {
+                    Integer key = entry.getKey();
+                    Integer value = entry.getValue();
+                    for (Label label : labelLinkList) {
+                        if (Objects.equals(key, label.getParentLabelID())) {
+                            finalMap.put(label.getId(), 0);
+                        }
+                    }
+                }
+                finalSize = finalMap.size();
+                i++;
+            } while (!Objects.equals(finalSize, initSize) && i < 50);
+
+            List<Integer> finalList = new ArrayList<>();
+            for (Map.Entry<Integer, Integer> entry : finalMap.entrySet()) {
+                Integer key = entry.getKey();
+                finalList.add(key);
+            }
+
+            return finalList;
+        } catch (CerberusException ex) {
+            LOG.error("Exception when enriching Labels with Child.", ex);
+        }
+        return new ArrayList<>();
     }
 
     @Override

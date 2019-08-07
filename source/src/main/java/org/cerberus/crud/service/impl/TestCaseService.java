@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseDAO;
+import org.cerberus.crud.entity.CampaignLabel;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
@@ -42,6 +43,7 @@ import org.cerberus.crud.factory.IFactoryTest;
 import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ICampaignParameterService;
+import org.cerberus.crud.service.ILabelService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseCountryService;
@@ -95,6 +97,8 @@ public class TestCaseService implements ITestCaseService {
     private IFactoryTestCase factoryTCase;
     @Autowired
     private ICampaignLabelService campaignLabelService;
+    @Autowired
+    private ILabelService labelService;
     @Autowired
     private ICampaignParameterService campaignParameterService;
     @Autowired
@@ -167,7 +171,7 @@ public class TestCaseService implements ITestCaseService {
 
             List<TestCaseLabel> testCaseLabel = testCaseLabelService.readByTestTestCase(initialTest, initialTc, null).getDataList();
             newTcase.setTestCaseLabel(testCaseLabel);
-            
+
         }
         return newTcase;
     }
@@ -321,18 +325,20 @@ public class TestCaseService implements ITestCaseService {
             }
         }
 
-        AnswerList label = campaignLabelService.readByVarious(campaign);
-        //AnswerList battery = campaignContentService.readByCampaign(campaign);
-        boolean ifLabel = (label.getTotalRows() > 0);
-        //boolean ifBattery = (battery.getTotalRows() > 0) ? true : false;
+        AnswerList<CampaignLabel> label = campaignLabelService.readByVarious(campaign);
+
+        List<Integer> labelIdList = new ArrayList<>();
+        List<CampaignLabel> labelList = label.getDataList();
+        for (CampaignLabel campaignLabel : labelList) {
+            labelIdList.add(campaignLabel.getLabelId());
+        }
+
+        labelIdList = labelService.enrichWithChild(labelIdList);
 
         Integer maxReturn = parameterService.getParameterIntegerByKey("cerberus_campaign_maxtestcase", "", 1000);
 
-        if (ifLabel) {
-            result = testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, true, status, system, application, priority, group, maxReturn);
-        } else {
-            result = testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, false, status, system, application, priority, group, maxReturn);
-        }
+        result = testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, labelIdList, status, system, application, priority, group, maxReturn);
+
         return result;
     }
 
@@ -523,7 +529,6 @@ public class TestCaseService implements ITestCaseService {
         //TODO ------------------------
         //Check Cerberus version compatibility. If not stop
         //-------------------------------
-        
         //insert testcase
         Answer testCaseImported = this.create(testCase);
         if (!testCaseImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
@@ -531,7 +536,7 @@ public class TestCaseService implements ITestCaseService {
             msg.setDescription(testCaseImported.getResultMessage().getDescription());
             throw new CerberusException(msg);
         }
-        
+
         //for tcstep, insert steps
         for (TestCaseStep tcs : testCase.getTestCaseStep()) {
             Answer testCaseStepImported = testCaseStepService.create(tcs);
@@ -551,7 +556,7 @@ public class TestCaseService implements ITestCaseService {
                 }
             }
         }
-        
+
         //insert tccountry, insert countries
         for (TestCaseCountry tcc : testCase.getTestCaseCountry()) {
             Answer testCaseCountryImported = testCaseCountryService.create(tcc);

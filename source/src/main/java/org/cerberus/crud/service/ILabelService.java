@@ -50,6 +50,21 @@ public interface ILabelService {
     AnswerList readAll();
 
     /**
+     * Reading from database all lines of Parent / Child Labels.
+     *
+     * @return
+     */
+    AnswerList readAllLinks();
+
+    /**
+     * Add child element into list of Label Id.
+     *
+     * @param labelIdList
+     * @return
+     */
+    List<Integer> enrichWithChild(List<Integer> labelIdList);
+
+    /**
      *
      * @param system
      * @return

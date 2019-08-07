@@ -1274,29 +1274,30 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, boolean withLabelOrBattery, String[] status, String[] system, String[] application, String[] priority, String[] group, Integer maxReturn) {
+    public AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, List<Integer> labelIdList, String[] status, String[] system, String[] application, String[] priority, String[] group, Integer maxReturn) {
 
         List<TestCase> list = null;
         AnswerItem answer = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        HashMap<String, String[]> tcParameters = new HashMap<String, String[]>();
+        HashMap<String, String[]> tcParameters = new HashMap<>();
         tcParameters.put("status", status);
         tcParameters.put("system", system);
         tcParameters.put("application", application);
         tcParameters.put("priority", priority);
         tcParameters.put("countries", countries);
         tcParameters.put("group", group);
+        boolean withLabel = (labelIdList.size() > 0);
 
         StringBuilder query = new StringBuilder("SELECT tec.*, app.system FROM testcase tec ");
 
-        if (withLabelOrBattery) {
+        if (withLabel) {
             query.append("LEFT OUTER JOIN application app ON app.application = tec.application ")
                     .append("INNER JOIN testcasecountry tcc ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")
                     .append("LEFT JOIN testcaselabel tel ON tec.test = tel.test AND tec.testcase = tel.testcase ")
-                    .append("LEFT JOIN campaignlabel cpl ON cpl.labelId = tel.labelId ")
-                    .append("WHERE (cpl.campaign = ? )");
-        } else if (!withLabelOrBattery && (status != null || system != null || application != null || priority != null)) {
+                    .append("WHERE ")
+                    .append(SqlUtil.createWhereInClauseInteger("tel.labelId", labelIdList));
+        } else if (!withLabel && (status != null || system != null || application != null || priority != null)) {
             query.append("LEFT OUTER JOIN application app ON app.application = tec.application ")
                     .append("INNER JOIN testcasecountry tcc ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")
                     .append("WHERE 1=1");
@@ -1338,11 +1339,6 @@ public class TestCaseDAO implements ITestCaseDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-
-                if (withLabelOrBattery) {
-                    preStat.setString(i++, campaign);
-                    LOG.debug("SQL.param : " + campaign);
-                }
 
                 for (Entry<String, String[]> entry : tcParameters.entrySet()) {
                     String[] valeur = entry.getValue();
