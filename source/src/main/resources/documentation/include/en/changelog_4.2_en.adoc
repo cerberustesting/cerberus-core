@@ -6,7 +6,8 @@
 *Improvements / New features*
 [square]
 * Scheduled campaign with Quartz cron expression through campaign modal. You can now schedule your campaign directly inside Cerberus #1932
-* When defining a campaign, Label automaticly select all test cases from child labels. #1962
+* When defining a campaign or selecting a list of testcase from runtest page, Label selection automaticly select all child labels in order to get the list of testcases. #1962
+* Cel in reportingbytag page now also display previous execution when current one is in PE or QU state. That allow to start analysing a test case before a campaign finish to execute #1983 
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

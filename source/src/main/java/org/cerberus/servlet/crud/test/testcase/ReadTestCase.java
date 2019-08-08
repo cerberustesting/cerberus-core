@@ -75,6 +75,8 @@ public class ReadTestCase extends AbstractCrudTestCase {
     private ICampaignParameterService campaignParameterService;
     @Autowired
     private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
+    @Autowired
+    private ILabelService labelService;
 
     private static final Logger LOG = LogManager.getLogger(ReadTestCase.class);
 
@@ -164,6 +166,9 @@ public class ReadTestCase extends AbstractCrudTestCase {
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         } catch (CerberusException ex) {
+            LOG.error(ex, ex);
+            // TODO return to the gui
+        } catch (Exception ex) {
             LOG.error(ex, ex);
             // TODO return to the gui
         }
@@ -421,15 +426,22 @@ public class ReadTestCase extends AbstractCrudTestCase {
         String[] creator = request.getParameterValues("creator");
         String[] implementer = request.getParameterValues("implementer");
         String[] system = request.getParameterValues("system");
-        String[] testBattery = request.getParameterValues("testBattery");
         String[] campaign = request.getParameterValues("campaign");
         String[] priority = request.getParameterValues("priority");
         String[] group = request.getParameterValues("group");
         String[] status = request.getParameterValues("status");
         String[] labelid = request.getParameterValues("labelid");
+        List<Integer> labelList = new ArrayList<>();
+        if (labelid != null) {
+            for (int i = 0; i < labelid.length; i++) {
+                String string = labelid[i];
+                labelList.add(Integer.valueOf(string));
+            }
+            labelList = labelService.enrichWithChild(labelList);
+        }
         int length = ParameterParserUtil.parseIntegerParam(request.getParameter("length"), -1);
 
-        AnswerList answer = testCaseService.readByVarious(test, idProject, app, creator, implementer, system, campaign, labelid, priority, group, status, length);
+        AnswerList answer = testCaseService.readByVarious(test, idProject, app, creator, implementer, system, campaign, labelList, priority, group, status, length);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (TestCase tc : (List<TestCase>) answer.getDataList()) {

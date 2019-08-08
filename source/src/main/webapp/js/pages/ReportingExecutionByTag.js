@@ -312,13 +312,13 @@ function loadReportingData(selectTag) {
 
             // Report By Label
             $("#progressLabel").empty();
-//        if (!$.isEmptyObject(data.labelStat)) {
             loadLabelReport(data.labelStat);
 //        }
 
             // Detailed Test Case List Report
             loadReportList(data.table, selectTag);
         } else {
+
             hideLoader($("#TagDetail"));
             hideLoader($("#ReportByStatus"));
             hideLoader($("#functionChart"));
@@ -1306,7 +1306,6 @@ function aoColumnsFunc(Columns) {
             "mRender": function (data, type, row, meta) {
                 if (data !== "") {
                     // Getting selected Tag;
-                    var executionLink = generateExecutionLink(data.ControlStatus, data.ID, tag);
                     var glyphClass = getRowClass(data.ControlStatus);
                     var tooltip = generateTooltip(data);
                     var cell = "";
@@ -1319,18 +1318,26 @@ function aoColumnsFunc(Columns) {
                         cell += '<input id="selectLine" name="id" value=' + data.QueueID + ' onclick="refreshNbChecked()" data-select="id" data-line="select' + data.ManualExecution + '-' + state + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input>';
                     }
                     cell += '</span>';
+                    let statWidth = "100";
+                    if (data.previousExeControlStatus !== undefined) {
+                        cell += '<div style="width: 20%;cursor: pointer; height: 40px;" class="progress-bar status' + data.previousExeControlStatus + '"';
+                        cell += ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + data.previousExeId + '\')">';
+                        cell += data.previousExeControlStatus;
+                        cell += '</div>';
+                        statWidth = "80";
+                    }
                     let idProgressBar = (data.Test + "_" + data.TestCase + "_" + data.RobotDecli).replace("\.", "_").replace(" ", "_");
                     if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
                         cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" id="' + idProgressBar + '" ';
                     } else {
                         cell += '<div class="progress-bar status' + data.ControlStatus + '" id="' + idProgressBar + '" ';
                     }
-                    cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;"';
+                    cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: ' + statWidth + '%;cursor: pointer; height: 40px;"';
                     cell += 'data-toggle="tooltip" data-html="true" title="' + tooltip + '"';
                     if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
                         cell += ' onclick="openModalTestCaseExecutionQueue(' + data.QueueID + ', \'EDIT\');">\n\' ';
                     } else {
-                        cell += ' onclick="window.open(\'' + executionLink + '\')">';
+                        cell += ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + data.ID + '\')">';
                     }
                     cell += '<span class="' + glyphClass.glyph + ' marginRight5"></span>';
                     cell += '<span name="tcResult">' + data.ControlStatus + '<span>';

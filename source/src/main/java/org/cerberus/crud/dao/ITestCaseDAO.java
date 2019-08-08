@@ -80,7 +80,8 @@ public interface ITestCaseDAO {
      * @param application arrays of application to filter
      * @param priority arrays of priority to filter
      * @param group arrays of group to filter
-     * @param maxReturn nd max of records to return. (Prevent from returning too large list)
+     * @param maxReturn nd max of records to return. (Prevent from returning too
+     * large list)
      * @return the list of TCase used in the campaign
      * @since 1.0.2
      */
@@ -128,7 +129,7 @@ public interface ITestCaseDAO {
      * @return
      */
     public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length);
+            String[] campaign, List<Integer> labelid, String[] priority, String[] group, String[] status, int length);
 
     /**
      *

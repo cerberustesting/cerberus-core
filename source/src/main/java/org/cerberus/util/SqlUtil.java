@@ -140,13 +140,13 @@ public class SqlUtil {
         return stringBuilder.toString();
     }
 
-    public static String createWhereInClauseInteger(String field, List<Integer> values) {
+    public static String createWhereInClauseInteger(String field, List<Integer> values, String preString, String postString) {
 
         if (field == null || field.isEmpty() || values == null || values.isEmpty()) {
             return "";
         }
 
-        StringBuilder stringBuilder = new StringBuilder(field).append(" IN (");
+        StringBuilder stringBuilder = new StringBuilder(preString).append(field).append(" IN (");
         int index = 0;
 
         String separator;
@@ -163,7 +163,7 @@ public class SqlUtil {
             }
         }
 
-        stringBuilder.append(")");
+        stringBuilder.append(")").append(postString);
 
         return stringBuilder.toString();
     }

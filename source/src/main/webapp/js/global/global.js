@@ -2016,18 +2016,6 @@ function escapeHtml(unsafe) {
             .replace(/'/g, "\\'");
 }
 
-function generateExecutionLink(status, id, tag) {
-    var result = "";
-    if (status === "NE") {
-        // Not executed (means manual execution).
-        result = "./TestCaseExecution.jsp?executionId=" + id;
-    } else {
-        // No longuer in the queue so we display the result.
-        result = "./TestCaseExecution.jsp?executionId=" + id;
-    }
-    return result;
-}
-
 function getRowClass(status) {
     var rowClass = [];
 

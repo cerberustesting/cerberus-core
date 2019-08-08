@@ -127,6 +127,9 @@ public class TestCaseExecution {
 
     private List<String> videos;
 
+    private long previousExeId;
+    private String previousExeStatus;
+
     // Others
     private MessageGeneral resultMessage;
     private String executionUUID;
@@ -171,6 +174,22 @@ public class TestCaseExecution {
     public static final String MANUAL_Y = "Y";
     public static final String MANUAL_N = "N";
     public static final String MANUAL_A = "A";
+
+    public long getPreviousExeId() {
+        return previousExeId;
+    }
+
+    public void setPreviousExeId(long previousExeId) {
+        this.previousExeId = previousExeId;
+    }
+
+    public String getPreviousExeStatus() {
+        return previousExeStatus;
+    }
+
+    public void setPreviousExeStatus(String previousExeStatus) {
+        this.previousExeStatus = previousExeStatus;
+    }
 
     public RobotExecutor getRobotExecutorObj() {
         return robotExecutorObj;
@@ -935,8 +954,6 @@ public class TestCaseExecution {
     public void setRemoteProxyLastHarMD5(String remoteProxyLastHarMD5) {
         this.remoteProxyLastHarMD5 = remoteProxyLastHarMD5;
     }
-    
-    
 
     /**
      * Convert the current TestCaseExecution into JSON format
@@ -989,6 +1006,8 @@ public class TestCaseExecution {
             result.put("system", this.getSystem());
             result.put("robotDecli", this.getRobotDecli());
             result.put("videos", this.getVideos());
+            result.put("previousExeId", this.getPreviousExeId());
+            result.put("previousExeStatus", this.getPreviousExeStatus());
 
             if (withChilds) {
                 // Looping on ** Step **

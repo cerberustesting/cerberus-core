@@ -177,7 +177,7 @@ public interface ITestCaseService {
      * @return
      */
     public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length);
+            String[] campaign, List<Integer> labelid, String[] priority, String[] group, String[] status, int length);
 
     /**
      *
@@ -286,12 +286,12 @@ public interface ITestCaseService {
      * @return
      */
     public AnswerList findTestCasesThatUseService(String service);
-    
+
     /**
-     * 
-     * @param testCase 
-     * @param cerberusVersion 
-     * @throws org.cerberus.exception.CerberusException 
+     *
+     * @param testCase
+     * @param cerberusVersion
+     * @throws org.cerberus.exception.CerberusException
      */
     public void importWithDependency(TestCase testCase) throws CerberusException;
 

@@ -43,8 +43,8 @@ public class TreeNode {
     private String icon;
     private String href;
     private boolean selectable;
+    private List<String> tags; // This is not Cerberus tags but GUI hierarchy tag.
     private List<TreeNode> nodes;
-    private List<String> tags;
     private String type;
     private Integer nbNodesWithChild;
     private String nbNodesText;
@@ -427,8 +427,9 @@ public class TreeNode {
             stats.put("nbQE", this.nbQE);
             stats.put("nbQU", this.nbQU);
             stats.put("nbWE", this.nbWE);
-            stats.put("nbElementWithChild", this.counter1WithChild);
             stats.put("nbElement", this.counter1);
+            stats.put("nbElementWithChild", this.counter1WithChild);
+            stats.put("nbNodesWithChild", this.nbNodesWithChild);
             result.put("stats", stats);
             if (this.getNodes() != null) {
                 JSONArray array = new JSONArray();

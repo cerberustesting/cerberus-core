@@ -990,7 +990,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length) {
+            String[] campaign, List<Integer> labelid, String[] priority, String[] group, String[] status, int length) {
         AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -1014,7 +1014,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(createInClauseFromList(group, "tec.group", "AND ", " "));
         query.append(createInClauseFromList(status, "tec.status", "AND ", " "));
         query.append(createInClauseFromList(system, "app.system", "AND ", " "));
-        query.append(createInClauseFromList(labelid, "tel.labelid", "AND ", " "));
+        query.append(SqlUtil.createWhereInClauseInteger("tel.labelid", labelid, "AND ", " "));
         if (campaign != null) {
             query.append(createInClauseFromList(campaign, "cpl.campaign", " AND (", ") "));
         }
@@ -1296,7 +1296,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     .append("INNER JOIN testcasecountry tcc ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")
                     .append("LEFT JOIN testcaselabel tel ON tec.test = tel.test AND tec.testcase = tel.testcase ")
                     .append("WHERE ")
-                    .append(SqlUtil.createWhereInClauseInteger("tel.labelId", labelIdList));
+                    .append(SqlUtil.createWhereInClauseInteger("tel.labelId", labelIdList, "", ""));
         } else if (!withLabel && (status != null || system != null || application != null || priority != null)) {
             query.append("LEFT OUTER JOIN application app ON app.application = tec.application ")
                     .append("INNER JOIN testcasecountry tcc ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")

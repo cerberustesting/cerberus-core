@@ -177,7 +177,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public AnswerList<TestCaseExecution>  readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException {
+    public AnswerList<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException {
         return testCaseExecutionDao.readByCriteria(start, amount, sort, searchTerm, individualSearch, individualLike, system);
     }
 
@@ -242,7 +242,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
                     testCaseExecution.getTestCaseExecutionDataMap().put(tced.getProperty(), tced);
                 }
             }
-        } catch(CerberusException e) {
+        } catch (CerberusException e) {
             LOG.error("An erreur occured while get dependency", e);
         }
 
@@ -252,7 +252,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
             List<String> videos = new LinkedList<>();
             videosAnswer.forEach(tcef -> videos.add(tcef.getFileName()));
             testCaseExecution.setVideos(videos);
-        } catch(CerberusException e) {
+        } catch (CerberusException e) {
             LOG.error("An erreur occured while get video file", e);
         }
 
@@ -333,10 +333,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
          */
         testCaseExecutions = hashExecution(testCaseExecutions, testCaseExecutionsInQueue);
 
-
         // load all test case dependency
         testCaseExecutionQueueDepService.loadDependenciesOnTestCaseExecution(testCaseExecutions);
-
 
         return testCaseExecutions;
     }
@@ -351,6 +349,10 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
                     + testCaseExecution.getTestCase();
             if ((testCaseExecutionsList.containsKey(key))) {
                 testCaseExecution.setNbExecutions(testCaseExecutionsList.get(key).getNbExecutions() + 1);
+                if (TestCaseExecution.CONTROLSTATUS_PE.equalsIgnoreCase(testCaseExecution.getControlStatus())) {
+                    testCaseExecution.setPreviousExeId(testCaseExecutionsList.get(key).getId());
+                    testCaseExecution.setPreviousExeStatus(testCaseExecutionsList.get(key).getControlStatus());
+                }
             }
             testCaseExecutionsList.put(key, testCaseExecution);
         }
@@ -363,6 +365,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
                     + testCaseExecution.getTestCase();
             if ((testCaseExecutionsList.containsKey(key) && testCaseExecutionsList.get(key).getStart() < testCaseExecutionInQueue.getRequestDate().getTime())
                     || !testCaseExecutionsList.containsKey(key)) {
+                if (TestCaseExecution.CONTROLSTATUS_QU.equalsIgnoreCase(testCaseExecution.getControlStatus())) {
+                    testCaseExecution.setPreviousExeId(testCaseExecutionsList.get(key).getId());
+                    testCaseExecution.setPreviousExeStatus(testCaseExecutionsList.get(key).getControlStatus());
+                }
+
                 testCaseExecutionsList.put(key, testCaseExecution);
             }
         }
