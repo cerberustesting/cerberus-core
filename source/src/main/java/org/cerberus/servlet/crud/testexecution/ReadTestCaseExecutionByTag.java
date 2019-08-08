@@ -747,6 +747,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 node.setCounter1Text("<span style='background-color:#000000' class='cnt1 badge badge-pill badge-secondary'>%COUNTER1%</span>");
                 node.setCounter1WithChildText("<span class='cnt1WC badge badge-pill badge-secondary'>%COUNTER1WITHCHILD%</span>");
                 node.setNbNodesText("<span style='background-color:#337ab7' class='nbNodes badge badge-pill badge-primary'>%NBNODESWITHCHILD%</span>");
+                node.setLabelObj(label);
                 inputList.put(node.getId(), node);
 //                    LOG.debug("Label : " + node.getId() + " T : " + node);
             }
