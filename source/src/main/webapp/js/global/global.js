@@ -2091,6 +2091,22 @@ function getDate(date) {
 }
 
 /**
+ * Method that return a String that contain the date. If date is 1970, the string return will be empty.
+ * @param {string} date
+ * @returns {string} date in string format
+ */
+function getDateShort(date) {
+    var endExe = new Date(date);
+    var d1 = new Date('1980-01-01');
+    if (endExe > d1) {
+        return endExe.getHours() + ":" + endExe.getMinutes() + ":" + endExe.getSeconds();
+    } else {
+        return "";
+    }
+}
+
+
+/**
  * Method used to restrict usage of some specific caracters.
  * @param {String} val value to test
  * @returns {boolean} true if is null, undefined of len >= 0

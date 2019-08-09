@@ -350,8 +350,10 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
             if ((testCaseExecutionsList.containsKey(key))) {
                 testCaseExecution.setNbExecutions(testCaseExecutionsList.get(key).getNbExecutions() + 1);
                 if (TestCaseExecution.CONTROLSTATUS_PE.equalsIgnoreCase(testCaseExecution.getControlStatus())) {
-                    testCaseExecution.setPreviousExeId(testCaseExecutionsList.get(key).getId());
-                    testCaseExecution.setPreviousExeStatus(testCaseExecutionsList.get(key).getControlStatus());
+                    if (testCaseExecutionsList.get(key) != null) {
+                        testCaseExecution.setPreviousExeId(testCaseExecutionsList.get(key).getId());
+                        testCaseExecution.setPreviousExeStatus(testCaseExecutionsList.get(key).getControlStatus());
+                    }
                 }
             }
             testCaseExecutionsList.put(key, testCaseExecution);
@@ -366,8 +368,10 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
             if ((testCaseExecutionsList.containsKey(key) && testCaseExecutionsList.get(key).getStart() < testCaseExecutionInQueue.getRequestDate().getTime())
                     || !testCaseExecutionsList.containsKey(key)) {
                 if (TestCaseExecution.CONTROLSTATUS_QU.equalsIgnoreCase(testCaseExecution.getControlStatus())) {
-                    testCaseExecution.setPreviousExeId(testCaseExecutionsList.get(key).getId());
-                    testCaseExecution.setPreviousExeStatus(testCaseExecutionsList.get(key).getControlStatus());
+                    if (testCaseExecutionsList.get(key) != null) {
+                        testCaseExecution.setPreviousExeId(testCaseExecutionsList.get(key).getId());
+                        testCaseExecution.setPreviousExeStatus(testCaseExecutionsList.get(key).getControlStatus());
+                    }
                 }
 
                 testCaseExecutionsList.put(key, testCaseExecution);

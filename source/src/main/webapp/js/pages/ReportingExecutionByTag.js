@@ -1108,13 +1108,16 @@ function generateTooltip(data) {
     } else {
         htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.ID + '</div>';
     }
-    htmlRes +=
-            '<div><span class=\'bold\'>Environment : </span>' + data.Environment + '</div>' +
-            '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>' +
-            '<div><span class=\'bold\'>Robot Decli : </span>' + data.RobotDecli + '</div>' +
-            '<div><span class=\'bold\'>Start : </span>' + new Date(data.Start) + '</div>' +
-            '<div><span class=\'bold\'>End : </span>' + new Date(data.End) + '</div>' +
-            '<div>' + ctrlmessage + '</div>';
+    htmlRes += '<div><span class=\'bold\'>Environment : </span>' + data.Environment + '</div>';
+    htmlRes += '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>';
+    if ((data.RobotDecli !== undefined) && (data.RobotDecli !== '')) {
+        htmlRes += '<div><span class=\'bold\'>Robot Decli : </span>' + data.RobotDecli + '</div>';
+    }
+    htmlRes += '<div><span class=\'bold\'>Start : </span>' + getDateShort(data.Start) + '</div>';
+    if (getDateShort(data.End) !== "") {
+        htmlRes += '<div><span class=\'bold\'>End : </span>' + getDateShort(data.End) + '</div>';
+    }
+    htmlRes += '<div>' + ctrlmessage + '</div>';
 
     return htmlRes;
 }
@@ -1309,7 +1312,8 @@ function aoColumnsFunc(Columns) {
                     var glyphClass = getRowClass(data.ControlStatus);
                     var tooltip = generateTooltip(data);
                     var cell = "";
-                    cell += '<div class="input-group"><span style="border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon status' + data.ControlStatus + '">';
+                    cell += '<div class="input-group">';
+                    cell += '<span style="border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon status' + data.ControlStatus + '">';
                     var state = data.ControlStatus;
                     if (!isEmpty(data.QueueState)) {
                         state += data.QueueState;
@@ -1326,7 +1330,7 @@ function aoColumnsFunc(Columns) {
                         cell += '</div>';
                         statWidth = "80";
                     }
-                    let idProgressBar = (data.Test + "_" + data.TestCase + "_" + data.RobotDecli).replace("\.", "_").replace(" ", "_");
+                    let idProgressBar = (data.Test + "_" + data.TestCase + "_" + data.Country + "_" + data.Environment + "_" + data.RobotDecli).replace(/\./g, '_').replace(/ /g, '_').replace(/\:/g, '_');
                     if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
                         cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" id="' + idProgressBar + '" ';
                     } else {
@@ -1340,25 +1344,28 @@ function aoColumnsFunc(Columns) {
                         cell += ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + data.ID + '\')">';
                     }
                     cell += '<span class="' + glyphClass.glyph + ' marginRight5"></span>';
-                    cell += '<span name="tcResult">' + data.ControlStatus + '<span>';
+                    cell += '<span name="tcResult">' + data.ControlStatus + '</span>';
+                    if (data.QueueState !== undefined) {
+                        cell += '<br><span style="font-size: xx-small">' + data.QueueState + " " + '</span>';
+                    }
                     if (data.TestCaseDep.length > 0) {
                         let button = ""
                         let txt = ""
                         let dependencyArray = ""
                         for (let dep of data.TestCaseDep) {
-                            dependencyArray += "{test:'" + dep.test + "',testcase:'" + dep.testcase + "',robotdecli:'" + data.RobotDecli + "'},"
-
+                            dependencyArray += "{test:'" + dep.test + "',testcase:'" + dep.testcase + "',Country:'" + data.Country + "',Environment:'" + data.Environment + "',robotdecli:'" + data.RobotDecli + "'},"
                         }
-
-                        let dependency = "renderDependency('dep" + cptDep + "',[" + dependencyArray + "]);"
-
-                        button = '<button id="dep' + cptDep + '" type="button" class="btn  btn-info hideFeatureTCDependencies" onclick="stopPropagation(event);' + dependency + '" data-html="true" data-toggle="popover">' +
-                                '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> </button>'
-                                ;
-                        cell += '<br><span style="font-size: xx-small">' + data.QueueState + " " + button + '<span>';
-                        cptDep++
+                        var dependency = "renderDependency('dep" + cptDep + "',[" + dependencyArray + "]);"
                     }
                     cell += '</div>';
+                    if (data.TestCaseDep.length > 0) {
+                        cell += '<span style="padding:0px; border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon ">';
+                        cell += '<button id="dep' + cptDep + '" type="button" class="btn  btn-info hideFeatureTCDependencies" onclick="stopPropagation(event);' + dependency + '" data-html="true" data-toggle="popover">' +
+                                '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> </button>'
+                        cell += '</span>';
+                        cptDep++;
+
+                    }
                     cell += '</div>';
                     return cell;
                 } else {
@@ -1420,19 +1427,15 @@ function aoColumnsFunc(Columns) {
 
 function renderDependency(id, dependencyArray) {
     let text = ""
-
     dependencyArray.forEach(dep => {
-        let idProgressBar = (dep.test + "_" + dep.testcase + "_" + dep.robotdecli).replace("\.", "_").replace(" ", "_");
+        let idProgressBar = (dep.test + "_" + dep.testcase + "_" + dep.Country + "_" + dep.Environment + "_" + dep.robotdecli).replace(/ /g, '_').replace(/\./g, '_').replace(/\:/g, '_');
         let tcDepResult = $("#" + idProgressBar).find("[name='tcResult']").text();
-
-        text += "<a href='#" + idProgressBar + "'>" + dep.test + " - " + dep.testcase + " - " + tcDepResult + "</a><a onclick='$(\"#" + idProgressBar + "\").click()'> (open on new tab)</a><br />"
-    })
-
+        text += "<a style='cursor: pointer;' onclick='$(\"#" + idProgressBar + "\").click()' style='font-size: xx-small'><div style='width: 20%' class='progress-bar status" + tcDepResult + "'>" + tcDepResult + "</div></a><a href='#" + idProgressBar + "'>" + dep.test + " - " + dep.testcase + "</a><br>"
+    });
     $("#" + id).attr('title', "Dependency")
             .popover('fixTitle')
             .attr("data-content", text)
             .popover('show');
-
 }
 
 function customConfig(config) {
