@@ -1547,19 +1547,6 @@
         <servlet-name>ImportTestCase</servlet-name>
         <url-pattern>/ImportTestCase</url-pattern>
     </servlet-mapping>
-
-
-    <!-- Filter allow CORS on Cerberus API. Need to override the FRONT_URL en variable to works-->
-    <filter>
-        <filter-name>corsFilter</filter-name>
-        <filter-class>org.cerberus.filter.SimpleCORSFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>corsFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
