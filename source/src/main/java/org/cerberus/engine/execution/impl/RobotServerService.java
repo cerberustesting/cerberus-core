@@ -60,7 +60,6 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.execution.IRecorderService;
-import org.cerberus.engine.execution.ISeleniumServerService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
@@ -84,13 +83,14 @@ import org.openqa.selenium.remote.*;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.cerberus.engine.execution.IRobotServerService;
 
 /**
  *
  * @author bcivel
  */
 @Service
-public class SeleniumServerService implements ISeleniumServerService {
+public class RobotServerService implements IRobotServerService {
 
     @Autowired
     private IParameterService parameterService;
@@ -111,7 +111,7 @@ public class SeleniumServerService implements ISeleniumServerService {
     private static Map<String, Boolean> apkAlreadyPrepare = new HashMap<>();
     private static int totocpt = 0;
 
-    private static final Logger LOG = LogManager.getLogger(SeleniumServerService.class);
+    private static final Logger LOG = LogManager.getLogger(RobotServerService.class);
     /**
      * Proxy default config. (Should never be used as default config is inserted
      * into database)
@@ -144,7 +144,7 @@ public class SeleniumServerService implements ISeleniumServerService {
              * level, set the selenium & appium wait element with this value,
              * else, take the one from parameter
              */
-            Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, cerberus_selenium_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout,cerberus_appium_action_longpress_wait;
+            Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, cerberus_selenium_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout, cerberus_appium_action_longpress_wait;
             boolean cerberus_selenium_autoscroll;
 
             if (!tCExecution.getTimeout().isEmpty()) {
@@ -190,11 +190,10 @@ public class SeleniumServerService implements ISeleniumServerService {
             /**
              * SetUp Proxy
              */
-            String hubUrl = StringUtil.cleanHostURL(
-                    SeleniumServerService.getBaseUrl(StringUtil.formatURLCredential(
-                            tCExecution.getSession().getHostUser(),
-                            tCExecution.getSession().getHostPassword(), session.getHost()),
-                            session.getPort())) + "/wd/hub";
+            String hubUrl = StringUtil.cleanHostURL(RobotServerService.getBaseUrl(StringUtil.formatURLCredential(
+                    tCExecution.getSession().getHostUser(),
+                    tCExecution.getSession().getHostPassword(), session.getHost()),
+                    session.getPort())) + "/wd/hub";
             LOG.debug(logPrefix + "Hub URL :" + hubUrl);
             URL url = new URL(hubUrl);
             HttpCommandExecutor executor = null;
@@ -261,6 +260,8 @@ public class SeleniumServerService implements ISeleniumServerService {
                     } else {
                         driver = new RemoteWebDriver(executor, caps);
                     }
+                    tCExecution.setRobotProvider(guessRobotProvider(session.getHost()));
+                    tCExecution.setRobotSessionID(((RemoteWebDriver) driver).getSessionId().toString());
                     break;
                 case Application.TYPE_APK:
                     // add a lock on app path this part of code, because we can't install 2 apk with the same name simultaneously
@@ -287,11 +288,15 @@ public class SeleniumServerService implements ISeleniumServerService {
                     }
 
                     driver = (WebDriver) appiumDriver;
+                    tCExecution.setRobotProvider(guessRobotProvider(session.getHost()));
+                    tCExecution.setRobotSessionID(((RemoteWebDriver) driver).getSessionId().toString());
                     break;
 
                 case Application.TYPE_IPA:
                     appiumDriver = new IOSDriver(url, caps);
                     driver = (WebDriver) appiumDriver;
+                    tCExecution.setRobotProvider(guessRobotProvider(session.getHost()));
+                    tCExecution.setRobotSessionID(((RemoteWebDriver) driver).getSessionId().toString());
                     break;
                 case Application.TYPE_FAT:
                     /**
@@ -393,6 +398,13 @@ public class SeleniumServerService implements ISeleniumServerService {
         } finally {
             executionThreadPoolService.executeNextInQueueAsynchroneously(false);
         }
+    }
+
+    private String guessRobotProvider(String host) {
+        if (host.contains("browserstack")) {
+            return TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK;
+        }
+        return TestCaseExecution.ROBOTPROVIDER_HOMEMADE;
     }
 
     /**
@@ -754,7 +766,7 @@ public class SeleniumServerService implements ISeleniumServerService {
 
             HttpClient client = HttpClientBuilder.create().setRedirectStrategy(new LaxRedirectStrategy()).build();
 
-            URL sessionURL = new URL(SeleniumServerService.getBaseUrl(session.getHost(), session.getPort()) + "/grid/api/testsession?session=" + sessionId);
+            URL sessionURL = new URL(RobotServerService.getBaseUrl(session.getHost(), session.getPort()) + "/grid/api/testsession?session=" + sessionId);
 
             BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("POST", sessionURL.toExternalForm());
             HttpResponse response = client.execute(host, r);
@@ -815,7 +827,7 @@ public class SeleniumServerService implements ISeleniumServerService {
 
         String url = "http://" + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/startProxy";
 
-        try ( InputStream is = new URL(url).openStream()) {
+        try (InputStream is = new URL(url).openStream()) {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
             StringBuilder sb = new StringBuilder();
             int cp;

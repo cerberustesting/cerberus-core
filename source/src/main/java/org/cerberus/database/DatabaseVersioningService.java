@@ -8178,6 +8178,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1421
         a.add("ALTER TABLE `scheduledexecution` DROP FOREIGN KEY `FK_scheduledexecution_01`;");
 
+        // Removed not necessary BrowserFullVersion information and added Robot provider and session.
+        // 1422
+        a.add("ALTER TABLE `testcaseexecution` DROP COLUMN `BrowserFullVersion`, ADD COLUMN `RobotProvider` VARCHAR(20) NOT NULL DEFAULT '' AFTER `RobotDecli`, ADD COLUMN `RobotSessionId` VARCHAR(100) NOT NULL DEFAULT '' AFTER `RobotProvider`;");
+
         return a;
     }
 

@@ -321,10 +321,10 @@ public class RunTestCase extends HttpServlet {
             TestCase tCase = factoryTCase.create(test, testCase);
 
             // Building Execution Object.
-            TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, robot, "", robotHost, robotPort, robotDecli, browser, version, platform, "",
+            TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, robot, "", robotHost, robotPort, robotDecli, browser, version, platform,
                     0, 0, "", "", "", null, null, tag, verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                     Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort,
-                    null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, robObj,
+                    null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, robObj, "", "",
                     "", "", "", "", "", manualExecution, userAgent, 0, 0, "");
             tCExecution.setSeleniumIPUser(ss_ip_user);
             tCExecution.setSeleniumIPPassword(ss_ip_pass);

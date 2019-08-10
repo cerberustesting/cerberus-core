@@ -89,7 +89,7 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private ISikuliService sikuliService;
     @Autowired
-    private ISeleniumServerService seleniumServerService;
+    private IRobotServerService seleniumServerService;
     @Autowired
     private IActionService actionService;
     @Autowired
@@ -143,7 +143,7 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private IRetriesService retriesService;
     @Autowired
-    private ISeleniumServerService serverService;
+    private IRobotServerService serverService;
     @Autowired
     private IFactoryRobotCapability robotCapabilityFactory;
     @Autowired
@@ -395,7 +395,6 @@ public class ExecutionRunService implements IExecutionRunService {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 try {
                     Capabilities caps = this.seleniumServerService.getUsedCapabilities(tCExecution.getSession());
-                    tCExecution.setBrowserFullVersion(caps.getBrowserName() + " " + caps.getVersion() + " " + caps.getPlatform().toString());
                     tCExecution.setVersion(caps.getVersion());
                     tCExecution.setPlatform(caps.getPlatform().toString());
                 } catch (Exception ex) {

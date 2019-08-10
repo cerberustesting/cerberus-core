@@ -173,7 +173,7 @@ function loadExecutionInformation(executionId, stepList, sockets) {
                     } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
                     socket.onmessage = function (e) {
                         var data = JSON.parse(e.data);
-                            updatePage(data, stepList);
+                        updatePage(data, stepList);
                     } //on récupère les messages provenant du serveur websocket
                     socket.onclose = function (e) {
                     } //on est informé lors de la fermeture de la connexion vers le serveur
@@ -414,7 +414,7 @@ function updatePage(data, stepList) {
                             newBugURL = newBugURL.replace("%BUILD%", data.build);
                             newBugURL = newBugURL.replace("%REV%", data.revision);
                             newBugURL = newBugURL.replace("%BROWSER%", data.browser);
-                            newBugURL = newBugURL.replace("%BROWSERFULLVERSION%", data.browserFullVersion);
+                            newBugURL = newBugURL.replace("%BROWSERFULLVERSION%", data.browser + ' ' + data.version + ' ' + data.platform);
                             link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text("Open a new bug"));
                         } else {
                             link = $('<a id="bugID">').attr("href", "#").append($("<button class='btn btn-default btn-block'>").text("No 'New Bug' URL Specified.").attr("title", "Please specify 'New Bug' URL at application level."));
@@ -570,7 +570,6 @@ function setConfigPanel(data) {
     configPanel.find("#tcDescription").text(data.description);
     configPanel.find("input#application").val(data.application);
     configPanel.find("input#browser").val(data.browser);
-    configPanel.find("input#browserfull").val(data.browserFullVersion);
     configPanel.find("input#build").val(data.build);
     configPanel.find("input#country").val(data.country);
     configPanel.find("input#environment").val(data.environment);
@@ -600,6 +599,16 @@ function setConfigPanel(data) {
     configPanel.find("input#testcaseversion").val(data.testCaseVersion);
     configPanel.find("input#system").val(data.system);
     configPanel.find("input#robotdecli").val(data.robotDecli);
+    configPanel.find("input#robotsessionid").val(data.robotSessionId);
+    if (data.robotProvider === "BROWSERSTACK") {
+        var build = "sessionid"; // FIX ME
+        var link = $('<a target="_blank" id="sessionLink">').attr("href", "https://automate.browserstack.com/builds/" + build + "/sessions/" + data.robotSessionId).append($("<button class='btn btn-default btn-block'>").text("See Session"));
+                $("#sessionLink").empty();
+        $("#sessionLink").append(link);
+        $("#sessionLink").show();
+    } else {
+        $("#sessionLink").hide();
+    }
     configPanel.find("input#version").val(data.version);
 
     configPanel.find("input#conditionOperTC").val(data.conditionOper);
@@ -912,10 +921,10 @@ function getPropertyContent(property) {
     var retryPeriodField = $("<input type='text' class='form-control' id='retryPeriod'>").prop("readonly", true);
 
     var typeGroup = $("<div class='form-group'></div>").append($("<label for='type'>" + doc.getDocLabel("testcaseexecutiondata", "type") + "</label>")).append(typeField);
-    
+
     // add rank
     var rankGroup = $("<div class='form-group'></div>").append($("<label for='rank'>" + doc.getDocLabel("testcasecountryproperties", "Rank") + "</label>")).append(rankField);
-    
+
     var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
     var value1Group = $("<div class='form-group'></div>").append($("<label for='value1'>" + doc.getDocLabel("page_executiondetail", "value1") + "</label>")).append(value1Field);
     var value1InitGroup = $("<div class='form-group'></div>").append($("<label for='value1init'>" + doc.getDocLabel("page_executiondetail", "value1init") + "</label>")).append(value1InitField);

@@ -44,12 +44,12 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
     @Override
     public TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment, String country,
             String robot, String robotExecutor, String robotHost, String robotPort, String robotDecli,
-            String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
+            String browser, String version, String platform, long start, long end, String controlStatus, String controlMessage,
             String application, Application applicationObj, String url, String tag, int verbose, int screenshot, int pageSource, int seleniumLog,
             boolean synchroneous, String timeout, String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor,
-            int numberOfRetries, String screenSize, Robot robotObj,
+            int numberOfRetries, String screenSize, Robot robotObj, String robotProvider, String robotSessionId, 
             String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String manualExecution, String userAgent, int testCaseVersion, int testCasePriority, String system) {
         TestCaseExecution newTce = new TestCaseExecution();
         newTce.setApplicationObj(applicationObj);
@@ -57,7 +57,6 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setBrowser(browser);
         newTce.setVersion(version);
         newTce.setPlatform(platform);
-        newTce.setBrowserFullVersion(browserFullVersion);
         newTce.setBuild(build);
         newTce.setControlMessage(controlMessage);
         newTce.setControlStatus(controlStatus);
@@ -72,6 +71,8 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setRobotHost(robotHost);
         newTce.setRobotPort(robotPort);
         newTce.setRobotDecli(robotDecli);
+        newTce.setRobotProvider(robotProvider);
+        newTce.setRobotSessionID(robotSessionId);
         newTce.setRevision(revision);
         newTce.setStart(start);
         newTce.setStatus(status);

@@ -53,6 +53,8 @@ public class TestCaseExecution {
     private String robotHost; // Host the Selenium IP
     private String robotPort; // host the Selenium Port
     private String robotDecli;
+    private String robotProvider;
+    private String robotSessionID;
     private String browser;
     private String version;
     private String platform;
@@ -144,9 +146,11 @@ public class TestCaseExecution {
     private boolean cerberus_featureflipping_activatewebsocketpush;
     private long cerberus_featureflipping_websocketpushperiod;
     private long lastWebsocketPush;
+    // Remote Proxy data.
     private Integer remoteProxyPort;
     private String remoteProxyUUID;
     private String remoteProxyLastHarMD5;
+
     /**
      * Invariant PROPERTY TYPE String.
      */
@@ -175,6 +179,25 @@ public class TestCaseExecution {
     public static final String MANUAL_N = "N";
     public static final String MANUAL_A = "A";
 
+    public static final String ROBOTPROVIDER_BROWSERSTACK = "BROWSERSTACK";
+    public static final String ROBOTPROVIDER_HOMEMADE = "HOMEMADE";
+
+    public String getRobotSessionID() {
+        return robotSessionID;
+    }
+
+    public void setRobotSessionID(String robotSessionID) {
+        this.robotSessionID = robotSessionID;
+    }
+
+    public String getRobotProvider() {
+        return robotProvider;
+    }
+
+    public void setRobotProvider(String robotProvider) {
+        this.robotProvider = robotProvider;
+    }
+    
     public long getPreviousExeId() {
         return previousExeId;
     }
@@ -715,9 +738,6 @@ public class TestCaseExecution {
         this.browser = browser;
     }
 
-    public String getBrowserFullVersion() {
-        return browserFullVersion;
-    }
 
     public void setBrowserFullVersion(String browserFullVersion) {
         this.browserFullVersion = browserFullVersion;
@@ -977,7 +997,6 @@ public class TestCaseExecution {
             result.put("browser", this.getBrowser());
             result.put("version", this.getVersion());
             result.put("platform", this.getPlatform());
-            result.put("browserFullVersion", this.getBrowserFullVersion());
             result.put("start", this.getStart());
             result.put("end", this.getEnd());
             result.put("controlStatus", this.getControlStatus());
@@ -1005,6 +1024,8 @@ public class TestCaseExecution {
             result.put("testCaseVersion", this.getTestCaseVersion());
             result.put("system", this.getSystem());
             result.put("robotDecli", this.getRobotDecli());
+            result.put("robotProvider", this.getRobotProvider());
+            result.put("robotSessionId", this.getRobotSessionID());
             result.put("videos", this.getVideos());
             result.put("previousExeId", this.getPreviousExeId());
             result.put("previousExeStatus", this.getPreviousExeStatus());

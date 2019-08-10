@@ -28,7 +28,7 @@ import org.openqa.selenium.Capabilities;
  *
  * @author bcivel
  */
-public interface ISeleniumServerService {
+public interface IRobotServerService {
 
     /**
      * Start the selenium Server

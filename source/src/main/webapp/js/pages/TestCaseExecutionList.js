@@ -256,13 +256,6 @@ function aoColumnsFunc() {
             "sDefaultContent": ""
         },
         {
-            "data": "browserFullVersion",
-            "sName": "exe.browserfullversion",
-            "title": doc.getDocOnline("page_executiondetail", "browserfull"),
-            "sWidth": "70px",
-            "sDefaultContent": ""
-        },
-        {
             "data": "start",
             "sName": "exe.start",
             "like": true,

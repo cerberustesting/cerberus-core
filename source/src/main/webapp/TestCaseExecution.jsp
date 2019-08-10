@@ -427,10 +427,22 @@
                                         <input type="text" class="form-control" id="robothost" placeholder="Robot Host" readonly>
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="robotport">Robot Port</label>
                                         <input type="text" class="form-control" id="robotport" placeholder="Robot Port" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="robotsessionid">Robot Session</label>
+                                        <input type="text" class="form-control" id="robotsessionid" placeholder="Robot Session Id" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <div class="form-group">
+                                        <label for="sessionLink"></label>
+                                        <div id="sessionLink"></div>
                                     </div>
                                 </div>
                             </div>

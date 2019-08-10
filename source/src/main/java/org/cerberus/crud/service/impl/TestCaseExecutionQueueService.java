@@ -421,9 +421,9 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         }
         TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, description, null, null, environment, country, "", "", robotHost, robotPort, robotDecli,
                 browser, version, platform,
-                browser, start, end, controlStatus, controlMessage, application, applicationObj, "", tag, verbose, screenshot, pageSource,
+                start, end, controlStatus, controlMessage, application, applicationObj, "", tag, verbose, screenshot, pageSource,
                 seleniumLog, synchroneous, timeout, outputFormat, "", "", tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
-                myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", manualExecution, "", 0, 0, "");
+                myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", "", "", manualExecution, "", 0, 0, "");
         result.setQueueID(testCaseExecutionInQueue.getId());
         result.setQueueState(testCaseExecutionInQueue.getState().name());
         result.setId(testCaseExecutionInQueue.getExeId());

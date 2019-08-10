@@ -42,7 +42,6 @@ import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestService;
 import org.cerberus.engine.execution.IExecutionCheckService;
 import org.cerberus.engine.execution.IExecutionStartService;
-import org.cerberus.engine.execution.ISeleniumServerService;
 import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,6 +52,7 @@ import org.cerberus.crud.service.IRobotExecutorService;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.engine.execution.IRobotServerService;
 
 /**
  *
@@ -82,7 +82,7 @@ public class ExecutionStartService implements IExecutionStartService {
     @Autowired
     ExecutionUUID executionUUIDObject;
     @Autowired
-    private ISeleniumServerService serverService;
+    private IRobotServerService serverService;
     @Autowired
     private IParameterService parameterService;
     @Autowired
