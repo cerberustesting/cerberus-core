@@ -125,17 +125,15 @@ public class RobotServerService implements IRobotServerService {
 
     @Override
     public void startServer(TestCaseExecution tCExecution) throws CerberusException {
-        //message used for log purposes 
-        String logPrefix = "[" + tCExecution.getTest() + " - " + tCExecution.getTestCase() + "] ";
 
         try {
 
-            LOG.info(logPrefix + "Start Robot Server (Selenium, Appium or Sikuli)");
+            LOG.info("Start Robot Server (Selenium, Appium or Sikuli)");
 
             /**
              * Set Session
              */
-            LOG.debug(logPrefix + "Setting the session.");
+            LOG.debug("Setting the session.");
             String system = tCExecution.getApplicationObj().getSystem();
 
             /**
@@ -161,7 +159,7 @@ public class RobotServerService implements IRobotServerService {
             cerberus_selenium_action_click_timeout = parameterService.getParameterIntegerByKey("cerberus_selenium_action_click_timeout", system, 90000);
             cerberus_selenium_autoscroll = parameterService.getParameterBooleanByKey("cerberus_selenium_autoscroll", system, false);
             cerberus_appium_action_longpress_wait = parameterService.getParameterIntegerByKey("cerberus_appium_action_longpress_wait", system, 8000);
-            LOG.debug(logPrefix + "TimeOut defined on session : " + cerberus_selenium_wait_element);
+            LOG.debug("TimeOut defined on session : " + cerberus_selenium_wait_element);
 
             Session session = new Session();
             session.setCerberus_selenium_implicitlyWait(cerberus_selenium_implicitlyWait);
@@ -177,15 +175,38 @@ public class RobotServerService implements IRobotServerService {
             session.setPort(tCExecution.getRobotPort());
             session.setCerberus_selenium_autoscroll(cerberus_selenium_autoscroll);
             tCExecution.setSession(session);
-            LOG.debug(logPrefix + "Session is set.");
+            tCExecution.setRobotProvider(guessRobotProvider(session.getHost()));
+            LOG.debug("Session is set.");
 
             /**
              * SetUp Capabilities
              */
-            LOG.debug(logPrefix + "Set Capabilities");
+            LOG.debug("Set Capabilities");
             DesiredCapabilities caps = this.setCapabilities(tCExecution);
             session.setDesiredCapabilities(caps);
-            LOG.debug(logPrefix + "Set Capabilities - retreived");
+            LOG.debug("Set Capabilities - retreived");
+
+            /**
+             * We record Caps list at the execution level.
+             */
+            try {
+
+                // Init additionalFinalCapabilities and set it from real caps.
+                List<RobotCapability> additionalFinalCapabilities = new ArrayList<>();
+                for (Map.Entry cap : caps.asMap().entrySet()) {
+                    additionalFinalCapabilities.add(factoryRobotCapability.create(0, "", cap.getKey().toString(), cap.getValue().toString()));
+                }
+
+                // Init inputCapabilities and set it from Robot values.
+                List<RobotCapability> inputCapabilities = new ArrayList<>();
+                if (tCExecution.getRobotObj() != null) {
+                    inputCapabilities = tCExecution.getRobotObj().getCapabilities();
+                }
+
+                tCExecution.addFileList(recorderService.recordCapabilities(tCExecution, inputCapabilities, additionalFinalCapabilities));
+            } catch (Exception ex) {
+                LOG.error("Exception Saving Robot Caps " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
+            }
 
             /**
              * SetUp Proxy
@@ -194,7 +215,7 @@ public class RobotServerService implements IRobotServerService {
                     tCExecution.getSession().getHostUser(),
                     tCExecution.getSession().getHostPassword(), session.getHost()),
                     session.getPort())) + "/wd/hub";
-            LOG.debug(logPrefix + "Hub URL :" + hubUrl);
+            LOG.debug("Hub URL :" + hubUrl);
             URL url = new URL(hubUrl);
             HttpCommandExecutor executor = null;
 
@@ -245,7 +266,7 @@ public class RobotServerService implements IRobotServerService {
             /**
              * SetUp Driver
              */
-            LOG.debug(logPrefix + "Set Driver");
+            LOG.debug("Set Driver");
             WebDriver driver = null;
             AppiumDriver appiumDriver = null;
             switch (tCExecution.getApplicationObj().getType().toUpperCase()) {
@@ -260,8 +281,7 @@ public class RobotServerService implements IRobotServerService {
                     } else {
                         driver = new RemoteWebDriver(executor, caps);
                     }
-                    tCExecution.setRobotProvider(guessRobotProvider(session.getHost()));
-                    tCExecution.setRobotSessionID(((RemoteWebDriver) driver).getSessionId().toString());
+                    tCExecution.setRobotSessionID(getSession(driver, tCExecution.getRobotProvider()));
                     break;
                 case Application.TYPE_APK:
                     // add a lock on app path this part of code, because we can't install 2 apk with the same name simultaneously
@@ -288,15 +308,13 @@ public class RobotServerService implements IRobotServerService {
                     }
 
                     driver = (WebDriver) appiumDriver;
-                    tCExecution.setRobotProvider(guessRobotProvider(session.getHost()));
-                    tCExecution.setRobotSessionID(((RemoteWebDriver) driver).getSessionId().toString());
+                    tCExecution.setRobotSessionID(getSession(driver, tCExecution.getRobotProvider()));
                     break;
 
                 case Application.TYPE_IPA:
                     appiumDriver = new IOSDriver(url, caps);
                     driver = (WebDriver) appiumDriver;
-                    tCExecution.setRobotProvider(guessRobotProvider(session.getHost()));
-                    tCExecution.setRobotSessionID(((RemoteWebDriver) driver).getSessionId().toString());
+                    tCExecution.setRobotSessionID(getSession(driver, tCExecution.getRobotProvider()));
                     break;
                 case Application.TYPE_FAT:
                     /**
@@ -315,6 +333,24 @@ public class RobotServerService implements IRobotServerService {
                         sikuliService.doSikuliActionOpenApp(session, tCExecution.getCountryEnvironmentParameters().getIp());
                     }
                     break;
+            }
+
+            /**
+             * We record Server Side Caps.
+             */
+            if (driver != null) {
+                try {
+
+                    // Init additionalFinalCapabilities and set it from real caps.
+                    List<RobotCapability> serverCapabilities = new ArrayList<>();
+                    for (Map.Entry cap : ((RemoteWebDriver) driver).getCapabilities().asMap().entrySet()) {
+                        serverCapabilities.add(factoryRobotCapability.create(0, "", cap.getKey().toString(), cap.getValue().toString()));
+                    }
+
+                    tCExecution.addFileList(recorderService.recordServerCapabilities(tCExecution, serverCapabilities));
+                } catch (Exception ex) {
+                    LOG.error("Exception Saving Server Robot Caps " + tCExecution.getId(), ex);
+                }
             }
 
             /**
@@ -375,23 +411,23 @@ public class RobotServerService implements IRobotServerService {
             tCExecution.getSession().setStarted(true);
 
         } catch (CerberusException exception) {
-            LOG.error(logPrefix + exception.toString(), exception);
+            LOG.error(exception.toString(), exception);
             throw new CerberusException(exception.getMessageError(), exception);
         } catch (MalformedURLException exception) {
-            LOG.error(logPrefix + exception.toString(), exception);
+            LOG.error(exception.toString(), exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED);
             mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort()));
             throw new CerberusException(mes, exception);
         } catch (UnreachableBrowserException exception) {
-            LOG.error(logPrefix + "Could not connect to : " + tCExecution.getSeleniumIP() + ":" + tCExecution.getSeleniumPort());
-            LOG.error(logPrefix + "UnreachableBrowserException catched.", exception);
+            LOG.error("Could not connect to : " + tCExecution.getSeleniumIP() + ":" + tCExecution.getSeleniumPort());
+            LOG.error("UnreachableBrowserException catched.", exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
             mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
             mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
             mes.setDescription(mes.getDescription().replace("%ERROR%", exception.toString()));
             throw new CerberusException(mes, exception);
         } catch (Exception exception) {
-            LOG.error(logPrefix + exception.toString(), exception);
+            LOG.error(exception.toString(), exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
             mes.setDescription(mes.getDescription().replace("%MES%", exception.toString()));
             throw new CerberusException(mes, exception);
@@ -400,11 +436,31 @@ public class RobotServerService implements IRobotServerService {
         }
     }
 
+    private String getSession(WebDriver driver, String robotProvider) {
+        String session = "";
+        switch (robotProvider) {
+            case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
+                session = ((RemoteWebDriver) driver).getSessionId().toString();
+                break;
+            case TestCaseExecution.ROBOTPROVIDER_KOBITON:
+                session = ((RemoteWebDriver) driver).getCapabilities().getCapability("kobitonSessionId").toString();
+                break;
+            case TestCaseExecution.ROBOTPROVIDER_NONE:
+                session = ((RemoteWebDriver) driver).getSessionId().toString();
+                break;
+            default:
+        }
+        return session;
+    }
+
     private String guessRobotProvider(String host) {
         if (host.contains("browserstack")) {
             return TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK;
         }
-        return TestCaseExecution.ROBOTPROVIDER_HOMEMADE;
+        if (host.contains("kobiton")) {
+            return TestCaseExecution.ROBOTPROVIDER_KOBITON;
+        }
+        return TestCaseExecution.ROBOTPROVIDER_NONE;
     }
 
     /**
@@ -440,7 +496,7 @@ public class RobotServerService implements IRobotServerService {
         }
         if (additionalCapabilities != null) {
             for (RobotCapability additionalCapability : additionalCapabilities) {
-                LOG.debug("RobotCaps on Robot : " + " " + additionalCapability.getRobot() + " caps : " + additionalCapability.getCapability() + " Value : " + additionalCapability.getValue());
+                LOG.debug("RobotCaps on Robot : " + additionalCapability.getRobot() + " caps : " + additionalCapability.getCapability() + " Value : " + additionalCapability.getValue());
                 if ((caps.getCapability(additionalCapability.getCapability()) == null)
                         || ((caps.getCapability(additionalCapability.getCapability()) != null) && (caps.getCapability(additionalCapability.getCapability()).toString().equals("")))) { // caps does not already exist so we can set it.
                     if (StringUtil.isBoolean(additionalCapability.getValue())) {
@@ -509,55 +565,91 @@ public class RobotServerService implements IRobotServerService {
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
             // Set the app capability with the application path
             if (!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
-                if ((caps.getCapability("app") == null)
-                        || ((caps.getCapability("app") != null) && (caps.getCapability("app").toString().equals("")))) {
+                if (isNotAlreadyDefined(caps, "app")) {
                     caps.setCapability("app", tCExecution.getMyHost());
                 }
             } else {
-                if ((caps.getCapability("app") == null)
-                        || ((caps.getCapability("app") != null) && (caps.getCapability("app").toString().equals("")))) {
+                if (isNotAlreadyDefined(caps, "app")) {
                     caps.setCapability("app", tCExecution.getCountryEnvironmentParameters().getIp());
                 }
             }
             if (!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getMobileActivity()) && tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                if ((caps.getCapability("appWaitActivity") == null)
-                        || ((caps.getCapability("appWaitActivity") != null) && (caps.getCapability("appWaitActivity").toString().equals("")))) {
+                if (isNotAlreadyDefined(caps, "appWaitActivity")) {
                     caps.setCapability("appWaitActivity", tCExecution.getCountryEnvironmentParameters().getMobileActivity());
                 }
             }
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                if ((caps.getCapability("automationName") == null)
-                        || ((caps.getCapability("automationName") != null) && (caps.getCapability("automationName").toString().equals("")))) {
+                if (isNotAlreadyDefined(caps, "automationName")) {
                     caps.setCapability("automationName", "UIAutomator2"); // use UIAutomator2 by default
                 }
             }
-
         }
 
         /**
-         * We record Caps list at the execution level.
+         * We record Selenium log at the end of the execution.
          */
-        try {
-
-            // Init additionalFinalCapabilities and set it from real caps.
-            List<RobotCapability> additionalFinalCapabilities = new ArrayList<>();
-            for (Map.Entry cap : caps.asMap().entrySet()) {
-                additionalFinalCapabilities.add(factoryRobotCapability.create(0, "", cap.getKey().toString(), cap.getValue().toString()));
-            }
-
-            // Init inputCapabilities and set it from Robot values.
-            List<RobotCapability> inputCapabilities = new ArrayList<>();
-            if (tCExecution.getRobotObj() != null) {
-                inputCapabilities = tCExecution.getRobotObj().getCapabilities();
-            }
-
-            tCExecution.addFileList(recorderService.recordCapabilities(tCExecution, inputCapabilities, additionalFinalCapabilities));
-        } catch (Exception ex) {
-            LOG.error("Exception Saving Robot Caps " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
+        switch (tCExecution.getRobotProvider()) {
+            case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
+                if (!StringUtil.isNullOrEmpty(tCExecution.getTag()) && isNotAlreadyDefined(caps, "build")) {
+                    caps.setCapability("build", tCExecution.getTag()); // use UIAutomator2 by default
+                }
+                if (isNotAlreadyDefined(caps, "project")) {
+                    caps.setCapability("project", tCExecution.getApplication());
+                }
+                if (isNotAlreadyDefined(caps, "name")) {
+                    String externalExeName = parameterService.getParameterStringByKey("cerberus_browserstack_defaultexename", tCExecution.getSystem(), "Exe : %EXEID%");
+                    externalExeName = externalExeName.replace("%EXEID%", String.valueOf(tCExecution.getId()));
+                    caps.setCapability("name", externalExeName);
+                }
+                if (tCExecution.getVerbose() >= 2) {
+                    if (isNotAlreadyDefined(caps, "browserstack.debug")) {
+                        caps.setCapability("browserstack.debug", true);
+                    }
+                    if (isNotAlreadyDefined(caps, "browserstack.console")) {
+                        caps.setCapability("browserstack.console", "warnings");
+                    }
+                    if (isNotAlreadyDefined(caps, "browserstack.networkLogs")) {
+                        caps.setCapability("browserstack.networkLogs", true);
+                    }
+                }
+                break;
+            case TestCaseExecution.ROBOTPROVIDER_KOBITON:
+                if (isNotAlreadyDefined(caps, "sessionName")) {
+                    String externalExeName = parameterService.getParameterStringByKey("cerberus_kobiton_defaultsessionname", tCExecution.getSystem(), "%EXEID% : %TEST% - %TESTCASE%");
+                    externalExeName = externalExeName.replace("%EXEID%", String.valueOf(tCExecution.getId()));
+                    externalExeName = externalExeName.replace("%APPLI%", String.valueOf(tCExecution.getApplication()));
+                    externalExeName = externalExeName.replace("%TAG%", String.valueOf(tCExecution.getTag()));
+                    externalExeName = externalExeName.replace("%TEST%", String.valueOf(tCExecution.getTest()));
+                    externalExeName = externalExeName.replace("%TESTCASE%", String.valueOf(tCExecution.getTestCase()));
+                    externalExeName = externalExeName.replace("%TESTCASEDESC%", String.valueOf(tCExecution.getTestCaseObj().getDescription()));
+                    caps.setCapability("sessionName", externalExeName);
+                }
+                if (isNotAlreadyDefined(caps, "sessionDescription")) {
+                    String externalExeName = parameterService.getParameterStringByKey("cerberus_kobiton_defaultsessiondescription", tCExecution.getSystem(), "%TESTCASEDESC%");
+                    externalExeName = externalExeName.replace("%EXEID%", String.valueOf(tCExecution.getId()));
+                    externalExeName = externalExeName.replace("%APPLI%", String.valueOf(tCExecution.getApplication()));
+                    externalExeName = externalExeName.replace("%TAG%", String.valueOf(tCExecution.getTag()));
+                    externalExeName = externalExeName.replace("%TEST%", String.valueOf(tCExecution.getTest()));
+                    externalExeName = externalExeName.replace("%TESTCASE%", String.valueOf(tCExecution.getTestCase()));
+                    externalExeName = externalExeName.replace("%TESTCASEDESC%", String.valueOf(tCExecution.getTestCaseObj().getDescription()));
+                    caps.setCapability("sessionDescription", externalExeName);
+                }
+                if (isNotAlreadyDefined(caps, "deviceGroup")) {
+                    caps.setCapability("deviceGroup", "KOBITON"); // use UIAutomator2 by default
+                }
+                break;
+            case TestCaseExecution.ROBOTPROVIDER_NONE:
+                break;
+            default:
         }
 
         return caps;
+    }
+
+    private boolean isNotAlreadyDefined(DesiredCapabilities caps, String capability) {
+        return ((caps.getCapability(capability) == null)
+                || ((caps.getCapability(capability) != null) && (caps.getCapability(capability).toString().equals(""))));
     }
 
     /**
@@ -714,12 +806,18 @@ public class RobotServerService implements IRobotServerService {
                 LOG.error(ex.toString(), ex);
             }
 
+            /**
+             * We remove manually the package if it is defined.
+             */
             if (session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null
                     && !StringUtil.isNullOrEmpty(tce.getCountryEnvironmentParameters().getMobilePackage())) {
-                session.getAppiumDriver().removeApp(tce.getCountryEnvironmentParameters().getMobilePackage()); // remove manually if package is defined
+                session.getAppiumDriver().removeApp(tce.getCountryEnvironmentParameters().getMobilePackage());
             }
 
-            // lock device if deviceLockUnlock is active
+            /**
+             * We lock device if deviceLockUnlock is active.
+             */
+            // 
             if (tce.getRobotExecutorObj() != null && session.getAppiumDriver() != null && session.getAppiumDriver() instanceof LocksDevice
                     && "Y".equals(tce.getRobotExecutorObj().getDeviceLockUnlock())) {
                 ((LocksDevice) session.getAppiumDriver()).lockDevice();
@@ -728,16 +826,62 @@ public class RobotServerService implements IRobotServerService {
             /**
              * We record Selenium log at the end of the execution.
              */
+            switch (tce.getRobotProvider()) {
+                case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
+                    try {
+                        tce.addFileList(recorderService.recordSeleniumLog(tce));
+                    } catch (Exception ex) {
+                        LOG.error("Exception Getting Selenium Logs " + tce.getId(), ex);
+                    }
+//                    try {
+//                        tce.addFileList(recorderService.recordBrowserstackSeleniumLog(tce));
+//                    } catch (Exception ex) {
+//                        LOG.error("Exception Getting Browserstack Selenium Logs " + tce.getId(), ex);
+//                    }
+//                    break;
+                case TestCaseExecution.ROBOTPROVIDER_NONE:
+                    try {
+                        tce.addFileList(recorderService.recordSeleniumLog(tce));
+                    } catch (Exception ex) {
+                        LOG.error("Exception Getting Selenium Logs " + tce.getId(), ex);
+                    }
+                    break;
+                default:
+            }
+
+            /**
+             * We record Har log at the end of the execution.
+             */
+            switch (tce.getRobotProvider()) {
+                case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
+//                    try {
+//                        String url = "http://api.bs.com/getHar?uuid=" + tce.getRobotSessionID();
+//                        tce.addFileList(recorderService.recordBrowserstackHarLog(tce, url));
+//                    } catch (Exception ex) {
+//                        LOG.error("Exception Getting Browserstack HAR File " + tce.getId(), ex);
+//                    }
+                    break;
+                case TestCaseExecution.ROBOTPROVIDER_NONE:
+                    break;
+                default:
+            }
             try {
-                //getHarFile
-                //if proxy started and parameter verbose >  =1 activated
+                // Get Har File when Cerberus Executor is activated.
+                // If proxy started and parameter verbose >= 1 activated
                 if ("Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())
                         && tce.getVerbose() >= 1) {
                     String url = "http://" + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + tce.getRemoteProxyUUID();
                     tce.addFileList(recorderService.recordHarLog(tce, url));
                 }
+            } catch (Exception ex) {
+                LOG.error("Exception Getting Har File from Cerberus Executor " + tce.getId(), ex);
+            }
 
-                //if proxy started
+            /**
+             * We Stop the Proxy on Cerberus Executor.
+             */
+            try {
+                // Ask the Proxy to stop.
                 if ("Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())) {
                     String urlStop = "http://" + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/stopProxy?uuid=" + tce.getRemoteProxyUUID();
                     InputStream is = new URL(urlStop).openStream();
@@ -745,11 +889,25 @@ public class RobotServerService implements IRobotServerService {
                 }
 
             } catch (Exception ex) {
-                LOG.error("Exception Getting Selenium Logs " + tce.getId() + " Exception :" + ex.toString(), ex);
+                LOG.error("Exception when asking Cerberus Executor proxy to stop " + tce.getId(), ex);
             }
 
-            LOG.info("Stop execution session");
-            session.quit();
+            /**
+             * We Stop the Robot Session (Selenium or Appium).
+             */
+            LOG.info("Stop execution robot session");
+            if (tce.getRobotProvider().equals(TestCaseExecution.ROBOTPROVIDER_KOBITON)) {
+                // For Kobiton, we should first close Appium session.
+                if (session.getAppiumDriver() != null) {
+                    session.getAppiumDriver().close();
+                }
+                if (session.getDriver() != null) {
+                    session.getDriver().quit();
+                }
+            } else {
+                session.quit();
+            }
+
             return true;
         }
         return false;

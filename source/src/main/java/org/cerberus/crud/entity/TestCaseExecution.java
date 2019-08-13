@@ -58,7 +58,6 @@ public class TestCaseExecution {
     private String browser;
     private String version;
     private String platform;
-    private String browserFullVersion;
     private long start;
     private long end;
     private String controlStatus;
@@ -112,6 +111,7 @@ public class TestCaseExecution {
     private Invariant CountryObj;
     private Test testObj;
     private TestCase testCaseObj;
+    private Tag tagObj;
     private CountryEnvParam countryEnvParam;
     private CountryEnvironmentParameters countryEnvironmentParameters;
     private Invariant environmentDataObj;
@@ -180,7 +180,8 @@ public class TestCaseExecution {
     public static final String MANUAL_A = "A";
 
     public static final String ROBOTPROVIDER_BROWSERSTACK = "BROWSERSTACK";
-    public static final String ROBOTPROVIDER_HOMEMADE = "HOMEMADE";
+    public static final String ROBOTPROVIDER_KOBITON = "KOBITON";
+    public static final String ROBOTPROVIDER_NONE = "NONE";
 
     public String getRobotSessionID() {
         return robotSessionID;
@@ -197,7 +198,7 @@ public class TestCaseExecution {
     public void setRobotProvider(String robotProvider) {
         this.robotProvider = robotProvider;
     }
-    
+
     public long getPreviousExeId() {
         return previousExeId;
     }
@@ -738,11 +739,6 @@ public class TestCaseExecution {
         this.browser = browser;
     }
 
-
-    public void setBrowserFullVersion(String browserFullVersion) {
-        this.browserFullVersion = browserFullVersion;
-    }
-
     public String getBuild() {
         return build;
     }
@@ -869,6 +865,14 @@ public class TestCaseExecution {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public Tag getTagObj() {
+        return tagObj;
+    }
+
+    public void setTagObj(Tag tagObj) {
+        this.tagObj = tagObj;
     }
 
     public String getTest() {
@@ -1044,6 +1048,12 @@ public class TestCaseExecution {
                 if (this.getTestCaseObj() != null) {
                     TestCase tc = this.getTestCaseObj();
                     result.put("testCaseObj", tc.toJson());
+                }
+                
+                // ** Tag **
+                if (this.getTagObj() != null) {
+                    Tag tagO = this.getTagObj();
+                    result.put("tagObj", tagO.toJsonLight());
                 }
 
                 // Looping on ** Execution Data **

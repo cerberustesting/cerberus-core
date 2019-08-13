@@ -8182,6 +8182,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1422
         a.add("ALTER TABLE `testcaseexecution` DROP COLUMN `BrowserFullVersion`, ADD COLUMN `RobotProvider` VARCHAR(20) NOT NULL DEFAULT '' AFTER `RobotDecli`, ADD COLUMN `RobotSessionId` VARCHAR(100) NOT NULL DEFAULT '' AFTER `RobotProvider`;");
 
+        // New parameters.
+        // 1423
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + "('', 'cerberus_browserstack_defaultexename', 'Exe : %EXEID%', 'Define the default value for the name of the execution to be sent to Browserstack when a test is executed. Variable %EXEID% can be used.'),"
+                + "('', 'cerberus_kobiton_defaultsessionname', '%EXEID% : %TEST% - %TESTCASE%', 'Define the default value for the SessionName to be sent to Kobiton when a test is executed. Variables %EXEID%, %APPLI%, %TAG%, %TEST%, %TESTCASE%, %TESTCASEDESC% can be used.'),"
+                + "('', 'cerberus_kobiton_defaultsessiondescription', '%TESTCASEDESC%', 'Define the default value for the SessionDescription to be sent to Kobiton when a test is executed. Variables %EXEID%, %APPLI%, %TAG%, %TEST%, %TESTCASE%, %TESTCASEDESC% can be used.');");
+
+        // Adding browserstack Build column.
+        // 1424
+        a.add("ALTER TABLE `tag` ADD COLUMN `browserstackBuildHash` VARCHAR(100) NOT NULL DEFAULT '' AFTER `ReqEnvironmentList`;");
+
         return a;
     }
 

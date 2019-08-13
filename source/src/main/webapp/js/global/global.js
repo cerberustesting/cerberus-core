@@ -2099,12 +2099,21 @@ function getDateShort(date) {
     var endExe = new Date(date);
     var d1 = new Date('1980-01-01');
     if (endExe > d1) {
-        return endExe.getHours() + ":" + endExe.getMinutes() + ":" + endExe.getSeconds();
+        return ('0' + endExe.getHours()).substr(-2) + ":" + ('0' + endExe.getMinutes()).substr(-2) + ":" + ('0' + endExe.getSeconds()).substr(-2);
     } else {
         return "";
     }
 }
 
+function getDateMedium(date) {
+    var endExe = new Date(date);
+    var d1 = new Date('1980-01-01');
+    if (endExe > d1) {
+        return ("0" + endExe.getDate()).slice(-2) + "-" + ("0" + (endExe.getMonth() + 1)).slice(-2) + "-" + endExe.getFullYear() + " " + ('0' + endExe.getHours()).substr(-2) + ":" + ('0' + endExe.getMinutes()).substr(-2) + ":" + ('0' + endExe.getSeconds()).substr(-2);
+    } else {
+        return "";
+    }
+}
 
 /**
  * Method used to restrict usage of some specific caracters.

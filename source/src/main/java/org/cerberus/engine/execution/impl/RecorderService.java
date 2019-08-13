@@ -627,15 +627,55 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
+    public TestCaseExecutionFile recordServerCapabilities(TestCaseExecution testCaseExecution, List<RobotCapability> capFinalList) {
+        TestCaseExecutionFile object = null;
+
+        LOG.debug("Starting to save Server Robot caps file.");
+
+        if ((capFinalList == null)) {
+            LOG.debug("No caps to record.");
+            return null;
+        }
+
+        JSONObject outputMessage = new JSONObject();
+
+        try {
+
+            JSONObject capsFinal = new JSONObject();
+            if (capFinalList != null) {
+                for (RobotCapability robotCapability : capFinalList) {
+                    capsFinal.append(robotCapability.getCapability(), robotCapability.getValue());
+                }
+            }
+            outputMessage.put("ServerCapabilities", capsFinal);
+
+            // RESULT.
+            Recorder recorder = this.initFilenames(testCaseExecution.getId(), null, null, null, null, null, null, null, 0, "robot_server_caps", "json", false);
+            recordFile(recorder.getFullPath(), recorder.getFileName(), outputMessage.toString());
+
+            // Index file created to database.
+            object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Robot Server Caps", recorder.getRelativeFilenameURL(), "JSON", "", null, "", null);
+            testCaseExecutionFileService.save(object);
+
+        } catch (CerberusException ex) {
+            LOG.error(ex.toString(), ex);
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        } catch (Exception ex) {
+            LOG.error(ex.toString(), ex);
+        }
+
+        return object;
+    }
+
+    @Override
     public TestCaseExecutionFile recordSeleniumLog(TestCaseExecution testCaseExecution) {
         TestCaseExecutionFile object = null;
-        // Used for logging purposes
-        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
 
         if (testCaseExecution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
 
             if (testCaseExecution.getSeleniumLog() == 2 || (testCaseExecution.getSeleniumLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
-                LOG.debug(logPrefix + "Starting to save Selenium log file.");
+                LOG.debug("Starting to save Selenium log file.");
 
                 try {
                     Recorder recorder = this.initFilenames(testCaseExecution.getId(), null, null, null, null, null, null, null, 0, "selenium_log", "txt", false);
@@ -664,19 +704,19 @@ public class RecorderService implements IRecorderService {
                         testCaseExecutionFileService.save(object);
 
                     } catch (FileNotFoundException ex) {
-                        LOG.error(logPrefix + ex.toString(), ex);
+                        LOG.error("Exception on recording Selenium file.", ex);
                     } catch (IOException ex) {
-                        LOG.error(logPrefix + ex.toString(), ex);
+                        LOG.error("Exception on recording Selenium file.", ex);
                     }
 
-                    LOG.debug(logPrefix + "Selenium log recorded in : " + recorder.getRelativeFilenameURL());
+                    LOG.debug("Selenium log recorded in : " + recorder.getRelativeFilenameURL());
 
                 } catch (CerberusException ex) {
-                    LOG.error(logPrefix + ex.toString(), ex);
+                    LOG.error("Exception on recording Selenium file.", ex);
                 }
             }
         } else {
-            LOG.debug(logPrefix + "Selenium Log not recorded because test on non GUI application");
+            LOG.debug("Selenium Log not recorded because test on non GUI application");
         }
         return object;
     }
@@ -684,13 +724,11 @@ public class RecorderService implements IRecorderService {
     @Override
     public TestCaseExecutionFile recordHarLog(TestCaseExecution testCaseExecution, String url) {
         TestCaseExecutionFile object = null;
-        // Used for logging purposes
-        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
 
         if (testCaseExecution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
 
             if (testCaseExecution.getSeleniumLog() == 2 || (testCaseExecution.getSeleniumLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
-                LOG.debug(logPrefix + "Starting to save Har log file.");
+                LOG.debug("Starting to save Har log file.");
 
                 try {
                     Recorder recorder = this.initFilenames(testCaseExecution.getId(), null, null, null, null, null, null, null, 0, "har_log", "json", false);
@@ -717,19 +755,19 @@ public class RecorderService implements IRecorderService {
                         testCaseExecutionFileService.save(object);
 
                     } catch (FileNotFoundException ex) {
-                        LOG.error(logPrefix + ex.toString(), ex);
+                        LOG.error("Exception in Har log recording.", ex);
                     } catch (IOException ex) {
-                        LOG.error(logPrefix + ex.toString(), ex);
+                        LOG.error("Exception in Har log recording.", ex);
                     }
 
-                    LOG.debug(logPrefix + "Har log recorded in : " + recorder.getRelativeFilenameURL());
+                    LOG.debug("Har log recorded in : " + recorder.getRelativeFilenameURL());
 
                 } catch (CerberusException ex) {
-                    LOG.error(logPrefix + ex.toString(), ex);
+                    LOG.error("Exception in Har log recording.", ex);
                 }
             }
         } else {
-            LOG.debug(logPrefix + "Har Log not recorded because test on non GUI application");
+            LOG.debug("Har Log not recorded because test on non GUI application");
         }
         return object;
     }

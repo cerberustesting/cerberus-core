@@ -28,9 +28,8 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvLink;
 import org.cerberus.crud.entity.CountryEnvParam;
-import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotCapability;
-import org.cerberus.crud.entity.RobotExecutor;
+import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -48,11 +47,30 @@ import org.cerberus.crud.factory.IFactoryTestCaseExecutionSysVer;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControlExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepExecution;
-import org.cerberus.crud.service.*;
+import org.cerberus.crud.factory.IFactoryTag;
+import org.cerberus.crud.service.ICountryEnvLinkService;
+import org.cerberus.crud.service.ICountryEnvParamService;
+import org.cerberus.crud.service.ILoadTestCaseService;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITagService;
+import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
+import org.cerberus.crud.service.ITestCaseExecutionDataService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.crud.service.ITestCaseExecutionService;
+import org.cerberus.crud.service.ITestCaseExecutionSysVerService;
+import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
+import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
+import org.cerberus.crud.service.ITestCaseStepExecutionService;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.engine.execution.*;
+import org.cerberus.engine.execution.IConditionService;
+import org.cerberus.engine.execution.IExecutionRunService;
+import org.cerberus.engine.execution.IRecorderService;
+import org.cerberus.engine.execution.IRetriesService;
+import org.cerberus.engine.execution.IRobotServerService;
 import org.cerberus.engine.execution.video.VideoRecorder;
 import org.cerberus.engine.gwt.IActionService;
 import org.cerberus.engine.gwt.IControlService;
@@ -63,9 +81,9 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.enums.Screenshot;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.notification.INotificationService;
+import org.cerberus.service.robotproviders.IBrowserstackService;
+import org.cerberus.service.robotproviders.IKobitonService;
 import org.cerberus.service.sikuli.ISikuliService;
-import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.websocket.TestCaseExecutionEndPoint;
@@ -89,7 +107,7 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private ISikuliService sikuliService;
     @Autowired
-    private IRobotServerService seleniumServerService;
+    private IRobotServerService robotServerService;
     @Autowired
     private IActionService actionService;
     @Autowired
@@ -139,21 +157,17 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private ITagService tagService;
     @Autowired
-    private INotificationService notificationService;
-    @Autowired
     private IRetriesService retriesService;
     @Autowired
-    private IRobotServerService serverService;
-    @Autowired
     private IFactoryRobotCapability robotCapabilityFactory;
-    @Autowired
-    private IRobotService robotService;
-    @Autowired
-    private IRobotExecutorService robotExecutorService;
     @Autowired
     private ITestCaseExecutionQueueDepService testCaseExecutionQueueDepService;
     @Autowired
     private ITestCaseExecutionDataService testCaseExecutionDataService;
+    @Autowired
+    private IBrowserstackService browserstackService;
+    @Autowired
+    private IKobitonService kobitonService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
@@ -210,83 +224,6 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
                 LOG.debug(logPrefix + "Linked System Version Registered.");
             }
-
-//            // If Robot is feeded, we check it exist. If it exist, we overwrite the associated parameters.
-//            Robot robObj = null;
-//            RobotExecutor robExeObj = null;
-//            String robotHost = "";
-//            String robotPort = "";
-//            String browser = tCExecution.getBrowser();
-//            String robotDecli = "";
-//            String version = "";
-//            String platform = "";
-//            if (!StringUtil.isNullOrEmpty(tCExecution.getRobot())) {
-//                try {
-//                    robObj = robotService.readByKey(tCExecution.getRobot());
-//
-//                    // If Robot parameter is defined and we can find the robot, we overwrite the corresponding parameters.
-//                    browser = ParameterParserUtil.parseStringParam(robObj.getBrowser(), browser);
-//                    robotDecli = ParameterParserUtil.parseStringParam(robObj.getRobotDecli(), "");
-//                    if (StringUtil.isNullOrEmpty(robotDecli)) {
-//                        robotDecli = robObj.getRobot();
-//                    }
-//                    version = ParameterParserUtil.parseStringParam(robObj.getVersion(), version);
-//                    platform = ParameterParserUtil.parseStringParam(robObj.getPlatform(), platform);
-//                    tCExecution.setUserAgent(robObj.getUserAgent());
-//                    tCExecution.setScreenSize(robObj.getScreenSize());
-//                    tCExecution.setBrowser(browser);
-//                    tCExecution.setRobotDecli(robotDecli);
-//                    tCExecution.setVersion(version);
-//                    tCExecution.setPlatform(platform);
-//                    tCExecution.setRobotObj(robObj);
-//
-//                    // We cannot execute a testcase on a desactivated Robot.
-//                    if (robObj.getActive().equals("N")) {
-//                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CAPABILITYDECODE)
-//                                .resolveDescription("ROBOT", tCExecution.getRobot()));
-//                    }
-//
-//                    // If executor is not set, we get the best one from the list.
-//                    if (StringUtil.isNullOrEmpty(tCExecution.getRobotExecutor())) {
-//                        LOG.debug(logPrefix + "Getting the best Executor on Robot : " + tCExecution.getRobot());
-//                        robExeObj = robotExecutorService.readBestByKey(tCExecution.getRobot());
-//                        if (robExeObj != null) {
-//                            tCExecution.setRobotExecutor(robExeObj.getExecutor());
-//                            tCExecution.setRobotExecutorObj(robExeObj);
-//                            robotExecutorService.updateLastExe(robExeObj.getRobot(), robExeObj.getExecutor());
-//                        } else {
-//                            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTEXECUTORNOTEXIST)
-//                                    .resolveDescription("ROBOT", tCExecution.getRobot())
-//                                    .resolveDescription("EXECUTOR", tCExecution.getRobotExecutor()));
-//                        }
-//                        LOG.debug(logPrefix + " Executor retreived : " + robExeObj.getExecutor());
-//                    } else {
-//                        LOG.debug(logPrefix + " Getting Requested Robot / Executor : " + tCExecution.getRobot() + " / " + tCExecution.getRobotExecutor());
-//                        robExeObj = robotExecutorService.convert(robotExecutorService.readByKey(tCExecution.getRobot(), tCExecution.getRobotExecutor()));
-//                        tCExecution.setRobotExecutorObj(robExeObj);
-//                        if (robExeObj == null) {
-//                            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTEXECUTORNOTEXIST)
-//                                    .resolveDescription("ROBOT", tCExecution.getRobot())
-//                                    .resolveDescription("EXECUTOR", tCExecution.getRobotExecutor()));
-//                        }
-//                    }
-//
-//                    robotHost = ParameterParserUtil.parseStringParam(robExeObj.getHost(), tCExecution.getRobotHost());
-//                    robotPort = ParameterParserUtil.parseStringParam(String.valueOf(robExeObj.getPort()), tCExecution.getRobotPort());
-//                    tCExecution.setRobotHost(robotHost);
-//                    tCExecution.setRobotPort(robotPort);
-//                    tCExecution.setSeleniumIP(robotHost);
-//                    tCExecution.setSeleniumPort(robotPort);
-//                    tCExecution.setSeleniumIPUser(robExeObj.getHostUser());
-//                    tCExecution.setSeleniumIPPassword(robExeObj.getHostPassword());
-//
-//                } catch (CerberusException ex) {
-//                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTNOTEXIST)
-//                            .resolveDescription("ROBOT", tCExecution.getRobot()), ex);
-//                }
-//            } else {
-//                tCExecution.setRobotDecli(browser);
-//            }
 
             /**
              * Start robot server if execution is not manual
@@ -363,12 +300,12 @@ public class ExecutionRunService implements IExecutionRunService {
 
                     } else {
                         /**
-                         * Start Selenium server
+                         * Start Robot server (Selenium/Appium/Sikuli)
                          */
-                        LOG.debug(logPrefix + "Starting Server.");
+                        LOG.debug(logPrefix + "Starting Robot Server.");
                         try {
-                            this.serverService.startServer(tCExecution);
-                            LOG.debug(logPrefix + "Server Started.");
+                            this.robotServerService.startServer(tCExecution);
+                            LOG.debug(logPrefix + "Robot Server Started.");
                         } catch (CerberusException ex) {
                             LOG.debug(logPrefix + ex.getMessageError().getDescription());
                             throw new CerberusException(ex.getMessageError(), ex);
@@ -389,12 +326,21 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
             /**
+             * For BrowserStack only, we try to enrish the Tag with build hash.
+             */
+            if (TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK.equals(tCExecution.getRobotProvider())) {
+                String newBuildHash = tagService.enrichTagWithBrowserStackBuild(tCExecution.getSystem(), tCExecution.getTag(), tCExecution.getRobotExecutorObj().getHostUser(), tCExecution.getRobotExecutorObj().getHostPassword());
+                Tag newTag = tagService.convert(tagService.readByKey(tCExecution.getTag()));
+                tCExecution.setTagObj(newTag);
+            }
+
+            /**
              * Get used SeleniumCapabilities (empty if application is not GUI)
              */
             LOG.debug(logPrefix + "Getting Selenium capabitities for GUI applications.");
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 try {
-                    Capabilities caps = this.seleniumServerService.getUsedCapabilities(tCExecution.getSession());
+                    Capabilities caps = this.robotServerService.getUsedCapabilities(tCExecution.getSession());
                     tCExecution.setVersion(caps.getVersion());
                     tCExecution.setPlatform(caps.getPlatform().toString());
                 } catch (Exception ex) {
@@ -514,16 +460,6 @@ public class ExecutionRunService implements IExecutionRunService {
             // 
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING));
             updateTCExecution(tCExecution, true);
-//            try {
-//                testCaseExecutionService.updateTCExecution(tCExecution);
-//            } catch (CerberusException ex) {
-//                LOG.warn(ex);
-//            }
-//
-//            // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-//            if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-//                TestCaseExecutionEndPoint.getInstance().send(tCExecution, true);
-//            }
 
             // Evaluate the condition at the step level.
             AnswerItem<Boolean> conditionAnswerTc;
@@ -810,9 +746,6 @@ public class ExecutionRunService implements IExecutionRunService {
 
                                 // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
                                 updateTCExecutionWebSocketOnly(tCExecution, false);
-//                                if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-//                                    TestCaseExecutionEndPoint.getInstance().send(tCExecution, false);
-//                                }
 
                                 step_index++;
                             } while (execute_Next_Step && step_index <= maxloop);
@@ -833,12 +766,16 @@ public class ExecutionRunService implements IExecutionRunService {
                     }
 
                     /**
-                     * We record Selenium log at the end of the execution.
+                     * We notify external robot provider of end of execution
+                     * status.
                      */
-                    try {
-                        tCExecution.addFileList(recorderService.recordSeleniumLog(tCExecution));
-                    } catch (Exception ex) {
-                        LOG.error(logPrefix + "Exception Getting Selenium Logs " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
+                    switch (tCExecution.getRobotProvider()) {
+                        case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
+                            browserstackService.setSessionStatus(tCExecution.getSystem(), tCExecution.getRobotSessionID(), tCExecution.getControlStatus(), tCExecution.getControlMessage(), tCExecution.getRobotExecutorObj().getHostUser(), tCExecution.getRobotExecutorObj().getHostPassword());
+                            break;
+                        case TestCaseExecution.ROBOTPROVIDER_KOBITON:
+                            kobitonService.setSessionStatus(tCExecution.getSystem(), tCExecution.getRobotSessionID(), tCExecution.getControlStatus(), tCExecution.getControlMessage(), tCExecution.getRobotExecutorObj().getHostUser(), tCExecution.getRobotExecutorObj().getHostPassword());
+                            break;
                     }
 
                 } else { // We don't execute the testcase linked with condition.
@@ -1227,10 +1164,6 @@ public class ExecutionRunService implements IExecutionRunService {
         this.testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
 
         updateTCExecutionWebSocketOnly(tcExecution, false);
-//        // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-//        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-//            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
-//        }
 
         return testCaseStepExecution;
     }
@@ -1419,9 +1352,6 @@ public class ExecutionRunService implements IExecutionRunService {
 
                         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
                         updateTCExecutionWebSocketOnly(tcExecution, false);
-//                        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-//                            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
-//                        }
 
                     }
                 } else {
@@ -1461,9 +1391,6 @@ public class ExecutionRunService implements IExecutionRunService {
 
                 // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
                 updateTCExecutionWebSocketOnly(tcExecution, false);
-//                if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-//                    TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
-//                }
             }
 
             /**
@@ -1477,9 +1404,6 @@ public class ExecutionRunService implements IExecutionRunService {
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         updateTCExecutionWebSocketOnly(tcExecution, false);
-//        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-//            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
-//        }
 
         LOG.debug("Finished execute Action : " + testCaseStepActionExecution.getAction());
         return testCaseStepActionExecution;
@@ -1516,35 +1440,56 @@ public class ExecutionRunService implements IExecutionRunService {
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         updateTCExecutionWebSocketOnly(tcExecution, false);
-//        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-//            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
-//        }
 
         return testCaseStepActionControlExecution;
     }
 
     private TestCaseExecution stopRunTestCase(TestCaseExecution tCExecution) {
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-            try {
-                this.seleniumServerService.stopServer(tCExecution);
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Stop server for execution " + tCExecution.getId());
+
+        switch (tCExecution.getApplicationObj().getType()) {
+            case Application.TYPE_GUI:
+            case Application.TYPE_APK:
+            case Application.TYPE_IPA:
+                try {
+                    this.robotServerService.stopServer(tCExecution);
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Stop server for execution " + tCExecution.getId());
+                    }
+                } catch (WebDriverException exception) {
+                    LOG.warn("Selenium/Appium didn't manage to close connection for execution " + tCExecution.getId(), exception);
                 }
-            } catch (WebDriverException exception) {
-                LOG.warn("Selenium didn't manage to close connection for execution " + tCExecution.getId() + " due to " + exception.toString(), exception);
-            }
-        }
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Stop Sikuli server for execution " + tCExecution.getId() + " closing application " + tCExecution.getCountryEnvironmentParameters().getIp());
-            }
-            if (!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getIp())) {
-                this.sikuliService.doSikuliActionCloseApp(tCExecution.getSession(), tCExecution.getCountryEnvironmentParameters().getIp());
-            }
+                break;
+            case Application.TYPE_FAT:
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Stop Sikuli server for execution " + tCExecution.getId() + " closing application " + tCExecution.getCountryEnvironmentParameters().getIp());
+                }
+                if (!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getIp())) {
+                    this.sikuliService.doSikuliActionCloseApp(tCExecution.getSession(), tCExecution.getCountryEnvironmentParameters().getIp());
+                }
+                break;
+            default:
         }
 
+//        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+//                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+//                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+//            try {
+//                this.robotServerService.stopServer(tCExecution);
+//                if (LOG.isDebugEnabled()) {
+//                    LOG.debug("Stop server for execution " + tCExecution.getId());
+//                }
+//            } catch (WebDriverException exception) {
+//                LOG.warn("Selenium didn't manage to close connection for execution " + tCExecution.getId() + " due to " + exception.toString(), exception);
+//            }
+//        }
+//        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+//            if (LOG.isDebugEnabled()) {
+//                LOG.debug("Stop Sikuli server for execution " + tCExecution.getId() + " closing application " + tCExecution.getCountryEnvironmentParameters().getIp());
+//            }
+//            if (!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getIp())) {
+//                this.sikuliService.doSikuliActionCloseApp(tCExecution.getSession(), tCExecution.getCountryEnvironmentParameters().getIp());
+//            }
+//        }
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         updateTCExecutionWebSocketOnly(tCExecution, false);
 

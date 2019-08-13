@@ -41,10 +41,10 @@ public interface IRobotServerService {
     /**
      * Stop the server if started
      *
-     * @param session
+     * @param tCExecution
      * @return true if server successfully closed
      */
-    boolean stopServer(TestCaseExecution session);
+    boolean stopServer(TestCaseExecution tCExecution);
 
     /**
      * Find the capabilities used by the server

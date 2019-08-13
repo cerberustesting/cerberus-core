@@ -92,6 +92,7 @@
                                                 <a><button class="btn btn-default pull-left" id="ExecutionByTag" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-tasks"></span> See Execution By Tag</button></a>
                                                 <a><button class="btn btn-default pull-left" id="ExecutionQueue" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-eye-open"></span> See Queue Parameters</button></a>
                                                 <a><button class="btn btn-default pull-left" id="ExecutionQueueByTag" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> See Queue By Tag</button></a>
+                                                <a><button class="btn btn-default pull-left" id="sessionLinkHeader" style="margin-left: 5px; margin-right: 5px;">Link External Provider</button></a>
                                             </div>
                                         </div>
 
@@ -246,14 +247,14 @@
                                             <div id="propTable" class="list-group">
                                             </div>                                           
                                             <div class="row" id="secondaryPropTableHeader" class="list-group" style="display:none;">
-                                				<div class="col-sm-6">
-                                        			<button id="showSecondaryProp" type="button" class="btn btn-default center-block"><span class="glyphicon glyphicon-collapse-down"></span> Show <span id="secondaryPropCount"></span> Secondary Properties</button>                  
-                                    			</div>
-                                    			<div class="col-sm-6">
-                                        			<button id="hideSecondaryProp" type="button" class="btn btn-default center-block"><span class="glyphicon glyphicon-collapse-up"></span> Hide Secondary Properties</button>             
-                                    			</div>                               			
-                                			</div>
-                                			<div id="secondaryPropTable" style="margin-top:20px;">
+                                                <div class="col-sm-6">
+                                                    <button id="showSecondaryProp" type="button" class="btn btn-default center-block"><span class="glyphicon glyphicon-collapse-down"></span> Show <span id="secondaryPropCount"></span> Secondary Properties</button>                  
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <button id="hideSecondaryProp" type="button" class="btn btn-default center-block"><span class="glyphicon glyphicon-collapse-up"></span> Hide Secondary Properties</button>             
+                                                </div>                               			
+                                            </div>
+                                            <div id="secondaryPropTable" style="margin-top:20px;">
                                             </div>
                                         </div>
                                     </div>
@@ -442,7 +443,7 @@
                                 <div class="col-sm-1">
                                     <div class="form-group">
                                         <label for="sessionLink"></label>
-                                        <div id="sessionLink"></div>
+                                        <a><button class="btn btn-default pull-left" id="sessionLink" style="margin-left: 5px; margin-right: 5px;">Link External Provider</button></a>
                                     </div>
                                 </div>
                             </div>

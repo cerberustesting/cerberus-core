@@ -403,13 +403,18 @@ function generateTooltip(data) {
     if (data.controlMessage.length > 200) {
         ctrlmessage = data.controlMessage.substring(0, 200) + '...';
     }
-    htmlRes = '<div><span class=\'bold\'>Execution IDs :</span> ' + data.id + '</div>' +
-            '<div><span class=\'bold\'>Country : </span>' + data.country + '</div>' +
-            '<div><span class=\'bold\'>Environment : </span>' + data.environment + '</div>' +
-            '<div><span class=\'bold\'>Browser : </span>' + data.browser + '</div>' +
-            '<div><span class=\'bold\'>Start : </span>' + new Date(data.start) + '</div>' +
-            '<div><span class=\'bold\'>End : </span>' + new Date(data.end) + '</div>' +
-            '<div>' + ctrlmessage + '</div>';
+
+    htmlRes = '<div><span class=\'bold\'>Execution IDs :</span> ' + data.id + '</div>'
+    htmlRes += '<div><span class=\'bold\'>Country : </span>' + data.country + '</div>'
+    htmlRes += '<div><span class=\'bold\'>Environment : </span>' + data.environment + '</div>'
+    if (data.robotDecli !== "") {
+        htmlRes += '<div><span class=\'bold\'>Browser : </span>' + data.robotDecli + ' (' + data.browser + ')</div>'
+    }
+    htmlRes += '<div><span class=\'bold\'>Start : </span>' + getDateMedium(data.start) + '</div>';
+    if (getDateShort(data.end) !== "") {
+        htmlRes += '<div><span class=\'bold\'>End : </span>' + getDateShort(data.end) + '</div>';
+    }
+    htmlRes += '<div>' + ctrlmessage + '</div>';
 
     return htmlRes;
 }

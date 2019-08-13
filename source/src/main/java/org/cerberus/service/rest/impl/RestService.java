@@ -209,10 +209,8 @@ public class RestService implements IRestService {
         HttpClientBuilder httpclientBuilder;
         if (proxyService.useProxy(servicePath, system)) {
 
-            String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system,
-                    DEFAULT_PROXY_HOST);
-            int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system,
-                    DEFAULT_PROXY_PORT);
+            String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
+            int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system, DEFAULT_PROXY_PORT);
 
             serviceREST.setProxy(true);
             serviceREST.setProxyHost(proxyHost);

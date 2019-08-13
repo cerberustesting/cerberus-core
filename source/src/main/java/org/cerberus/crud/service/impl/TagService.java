@@ -38,6 +38,7 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ciresult.ICIService;
 import org.cerberus.service.notification.INotificationService;
+import org.cerberus.service.robotproviders.IBrowserstackService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -64,6 +65,8 @@ public class TagService implements ITagService {
     private ITestCaseExecutionService testCaseExecutionService;
     @Autowired
     private ICIService ciService;
+    @Autowired
+    private IBrowserstackService browserstackService;
     @Autowired
     private ITestCaseExecutionQueueService executionQueueService;
 
@@ -183,8 +186,8 @@ public class TagService implements ITagService {
         answerTag = readByKey(tagS);
         Tag tag = (Tag) answerTag.getItem();
         if (tag == null) {
-            Answer ans = tagDAO.create(factoryTag.create(0, tagS, "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "", "",
-                     reqEnvironmentList.toString(), reqCountryList.toString(), user, null, user, null));
+            Answer ans = tagDAO.create(factoryTag.create(0, tagS, "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "", "", "",
+                    reqEnvironmentList.toString(), reqCountryList.toString(), user, null, user, null));
             if (!StringUtil.isNullOrEmpty(campaign)) {
                 notificationService.generateAndSendNotifyStartTagExecution(tagS, campaign);
             }
@@ -197,6 +200,23 @@ public class TagService implements ITagService {
             }
             return null;
         }
+    }
+
+    @Override
+    public String enrichTagWithBrowserStackBuild(String system, String tagS, String user, String pass) {
+        if (!StringUtil.isNullOrEmpty(tagS)) {
+            LOG.debug("Trying to enrish tag '" + tagS + "' with BrowserStack Build hash.");
+            AnswerItem answerTag;
+            answerTag = readByKey(tagS);
+            Tag tag = (Tag) answerTag.getItem();
+            if ((tag != null) && StringUtil.isNullOrEmpty(tag.getBrowserstackBuildHash())) {
+                String newBuildHash = browserstackService.getBrowserStackBuildHash(system, tagS, user, pass);
+                    tag.setBrowserstackBuildHash(newBuildHash);
+                    Answer ans = tagDAO.updateBrowserStackBuild(tagS, tag);
+                    return newBuildHash;
+            }
+        }
+        return null;
     }
 
     @Override

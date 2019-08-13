@@ -25,6 +25,7 @@ import java.util.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
+import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -71,6 +72,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     ITestCaseExecutionQueueDepService testCaseExecutionQueueDepService;
     @Autowired
     private ITagSystemService tagSystemService;
+    @Autowired
+    private ITagService tagService;
     @Autowired
     private IFactoryTagSystem factoryTagSystem;
 
@@ -231,6 +234,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     public AnswerItem readByKeyWithDependency(long executionId) {
         AnswerItem tce = this.readByKey(executionId);
         TestCaseExecution testCaseExecution = (TestCaseExecution) tce.getItem();
+
+        if (!StringUtil.isNullOrEmpty(testCaseExecution.getTag())) {
+            AnswerItem<Tag> ai = tagService.readByKey(testCaseExecution.getTag());
+            testCaseExecution.setTagObj(ai.getItem());
+        }
 
         AnswerItem<TestCase> ai = testCaseService.readByKeyWithDependency(testCaseExecution.getTest(), testCaseExecution.getTestCase());
         testCaseExecution.setTestCaseObj(ai.getItem());

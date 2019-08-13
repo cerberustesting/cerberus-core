@@ -601,13 +601,26 @@ function setConfigPanel(data) {
     configPanel.find("input#robotdecli").val(data.robotDecli);
     configPanel.find("input#robotsessionid").val(data.robotSessionId);
     if (data.robotProvider === "BROWSERSTACK") {
-        var build = "sessionid"; // FIX ME
-        var link = $('<a target="_blank" id="sessionLink">').attr("href", "https://automate.browserstack.com/builds/" + build + "/sessions/" + data.robotSessionId).append($("<button class='btn btn-default btn-block'>").text("See Session"));
-                $("#sessionLink").empty();
-        $("#sessionLink").append(link);
-        $("#sessionLink").show();
+        if (data.tagObj !== undefined) {
+            let targetUrl = "https://automate.browserstack.com/builds/" + data.tagObj.browserstackBuildHash + "/sessions/" + data.robotSessionId;
+            let provImg = $('<img src="./images/browserstack.png" width="20">');
+            $("#sessionLinkHeader").empty().append(provImg).show();
+            $("#sessionLinkHeader").parent().attr("href", targetUrl).attr("target", "_blank");
+            provImg = $('<img src="./images/browserstack.png" width="20">');
+            $("#sessionLink").empty().append(provImg).show();
+            $("#sessionLink").parent().attr("href", targetUrl).attr("target", "_blank");
+        }
+    } else if (data.robotProvider === "KOBITON") {
+        let targetUrl = "https://portal.kobiton.com/sessions/" + data.robotSessionId;
+        let provImg = $('<img src="./images/kobiton.png" width="20">');
+        $("#sessionLinkHeader").empty().append(provImg).show();
+        $("#sessionLinkHeader").parent().attr("href", targetUrl).attr("target", "_blank");
+        provImg = $('<img src="./images/kobiton.png" width="20">');
+        $("#sessionLink").empty().append(provImg).show();
+        $("#sessionLink").parent().attr("href", targetUrl).attr("target", "_blank");
     } else {
         $("#sessionLink").hide();
+        $("#sessionLinkHeader").hide();
     }
     configPanel.find("input#version").val(data.version);
 

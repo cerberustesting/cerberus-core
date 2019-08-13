@@ -17,40 +17,43 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.proxy;
+package org.cerberus.service.robotproviders;
 
-import org.apache.http.impl.client.HttpClientBuilder;
+import java.util.List;
+import org.json.JSONObject;
 
 /**
  *
- * @author bcivel
+ * @author vertigo17
  */
-public interface IProxyService {
-
-    /**
-     * Hold the rule whether we use a proxy or not.
-     *
-     * @param targetUrl
-     * @param system
-     * @return
-     */
-    public boolean useProxy(String targetUrl, String system);
-    
-    
-    /**
-     * Convert Cerberus exception parameter to regex..
-     *
-     * @param useProxy
-     * @return
-     */
-    public String convertToRegEx(String useProxy);
+public interface IKobitonService {
 
     /**
      *
-     * @param system
-     * @param url
+     * @param sessionId BrowserStack session id.
+     * @param status TestCase Execution control status.
+     * @param reason Detailed reason.
+     * @param user BrowserStack user
+     * @param pass BrowserStack password
+     */
+    public void setSessionStatus(String system, String sessionId, String status, String reason, String user, String pass);
+
+    /**
+     *
+     * @param sessionId
+     * @param user
+     * @param pass
      * @return
      */
-    public HttpClientBuilder getBuilderWithProxy(String system, String url);
-    
+    public List<String> getSeleniumLogs(String sessionId, String user, String pass);
+
+    /**
+     *
+     * @param sessionId
+     * @param user
+     * @param pass
+     * @return
+     */
+    public JSONObject getHarLogs(String sessionId, String user, String pass);
+
 }

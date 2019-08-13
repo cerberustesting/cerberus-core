@@ -67,7 +67,11 @@ image:runexecutionsettings_en.png[RunExecutionSettings, 500, 500]
 
 | *Trace \ Verbose Level* | *0* | *1*  | *2*   
 | Chrome & Firefox display | no (headless) | yes | yes
-| JSON INFO Application Server logs | no | yes | yes
+| JSON INFO on Cerberus Application Server logs | no | yes | yes
+| Save Selenium log | no | only when result <> OK | yes
+| HAR file (when using Cerberus proxy executor) | no | yes | yes
+| Browserstack log activation | no | no | yes
+| Browserstack Save HAR and Selenium log | no | no | yes
 
 |=== 
 

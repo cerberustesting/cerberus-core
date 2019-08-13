@@ -91,6 +91,14 @@ public interface ITagDAO {
     /**
      *
      * @param tag
+     * @param object
+     * @return
+     */
+    Answer updateBrowserStackBuild(String tag, Tag object);
+
+    /**
+     *
+     * @param tag
      * @return
      */
     Answer updateDateEndQueue(Tag tag);
