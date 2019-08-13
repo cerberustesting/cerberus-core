@@ -859,12 +859,12 @@ public class PropertyService implements IPropertyService {
                     value = message;
                 }
                 testCaseExecutionData.setValue(value);
-                testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMCOMMAND)
-                        .resolveDescription("VALUE", value));
+                testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMCOMMAND).resolveDescription("VALUE", value));
             } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
                 res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getApplicationObj().getType()));
                 res.setDescription(res.getDescription().replace("%PROPTYPE%", testCaseExecutionData.getType()));
+                testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (Exception e) {
             LOG.debug("Exception Running Command Script :" + e.getMessage());
@@ -896,12 +896,12 @@ public class PropertyService implements IPropertyService {
                     value = message;
                 }
                 testCaseExecutionData.setValue(value);
-                testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETELEMENTPOSITION)
-                        .resolveDescription("VALUE", value));
+                testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETELEMENTPOSITION).resolveDescription("VALUE", value));
             } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
                 res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getApplicationObj().getType()));
                 res.setDescription(res.getDescription().replace("%PROPTYPE%", testCaseExecutionData.getType()));
+                testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (Exception e) {
             LOG.debug("Exception Running Command Script :" + e.getMessage());
@@ -919,12 +919,11 @@ public class PropertyService implements IPropertyService {
         } catch (CerberusException ex) {
             LOG.warn(ex);
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_SQLLIB_NOTEXIT);
-
             res.setDescription(res.getDescription().replace("%SQLLIB%", testCaseExecutionData.getValue1()));
+
             testCaseExecutionData.setPropertyResultMessage(res);
 
-            testCaseExecutionData.setEnd(
-                    new Date().getTime());
+            testCaseExecutionData.setEnd(new Date().getTime());
             return testCaseExecutionData;
         }
         testCaseExecutionData = this.property_getFromSql(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceCalculation);
@@ -947,18 +946,18 @@ public class PropertyService implements IPropertyService {
             } catch (Exception ex) {
                 LOG.warn(ex);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_SQLLIB_NOTEXIT);
-
                 res.setDescription(res.getDescription().replace("%SQLLIB%", testCaseExecutionData.getValue1()));
+
                 testCaseExecutionData.setPropertyResultMessage(res);
 
-                testCaseExecutionData.setEnd(
-                        new Date().getTime());
+                testCaseExecutionData.setEnd(new Date().getTime());
                 return testCaseExecutionData;
             }
         } else {
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
             res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getApplicationObj().getType()));
             res.setDescription(res.getDescription().replace("%PROPTYPE%", testCaseExecutionData.getType()));
+            testCaseExecutionData.setPropertyResultMessage(res);
 
         }
 

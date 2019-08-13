@@ -158,7 +158,7 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_GETELEMENTPOSITION_EXCEPTION(904, "FA", "Position evaluation error: %REASON%", true, true, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_SOAPFROMLIB_NODATA(198, "NA", "SOAP Request executed but returned no data.", true, false, false, MessageGeneralEnum.EXECUTION_NA),
     PROPERTY_FAILED_FEATURENOTIMPLEMENTED(197, "FA", "Feature '%FEATURE%' is not yet implemented!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
-    PROPERTY_FAILED_FEATURENOTSUPPORTED(197, "FA", "property type '%PROPTYPE%' is not supported for application type '%APPTYPE'.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_FEATURENOTSUPPORTED(197, "FA", "property type '%PROPTYPE%' is not supported for application type '%APPTYPE%'.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_PENDING(199, "PE", "Calculating property...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_NOTPOSSIBLE(199, "FA", "can't calculate this property, no webdriver set on a manual execution", false, false, false, MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_NOCONNECTION),
     // *********** EXECUTION ACTIONS ***********
