@@ -725,6 +725,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "labels",
+            "visible": false,
             "sName": "lab.label",
             "title": doc.getDocOnline("label", "label"),
             "bSortable": false,
@@ -755,6 +756,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "labelsREQUIREMENT",
+            "visible": false,
             "sName": "lab.labelsREQUIREMENT",
             "title": doc.getDocOnline("label", "labelsREQUIREMENT"),
             "bSortable": false,
@@ -770,6 +772,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "labelsBATTERY",
+            "visible": false,
             "sName": "lab.labelsBATTERY",
             "title": doc.getDocOnline("label", "labelsBATTERY"),
             "bSortable": false,
@@ -806,6 +809,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "tcActive",
+            "visible": false,
             "sName": "tec.tcactive",
             "title": doc.getDocOnline("testcase", "TcActive"),
             "sDefaultContent": "",
@@ -831,6 +835,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "priority",
+            "visible": false,
             "sName": "tec.priority",
             "title": doc.getDocOnline("invariant", "PRIORITY"),
             "sWidth": "70px",
@@ -838,6 +843,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "function",
+            "visible": false,
             "like": true,
             "sName": "tec.function",
             "title": doc.getDocOnline("testcase", "Function"),
@@ -846,6 +852,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "project",
+            "visible": false,
             "sName": "tec.project",
             "title": doc.getDocOnline("project", "idproject"),
             "sWidth": "100px",
@@ -853,6 +860,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "origine",
+            "visible": false,
             "sName": "tec.origine",
             "title": doc.getDocOnline("testcase", "Origine"),
             "sWidth": "70px",
@@ -860,6 +868,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "refOrigine",
+            "visible": false,
             "sName": "tec.refOrigine",
             "like": true,
             "title": doc.getDocOnline("testcase", "RefOrigine"),
@@ -868,6 +877,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "group",
+            "visible": false,
             "sName": "tec.group",
             "title": doc.getDocOnline("invariant", "Type"),
             "sWidth": "100px",
@@ -875,6 +885,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "dateCreated",
+            "visible": false,
             "sName": "tec.dateCreated",
             "like": true,
             "title": doc.getDocOnline("transversal", "DateCreated"),
@@ -883,6 +894,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "usrCreated",
+            "visible": false,
             "sName": "tec.usrCreated",
             "title": doc.getDocOnline("transversal", "UsrCreated"),
             "sWidth": "100px",
@@ -890,6 +902,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "testCaseVersion",
+            "visible": false,
             "sName": "tec.testCaseVersion",
             "title": doc.getDocOnline("testcase", "TestCaseVersion"),
             "sWidth": "50px",
@@ -897,6 +910,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "dateModif",
+            "visible": false,
             "like": true,
             "sName": "tec.dateModif",
             "title": doc.getDocOnline("transversal", "DateModif"),
@@ -909,6 +923,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "usrModif",
+            "visible": false,
             "sName": "tec.usrModif",
             "title": doc.getDocOnline("transversal", "UsrModif"),
             "sWidth": "100px",
@@ -938,6 +953,7 @@ function aoColumnsFunc(countries, tableId) {
                 }
             },
             "bSortable": false,
+            "visible": false,
             "bSearchable": false,
             "sClass": "center",
             "title": country,

@@ -1141,7 +1141,8 @@ function eventNewChainModalConfirmHandler() {
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": null,
+        {
+            "data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "sWidth": "160px",
@@ -1193,27 +1194,38 @@ function aoColumnsFunc(tableId) {
                 return returnString;
             }
         },
-        {"data": "system",
+        {
+            "data": "system",
             "sName": "system",
             "sWidth": "100px",
-            "title": doc.getDocOnline("invariant", "SYSTEM")},
-        {"data": "country",
+            "title": doc.getDocOnline("invariant", "SYSTEM")
+        },
+        {
+            "data": "country",
             "sName": "country",
             "sWidth": "70px",
-            "title": doc.getDocOnline("invariant", "COUNTRY")},
-        {"data": "environment",
+            "title": doc.getDocOnline("invariant", "COUNTRY")
+        },
+        {
+            "data": "environment",
             "sName": "environment",
             "sWidth": "100px",
-            "title": doc.getDocOnline("invariant", "ENVIRONMENT")},
-        {"data": "description",
+            "title": doc.getDocOnline("invariant", "ENVIRONMENT")
+        },
+        {
+            "data": "description",
             "like": true,
             "sName": "description",
             "sWidth": "150px",
-            "title": doc.getDocOnline("countryenvparam", "Description")},
-        {"data": "envGp",
+            "title": doc.getDocOnline("countryenvparam", "Description")
+        },
+        {
+            "data": "envGp",
+            "visible": false,
             "sName": "inv.gp1",
             "sWidth": "150px",
-            "title": doc.getDocOnline("page_environment", "envgp")},
+            "title": doc.getDocOnline("page_environment", "envgp")
+        },
         {
             "data": "active",
             "sName": "active",
@@ -1229,20 +1241,30 @@ function aoColumnsFunc(tableId) {
                 }
             }
         },
-        {"data": "build",
+        {
+            "data": "build",
+            "visible": false,
             "sName": "build",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisioninvariant", "versionname01")},
-        {"data": "revision",
+            "title": doc.getDocOnline("buildrevisioninvariant", "versionname01")
+        },
+        {
+            "data": "revision",
+            "visible": false,
             "sName": "revision",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisioninvariant", "versionname02")},
-        {"data": "type",
+            "title": doc.getDocOnline("buildrevisioninvariant", "versionname02")
+        },
+        {
+            "data": "type",
+            "visible": false,
             "sName": "type",
             "sWidth": "80px",
-            "title": doc.getDocOnline("countryenvparam", "Type")},
+            "title": doc.getDocOnline("countryenvparam", "Type")
+        },
         {
             "data": "maintenanceAct",
+            "visible": false,
             "sName": "maintenanceAct",
             "title": doc.getDocOnline("countryenvparam", "maintenanceact"),
             "sDefaultContent": "",
@@ -1256,18 +1278,27 @@ function aoColumnsFunc(tableId) {
                 }
             }
         },
-        {"data": "maintenanceStr",
+        {
+            "data": "maintenanceStr",
+            "visible": false,
             "sName": "maintenanceStr",
             "sWidth": "80px",
-            "title": doc.getDocOnline("countryenvparam", "maintenancestr")},
-        {"data": "maintenanceEnd",
+            "title": doc.getDocOnline("countryenvparam", "maintenancestr")
+        },
+        {
+            "data": "maintenanceEnd",
+            "visible": false,
             "sName": "maintenanceEnd",
             "sWidth": "80px",
-            "title": doc.getDocOnline("countryenvparam", "maintenanceend")},
-        {"data": "chain",
+            "title": doc.getDocOnline("countryenvparam", "maintenanceend")
+        },
+        {
+            "data": "chain",
+            "visible": false,
             "sName": "chain",
             "sWidth": "80px",
-            "title": doc.getDocOnline("countryenvparam", "chain")}
+            "title": doc.getDocOnline("countryenvparam", "chain")
+        }
     ];
     return aoColumns;
 }

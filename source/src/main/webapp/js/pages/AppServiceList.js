@@ -255,6 +255,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "sName": "srv.ServiceRequest",
+            "visible": false,
             "like": true,
             "data": "serviceRequest",
             "title": doc.getDocLabel("appservice", "srvRequest"),
@@ -269,17 +270,20 @@ function aoColumnsFunc(tableId) {
             }
         }, {
             "sName": "srv.operation",
+            "visible": false,
             "like": true,
             "data": "operation",
             "sWidth": "150px",
             "title": doc.getDocLabel("appservice", "operation")
         }, {
             "sName": "srv.Method",
+            "visible": false,
             "data": "method",
             "sWidth": "150px",
             "title": doc.getDocLabel("appservice", "method")
         }, {
             "sName": "srv.group",
+            "visible": false,
             "data": "group",
             "sWidth": "150px",
             "title": doc.getDocLabel("appservice", "group")
@@ -291,23 +295,27 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("appservice", "description")
         }, {
             "sName": "srv.DateCreated",
+            "visible": false,
             "like": true,
             "data": "DateCreated",
             "sWidth": "150px",
             "title": doc.getDocOnline("transversal", "DateCreated")
         }, {
             "sName": "srv.UsrCreated",
+            "visible": false,
             "data": "UsrCreated",
             "sWidth": "70px",
             "title": doc.getDocOnline("transversal", "UsrCreated")
         }, {
             "sName": "srv.DateModif",
+            "visible": false,
             "like": true,
             "data": "DateModif",
             "sWidth": "150px",
             "title": doc.getDocOnline("transversal", "DateModif")
         }, {
             "sName": "srv.UsrModif",
+            "visible": false,
             "data": "UsrModif",
             "sWidth": "70px",
             "title": doc.getDocOnline("transversal", "UsrModif")

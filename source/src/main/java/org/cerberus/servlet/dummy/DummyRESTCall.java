@@ -88,6 +88,7 @@ public class DummyRESTCall extends HttpServlet {
             jsonResponse.put("LocalName", request.getLocalName());
             jsonResponse.put("LocalPort", request.getLocalPort());
             jsonResponse.put("QueryString", request.getQueryString());
+            jsonResponse.put("EmptyString", "");
             jsonResponse.put("Boolean", true);
 
             String remoteIP = request.getRemoteAddr();

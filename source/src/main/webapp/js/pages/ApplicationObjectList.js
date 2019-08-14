@@ -255,6 +255,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "usrcreated",
+            "visible": false,
             "sName": "usrcreated",
             "sWidth": "60px",
             "title": doc.getDocOnline("page_applicationObject",
@@ -262,6 +263,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "datecreated",
+            "visible": false,
             "like": true,
             "sName": "datecreated",
             "sWidth": "80px",
@@ -270,6 +272,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "usrmodif",
+            "visible": false,
             "sName": "usrmodif",
             "sWidth": "60px",
             "title": doc
@@ -278,6 +281,7 @@ function aoColumnsFunc(tableId) {
         {
             "data": "datemodif",
             "like": true,
+            "visible": false,
             "sName": "datemodif",
             "sWidth": "80px",
             "title": doc.getDocOnline("page_applicationObject",

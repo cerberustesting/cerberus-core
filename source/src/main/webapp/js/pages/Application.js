@@ -511,7 +511,8 @@ function displayWarningOnChangeApplicationKey() {
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": null,
+        {
+            "data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
@@ -537,40 +538,56 @@ function aoColumnsFunc(tableId) {
                 return '<div class="center btn-group width150">' + viewApplication + '</div>';
             }
         },
-        {"data": "application",
+        {
+            "data": "application",
             "sName": "application",
             "sWidth": "60px",
             "title": doc.getDocOnline("application", "Application")},
-        {"data": "description",
+        {
+            "data": "description",
             "like": true,
             "sName": "description",
             "sWidth": "80px",
             "title": doc.getDocOnline("application", "Description")},
-        {"data": "sort",
+        {
+            "data": "sort",
+            "visible": false,
             "sName": "sort",
             "sWidth": "60px",
             "title": doc.getDocOnline("application", "sort")},
-        {"data": "type",
+        {
+            "data": "type",
             "sName": "type",
             "sWidth": "60px",
             "title": doc.getDocOnline("application", "type")},
-        {"data": "system",
+        {
+            "data": "system",
             "sName": "system",
             "sWidth": "60px",
             "title": doc.getDocOnline("application", "system")},
-        {"data": "subsystem",
+        {
+            "data": "subsystem",
+            "visible": false,
             "sName": "subsystem",
             "sWidth": "60px",
-            "title": doc.getDocOnline("application", "subsystem")},
-        {"data": "svnurl",
-            "sName": "svnurl",
-            "sWidth": "80px",
-            "title": doc.getDocOnline("application", "svnurl"),
-            "mRender": function (data, type, oObj) {
-                return drawURL(data);
-            }
+            "title": doc.getDocOnline("application", "subsystem")
         },
-        {"data": "bugTrackerUrl",
+        {
+            "data": "subsystem",
+            "visible": false,
+            "sName": "subsystem",
+            "sWidth": "60px",
+            "title": doc.getDocOnline("application", "subsystem")
+        },
+        {
+            "data": "poolSize",
+            "sName": "poolSize",
+            "sWidth": "80px",
+            "title": doc.getDocOnline("application", "poolSize"),
+        },
+        {
+            "data": "bugTrackerUrl",
+            "visible": false,
             "like": true,
             "sName": "bugTrackerUrl",
             "sWidth": "80px",
@@ -579,7 +596,9 @@ function aoColumnsFunc(tableId) {
                 return drawURL(data);
             }
         },
-        {"data": "bugTrackerNewUrl",
+        {
+            "data": "bugTrackerNewUrl",
+            "visible": false,
             "like": true,
             "sName": "bugTrackerNewUrl",
             "sWidth": "80px",
@@ -588,14 +607,20 @@ function aoColumnsFunc(tableId) {
                 return drawURL(data);
             }
         },
-        {"data": "deploytype",
+        {
+            "data": "deploytype",
+            "visible": false,
             "sName": "deploytype",
             "sWidth": "60px",
-            "title": doc.getDocOnline("application", "deploytype")},
-        {"data": "mavengroupid",
+            "title": doc.getDocOnline("application", "deploytype")
+        },
+        {
+            "data": "mavengroupid",
+            "visible": false,
             "sName": "mavengroupid",
             "sWidth": "60px",
-            "title": doc.getDocOnline("application", "mavengroupid")}
+            "title": doc.getDocOnline("application", "mavengroupid")
+        }
     ];
     return aoColumns;
 }

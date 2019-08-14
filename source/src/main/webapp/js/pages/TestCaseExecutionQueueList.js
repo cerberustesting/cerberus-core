@@ -477,10 +477,36 @@ function aoColumnsFunc(tableId) {
             }
         },
         {
-            "data": "priority",
-            "sName": "priority",
-            "title": doc.getDocLabel("testcaseexecutionqueue", "priority"),
-            "sWidth": "40px"
+            "data": "test",
+            "sName": "test",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "test_col"),
+            "sWidth": "70px"
+        },
+        {
+            "data": "testCase",
+            "like": true,
+            "sName": "testcase",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "testcase_col"),
+            "sWidth": "70px"
+        },
+        {
+            "data": "country",
+            "sName": "country",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "country_col"),
+            "sWidth": "70px"
+        },
+        {
+            "data": "environment",
+            "sName": "environment",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "environment_col"),
+            "sWidth": "70px"
+        },
+        {
+            "data": "robot",
+            "sName": "robot",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "robot_col"),
+            "sWidth": "70px",
+            "defaultContent": ""
         },
         {
             "data": "tag",
@@ -518,6 +544,13 @@ function aoColumnsFunc(tableId) {
             "defaultContent": ""
         },
         {
+            "data": "priority",
+            "visible": false,
+            "sName": "priority",
+            "title": doc.getDocLabel("testcaseexecutionqueue", "priority"),
+            "sWidth": "40px"
+        },
+        {
             "data": "exeId",
             "like": true,
             "sName": "exeId",
@@ -534,6 +567,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "UsrCreated",
+            "visible": false,
             "sName": "UsrCreated",
             "sWidth": "70px",
             "defaultContent": "",
@@ -541,44 +575,12 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "DateCreated",
+            "visible": false,
             "like": true,
             "sName": "DateCreated",
             "sWidth": "110px",
             "defaultContent": "",
             "title": doc.getDocOnline("transversal", "DateCreated")
-        },
-        {
-            "data": "test",
-            "sName": "test",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "test_col"),
-            "sWidth": "70px"
-        },
-        {
-            "data": "testCase",
-            "like": true,
-            "sName": "testcase",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "testcase_col"),
-            "sWidth": "70px"
-        },
-        {
-            "data": "country",
-            "sName": "country",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "country_col"),
-            "sWidth": "70px"
-        },
-        {
-            "data": "environment",
-            "sName": "environment",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "environment_col"),
-            "sWidth": "70px"
-        },
-        {
-            "data": "robot",
-            "sName": "robot",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "robot_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
         },
         {
             "data": "robotIP",
@@ -718,6 +720,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "debugFlag",
+            "visible": false,
             "sName": "debugFlag",
             "title": doc.getDocLabel("testcaseexecutionqueue", "debugFlag"),
             "sWidth": "70px",
@@ -725,6 +728,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "UsrModif",
+            "visible": false,
             "sName": "UsrModif",
             "sWidth": "70px",
             "defaultContent": "",
@@ -732,6 +736,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "DateModif",
+            "visible": false,
             "sName": "DateModif",
             "sWidth": "110px",
             "defaultContent": "",
