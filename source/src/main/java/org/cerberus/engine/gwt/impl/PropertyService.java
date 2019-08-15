@@ -59,6 +59,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.appium.impl.AndroidAppiumService;
+import org.cerberus.service.appium.impl.IOSAppiumService;
 import org.cerberus.service.datalib.IDataLibService;
 import org.cerberus.service.groovy.IGroovyService;
 import org.cerberus.service.json.IJsonService;
@@ -127,6 +128,8 @@ public class PropertyService implements IPropertyService {
     private IVariableService variableService;
     @Autowired
     private AndroidAppiumService androidAppiumService;
+    @Autowired
+    private IOSAppiumService iosAppiumService;
 
     @Override
     public AnswerItem<String> decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution tCExecution,
@@ -897,6 +900,15 @@ public class PropertyService implements IPropertyService {
                 }
                 testCaseExecutionData.setValue(value);
                 testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETELEMENTPOSITION).resolveDescription("VALUE", value));
+            } else if (tCExecution.getApplicationObj().getType().equals(Application.TYPE_IPA)) {
+                String message = iosAppiumService.getElementPosition(tCExecution.getSession(), identifier);
+
+                String value = "";
+                if (!StringUtil.isNullOrEmpty(message)) {
+                    value = message;
+                }
+                testCaseExecutionData.setValue(value);
+                testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETELEMENTPOSITION).resolveDescription("VALUE", value));
             } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
                 res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getApplicationObj().getType()));
@@ -1391,21 +1403,12 @@ public class PropertyService implements IPropertyService {
             String valueFromJson = this.jsonService.getFromJson(jsonResponse, null, testCaseExecutionData.getValue1());
 
             if (valueFromJson != null) {
-                if (!"".equals(valueFromJson)) {
-                    testCaseExecutionData.setValue(valueFromJson);
-                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMJSON);
-                    res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
-                    res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
-                    res.setDescription(res.getDescription().replace("%VALUE%", valueFromJson));
-                    testCaseExecutionData.setPropertyResultMessage(res);
-
-                } else {
-                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
-                    res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
-                    res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
-                    res.setDescription(res.getDescription().replace("%ERROR%", ""));
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                }
+                testCaseExecutionData.setValue(valueFromJson);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMJSON);
+                res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
+                res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
+                res.setDescription(res.getDescription().replace("%VALUE%", valueFromJson));
+                testCaseExecutionData.setPropertyResultMessage(res);
 
             } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
@@ -1417,7 +1420,7 @@ public class PropertyService implements IPropertyService {
             }
         } catch (Exception exception) {
             if (LOG.isDebugEnabled()) {
-                LOG.error(exception.toString(), exception);
+                LOG.error("Exception when getting property from JSON.", exception);
             }
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
             res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
