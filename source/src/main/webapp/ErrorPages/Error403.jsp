@@ -65,9 +65,9 @@
         <h2 style="text-align: center">Ask your administrator to add you the necessary roles.</h2>
         <br><br>
         <br>
-        <h4 style="text-align: center">You can try to :</h4>
-        <h4 style="text-align: center"><a href="./Logout.jsp">Logout</a></h4>
-        <h4 style="text-align: center"><a href="./">Back to homepage</a></h4>
+        <h4 style="text-align: center">You can try to :</h4><br>
+        <h4 style="text-align: center"><a href="./Logout.jsp">Logout</a></h4><br>
+        <h4 style="text-align: center"><a href="./">Back to homepage</a></h4><br>
         <br>
         <br>
         <div style="text-align: center"><%

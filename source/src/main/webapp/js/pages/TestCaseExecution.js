@@ -440,6 +440,7 @@ function updatePage(data, stepList) {
     createProperties(data.testCaseExecutionDataList);
     createVideo(data.videos);
     setUpClickFunctionToSaveTestCaseExecutionButton(data);
+    drawDependencies(data.testCaseExecutionQueueDepList);
 }
 
 
@@ -2668,7 +2669,7 @@ function addFileLink(fileList, container, manual, idStep) {
         if ((fileList[i].fileType === "JPG") || (fileList[i].fileType === "PNG")) {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
             var fileDesc = fileList[i].fileDesc;
-            var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+            var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                     .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
                     .click(function (e) {
                         changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
@@ -2686,28 +2687,28 @@ function addFileLink(fileList, container, manual, idStep) {
             var fileDesctxt = fileList[i].fileDesc;
             var filetypetxt = fileList[i].fileType.toLowerCase();
             if (i === 0) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 1) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 2) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 3) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
@@ -2720,12 +2721,12 @@ function addFileLink(fileList, container, manual, idStep) {
             var linkBoxtxt = null;
 
             if (fileList[i].fileType === "BIN") {
-                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function (f) {
+                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
             } else if (fileList[i].fileType === "PDF") {
-                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function (f) {
+                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
@@ -2859,4 +2860,61 @@ function getScriptInformationOfStep() {
 }
 
 
+function drawDependencies(depList) {
+    console.info(depList);
+    if (depList.length <= 0) {
+        $('#editTabDep').hide();
+    } else {
+        $('#editTabDep').show();
+        for (var i = 0; i < depList.length; i++) {
+            appendDepRow(depList[i]);
+        }
+
+    }
+}
+
+
+function appendDepRow(dep) {
+    var doc = new Doc();
+    var typeInput = $("<input readonly>").addClass("form-control input-sm").val(dep.type);
+    var depTestInput = $("<input readonly>").addClass("form-control input-sm").val(dep.depTest);
+    var depTestcaseInput = $("<input readonly>").addClass("form-control input-sm").val(dep.depTestCase);
+    var depEventInput = $("<input readonly>").addClass("form-control input-sm").val(dep.depEvent);
+    var statusInput = $("<input readonly>").addClass("form-control input-sm").val(dep.status);
+    var releaseDateInput = $("<input readonly>").addClass("form-control input-sm").val(getDateShort(dep.releaseDate));
+    var commentInput = $("<input readonly>").addClass("form-control input-sm").val(getDateShort(dep.comment));
+    var exeIdInput = $("<input readonly>").addClass("form-control input-sm").val(dep.exeId);
+    var exeQueueIdInput = $("<input readonly>").addClass("form-control input-sm").val(dep.exeQueueId);
+    var table = $("#depTableBody");
+
+    var row = $("<tr></tr>");
+
+    var type = $("<div class='form-group col-lg-3 col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "type") + "</label>").append(typeInput);
+    var drow01 = $("<div class='row'></div>").append(type);
+    if (dep.type === "TCEXEEND") {
+        var det1 = $("<div class='form-group col-lg-6 col-sm-7'></div>").append("<label for='name'>" + doc.getDocOnline("test", "Test") + "</label>").append(depTestInput);
+        var det2 = $("<div class='form-group col-lg-3 col-sm-5'></div>").append("<label for='name'>" + doc.getDocOnline("testcase", "TestCase") + "</label>").append(depTestcaseInput);
+        drow01.append(det1).append(det2);
+    } else if (dep.type === "EVENT") {
+        var det1 = $("<div class='form-group col-lg-10'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "executor") + "</label>").append(depEventInput);
+        drow01.append(det1);
+    }
+    var td1 = $("<td></td>").append(drow01);
+
+    var status = $("<div class='form-group col-lg-3 col-md-6 col-sm-6'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "status") + "</label>").append(statusInput);
+    var relDate = $("<div class='form-group col-lg-3 col-md-6 col-sm-6'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "releaseDate") + "</label>").append(releaseDateInput);
+    var comDate = $("<div class='form-group col-lg-6 col-md-12 col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "comment") + "</label>").append(commentInput);
+    var drow01 = $("<div class='row'></div>").append(status).append(relDate).append(comDate);
+    if (dep.type === "TCEXEEND") {
+        var det1 = $("<div class='form-group col-lg-3 col-md-3 col-sm-3'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "exeId") + "</label>").append(exeIdInput);
+        var det2 = $("<div class='form-group col-lg-3 col-md-3 col-sm-3'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "exeQueueId") + "</label>").append(exeQueueIdInput);
+        drow01.append(det1).append(det2);
+    }
+    var td2 = $("<td></td>").append(drow01);
+
+    row.append(td1).append(td2);
+
+//    row.data("executor", dep);
+    table.append(row);
+}
 

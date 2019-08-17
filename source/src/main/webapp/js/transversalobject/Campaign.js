@@ -1039,20 +1039,14 @@ function loadSchedulerTable(name) {
     $('#parameterScheduler tr').remove();
     var table = $('#parameterSchedulerTable')
     var deleteBtn = $('<div id="deleteBtnFirst"></div>').addClass("h6").text("Delete");
-    var cronEntry = $('<div id="cronExpression"></div>').addClass("h6").text("CronExpression");
-    var active = $('<div id="active"></div>').addClass("h6").text("Active");
-    var lastExec = $('<div id="lastExec"></div>').addClass("h6").text("Last Execution");
+    var cronEntry = $('<div id="cronExpression"></div>').addClass("h6").text("Definition");
     var row = $("<tr></tr>");
-    var td1 = $("<td class='row form-group col-sm-1'></td>").append(deleteBtn);
-    var td2 = $("<td class='row form-group col-sm-5'></td>").append(cronEntry);
-    var td3 = $("<td class='row form-group col-sm-1'></td>").append(active);
-    var td4 = $("<td class='row form-group col-sm-5'></td>").append(lastExec);
+    var td1 = $("<td class='row form-group'></td>").append(deleteBtn);
+    var td2 = $("<td class='row form-group'></td>").append(cronEntry);
 
 
     row.append(td1);
     row.append(td2);
-    row.append(td3);
-    row.append(td4);
     table.append(row);
 
     var jqxhr = $.getJSON("ReadScheduleEntry", "&name=" + name);
@@ -1072,18 +1066,27 @@ function appendSchedulerRow(scheduler) {
     } else {
         activebool = false;
     }
+
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-s").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var cronInput = $("<input maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel('scheduler', 'cronDefinition') + " --\">").addClass("form-control input-sm").val(scheduler.cronDefinition);
-    var active = $("<input type='checkbox'>").prop("checked", activebool);
-    var lastExec = $('<div id="lastExecution"></div>').addClass("h6").text(" " + scheduler.lastExecution);
+    var cronInput = $("<input maxlength=\"200\">").addClass("form-control input-sm").val(scheduler.cronDefinition);
+    var activeInput = $("<input type='checkbox'>").addClass("form-control").prop("checked", activebool);
+    var lastExecInput = $("<input readonly>").addClass("form-control input-sm").val(scheduler.lastExecution);
+    
+    var cron = $("<div class='form-group col-sm-10'></div>").append("<label for='name'>" + doc.getDocOnline("scheduleentry", "cronDefinition") + "</label>").append(cronInput);
+    var active = $("<div class='form-group col-sm-2'></div>").append("<label for='name'>" + doc.getDocOnline("scheduleentry", "active") + "</label>").append(activeInput);
+    var lastExec = $("<div class='form-group col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("scheduleentry", "lastexecution") + "</label>").append(lastExecInput);
+    
+    
     var table = $('#parameterSchedulerTable')
     var row = $("<tr class='dataField'></tr>");
 
-    var td1 = $("<td class='row form-group col-sm-1'></td>").append(deleteBtn);
-    var td2 = $("<td class='row form-group col-sm-5'></td>").append(cronInput);
-    var td3 = $("<td class='row form-group col-sm-1'></td>").append(active);
-    var td4 = $("<td class='row form-group col-sm-5'></td>").append(lastExec);
+    var drow1 = $("<div class='row'></div>").append(cron).append(active).append(lastExec);
+    
+    var td1 = $("<td class='row form-group'></td>").append(deleteBtn);
+    var td2 = $("<td class='row form-group'></td>").append(drow1);
+    var td3 = $("<td class='row form-group'></td>");
+    var td4 = $("<td class='row form-group'></td>");
 
     deleteBtn.click(function () {
         scheduler.toDelete = (scheduler.toDelete) ? false : true;
@@ -1110,8 +1113,8 @@ function appendSchedulerRow(scheduler) {
 
     row.append(td1);
     row.append(td2);
-    row.append(td3);
-    row.append(td4);
+//    row.append(td3);
+//    row.append(td4);
     row.data("scheduler", scheduler);
     table.append(row);
 }

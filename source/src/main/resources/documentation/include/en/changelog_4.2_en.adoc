@@ -11,6 +11,7 @@
 * Better integration with Browserstack service. Session Id is now displayed in detail execution page with button in order to reach browserstack page. Build and project are feed automaticly from Tag and Application name. Execution name can also be configured thanks to parameter cerberus_browserstack_defaultexename. At the end of the execution, status is updated into browserstack automaticly.
 * Better integration with Kobiton service.  Session Id is now displayed in detail execution page with button in order to reach Kobiton detail execution page. Session name and Session description are feed automaticly from parameters cerberus_kobiton_defaultsessionname and cerberus_kobiton_defaultsessiondescription.
 * For new users, by default, Cerberus will only display important columns on tables. All columns can still be added by using button 'Display/Hide Columns'
+* new tab inside detail execution page that display the dependency status and release timings.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

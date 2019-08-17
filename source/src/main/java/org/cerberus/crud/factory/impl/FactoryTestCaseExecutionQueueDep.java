@@ -44,6 +44,8 @@ public class FactoryTestCaseExecutionQueueDep implements IFactoryTestCaseExecuti
         testCaseDep.setDepTestCase(depTestCase);
         testCaseDep.setDepEvent(depEvent);
         testCaseDep.setStatus(status);
+        testCaseDep.setReleaseDate(releaseDate);
+        testCaseDep.setComment(comment);
         testCaseDep.setExeId(exeId);
         testCaseDep.setUsrCreated(usrCreated);
         testCaseDep.setDateCreated(dateCreated);

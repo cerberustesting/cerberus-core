@@ -21,7 +21,9 @@ package org.cerberus.crud.service;
 
 import java.util.List;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.entity.TestCaseExecutionQueueDep;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
@@ -90,6 +92,13 @@ public interface ITestCaseExecutionQueueDepService {
      * @param exeQueueId
      * @return
      */
+    AnswerList<TestCaseExecutionQueueDep> readByQueueId(long exeQueueId);
+
+    /**
+     *
+     * @param exeQueueId
+     * @return
+     */
     AnswerItem<Integer> readNbWaitingByExeQueue(long exeQueueId);
 
     /**
@@ -122,5 +131,28 @@ public interface ITestCaseExecutionQueueDepService {
      * @param idQueue
      */
     void manageDependenciesEndOfQueueExecution(long idQueue);
+
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    TestCaseExecutionQueueDep convert(AnswerItem<TestCaseExecutionQueueDep> answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<TestCaseExecutionQueueDep> convert(AnswerList<TestCaseExecutionQueueDep> answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
 
 }

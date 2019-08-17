@@ -32,6 +32,7 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.entity.TestCaseExecutionQueueDep;
 import org.cerberus.crud.factory.IFactoryTagSystem;
 import org.cerberus.crud.service.*;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -251,7 +252,16 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
                 }
             }
         } catch (CerberusException e) {
-            LOG.error("An erreur occured while get dependency", e);
+            LOG.error("An erreur occured while getting testcase execution data", e);
+        }
+
+        if (testCaseExecution.getQueueID() > 0) {
+            try {
+                List<TestCaseExecutionQueueDep> a = testCaseExecutionQueueDepService.convert(testCaseExecutionQueueDepService.readByQueueId(testCaseExecution.getQueueID()));
+                testCaseExecution.setTestCaseExecutionQueueDep(a);
+            } catch (CerberusException e) {
+                LOG.error("An erreur occured while getting execution dependency", e);
+            }
         }
 
         // set video if it exists
@@ -261,7 +271,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
             videosAnswer.forEach(tcef -> videos.add(tcef.getFileName()));
             testCaseExecution.setVideos(videos);
         } catch (CerberusException e) {
-            LOG.error("An erreur occured while get video file", e);
+            LOG.error("An erreur occured while getting video file", e);
         }
 
         // We first add the 'Pres Testing' testcase execution steps.

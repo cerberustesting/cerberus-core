@@ -260,8 +260,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
         List<JSONObject> testCaseDep = new ArrayList<>();
 
-        if (testCaseExecution.getTestCaseDep() != null) {
-            for (TestCaseExecutionQueueDep tce : testCaseExecution.getTestCaseDep()) {
+        if (testCaseExecution.getTestCaseExecutionQueueDepList() != null) {
+            for (TestCaseExecutionQueueDep tce : testCaseExecution.getTestCaseExecutionQueueDepList()) {
                 JSONObject obj = new JSONObject();
                 obj.put("test", tce.getDepTest());
                 obj.put("testcase", tce.getDepTestCase());

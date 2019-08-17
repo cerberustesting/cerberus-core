@@ -315,6 +315,49 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     }
 
     @Override
+    public AnswerList<TestCaseExecutionQueueDep> readByQueueId(long exeQueueId) {
+        AnswerList<TestCaseExecutionQueueDep> ans = new AnswerList<>();
+        MessageEvent msg = null;
+
+        final String query = "SELECT * FROM testcaseexecutionqueuedep WHERE `ExeQueueID` = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.queueId : " + exeQueueId);
+        }
+
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query)) {
+            // Prepare and execute query
+            preStat.setLong(1, exeQueueId);
+            ResultSet rs = preStat.executeQuery();
+            try {
+                List<TestCaseExecutionQueueDep> al = new ArrayList<>();
+                while (rs.next()) {
+                    al.add(loadFromResultSet(rs));
+                }
+                ans.setDataList(al);
+                // Set the final message
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME).resolveDescription("OPERATION", "SELECT");
+            } catch (Exception e) {
+                LOG.error("Unable to execute query : " + e.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION", e.toString());
+            } finally {
+                if (rs != null) {
+                    rs.close();
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Unable to read by exeId : " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION", e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+        return ans;
+    }
+
+    @Override
     public AnswerList<TestCaseExecutionQueueDep> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);

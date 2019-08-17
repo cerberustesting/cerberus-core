@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+var nbRow = 0;
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
@@ -140,7 +142,7 @@ function displayPageLabel() {
     $("[name='tab2Text']").html(doc.getDocOnline("page_environment", "tabInstallInstruction"));
     $("[name='buildHeader']").html(doc.getDocOnline("buildrevisionparameters", "Build"));
     $("[name='revisionHeader']").html(doc.getDocOnline("buildrevisionparameters", "Revision"));
-    $("[name='applicationHeader']").html(doc.getDocOnline("buildrevisionparameters", "application"));
+//    $("[name='applicationHeader']").html(doc.getDocOnline("buildrevisionparameters", "application"));
     $("[name='releaseHeader']").html(doc.getDocOnline("buildrevisionparameters", "Release"));
     $("[name='linkHeader']").html(doc.getDocOnline("buildrevisionparameters", "Link"));
     $("[name='versionHeader']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
@@ -161,14 +163,14 @@ function displayPageLabel() {
     $("[name='tabDeploy']").html(doc.getDocOnline("page_environment", "tabDeploy"));
     $("[name='tabNotif']").html(doc.getDocOnline("page_environment", "tabNotif"));
     // Application List
-    $("[name='applicationHeader']").html(doc.getDocOnline("application", "Application"));
-    $("[name='ipHeader']").html(doc.getDocOnline("countryenvironmentparameters", "IP") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
-    $("[name='urlHeader']").html(doc.getDocOnline("countryenvironmentparameters", "URL") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "domain"));
-    $("#var1Header").html(doc.getDocOnline("countryenvironmentparameters", "Var1")
-            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var2"));
-    $("#var3Header").html(doc.getDocOnline("countryenvironmentparameters", "Var3")
-            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var4"));
-    $("#poolSizeHeader").html(doc.getDocOnline("countryenvironmentparameters", "poolSize"));
+//    $("[name='applicationHeader']").html(doc.getDocOnline("application", "Application"));
+//    $("[name='ipHeader']").html(doc.getDocOnline("countryenvironmentparameters", "IP") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
+//    $("[name='urlHeader']").html(doc.getDocOnline("countryenvironmentparameters", "URL") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "domain"));
+//    $("#var1Header").html(doc.getDocOnline("countryenvironmentparameters", "Var1")
+//            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var2"));
+//    $("#var3Header").html(doc.getDocOnline("countryenvironmentparameters", "Var3")
+//            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var4"));
+//    $("#poolSizeHeader").html(doc.getDocOnline("countryenvironmentparameters", "poolSize"));
 
     // Databases List
     $("[name='databaseHeader']").html(doc.getDocOnline("countryenvironmentdatabase", "Database"));
@@ -625,32 +627,64 @@ function loadApplicationTable(selectSystem, selectCountry, selectEnvironment) {
 }
 
 function appendApplicationRow(app) {
+    nbRow++;
+    
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectApplication = getSelectApplication(getUser().defaultSystem);
-    var ipInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "IP") + " --\">").addClass("form-control input-sm").val(app.ip);
+    var ipInput = $("<input maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "IP") + " --\">").addClass("form-control input-sm").val(app.ip);
+    var urlInput = $("<input maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URL") + " --\">").addClass("form-control input-sm").val(app.url);
+    var poolSizeInput = $("<input maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "poolSize") + " --\">").addClass("form-control input-sm").val(app.poolSize);
+    
     var domainInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "domain") + " --\">").addClass("form-control input-sm").val(app.domain);
-    var urlInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URL") + " --\">").addClass("form-control input-sm").val(app.url);
     var urlLoginInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URLLOGIN") + " --\">").addClass("form-control input-sm").val(app.urlLogin);
     var variable1 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var1") + " --\">").addClass("form-control input-sm").val(app.var1);
     var variable2 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var2") + " --\">").addClass("form-control input-sm").val(app.var2);
     var variable3 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var3") + " --\">").addClass("form-control input-sm").val(app.var3);
     var variable4 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var4") + " --\">").addClass("form-control input-sm").val(app.var4);
-    var poolSizeInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "poolSize") + " --\">").addClass("form-control input-sm").val(app.poolSize);
     var mobileActivity = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobileActivity") + " --\">").addClass("form-control input-sm").val(app.mobileActivity);
     var mobilePackage = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobilePackage") + " --\">").addClass("form-control input-sm").val(app.mobilePackage);
 
     var table = $("#applicationTableBody");
 
     var row = $("<tr></tr>");
-    var deleteBtnRow = $("<td></td>").append(deleteBtn);
-    var application = $("<td></td>").append(selectApplication.val(app.application));
-    var ipName = $("<td></td>").append(ipInput).append(urlLoginInput);
-    var urlName = $("<td></td>").append(urlInput).append(domainInput);
-    var vars1 = $("<td></td>").append(variable1).append(variable2);
-    var vars2 = $("<td></td>").append(variable3).append(variable4);
-    var poolSize = $("<td></td>").append(poolSizeInput);
-    var mobileData = $("<td></td>").append(mobileActivity).append(mobilePackage);
+    
+    var td1 = $("<td></td>").append(deleteBtn);
+    
+    var td2 = $("<td></td>").append(selectApplication.val(app.application));
+//    var td2 = $("<td></td>").append(application);
+    
+    var ipName = $("<div class='form-group col-sm-5'></div>").append("<label for='ip'>" + doc.getDocOnline("countryenvironmentparameters", "IP") + "</label>").append(ipInput);
+    var urlName = $("<div class='form-group col-sm-3'></div>").append("<label for='url'>" + doc.getDocOnline("countryenvironmentparameters", "URL") + "</label>").append(urlInput);
+    var poolSizeName = $("<div class='form-group col-sm-2'></div>").append("<label for='poolSize'>" + doc.getDocOnline("countryenvironmentparameters", "poolSize") + "</label>").append(poolSizeInput);
+    var expandName = $("<div class='form-group col-sm-2'></div>").append("<button class='btn btn-primary' type='button' data-toggle='collapse' data-target='#col" + nbRow + "' aria-expanded='false' aria-controls='col" + nbRow + "'><span class='glyphicon glyphicon-chevron-down'></span></button>");
+    var drow1 = $("<div class='row'></div>").append(ipName).append(urlName).append(poolSizeName).append(expandName);
+    
+    var loginName = $("<div class='form-group col-sm-6'></div>").append("<label for='login'>" + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN") + "</label>").append(urlLoginInput);
+    var domainName = $("<div class='form-group col-sm-6'></div>").append("<label for='domain'>" + doc.getDocOnline("countryenvironmentparameters", "domain") + "</label>").append(domainInput);
+    var drow2 = $("<div class='row'></div>").append(loginName).append(domainName);
+
+    var var1Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var1'>" + doc.getDocOnline("countryenvironmentparameters", "Var1") + "</label>").append(variable1);
+    var var2Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var2'>" + doc.getDocOnline("countryenvironmentparameters", "Var2") + "</label>").append(variable2);
+    var var3Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var3'>" + doc.getDocOnline("countryenvironmentparameters", "Var3") + "</label>").append(variable3);
+    var var4Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "Var4") + "</label>").append(variable4);
+    var drow3 = $("<div class='row'></div>").append(var1Name).append(var2Name).append(var3Name).append(var4Name);
+
+    var mobileActivityName = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobileActivity") + "</label>").append(mobileActivity);
+    var mobilePackageName = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobilePackage") + "</label>").append(mobilePackage);
+    var drow4 = $("<div class='row'></div>").append(mobileActivityName).append(mobilePackageName);
+    
+    //    var ipName = $("<td></td>").append(ipInput).append(urlLoginInput);
+//    var urlName = $("<td></td>").append(urlInput).append(domainInput);
+//    var vars1 = $("<td></td>").append(variable1).append(variable2);
+//    var vars2 = $("<td></td>").append(variable3).append(variable4);
+//    var poolSize = $("<td></td>").append(poolSizeInput);
+//    var mobileData = $("<td></td>").append(mobileActivity).append(mobilePackage);
+//    var drow2 = $("<div class='row'></div>").append(vars1).append(vars2);
+    
+    var panelExtra = $("<div class='collapse' id='col" + nbRow + "'></div>").append(drow2).append(drow3).append(drow4);
+    
+    var td3 = $("<td></td>").append(drow1).append(panelExtra);
 
     deleteBtn.click(function () {
         app.toDelete = (app.toDelete) ? false : true;
@@ -691,19 +725,23 @@ function appendApplicationRow(app) {
         app.poolSize = $(this).val();
     });
     mobileActivity.change(function () {
-        env.mobileActivity = $(this).val();
+        app.mobileActivity = $(this).val();
     });
     mobilePackage.change(function () {
-        env.mobilePackage = $(this).val();
+        app.mobilePackage = $(this).val();
     });
-    row.append(deleteBtnRow);
-    row.append(application);
-    row.append(ipName);
-    row.append(urlName);
-    row.append(vars1);
-    row.append(vars2);
-    row.append(poolSize);
-    row.append(mobileData);
+    
+    row.append(td1);
+    row.append(td2);
+    row.append(td3);
+//    row.append(deleteBtnRow);
+//    row.append(application);
+//    row.append(ipName);
+//    row.append(urlName);
+//    row.append(vars1);
+//    row.append(vars2);
+//    row.append(poolSize);
+//    row.append(mobileData);
 
     app.application = selectApplication.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     row.data("application", app);
@@ -1306,26 +1344,35 @@ function aoColumnsFunc(tableId) {
 function aoColumnsFuncChange(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": "datecre",
+        {
+            "data": "datecre",
             "sName": "datecre",
             "sWidth": "195px",
-            "title": doc.getDocOnline("countryenvparam_log", "datecre")},
-        {"data": "description",
+            "title": doc.getDocOnline("countryenvparam_log", "datecre")
+        },
+        {
+            "data": "description",
             "sName": "description",
             "sWidth": "360px",
-            "title": doc.getDocOnline("countryenvparam_log", "Description")},
-        {"data": "build",
+            "title": doc.getDocOnline("countryenvparam_log", "Description")
+        },
+        {
+            "data": "build",
             "sName": "build",
             "sWidth": "120px",
-            "title": doc.getDocOnline("buildrevisioninvariant", "versionname01")},
-        {"data": "revision",
+            "title": doc.getDocOnline("buildrevisioninvariant", "versionname01")
+        },
+        {
+            "data": "revision",
             "sName": "revision",
             "sWidth": "120px",
-            "title": doc.getDocOnline("buildrevisioninvariant", "versionname02")},
+            "title": doc.getDocOnline("buildrevisioninvariant", "versionname02")
+        },
         {"data": "creator",
             "sName": "creator",
             "sWidth": "110px",
-            "title": doc.getDocOnline("countryenvparam_log", "Creator")}
+            "title": doc.getDocOnline("countryenvparam_log", "Creator")
+        }
     ];
     return aoColumns;
 }
@@ -1333,22 +1380,30 @@ function aoColumnsFuncChange(tableId) {
 function aoColumnsFuncEvent(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": "dateBatch",
+        {
+            "data": "dateBatch",
             "sName": "dateBatch",
             "sWidth": "195px",
-            "title": doc.getDocOnline("buildrevisionbatch", "dateBatch")},
-        {"data": "batch",
+            "title": doc.getDocOnline("buildrevisionbatch", "dateBatch")
+        },
+        {
+            "data": "batch",
             "sName": "batch",
             "sWidth": "470px",
-            "title": doc.getDocOnline("buildrevisionbatch", "batch")},
-        {"data": "build",
+            "title": doc.getDocOnline("buildrevisionbatch", "batch")
+        },
+        {
+            "data": "build",
             "sName": "build",
             "sWidth": "120px",
-            "title": doc.getDocOnline("buildrevisionbatch", "build")},
-        {"data": "revision",
+            "title": doc.getDocOnline("buildrevisionbatch", "build")
+        },
+        {
+            "data": "revision",
             "sName": "revision",
             "sWidth": "120px",
-            "title": doc.getDocOnline("buildrevisionbatch", "revision")}
+            "title": doc.getDocOnline("buildrevisionbatch", "revision")
+        }
     ];
     return aoColumns;
 }

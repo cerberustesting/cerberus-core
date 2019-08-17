@@ -28,7 +28,27 @@ import java.sql.Timestamp;
  */
 public interface IFactoryTestCaseExecutionQueueDep {
 
-
+    /**
+     *
+     * @param id
+     * @param exeQueueId
+     * @param environment
+     * @param country
+     * @param tag
+     * @param type
+     * @param depTest
+     * @param depTestCase
+     * @param depEvent
+     * @param status
+     * @param releaseDate
+     * @param comment
+     * @param exeId
+     * @param usrCreated
+     * @param dateCreated
+     * @param usrModif
+     * @param dateModif
+     * @return
+     */
     TestCaseExecutionQueueDep create(long id, long exeQueueId, String environment, String country, String tag, String type, String depTest, String depTestCase
             , String depEvent, String status, Timestamp releaseDate, String comment, long exeId, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 

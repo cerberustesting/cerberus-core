@@ -147,6 +147,7 @@
                                 <li><a data-toggle="tab" href="#tabDetail" id="editTabDetail" name="tabDetail">Execution Details</a></li>
                                 <li><a data-toggle="tab" href="#tabEnv" id="editTabEnv" name="tabEnv">Environment</a></li>
                                 <li><a data-toggle="tab" href="#tabRobot" id="editTabRobot" name="tabRobot">Robot</a></li>
+                                <li><a data-toggle="tab" href="#tabDep" id="editTabDep" name="tabDep">Dependencies</a></li>
                             </ul>
                         </div>
                     </div>
@@ -301,7 +302,8 @@
                                             </span>
                                         </div>
                                     </div>
-                                </div>                            </div>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-sm-4">
                                     <div class="form-group">
@@ -397,9 +399,8 @@
                                     </div>
                                 </div>
                             </div>
-
-
                         </div>
+
                         <div class="center marginTop25 tab-pane fade" id="tabRobot">
                             <div class="row">
                                 <div class="col-sm-3">
@@ -486,6 +487,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="center marginTop25 tab-pane fade" id="tabEnv">
                             <div class="row">
                                 <div class="col-sm-2">
@@ -539,6 +541,19 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="center marginTop25 tab-pane fade" id="tabDep">
+                            <div id="listPanelDep">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <table class="table table-bordered table-hover nomarginbottom" id="depTable">
+                                            <tbody id="depTableBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>  
+                            </div>   
                         </div>
 
                     </div>

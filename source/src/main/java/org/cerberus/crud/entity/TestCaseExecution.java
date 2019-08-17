@@ -125,7 +125,7 @@ public class TestCaseExecution {
     private List<String> recursiveAlreadyCalculatedPropertiesList;
     private List<TestCaseCountryProperties> testCaseCountryPropertyList;
 
-    private List<TestCaseExecutionQueueDep> testCaseDep;
+    private List<TestCaseExecutionQueueDep> testCaseExecutionQueueDepList;
 
     private List<String> videos;
 
@@ -947,12 +947,12 @@ public class TestCaseExecution {
         this.videos = videos;
     }
 
-    public List<TestCaseExecutionQueueDep> getTestCaseDep() {
-        return testCaseDep;
+    public List<TestCaseExecutionQueueDep> getTestCaseExecutionQueueDepList() {
+        return testCaseExecutionQueueDepList;
     }
 
-    public void setTestCaseDep(List<TestCaseExecutionQueueDep> testCaseDep) {
-        this.testCaseDep = testCaseDep;
+    public void setTestCaseExecutionQueueDep(List<TestCaseExecutionQueueDep> testCaseExecutionQueueDep) {
+        this.testCaseExecutionQueueDepList = testCaseExecutionQueueDep;
     }
 
     public Integer getRemoteProxyPort() {
@@ -1043,6 +1043,14 @@ public class TestCaseExecution {
                     }
                 }
                 result.put("testCaseStepExecutionList", array);
+
+                array = new JSONArray();
+                if (this.getTestCaseExecutionQueueDepList()!= null) {
+                    for (Object tceQDep : this.getTestCaseExecutionQueueDepList()) {
+                        array.put(((TestCaseExecutionQueueDep) tceQDep).toJson());
+                    }
+                }
+                result.put("testCaseExecutionQueueDepList", array);
 
                 // ** TestCase **
                 if (this.getTestCaseObj() != null) {

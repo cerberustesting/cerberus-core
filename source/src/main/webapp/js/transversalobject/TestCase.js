@@ -186,7 +186,7 @@ function addHtmlForDependencyLine(id, test, testCase, testCaseTxt, activate, des
 }
 
 function getHtmlIdForTestCase(test, testCase) {
-    return (test + '-' + testCase).replace(/ /g, '_').replace(/./g, '_')
+    return (test + '-' + testCase).replace(/ /g, '_').replace(/\./g, '_').replace(/\:/g, '_');
 }
 
 function removeTestCaseDependency(test, testCase) {
@@ -1046,7 +1046,7 @@ function loadLabel(labelList, mySystem, myLabelDiv, labelSize) {
                 var l = data.contentTable[index];
                 var labelTag = '<div style="float:left" align="center"><input name="labelid" id="labelId' + l.id + '" value="' + l.id + '" type="checkbox">\n\
                 <span class="label label-primary" style="cursor:pointer;background-color:' + l.color + '">' + l.label + '</span></div> ';
-                var option = $('<div style="float:left; height:60px" name="itemLabelDiv" id="itemLabelId' + l.id + '" class="col-xs-' + labelSize + ' list-group-item list-label"></div>')
+                var option = $('<div style="float:left; height:60px" name="itemLabelDiv" id="itemLabelId' + l.id + '" class="col-xs-4 col-sm-2 list-group-item list-label"></div>')
                         .attr("value", l.label).html(labelTag);
                 var a = "S";
                 if (l.type === "REQUIREMENT") {

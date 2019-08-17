@@ -79,9 +79,9 @@
         <h4 style="text-align: center">Ressource not available (404) : <%=request.getAttribute("javax.servlet.error.message")%></h4>
         <br>
         <br>
-        <h4 style="text-align: center">You can try to :</h4>
-        <h4 style="text-align: center"><a href="./Logout.jsp">Logout</a></h4>
-        <h4 style="text-align: center"><a href="./">Back to homepage</a></h4>
+        <h4 style="text-align: center">You can try to :</h4><br>
+        <h4 style="text-align: center"><a href="./Logout.jsp">Logout</a></h4><br>
+        <h4 style="text-align: center"><a href="./">Back to homepage</a></h4><br>
         <br>
         <div style="text-align: center"><%
             out.print(display_footer(DatePageStart));%>            

@@ -82,6 +82,13 @@ public interface ITestCaseExecutionQueueDepDAO {
 
     /**
      *
+     * @param exeQueueId
+     * @return
+     */
+    AnswerList<TestCaseExecutionQueueDep> readByQueueId(long exeQueueId);
+
+    /**
+     *
      * @param startPosition
      * @param length
      * @param columnName
@@ -142,5 +149,5 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @return
      * @throws CerberusException
      */
-    HashMap<TestCaseExecution,List<TestCaseExecutionQueueDep>> readDependenciesByTestCaseExecution(List<TestCaseExecution> testCaseExecutions) throws CerberusException;
+    HashMap<TestCaseExecution, List<TestCaseExecutionQueueDep>> readDependenciesByTestCaseExecution(List<TestCaseExecution> testCaseExecutions) throws CerberusException;
 }

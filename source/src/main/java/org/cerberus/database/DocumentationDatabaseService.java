@@ -350,8 +350,6 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('project','description','','fr','Description','Description du projet',NULL)");
         b.append(",('project','idproject','','en','Project','This is the id of the project that provided the implementation of the <code class=\\'doc-crbvvoca\\'>test case</code>.',NULL)");
         b.append(",('project','idproject','','fr','Projet','Identifiant du projet qui est à l\\'origine de la création d\\'un <code class=\\'doc-crbvvoca\\'>cas de test</code>.',NULL)");
-        b.append(",('scheduler','cronexp','','en','Cron Expression','Scheduler use cron expression in quartz format to plan campaign execution. Example : 0 0 12 1/1 * ? * <br> everyday at noon',NULL)");
-        b.append(",('scheduler','cronexp','','fr','Cron Expression','Le plannificateur utilise les expressions CRON au format Quartz pour ordonnancer les campagnes. Exemple : 0 0 12 1/1 * ? * <br> Tout les jours à midi',NULL)");
         b.append(",('robot','active','','en','Active','Define if the robot is active or not.',NULL)");
         b.append(",('robot','active','','fr','Actif','Defini si le robot est actif ou non.',NULL)");
         b.append(",('robot','browser','','en','Browser','Broswer of the robot.',NULL)");
@@ -418,10 +416,12 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('robotexecutor','executorProxyPort','','en','Executor Proxy Port','Port of the executor proxy. If 0, port will be determined randomly.',NULL)");
         b.append(",('robotexecutor','executorProxyActive','','fr','Proxy Actif / Inactif', 'Activer / Désactiver l\\'utilisation du proxy de l\\'extension de l\\'executor.',NULL)");
         b.append(",('robotexecutor','executorProxyActive','','en','Active / Unactive Proxy', 'Activate / Unactivate the usage of of proxy through the Executor Extension.',NULL)");
-        b.append(",('scheduler','cronDefinition','','fr','Expression Cron','Expression Cron parametree pour ordonnancer la campagne',NULL)");
-        b.append(",('scheduler','cronDefinition','','en','Cron Expression','Cron expression use to schedule campaign',NULL)");
-        b.append(",('scheduler','active','','en','Active','Scheduler activity',NULL)");
-        b.append(",('scheduler','active','','fr','Active','Activité du scheduler',NULL)");
+        b.append(",('scheduleentry','cronDefinition','','fr','Expression Cron','Expression Cron parametree pour ordonnancer la campagne',NULL)");
+        b.append(",('scheduleentry','cronDefinition','','en','Cron Expression','Cron expression use to schedule campaign',NULL)");
+        b.append(",('scheduleentry','active','','en','Active','Scheduler activity',NULL)");
+        b.append(",('scheduleentry','active','','fr','Active','Activité du scheduler',NULL)");
+        b.append(",('scheduleentry','lastexecution','','en','Last Execution','',NULL)");
+        b.append(",('scheduleentry','lastexecution','','fr','Dernière execution','',NULL)");
         b.append(",('tag','id','','en','Tag ID','Technical ID of the tag',NULL)");
         b.append(",('tag','id','','fr','ID du Tag','ID technique du Tag',NULL)");
         b.append(",('tag','tag','','en','Tag','',NULL)");
@@ -613,6 +613,18 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcaseexecutionqueue','debugFlag','','fr','Activation du mode debug',NULL,NULL)");
         b.append(",('testcaseexecutionqueue','priority','','en','Priority',NULL,NULL)");
         b.append(",('testcaseexecutionqueue','priority','','fr','Priorité',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','type','','en','Dependency Type',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','type','','fr','Type de dépendance',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','status','','en','Status',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','status','','fr','Status',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','releaseDate','','en','Release Date',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','releaseDate','','fr','Date de liberation',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','comment','','en','Comment',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','comment','','fr','Commentaire',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','exeId','','en','Execution Id',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','exeId','','fr','Id d\\'execution',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','exeQueueId','','en','Queue Id',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','exeQueueId','','fr','Id de la file d\\'attente',NULL,NULL)");
         b.append(",('testcaseexecutionwwwsum','css_nb','','en','Css_nb','Number of css downloaded for all the scenario',NULL)");
         b.append(",('testcaseexecutionwwwsum','css_nb','','fr','Css_nb',NULL,NULL)");
         b.append(",('testcaseexecutionwwwsum','css_size_max','','en','Css_size_max','Size of the biggest css dowloaded during the scenario',NULL)");
@@ -2336,6 +2348,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         /**
          * Cerberus Transversal GUI Pages Documentation.
          */
+        b.append(",('scheduler','cronexp','','en','Cron Expression','Scheduler use cron expression in quartz format to plan campaign execution. Example : 0 0 12 1/1 * ? * <br> everyday at noon',NULL)");
+        b.append(",('scheduler','cronexp','','fr','Cron Expression','Le plannificateur utilise les expressions CRON au format Quartz pour ordonnancer les campagnes. Exemple : 0 0 12 1/1 * ? * <br> Tout les jours à midi',NULL)");
         b.append(",('dataTable','colVis','','en','Show/Hide columns','',NULL)");
         b.append(",('dataTable','colVis','','fr','Afficher/Cacher les colonnes','',NULL)");
         b.append(",('dataTable','sEmptyTable','','en','No data available in table','',NULL)");
