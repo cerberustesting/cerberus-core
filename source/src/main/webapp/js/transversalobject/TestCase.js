@@ -462,15 +462,42 @@ function confirmTestCaseModalHandler(mode) {
     }
 
     // Getting Data from Label List
-    var table2 = $("#editTestCaseModal input[name=labelid]:checked");
+//    var table2 = $("#editTestCaseModal input[name=labelid]:checked");
+//    var table_label = [];
+//    for (var i = 0; i < table2.length; i++) {
+//        var newLabel1 = {
+//            labelId: $(table2[i]).val(),
+//            toDelete: false
+//        };
+//        table_label.push(newLabel1);
+//    }
+
     var table_label = [];
+    var table2 = $('#selectLabelS').treeview('getSelected', {levels: 20, silent: true});
     for (var i = 0; i < table2.length; i++) {
         var newLabel1 = {
-            labelId: $(table2[i]).val(),
+            labelId: table2[i].id,
             toDelete: false
         };
         table_label.push(newLabel1);
     }
+    var table2 = $('#selectLabelR').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        var newLabel1 = {
+            labelId: table2[i].id,
+            toDelete: false
+        };
+        table_label.push(newLabel1);
+    }
+    var table2 = $('#selectLabelB').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        var newLabel1 = {
+            labelId: table2[i].id,
+            toDelete: false
+        };
+        table_label.push(newLabel1);
+    }
+
 
     // Getting Dependency data
     let testcaseDependency = []
@@ -597,7 +624,7 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
             // Title of the label list.
             $("#labelField").html("Labels from system : " + t.system);
             // Loading the label list from aplication of the testcase.
-            loadLabel(testCase.labelList, t.system, "#selectLabel");
+            loadLabel(testCase.labelList, t.system, "#selectLabel", undefined, testCase.test, testCase.testCase);
             // Loading application combo from the system of the current application.
             appendApplicationList(testCase.application, t.system);
 
@@ -1018,9 +1045,11 @@ function appendTestCaseCountryList(testCase, isReadOnly) {
  * @param {String} mySystem - system that will be used in order to load the label list. if not feed, the default system from user will be used.
  * @param {String} myLabelDiv - Reference of the div where the label will be added. Ex : "#selectLabel".
  * @param {String} labelSize - size of col-xs-?? from 1 to 12. Default to 2 Ex : "4".
+ * @param {String} test - Test Folder to Select.
+ * @param {String} testCase - Test ID to Select.
  * @returns {null}
  */
-function loadLabel(labelList, mySystem, myLabelDiv, labelSize) {
+function loadLabel(labelList, mySystem, myLabelDiv, labelSize, test, testCase) {
 
     if (isEmpty(labelSize)) {
         labelSize = "2";
@@ -1031,61 +1060,79 @@ function loadLabel(labelList, mySystem, myLabelDiv, labelSize) {
         targetSystem = getUser().defaultSystem;
     }
 
-    var jqxhr = $.get("ReadLabel?system=" + targetSystem, "", "json");
+    var jqxhr = $.get("ReadLabel?system=" + targetSystem + "&withHierarchy=true&isSelectable=Y&testSelect=" + encodeURI(test) + "&testCaseSelect=" + encodeURI(testCase), "", "json");
 
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
+
         //DRAW LABEL LIST
         if (messageType === "success") {
-            $(labelDiv + "S").empty();
-            $(labelDiv + "R").empty();
-            $(labelDiv + "B").empty();
-            var index;
-            for (index = 0; index < data.contentTable.length; index++) {
-                //the character " needs a special encoding in order to avoid breaking the string that creates the html element
-                var l = data.contentTable[index];
-                var labelTag = '<div style="float:left" align="center"><input name="labelid" id="labelId' + l.id + '" value="' + l.id + '" type="checkbox">\n\
-                <span class="label label-primary" style="cursor:pointer;background-color:' + l.color + '">' + l.label + '</span></div> ';
-                var option = $('<div style="float:left; height:60px" name="itemLabelDiv" id="itemLabelId' + l.id + '" class="col-xs-4 col-sm-2 list-group-item list-label"></div>')
-                        .attr("value", l.label).html(labelTag);
-                var a = "S";
-                if (l.type === "REQUIREMENT") {
-                    a = "R";
-                } else if (l.type === "BATTERY") {
-                    a = "B";
-                }
-                if (l.system === targetSystem) {
-                    $(labelDiv + a).prepend(option);
-                } else {
-                    $(labelDiv + a).append(option);
-                }
-            }
+
+            //DRAW LABEL TREE
+
+            $('#selectLabelS').treeview({data: data.labelHierarchy.stickers, enableLinks: false, showTags: true, multiSelect: true});
+            $('#selectLabelB').treeview({data: data.labelHierarchy.batteries, enableLinks: false, showTags: true, multiSelect: true});
+            $('#selectLabelR').treeview({data: data.labelHierarchy.requirements, enableLinks: false, showTags: true, multiSelect: true});
+
+            $('#selectLabelS').treeview('expandAll', {levels: 20, silent: true});
+            $('#selectLabelB').treeview('expandAll', {levels: 20, silent: true});
+            $('#selectLabelR').treeview('expandAll', {levels: 20, silent: true});
+
+//            $(labelDiv + "S").empty();
+//            $(labelDiv + "R").empty();
+//            $(labelDiv + "B").empty();
+//            var index;
+//            for (index = 0; index < data.contentTable.length; index++) {
+//                //the character " needs a special encoding in order to avoid breaking the string that creates the html element
+//                var l = data.contentTable[index];
+//                var labelTag = '<div style="float:left" align="center"><input name="labelid" id="labelId' + l.id + '" value="' + l.id + '" type="checkbox">\n\
+//                <span class="label label-primary" style="cursor:pointer;background-color:' + l.color + '">' + l.label + '</span></div> ';
+//                var option = $('<div style="float:left; height:60px" name="itemLabelDiv" id="itemLabelId' + l.id + '" class="col-xs-4 col-sm-2 list-group-item list-label"></div>')
+//                        .attr("value", l.label).html(labelTag);
+//                var a = "S";
+//                if (l.type === "REQUIREMENT") {
+//                    a = "R";
+//                } else if (l.type === "BATTERY") {
+//                    a = "B";
+//                }
+//                if (l.system === targetSystem) {
+//                    $(labelDiv + a).prepend(option);
+//                } else {
+//                    $(labelDiv + a).append(option);
+//                }
+//            }
         } else {
             showMessageMainPage(messageType, data.message, true);
         }
         // Put the selected testcaselabel at the top and check them. 
-        if (!(isEmpty(labelList))) {
-            var index;
-            for (index = 0; index < labelList.length; index++) {
-                var l = labelList[index].label;
-                //For each testcaselabel, put at the top of the list and check them
-                var element = $("#itemLabelId" + l.id);
-                element.remove();
-                var a = "S";
-                if (l.type === "REQUIREMENT") {
-                    a = "R";
-                } else if (l.type === "BATTERY") {
-                    a = "B";
-                }
-                $(labelDiv + a).prepend(element);
-                $("#labelId" + l.id).prop("checked", true);
-            }
-        }
+//        if (!(isEmpty(labelList))) {
+//            var index;
+//            for (index = 0; index < labelList.length; index++) {
+//                var l = labelList[index].label;
+//                //For each testcaselabel, put at the top of the list and check them
+//                var element = $("#itemLabelId" + l.id);
+
+//                $('#selectLabelSb').treeview('selectNode', {levels: 20, silent: true, id : l.id});
+//                $('#selectLabelBb').treeview('selectNode', l.id);
+//                $('#selectLabelRb').treeview('selectNode', l.id);
+//                tS.selectNode(l.id);
+
+//                element.remove();
+//                var a = "S";
+//                if (l.type === "REQUIREMENT") {
+//                    a = "R";
+//                } else if (l.type === "BATTERY") {
+//                    a = "B";
+//                }
+//                $(labelDiv + a).prepend(element);
+//                $("#labelId" + l.id).prop("checked", true);
+//            }
+//        }
         //ADD CLICK EVENT ON LABEL
-        $(labelDiv + "S").find('span').click(function () {
-            var status = $(this).parent().find("input").prop('checked');
-            $(this).parent().find("input").prop('checked', !status);
-        });
+//        $(labelDiv + "S").find('span').click(function () {
+//            var status = $(this).parent().find("input").prop('checked');
+//            $(this).parent().find("input").prop('checked', !status);
+//        });
     }).fail(handleErrorAjaxAfterTimeout);
 }
 

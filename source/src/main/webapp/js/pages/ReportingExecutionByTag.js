@@ -1132,7 +1132,7 @@ function openModalTestCase_FromRepTag(element, test, testcase, mode) {
             // when modal is closed, we check that testcase object exist and has been saved in order to update the comment and bugid on reportbytag screen.
             var newComment = $('#editTestCaseModal').data("testcase").comment;
             var newBugId = $('#editTestCaseModal').data("testcase").bugId;
-            $(element).parent().parent().find('td.comment').text(newComment);
+            $(element).parent().parent().find('td.comment').text(decodeURI(newComment).replace(/\+/g, ' ').replace(/%2B/g, '+'));
             $(element).parent().parent().find('td.bugid').text(newBugId);
         }
     });

@@ -154,7 +154,7 @@ function displayPageLabel() {
 }
 
 function generateLabelTree() {
-    $.when($.ajax("ReadLabel?q=1" + getUser().defaultSystemsQuery + "&withHierarchy=true")).then(function (data) {
+    $.when($.ajax("ReadLabel?q=1" + getUser().defaultSystemsQuery + "&withHierarchy=true&hasButtons=Y")).then(function (data) {
 
         $('#mainTreeS').treeview({data: data.labelHierarchy.stickers, enableLinks: false, showTags: true});
         $('#mainTreeB').treeview({data: data.labelHierarchy.batteries, enableLinks: false, showTags: true});
