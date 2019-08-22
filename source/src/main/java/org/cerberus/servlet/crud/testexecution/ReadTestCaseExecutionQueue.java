@@ -193,15 +193,18 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         ITestCaseExecutionQueueService queueService = appContext.getBean(ITestCaseExecutionQueueService.class);
 
         //finds the project     
-        AnswerItem answer = queueService.readByKey(queueid);
+        AnswerItem answer = queueService.readByKey(queueid, true);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             TestCaseExecutionQueue lib = (TestCaseExecutionQueue) answer.getItem();
             JSONObject response = convertTestCaseExecutionInQueueToJSONObject(lib);
+            
+            // Adding nb of entries in the queue before it gets triggered.
             int nb = 0;
             nb = queueService.getNbEntryToGo(lib.getId(), lib.getPriority());
             response.put("nbEntryInQueueToGo", nb);
+            
             object.put("contentTable", response);
         }
 

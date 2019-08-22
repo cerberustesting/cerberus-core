@@ -526,6 +526,8 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#retries").prop("disabled", "disabled");
         formEdit.find("#manualExecution").prop("disabled", "disabled");
     }
+    drawDependencies(exeQ.testcaseExecutionQueueDepList, "depQueueTableBody");
+
 }
 
 function robot_change() {
@@ -552,3 +554,64 @@ function enableDisableJob() {
     // Trap closure of modal in order to trigger that refresh.
     displayAndRefresh_jobStatus();
 }
+
+
+function drawDependencies(depList, targetTableBody) {
+    if (depList.length <= 0) {
+        $('#editTabDep').hide();
+    } else {
+        $('#editTabDep').show();
+        $('#editTabDep').empty();
+        for (var i = 0; i < depList.length; i++) {
+            appendDepRow(depList[i], targetTableBody);
+        }
+
+    }
+}
+
+
+function appendDepRow(dep, targetTableBody) {
+    var doc = new Doc();
+    var typeInput = $("<input readonly>").addClass("form-control input-sm").val(dep.type);
+    var depTestInput = $("<input readonly>").addClass("form-control input-sm").val(dep.depTest);
+    var depTestcaseInput = $("<input readonly>").addClass("form-control input-sm").val(dep.depTestCase);
+    var depEventInput = $("<input readonly>").addClass("form-control input-sm").val(dep.depEvent);
+    var statusInput = $("<input readonly>").addClass("form-control input-sm").val(dep.status);
+    var releaseDateInput = $("<input readonly>").addClass("form-control input-sm").val(getDateShort(dep.releaseDate));
+    var commentInput = $("<input readonly>").addClass("form-control input-sm").val(dep.comment);
+    var exeIdInput = $("<input readonly>").addClass("form-control input-sm").val(dep.exeId);
+    var queueIdInput = $("<input readonly>").addClass("form-control input-sm").val(dep.queueId);
+    var table = $("#" + targetTableBody);
+
+    var row = $("<tr></tr>");
+
+    var type = $("<div class='form-group col-lg-3 col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "type") + "</label>").append(typeInput);
+    var drow01 = $("<div class='row'></div>").append(type);
+    if (dep.type === "TCEXEEND") {
+        var det1 = $("<div class='form-group col-lg-6 col-sm-7'></div>").append("<label for='name'>" + doc.getDocOnline("test", "Test") + "</label>").append(depTestInput);
+        var det2 = $("<div class='form-group col-lg-3 col-sm-5'></div>").append("<label for='name'>" + doc.getDocOnline("testcase", "TestCase") + "</label>").append(depTestcaseInput);
+        drow01.append(det1).append(det2);
+    } else if (dep.type === "EVENT") {
+        var det1 = $("<div class='form-group col-lg-10'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "executor") + "</label>").append(depEventInput);
+        drow01.append(det1);
+    }
+    var td1 = $("<td></td>").append(drow01);
+
+    var status = $("<div class='form-group col-lg-3 col-md-6 col-sm-6'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "status") + "</label>").append(statusInput);
+    var relDate = $("<div class='form-group col-lg-3 col-md-6 col-sm-6'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "releaseDate") + "</label>").append(releaseDateInput);
+    var comDate = $("<div class='form-group col-lg-6 col-md-12 col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "comment") + "</label>").append(commentInput);
+    var drow01 = $("<div class='row'></div>").append(status).append(relDate).append(comDate);
+    if (dep.type === "TCEXEEND") {
+        var det1 = $("<div class='form-group col-lg-3 col-md-3 col-sm-3'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "exeId") + "</label>").append(exeIdInput);
+        var det2 = $("<div class='form-group col-lg-3 col-md-3 col-sm-3'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "exeQueueId") + "</label>").append(queueIdInput);
+        drow01.append(det1).append(det2);
+    }
+    var td2 = $("<td></td>").append(drow01);
+
+    row.append(td1).append(td2);
+
+//    row.data("executor", dep);
+    table.append(row);
+}
+
+

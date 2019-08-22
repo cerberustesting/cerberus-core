@@ -38,6 +38,7 @@ import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.IRobotExecutorService;
 import org.cerberus.crud.service.IRobotService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.exception.CerberusException;
@@ -73,6 +74,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     ExecutionQueueThreadPool threadQueuePool;
     @Autowired
     private ITestCaseExecutionQueueService queueService;
+    @Autowired
+    private ITestCaseExecutionQueueDepService queueDepService;
     @Autowired
     private IRetriesService retriesService;
     @Autowired
@@ -464,6 +467,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                             task.setSelectedRobotHost(robotHost);
                                             task.setToExecuteTimeout(queueTimeout);
                                             task.setQueueService(queueService);
+                                            task.setQueueDepService(queueDepService);
                                             task.setRetriesService(retriesService);
                                             task.setExecThreadPool(threadQueuePool);
                                             Future<?> future = threadQueuePool.getExecutor().submit(task);

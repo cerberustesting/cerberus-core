@@ -31,7 +31,7 @@ public class FactoryTestCaseExecutionQueueDep implements IFactoryTestCaseExecuti
 
     @Override
     public TestCaseExecutionQueueDep create(long id, long exeQueueId, String environment, String country, String tag, String type, String depTest, String depTestCase
-            , String depEvent, String status, Timestamp releaseDate, String comment, long exeId, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
+            , String depEvent, String status, Timestamp releaseDate, String comment, long exeId, long queueId, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         TestCaseExecutionQueueDep testCaseDep = new TestCaseExecutionQueueDep();
 
         testCaseDep.setId(id);
@@ -47,6 +47,7 @@ public class FactoryTestCaseExecutionQueueDep implements IFactoryTestCaseExecuti
         testCaseDep.setReleaseDate(releaseDate);
         testCaseDep.setComment(comment);
         testCaseDep.setExeId(exeId);
+        testCaseDep.setQueueId(queueId);
         testCaseDep.setUsrCreated(usrCreated);
         testCaseDep.setDateCreated(dateCreated);
         testCaseDep.setUsrModif(usrModif);

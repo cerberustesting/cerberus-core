@@ -43,6 +43,7 @@ public interface IFactoryTestCaseExecutionQueueDep {
      * @param releaseDate
      * @param comment
      * @param exeId
+     * @param queueId
      * @param usrCreated
      * @param dateCreated
      * @param usrModif
@@ -50,6 +51,6 @@ public interface IFactoryTestCaseExecutionQueueDep {
      * @return
      */
     TestCaseExecutionQueueDep create(long id, long exeQueueId, String environment, String country, String tag, String type, String depTest, String depTestCase
-            , String depEvent, String status, Timestamp releaseDate, String comment, long exeId, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
+            , String depEvent, String status, Timestamp releaseDate, String comment, long exeId, long queueId, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
 }

@@ -57,14 +57,14 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @param exeQueueId
      * @return
      */
-    AnswerItem<Integer> readNbWaitingByExeQueue(long exeQueueId);
+    AnswerItem<Integer> readNbWaitingByExeQueueId(long exeQueueId);
 
     /**
      *
      * @param exeQueueId
      * @return
      */
-    AnswerItem<Integer> readNbReleasedWithNOKByExeQueue(long exeQueueId);
+    AnswerItem<Integer> readNbReleasedWithNOKByExeQueueId(long exeQueueId);
 
     /**
      *
@@ -85,7 +85,7 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @param exeQueueId
      * @return
      */
-    AnswerList<TestCaseExecutionQueueDep> readByQueueId(long exeQueueId);
+    AnswerList<TestCaseExecutionQueueDep> readByExeQueueId(long exeQueueId);
 
     /**
      *
@@ -109,7 +109,7 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @param testcase
      * @return
      */
-    AnswerItem<Integer> insertFromTCDep(long queueId, String env, String country, String tag, String test, String testcase);
+    AnswerItem<Integer> insertFromTestCaseDep(long queueId, String env, String country, String tag, String test, String testcase);
 
     /**
      *
@@ -117,7 +117,7 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @param fromQueueId
      * @return
      */
-    AnswerItem<Integer> insertFromQueueExeDep(long queueId, long fromQueueId);
+    AnswerItem<Integer> insertFromExeQueueIdDep(long queueId, long fromQueueId);
 
     /**
      *

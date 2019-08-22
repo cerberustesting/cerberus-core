@@ -39,9 +39,10 @@ public interface ITestCaseExecutionQueueService {
     /**
      *
      * @param queueId
+     * @param withDep
      * @return
      */
-    AnswerItem<TestCaseExecutionQueue> readByKey(long queueId);
+    AnswerItem<TestCaseExecutionQueue> readByKey(long queueId, boolean withDep);
 
     /**
      * Find a list of TestCaseWithExecution object from testcaseexecutionqueue
@@ -199,19 +200,24 @@ public interface ITestCaseExecutionQueueService {
             String comment, String bugid, String ticket);
 
     /**
+     * Create a new Queue entry on database from existing object. if withNewDep
+     * true, we create new not RELEASED dependencies. if false, we duplicate
+     * existing dependencies from queue entry exeQueue.
+     *
      * @param object the {@link queue entry} to Create
+     * @param withNewDep
      * @param exeQueue original queue entry id from which the duplication is
      * done.
      * @return {@link AnswerItem}
      */
-    AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, long exeQueue);
+    AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, boolean withNewDep, long exeQueue);
 
     /**
      *
-     * @param id
+     * @param exeQueueId
      * @param tag
      */
-    void checkAndReleaseQueuedEntry(long id, String tag);
+    void checkAndReleaseQueuedEntry(long exeQueueId, String tag);
 
     /**
      * @param object the {@link AppService} to Update

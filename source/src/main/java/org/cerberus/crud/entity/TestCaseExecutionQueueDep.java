@@ -40,6 +40,7 @@ public class TestCaseExecutionQueueDep {
     private Timestamp releaseDate;
     private String comment;
     private long exeId;
+    private long queueId;
     private String usrCreated;
     private Timestamp dateCreated;
     private String usrModif;
@@ -160,6 +161,14 @@ public class TestCaseExecutionQueueDep {
         this.exeId = exeId;
     }
 
+    public long getQueueId() {
+        return queueId;
+    }
+
+    public void setQueueId(long queueId) {
+        this.queueId = queueId;
+    }
+
     public String getUsrCreated() {
         return usrCreated;
     }
@@ -200,6 +209,7 @@ public class TestCaseExecutionQueueDep {
         JSONObject result = new JSONObject();
         try {
             result.put("id", this.getId());
+            result.put("exeQueueId", this.getExeQueueId());
             result.put("comment", this.getComment());
             result.put("releaseDate", this.getReleaseDate());
             result.put("country", this.getCountry());
@@ -210,7 +220,7 @@ public class TestCaseExecutionQueueDep {
             result.put("depTestCase", this.getDepTestCase());
             result.put("environment", this.getEnvironment());
             result.put("exeId", this.getExeId());
-            result.put("exeQueueId", this.getExeQueueId());
+            result.put("queueId", this.getQueueId());
             result.put("status", this.getStatus());
             result.put("tag", this.getTag());
             result.put("type", this.getType());

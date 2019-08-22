@@ -141,7 +141,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     }
 
     @Override
-    public AnswerItem<Integer> readNbWaitingByExeQueue(long exeQueueId) {
+    public AnswerItem<Integer> readNbWaitingByExeQueueId(long exeQueueId) {
         AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
 
@@ -185,7 +185,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     }
 
     @Override
-    public AnswerItem<Integer> readNbReleasedWithNOKByExeQueue(long exeQueueId) {
+    public AnswerItem<Integer> readNbReleasedWithNOKByExeQueueId(long exeQueueId) {
         AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
 
@@ -315,7 +315,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     }
 
     @Override
-    public AnswerList<TestCaseExecutionQueueDep> readByQueueId(long exeQueueId) {
+    public AnswerList<TestCaseExecutionQueueDep> readByExeQueueId(long exeQueueId) {
         AnswerList<TestCaseExecutionQueueDep> ans = new AnswerList<>();
         MessageEvent msg = null;
 
@@ -474,7 +474,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     }
 
     @Override
-    public AnswerItem<Integer> insertFromTCDep(long queueId, String env, String country, String tag, String test, String testcase) {
+    public AnswerItem<Integer> insertFromTestCaseDep(long queueId, String env, String country, String tag, String test, String testcase) {
         AnswerItem ans = new AnswerItem<>();
         MessageEvent msg = null;
         final String query = "INSERT INTO testcaseexecutionqueuedep(ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status) "
@@ -518,17 +518,17 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     }
 
     @Override
-    public AnswerItem<Integer> insertFromQueueExeDep(long queueId, long fromQueueId) {
+    public AnswerItem<Integer> insertFromExeQueueIdDep(long queueId, long fromExeQueueId) {
         AnswerItem ans = new AnswerItem<>();
         MessageEvent msg = null;
-        final String query = "INSERT INTO testcaseexecutionqueuedep(ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status, ReleaseDate, Comment, ExeId) "
-                + "SELECT ?, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status, ReleaseDate, Comment, ExeId FROM testcaseexecutionqueuedep "
+        final String query = "INSERT INTO testcaseexecutionqueuedep(ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status, ReleaseDate, Comment, ExeId, QueueId) "
+                + "SELECT ?, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status, ReleaseDate, Comment, ExeId, QueueId FROM testcaseexecutionqueuedep "
                 + "WHERE ExeQueueID=?;";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.test : " + fromQueueId);
+            LOG.debug("SQL.param.test : " + fromExeQueueId);
         }
 
         try (Connection connection = databaseSpring.connect();
@@ -537,7 +537,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             // Prepare and execute query
             int i = 1;
             preStat.setLong(i++, queueId);
-            preStat.setLong(i++, fromQueueId);
+            preStat.setLong(i++, fromExeQueueId);
             try {
                 int rs = preStat.executeUpdate();
                 ans.setItem(rs);
@@ -709,6 +709,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public HashMap<TestCaseExecution, List<TestCaseExecutionQueueDep>> readDependenciesByTestCaseExecution(List<TestCaseExecution> testCaseExecutions) throws CerberusException {
+
         HashMap<TestCaseExecution, List<TestCaseExecutionQueueDep>> hashMap = new HashMap<>();
         if (CollectionUtils.isEmpty(testCaseExecutions)) {
             return hashMap;
@@ -757,12 +758,13 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
         Timestamp releaseDate = rs.getTimestamp("ReleaseDate");
         String comment = ParameterParserUtil.parseStringParam(rs.getString("Comment"), "");
         Long exeID = ParameterParserUtil.parseLongParam(rs.getString("ExeID"), -1);
+        Long queueID = ParameterParserUtil.parseLongParam(rs.getString("QueueID"), -1);
         String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("UsrCreated"), "");
         Timestamp dateCreated = rs.getTimestamp("DateCreated");
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("UsrModif"), "");
         Timestamp dateModif = rs.getTimestamp("DateModif");
 
         return factoryTestCaseExecutionQueueDep.create(id, exeQueueID, environment, country, tag, type, depTest, depTestCase, depEvent, status, releaseDate,
-                comment, exeID, usrCreated, dateCreated, usrModif, dateModif);
+                comment, exeID, queueID, usrCreated, dateCreated, usrModif, dateModif);
     }
 }

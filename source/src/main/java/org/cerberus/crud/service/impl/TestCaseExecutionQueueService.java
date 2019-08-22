@@ -29,6 +29,7 @@ import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.entity.TestCaseExecutionQueueDep;
 import org.cerberus.crud.factory.IFactoryTagSystem;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.service.IParameterService;
@@ -74,8 +75,18 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     private static final Logger LOG = LogManager.getLogger(TestCaseExecutionQueueService.class);
 
     @Override
-    public AnswerItem<TestCaseExecutionQueue> readByKey(long queueId) {
-        return testCaseExecutionInQueueDAO.readByKey(queueId);
+    public AnswerItem<TestCaseExecutionQueue> readByKey(long queueId, boolean withDep) {
+        AnswerItem<TestCaseExecutionQueue> result = testCaseExecutionInQueueDAO.readByKey(queueId);
+        if (withDep && result.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            TestCaseExecutionQueue obj = (TestCaseExecutionQueue) result.getItem();
+            AnswerList<TestCaseExecutionQueueDep> depAnsList = testCaseExecutionQueueDepService.readByExeQueueId(queueId);
+            if (depAnsList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                List<TestCaseExecutionQueueDep> depList = (List<TestCaseExecutionQueueDep>) depAnsList.getDataList();
+                obj.setTestcaseExecutionQueueDepList(depList);
+                result.setItem(obj);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -169,7 +180,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, long exeQueueId) {
+    public AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, boolean withNewDep, long exeQueueId) {
+
         LOG.debug("Creating Queue entry : " + object.getId() + " From : " + exeQueueId);
         // We create the link between the tag and the system if it does not exist yet.
         if (!StringUtil.isNullOrEmpty(object.getTag()) && !StringUtil.isNullOrEmpty(object.getSystem())) {
@@ -182,7 +194,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
             // If tag is not defined, we do not insert any dependencies.
             ret = testCaseExecutionInQueueDAO.create(object);
         } else {
-            if (exeQueueId == 0) {
+            if (withNewDep) {
                 // Brand New execution Queue.
                 // Inserting the record into the Queue forcing its state to QUWITHDEP (in order to secure it doesnt get triggered).
                 object.setState(TestCaseExecutionQueue.State.QUWITHDEP);
@@ -192,7 +204,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                     // Get the QueueId Result from inserted record.
                     long insertedQueueId = ret.getItem().getId();
                     // Adding dependencies
-                    AnswerItem<Integer> retDep = testCaseExecutionQueueDepService.insertFromTCDep(insertedQueueId, object.getEnvironment(), object.getCountry(), object.getTag(), object.getTest(), object.getTestCase());
+                    AnswerItem<Integer> retDep = testCaseExecutionQueueDepService.insertFromTestCaseDep(insertedQueueId, object.getEnvironment(), object.getCountry(), object.getTag(), object.getTest(), object.getTestCase());
                     LOG.debug("Dep inserted : " + retDep.getItem());
                     if (retDep.getItem() < 1) {
                         // In case there are no dependencies, we release the execution moving to QUEUED State
@@ -204,14 +216,14 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                     }
                 }
             } else {
-                // New execution Queue from an existing one (deplicated from an existing queue entry).
+                // New execution Queue from an existing one (duplicated from an existing queue entry).
                 ret = testCaseExecutionInQueueDAO.create(object);
                 // We duplicate here the dependencies from the original exeQueue entry.
                 if (ret.getItem() != null) {
                     // Get the QueueId Result from inserted record.
                     long insertedQueueId = ret.getItem().getId();
                     // Adding dependencies
-                    AnswerItem<Integer> retDep = testCaseExecutionQueueDepService.insertFromQueueExeDep(insertedQueueId, exeQueueId);
+                    AnswerItem<Integer> retDep = testCaseExecutionQueueDepService.insertFromExeQueueIdDep(insertedQueueId, exeQueueId);
                     LOG.debug("Dep inserted from old entries : " + retDep.getItem());
                 }
             }
@@ -221,23 +233,23 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public void checkAndReleaseQueuedEntry(long id, String tag) {
-        LOG.debug("Checking if we can move QUWITHDEP Queue entry to QUEUED : " + id);
-        AnswerItem ansNbWaiting = testCaseExecutionQueueDepService.readNbWaitingByExeQueue(id);
+    public void checkAndReleaseQueuedEntry(long exeQueueId, String tag) {
+        LOG.debug("Checking if we can move QUWITHDEP Queue entry to QUEUED : " + exeQueueId);
+        AnswerItem ansNbWaiting = testCaseExecutionQueueDepService.readNbWaitingByExeQueueId(exeQueueId);
         int nbwaiting = (int) ansNbWaiting.getItem();
         if (nbwaiting < 1) {
             // No more waiting dependencies.
-            AnswerItem ansNbReleasedNOK = testCaseExecutionQueueDepService.readNbReleasedWithNOKByExeQueue(id);
+            AnswerItem ansNbReleasedNOK = testCaseExecutionQueueDepService.readNbReleasedWithNOKByExeQueueId(exeQueueId);
             int nbReleasedNOK = (int) ansNbReleasedNOK.getItem();
 
             if (nbReleasedNOK <= 0) {
                 // If all execution of RELEASED dep are OK, we update ExeQueue status from QUWITHDEP to QUEUED in order to allow queue entry to be executed.
-                updateToQueuedFromQuWithDep(id, "All Dependencies RELEASED.");
+                updateToQueuedFromQuWithDep(exeQueueId, "All Dependencies RELEASED.");
             } else {
                 try {
                     String notExecutedMessage = nbReleasedNOK + " RELEASED dependency(ies) not OK.";
-                    updateToErrorFromQuWithDep(id, notExecutedMessage);
-                    testCaseExecutionQueueDepService.manageDependenciesEndOfQueueExecution(id);
+                    updateToErrorFromQuWithDep(exeQueueId, notExecutedMessage);
+                    testCaseExecutionQueueDepService.manageDependenciesEndOfQueueExecution(exeQueueId);
                     tagService.manageCampaignEndOfExecution(tag);
                 } catch (CerberusException ex) {
                     LOG.error(ex.toString(), ex);

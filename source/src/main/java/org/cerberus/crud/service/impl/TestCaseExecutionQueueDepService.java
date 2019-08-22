@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionQueueDepDAO;
@@ -58,13 +59,13 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
     private final String OBJECT_NAME = "Test Case Execution Queue Dependency";
 
     @Override
-    public AnswerItem<Integer> insertFromTCDep(long queueId, String env, String country, String tag, String test, String testcase) {
-        return testCaseExecutionQueueDepDAO.insertFromTCDep(queueId, env, country, tag, test, testcase);
+    public AnswerItem<Integer> insertFromTestCaseDep(long queueId, String env, String country, String tag, String test, String testcase) {
+        return testCaseExecutionQueueDepDAO.insertFromTestCaseDep(queueId, env, country, tag, test, testcase);
     }
 
     @Override
-    public AnswerItem<Integer> insertFromQueueExeDep(long queueId, long fromQueueId) {
-        return testCaseExecutionQueueDepDAO.insertFromQueueExeDep(queueId, fromQueueId);
+    public AnswerItem<Integer> insertFromExeQueueIdDep(long queueId, long fromQueueId) {
+        return testCaseExecutionQueueDepDAO.insertFromExeQueueIdDep(queueId, fromQueueId);
     }
 
     @Override
@@ -83,13 +84,13 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
     }
 
     @Override
-    public AnswerList<TestCaseExecutionQueueDep> readByQueueId(long exeQueueId) {
-        return testCaseExecutionQueueDepDAO.readByQueueId(exeQueueId);
+    public AnswerList<TestCaseExecutionQueueDep> readByExeQueueId(long exeQueueId) {
+        return testCaseExecutionQueueDepDAO.readByExeQueueId(exeQueueId);
     }
 
     @Override
-    public AnswerItem<Integer> readNbWaitingByExeQueue(long exeQueueId) {
-        return testCaseExecutionQueueDepDAO.readNbWaitingByExeQueue(exeQueueId);
+    public AnswerItem<Integer> readNbWaitingByExeQueueId(long exeQueueId) {
+        return testCaseExecutionQueueDepDAO.readNbWaitingByExeQueueId(exeQueueId);
     }
 
     @Override
@@ -103,8 +104,8 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
     }
 
     @Override
-    public AnswerItem<Integer> readNbReleasedWithNOKByExeQueue(long exeQueueId) {
-        return testCaseExecutionQueueDepDAO.readNbReleasedWithNOKByExeQueue(exeQueueId);
+    public AnswerItem<Integer> readNbReleasedWithNOKByExeQueueId(long exeQueueId) {
+        return testCaseExecutionQueueDepDAO.readNbReleasedWithNOKByExeQueueId(exeQueueId);
     }
 
     @Override
@@ -114,7 +115,7 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
 
             // Updating all dependencies of type TCEEXEEND and tCExecution.getId() to RELEASED.
             AnswerItem ansNbDep = updateStatusToRelease(tCExecution.getEnvironment(), tCExecution.getCountry(), tCExecution.getTag(),
-                    TestCaseExecutionQueueDep.TYPE_TCEXEEND, tCExecution.getTest(), tCExecution.getTestCase(), "", tCExecution.getId(), 0);
+                    TestCaseExecutionQueueDep.TYPE_TCEXEEND, tCExecution.getTest(), tCExecution.getTestCase(), "", tCExecution.getId(), tCExecution.getQueueID());
             int nbdep = (int) ansNbDep.getItem();
             // Only check status of each Queue Entries if we RELEASED at least 1 entry.
             if (nbdep > 0) {
@@ -136,7 +137,7 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
 
         try {
             //, String environment, String country, String tag, String test, String testCase
-            TestCaseExecutionQueue queueEntry = executionQueueService.convert(executionQueueService.readByKey(idQueue));
+            TestCaseExecutionQueue queueEntry = executionQueueService.convert(executionQueueService.readByKey(idQueue, false));
 
             // Updating all dependencies of type TCEEXEEND and tCExecution.getId() to RELEASED.
             AnswerItem ansNbDep = updateStatusToRelease(queueEntry.getEnvironment(), queueEntry.getCountry(), queueEntry.getTag(),
@@ -157,7 +158,6 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
             LOG.error("Exception when release dep from Queue Error.", ex);
         }
     }
-
 
     @Override
     public TestCaseExecutionQueueDep convert(AnswerItem<TestCaseExecutionQueueDep> answerItem) throws CerberusException {
@@ -185,6 +185,59 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
-    
-    
+
+    @Override
+    public List<Long> enrichWithDependencies(List<Long> queueIdList) {
+
+        try {
+            // Loading list of labelId into a map in order to dedup it.
+            HashMap<Long, Long> finalMap = new HashMap<>();
+            HashMap<Long, Long> initMap = new HashMap<>();
+            // Dedup list on a MAP
+            for (Long queueId : queueIdList) {
+                finalMap.put(queueId, Long.valueOf(0));
+                initMap.put(queueId, Long.valueOf(0));
+            }
+
+            // Looping of each queueId and add the parent.
+            Integer initSize = initMap.size();
+            Integer finalSize = initSize;
+            Integer i = 0;
+            do {
+                // Copy FinalMap to InitMap.
+                for (Map.Entry<Long, Long> entry : finalMap.entrySet()) {
+                    Long key = entry.getKey();
+                    initMap.put(key, Long.valueOf(0));
+                }
+                // Save the size if InitMap
+                initSize = initMap.size();
+                // For each InitMap, we add the dependency.
+                for (Map.Entry<Long, Long> entry : initMap.entrySet()) {
+                    Long key = entry.getKey();
+                    // Loading from database the list of links from parent to childs.
+                    List<TestCaseExecutionQueueDep> queueIdLinkList = this.convert(this.readByExeQueueId(key));
+                    // for each dependency found, we add the dependency to the FinalMap.
+                    for (TestCaseExecutionQueueDep queueDepEntry : queueIdLinkList) {
+                            finalMap.put(queueDepEntry.getQueueId(), Long.valueOf(0));
+                    }
+                }
+                finalSize = finalMap.size();
+                i++;
+                LOG.debug(initSize + " " + finalSize);
+            } while (!Objects.equals(finalSize, initSize) && i < 50);
+
+            // Convert Map to List.
+            List<Long> finalList = new ArrayList<>();
+            for (Map.Entry<Long, Long> entry : finalMap.entrySet()) {
+                Long key = entry.getKey();
+                finalList.add(key);
+            }
+            return finalList;
+
+        } catch (CerberusException ex) {
+            LOG.error("Exception when enriching Labels with Child.", ex);
+        }
+        return new ArrayList<>();
+    }
+
 }

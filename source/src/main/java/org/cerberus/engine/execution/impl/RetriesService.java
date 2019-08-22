@@ -53,7 +53,7 @@ public class RetriesService implements IRetriesService {
             if (tCExecution.getQueueID() > 0) {
                 // If QueueId exist, we try to get the original execution queue.
                 try {
-                    newExeQueue = executionQueueService.convert(executionQueueService.readByKey(tCExecution.getQueueID()));
+                    newExeQueue = executionQueueService.convert(executionQueueService.readByKey(tCExecution.getQueueID(), false));
                 } catch (Exception e) {
                     // Unfortunatly the execution no longuer exist so we pick initial value.
                     newExeQueue = tCExecution.getTestCaseExecutionQueue();
@@ -88,7 +88,7 @@ public class RetriesService implements IRetriesService {
         newExeQueue.setState(TestCaseExecutionQueue.State.QUEUED);
         newExeQueue.setRetries(newRetry);
         // Insert execution to the Queue.
-        executionQueueService.create(newExeQueue, exeQueue);
+        executionQueueService.create(newExeQueue, false, exeQueue);
         return true;
     }
 }

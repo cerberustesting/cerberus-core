@@ -1167,9 +1167,13 @@ function refreshNbChecked() {
     if (nbchecked > 0) {
         $('#submitExe').prop("disabled", false);
         $('#submitExe').html("<span class='glyphicon glyphicon-play'></span> Submit Again (" + nbchecked + ")");
+        $('#submitExewithDep').prop("disabled", false);
+        $('#submitExewithDep').html("<span class='glyphicon glyphicon-play'></span> Submit Again with Dep (" + nbchecked + ")");
     } else {
         $('#submitExe').prop("disabled", true);
         $('#submitExe').html("<span class='glyphicon glyphicon-play'></span> Submit Again");
+        $('#submitExewithDep').prop("disabled", true);
+        $('#submsubmitExewithDepitExe').html("<span class='glyphicon glyphicon-play'></span> Submit Again with Dep");
     }
 }
 
@@ -1184,9 +1188,13 @@ function renderOptionsForExeList(selectTag) {
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKO' type='checkbox'></input>KO</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKOManual' type='checkbox'></input>KO (Manual)</label>";
         contentToAdd += "<label class='checkbox-inline marginRight10'><input id='selectAllQueueNA' type='checkbox'></input>NA</label>";
+        contentToAdd += "<div class='btn-group marginRight20'>";
         contentToAdd += "<button id='submitExe' type='button' disabled='disabled' title='Submit again the selected executions.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again</button>";
-        contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
-        contentToAdd += "<button id='refresh' type='button' title='Refresh.' class='btn btn-default' onclick='loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
+        contentToAdd += "<button id='btnGroupDrop4' type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
+        contentToAdd += "<div class='dropdown-menu'><button id='submitExewithDep' type='button' disabled='disabled' title='Submit again the selected executions with all dependencies.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again with Dep</button></div>";
+        contentToAdd += "</div>";
+        contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default marginLeft20'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
+        contentToAdd += "<button id='refresh' type='button' title='Refresh.' class='btn btn-default marginLeft20' onclick='loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
         contentToAdd += "</div>";
 
         $("#listTable_length").before(contentToAdd);
@@ -1209,12 +1217,16 @@ function renderOptionsForExeList(selectTag) {
         $('#selectAllQueueNA').click(function () {
             selectAllQueue("selectAllQueueNA", "", "NA");
         });
-        $('#submitExe').click(massAction_copyQueue);
+        $('#submitExe').click(massAction_copyQueueWithoutDep);
+        $('#submitExewithDep').click(massAction_copyQueueWithDep);
     }
 }
 
-function massAction_copyQueue() {
+function massAction_copyQueue(option) {
 
+    if (option === undefined) {
+        option = "toQUEUED";
+    }
     clearResponseMessageMainPage();
 
     var doc = new Doc();
@@ -1226,7 +1238,7 @@ function massAction_copyQueue() {
         showMessage(localMessage, null);
     } else {
 
-        var jqxhr = $.post("CreateTestCaseExecutionQueue", paramSerialized + "&actionState=toQUEUED&actionSave=save", "json");
+        var jqxhr = $.post("CreateTestCaseExecutionQueue", paramSerialized + "&actionState=" + option + "&actionSave=save", "json");
         $.when(jqxhr).then(function (data) {
             // unblock when remote call returns 
             if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
@@ -1240,6 +1252,13 @@ function massAction_copyQueue() {
         }).fail(handleErrorAjaxAfterTimeout);
     }
 
+}
+
+function massAction_copyQueueWithDep() {
+    massAction_copyQueue("toQUEUEDwithDep");
+}
+function massAction_copyQueueWithoutDep() {
+    massAction_copyQueue("toQUEUED");
 }
 
 var cptDep = 0;
@@ -1296,6 +1315,7 @@ function aoColumnsFunc(Columns) {
             "title": title,
             "bSortable": true,
             "bSearchable": true,
+            "class": "mainCell",
             "sWidth": "40px",
             "data": function (row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
@@ -1311,8 +1331,9 @@ function aoColumnsFunc(Columns) {
                     // Getting selected Tag;
                     var glyphClass = getRowClass(data.ControlStatus);
                     var tooltip = generateTooltip(data);
+                    let idProgressBar = (data.Test + "_" + data.TestCase + "_" + data.Country + "_" + data.Environment + "_" + data.RobotDecli).replace(/\./g, '_').replace(/ /g, '_').replace(/\:/g, '_');
                     var cell = "";
-                    cell += '<div class="input-group">';
+                    cell += '<div class="input-group mainCell" id="' + idProgressBar + '">';
                     cell += '<span style="border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon status' + data.ControlStatus + '">';
                     var state = data.ControlStatus;
                     if (!isEmpty(data.QueueState)) {
@@ -1330,11 +1351,10 @@ function aoColumnsFunc(Columns) {
                         cell += '</div>';
                         statWidth = "80";
                     }
-                    let idProgressBar = (data.Test + "_" + data.TestCase + "_" + data.Country + "_" + data.Environment + "_" + data.RobotDecli).replace(/\./g, '_').replace(/ /g, '_').replace(/\:/g, '_');
                     if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
-                        cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" id="' + idProgressBar + '" ';
+                        cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" id1="' + idProgressBar + '" ';
                     } else {
-                        cell += '<div class="progress-bar status' + data.ControlStatus + '" id="' + idProgressBar + '" ';
+                        cell += '<div class="progress-bar status' + data.ControlStatus + '" id1="' + idProgressBar + '" ';
                     }
                     cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: ' + statWidth + '%;cursor: pointer; height: 40px;"';
                     cell += 'data-toggle="tooltip" data-html="true" title="' + tooltip + '"';
@@ -1360,11 +1380,10 @@ function aoColumnsFunc(Columns) {
                     cell += '</div>';
                     if (data.TestCaseDep.length > 0) {
                         cell += '<span style="padding:0px; border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon ">';
-                        cell += '<button id="dep' + cptDep + '" type="button" class="btn  btn-info hideFeatureTCDependencies" onclick="stopPropagation(event);' + dependency + '" data-html="true" data-toggle="popover">' +
+                        cell += '<button id="dep' + cptDep + '" type="button" class="btn btn-info hideFeatureTCDependencies" onclick="stopPropagation(event);' + dependency + '" data-html="true" data-toggle="popover">' +
                                 '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> </button>'
                         cell += '</span>';
                         cptDep++;
-
                     }
                     cell += '</div>';
                     return cell;
@@ -1427,12 +1446,17 @@ function aoColumnsFunc(Columns) {
 
 function renderDependency(id, dependencyArray) {
     let text = ""
+    // Remove all background of mainCell
+    $(".mainCell").parent().removeClass("info");
     dependencyArray.forEach(dep => {
         let idProgressBar = (dep.test + "_" + dep.testcase + "_" + dep.Country + "_" + dep.Environment + "_" + dep.robotdecli).replace(/ /g, '_').replace(/\./g, '_').replace(/\:/g, '_');
         let tcDepResult = $("#" + idProgressBar).find("[name='tcResult']").text();
-        text += "<a style='cursor: pointer;' onclick='$(\"#" + idProgressBar + "\").click()' style='font-size: xx-small'><div style='width: 20%' class='progress-bar status" + tcDepResult + "'>" + tcDepResult + "</div></a><a href='#" + idProgressBar + "'>" + dep.test + " - " + dep.testcase + "</a><br>"
+        text += "<a style='cursor: pointer;' onclick='$(\"#" + idProgressBar + "\").click()' style='font-size: xx-small'><div style='width: 20%' class='progress-bar status" + tcDepResult + "'>" + tcDepResult + "</div></a><a href='#" + idProgressBar + "'>" + dep.test + " - " + dep.testcase + "</a><br>";
+        // Add background of mainCell that are dependent.
+        $("#" + idProgressBar).parent().addClass("info");
     });
     $("#" + id).attr('title', "Dependency")
+            .addClass("info")
             .popover('fixTitle')
             .attr("data-content", text)
             .popover('show');

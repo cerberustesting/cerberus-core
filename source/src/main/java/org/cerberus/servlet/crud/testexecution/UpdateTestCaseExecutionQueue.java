@@ -184,7 +184,7 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
                 ITestCaseExecutionQueueService executionQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
                 IExecutionThreadPoolService executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
 
-                AnswerItem resp = executionQueueService.readByKey(id);
+                AnswerItem resp = executionQueueService.readByKey(id, false);
                 if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                     /**
                      * Object could not be found. We stop here and report the

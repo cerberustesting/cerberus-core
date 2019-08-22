@@ -257,7 +257,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
 
         if (testCaseExecution.getQueueID() > 0) {
             try {
-                List<TestCaseExecutionQueueDep> a = testCaseExecutionQueueDepService.convert(testCaseExecutionQueueDepService.readByQueueId(testCaseExecution.getQueueID()));
+                List<TestCaseExecutionQueueDep> a = testCaseExecutionQueueDepService.convert(testCaseExecutionQueueDepService.readByExeQueueId(testCaseExecution.getQueueID()));
                 testCaseExecution.setTestCaseExecutionQueueDep(a);
             } catch (CerberusException e) {
                 LOG.error("An erreur occured while getting execution dependency", e);
