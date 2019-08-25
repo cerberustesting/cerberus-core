@@ -416,8 +416,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('robotexecutor','executorProxyPort','','en','Executor Proxy Port','Port of the executor proxy. If 0, port will be determined randomly.',NULL)");
         b.append(",('robotexecutor','executorProxyActive','','fr','Proxy Actif / Inactif', 'Activer / Désactiver l\\'utilisation du proxy de l\\'extension de l\\'executor.',NULL)");
         b.append(",('robotexecutor','executorProxyActive','','en','Active / Unactive Proxy', 'Activate / Unactivate the usage of of proxy through the Executor Extension.',NULL)");
-        b.append(",('scheduleentry','cronDefinition','','fr','Expression Cron','Expression Cron parametree pour ordonnancer la campagne',NULL)");
-        b.append(",('scheduleentry','cronDefinition','','en','Cron Expression','Cron expression use to schedule campaign',NULL)");
+        b.append(",('scheduleentry','cronDefinition','','fr','Expression Cron Quartz','Expression Cron parametree pour ordonnancer la campagne',NULL)");
+        b.append(",('scheduleentry','cronDefinition','','en','Quartz Cron Expression','Cron expression use to schedule campaign',NULL)");
+        b.append(",('scheduleentry','description','','fr','Description','',NULL)");
+        b.append(",('scheduleentry','description','','en','Description','',NULL)");
         b.append(",('scheduleentry','active','','en','Active','Scheduler activity',NULL)");
         b.append(",('scheduleentry','active','','fr','Active','Activité du scheduler',NULL)");
         b.append(",('scheduleentry','lastexecution','','en','Last Execution','',NULL)");

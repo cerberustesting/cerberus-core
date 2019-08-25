@@ -36,7 +36,6 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -63,10 +62,76 @@ public class ScheduledExecutionDAO implements IScheduledExecutionDAO {
         boolean throwEx = false;
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-//        query.append("INSERT INTO scheduledexecution (`schedulerID`, `scheduleName`, `scheduledDate`"
-//                + ", `scheduleFireTime`, `status`, `comment`, `UsrCreated`"
-//                + ")");
-//        query.append("VALUES (?,?,?,?,?,?,?)");
+        query.append("INSERT INTO scheduledexecution (`schedulerID`, `scheduleName`, `scheduledDate`"
+                + ", `scheduleFireTime`, `status`, `comment`, `UsrCreated`"
+                + ")");
+        query.append("VALUES (?,?,?,?,?,?,?)");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.id : " + object.getSchedulerId());
+            LOG.debug("SQL.date : " + object.getScheduledDate());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+            try {
+                int i = 1;
+                preStat.setLong(i++, object.getSchedulerId());
+                preStat.setString(i++, object.getScheduleName());
+                preStat.setTimestamp(i++, object.getScheduledDate());
+                preStat.setTimestamp(i++, object.getScheduleFireTime());
+                preStat.setString(i++, object.getStatus());
+                preStat.setString(i++, object.getComment());
+                preStat.setString(i++, object.getUsrCreated());
+
+                preStat.executeUpdate();
+                ResultSet resultSet = preStat.getGeneratedKeys();
+
+                try {
+                    if (resultSet.first()) {
+                        return resultSet.getLong(1);
+                    } else {
+                        return 0;
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString(), exception);
+                    throwEx = true;
+                } finally {
+                    resultSet.close();
+                }
+
+            } catch (SQLException exception) {
+                // LOG is only in debug as it could happen on normal situation where The same campaign is triggered more than once at the exact same time from different scheduler entry or JVM instance.
+                LOG.debug("Unable to execute query : " + exception.toString(), exception);
+                throwEx = true;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString(), exception);
+            throwEx = true;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+        if (throwEx) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
+        }
+        return 0;
+    }
+
+    @Override
+    public long createWhenNotExist(ScheduledExecution object) throws CerberusException {
+        boolean throwEx = false;
+        MessageEvent msg = null;
+        StringBuilder query = new StringBuilder();
 
         query.append("INSERT INTO scheduledexecution (`schedulerID`, `scheduleName`, `scheduledDate`, `scheduleFireTime`, `status`, `comment`, `UsrCreated`) "
                 + "SELECT ?,?,?,?,?,?,? FROM scheduledexecution "
@@ -75,6 +140,8 @@ public class ScheduledExecutionDAO implements IScheduledExecutionDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.id : " + object.getSchedulerId());
+            LOG.debug("SQL.date : " + object.getScheduledDate());
         }
         Connection connection = this.databaseSpring.connect();
         try {
@@ -108,6 +175,7 @@ public class ScheduledExecutionDAO implements IScheduledExecutionDAO {
                 }
 
             } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString(), exception);
                 throwEx = true;
             } finally {
                 preStat.close();

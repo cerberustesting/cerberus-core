@@ -410,7 +410,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
             List<String> errorMessages = new ArrayList<String>();
             for (TestCaseExecutionQueue toInsert : toInserts) {
                 try {
-                    inQueueService.convert(inQueueService.create(toInsert, true, 0));
+                    inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUEUED));
                     nbExe++;
                     JSONObject value = new JSONObject();
                     value.put("queueId", toInsert.getId());

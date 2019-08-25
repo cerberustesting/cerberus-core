@@ -583,11 +583,11 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 LOG.warn(ex);
             }
 
-            // Part 2: Try to insert all these test cases to the execution queue.
+            // Part 2a: Try to insert all these test cases to the execution queue.
             List<String> errorMessages = new ArrayList<String>();
             for (TestCaseExecutionQueue toInsert : toInserts) {
                 try {
-                    inQueueService.convert(inQueueService.create(toInsert, true, 0));
+                    inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUTEMP));
                     nbExe++;
                     JSONObject value = new JSONObject();
                     value.put("queueId", toInsert.getId());
@@ -606,6 +606,9 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     LOG.error(ex, ex);
                 }
             }
+
+            // Part 2b: move all the execution queue from tag to QUEUE state.
+            inQueueService.updateAllTagToQueuedFromQuTemp(tag);
 
             // Part 3 : Trigger JobQueue
             try {

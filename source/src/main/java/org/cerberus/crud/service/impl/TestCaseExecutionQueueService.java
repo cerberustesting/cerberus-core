@@ -180,15 +180,12 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, boolean withNewDep, long exeQueueId) {
+    public AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, boolean withNewDep, long exeQueueId, TestCaseExecutionQueue.State targetState) {
 
-        LOG.debug("Creating Queue entry : " + object.getId() + " From : " + exeQueueId);
+        LOG.debug("Creating Queue entry : " + object.getId() + " From : " + exeQueueId + " targetState : " + targetState.toString());
         // We create the link between the tag and the system if it does not exist yet.
-        if (!StringUtil.isNullOrEmpty(object.getTag()) && !StringUtil.isNullOrEmpty(object.getSystem())) {
-            if (!tagSystemService.exist(object.getTag(), object.getSystem())) {
-                tagSystemService.create(factoryTagSystem.create(object.getTag(), object.getSystem(), object.getUsrCreated(), null, "", null));
-            }
-        }
+        tagSystemService.createIfNotExist(object.getTag(), object.getSystem(), object.getUsrCreated());
+
         AnswerItem<TestCaseExecutionQueue> ret;
         if (StringUtil.isNullOrEmpty(object.getTag())) {
             // If tag is not defined, we do not insert any dependencies.
@@ -207,8 +204,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                     AnswerItem<Integer> retDep = testCaseExecutionQueueDepService.insertFromTestCaseDep(insertedQueueId, object.getEnvironment(), object.getCountry(), object.getTag(), object.getTest(), object.getTestCase());
                     LOG.debug("Dep inserted : " + retDep.getItem());
                     if (retDep.getItem() < 1) {
-                        // In case there are no dependencies, we release the execution moving to QUEUED State
-                        updateToQueued(insertedQueueId, "");
+                        // In case there are no dependencies, we release the execution moving to targetState State
+                        updateToState(insertedQueueId, "", targetState);
                     } else {
                         // In case there is at least 1 dependency, we leave the state to QUWITHDEP but move the prio to high so that when dependencies are released execution is triggered ASAP.
                         object.setPriority(TestCaseExecutionQueue.PRIORITY_WHENDEPENDENCY); // pass prio to 100 if it's a QUWITHDEP
@@ -217,6 +214,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                 }
             } else {
                 // New execution Queue from an existing one (duplicated from an existing queue entry).
+                object.setState(targetState);
                 ret = testCaseExecutionInQueueDAO.create(object);
                 // We duplicate here the dependencies from the original exeQueue entry.
                 if (ret.getItem() != null) {
@@ -274,8 +272,18 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
+    public Answer updateToState(long id, String comment, TestCaseExecutionQueue.State targetState) {
+        return testCaseExecutionInQueueDAO.updateToState(id, comment, targetState);
+    }
+
+    @Override
     public Answer updateToQueued(long id, String comment) {
         return testCaseExecutionInQueueDAO.updateToQueued(id, comment);
+    }
+
+    @Override
+    public Answer updateAllTagToQueuedFromQuTemp(String tag) {
+        return testCaseExecutionInQueueDAO.updateAllTagToQueuedFromQuTemp(tag);
     }
 
     @Override

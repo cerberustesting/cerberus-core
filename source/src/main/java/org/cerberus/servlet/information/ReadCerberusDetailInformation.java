@@ -21,12 +21,15 @@ package org.cerberus.servlet.information;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -35,12 +38,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.config.Property;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.database.dao.ICerberusInformationDAO;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.session.SessionCounter;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITagSystemService;
 import org.cerberus.database.IDatabaseVersioningService;
 import org.cerberus.engine.scheduler.SchedulerInit;
 import org.cerberus.util.answer.AnswerItem;
@@ -65,6 +70,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
     private IDatabaseVersioningService databaseVersionService;
     private IMyVersionService myVersionService;
     private IParameterService parameterService;
+    private ITagSystemService tagSystemService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -186,8 +192,38 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             String str1 = getServletContext().getServerInfo();
             jsonResponse.put("applicationServerInfo", str1);
 
+            // Cache parameter data and status
+            JSONObject objCache = new JSONObject();
+            HashMap<String, Parameter> cacheParam = parameterService.getCacheEntry();
+            JSONArray cacheValuesArray = new JSONArray();
+
+            for (Map.Entry<String, Parameter> entry : cacheParam.entrySet()) {
+                String key = entry.getKey();
+                Parameter value = entry.getValue();
+                JSONObject objParam = new JSONObject();
+                objParam.put("key", key);
+                if (value.getCacheEntryCreation() != null) {
+                    objParam.put("created", value.getCacheEntryCreation().toString());
+                    Duration d = Duration.between(value.getCacheEntryCreation(), LocalDateTime.now());
+                    objParam.put("durationFromCreatedInS", d.getSeconds());
+                }
+                cacheValuesArray.put(objParam);
+            }
+            objCache.put("cacheParameterEntry", cacheValuesArray);
+            objCache.put("cacheParameterDurationInS", Parameter.CACHE_DURATION);
+
+            // Cache Tag System data and status
+            cacheValuesArray = new JSONArray();
+            tagSystemService = appContext.getBean(ITagSystemService.class);
+            cacheValuesArray.put(tagSystemService.getTagSystemCache());
+            objCache.put("cacheTagSystemEntry", cacheValuesArray);
+
+            jsonResponse.put("cache", objCache);
+
         } catch (JSONException ex) {
             LOG.warn(ex);
+        } catch (Exception ex) {
+            LOG.error("Exception in ReadCerberusDetailInformation Servlet", ex);
         }
 
         response.setContentType("application/json");
@@ -195,6 +231,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
     }
 
     class SortTriggers implements Comparator<JSONObject> {
+
         // Used for sorting Triggers 
         @Override
         public int compare(JSONObject a, JSONObject b) {

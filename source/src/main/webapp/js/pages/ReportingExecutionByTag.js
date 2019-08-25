@@ -1380,8 +1380,8 @@ function aoColumnsFunc(Columns) {
                     cell += '</div>';
                     if (data.TestCaseDep.length > 0) {
                         cell += '<span style="padding:0px; border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon ">';
-                        cell += '<button id="dep' + cptDep + '" type="button" class="btn btn-info hideFeatureTCDependencies" onclick="stopPropagation(event);' + dependency + '" data-html="true" data-toggle="popover">' +
-                                '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> </button>'
+                        cell += '<a id="dep' + cptDep + '" role="button" class="btn btn-info hideFeatureTCDependencies" onclick="stopPropagation(event);' + dependency + '" data-html="true" data-toggle="popover" data-placement="right">' +
+                                '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> </a>'
                         cell += '</span>';
                         cptDep++;
                     }
@@ -1459,6 +1459,7 @@ function renderDependency(id, dependencyArray) {
             .addClass("info")
             .popover('fixTitle')
             .attr("data-content", text)
+            .attr("data-placement", "right")
             .popover('show');
 }
 

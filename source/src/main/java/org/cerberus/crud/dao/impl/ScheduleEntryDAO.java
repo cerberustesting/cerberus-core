@@ -253,12 +253,13 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
         String name = ParameterParserUtil.parseStringParam(rs.getString("scheduleentry.name"), "");
         String cronDefinition = ParameterParserUtil.parseStringParam(rs.getString("scheduleentry.cronDefinition"), "");
         String active = ParameterParserUtil.parseStringParam(rs.getString("scheduleentry.active"), "");
+        String desc = ParameterParserUtil.parseStringParam(rs.getString("scheduleentry.description"), "");
         String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("scheduleentry.UsrCreated"), "");
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("scheduleentry.UsrModif"), "");
         Timestamp lastExecution = rs.getTimestamp("scheduleentry.lastExecution");
         Timestamp dateModif = rs.getTimestamp("scheduleentry.DateModif");
         Timestamp dateCreated = rs.getTimestamp("scheduleentry.DateCreated");
-        ScheduleEntry newScheduleEntry = factoryscheduleentry.create(schedulerId, type, name, cronDefinition, lastExecution, active, usrCreated, dateCreated, usrModif, dateModif);
+        ScheduleEntry newScheduleEntry = factoryscheduleentry.create(schedulerId, type, name, cronDefinition, lastExecution, active, desc, usrCreated, dateCreated, usrModif, dateModif);
         return newScheduleEntry;
 
     }
@@ -267,7 +268,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
     public AnswerItem<Integer> create(ScheduleEntry scheduler) {
         MessageEvent msg = null;
         AnswerItem<Integer> ans = new AnswerItem();
-        final StringBuilder query = new StringBuilder("INSERT INTO `scheduleentry` (`type`, `name`,`cronDefinition`,`active`,`UsrCreated`) VALUES ( ?, ?, ?, ?, ?);");
+        final StringBuilder query = new StringBuilder("INSERT INTO `scheduleentry` (`type`, `name`,`cronDefinition`,`active`,`description`,`UsrCreated`) VALUES ( ?, ?, ?, ?, ?, ?);");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -286,6 +287,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
                 preStat.setString(i++, scheduler.getName());
                 preStat.setString(i++, scheduler.getCronDefinition());
                 preStat.setString(i++, scheduler.getActive());
+                preStat.setString(i++, scheduler.getDescription());
                 preStat.setString(i++, scheduler.getUsrCreated());
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -337,7 +339,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
     @Override
     public Answer update(ScheduleEntry scheduleEntryObject) {
         MessageEvent msg = null;
-        String query = "UPDATE scheduleentry SET type = ? , name = ?, cronDefinition = ?,lastExecution = ?, active = ?, DateModif = CURRENT_TIMESTAMP, UsrModif = ? WHERE ID = ?";
+        String query = "UPDATE scheduleentry SET type = ? , name = ?, cronDefinition = ?,lastExecution = ?, active = ?, description = ?, DateModif = CURRENT_TIMESTAMP, UsrModif = ? WHERE ID = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -355,6 +357,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
                 preStat.setString(i++, scheduleEntryObject.getCronDefinition());
                 preStat.setTimestamp(i++, scheduleEntryObject.getLastExecution());
                 preStat.setString(i++, scheduleEntryObject.getActive());
+                preStat.setString(i++, scheduleEntryObject.getDescription());
                 preStat.setString(i++, scheduleEntryObject.getUsrModif());
                 preStat.setLong(i++, scheduleEntryObject.getID());
 

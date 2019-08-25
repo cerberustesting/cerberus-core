@@ -104,6 +104,10 @@ public class ParameterDAO implements IParameterDAO {
         final String query = "SELECT * FROM parameter p WHERE p.`system` = ? and p.param = ? ";
 
         Connection connection = this.databaseSpring.connect();
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
@@ -156,6 +160,10 @@ public class ParameterDAO implements IParameterDAO {
         final String query = "SELECT * FROM parameter p ";
 
         Connection connection = this.databaseSpring.connect();
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
 
@@ -207,6 +215,10 @@ public class ParameterDAO implements IParameterDAO {
         final String query = "UPDATE parameter SET Value = ? WHERE system = ? and param = ? ;";
 
         Connection connection = this.databaseSpring.connect();
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
@@ -240,6 +252,10 @@ public class ParameterDAO implements IParameterDAO {
         final String query = "INSERT INTO parameter (`system`, `param`, `value`, `description`) VALUES (?, ?, ?, ?) ;";
 
         Connection connection = this.databaseSpring.connect();
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
@@ -280,6 +296,12 @@ public class ParameterDAO implements IParameterDAO {
         final String query = mySQL.toString();
 
         Connection connection = this.databaseSpring.connect();
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             preStat.setString(1, mySystem1);
@@ -381,6 +403,12 @@ public class ParameterDAO implements IParameterDAO {
             LOG.debug("SQL : " + query.toString());
         }
         Connection connection = this.databaseSpring.connect();
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
@@ -663,6 +691,12 @@ public class ParameterDAO implements IParameterDAO {
 
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY)) {
+
+            // Debug message on SQL.
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("SQL : " + Query.READ_BY_KEY);
+            }
+
             // Prepare and execute query
             preStat.setString(1, system);
             preStat.setString(2, param);
@@ -696,6 +730,11 @@ public class ParameterDAO implements IParameterDAO {
 
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+
+            // Debug message on SQL.
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("SQL : " + Query.CREATE);
+            }
             // Prepare and execute query
             preStat.setString(1, object.getSystem());
             preStat.setString(2, object.getParam());
@@ -724,6 +763,11 @@ public class ParameterDAO implements IParameterDAO {
 
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
+
+            // Debug message on SQL.
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("SQL : " + Query.UPDATE);
+            }
             // Prepare and execute query
             preStat.setString(1, object.getValue());
             preStat.setString(2, object.getSystem());
@@ -751,6 +795,11 @@ public class ParameterDAO implements IParameterDAO {
 
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
+            // Debug message on SQL.
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("SQL : " + Query.DELETE);
+            }
+
             // Prepare and execute query
             preStat.setString(1, object.getSystem());
             preStat.setString(2, object.getParam());

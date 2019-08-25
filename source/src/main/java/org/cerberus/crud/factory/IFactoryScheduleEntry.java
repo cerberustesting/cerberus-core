@@ -36,11 +36,12 @@ public interface IFactoryScheduleEntry {
      * @param cronDefinition
      * @param lastExecution
      * @param active
+     * @param description
      * @param UsrCreated
      * @param DateCreated
      * @param UsrModif
      * @param DateModif
      * @return
      */
-    ScheduleEntry create(long ID, String type, String name, String cronDefinition, Timestamp lastExecution, String active, String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif);
+    ScheduleEntry create(long ID, String type, String name, String cronDefinition, Timestamp lastExecution, String active, String description, String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif);
 }

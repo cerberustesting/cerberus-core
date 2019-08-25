@@ -91,6 +91,7 @@ public class CreateScheduleEntry extends HttpServlet {
         String cronDefinition = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("cronDefinition"), "");
         String type = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("type"), "CAMPAIGN");
         String active = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("active"), "Y");
+        String desc = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("description"), "Y");
         Boolean validCron = org.quartz.CronExpression.isValidExpression(cronDefinition);
         LOG.debug("validCron : " + validCron);
         /**
@@ -109,7 +110,7 @@ public class CreateScheduleEntry extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IFactoryScheduleEntry factoryScheduleEntry = appContext.getBean(IFactoryScheduleEntry.class);
             IScheduleEntryService scheduleEntryService = appContext.getBean(IScheduleEntryService.class);
-            ScheduleEntry scheduleEntry = factoryScheduleEntry.create(0, type, name, cronDefinition, null, active, request.getUserPrincipal().getName(), null, null, null);
+            ScheduleEntry scheduleEntry = factoryScheduleEntry.create(0, type, name, cronDefinition, null, active, desc, request.getUserPrincipal().getName(), null, null, null);
             ans = scheduleEntryService.create(scheduleEntry);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

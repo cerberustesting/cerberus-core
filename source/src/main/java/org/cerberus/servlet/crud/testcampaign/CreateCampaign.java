@@ -243,6 +243,7 @@ public class CreateCampaign extends HttpServlet {
             boolean delete = tcsaJson.getBoolean("toDelete");
             String cronExpression = policy.sanitize(tcsaJson.getString("cronDefinition"));
             String active = policy.sanitize(tcsaJson.getString("active"));
+            String desc = policy.sanitize(tcsaJson.getString("description"));
             String strId = tcsaJson.getString("ID");
             String lastExecutionStr = tcsaJson.getString("lastExecution");
             String type = "CAMPAIGN";
@@ -263,7 +264,7 @@ public class CreateCampaign extends HttpServlet {
             Timestamp timestampfactice = new Timestamp(System.currentTimeMillis());
 
             if (!delete) {
-                ScheduleEntry sch = scheFactory.create(id, type, name, cronExpression, timestampfactice, active, request.getRemoteUser(), timestampfactice, request.getRemoteUser(), timestampfactice);
+                ScheduleEntry sch = scheFactory.create(id, type, name, cronExpression, timestampfactice, active, desc, request.getRemoteUser(), timestampfactice, request.getRemoteUser(), timestampfactice);
                 scheList.add(sch);
             }
         }

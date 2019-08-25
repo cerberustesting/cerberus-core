@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
@@ -31,6 +32,7 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -52,6 +54,13 @@ public class TagSystemService implements ITagSystemService {
     private static final Logger LOG = LogManager.getLogger("TagSystemService");
 
     private final String OBJECT_NAME = "TagSystem";
+
+    private List<String> tagSystemCache = new ArrayList<>();
+
+    @Override
+    public List<String> getTagSystemCache() {
+        return tagSystemCache;
+    }
 
     @Override
     public AnswerItem<TagSystem> readByKey(String tag, String system) {
@@ -82,6 +91,18 @@ public class TagSystemService implements ITagSystemService {
     public boolean exist(String tag, String system) {
         AnswerItem objectAnswer = readByKey(tag, system);
         return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
+    }
+
+    @Override
+    public Answer createIfNotExist(String tag, String system, String user) {
+        if (!StringUtil.isNullOrEmpty(tag) && !StringUtil.isNullOrEmpty(system)) {
+            String keyCacheEntry = tag + "//!//" + system;
+            if (!tagSystemCache.contains(keyCacheEntry) && !exist(tag, system)) {
+                tagSystemCache.add(keyCacheEntry);
+                return create(factoryTagSystem.create(tag, system, user, null, "", null));
+            }
+        }
+        return null;
     }
 
     @Override

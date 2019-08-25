@@ -166,10 +166,10 @@ public class ScheduledJob implements Job {
                                 Answer updateScx = scheduledExecutionService.update(scheduledExecutionObject);
                             }
                         } else {
-                            LOG.warn("No execution inserted for job " + schedulerId + " and campaign '" + scheduleName + "' in database (Potentialy another instance of Cerberus already triggered the job).");
+                            LOG.info("No execution inserted for JobId " + schedulerId + " Campaign '" + scheduleName + " FireTime '" + scheduleFireTime + "' in database (Potentialy another instance of Cerberus already triggered the job).");
                         }
                     } catch (Exception e) {
-                        LOG.warn("Cannot insert execution for job " + schedulerId + " and campaign '" + scheduleName + "' in database (Potentialy another instance of Cerberus already triggered the job).");
+                        LOG.info("Cannot insert execution for JobId " + schedulerId + " Campaign '" + scheduleName + " FireTime '" + scheduleFireTime + "' in database (Potentialy another instance of Cerberus already triggered the job).");
                     }
                 }
 

@@ -440,7 +440,7 @@ function updatePage(data, stepList) {
     createProperties(data.testCaseExecutionDataList);
     createVideo(data.videos);
     setUpClickFunctionToSaveTestCaseExecutionButton(data);
-    drawDependencies(data.testCaseExecutionQueueDepList, "depTableBody");
+    drawDependencies(data.testCaseExecutionQueueDepList, "depTableBody", "editTabDep");
 }
 
 

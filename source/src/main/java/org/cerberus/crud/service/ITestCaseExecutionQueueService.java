@@ -208,9 +208,10 @@ public interface ITestCaseExecutionQueueService {
      * @param withNewDep
      * @param exeQueue original queue entry id from which the duplication is
      * done.
+     * @param targetState
      * @return {@link AnswerItem}
      */
-    AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, boolean withNewDep, long exeQueue);
+    AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, boolean withNewDep, long exeQueue, TestCaseExecutionQueue.State targetState);
 
     /**
      *
@@ -245,6 +246,15 @@ public interface ITestCaseExecutionQueueService {
      *
      * @param id
      * @param comment
+     * @param targetState
+     * @return
+     */
+    Answer updateToState(long id, String comment, TestCaseExecutionQueue.State targetState);
+
+    /**
+     *
+     * @param id
+     * @param comment
      * @return
      */
     Answer updateToQueued(long id, String comment);
@@ -257,6 +267,13 @@ public interface ITestCaseExecutionQueueService {
      */
     Answer updateToQueuedFromQuWithDep(long id, String comment);
 
+    /**
+     *
+     * @param tag
+     * @return
+     */
+    Answer updateAllTagToQueuedFromQuTemp(String tag);
+    
     /**
      *
      * @param id
@@ -294,7 +311,6 @@ public interface ITestCaseExecutionQueueService {
      *
      * @param id
      * @param comment
-     * @param exeId
      * @throws CerberusException
      */
     void updateToErrorFromQuWithDep(long id, String comment) throws CerberusException;

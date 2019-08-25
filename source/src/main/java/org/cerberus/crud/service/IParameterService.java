@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -27,14 +28,25 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
-import org.cerberus.util.observe.Observable;
 
 /**
  * @author bcivel
  */
-public interface IParameterService extends Observable<String, Parameter> {
+public interface IParameterService {
 
-    String DEFAULT_SYSTEM = "";
+    /**
+     *
+     * @return
+     */
+    HashMap<String, Parameter> getCacheEntry();
+
+    /**
+     * remove all cache entries where key contains parameter. Purge all entries
+     * if parameter is null.
+     *
+     * @param parameter
+     */
+    void purgeCacheEntry(String parameter);
 
     /**
      * Getting the parameter from database with system (priority) rule. If
@@ -105,11 +117,6 @@ public interface IParameterService extends Observable<String, Parameter> {
 
     List<Parameter> findAllParameter() throws CerberusException;
 
-    void updateParameter(Parameter parameter) throws CerberusException;
-
-    void insertParameter(Parameter parameter) throws CerberusException;
-
-    void saveParameter(Parameter parameter) throws CerberusException;
 
     /**
      * Get the {@link Parameter} List of the given {@link System}
@@ -162,7 +169,7 @@ public interface IParameterService extends Observable<String, Parameter> {
      *
      * @param system the system of the {@link Parameter} to get
      * @param param the param of the {@link Parameter} to get
-     * @return 
+     * @return
      */
     AnswerItem readByKey(String system, String param);
 
@@ -236,7 +243,7 @@ public interface IParameterService extends Observable<String, Parameter> {
      * @return
      */
     Parameter secureParameter(Parameter parameter);
-    
+
     /**
      *
      * @param parameter
