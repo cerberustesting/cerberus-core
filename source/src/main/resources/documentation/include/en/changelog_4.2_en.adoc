@@ -21,3 +21,4 @@
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * SQL1422 can be quite long on database with large amount of executions (new column on testcaseexecution page).
+* if you installed Cerberus on a multi instance environment, the parameter caching feature may slow down by 60 seconds the time for a parameter change to be considered.
