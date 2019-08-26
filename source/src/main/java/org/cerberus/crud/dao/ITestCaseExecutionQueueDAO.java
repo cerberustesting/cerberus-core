@@ -210,9 +210,25 @@ public interface ITestCaseExecutionQueueDAO {
      *
      * @param id
      * @param comment
+     * @param targetState
+     * @return
+     */
+    Answer updateToState(long id, String comment, TestCaseExecutionQueue.State targetState);
+
+    /**
+     *
+     * @param id
+     * @param comment
      * @return
      */
     Answer updateToQueued(long id, String comment);
+
+    /**
+     *
+     * @param tag
+     * @return
+     */
+    Answer updateAllTagToQueuedFromQuTemp(String tag);
 
     /**
      *

@@ -197,14 +197,16 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
-            TestCaseExecutionQueue lib = (TestCaseExecutionQueue) answer.getItem();
-            JSONObject response = convertTestCaseExecutionInQueueToJSONObject(lib);
-            
+            TestCaseExecutionQueue queueEntry = (TestCaseExecutionQueue) answer.getItem();
+            JSONObject response = convertTestCaseExecutionInQueueToJSONObject(queueEntry);
+
             // Adding nb of entries in the queue before it gets triggered.
             int nb = 0;
-            nb = queueService.getNbEntryToGo(lib.getId(), lib.getPriority());
+            if (TestCaseExecutionQueue.State.QUEUED.equals(queueEntry.getState())) {
+                nb = queueService.getNbEntryToGo(queueEntry.getId(), queueEntry.getPriority());
+            }
             response.put("nbEntryInQueueToGo", nb);
-            
+
             object.put("contentTable", response);
         }
 

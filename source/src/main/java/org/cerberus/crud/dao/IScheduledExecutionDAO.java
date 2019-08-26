@@ -35,6 +35,13 @@ public interface IScheduledExecutionDAO {
      * @throws org.cerberus.exception.CerberusException
      */
     public long create(ScheduledExecution object) throws CerberusException;
+    /**
+     *
+     * @param object
+     * @return
+     * @throws org.cerberus.exception.CerberusException
+     */
+    public long createWhenNotExist(ScheduledExecution object) throws CerberusException;
 
     /**
      *

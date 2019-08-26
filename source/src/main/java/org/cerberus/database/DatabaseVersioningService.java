@@ -8193,6 +8193,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1424
         a.add("ALTER TABLE `tag` ADD COLUMN `browserstackBuildHash` VARCHAR(100) NOT NULL DEFAULT '' AFTER `ReqEnvironmentList`;");
 
+        // Adding description on scheduler definition.
+        // 1425
+        a.add("ALTER TABLE `scheduleentry` ADD COLUMN `description` VARCHAR(200) NOT NULL DEFAULT '' AFTER `active`;");
+
+        // Adding constrain in order to secure that same campaign schedule is not triggered at the same time.
+        // 1426-1427
+        a.add("TRUNCATE `scheduledexecution`;");
+        a.add("ALTER TABLE `scheduledexecution` ADD UNIQUE INDEX `IX_scheduledexecution_02` (`scheduleName` ASC, `scheduleFireTime` ASC);");
+
         return a;
     }
 

@@ -88,7 +88,7 @@ public class RetriesService implements IRetriesService {
         newExeQueue.setState(TestCaseExecutionQueue.State.QUEUED);
         newExeQueue.setRetries(newRetry);
         // Insert execution to the Queue.
-        executionQueueService.create(newExeQueue, false, exeQueue);
+        executionQueueService.create(newExeQueue, false, exeQueue, TestCaseExecutionQueue.State.QUEUED);
         return true;
     }
 }

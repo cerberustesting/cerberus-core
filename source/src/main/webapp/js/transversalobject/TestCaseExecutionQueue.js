@@ -328,6 +328,22 @@ function feedTestCase(test, selectElement, defaultTestCase) {
  * @returns {null}
  */
 function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) {
+
+    // Message on entry to go.
+    console.info(exeQ.nbEntryInQueueToGo);
+    var target = $("#messageArea2");
+    if (exeQ.nbEntryInQueueToGo > 0) {
+        target.empty();
+        var releaseDateInput1 = $("<h3>").text("Queue entries to be processed before that entry (Dependencies excluded) : " + exeQ.nbEntryInQueueToGo);
+        var relDate1 = $("<div class='form-group info col-lg-12'></div>").append(releaseDateInput1);
+        var drow011 = $("<div class='row'></div>").append(relDate1);
+        target.show();
+        target.append(drow011);
+    } else {
+        target.empty();
+        target.hide();
+    }
+
     var formEdit = $('#' + modalId);
     var doc = new Doc();
     var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT") && ((exeQ.state === "WAITING") || (exeQ.state === "QUEUED") || (exeQ.state === "ERROR") || (exeQ.state === "CANCELLED")))
@@ -526,7 +542,7 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#retries").prop("disabled", "disabled");
         formEdit.find("#manualExecution").prop("disabled", "disabled");
     }
-    drawDependencies(exeQ.testcaseExecutionQueueDepList, "depQueueTableBody");
+    drawDependencies(exeQ.testcaseExecutionQueueDepList, "depQueueTableBody", "tab4QText");
 
 }
 
@@ -556,12 +572,12 @@ function enableDisableJob() {
 }
 
 
-function drawDependencies(depList, targetTableBody) {
+function drawDependencies(depList, targetTableBody, targetTab) {
+    $("#" + targetTableBody).empty();
     if (depList.length <= 0) {
-        $('#editTabDep').hide();
+        $("#" + targetTab).hide();
     } else {
-        $('#editTabDep').show();
-        $('#editTabDep').empty();
+        $("#" + targetTab).show();
         for (var i = 0; i < depList.length; i++) {
             appendDepRow(depList[i], targetTableBody);
         }

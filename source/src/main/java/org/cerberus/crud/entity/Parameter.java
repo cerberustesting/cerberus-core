@@ -19,6 +19,8 @@
  */
 package org.cerberus.crud.entity;
 
+import java.time.LocalDateTime;
+
 /**
  *
  * @author bcivel
@@ -29,23 +31,32 @@ public class Parameter {
     private String param;
     private String value;
     private String description;
-    
+
     /**
      * From here are data outside database model.
      */
     private String system1;
     private String system1value;
+    private LocalDateTime cacheEntryCreation;
 
-    
     /**
      * Invariant PROPERTY TYPE String.
      */
     public static final String VALUE_queueexecution_global_threadpoolsize = "cerberus_queueexecution_global_threadpoolsize";
     public static final String VALUE_queueexecution_global_threadpoolsize_master = "cerberus_queueexecution_global_threadpoolsize_master";
-    
-    
+
     public static final String SECUREDPARAMINSQLCLAUSE = "(\"cerberus_accountcreation_defaultpassword\",\"cerberus_proxyauthentification_password\",\"cerberus_jenkinsadmin_password\",\"cerberus_smtp_password\")";
+
+    public static final Integer CACHE_DURATION = 60;
     
+    public LocalDateTime getCacheEntryCreation() {
+        return cacheEntryCreation;
+    }
+
+    public void setCacheEntryCreation(LocalDateTime cacheEntryCreation) {
+        this.cacheEntryCreation = cacheEntryCreation;
+    }
+
     public String getSystem() {
         return system;
     }

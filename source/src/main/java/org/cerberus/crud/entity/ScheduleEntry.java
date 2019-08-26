@@ -36,6 +36,7 @@ public class ScheduleEntry {
     private String cronDefinition;
     private Timestamp lastExecution;
     private String active;
+    private String description;
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
@@ -63,6 +64,14 @@ public class ScheduleEntry {
 
     public String getActive() {
         return active;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getUsrCreated() {
@@ -154,6 +163,9 @@ public class ScheduleEntry {
             return false;
         }
         if ((this.active == null) ? (other.active != null) : !this.active.equals(other.active)) {
+            return false;
+        }
+        if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
             return false;
         }
         if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {

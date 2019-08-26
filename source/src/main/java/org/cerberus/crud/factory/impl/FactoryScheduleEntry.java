@@ -36,7 +36,7 @@ public class FactoryScheduleEntry implements IFactoryScheduleEntry {
     private static final Logger LOG = LogManager.getLogger(FactoryScheduleEntry.class);
 
     @Override
-    public ScheduleEntry create(long ID, String type, String name, String cronDefinition, Timestamp lastExecution, String active, String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif) {
+    public ScheduleEntry create(long ID, String type, String name, String cronDefinition, Timestamp lastExecution, String active, String description, String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif) {
         ScheduleEntry scheduler = new ScheduleEntry();
         scheduler.setID(ID);
         scheduler.setType(type);
@@ -44,6 +44,7 @@ public class FactoryScheduleEntry implements IFactoryScheduleEntry {
         scheduler.setCronDefinition(cronDefinition);
         scheduler.setLastExecution(lastExecution);
         scheduler.setActive(active);
+        scheduler.setDescription(description);
         scheduler.setUsrCreated(UsrCreated);
         scheduler.setDateCreated(DateCreated);
         scheduler.setUsrModif(UsrModif);

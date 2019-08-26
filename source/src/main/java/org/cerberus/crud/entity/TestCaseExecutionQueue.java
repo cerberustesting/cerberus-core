@@ -74,6 +74,7 @@ public class TestCaseExecutionQueue {
     public static final int PRIORITY_WHENDEPENDENCY = 100;
 
     public enum State {
+        QUTEMP,
         QUWITHDEP,
         QUEUED,
         WAITING,
