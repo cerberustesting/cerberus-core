@@ -528,7 +528,7 @@ public class ActionService implements IActionService {
         if (isWindows) {
             commandToRun = new String[]{"cmd.exe", "/c", command};
         } else {
-            commandToRun = new String[]{"bash", "-c" + command};
+            commandToRun = new String[]{"bash", "-c", command};
         }
 
         if (!args.isEmpty()) {
