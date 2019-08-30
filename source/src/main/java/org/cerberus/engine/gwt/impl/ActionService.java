@@ -524,15 +524,17 @@ public class ActionService implements IActionService {
          */
         String[] commandToRun;
 
-        boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
-        if (isWindows) {
-            commandToRun = new String[]{"cmd.exe", "/c", command};
-        } else {
-            commandToRun = new String[]{"bash", "-c", command};
-        }
-
         if (!args.isEmpty()) {
-            // TO DO
+            // put anything in args and the full command can be passed in command
+            // separator is ;
+            commandToRun = command.split(";");
+        } else {
+            boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+            if (isWindows) {
+                commandToRun = new String[]{"cmd.exe", "/c", command};
+            } else {
+                commandToRun = new String[]{"bash", "-c", command};
+            }
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder(commandToRun);
