@@ -76,22 +76,6 @@ Also secure the path variable match your contextroot.
       <Valve className="org.keycloak.adapters.tomcat.KeycloakAuthenticatorValve"/>
 </Context>
 
-You can also set the KC activation on Cerberus side, choose the other method if you don't want to modify Cerberus source
-
-On Cerberus source, uncomment following line from WEB-INF/web.xml
-    <login-config>
-        <auth-method>BASIC</auth-method>
-        <realm-name>Enable this in order to activate KeyCloak</realm-name>
-    </login-config>
-and comment
-    <login-config>
-        <auth-method>FORM</auth-method>
-        <form-login-config>
-            <form-login-page>/Login.jsp</form-login-page>
-            <form-error-page>/Login.jsp?error=1</form-error-page>
-        </form-login-config>
-    </login-config>
-
 Environment variable needs to be modified, follow the method above (#SET ENVIRONMENT VARIABLE)
 
 (Max, Linux)
@@ -106,5 +90,21 @@ On Tomcat, in conf folder, modify 'server.xml' in order to Change port to 8180 :
                redirectPort="8443" />
 
 On Tomcat, in lib folder, unzip all jar from 'keycloak-tomcat8-adapter-dist-4.7.0.Final.tar.gz'
+
+On Keycloak, add the folowing Roles :
+TestRO
+Test
+TestStepLibrary
+TestAdmin
+TestDataManager
+Label
+RunTest
+IntegratorRO
+Integrator
+IntegratorNewChain
+IntegratorDeploy
+Administrator
+
+Create a User and go to "Users > your user > Role mappings" to add all Roles to your user
 
 Please also consult user migration documentation : (https://github.com/cerberustesting/cerberus-source/blob/master/docs/KeycloakMigration/README.md).
