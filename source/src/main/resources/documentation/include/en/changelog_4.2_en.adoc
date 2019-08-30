@@ -3,6 +3,7 @@
 * Filter in runtest page issue
 * Robot update issue
 * Various improvements and bug fixes on dependency management.
+* fixed issue when saving userAgent #2012
 
 *Improvements / New features*
 [square]
