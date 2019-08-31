@@ -590,6 +590,11 @@ function getSelectInvariant(idName, forceReload, notAsync, addValue) {
     return select;
 }
 
+function cleanCacheInvariant(idName) {
+    var cacheEntryName = idName + "INVARIANT";
+    sessionStorage.removeItem(cacheEntryName);
+}
+
 /**
  * This method will return the combo list of Robot.
  * It will load the values from the sessionStorage cache of the browser

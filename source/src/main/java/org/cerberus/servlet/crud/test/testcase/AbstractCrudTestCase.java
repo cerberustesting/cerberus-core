@@ -43,9 +43,7 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
 
     private WebApplicationContext springContext;
 
-
     private static final Logger LOG = LogManager.getLogger(AbstractCrudTestCase.class);
-
 
     protected abstract void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, CerberusException, JSONException;
 
@@ -95,8 +93,6 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
         return "Short description";
     }
 
-
-
     @Override
     public void init(final ServletConfig config) throws ServletException {
         super.init(config);
@@ -105,12 +101,10 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
         beanFactory.autowireBean(this);
     }
 
-
     protected TestCase getTestCaseFromRequest(HttpServletRequest request, TestCase tc) throws CerberusException {
         try {
 
             String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
-
 
             // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
             tc.setImplementer(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("implementer"), tc.getImplementer(), charset));
@@ -123,7 +117,6 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             } else {
                 tc.setProject(tc.getProject());
             }
-
 
             tc.setApplication(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), tc.getApplication(), charset));
             tc.setActiveQA(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeQA"), tc.getActiveQA(), charset));
@@ -152,7 +145,6 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             tc.setHowTo(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("howTo"), tc.getHowTo(), charset));
             tc.setBehaviorOrValueExpected(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("behaviorOrValueExpected"), tc.getBehaviorOrValueExpected(), charset));
 
-
             // TODO verify, this setteer was not call on "create test case"
             tc.setConditionOper(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("conditionOper"), tc.getConditionOper(), charset));
             // Parameter that we cannot secure as we need the html --> We DECODE them
@@ -164,6 +156,5 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR), e);
         }
     }
-
 
 }

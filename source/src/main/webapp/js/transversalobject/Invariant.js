@@ -238,6 +238,8 @@ function confirmInvariantModalHandler(mode) {
     }
 
     showLoaderInModal('#editInvariantModal');
+    var inv1 = data.originalIdName;
+    var inv2 = data.idname;
 
     $.ajax({
         url: myServlet,
@@ -272,6 +274,11 @@ function confirmInvariantModalHandler(mode) {
                 $('#editInvariantModal').data("Saved", true);
                 $('#editInvariantModal').modal('hide');
                 showMessage(data);
+                // Clean local Storage
+                cleanCacheInvariant(inv1);
+                if (inv1 !== inv2) {
+                    cleanCacheInvariant(inv2);
+                }
             } else {
                 showMessage(data, $('#editInvariantModal'));
             }
