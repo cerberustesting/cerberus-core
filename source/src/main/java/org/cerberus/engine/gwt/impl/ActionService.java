@@ -300,6 +300,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_CLEARFIELD:
                     res = this.doActionClearField(tCExecution, value1);
                     break;
+                case TestCaseStepAction.ACTION_REFRESHCURRENTPAGE:
+                    res = this.doActionRefreshCurrentPage(tCExecution);
+                    break;
                 /**
                  * DEPRECATED ACTIONS FROM HERE.
                  */
@@ -1513,7 +1516,7 @@ public class ActionService implements IActionService {
                         // If value2 is fed we force the result to value1.
                         tcExeData.setProperty(value1);
                     }
-                    //saves the result 
+                    //saves the result
                     try {
                         testCaseExecutionDataService.save(tcExeData);
                         LOG.debug("Adding into Execution data list. Property : '" + tcExeData.getProperty() + "' Index : '" + tcExeData.getIndex() + "' Value : '" + tcExeData.getValue() + "'");
@@ -1715,6 +1718,27 @@ public class ActionService implements IActionService {
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action Type : " + ex);
             return ex.getMessageError();
+        }
+    }
+
+    private MessageEvent doActionRefreshCurrentPage(TestCaseExecution tCExecution) {
+        MessageEvent message;
+
+        try {
+            LOG.debug("REFRESH CURRENT PAGE");
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                return this.webdriverService.doSeleniumActionRefreshCurrentPage(tCExecution.getSession());
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", "OpenURL[WithBase]"));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (Exception e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_REFRESHCURRENTPAGE);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
+            LOG.debug("Exception Running scroll to  :" + messageString, e);
+            return message;
         }
     }
 
