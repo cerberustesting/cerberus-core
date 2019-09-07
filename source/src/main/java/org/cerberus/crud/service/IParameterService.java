@@ -173,11 +173,6 @@ public interface IParameterService {
      */
     AnswerItem readByKey(String system, String param);
 
-    /**
-     * @param object the {@link Parameter} to Create
-     * @return {@link AnswerItem}
-     */
-    Answer create(Parameter object);
 
     /**
      * @param object the {@link Parameter} to Update
@@ -185,11 +180,6 @@ public interface IParameterService {
      */
     Answer update(Parameter object);
 
-    /**
-     * @param object the {@link Parameter} to Delete
-     * @return {@link AnswerItem}
-     */
-    Answer delete(Parameter object);
 
     /**
      * @param object the {@link Parameter} to Save

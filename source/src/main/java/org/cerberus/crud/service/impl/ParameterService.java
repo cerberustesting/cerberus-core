@@ -246,15 +246,6 @@ public class ParameterService implements IParameterService {
     }
 
     @Override
-    public Answer create(Parameter object) {
-        Answer answer = parameterDao.create(object);
-        if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getSource())) {
-            purgeCacheEntry(object.getParam());
-        }
-        return answer;
-    }
-
-    @Override
     public Answer update(Parameter object) {
         Answer answer = parameterDao.update(object);
         if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getSource())) {
@@ -264,23 +255,14 @@ public class ParameterService implements IParameterService {
     }
 
     @Override
-    public Answer delete(Parameter object) {
-        Answer answer = parameterDao.delete(object);
-        if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getCode())) {
-            purgeCacheEntry(object.getParam());
-        }
-        return answer;
-    }
-
-    @Override
     public Answer save(Parameter object) {
         Answer finalAnswer = new Answer();
-        if (Parameter.VALUE_queueexecution_global_threadpoolsize_master.equalsIgnoreCase(object.getParam())) {
+        if (!hasPermissionsUpdate(object, null)) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNAUTHORISED);
             msg.setDescription(msg.getDescription()
                     .replace("%ITEM%", "Parameter")
                     .replace("%OPERATION%", "update")
-                    .replace("%REASON%", "This parameter (saas) cannot be updated."));
+                    .replace("%REASON%", "This parameter is protected and cannot be updated."));
             finalAnswer = new Answer(msg);
             LOG.warn("Attempt to modify Parameter '" + object.getParam() + "' to value '" + object.getValue() + "' refused !");
             return finalAnswer;
@@ -291,15 +273,13 @@ public class ParameterService implements IParameterService {
              * Object could not be found. We stop here and report the error.
              */
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
-        } else if (resp.getItem() == null) {
-            finalAnswer = create(object);
         } else if (!((object.getValue()).equals(((Parameter) resp.getItem()).getValue()))) {
             finalAnswer = update(object);
         } else {
             /**
              * Nothing is done but everything went OK
              */
-            finalAnswer = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED));
+            finalAnswer = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED).resolveDescription("ITEM", "Parameter").resolveDescription("OPERATION", "Save").resolveDescription("REASON", "Parameter does not exist"));
         }
         return finalAnswer;
     }
@@ -313,14 +293,30 @@ public class ParameterService implements IParameterService {
     @Override
     public boolean hasPermissionsUpdate(Parameter parameter, HttpServletRequest request) {
         // Access right calculation.
+
         // master parameters cannot be changed.
         if (Parameter.VALUE_queueexecution_global_threadpoolsize_master.equalsIgnoreCase(parameter.getParam())) {
             return false;
         }
-        // parameters that have a master value cannot be changed in saas mode.
-        if (Parameter.VALUE_queueexecution_global_threadpoolsize.equalsIgnoreCase(parameter.getParam())
-                && Property.isSaaS()) {
-            return false;
+        // parameters that are protected in saas mode mode.
+        if (Property.isSaaS()) {
+            if (Parameter.VALUE_queueexecution_global_threadpoolsize.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_applicationobject_path.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_exeautomedia_path.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_exemanualmedia_path.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_ftpfile_path.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_gui_url.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_screenshot_max_size.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_smtp_host.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_smtp_isSetTls.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_smtp_password.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_smtp_port.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_smtp_username.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_url.equalsIgnoreCase(parameter.getParam())) {
+
+                return false;
+
+            }
         }
         return request.isUserInRole("Administrator");
     }

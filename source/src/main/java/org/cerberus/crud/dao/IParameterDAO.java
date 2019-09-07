@@ -43,10 +43,6 @@ public interface IParameterDAO {
 
     List<Parameter> findAllParameter() throws CerberusException;
 
-    void updateParameter(Parameter parameter) throws CerberusException;
-
-    void insertParameter(Parameter parameter) throws CerberusException;
-
     List<Parameter> findAllParameterWithSystem1(String system, String system1) throws CerberusException;
 
     AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
@@ -63,15 +59,10 @@ public interface IParameterDAO {
      * Get the {@link Parameter} of the given key
      *
      * @param system the system of the {@link Parameter} to get
-     * @param param  the param of the {@link Parameter} to get
+     * @param param the param of the {@link Parameter} to get
+     * @return
      */
     AnswerItem readByKey(String system, String param);
-
-    /**
-     * @param object the {@link Parameter} to Create
-     * @return {@link AnswerItem}
-     */
-    Answer create(Parameter object);
 
     /**
      * @param object the {@link Parameter} to Update
@@ -79,9 +70,4 @@ public interface IParameterDAO {
      */
     Answer update(Parameter object);
 
-    /**
-     * @param object the {@link Parameter} to Delete
-     * @return {@link AnswerItem}
-     */
-    Answer delete(Parameter object);
 }
