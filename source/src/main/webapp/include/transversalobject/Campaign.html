@@ -213,9 +213,8 @@
                                         </div>
                                     </div>
                                 </div>                                
-
-
                             </div>
+
                             <div class="center marginTop25 tab-pane fade in" id="tabsEdit-5">
                                 <div class="row">
                                     <div class="col-xs-12">
@@ -250,30 +249,49 @@
                                     </div>
                                 </div>  
                             </div>  
+
                             <div class="center marginTop25 tab-pane fade in" id="tabsEdit-8">
                                 <div class="row">
-                                    <div class="col-xs-12">
-                                        <div class="form-group col-sm-12">
-                                            <label name="lbl_cronexp" for="cronexp">Cron Expression</label>
-                                            <div class="input-group col-sm-6">
-                                                <input type="text" class="form-control" id='schedulerinput'>
-                                                <span class="input-group-btn">
-                                                    <button class="btn btn-default" type="button" id='addscheduler'>Add</button>
-                                                </span>
-                                            </div>
-                                            <br>
-                                            <br>
-                                                <div id="parameterScheduler">
-                                                    <table id="parameterSchedulerTable" class="table table-bordered table-hover display" name="parameterTestcaseTable"></table>
-                                                    <div class="marginBottom20"></div>
-                                                </div>
-                                            </div>
-
-                                        </div>   
+                                    <div class="form-group col-sm-6">
+                                        <label name="lbl_cronexp" for="cronexp">Cron Expression</label>
+                                        <div class="input-group col-sm-6">
+                                            <input type="text" class="form-control" id='schedulerinput'>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" id='addscheduler'>Add</button>
+                                            </span>
+                                        </div>
                                     </div>
+                                    <div class="form-group col-sm-6">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label name="lbl_ex1" for="ex1">Example 1 : Every Week day at 12</label>
+                                                <div>
+                                                    <input id="ex1" class="form-control" readonly="readonly" value="0 0 12 ? * MON-FRI *"/>     
+                                                </div>
+                                                <label name="lbl_ex2" for="ex2">Example 2 : Every 10 minutes</label>
+                                                <div>
+                                                    <input id="ex2" class="form-control" readonly="readonly"  value="0 0/10 * 1/1 * ? *"/>     
+                                                </div>
+                                                <div>
+                                                    <h4 class="">Build your own syntax at <a target="_blank" href="http://www.cronmaker.com/">cronmaker.com</a></h4>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm-12">
+                                            <div id="parameterScheduler">
+                                                <table id="parameterSchedulerTable" class="table table-bordered table-hover display" name="parameterTestcaseTable"></table>
+                                                <div class="marginBottom20"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">

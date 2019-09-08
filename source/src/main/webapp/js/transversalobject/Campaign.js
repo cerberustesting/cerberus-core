@@ -436,8 +436,22 @@ function editEntryClick(param) {
         $('#addscheduler').off('click');
         $('#addscheduler').click(addNewSchedulerRow);
         $('#schedulerinput').val('0 0 12 1/1 * ? *');
+
+        loadCronList();
+
         loadSchedulerTable(param);
 
+    });
+
+}
+
+function loadCronList() {
+    var cronList = [];
+    cronList.push("0 0 12 1/1 * ? *");
+    cronList.push("0 0 12 ? * MON-FRI *");
+    cronList.push("0 0/10 * 1/1 * ? *");
+    $("#schedulerinput").autocomplete({
+        source: cronList
     });
 
 }
@@ -590,6 +604,8 @@ function addEntryClick() {
     $('#addscheduler').off('click');
     $('#addscheduler').click(addNewSchedulerRow);
     $('#schedulerinput').val('0 0 12 1/1 * ? *');
+    loadCronList();
+
     loadSchedulerTable("");
 
 }
@@ -1075,20 +1091,20 @@ function appendSchedulerRow(scheduler) {
     var lastExecInput = $("<input readonly>").addClass("form-control input-sm").val(scheduler.lastExecution);
     var userCreateInput = $("<input readonly>").addClass("form-control input-sm").val(scheduler.UsrCreated);
     var userModifInput = $("<input readonly>").addClass("form-control input-sm").val(scheduler.UsrModif);
-    
+
     var cron = $("<div class='form-group col-sm-10'></div>").append("<label for='name'>" + doc.getDocOnline("scheduleentry", "cronDefinition") + "</label>").append(cronInput);
     var active = $("<div class='form-group col-sm-2'></div>").append("<label for='name'>" + doc.getDocOnline("scheduleentry", "active") + "</label>").append(activeInput);
     var lastExec = $("<div class='form-group col-sm-4'></div>").append("<label for='name'>" + doc.getDocOnline("scheduleentry", "lastexecution") + "</label>").append(lastExecInput);
     var description = $("<div class='form-group col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("scheduleentry", "description") + "</label>").append(descInput);
     var userCreate = $("<div class='form-group col-sm-4'></div>").append("<label for='name'>" + doc.getDocOnline("transversal", "UsrCreated") + "</label>").append(userCreateInput);
     var userModif = $("<div class='form-group col-sm-4'></div>").append("<label for='name'>" + doc.getDocOnline("transversal", "UsrModif") + "</label>").append(userModifInput);
-    
-    
+
+
     var table = $('#parameterSchedulerTable')
     var row = $("<tr class='dataField'></tr>");
 
     var drow1 = $("<div class='row'></div>").append(cron).append(active).append(description).append(lastExec).append(userCreate).append(userModif);
-    
+
     var td1 = $("<td class='row form-group'></td>").append(deleteBtn);
     var td2 = $("<td class='row form-group'></td>").append(drow1);
 
@@ -1128,6 +1144,7 @@ function addNewSchedulerRow() {
         cronDefinition: $('#schedulerinput').val(),
         active: "Y",
         lastExecution: "",
+        description: "",
         ID: "0",
         toDelete: false
     }
