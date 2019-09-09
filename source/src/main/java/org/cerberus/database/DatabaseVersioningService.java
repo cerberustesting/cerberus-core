@@ -8204,7 +8204,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
 	// add the refreshPageAction private invariant
 	// 1428
-	a.add("INSERT INTO invariant(idname, value, sort, description, VeryShortDesc) VALUES('ACTION', 'refreshCurrentPage', 26500, 'refresh current page', 'refresh current page');");
+	a.add("INSERT INTO invariant(idname, value, sort, description, VeryShortDesc) VALUES('ACTION', 'refreshCurrentPage', 6520, 'refresh current page', 'refresh current page');");
 
 	return a;
     }
