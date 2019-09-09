@@ -301,7 +301,7 @@ public enum MessageEventEnum {
     ACTION_WAITINGFORMANUALEXECUTION(240, "WE", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_FAILED_CLEAR_NO_SUCH_ELEMENT(267, "FA", "Failed to long clicked because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_EXECUTECOMMAND_MISSINGPARAMETER(289, "FA", "Failed to launch the command due to the empty parameter : %PARAM%", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
-    ACTION_FAILED_REFRESHCURRENTPAGE(200, "FA", "Failed to refresh current page", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_REFRESHCURRENTPAGE(259, "FA", "Failed to refresh current page : %DETAIL%", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     // *********** EXECUTION CONTROLS ***********
     CONTROL_SUCCESS(300, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS_EQUAL(300, "OK", "'%STRING1%' is equal to '%STRING2%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -501,41 +501,41 @@ public enum MessageEventEnum {
     private final MessageGeneralEnum message;
 
     private MessageEventEnum(int code, String codeString, String description, boolean stopTest, boolean doScreenshot, boolean getPageSource, MessageGeneralEnum message) {
-        this.code = code;
-        this.codeString = codeString;
-        this.description = description;
-        this.stopTest = stopTest;
-        this.doScreenshot = doScreenshot;
-        this.getPageSource = getPageSource;
-        this.message = message;
+	this.code = code;
+	this.codeString = codeString;
+	this.description = description;
+	this.stopTest = stopTest;
+	this.doScreenshot = doScreenshot;
+	this.getPageSource = getPageSource;
+	this.message = message;
     }
 
     public String getDescription() {
-        return description;
+	return description;
     }
 
     public MessageGeneralEnum getMessage() {
-        return message;
+	return message;
     }
 
     public boolean isStopTest() {
-        return stopTest;
+	return stopTest;
     }
 
     public boolean isDoScreenshot() {
-        return doScreenshot;
+	return doScreenshot;
     }
 
     public boolean isGetPageSource() {
-        return getPageSource;
+	return getPageSource;
     }
 
     public int getCode() {
-        return this.code;
+	return this.code;
     }
 
     public String getCodeString() {
-        return codeString;
+	return codeString;
     }
 
 }

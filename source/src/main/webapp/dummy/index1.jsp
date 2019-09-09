@@ -158,7 +158,6 @@
 	<script language="text/javascript" type="text/javascript">
 	    function showTextFieldContent() {
 		var textContent = document.getElementById("textField").value;
-		console.log(textContent);
 		document.getElementById("textFieldContent").innerHTML = textContent;
 	    }
 	</script>
