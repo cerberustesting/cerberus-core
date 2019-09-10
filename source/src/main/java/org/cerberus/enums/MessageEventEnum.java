@@ -291,7 +291,10 @@ public enum MessageEventEnum {
     ACTION_FAILED_SQL_AGAINST_CERBERUS(295, "FA", "You cannot perform executeSqlUpdate action on a JDBC ressource using Cerberus connection pool. Please create new connection with dedicated rights.", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_HIDEKEYBOARD(296, "FA", "Failed to hide keyboard. Check server logs.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SWIPE(297, "FA", "Failed to swipe '%DIRECTION%' screen due to '%REASON%'.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
-    ACTION_FAILED_EXECUTECOMMAND(297, "FA", "Failed to execute command : %EXCEPTION%.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_EXECUTECOMMAND(297, "FA", "Not executed because Action : %EXCEPTION%.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_EXECUTECOMMAND_NOTSUPPORTED_FOR_OS(297, "FA", "Failed to execute script because it isn't supported for OS %OS%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_EXECUTECOMMAND_ILLEGALSTART(297, "FA", "Failed to execute the command because it starts with a forbidden character : %FIRST_CHAR%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_EXECUTECOMMAND_DISABLED(297, "FA", "Failed to execute the command because the feature isn't enabled (see. Cerberus parameters)", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_TIMEOUT(298, "FA", "Timeout exceeded when performing the action : %TIMEOUT% milliseconds", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_GENERIC(298, "FA", "Action Failed. %DETAIL%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_DRAGANDDROP(299, "FA", "Failed to drag and drop because could not find element '%ELEMENT%'!\" .", true, true, false, MessageGeneralEnum.EXECUTION_FA),
@@ -501,41 +504,41 @@ public enum MessageEventEnum {
     private final MessageGeneralEnum message;
 
     private MessageEventEnum(int code, String codeString, String description, boolean stopTest, boolean doScreenshot, boolean getPageSource, MessageGeneralEnum message) {
-	this.code = code;
-	this.codeString = codeString;
-	this.description = description;
-	this.stopTest = stopTest;
-	this.doScreenshot = doScreenshot;
-	this.getPageSource = getPageSource;
-	this.message = message;
+        this.code = code;
+        this.codeString = codeString;
+        this.description = description;
+        this.stopTest = stopTest;
+        this.doScreenshot = doScreenshot;
+        this.getPageSource = getPageSource;
+        this.message = message;
     }
 
     public String getDescription() {
-	return description;
+        return description;
     }
 
     public MessageGeneralEnum getMessage() {
-	return message;
+        return message;
     }
 
     public boolean isStopTest() {
-	return stopTest;
+        return stopTest;
     }
 
     public boolean isDoScreenshot() {
-	return doScreenshot;
+        return doScreenshot;
     }
 
     public boolean isGetPageSource() {
-	return getPageSource;
+        return getPageSource;
     }
 
     public int getCode() {
-	return this.code;
+        return this.code;
     }
 
     public String getCodeString() {
-	return codeString;
+        return codeString;
     }
 
 }
