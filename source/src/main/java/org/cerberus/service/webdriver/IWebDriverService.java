@@ -81,15 +81,15 @@ public interface IWebDriverService {
     String getAttributeFromHtml(Session session, Identifier identifier, String attribute);
 
     String getFromCookie(Session session, String cookieName, String cookieParameter);
-    
-    Integer getNumberOfElements(Session session, Identifier object); 
+
+    Integer getNumberOfElements(Session session, Identifier object);
 
     File takeScreenShotFile(Session session);
 
     BufferedImage takeScreenShot(Session session);
 
     List<String> getSeleniumLog(Session session);
-    
+
     MessageEvent scrollTo(Session session, Identifier identifier, String text);
 
     MessageEvent doSeleniumActionClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
@@ -129,4 +129,6 @@ public interface IWebDriverService {
     MessageEvent doSeleniumActionRightClick(Session session, Identifier identifier);
 
     MessageEvent doSeleniumActionDragAndDrop(Session session, Identifier object, Identifier property) throws IOException;
+
+    MessageEvent doSeleniumActionRefreshCurrentPage(Session session);
 }

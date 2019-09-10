@@ -27,10 +27,10 @@
         <title>JSP Page</title>
         <script type="text/javascript" src="../dependencies/jQuery-2.2.3/jquery-2.2.3.min.js"></script>
         <%
-            String delay = request.getParameter("asyncdelay");
-            if (delay != null) {
-                out.print("<script type=\"text/javascript\" src=\"index3.jsp?delay=" + delay + "\" async>");
-            }
+	    String delay = request.getParameter("asyncdelay");
+	    if (delay != null) {
+		out.print("<script type=\"text/javascript\" src=\"index3.jsp?delay=" + delay + "\" async>");
+	    }
         %>
     </head>
     <body>
@@ -58,26 +58,26 @@
         </form>
         <br>
         <script>
-            function printValue(value) {
-                document.selectFormulary.selectedValue.value = value.value;
-            }
+	    function printValue(value) {
+		document.selectFormulary.selectedValue.value = value.value;
+	    }
         </script>
         <script>
-            function waitXSecondAndPrintValue(value) {
-                window.setTimeout(function () {
-                    var i = document.createElement('input');
-                    i.setAttribute('id', 'selectedTimeout');
-                    i.setAttribute('name', 'selectedTimeout');
-                    i.setAttribute('value', 'Hello World!');
-                    document.selectTimeout.appendChild(i);
+	    function waitXSecondAndPrintValue(value) {
+		window.setTimeout(function() {
+		    var i = document.createElement('input');
+		    i.setAttribute('id', 'selectedTimeout');
+		    i.setAttribute('name', 'selectedTimeout');
+		    i.setAttribute('value', 'Hello World!');
+		    document.selectTimeout.appendChild(i);
 
-                    document.getElementById('selectTimeoutHide').setAttribute('value', 'Hello World!');
-                    document.getElementById('selectTimeoutHide').style.display = 'inline';
-                }, value.value);
-            }
+		    document.getElementById('selectTimeoutHide').setAttribute('value', 'Hello World!');
+		    document.getElementById('selectTimeoutHide').style.display = 'inline';
+		}, value.value);
+	    }
         </script>
         <script language="text/javascript" type="text/javascript">
-            var product = "12345";
+	    var product = "12345";
         </script>
         <form name="selectFormulary">
             <p>Below is part to test select Regex</p>
@@ -103,12 +103,12 @@
         <br>
         <br>
         <a href="#" id="openPopup" data-cerberus="openPopup" onclick="javascript:window.open('./index2.jsp', 'popup',
-                        'width=500,height=400,scrollbars=yes,menubar=false,location=false');
-                return false;">Open Popup</a>
-                <br><br>
-                <a href="#" id="openPopupWithoutTitle" data-cerberus="openPopupWithoutTitle" onclick="javascript:window.open('./index4.jsp', 'popup',
-                        'width=500,height=400,scrollbars=yes,menubar=false,location=false');
-                return false;">Open Popup Without Title</a>
+			'width=500,height=400,scrollbars=yes,menubar=false,location=false');
+		return false;">Open Popup</a>
+	<br><br>
+	<a href="#" id="openPopupWithoutTitle" data-cerberus="openPopupWithoutTitle" onclick="javascript:window.open('./index4.jsp', 'popup',
+			'width=500,height=400,scrollbars=yes,menubar=false,location=false');
+		return false;">Open Popup Without Title</a>
         <br>
         <br>
         <a href="#" id="alertPopup" data-cerberus="alertPopup" onclick="javascript:alert('ceci est une popup d\'alert')">Open Alert</a>
@@ -125,8 +125,8 @@
         <br><br>
         <form method="POST" enctype="multipart/form-data">
             <p>Below is part to test action keypress on non-browser windows</p>
-          File to upload: <input type="file" name="template"><br/>
-          <br/>
+	    File to upload: <input type="file" name="template"><br/>
+	    <br/>
         </form>
 
         <p> Parameters that can be used on that page :</p>
@@ -140,12 +140,29 @@
         <p>A function is triggered when the button is double-clicked. The function outputs some text in a p element with id="demo".</p>
 
         <script>
-        function myFunction() {
-            document.getElementById("demo").innerHTML = "DoubleClick works!";
-        }
-        </script>      
+	    function myFunction() {
+		document.getElementById("demo").innerHTML = "DoubleClick works!";
+	    }
+        </script>
         <br>
         <br>
+        <form>
+            <label for="textField">Type anything</label>
+            <br>
+            <input type="text" id="textField" name="textField"></input>
+            <br>
+            <input type="button" value="submit" id="textFieldSubmit" onclick="showTextFieldContent()" >
+	    <br>
+	    <span id="textFieldContent"></span>
+        </form>
+	<script language="text/javascript" type="text/javascript">
+	    function showTextFieldContent() {
+		var textContent = document.getElementById("textField").value;
+		document.getElementById("textFieldContent").innerHTML = textContent;
+	    }
+	</script>
+	<br>
+	<br>
         <p>Below is part to test iframe switching</p>
         <iframe id="iframeCerberusWebsite" src="https://qa.cerberus-testing.org/dummy/index2.jsp" height="500" width="500">
 

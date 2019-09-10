@@ -93,7 +93,7 @@ public class TestCaseStepAction {
     public static final String ACTION_DRAGANDDROP = "dragAndDrop";
     public static final String ACTION_LONGPRESS = "longPress";
     public static final String ACTION_CLEARFIELD = "clearField";
-
+    public static final String ACTION_REFRESHCURRENTPAGE = "refreshCurrentPage";
 
     // DEPRECATED
     public static final String ACTION_REMOVEDIFFERENCE = "removeDifference";

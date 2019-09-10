@@ -533,7 +533,7 @@ public class WebDriverService implements IWebDriverService {
 //                        }
 //                    };
 //                    Future<MessageEvent> future = executor.submit(task);
-//                    
+//
 //                    try {
 //                        MessageEvent result = future.get(session.getCerberus_selenium_action_click_timeout(), TimeUnit.MILLISECONDS);
 //                        return result;
@@ -970,6 +970,26 @@ public class WebDriverService implements IWebDriverService {
         }
     }
 
+    @Override
+    public MessageEvent doSeleniumActionRefreshCurrentPage(Session session) {
+
+        MessageEvent message;
+
+        try {
+            session.getDriver().navigate().refresh();
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_REFRESHCURRENTPAGE);
+            return message;
+        } catch (TimeoutException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_REFRESHCURRENTPAGE);
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_pageLoadTimeout())));
+            LOG.warn(exception.toString());
+        } catch (WebDriverException exception) {
+            LOG.warn(exception.toString());
+            return parseWebDriverException(exception);
+        }
+        return message;
+    }
+
     /**
      * Interface to Windows instrumentation in order to have control over all
      * the others applications running in the OS
@@ -1057,7 +1077,7 @@ public class WebDriverService implements IWebDriverService {
                         wait.withTimeout(TIMEOUT_FOCUS, TimeUnit.MILLISECONDS);
                     }
 
-                    //gets the robot 
+                    //gets the robot
                     Robot r = new Robot();
                     //converts the Key description sent through Cerberus into the AWT key code
                     int keyCode = KeyCodeEnum.getAWTKeyCode(property);

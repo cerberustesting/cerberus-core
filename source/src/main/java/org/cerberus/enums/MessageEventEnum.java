@@ -209,7 +209,7 @@ public enum MessageEventEnum {
     ACTION_SUCCESS_DRAGANDDROP(200, "OK", "Drag and drop from %SOURCE% to %TARGET% with success", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_LONG_CLICK(200, "OK", "Element '%ELEMENT%' long clicked.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLEAR(200, "OK", "Screenshot taken.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-
+    ACTION_SUCCESS_REFRESHCURRENTPAGE(200, "OK", "Current page refreshed", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_FAILED(250, "FA", "Unknown Action Error.", true, true, false, MessageGeneralEnum.EXECUTION_FA),
     ACTION_FAILED_CLICK(251, "FA", "Failed to click on '%ELEMENT%'. %MESS%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SELENIUM_CONNECTIVITY(252, "CA", "The test case is cancelled due to lost connection to Selenium Server! Detailed error : %ERROR%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
@@ -301,7 +301,7 @@ public enum MessageEventEnum {
     ACTION_WAITINGFORMANUALEXECUTION(240, "WE", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_FAILED_CLEAR_NO_SUCH_ELEMENT(267, "FA", "Failed to long clicked because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_EXECUTECOMMAND_MISSINGPARAMETER(289, "FA", "Failed to launch the command due to the empty parameter : %PARAM%", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
-    
+    ACTION_FAILED_REFRESHCURRENTPAGE(259, "FA", "Failed to refresh current page : %DETAIL%", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     // *********** EXECUTION CONTROLS ***********
     CONTROL_SUCCESS(300, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS_EQUAL(300, "OK", "'%STRING1%' is equal to '%STRING2%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -485,8 +485,6 @@ public enum MessageEventEnum {
     SCHEDULER_DELETE_OK(401, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "schedule entry for %ITEM% was delete with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
     SCHEDULER_NO_DATA_FOUND(402, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "Could not find any data that match the required criteria to create Schedule entry.", true, true, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
     SCHEDULER_ERROR_EXPECTED(403, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "%ITEM% - schedule entry %OPERATION% failed to complete. %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
-
-
     // *********** GENERIC ***********
     GENERIC_OK(500, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "Operation finished with success.", false, false, false, MessageGeneralEnum.GENERIC_SUCCESS),
     GENERIC_WARNING(500, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "Operation finished with Warning :  %REASON%.", false, false, false, MessageGeneralEnum.GENERIC_WARNING),
@@ -503,41 +501,41 @@ public enum MessageEventEnum {
     private final MessageGeneralEnum message;
 
     private MessageEventEnum(int code, String codeString, String description, boolean stopTest, boolean doScreenshot, boolean getPageSource, MessageGeneralEnum message) {
-        this.code = code;
-        this.codeString = codeString;
-        this.description = description;
-        this.stopTest = stopTest;
-        this.doScreenshot = doScreenshot;
-        this.getPageSource = getPageSource;
-        this.message = message;
+	this.code = code;
+	this.codeString = codeString;
+	this.description = description;
+	this.stopTest = stopTest;
+	this.doScreenshot = doScreenshot;
+	this.getPageSource = getPageSource;
+	this.message = message;
     }
 
     public String getDescription() {
-        return description;
+	return description;
     }
 
     public MessageGeneralEnum getMessage() {
-        return message;
+	return message;
     }
 
     public boolean isStopTest() {
-        return stopTest;
+	return stopTest;
     }
 
     public boolean isDoScreenshot() {
-        return doScreenshot;
+	return doScreenshot;
     }
 
     public boolean isGetPageSource() {
-        return getPageSource;
+	return getPageSource;
     }
 
     public int getCode() {
-        return this.code;
+	return this.code;
     }
 
     public String getCodeString() {
-        return codeString;
+	return codeString;
     }
 
 }
