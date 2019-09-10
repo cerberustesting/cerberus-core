@@ -189,7 +189,8 @@ public class ConditionService implements IConditionService {
         }
         AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent resultControlMes = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
-        resultControlMes = controlService.verifyTextInElement(tCExecution, path, expected);
+
+        resultControlMes = controlService.verifyTextInElement(tCExecution, path, expected, "N");
 
         if ("OK".equals(resultControlMes.getCodeString())) {
 
@@ -217,7 +218,7 @@ public class ConditionService implements IConditionService {
         }
         AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent resultMes = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
-        resultMes = controlService.verifyTextNotInElement(tCExecution, path, expected);
+        resultMes = controlService.verifyTextNotInElement(tCExecution, path, expected, "N");
 
         if ("OK".equals(resultMes.getCodeString())) {
 
