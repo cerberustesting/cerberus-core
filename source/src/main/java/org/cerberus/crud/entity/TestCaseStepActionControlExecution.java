@@ -49,8 +49,10 @@ public class TestCaseStepActionControlExecution {
     private String control;
     private String value1Init;
     private String value2Init;
+    private String value3Init;
     private String value1;
     private String value2;
+    private String value3;
     private String fatal;
     private String description;
     private String returnCode;
@@ -186,6 +188,14 @@ public class TestCaseStepActionControlExecution {
 
     public void setValue1(String controlProperty) {
         this.value1 = controlProperty;
+    }
+
+    public String getValue3() {
+        return value3;
+    }
+
+    public void setValue3(String value3) {
+        this.value3 = value3;
     }
 
     public String getControl() {
@@ -332,6 +342,14 @@ public class TestCaseStepActionControlExecution {
         this.value2Init = value2Init;
     }
 
+    public String getValue3Init() {
+        return value3Init;
+    }
+
+    public void setValue3Init(String value3Init) {
+        this.value3Init = value3Init;
+    }
+
     /**
      * Convert the current TestCaseStepActionControlExecution into JSON format
      * Note that if withChilds and withParents are both set to true, only the
@@ -367,6 +385,8 @@ public class TestCaseStepActionControlExecution {
             result.put("controlPropertyInit", this.getValue1Init());
             result.put("controlValue", this.getValue2());
             result.put("controlValueInit", this.getValue2Init());
+            result.put("controlValue3", this.getValue3());
+            result.put("controlValue3Init", this.getValue3Init());
             result.put("fatal", this.getFatal());
             result.put("start", this.getStart());
             result.put("end", this.getEnd());

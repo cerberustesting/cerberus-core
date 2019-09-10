@@ -457,7 +457,7 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Initialize the global TestCaseExecution Data List.
              */
-            // 
+            //
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING));
             updateTCExecution(tCExecution, true);
 
@@ -1231,8 +1231,8 @@ public class ExecutionRunService implements IExecutionRunService {
                             testCaseStepActionControl.getStep(), testCaseStepActionExecution.getIndex(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControlSequence(), testCaseStepActionControl.getSort(),
                             null, null,
                             testCaseStepActionControl.getConditionOper(), testCaseStepActionControl.getConditionVal1(), testCaseStepActionControl.getConditionVal2(), testCaseStepActionControl.getConditionVal1(), testCaseStepActionControl.getConditionVal2(),
-                            testCaseStepActionControl.getControl(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(),
-                            testCaseStepActionControl.getFatal(), startControl, 0, 0, 0,
+                            testCaseStepActionControl.getControl(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(), testCaseStepActionControl.getValue3(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(),
+                            testCaseStepActionControl.getValue3(), testCaseStepActionControl.getFatal(), startControl, 0, 0, 0,
                             testCaseStepActionControl.getDescription(), testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
 

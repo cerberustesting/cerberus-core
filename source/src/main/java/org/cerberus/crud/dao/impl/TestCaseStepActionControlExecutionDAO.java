@@ -70,8 +70,8 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
 
         final String query = "INSERT INTO testcasestepactioncontrolexecution(id, step, `index`, sequence, controlsequence, sort, returncode, "
                 + "conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, control, "
-                + "value1Init, value2Init, value1, value2, fatal, start, END, startlong, endlong, returnmessage, test, testcase, description)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "value1Init, value2Init, value3Init, value1, value2, value3, fatal, start, END, startlong, endlong, returnmessage, test, testcase, description)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -105,8 +105,10 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getControl(), 200));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue1Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue2Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue3Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue1(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue2(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue3(), 65000));
                 preStat.setString(i++, testCaseStepActionControlExecution.getFatal());
                 if (testCaseStepActionControlExecution.getStart() != 0) {
                     preStat.setTimestamp(i++, new Timestamp(testCaseStepActionControlExecution.getStart()));
@@ -149,7 +151,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
     public void updateTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
 
         final String query = "UPDATE testcasestepactioncontrolexecution SET returncode = ?, conditionOper = ?, conditionVal1Init = ?, conditionVal2Init = ?, conditionVal1 = ?, conditionVal2 = ?, control = ?, "
-                + "value1Init = ?, value2Init = ?, value1 = ?, value2 = ?, fatal = ?, start = ?, END = ?, startlong = ?, endlong = ?"
+                + "value1Init = ?, value2Init = ?, value3Init = ?, value1 = ?, value2 = ?, value3 = ?, fatal = ?, start = ?, END = ?, startlong = ?, endlong = ?"
                 + ", returnmessage = ?, description = ?, sort = ? "
                 + "WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND `index` = ? AND sequence = ? AND controlsequence = ? ";
 
@@ -179,8 +181,10 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setString(i++, testCaseStepActionControlExecution.getControl());
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue1Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue2Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue3Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue1(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue2(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue3(), 65000));
                 preStat.setString(i++, testCaseStepActionControlExecution.getFatal());
                 if (testCaseStepActionControlExecution.getStart() != 0) {
                     preStat.setTimestamp(i++, new Timestamp(testCaseStepActionControlExecution.getStart()));
@@ -438,8 +442,10 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         String control = resultSet.getString("control");
         String value1 = resultSet.getString("value1");
         String value2 = resultSet.getString("value2");
+        String value3 = resultSet.getString("value3");
         String value1Init = resultSet.getString("value1Init");
         String value2Init = resultSet.getString("value2Init");
+        String value3Init = resultSet.getString("value3Init");
         String fatal = resultSet.getString("fatal");
         long start = resultSet.getTimestamp("start") == null ? 0 : resultSet.getTimestamp("start").getTime();
         long end = resultSet.getTimestamp("end") == null ? 0 : resultSet.getTimestamp("end").getTime();
@@ -447,7 +453,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         long endlong = resultSet.getLong("endlong");
         String description = resultSet.getString("description");
         return factoryTestCaseStepActionControlExecution.create(id, test, testCase, step, index,
-                sequence, controlSequence, sort, returnCode, returnMessage, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, control, value1Init, value2Init, value1, value2,
+                sequence, controlSequence, sort, returnCode, returnMessage, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, control, value1Init, value2Init, value3Init, value1, value2, value3,
                 fatal, start, end, startlong, endlong, description, null, null);
     }
 }

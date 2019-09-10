@@ -431,11 +431,12 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String controlValue = controlJson.getString("control");
             String value1 = controlJson.getString("value1");
             String value2 = controlJson.getString("value2");
+            String value3 = controlJson.getString("value3");
             String fatal = controlJson.getString("fatal");
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");
             if (!delete) {
-                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, sort, conditionOper, conditionVal1, conditionVal2, controlValue, value1, value2, fatal, description, screenshot));
+                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, sort, conditionOper, conditionVal1, conditionVal2, controlValue, value1, value2, value3, fatal, description, screenshot));
             }
         }
         return testCaseStepActionControl;

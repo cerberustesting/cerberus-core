@@ -71,17 +71,17 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
     public TestCaseStepActionControl findTestCaseStepActionControlByKey(String test, String testcase, int stepNumber, int sequence, int controlSequence) {
         TestCaseStepActionControl actionControl = null;
         final String query = "SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? AND step = ? AND sequence = ? AND control = ?";
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query);) {
-            
-                preStat.setString(1, test);
-                preStat.setString(2, testcase);
-                preStat.setInt(3, stepNumber);
-                preStat.setInt(4, sequence);
-                preStat.setInt(5, controlSequence);
 
-            try(ResultSet resultSet = preStat.executeQuery();) {
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
+
+            preStat.setString(1, test);
+            preStat.setString(2, testcase);
+            preStat.setInt(3, stepNumber);
+            preStat.setInt(4, sequence);
+            preStat.setInt(5, controlSequence);
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
                 if (resultSet.first()) {
                     int sort = resultSet.getInt("Sort");
                     String conditionOper = resultSet.getString("conditionOper");
@@ -90,18 +90,19 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                     String control = resultSet.getString("Control");
                     String value1 = resultSet.getString("Value1");
                     String value2 = resultSet.getString("Value2");
+                    String value3 = resultSet.getString("Value3");
                     String fatal = resultSet.getString("Fatal");
                     String description = resultSet.getString("Description");
                     String screenshotFilename = resultSet.getString("screenshotFilename");
                     actionControl = factoryTestCaseStepActionControl.create(test, testcase, stepNumber, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, control,
-                            value1, value2, fatal, description, screenshotFilename);
+                            value1, value2, value3, fatal, description, screenshotFilename);
                 }
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : " + exception.toString());
             }
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } 
+        }
         return actionControl;
     }
 
@@ -118,16 +119,16 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             LOG.debug("SQL.param.step : " + stepNumber);
             LOG.debug("SQL.param.sequence : " + sequence);
         }
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query);) {
-            
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
+
             preStat.setString(1, test);
             preStat.setString(2, testcase);
             preStat.setInt(3, stepNumber);
             preStat.setInt(4, sequence);
 
-            try(ResultSet resultSet = preStat.executeQuery();) {
+            try (ResultSet resultSet = preStat.executeQuery();) {
                 list = new ArrayList<TestCaseStepActionControl>();
 
                 while (resultSet.next()) {
@@ -140,17 +141,18 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                     String control = resultSet.getString("Control");
                     String value1 = resultSet.getString("Value1");
                     String value2 = resultSet.getString("Value2");
+                    String value3 = resultSet.getString("Value3");
                     String fatal = resultSet.getString("Fatal");
                     String description = resultSet.getString("Description");
                     String screenshotFilename = resultSet.getString("screenshotFilename");
-                    list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, control, value1, value2, fatal, description, screenshotFilename));
+                    list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, control, value1, value2, value3, fatal, description, screenshotFilename));
                 }
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : " + exception.toString());
-            } 
+            }
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } 
+        }
         return list;
     }
 
@@ -158,27 +160,29 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
     public void insertTestCaseStepActionControl(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasestepactioncontrol (`test`, `testCase`, `step`, `sequence`, `controlSequence`, `sort`, `conditionOper`, `conditionVal1`, `conditionVal2`, `control`, `value1`, `value2`, `fatal`, `Description`, `screenshotfilename`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO testcasestepactioncontrol (`test`, `testCase`, `step`, `sequence`, `controlSequence`, `sort`, `conditionOper`, `conditionVal1`, `conditionVal2`, `control`, `value1`, `value2`, `value3`, `fatal`, `Description`, `screenshotfilename`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
-        try(Connection connection = this.databaseSpring.connect();
-        		 PreparedStatement preStat = connection.prepareStatement(query.toString());) {
-           
-            preStat.setString(1, testCaseStepActionControl.getTest());
-            preStat.setString(2, testCaseStepActionControl.getTestCase());
-            preStat.setInt(3, testCaseStepActionControl.getStep());
-            preStat.setInt(4, testCaseStepActionControl.getSequence());
-            preStat.setInt(5, testCaseStepActionControl.getControlSequence());
-            preStat.setInt(6, testCaseStepActionControl.getSort());
-            preStat.setString(7, testCaseStepActionControl.getConditionOper());
-            preStat.setString(8, testCaseStepActionControl.getConditionVal1());
-            preStat.setString(9, testCaseStepActionControl.getConditionVal2());
-            preStat.setString(10, testCaseStepActionControl.getControl());
-            preStat.setString(11, testCaseStepActionControl.getValue1());
-            preStat.setString(12, testCaseStepActionControl.getValue2());
-            preStat.setString(13, testCaseStepActionControl.getFatal());
-            preStat.setString(14, testCaseStepActionControl.getDescription());
-            preStat.setString(15, testCaseStepActionControl.getScreenshotFilename());
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+
+            int i = 1;
+            preStat.setString(i++, testCaseStepActionControl.getTest());
+            preStat.setString(i++, testCaseStepActionControl.getTestCase());
+            preStat.setInt(i++, testCaseStepActionControl.getStep());
+            preStat.setInt(i++, testCaseStepActionControl.getSequence());
+            preStat.setInt(i++, testCaseStepActionControl.getControlSequence());
+            preStat.setInt(i++, testCaseStepActionControl.getSort());
+            preStat.setString(i++, testCaseStepActionControl.getConditionOper());
+            preStat.setString(i++, testCaseStepActionControl.getConditionVal1());
+            preStat.setString(i++, testCaseStepActionControl.getConditionVal2());
+            preStat.setString(i++, testCaseStepActionControl.getControl());
+            preStat.setString(i++, testCaseStepActionControl.getValue1());
+            preStat.setString(i++, testCaseStepActionControl.getValue2());
+            preStat.setString(i++, testCaseStepActionControl.getValue3());
+            preStat.setString(i++, testCaseStepActionControl.getFatal());
+            preStat.setString(i++, testCaseStepActionControl.getDescription());
+            preStat.setString(i++, testCaseStepActionControl.getScreenshotFilename());
             throwExcep = preStat.executeUpdate() == 0;
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
@@ -193,15 +197,14 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         List<TestCaseStepActionControl> list = null;
         final String query = "SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? AND step = ?";
 
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query);) {
-            
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
+
             preStat.setString(1, test);
             preStat.setString(2, testcase);
             preStat.setInt(3, step);
-            
-            try(ResultSet resultSet = preStat.executeQuery();) {
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
                 list = new ArrayList<TestCaseStepActionControl>();
 
                 while (resultSet.next()) {
@@ -214,17 +217,18 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                     String control = resultSet.getString("Control");
                     String value1 = resultSet.getString("Value1");
                     String value2 = resultSet.getString("Value2");
+                    String value3 = resultSet.getString("Value3");
                     String fatal = resultSet.getString("Fatal");
                     String description = resultSet.getString("Description");
                     String screenshotFilename = resultSet.getString("screenshotFilename");
-                    list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, control, value1, value2, fatal, description, screenshotFilename));
+                    list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, control, value1, value2, value3, fatal, description, screenshotFilename));
                 }
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : " + exception.toString());
             }
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } 
+        }
         return list;
     }
 
@@ -245,17 +249,17 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                 .append("`Control` = ?, ")
                 .append("`Value1` = ?, ")
                 .append("`Value2` = ?, ")
+                .append("`Value3` = ?, ")
                 .append("`Description` = ?, ")
                 .append("`Fatal` = ?, ")
                 .append("`screenshotFilename` = ? ")
                 .append("WHERE `Test` = ? AND `TestCase` = ? AND `Step` = ? AND `Sequence` = ? AND `ControlSequence` = ? ")
                 .toString();
 
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query);) {
-            
-            int i=1;
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
+
+            int i = 1;
             preStat.setString(i++, testCaseStepActionControl.getTest());
             preStat.setString(i++, testCaseStepActionControl.getTestCase());
             preStat.setInt(i++, testCaseStepActionControl.getStep());
@@ -268,6 +272,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             preStat.setString(i++, testCaseStepActionControl.getControl());
             preStat.setString(i++, testCaseStepActionControl.getValue1());
             preStat.setString(i++, testCaseStepActionControl.getValue2());
+            preStat.setString(i++, testCaseStepActionControl.getValue3());
             preStat.setString(i++, testCaseStepActionControl.getDescription());
             preStat.setString(i++, testCaseStepActionControl.getFatal());
             preStat.setString(i++, testCaseStepActionControl.getScreenshotFilename());
@@ -279,7 +284,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             throwExcep = preStat.executeUpdate() == 0;
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } 
+        }
         if (throwExcep) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
@@ -290,8 +295,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         boolean throwExcep = false;
         final String query = "DELETE FROM testcasestepactioncontrol WHERE test = ? and testcase = ? and step = ? and `sequence` = ? and `controlSequence` = ?";
 
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
             preStat.setString(1, tcsac.getTest());
             preStat.setString(2, tcsac.getTestCase());
             preStat.setInt(3, tcsac.getStep());
@@ -300,7 +305,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             throwExcep = preStat.executeUpdate() == 0;
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } 
+        }
         if (throwExcep) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
@@ -318,14 +323,13 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         query.append("GROUP BY tcsac.Test, tcsac.TestCase, tcsac.Step, tcsac.Sequence, tcsac.ControlSequence ");
         query.append("ORDER BY tcs.Sort, tcsa.Sort, tcsac.Sort ");
 
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query.toString());) {
-            
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+
             preStat.setString(1, test);
             preStat.setString(2, testCase);
-            
-            try(ResultSet resultSet = preStat.executeQuery();) {
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
                 list = new ArrayList<TestCaseStepActionControl>();
 
                 while (resultSet.next()) {
@@ -339,17 +343,18 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                     String control = resultSet.getString("Control");
                     String value1 = resultSet.getString("Value1");
                     String value2 = resultSet.getString("Value2");
+                    String value3 = resultSet.getString("Value3");
                     String fatal = resultSet.getString("Fatal");
                     String description = resultSet.getString("Description");
                     String screenshotFilename = resultSet.getString("screenshotFilename");
-                    list.add(factoryTestCaseStepActionControl.create(test, testCase, step, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, control, value1, value2, fatal, description, screenshotFilename));
+                    list.add(factoryTestCaseStepActionControl.create(test, testCase, step, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, control, value1, value2, value3, fatal, description, screenshotFilename));
                 }
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : " + exception.toString());
-            } 
+            }
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } 
+        }
         return list;
     }
 
@@ -362,47 +367,45 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ?");
 
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
-            
-                preStat.setString(1, test);
-                preStat.setString(2, testcase);
-                
-                try(ResultSet resultSet = preStat.executeQuery();
-                		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-                    //gets the data
-                    while (resultSet.next()) {
-                        controlList.add(this.loadFromResultSet(resultSet));
-                    }
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement();) {
 
-                    //get the total number of rows
-                    
-                    int nrTotalRows = 0;
+            preStat.setString(1, test);
+            preStat.setString(2, testcase);
 
-                    if (rowSet != null && rowSet.next()) {
-                        nrTotalRows = rowSet.getInt(1);
-                    }
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
+                while (resultSet.next()) {
+                    controlList.add(this.loadFromResultSet(resultSet));
+                }
 
-                    if (controlList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                        LOG.error("Partial Result in the query.");
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList<>(controlList, controlList.size());
-                    } else if (controlList.size() <= 0) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList<>(controlList, controlList.size());
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList<>(controlList, controlList.size());
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                } 
+                //get the total number of rows
+                int nrTotalRows = 0;
+
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
+
+                if (controlList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                    response = new AnswerList<>(controlList, controlList.size());
+                } else if (controlList.size() <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    response = new AnswerList<>(controlList, controlList.size());
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    response = new AnswerList<>(controlList, controlList.size());
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -421,25 +424,23 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? AND step = ? AND sequence = ?");
 
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
-            
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement();) {
+
             preStat.setString(1, test);
             preStat.setString(2, testcase);
             preStat.setInt(3, step);
             preStat.setInt(4, sequence);
-            
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     controlList.add(this.loadFromResultSet(resultSet));
                 }
 
                 //get the total number of rows
-                
                 int nrTotalRows = 0;
 
                 if (rowSet != null && rowSet.next()) {
@@ -469,7 +470,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-        } 
+        }
         response.setResultMessage(msg);
         return response;
     }
@@ -479,27 +480,29 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         Answer ans = new Answer();
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasestepactioncontrol (`test`, `testCase`, `step`, `sequence`, `controlSequence`, `sort`, `conditionOper`, `conditionVal1`, `conditionVal2`, `control`, `value1`, `value2`, `fatal`, `Description`, `screenshotfilename`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO testcasestepactioncontrol (`test`, `testCase`, `step`, `sequence`, `controlSequence`, `sort`, `conditionOper`, `conditionVal1`, `conditionVal2`, `control`, `value1`, `value2`, `value3`, `fatal`, `Description`, `screenshotfilename`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             // Prepare and execute query
-            preStat.setString(1, testCaseStepActionControl.getTest());
-            preStat.setString(2, testCaseStepActionControl.getTestCase());
-            preStat.setInt(3, testCaseStepActionControl.getStep());
-            preStat.setInt(4, testCaseStepActionControl.getSequence());
-            preStat.setInt(5, testCaseStepActionControl.getControlSequence());
-            preStat.setInt(6, testCaseStepActionControl.getSort());
-            preStat.setString(7, testCaseStepActionControl.getConditionOper());
-            preStat.setString(8, testCaseStepActionControl.getConditionVal1());
-            preStat.setString(9, testCaseStepActionControl.getConditionVal2());
-            preStat.setString(10, testCaseStepActionControl.getControl());
-            preStat.setString(11, testCaseStepActionControl.getValue1());
-            preStat.setString(12, testCaseStepActionControl.getValue2());
-            preStat.setString(13, testCaseStepActionControl.getFatal());
-            preStat.setString(14, testCaseStepActionControl.getDescription());
-            preStat.setString(15, testCaseStepActionControl.getScreenshotFilename());
+            int i = 1;
+            preStat.setString(i++, testCaseStepActionControl.getTest());
+            preStat.setString(i++, testCaseStepActionControl.getTestCase());
+            preStat.setInt(i++, testCaseStepActionControl.getStep());
+            preStat.setInt(i++, testCaseStepActionControl.getSequence());
+            preStat.setInt(i++, testCaseStepActionControl.getControlSequence());
+            preStat.setInt(i++, testCaseStepActionControl.getSort());
+            preStat.setString(i++, testCaseStepActionControl.getConditionOper());
+            preStat.setString(i++, testCaseStepActionControl.getConditionVal1());
+            preStat.setString(i++, testCaseStepActionControl.getConditionVal2());
+            preStat.setString(i++, testCaseStepActionControl.getControl());
+            preStat.setString(i++, testCaseStepActionControl.getValue1());
+            preStat.setString(i++, testCaseStepActionControl.getValue2());
+            preStat.setString(i++, testCaseStepActionControl.getValue3());
+            preStat.setString(i++, testCaseStepActionControl.getFatal());
+            preStat.setString(i++, testCaseStepActionControl.getDescription());
+            preStat.setString(i++, testCaseStepActionControl.getScreenshotFilename());
             preStat.executeUpdate();
 
             // Set the final message
@@ -530,9 +533,10 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         String fatal = resultSet.getString("fatal");
         String value1 = resultSet.getString("Value1");
         String value2 = resultSet.getString("Value2");
+        String value3 = resultSet.getString("Value3");
         String description = resultSet.getString("Description");
         String screenshotFilename = resultSet.getString("screenshotFilename");
 
-        return factoryTestCaseStepActionControl.create(test, testCase, step, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, control, value1, value2, fatal, description, screenshotFilename);
+        return factoryTestCaseStepActionControl.create(test, testCase, step, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, control, value1, value2, value3, fatal, description, screenshotFilename);
     }
 }
