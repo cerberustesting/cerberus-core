@@ -8208,9 +8208,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // add Value3 column in testcasestepactioncontrol and testcasestepactioncontrolexecution tables
         // 1429-1431
-        a.add("ALTER TABLE cerberus.testcasestepactioncontrol ADD Value3 TEXT;");
-        a.add("ALTER TABLE cerberus.testcasestepactioncontrolexecution ADD Value3 TEXT;");
-        a.add("ALTER TABLE cerberus.testcasestepactioncontrolexecution ADD Value3Init TEXT;");
+        a.add("ALTER TABLE testcasestepactioncontrol ADD Value3 TEXT after Value2;");
+        a.add("ALTER TABLE testcasestepactioncontrolexecution ADD Value3 TEXT AFTER Value2, ADD Value3Init TEXT AFTER Value2Init;");
 
         return a;
     }
