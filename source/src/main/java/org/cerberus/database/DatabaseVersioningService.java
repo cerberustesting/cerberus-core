@@ -8206,6 +8206,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 	// 1428
 	a.add("INSERT INTO invariant(idname, value, sort, description, VeryShortDesc) VALUES('ACTION', 'refreshCurrentPage', 6520, 'refresh current page', 'refresh current page');");
 
+	// add Value3 column in testcasestepactioncontrol and testcasestepactioncontrolexecution tables
+	// 1429
+	a.add("ALTER TABLE cerberus.testcasestepactioncontrol ADD Value3 TEXT;");
+	a.add("ALTER TABLE cerberus.testcasestepactioncontrolexecution ADD Value3 TEXT;");
+	a.add("ALTER TABLE cerberus.testcasestepactioncontrolexecution ADD Value3Init TEXT;");
+
 	return a;
     }
 
