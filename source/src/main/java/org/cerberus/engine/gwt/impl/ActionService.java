@@ -484,7 +484,11 @@ public class ActionService implements IActionService {
     private MessageEvent executeCommand(String command, String args) {
 
 	MessageEvent message;
-	String inputCommand;
+
+	// cerberus parameters check
+	String scriptFolder = parameterService.getParameterStringByKey("cerberus_script_folder", "", "CerberusScripts");
+	String scriptUser = parameterService.getParameterStringByKey("cerberus_script_user", "", "cerberus");
+	String scriptPassword = parameterService.getParameterStringByKey("cerberus_script_password", "", "scripts");
 
 	// command and args check
 	if (command.isEmpty()) {
@@ -492,90 +496,58 @@ public class ActionService implements IActionService {
 	    message.setDescription(message.getDescription().replace("%EXCEPTION%", "no command defined"));
 	    return message;
 	} else {
-	    // if the first character isn't an antislash, add it
-	    String firstChar = Character.toString(command.charAt(0));
-	    if (firstChar != "/") {
-		//command = "/" + command;
-	    }
-	    // store the script file name
-	    //inputCommand = command;
+	    // array of string to be passed to the processBuilder
+	    String[] commandToRun;
 
-	}
-
-	// hardcoded parameters : user & folder
-	// waiting for new parameters validation
-	String folderPath = "\"/CerberusScripts";
-	String scriptUser = "cerberus";
-
-	// cerberus parameters check
-	/*
-        if (parameterService.getParameterStringByKey("cerberus_script_user", "", "ALL").isEmpty() == true) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_MISSINGPARAMETER);
-            message.setDescription(message.getDescription().replace("%PARAM%", "cerberus_script_user"));
-            return message;
-        } else {
-            scriptUser = parameterService.getParameterStringByKey("cerberus_script_user", "", "ALL");
-        }
-
-        if (parameterService.getParameterStringByKey("cerberus_script_folderpath", "", "ALL").isEmpty() == true) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_MISSINGPARAMETER);
-            message.setDescription(message.getDescription().replace("%PARAM%", "cerberus_script_folderpath"));
-            return message;
-        } else {
-            folderPath = parameterService.getParameterStringByKey("cerberus_script_folderpath", "", "ALL");
-        }
-	 */
-	String[] commandToRun;
-
-	if (!args.isEmpty()) {
-	    // put anything in args and the full command can be passed in command
-	    // separator is ;
-	    commandToRun = command.split(";");
-	} else {
-	    boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
-	    if (isWindows) {
-		commandToRun = new String[]{"cmd.exe", "/c", command};
+	    if (!args.isEmpty()) {
+		// TEMPORARY DEBUG MODE
+		// put anything in args and the full command can be passed in command
+		// separator is ;
+		commandToRun = command.split(";");
 	    } else {
-		commandToRun = new String[]{"bash", "-c", command};
+		// FINAL MODE : the inputted command is the name of the script.extension
+		boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+		if (isWindows) {
+		    // TO DO : unsupported Host OS message to create
+		    commandToRun = new String[]{"cmd.exe", "/c", command};
+		} else {
+		    commandToRun = new String[]{"bash", "-c", "echo -n \"" + scriptPassword + "\" | su - " + scriptUser + " -c \"bash /" + scriptFolder + "/" + command + "\""};
+		}
 	    }
-	}
 
-	ProcessBuilder processBuilder = new ProcessBuilder(commandToRun);
-
-	StringBuilder sb = new StringBuilder();
-	for (String s : commandToRun) {
-	    sb.append(s);
-	    sb.append(" ");
-	}
-	String commandExecuted = sb.toString();
-
-	try {
-	    Process process = processBuilder.start();
-	    StringBuilder output = new StringBuilder();
-	    BufferedReader reader = new BufferedReader(
-		    new InputStreamReader(process.getInputStream()));
-	    String line;
-	    while ((line = reader.readLine()) != null) {
-		output.append(line + "\n");
+	    StringBuilder sb = new StringBuilder();
+	    for (String s : commandToRun) {
+		sb.append(s);
+		sb.append(" ");
 	    }
-	    int exitVal = process.waitFor();
-	    if (exitVal == 0) {
-		message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTECOMMAND);
-		message.setDescription(message.getDescription().replace("%LOG%", commandExecuted + " Output : " + output));
-		return message;
-	    } else {
+	    String commandExecuted = sb.toString();
+
+	    try {
+		ProcessBuilder processBuilder = new ProcessBuilder(commandToRun);
+		Process process = processBuilder.start();
+		StringBuilder output = new StringBuilder();
+		BufferedReader reader = new BufferedReader(
+			new InputStreamReader(process.getInputStream()));
+		String line;
+		while ((line = reader.readLine()) != null) {
+		    output.append(line).append("\n");
+		}
+		int exitVal = process.waitFor();
+		if (exitVal == 0) {
+		    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTECOMMAND);
+		    // TO DO : hide the executed command and display only the script
+		    message.setDescription(message.getDescription().replace("%LOG%", commandExecuted + " Output : " + output));
+		    return message;
+		} else {
+		    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
+		    message.setDescription(message.getDescription().replace("%EXCEPTION%", commandExecuted));
+		    return message;
+		}
+	    } catch (IOException | InterruptedException e) {
 		message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
-		message.setDescription(message.getDescription().replace("%EXCEPTION%", commandExecuted));
+		message.setDescription(message.getDescription().replace("%EXCEPTION%", e.toString()));
 		return message;
 	    }
-	} catch (IOException e) {
-	    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
-	    message.setDescription(message.getDescription().replace("%EXCEPTION%", e.toString()));
-	    return message;
-	} catch (InterruptedException e) {
-	    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
-	    message.setDescription(message.getDescription().replace("%EXCEPTION%", e.toString()));
-	    return message;
 	}
     }
 
