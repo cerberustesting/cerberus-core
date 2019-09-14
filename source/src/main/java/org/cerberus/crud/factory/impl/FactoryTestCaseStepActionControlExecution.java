@@ -73,7 +73,7 @@ public class FactoryTestCaseStepActionControlExecution implements IFactoryTestCa
         testCaseStepActionControlExecution.setControlResultMessage(resultMessage);
         testCaseStepActionControlExecution.setDescription(description);
         // List objects
-        List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
         testCaseStepActionControlExecution.setFileList(objectFileList);
         return testCaseStepActionControlExecution;
     }

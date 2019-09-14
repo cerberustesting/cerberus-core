@@ -431,7 +431,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String controlValue = controlJson.getString("control");
             String value1 = controlJson.getString("value1");
             String value2 = controlJson.getString("value2");
-            String value3 = controlJson.getString("value3");
+//            String value3 = controlJson.getString("value3");
+            String value3 = "";
             String fatal = controlJson.getString("fatal");
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");
