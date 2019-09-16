@@ -8207,9 +8207,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO invariant(idname, value, sort, description, VeryShortDesc) VALUES('ACTION', 'refreshCurrentPage', 6520, 'refresh current page', 'refresh current page');");
 
         // add Value3 column in testcasestepactioncontrol and testcasestepactioncontrolexecution tables
-        // 1429-1431
+        // 1429-1430
         a.add("ALTER TABLE testcasestepactioncontrol ADD Value3 TEXT after Value2;");
         a.add("ALTER TABLE testcasestepactioncontrolexecution ADD Value3 TEXT AFTER Value2, ADD Value3Init TEXT AFTER Value2Init;");
+
+        // add colums for Value3 and ConditionValue3 fields
+        // 1431-1438
+        a.add("ALTER TABLE testcase ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcasestep ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcasestepaction ADD Value3 TEXT AFTER Value2, ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcasestepactioncontrol ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcaseexecution ADD ConditionVal3Init TEXT AFTER ConditionVal2Init, ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcasestepexecution ADD ConditionVal3Init TEXT AFTER ConditionVal2Init, ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcasestepactionexecution ADD Value3 TEXT AFTER Value2, ADD Value3Init TEXT AFTER Value2Init, ADD ConditionVal3 TEXT AFTER ConditionVal2, ADD ConditionVal3Init TEXT AFTER ConditionVal2Init;");
+        a.add("ALTER TABLE testcasestepactioncontrolexecution ADD ConditionVal3 TEXT AFTER ConditionVal2, ADD ConditionVal3Init TEXT AFTER ConditionVal2Init;");
 
         return a;
     }
