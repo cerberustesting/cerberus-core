@@ -68,8 +68,8 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
     @Override
     public void insertTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution) {
         final String query = "INSERT INTO testcasestepexecution(id, test, testcase, step, `index`, sort, `loop`, batnumexe, returncode, start, fullstart, "
-                + "returnMessage, description, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "returnMessage, description, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -103,8 +103,10 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 preStat.setString(i++, testCaseStepExecution.getConditionOper());
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal1Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal2Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal3Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal1(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal2(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal3(), 65000));
 
                 preStat.executeUpdate();
 
@@ -129,7 +131,8 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
     @Override
     public void updateTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution) {
         final String query = "UPDATE testcasestepexecution SET returncode = ?, start = ?, fullstart = ?, end = ?, fullend = ?, timeelapsed = ?, "
-                + "returnmessage = ?, description = ?, sort = ?, `loop` = ?, conditionOper = ?, conditionVal1Init = ?, conditionVal2Init = ?, conditionVal1 = ?, conditionVal2 = ? "
+                + "returnmessage = ?, description = ?, sort = ?, `loop` = ?, conditionOper = ?, conditionVal1Init = ?, conditionVal2Init = ?, conditionVal3Init = ?, "
+                + "conditionVal1 = ?, conditionVal2 = ?, conditionVal3 = ? "
                 + "WHERE id = ? AND step = ? AND `index` = ? AND test = ? AND testcase = ?";
 
         // Debug message on SQL.
@@ -164,8 +167,10 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 preStat.setString(i++, testCaseStepExecution.getConditionOper());
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal1Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal2Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal3Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal1(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal2(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal3(), 65000));
                 preStat.setLong(i++, testCaseStepExecution.getId());
                 preStat.setInt(i++, testCaseStepExecution.getStep());
                 preStat.setInt(i++, testCaseStepExecution.getIndex());
@@ -329,8 +334,10 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         String conditionOper = resultSet.getString("conditionOper");
         String conditionVal1 = resultSet.getString("conditionVal1");
         String conditionVal2 = resultSet.getString("conditionVal2");
+        String conditionVal3 = resultSet.getString("conditionVal3");
         String conditionVal1Init = resultSet.getString("conditionVal1Init");
         String conditionVal2Init = resultSet.getString("conditionVal2Init");
+        String conditionVal3Init = resultSet.getString("conditionVal3Init");
         String batNumExe = resultSet.getString("batnumexe");
         long start = resultSet.getTimestamp("start") == null ? 0 : resultSet.getTimestamp("start").getTime();
         long end = resultSet.getTimestamp("end") == null ? 0 : resultSet.getTimestamp("end").getTime();
@@ -340,6 +347,6 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         String returnCode = resultSet.getString("returncode");
         String returnMessage = resultSet.getString("returnMessage");
         String description = resultSet.getString("description");
-        return factoryTestCaseStepExecution.create(id, test, testcase, step, index, sort, loop, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, batNumExe, start, end, fullstart, fullend, timeelapsed, returnCode, returnMessage, description);
+        return factoryTestCaseStepExecution.create(id, test, testcase, step, index, sort, loop, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, batNumExe, start, end, fullstart, fullend, timeelapsed, returnCode, returnMessage, description);
     }
 }

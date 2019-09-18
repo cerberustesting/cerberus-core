@@ -46,8 +46,10 @@ public class TestCaseStepExecution {
     private String conditionOper;
     private String conditionVal1Init;
     private String conditionVal2Init;
+    private String conditionVal3Init;
     private String conditionVal1;
     private String conditionVal2;
+    private String conditionVal3;
     private String batNumExe;
     private long start;
     private long end;
@@ -297,6 +299,14 @@ public class TestCaseStepExecution {
         this.conditionVal2Init = conditionVal2Init;
     }
 
+    public String getConditionVal3Init() {
+        return conditionVal3Init;
+    }
+
+    public void setConditionVal3Init(String conditionVal3Init) {
+        this.conditionVal3Init = conditionVal3Init;
+    }
+
     public String getConditionVal1() {
         return conditionVal1;
     }
@@ -311,6 +321,14 @@ public class TestCaseStepExecution {
 
     public void setConditionVal2(String conditionVal2) {
         this.conditionVal2 = conditionVal2;
+    }
+
+    public String getConditionVal3() {
+        return conditionVal3;
+    }
+
+    public void setConditionVal3(String conditionVal3) {
+        this.conditionVal3 = conditionVal3;
     }
 
     public String getTest() {
@@ -368,9 +386,9 @@ public class TestCaseStepExecution {
     }
 
     /**
-     * Convert the current TestCaseStepExecution into JSON format
-     * Note that if withChilds and withParents are both set to true, only the
-     * child will be included to avoid loop.
+     * Convert the current TestCaseStepExecution into JSON format Note that if
+     * withChilds and withParents are both set to true, only the child will be
+     * included to avoid loop.
      *
      * @param withChilds boolean that define if childs should be included
      * @param withParents boolean that define if parents should be included
@@ -407,29 +425,31 @@ public class TestCaseStepExecution {
             result.put("conditionOper", this.getConditionOper());
             result.put("conditionVal1Init", this.getConditionVal1Init());
             result.put("conditionVal2Init", this.getConditionVal2Init());
+            result.put("conditionVal3Init", this.getConditionVal3Init());
             result.put("conditionVal1", this.getConditionVal1());
             result.put("conditionVal2", this.getConditionVal2());
+            result.put("conditionVal3", this.getConditionVal3());
 
-            if (withChilds){
-            JSONArray array = new JSONArray();
-            if (this.getTestCaseStepActionExecutionList() != null) {
-                for (Object testCaseStepExecution : this.getTestCaseStepActionExecutionList()) {
-                    array.put(((TestCaseStepActionExecution) testCaseStepExecution).toJson(true, false));
+            if (withChilds) {
+                JSONArray array = new JSONArray();
+                if (this.getTestCaseStepActionExecutionList() != null) {
+                    for (Object testCaseStepExecution : this.getTestCaseStepActionExecutionList()) {
+                        array.put(((TestCaseStepActionExecution) testCaseStepExecution).toJson(true, false));
+                    }
                 }
-            }
-            result.put("testCaseStepActionExecutionList", array);
+                result.put("testCaseStepActionExecutionList", array);
 
-            array = new JSONArray();
-            if (this.getFileList() != null) {
-                for (Object stepFileList : this.getFileList()) {
-                    array.put(((TestCaseExecutionFile) stepFileList).toJson());
+                array = new JSONArray();
+                if (this.getFileList() != null) {
+                    for (Object stepFileList : this.getFileList()) {
+                        array.put(((TestCaseExecutionFile) stepFileList).toJson());
+                    }
                 }
+                result.put("fileList", array);
             }
-            result.put("fileList", array);
-            }
-            
-            if (withParents){
-            result.put("testCaseExecution", this.gettCExecution().toJson(false));
+
+            if (withParents) {
+                result.put("testCaseExecution", this.gettCExecution().toJson(false));
             }
 
         } catch (JSONException ex) {

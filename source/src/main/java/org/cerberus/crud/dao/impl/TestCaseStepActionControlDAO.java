@@ -87,6 +87,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                     String conditionOper = resultSet.getString("conditionOper");
                     String conditionVal1 = resultSet.getString("conditionVal1");
                     String conditionVal2 = resultSet.getString("conditionVal2");
+                    String conditionVal3 = resultSet.getString("conditionVal3");
                     String control = resultSet.getString("Control");
                     String value1 = resultSet.getString("Value1");
                     String value2 = resultSet.getString("Value2");
@@ -94,7 +95,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                     String fatal = resultSet.getString("Fatal");
                     String description = resultSet.getString("Description");
                     String screenshotFilename = resultSet.getString("screenshotFilename");
-                    actionControl = factoryTestCaseStepActionControl.create(test, testcase, stepNumber, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, control,
+                    actionControl = factoryTestCaseStepActionControl.create(test, testcase, stepNumber, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, conditionVal3, control,
                             value1, value2, value3, fatal, description, screenshotFilename);
                 }
             } catch (SQLException exception) {
@@ -138,6 +139,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                     String conditionOper = resultSet.getString("conditionOper");
                     String conditionVal1 = resultSet.getString("conditionVal1");
                     String conditionVal2 = resultSet.getString("conditionVal2");
+                    String conditionVal3 = resultSet.getString("conditionVal3");
                     String control = resultSet.getString("Control");
                     String value1 = resultSet.getString("Value1");
                     String value2 = resultSet.getString("Value2");
@@ -145,7 +147,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                     String fatal = resultSet.getString("Fatal");
                     String description = resultSet.getString("Description");
                     String screenshotFilename = resultSet.getString("screenshotFilename");
-                    list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, control, value1, value2, value3, fatal, description, screenshotFilename));
+                    list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, conditionVal3, control, value1, value2, value3, fatal, description, screenshotFilename));
                 }
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : " + exception.toString());
@@ -160,8 +162,9 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
     public void insertTestCaseStepActionControl(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasestepactioncontrol (`test`, `testCase`, `step`, `sequence`, `controlSequence`, `sort`, `conditionOper`, `conditionVal1`, `conditionVal2`, `control`, `value1`, `value2`, `value3`, `fatal`, `Description`, `screenshotfilename`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO testcasestepactioncontrol (`test`, `testCase`, `step`, `sequence`, `controlSequence`, `sort`, ");
+        query.append("`conditionOper`, `conditionVal1`, `conditionVal2`, `conditionVal3`, `control`, `value1`, `value2`, `value3`, `fatal`, `Description`, `screenshotfilename`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());) {
@@ -176,6 +179,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             preStat.setString(i++, testCaseStepActionControl.getConditionOper());
             preStat.setString(i++, testCaseStepActionControl.getConditionVal1());
             preStat.setString(i++, testCaseStepActionControl.getConditionVal2());
+            preStat.setString(i++, testCaseStepActionControl.getConditionVal3());
             preStat.setString(i++, testCaseStepActionControl.getControl());
             preStat.setString(i++, testCaseStepActionControl.getValue1());
             preStat.setString(i++, testCaseStepActionControl.getValue2());
@@ -214,6 +218,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                     String conditionOper = resultSet.getString("conditionOper");
                     String conditionVal1 = resultSet.getString("conditionVal1");
                     String conditionVal2 = resultSet.getString("conditionVal2");
+                    String conditionVal3 = resultSet.getString("conditionVal3");
                     String control = resultSet.getString("Control");
                     String value1 = resultSet.getString("Value1");
                     String value2 = resultSet.getString("Value2");
@@ -221,7 +226,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                     String fatal = resultSet.getString("Fatal");
                     String description = resultSet.getString("Description");
                     String screenshotFilename = resultSet.getString("screenshotFilename");
-                    list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, control, value1, value2, value3, fatal, description, screenshotFilename));
+                    list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, conditionVal3, control, value1, value2, value3, fatal, description, screenshotFilename));
                 }
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : " + exception.toString());
@@ -246,6 +251,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                 .append("`ConditionOper` = ?, ")
                 .append("`ConditionVal1` = ?, ")
                 .append("`ConditionVal2` = ?, ")
+                .append("`ConditionVal3` = ?, ")
                 .append("`Control` = ?, ")
                 .append("`Value1` = ?, ")
                 .append("`Value2` = ?, ")
@@ -269,6 +275,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             preStat.setString(i++, testCaseStepActionControl.getConditionOper());
             preStat.setString(i++, testCaseStepActionControl.getConditionVal1());
             preStat.setString(i++, testCaseStepActionControl.getConditionVal2());
+            preStat.setString(i++, testCaseStepActionControl.getConditionVal3());
             preStat.setString(i++, testCaseStepActionControl.getControl());
             preStat.setString(i++, testCaseStepActionControl.getValue1());
             preStat.setString(i++, testCaseStepActionControl.getValue2());
@@ -340,6 +347,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                     String conditionOper = resultSet.getString("conditionOper");
                     String conditionVal1 = resultSet.getString("conditionVal1");
                     String conditionVal2 = resultSet.getString("conditionVal2");
+                    String conditionVal3 = resultSet.getString("conditionVal3");
                     String control = resultSet.getString("Control");
                     String value1 = resultSet.getString("Value1");
                     String value2 = resultSet.getString("Value2");
@@ -347,7 +355,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                     String fatal = resultSet.getString("Fatal");
                     String description = resultSet.getString("Description");
                     String screenshotFilename = resultSet.getString("screenshotFilename");
-                    list.add(factoryTestCaseStepActionControl.create(test, testCase, step, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, control, value1, value2, value3, fatal, description, screenshotFilename));
+                    list.add(factoryTestCaseStepActionControl.create(test, testCase, step, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, conditionVal3, control, value1, value2, value3, fatal, description, screenshotFilename));
                 }
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : " + exception.toString());
@@ -480,8 +488,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         Answer ans = new Answer();
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasestepactioncontrol (`test`, `testCase`, `step`, `sequence`, `controlSequence`, `sort`, `conditionOper`, `conditionVal1`, `conditionVal2`, `control`, `value1`, `value2`, `value3`, `fatal`, `Description`, `screenshotfilename`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO testcasestepactioncontrol (`test`, `testCase`, `step`, `sequence`, `controlSequence`, `sort`, `conditionOper`, `conditionVal1`, `conditionVal2`, `conditionVal3`, `control`, `value1`, `value2`, `value3`, `fatal`, `Description`, `screenshotfilename`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {
@@ -496,6 +504,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             preStat.setString(i++, testCaseStepActionControl.getConditionOper());
             preStat.setString(i++, testCaseStepActionControl.getConditionVal1());
             preStat.setString(i++, testCaseStepActionControl.getConditionVal2());
+            preStat.setString(i++, testCaseStepActionControl.getConditionVal3());
             preStat.setString(i++, testCaseStepActionControl.getControl());
             preStat.setString(i++, testCaseStepActionControl.getValue1());
             preStat.setString(i++, testCaseStepActionControl.getValue2());
@@ -529,6 +538,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         String conditionOper = resultSet.getString("conditionOper");
         String conditionVal1 = resultSet.getString("conditionVal1");
         String conditionVal2 = resultSet.getString("conditionVal2");
+        String conditionVal3 = resultSet.getString("conditionVal3");
         String control = resultSet.getString("Control");
         String fatal = resultSet.getString("fatal");
         String value1 = resultSet.getString("Value1");
@@ -537,6 +547,6 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         String description = resultSet.getString("Description");
         String screenshotFilename = resultSet.getString("screenshotFilename");
 
-        return factoryTestCaseStepActionControl.create(test, testCase, step, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, control, value1, value2, value3, fatal, description, screenshotFilename);
+        return factoryTestCaseStepActionControl.create(test, testCase, step, sequence, controlSequence, sort, conditionOper, conditionVal1, conditionVal2, conditionVal3, control, value1, value2, value3, fatal, description, screenshotFilename);
     }
 }

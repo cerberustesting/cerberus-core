@@ -47,6 +47,7 @@ public class TestCase {
     private String conditionOper;
     private String conditionVal1;
     private String conditionVal2;
+    private String conditionVal3;
     private String group;
     private String origine;
     private String refOrigine;
@@ -167,6 +168,14 @@ public class TestCase {
 
     public void setConditionVal2(String conditionVal2) {
         this.conditionVal2 = conditionVal2;
+    }
+
+    public String getConditionVal3() {
+        return conditionVal3;
+    }
+
+    public void setConditionVal3(String conditionVal3) {
+        this.conditionVal3 = conditionVal3;
     }
 
     public String getApplication() {
@@ -424,7 +433,7 @@ public class TestCase {
     public void setTestCaseDep(List<TestCaseDep> testCaseDep) {
         this.testCaseDep = testCaseDep;
     }
-    
+
     public String getUserAgent() {
         return userAgent;
     }
@@ -465,6 +474,7 @@ public class TestCase {
             result.put("conditionOper", this.getConditionOper());
             result.put("conditionValue1", this.getConditionVal1());
             result.put("conditionValue2", this.getConditionVal2());
+            result.put("conditionValue3", this.getConditionVal3());
             result.put("group", this.getGroup());
             result.put("origine", this.getOrigine());
             result.put("refOrigine", this.getRefOrigine());
@@ -501,5 +511,5 @@ public class TestCase {
         }
         return result;
     }
-   
+
 }

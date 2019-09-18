@@ -37,7 +37,7 @@ public class FactoryTestCaseStepActionControlExecution implements IFactoryTestCa
     @Override
     public TestCaseStepActionControlExecution create(long id, String test, String testCase, int step, int index, int sequence, int controlSequence, int sort,
             String returnCode, String returnMessage,
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2,
+            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3,
             String control, String value1Init, String value2Init, String value3Init, String value1, String value2, String value3,
             String fatal, long start, long end, long startLong, long endLong,
             String description, TestCaseStepActionExecution testCaseStepActionExecution, MessageEvent resultMessage) {
@@ -55,8 +55,10 @@ public class FactoryTestCaseStepActionControlExecution implements IFactoryTestCa
         testCaseStepActionControlExecution.setConditionOper(conditionOper);
         testCaseStepActionControlExecution.setConditionVal1Init(conditionVal1Init);
         testCaseStepActionControlExecution.setConditionVal2Init(conditionVal2Init);
+        testCaseStepActionControlExecution.setConditionVal3Init(conditionVal3Init);
         testCaseStepActionControlExecution.setConditionVal1(conditionVal1);
         testCaseStepActionControlExecution.setConditionVal2(conditionVal2);
+        testCaseStepActionControlExecution.setConditionVal3(conditionVal3);
         testCaseStepActionControlExecution.setControl(control);
         testCaseStepActionControlExecution.setValue1(value1);
         testCaseStepActionControlExecution.setValue2(value2);

@@ -44,8 +44,10 @@ public class TestCaseStepActionControlExecution {
     private String conditionOper;
     private String conditionVal1Init;
     private String conditionVal2Init;
+    private String conditionVal3Init;
     private String conditionVal1;
     private String conditionVal2;
+    private String conditionVal3;
     private String control;
     private String value1Init;
     private String value2Init;
@@ -170,6 +172,14 @@ public class TestCaseStepActionControlExecution {
         this.conditionVal2Init = conditionVal2Init;
     }
 
+    public String getConditionVal3Init() {
+        return conditionVal3Init;
+    }
+
+    public void setConditionVal3Init(String conditionVal3Init) {
+        this.conditionVal3Init = conditionVal3Init;
+    }
+
     public void setConditionVal1(String conditionVal1) {
         this.conditionVal1 = conditionVal1;
     }
@@ -180,6 +190,14 @@ public class TestCaseStepActionControlExecution {
 
     public void setConditionVal2(String conditionVal2) {
         this.conditionVal2 = conditionVal2;
+    }
+
+    public String getConditionVal3() {
+        return conditionVal3;
+    }
+
+    public void setConditionVal3(String conditionVal3) {
+        this.conditionVal3 = conditionVal3;
     }
 
     public String getValue1() {
@@ -378,8 +396,10 @@ public class TestCaseStepActionControlExecution {
             result.put("conditionOper", this.getConditionOper());
             result.put("conditionVal1Init", this.getConditionVal1Init());
             result.put("conditionVal2Init", this.getConditionVal2Init());
+            result.put("conditionVal3Init", this.getConditionVal3Init());
             result.put("conditionVal1", this.getConditionVal1());
             result.put("conditionVal2", this.getConditionVal2());
+            result.put("conditionVal3", this.getConditionVal3());
             result.put("controlType", this.getControl());
             result.put("controlProperty", this.getValue1());
             result.put("controlPropertyInit", this.getValue1Init());

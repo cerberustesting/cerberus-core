@@ -60,6 +60,7 @@ public interface IFactoryTestCase {
      * @param conditionOper
      * @param conditionVal1
      * @param conditionVal2
+     * @param conditionVal3
      * @param fromBuild
      * @param fromRev
      * @param toBuild
@@ -78,14 +79,14 @@ public interface IFactoryTestCase {
      * @return
      */
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
-                 String implementer, String usrModif, String project, String ticket, String function, String application,
-                 String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
-                 String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String fromBuild,
-                 String fromRev, String toBuild, String toRev, String lastExecutionStatus, String bugID,
-                 String targetBuild, String targetRev, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry,
-                 List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep,
-                 List<TestCaseStepBatch> testCaseStepBatch);
-    
+            String implementer, String usrModif, String project, String ticket, String function, String application,
+            String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
+            String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String conditionVal3, String fromBuild,
+            String fromRev, String toBuild, String toRev, String lastExecutionStatus, String bugID,
+            String targetBuild, String targetRev, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry,
+            List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep,
+            List<TestCaseStepBatch> testCaseStepBatch);
+
     /**
      *
      * @param test
@@ -112,6 +113,7 @@ public interface IFactoryTestCase {
      * @param conditionOper
      * @param conditionVal1
      * @param conditionVal2
+     * @param conditionVal3
      * @param fromBuild
      * @param fromRev
      * @param toBuild
@@ -129,11 +131,11 @@ public interface IFactoryTestCase {
      * @return
      */
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
-                 String implementer, String usrModif, String project, String ticket, String function, String application,
-                 String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
-                 String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String fromBuild,
-                 String fromRev, String toBuild, String toRev, String lastExecutionStatus, String bugID,
-                 String targetBuild, String targetRev, String comment,  String dateCreated, String userAgent, String screenSize, Timestamp dateModif, int testCaseVersion);
+            String implementer, String usrModif, String project, String ticket, String function, String application,
+            String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
+            String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String conditionVal3, String fromBuild,
+            String fromRev, String toBuild, String toRev, String lastExecutionStatus, String bugID,
+            String targetBuild, String targetRev, String comment, String dateCreated, String userAgent, String screenSize, Timestamp dateModif, int testCaseVersion);
 
     /**
      *
@@ -142,7 +144,7 @@ public interface IFactoryTestCase {
      * @return
      */
     TestCase create(String test, String testCase);
-    
+
     /**
      *
      * @param test
@@ -151,5 +153,5 @@ public interface IFactoryTestCase {
      * @return
      */
     TestCase create(String test, String testCase, String description);
-    
+
 }

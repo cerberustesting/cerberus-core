@@ -76,9 +76,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         boolean throwEx = false;
         final String query = "INSERT INTO testcaseexecution(test, testcase, description, build, revision, environment, environmentData, country, browser, application, robothost, "
-                + "url, robotport, tag, status, start, controlstatus, controlMessage, crbversion, executor, screensize, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, "
+                + "url, robotport, tag, status, start, controlstatus, controlMessage, crbversion, executor, screensize, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, "
                 + "manualExecution, UserAgent, queueId, testCaseVersion, TestCasePriority, system, robotdecli, robot, robotexecutor, RobotProvider, RobotSessionId) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -116,8 +116,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getConditionOper());
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal1Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal2Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal3Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal1(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal2(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal3(), 65000));
                 preStat.setString(i++, tCExecution.getManualExecution());
                 preStat.setString(i++, tCExecution.getUserAgent());
                 preStat.setLong(i++, tCExecution.getQueueID());
@@ -174,7 +176,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 + ", browser = ?, application = ?, robothost = ?, url = ?, robotport = ?, tag = ?, status = ?"
                 + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ? "
                 + ", version = ?, platform = ?, executor = ?, screensize = ? "
-                + ", ConditionOper = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ManualExecution = ?, UserAgent = ?, queueId = ?, testCaseVersion = ?, testCasePriority = ?, system = ? "
+                + ", ConditionOper = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal3Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ConditionVal3 = ?, ManualExecution = ?, UserAgent = ?, queueId = ?, testCaseVersion = ?, testCasePriority = ?, system = ? "
                 + ", robotdecli = ?, robot = ?, robotexecutor = ?, RobotProvider = ?, RobotSessionId = ? WHERE id = ?";
 
         // Debug message on SQL.
@@ -219,8 +221,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getConditionOper());
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal1Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal2Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal3Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal1(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal2(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal3(), 65000));
                 preStat.setString(i++, tCExecution.getManualExecution());
                 preStat.setString(i++, tCExecution.getUserAgent());
                 preStat.setLong(i++, tCExecution.getQueueID());
@@ -312,7 +316,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
-        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
         query.append("select * from testcaseexecution exe ");
 
@@ -1437,6 +1441,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String conditionVal1Init = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal1Init"), "");
         String conditionVal2 = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal2"), "");
         String conditionVal2Init = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal2Init"), "");
+        String conditionVal3 = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal3"), "");
+        String conditionVal3Init = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal3Init"), "");
         String manualExecution = ParameterParserUtil.parseStringParam(resultSet.getString("exe.manualExecution"), "N");
         String userAgent = ParameterParserUtil.parseStringParam(resultSet.getString("exe.userAgent"), "");
         String system = ParameterParserUtil.parseStringParam(resultSet.getString("exe.system"), "");
@@ -1449,7 +1455,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 country, robot, robotExecutor, robotHost, robotPort, robotDecli, browser, version, platform, start, end, controlStatus, controlMessage, application, null, url,
                 tag, 0, 0, 0, 0, true, "", "", status, crbVersion, null, null, null,
                 false, null, null, null, environmentData, null, null, null, null, executor, 0, screenSize, null, robotProvider, robotSessionId,
-                conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, userAgent, testCaseVersion, testCasePriority, system);
+                conditionOper, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, manualExecution, userAgent, testCaseVersion, testCasePriority, system);
         result.setQueueID(queueId);
         return result;
     }

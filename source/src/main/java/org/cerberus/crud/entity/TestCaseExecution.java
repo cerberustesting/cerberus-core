@@ -72,8 +72,10 @@ public class TestCaseExecution {
     private String conditionOper;
     private String conditionVal1Init;
     private String conditionVal2Init;
+    private String conditionVal3Init;
     private String conditionVal1;
     private String conditionVal2;
+    private String conditionVal3;
     private String manualExecution;
     private String userAgent;
     private long queueID;
@@ -375,6 +377,14 @@ public class TestCaseExecution {
         this.conditionVal2Init = conditionVal2Init;
     }
 
+    public String getConditionVal3Init() {
+        return conditionVal3Init;
+    }
+
+    public void setConditionVal3Init(String conditionVal3Init) {
+        this.conditionVal3Init = conditionVal3Init;
+    }
+
     public String getConditionVal1() {
         return conditionVal1;
     }
@@ -389,6 +399,14 @@ public class TestCaseExecution {
 
     public void setConditionVal2(String conditionVal2) {
         this.conditionVal2 = conditionVal2;
+    }
+
+    public String getConditionVal3() {
+        return conditionVal3;
+    }
+
+    public void setConditionVal3(String conditionVal3) {
+        this.conditionVal3 = conditionVal3;
     }
 
     public long getCerberus_featureflipping_websocketpushperiod() {
@@ -1020,8 +1038,10 @@ public class TestCaseExecution {
             result.put("conditionOper", this.getConditionOper());
             result.put("conditionVal1Init", this.getConditionVal1Init());
             result.put("conditionVal2Init", this.getConditionVal2Init());
+            result.put("conditionVal3Init", this.getConditionVal3Init());
             result.put("conditionVal1", this.getConditionVal1());
             result.put("conditionVal2", this.getConditionVal2());
+            result.put("conditionVal3", this.getConditionVal3());
             result.put("userAgent", this.getUserAgent());
             result.put("queueId", this.getQueueID());
             result.put("manualExecution", this.getManualExecution());
@@ -1045,7 +1065,7 @@ public class TestCaseExecution {
                 result.put("testCaseStepExecutionList", array);
 
                 array = new JSONArray();
-                if (this.getTestCaseExecutionQueueDepList()!= null) {
+                if (this.getTestCaseExecutionQueueDepList() != null) {
                     for (Object tceQDep : this.getTestCaseExecutionQueueDepList()) {
                         array.put(((TestCaseExecutionQueueDep) tceQDep).toJson());
                     }
@@ -1057,7 +1077,7 @@ public class TestCaseExecution {
                     TestCase tc = this.getTestCaseObj();
                     result.put("testCaseObj", tc.toJson());
                 }
-                
+
                 // ** Tag **
                 if (this.getTagObj() != null) {
                     Tag tagO = this.getTagObj();
