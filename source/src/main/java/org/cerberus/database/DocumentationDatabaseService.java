@@ -1100,6 +1100,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','conditionVal2','','fr','Condition Value2','',NULL)");
         b.append(",('page_executiondetail','conditionVal2Init','','en','Condition Value2 Initial','',NULL)");
         b.append(",('page_executiondetail','conditionVal2Init','','fr','Condition Value2 Initiale','',NULL)");
+        b.append(",('page_executiondetail','conditionVal3','','en','Condition Value3','',NULL)");
+        b.append(",('page_executiondetail','conditionVal3','','fr','Condition Value3','',NULL)");
+        b.append(",('page_executiondetail','conditionVal3Init','','en','Condition Value3 Initial','',NULL)");
+        b.append(",('page_executiondetail','conditionVal3Init','','fr','Condition Value3 Initiale','',NULL)");
         b.append(",('page_executiondetail','controlmessage','','en','Control Message','',NULL)");
         b.append(",('page_executiondetail','controlmessage','','fr','Message du control','',NULL)");
         b.append(",('page_executiondetail','controlstatus','','en','Control Status','',NULL)");
@@ -1199,6 +1203,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','value2','','fr','Valeur 2','',NULL)");
         b.append(",('page_executiondetail','value2init','','en','Value 2 Initial','',NULL)");
         b.append(",('page_executiondetail','value2init','','fr','Valeur 2 Initiale','',NULL)");
+        b.append(",('page_executiondetail','value3','','en','Value 3','',NULL)");
+        b.append(",('page_executiondetail','value3','','fr','Valeur 3','',NULL)");
+        b.append(",('page_executiondetail','value3init','','en','Value 3 Initial','',NULL)");
+        b.append(",('page_executiondetail','value3init','','fr','Valeur 3 Initiale','',NULL)");
         b.append(",('page_executiondetail','verbose','','en','Verbose','',NULL)");
         b.append(",('page_executiondetail','verbose','','fr','Loquacité','',NULL)");
         b.append(",('page_executiondetail','version','','en','Version','',NULL)");
@@ -2188,6 +2196,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcasescript','value2init_field','','fr','Valeur 2 Initiale','',NULL)");
         b.append(",('page_testcasescript','value2_field','','en','Value 2','',NULL)");
         b.append(",('page_testcasescript','value2_field','','fr','Value 2','',NULL)");
+        b.append(",('page_testcasescript','value3init_field','','en','Value 3 Initial','',NULL)");
+        b.append(",('page_testcasescript','value3init_field','','fr','Valeur 3 Initiale','',NULL)");
+        b.append(",('page_testcasescript','value3_field','','en','Value 3','',NULL)");
+        b.append(",('page_testcasescript','value3_field','','fr','Value 3','',NULL)");
         b.append(",('page_testcasescript','value_field','','en','Value','',NULL)");
         b.append(",('page_testcasescript','value_field','','fr','Valeur','',NULL)");
         b.append(",('page_testcasescript','warning_nocountry','','en','That Testcase has no country selected, please add at east one country (in \\'Activation Criteria\\' Tab of the testcase) in order to be able to add and define properties.','',NULL)");

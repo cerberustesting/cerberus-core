@@ -433,14 +433,12 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionOper = controlJson.isNull("conditionOper") ? "always" : controlJson.getString("conditionOper");
             String conditionVal1 = controlJson.isNull("conditionVal1") ? "" : controlJson.getString("conditionVal1");
             String conditionVal2 = controlJson.isNull("conditionVal2") ? "" : controlJson.getString("conditionVal2");
-            //String conditionVal3 = controlJson.isNull("conditionVal3") ? "" : controlJson.getString("conditionVal3");
-            String conditionVal3 = "";
+            String conditionVal3 = controlJson.isNull("conditionVal3") ? "" : controlJson.getString("conditionVal3");
             String type = controlJson.getString("objType");
             String controlValue = controlJson.getString("control");
             String value1 = controlJson.getString("value1");
             String value2 = controlJson.getString("value2");
-            //String value3 = controlJson.getString("value3");
-            String value3 = "";
+            String value3 = controlJson.getString("value3");
             String fatal = controlJson.getString("fatal");
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");
