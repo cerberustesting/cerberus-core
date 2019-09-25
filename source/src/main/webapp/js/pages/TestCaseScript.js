@@ -20,9 +20,11 @@
 
 var canUpdate = false;
 var allDelete = false;
+var loadedPropertiesNumber = -1;
 var Tags = [];
 $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.js")).then(function() {
     $(document).ready(function() {
+        loadedPropertiesNumber = -1;
         initModalDataLib();
         $("#nav-property").on('mouseenter', 'a', function(ev) {
             try {
@@ -551,6 +553,11 @@ function setAllSort() {
 
 
 function saveScript(property) {
+
+    if (!isPropertyListDisplayed()) {
+        return;
+    }
+
     // Disable the save button to avoid double click.
     $("#saveScript").attr("disabled", true);
 
@@ -650,6 +657,15 @@ function saveScript(property) {
         saveProp();
     }
 
+}
+
+function isPropertyListDisplayed() {
+
+    var displayedPropertiesNumber = document.getElementById('propList').getElementsByTagName('li').length;
+    if (loadedPropertiesNumber === -1 || displayedPropertiesNumber < loadedPropertiesNumber) {
+        return false;
+    }
+    return true;
 }
 
 function deleteFnct(property) {
@@ -1120,10 +1136,9 @@ function loadPropertiesAndDraw(test, testcase, testcaseinfo, propertyToFocus, ca
                         propertyList.push(property.property);
                     }
                 }
-
+                loadedPropertiesNumber = propertyList.length;
                 localStorage.setItem("properties", JSON.stringify(propertyList));
                 localStorage.setItem("secondaryProperties", JSON.stringify(propertyList));
-
                 sortProperties("#propTable");
                 sortSecondaryProperties("#propTable");
 
