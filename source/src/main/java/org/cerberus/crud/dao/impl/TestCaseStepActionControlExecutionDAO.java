@@ -71,7 +71,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         final String query = "INSERT INTO testcasestepactioncontrolexecution(id, step, `index`, sequence, controlsequence, sort, returncode, "
                 + "conditionOper, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, control, "
                 + "value1Init, value2Init, value3Init, value1, value2, value3, fatal, start, END, startlong, endlong, returnmessage, test, testcase, description)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -460,7 +460,8 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         long endlong = resultSet.getLong("endlong");
         String description = resultSet.getString("description");
         return factoryTestCaseStepActionControlExecution.create(id, test, testCase, step, index,
-                sequence, controlSequence, sort, returnCode, returnMessage, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, control, value1Init, value2Init, value3Init, value1, value2, value3,
+                sequence, controlSequence, sort, returnCode, returnMessage, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal3Init,
+                conditionVal1, conditionVal2, conditionVal3, control, value1Init, value2Init, value3Init, value1, value2, value3,
                 fatal, start, end, startlong, endlong, description, null, null);
     }
 }
