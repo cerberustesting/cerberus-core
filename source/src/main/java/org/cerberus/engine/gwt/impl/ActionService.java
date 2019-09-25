@@ -565,20 +565,19 @@ public class ActionService implements IActionService {
             Identifier identifier = identifierService.convertStringToIdentifier(element);
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-//                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.MAC.toString())
-//                        || tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.IOS.toString())) {
-//                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-//                    return iosAppiumService.click(tCExecution.getSession(), identifier);
-//                } else {
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
-                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
-                } else {
+                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
+                    return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, false, false);
+                } else {
+                    if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                        return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
+                    } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
+                        return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
+                    } else {
+                        identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                        return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
+                    }
                 }
-//                }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return androidAppiumService.click(tCExecution.getSession(), identifier);
@@ -648,7 +647,7 @@ public class ActionService implements IActionService {
             identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier);
+                return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier, true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "MouseDown"));
@@ -717,7 +716,7 @@ public class ActionService implements IActionService {
             identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                return webdriverService.doSeleniumActionMouseUp(tCExecution.getSession(), identifier);
+                return webdriverService.doSeleniumActionMouseUp(tCExecution.getSession(), identifier, true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "MouseUp"));
@@ -828,13 +827,18 @@ public class ActionService implements IActionService {
             Identifier identifier = identifierService.convertStringToIdentifier(element);
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), identifier.getLocator(), "");
-                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                    return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), "", identifier.getLocator());
-                } else {
+                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, true, true);
+                    return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, false, false);
+                } else {
+                    if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                        return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), identifier.getLocator(), "");
+                    } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
+                        return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), "", identifier.getLocator());
+                    } else {
+                        identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                        return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, true, true);
+                    }
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
@@ -885,11 +889,16 @@ public class ActionService implements IActionService {
             }
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionType(tCExecution.getSession(), identifier.getLocator(), property);
-                } else {
+                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, property, propertyName);
+                    return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, property, propertyName, false, false);
+                } else {
+                    if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                        return sikuliService.doSikuliActionType(tCExecution.getSession(), identifier.getLocator(), property);
+                    } else {
+                        identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                        return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, property, propertyName, true, true);
+                    }
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 return androidAppiumService.type(tCExecution.getSession(), identifier, property, propertyName);
@@ -928,15 +937,19 @@ public class ActionService implements IActionService {
             Identifier identifier = identifierService.convertStringToIdentifier(element);
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "");
-                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator());
-                } else {
+                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier);
+                    return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, false, false);
+                } else {
+                    if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                        return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "");
+                    } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
+                        return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator());
+                    } else {
+                        identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                        return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, true, true);
+                    }
                 }
-
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
@@ -977,7 +990,7 @@ public class ActionService implements IActionService {
                 } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
                     message = sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator());
                 } else {
-                    message = webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier);
+                    message = webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, true, true);
                 }
                 if (message.getCodeString().equals("OK")) {
                     message = this.doActionWait(tCExecution, property, null);
@@ -1076,13 +1089,13 @@ public class ActionService implements IActionService {
                         || tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.IOS.toString())) {
                     return iosAppiumService.keyPress(tCExecution.getSession(), value2);
                 } else if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
-                    return androidAppiumService.keyPress(tCExecution.getSession(), value2);
+                    return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), objectIdentifier, value2, false, false);
                 }
                 if (objectIdentifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                     return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), objectIdentifier.getLocator(), value2);
                 } else {
                     identifierService.checkWebElementIdentifier(objectIdentifier.getIdentifier());
-                    return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), objectIdentifier, value2);
+                    return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), objectIdentifier, value2, true, true);
                 }
 
             } else if (appType.equalsIgnoreCase(Application.TYPE_APK)) {
@@ -1241,7 +1254,10 @@ public class ActionService implements IActionService {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierObject, identifierValue);
+                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
+                    return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierObject, identifierValue, false, false);
+                }
+                return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierObject, identifierValue, true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "Select"));
@@ -1326,7 +1342,7 @@ public class ActionService implements IActionService {
             identifierService.checkWebElementIdentifier(identifierDrop.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                return webdriverService.doSeleniumActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop);
+                return webdriverService.doSeleniumActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop, true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "Select"));

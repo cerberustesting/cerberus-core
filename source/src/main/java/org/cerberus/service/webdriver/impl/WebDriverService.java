@@ -517,51 +517,11 @@ public class WebDriverService implements IWebDriverService {
                 final WebElement webElement = (WebElement) answer.getItem();
 
                 if (webElement != null) {
-                    // We noticed that sometimes, webelement.click never finished whatever the timeout set.
-                    // Below is an implementation to secure timeout on thread before calling selenium.
-                    // This is a test that can be extended or clean depending on the result.
-//                    ExecutorService executor = Executors.newCachedThreadPool();
-//                    Callable<MessageEvent> task = new Callable<MessageEvent>() {
-//                        public MessageEvent call() {
-//                            MessageEvent message;
-//                            Actions actions = new Actions(session.getDriver());
-//                            actions.click(webElement);
-//                            actions.build().perform();
-//                            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
-//                            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-//                            return message;
-//                        }
-//                    };
-//                    Future<MessageEvent> future = executor.submit(task);
-//
-//                    try {
-//                        MessageEvent result = future.get(session.getCerberus_selenium_action_click_timeout(), TimeUnit.MILLISECONDS);
-//                        return result;
-//                    } catch (java.util.concurrent.TimeoutException ex) {
-//                        // handle the timeout
-//                        LOG.warn("Exception clicking on element :" + ex, ex);
-//                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-//                        message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
-//                        return message;
-//                    } catch (InterruptedException e) {
-//                        // handle the interrupts
-//                        LOG.warn("Exception clicking on element :" + e, e);
-//                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK);
-//                        message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()).replace("%MESS%", e.toString()));
-//                        return message;
-//                    } catch (ExecutionException e) {
-//                        // handle other exceptions
-//                        LOG.warn("Exception clicking on element :" + e, e);
-//                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
-//                        message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()).replace("%MESS%", e.toString()));
-//                        return message;
-//                    } finally {
-//                        future.cancel(true);
-//                    }
-
-                    Actions actions = new Actions(session.getDriver());
-                    actions.click(webElement);
-                    actions.build().perform();
+                    
+                    ((WebElement) answer.getItem()).click();
+//                    Actions actions = new Actions(session.getDriver());
+//                    actions.click(webElement);
+//                    actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
@@ -574,11 +534,6 @@ public class WebDriverService implements IWebDriverService {
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             LOG.debug(exception.toString());
             return message;
-//        } catch (TimeoutException exception) {
-//            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-//            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
-//            MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
-//            return message;
         } catch (WebDriverException exception) {
             LOG.warn(exception.toString());
             return parseWebDriverException(exception);
@@ -587,11 +542,11 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionMouseDown(Session session, Identifier identifier) {
+    public MessageEvent doSeleniumActionMouseDown(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
 
-            AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
+            AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {
@@ -622,10 +577,10 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionMouseUp(Session session, Identifier identifier) {
+    public MessageEvent doSeleniumActionMouseUp(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
-            AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
+            AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {
@@ -849,10 +804,10 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionType(Session session, Identifier identifier, String property, String propertyName) {
+    public MessageEvent doSeleniumActionType(Session session, Identifier identifier, String property, String propertyName, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
-            AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
+            AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {
@@ -888,10 +843,10 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier) {
+    public MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
-            AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
+            AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement menuHoverLink = (WebElement) answer.getItem();
                 if (menuHoverLink != null) {
@@ -1044,12 +999,12 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String property) {
+    public MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String property, boolean waitForVisibility, boolean waitForClickability) {
 
         MessageEvent message;
         try {
             if (!StringUtil.isNullOrEmpty(identifier.getLocator())) {
-                AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
+                AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
                 if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                     WebElement webElement = (WebElement) answer.getItem();
                     if (webElement != null) {
@@ -1156,12 +1111,12 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionSelect(Session session, Identifier object, Identifier property) {
+    public MessageEvent doSeleniumActionSelect(Session session, Identifier object, Identifier property, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
             Select select;
             try {
-                AnswerItem answer = this.getSeleniumElement(session, object, true, true);
+                AnswerItem answer = this.getSeleniumElement(session, object, waitForVisibility, waitForClickability);
                 if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                     WebElement webElement = (WebElement) answer.getItem();
                     if (webElement != null) {
@@ -1195,11 +1150,11 @@ public class WebDriverService implements IWebDriverService {
 
     // we need to implement the right selenium dragAndDrop method when it works
     @Override
-    public MessageEvent doSeleniumActionDragAndDrop(Session session, Identifier drag, Identifier drop) throws IOException {
+    public MessageEvent doSeleniumActionDragAndDrop(Session session, Identifier drag, Identifier drop, boolean waitForVisibility, boolean waitForClickability) throws IOException {
         MessageEvent message;
         try {
-            AnswerItem answerDrag = this.getSeleniumElement(session, drag, true, true);
-            AnswerItem answerDrop = this.getSeleniumElement(session, drop, true, true);
+            AnswerItem answerDrag = this.getSeleniumElement(session, drag, waitForVisibility, waitForClickability);
+            AnswerItem answerDrop = this.getSeleniumElement(session, drop, waitForVisibility, waitForClickability);
             if (answerDrag.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())
                     && answerDrop.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement source = (WebElement) answerDrag.getItem();

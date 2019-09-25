@@ -94,9 +94,9 @@ public interface IWebDriverService {
 
     MessageEvent doSeleniumActionClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
 
-    MessageEvent doSeleniumActionMouseDown(Session session, Identifier identifier);
+    MessageEvent doSeleniumActionMouseDown(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
 
-    MessageEvent doSeleniumActionMouseUp(Session session, Identifier identifier);
+    MessageEvent doSeleniumActionMouseUp(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
 
     MessageEvent doSeleniumActionSwitchToWindow(Session session, Identifier identifier);
 
@@ -106,19 +106,19 @@ public interface IWebDriverService {
 
     MessageEvent doSeleniumActionDoubleClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
 
-    MessageEvent doSeleniumActionType(Session session, Identifier identifier, String property, String propertyName);
+    MessageEvent doSeleniumActionType(Session session, Identifier identifier, String property, String propertyName, boolean waitForVisibility, boolean waitForClickability);
 
-    MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier);
+    MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
 
     MessageEvent doSeleniumActionWait(Session session, Identifier identifier);
 
     MessageEvent doSeleniumActionWaitVanish(Session session, Identifier identifier);
 
-    MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String property);
+    MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String property, boolean waitForVisibility, boolean waitForClickability);
 
     MessageEvent doSeleniumActionOpenURL(Session session, String host, Identifier identifier, boolean withBase);
 
-    MessageEvent doSeleniumActionSelect(Session session, Identifier object, Identifier property);
+    MessageEvent doSeleniumActionSelect(Session session, Identifier object, Identifier property, boolean waitForVisibility, boolean waitForClickability);
 
     MessageEvent doSeleniumActionUrlLogin(Session session, String host, String uri);
 
@@ -128,7 +128,7 @@ public interface IWebDriverService {
 
     MessageEvent doSeleniumActionRightClick(Session session, Identifier identifier);
 
-    MessageEvent doSeleniumActionDragAndDrop(Session session, Identifier object, Identifier property) throws IOException;
+    MessageEvent doSeleniumActionDragAndDrop(Session session, Identifier object, Identifier property, boolean waitForVisibility, boolean waitForClickability) throws IOException;
 
     MessageEvent doSeleniumActionRefreshCurrentPage(Session session);
 }
