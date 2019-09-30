@@ -20,12 +20,9 @@
 
 var canUpdate = false;
 var allDelete = false;
-var loadedPropertiesNumber = -1;
 var Tags = [];
 $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.js")).then(function() {
     $(document).ready(function() {
-        loadedPropertiesNumber = -1;
-        console.log("valeur initiale du compteur (loadedPropertiesNumber) :" + loadedPropertiesNumber);
         initModalDataLib();
         $("#nav-property").on('mouseenter', 'a', function(ev) {
             try {
@@ -555,14 +552,8 @@ function setAllSort() {
 
 function saveScript(property) {
 
-    if (!isPropertyListDisplayed()) {
-        return;
-    }
-    console.log("sauvegarde en cours");
-
     // Disable the save button to avoid double click.
     $("#saveScript").attr("disabled", true);
-    console.log("bouton 'save' désactivé");
 
     var stepArr = setAllSort();
     var doc = new Doc();
@@ -659,22 +650,6 @@ function saveScript(property) {
     } else {
         saveProp();
     }
-
-}
-
-function isPropertyListDisplayed() {
-
-    var displayedPropertiesNumber = document.getElementById('propList').getElementsByTagName('li').length;
-    console.log("-------VERIF AVANT SAUVEGARDE----------");
-    console.log("nb propriétés chargée depuis bdd : " + loadedPropertiesNumber);
-    console.log("nb propriétés affichées : " + displayedPropertiesNumber);
-    console.log("displayedPropertiesNumber < loadedPropertiesNumber ? : " + displayedPropertiesNumber < loadedPropertiesNumber);
-    if (loadedPropertiesNumber === -1 || displayedPropertiesNumber < loadedPropertiesNumber) {
-        console.log("/!\\ ERREUR ARRET SAUVERGARDE :/!\\");
-        return false;
-    }
-    console.log("controle OK");
-    return true;
 
 }
 
@@ -1146,8 +1121,6 @@ function loadPropertiesAndDraw(test, testcase, testcaseinfo, propertyToFocus, ca
                         propertyList.push(property.property);
                     }
                 }
-                loadedPropertiesNumber = propertyList.length;
-                console.log("nombre de propriété récupérée de la bdd :" + loadedPropertiesNumber);
                 localStorage.setItem("properties", JSON.stringify(propertyList));
                 localStorage.setItem("secondaryProperties", JSON.stringify(propertyList));
                 sortProperties("#propTable");
