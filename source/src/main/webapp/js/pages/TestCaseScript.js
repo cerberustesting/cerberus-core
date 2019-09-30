@@ -25,6 +25,7 @@ var Tags = [];
 $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.js")).then(function() {
     $(document).ready(function() {
         loadedPropertiesNumber = -1;
+        console.log("valeur initiale du compteur (loadedPropertiesNumber) :" + loadedPropertiesNumber);
         initModalDataLib();
         $("#nav-property").on('mouseenter', 'a', function(ev) {
             try {
@@ -557,9 +558,11 @@ function saveScript(property) {
     if (!isPropertyListDisplayed()) {
         return;
     }
+    console.log("sauvegarde en cours");
 
     // Disable the save button to avoid double click.
     $("#saveScript").attr("disabled", true);
+    console.log("bouton 'save' désactivé");
 
     var stepArr = setAllSort();
     var doc = new Doc();
@@ -662,10 +665,17 @@ function saveScript(property) {
 function isPropertyListDisplayed() {
 
     var displayedPropertiesNumber = document.getElementById('propList').getElementsByTagName('li').length;
+    console.log("-------VERIF AVANT SAUVEGARDE----------");
+    console.log("nb propriétés chargée depuis bdd : " + loadedPropertiesNumber);
+    console.log("nb propriétés affichées : " + displayedPropertiesNumber);
+    console.log("displayedPropertiesNumber < loadedPropertiesNumber ? : " + displayedPropertiesNumber < loadedPropertiesNumber);
     if (loadedPropertiesNumber === -1 || displayedPropertiesNumber < loadedPropertiesNumber) {
+        console.log("/!\\ ERREUR ARRET SAUVERGARDE :/!\\");
         return false;
     }
+    console.log("controle OK");
     return true;
+
 }
 
 function deleteFnct(property) {
@@ -1137,6 +1147,7 @@ function loadPropertiesAndDraw(test, testcase, testcaseinfo, propertyToFocus, ca
                     }
                 }
                 loadedPropertiesNumber = propertyList.length;
+                console.log("nombre de propriété récupérée de la bdd :" + loadedPropertiesNumber);
                 localStorage.setItem("properties", JSON.stringify(propertyList));
                 localStorage.setItem("secondaryProperties", JSON.stringify(propertyList));
                 sortProperties("#propTable");
@@ -1769,9 +1780,6 @@ function Step(json, stepList, canUpdate, hasPermissionsStepLibrary) {
 
     this.html = $("<li style='padding-right:5px'></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
     this.textArea = $("<div></div>").addClass("col-sm-8 textArea").addClass("step-description").text(this.description);
-    console.log("this inLibrary = " + this.inLibrary);
-    console.log("this isusestep = " + this.useStep);
-
 }
 
 Step.prototype.draw = function() {
@@ -4877,8 +4885,6 @@ function getKeywordList(type) {
 function tec_keyispressed(e) {
     var toto = "|.| |(|)|%|";
     var charval = "|" + e.key + "|";
-    console.info(charval);
-    console.info(e.key);
     if (toto.indexOf(charval) !== -1) {
         showMessageMainPage("warning", "Character '" + e.key + "' is not allowed on subdata name. This is to avoid creating ambiguous syntax when using variabilization.", false, 4000);
         return false;
