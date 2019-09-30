@@ -25,7 +25,6 @@ var Tags = [];
 $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.js")).then(function() {
     $(document).ready(function() {
         loadedPropertiesNumber = -1;
-        console.log("valeur initiale du compteur (loadedPropertiesNumber) : " + loadedPropertiesNumber);
         initModalDataLib();
         $("#nav-property").on('mouseenter', 'a', function(ev) {
             try {
@@ -559,8 +558,6 @@ function saveScript(property) {
         return;
     }
 
-    console.log("Controle passé, sauvegarde en cours");
-
     // Disable the save button to avoid double click.
     $("#saveScript").attr("disabled", true);
 
@@ -665,13 +662,8 @@ function saveScript(property) {
 function isPropertyListDisplayed() {
 
     var displayedPropertiesNumber = document.getElementById('propList').getElementsByTagName('li').length;
-    console.log("-------SAUVEGARDE--------");
-    console.log("nombre de propriétés récupérées : " + loadedPropertiesNumber);
-    console.log("nombre de propriétés affichées : " + displayedPropertiesNumber);
-    console.log("propriétés affichées < propriétés chargées ? " + displayedPropertiesNumber < loadedPropertiesNumber);
     if (loadedPropertiesNumber === -1 || displayedPropertiesNumber < loadedPropertiesNumber) {
         return false;
-        console.log("/!\\ ARRET /!\\");
     }
     return true;
 }
@@ -1145,7 +1137,6 @@ function loadPropertiesAndDraw(test, testcase, testcaseinfo, propertyToFocus, ca
                     }
                 }
                 loadedPropertiesNumber = propertyList.length;
-                console.log("nombre de propriété récupérée de la bdd : " + loadedPropertiesNumber);
                 localStorage.setItem("properties", JSON.stringify(propertyList));
                 localStorage.setItem("secondaryProperties", JSON.stringify(propertyList));
                 sortProperties("#propTable");
@@ -1778,6 +1769,9 @@ function Step(json, stepList, canUpdate, hasPermissionsStepLibrary) {
 
     this.html = $("<li style='padding-right:5px'></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
     this.textArea = $("<div></div>").addClass("col-sm-8 textArea").addClass("step-description").text(this.description);
+    console.log("this inLibrary = " + this.inLibrary);
+    console.log("this isusestep = " + this.useStep);
+
 }
 
 Step.prototype.draw = function() {
