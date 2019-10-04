@@ -131,7 +131,7 @@ public class RecorderService implements IRecorderService {
                  * connectivity with selenium.
                  */
                 if (!returnCode.equals("CA")) {
-                    objectFile = this.recordScreenshot(myExecution, testCaseStepActionExecution, controlNumber);
+                    objectFile = this.recordScreenshot(myExecution, testCaseStepActionExecution, controlNumber, "");
                     if (objectFile != null) {
                         objectFileList.add(objectFile);
                     }
@@ -314,7 +314,7 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
-    public TestCaseExecutionFile recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control) {
+    public TestCaseExecutionFile recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String cropValues) {
 
         TestCaseExecutionFile object = null;
 
@@ -339,7 +339,7 @@ public class RecorderService implements IRecorderService {
         if (applicationType.equals(Application.TYPE_GUI)
                 || applicationType.equals(Application.TYPE_APK)
                 || applicationType.equals(Application.TYPE_IPA)) {
-            newImage = this.webdriverService.takeScreenShotFile(testCaseExecution.getSession());
+            newImage = this.webdriverService.takeScreenShotFile(testCaseExecution.getSession(), cropValues);
         } else if (applicationType.equals(Application.TYPE_FAT)) {
             newImage = this.sikuliService.takeScreenShotFile(testCaseExecution.getSession());
         }

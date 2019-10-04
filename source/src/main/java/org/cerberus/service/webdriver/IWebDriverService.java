@@ -84,7 +84,7 @@ public interface IWebDriverService {
 
     Integer getNumberOfElements(Session session, Identifier object);
 
-    File takeScreenShotFile(Session session);
+    File takeScreenShotFile(Session session, String cropValues);
 
     BufferedImage takeScreenShot(Session session);
 

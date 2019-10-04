@@ -51,9 +51,10 @@ public interface IRecorderService {
      * @param testCaseExecution
      * @param testCaseStepActionExecution
      * @param control
+     * @param cropValues
      * @return
      */
-    TestCaseExecutionFile recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control);
+    TestCaseExecutionFile recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String cropValues);
 
     /**
      *

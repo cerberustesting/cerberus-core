@@ -40,6 +40,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -411,7 +412,7 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public File takeScreenShotFile(Session session) {
+    public File takeScreenShotFile(Session session, String cropValues) {
         boolean event = true;
         long timeout = System.currentTimeMillis() + (session.getCerberus_selenium_wait_element());
         //Try to capture picture. Try again until timeout is WebDriverException is raised.
@@ -419,6 +420,19 @@ public class WebDriverService implements IWebDriverService {
             try {
                 WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
                 File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
+                if (!StringUtil.isNullOrEmpty(cropValues)) {
+                    BufferedImage fullImg = ImageIO.read(image);
+                    // x - the X coordinate of the upper-left corner of the specified rectangular region y - the Y coordinate of the upper-left corner of the specified rectangular region w - the width of the specified rectangular region h - the height of the specified rectangular region 
+                    //Left, Top, largeur-Top, largeur-Left-Right, hauteur-Top-Bottom
+                    int l = getValue(cropValues, 0);
+                    int r = getValue(cropValues, 1);
+                    int t = getValue(cropValues, 2);
+                    int b = getValue(cropValues, 3);
+                    if ((fullImg.getWidth() > (l + r)) && (fullImg.getHeight() > (t + b))) {
+                        BufferedImage eleScreenshot = fullImg.getSubimage(l, t, (fullImg.getWidth() - l - r), (fullImg.getHeight() - t - b));
+                        ImageIO.write(eleScreenshot, "png", image);
+                    }
+                }
 
                 if (image != null) {
                     //logs for debug purposes
@@ -432,10 +446,27 @@ public class WebDriverService implements IWebDriverService {
                     LOG.warn(exception.toString());
                 }
                 event = false;
+            } catch (IOException ex) {
+                LOG.error("Exception when reading snapshot generated.", ex);
             }
         }
 
         return null;
+    }
+
+    private int getValue(String cropValues, int index) {
+        String[] cropS = cropValues.split(",");
+        if (cropS.length < 4) {
+            return 0;
+        }
+        int returnv = 0;
+        try {
+            returnv = Integer.valueOf(cropS[index]);
+        } catch (NumberFormatException e) {
+            LOG.debug("Failed to convert Integer.");
+            return 0;
+        }
+        return returnv;
     }
 
     @Override
@@ -517,7 +548,7 @@ public class WebDriverService implements IWebDriverService {
                 final WebElement webElement = (WebElement) answer.getItem();
 
                 if (webElement != null) {
-                    
+
                     ((WebElement) answer.getItem()).click();
 //                    Actions actions = new Actions(session.getDriver());
 //                    actions.click(webElement);

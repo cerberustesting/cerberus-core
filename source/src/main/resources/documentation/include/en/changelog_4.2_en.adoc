@@ -18,6 +18,7 @@
 * Rerun some execution from ReportByTag page can now be done including the associated dependencies. Using this new button, Cerberus will automaticly reruns all the dependent testcases before the requested one. #2003
 * A lot of UI responsive improvements for small screens on many modals.
 * Parameter caching (for 60s) in order to reduce SQL stress.
+* Added a parameter to takeScreenshot control in order to allow crop of the screenshot taken. Allow to remove bottom or top from the screen in order to remove taskbar or header and get clean screenshots for release process. #2019
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
