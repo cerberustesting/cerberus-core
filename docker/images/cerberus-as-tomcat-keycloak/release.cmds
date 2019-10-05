@@ -23,7 +23,7 @@
 
 
 # Prepare the release version
-awk '/ENV CERBERUS_VERSION/ {$0="ENV CERBERUS_VERSION ${RELEASE_VERSION}"} {print}' latest/Dockerfile > latest/Dockerfile.back && mv latest/Dockerfile.back latest/Dockerfile
+awk '/ARG CERBERUS_VERSION/ {$0="ARG CERBERUS_VERSION=${RELEASE_VERSION}"} {print}' latest/Dockerfile > latest/Dockerfile.back && mv latest/Dockerfile.back latest/Dockerfile
 cp -R latest ${RELEASE_VERSION}
 awk '/Use the latest Cerberus version/{print; print "${RELEASE_VERSION}   | Use the ${RELEASE_VERSION} Cerberus version     | [${RELEASE_VERSION}/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat-keycloak/${RELEASE_VERSION}/Dockerfile)"; next}1' README.md > README.md.back && mv README.md.back README.md
 
