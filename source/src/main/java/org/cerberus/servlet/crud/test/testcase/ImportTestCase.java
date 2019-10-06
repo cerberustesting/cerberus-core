@@ -191,7 +191,7 @@ public class ImportTestCase extends HttpServlet {
     }// </editor-fold>
 
     private List<String> getFiles(HttpServletRequest httpServletRequest) {
-        List<String> result = new ArrayList();
+        List<String> result = new ArrayList<>();
 
         try {
             if (ServletFileUpload.isMultipartContent(httpServletRequest)) {
@@ -227,7 +227,7 @@ public class ImportTestCase extends HttpServlet {
             String projectVersion = Infos.getInstance().getProjectVersion();
             
             //Compatibility Matrix. To update if testcase (including dependencies) model change.
-            Map<String, String> compatibilityMatrix = new HashMap();
+            Map<String, String> compatibilityMatrix = new HashMap<>();
             compatibilityMatrix.put("1.0", "4.0");
             compatibilityMatrix.put("4.1", "100.0");
             

@@ -650,8 +650,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public AnswerList readDistinctGroups() {
-        AnswerList answerList = new AnswerList<>();
+    public AnswerList<String> readDistinctGroups() {
+        AnswerList<String> answerList = new AnswerList<>();
         ArrayList<String> listOfGroups = new ArrayList<String>();
         MessageEvent msg;
         String query = "SELECT distinct(`Group`) FROM testdatalib  WHERE `Group` <> '' ORDER BY `Group`";

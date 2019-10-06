@@ -154,7 +154,7 @@ public class UserSystemService implements IUserSystemService {
         Answer a = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                 .resolveDescription("OPERATION", "UPDATE"));
 
-        AnswerList an = this.readByUser(user.getLogin());
+        AnswerList<UserSystem> an = this.readByUser(user.getLogin());
         if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             List<UserSystem> oldGroups = an.getDataList();
             //delete if don't exist in new

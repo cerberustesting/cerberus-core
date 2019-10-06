@@ -59,7 +59,7 @@ public interface ITagService {
      * @param campaign
      * @return
      */
-    AnswerList readByCampaign(String campaign);
+    AnswerList<Tag> readByCampaign(String campaign);
 
     /**
      *
@@ -72,7 +72,7 @@ public interface ITagService {
      * @param system
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> system);
+    AnswerList<Tag> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> system);
 
     /**
      *
@@ -85,7 +85,7 @@ public interface ITagService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByVariousByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Tag> readByVariousByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *

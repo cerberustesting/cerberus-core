@@ -61,12 +61,12 @@ public class TestDataLibService implements ITestDataLibService {
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(TestDataLibService.class);
 
     @Override
-    public AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country) {
+    public AnswerItem<TestDataLib> readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country) {
         return testDataLibDAO.readByNameBySystemByEnvironmentByCountry(name, system, environment, country);
     }
 
     @Override
-    public AnswerItem readByKey(int testDatalib) {
+    public AnswerItem<TestDataLib> readByKey(int testDatalib) {
         return testDataLibDAO.readByKey(testDatalib);
     }
     
@@ -76,17 +76,17 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public AnswerList readNameListByName(String testDataLibName, int limit, boolean like) {
+    public AnswerList<TestDataLib> readNameListByName(String testDataLibName, int limit, boolean like) {
         return testDataLibDAO.readNameListByName(testDataLibName, limit, like);
     }
 
     @Override
-    public AnswerList readAll() {
+    public AnswerList<TestDataLib> readAll() {
         return testDataLibDAO.readAll();
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String name, List<String> systems, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<TestDataLib> readByVariousByCriteria(String name, List<String> systems, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return testDataLibDAO.readByVariousByCriteria(name, systems, environment, country, type, start, amount, column, dir, searchTerm, individualSearch);
     }
 

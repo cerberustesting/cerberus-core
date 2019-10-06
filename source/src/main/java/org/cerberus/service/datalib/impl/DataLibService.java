@@ -33,15 +33,12 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
-import org.cerberus.crud.factory.IFactoryAppService;
-import org.cerberus.crud.service.IAppServiceService;
 import org.cerberus.crud.service.ICountryEnvironmentDatabaseService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
@@ -51,7 +48,6 @@ import org.cerberus.service.appservice.IServiceService;
 import org.cerberus.service.datalib.IDataLibService;
 import org.cerberus.service.file.IFileService;
 import org.cerberus.service.json.IJsonService;
-import org.cerberus.service.soap.ISoapService;
 import org.cerberus.service.sql.ISQLService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.util.StringUtil;
@@ -59,7 +55,6 @@ import org.cerberus.util.XmlUtil;
 import org.cerberus.util.XmlUtilException;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
-import org.jfree.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -94,13 +89,7 @@ public class DataLibService implements IDataLibService {
     @Autowired
     private ISQLService sqlService;
     @Autowired
-    private IAppServiceService appServiceService;
-    @Autowired
     private IServiceService serviceService;
-    @Autowired
-    private ISoapService soapService;
-    @Autowired
-    private IFactoryAppService factoryAppService;
     @Autowired
     private IXmlUnitService xmlUnitService;
     @Autowired

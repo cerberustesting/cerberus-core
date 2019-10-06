@@ -99,7 +99,7 @@ public interface ITestDataLibDAO {
      *
      * @return
      */
-    AnswerList readDistinctGroups();
+    AnswerList<String> readDistinctGroups();
 
     /**
      *

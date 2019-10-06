@@ -154,9 +154,9 @@ public class ReadCampaign extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findCampaignList(Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
-        AnswerItem item = new AnswerItem<>();
-        AnswerList answer = new AnswerList<>();
+    private AnswerItem<JSONObject> findCampaignList(Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
+        AnswerList<Campaign> answer = new AnswerList<>();
         JSONObject resp = new JSONObject();
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
@@ -205,8 +205,8 @@ public class ReadCampaign extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findCampaignByKey(String key, Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findCampaignByKey(String key, Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         campaignService = appContext.getBean(ICampaignService.class);
@@ -274,8 +274,8 @@ public class ReadCampaign extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         campaignService = appContext.getBean(ICampaignService.class);

@@ -90,17 +90,17 @@ public class TagService implements ITagService {
     }
     
     @Override
-    public AnswerList readByCampaign(String campaign) {
+    public AnswerList<Tag> readByCampaign(String campaign) {
         return tagDAO.readByVariousByCriteria(campaign, 0, 0, "id", "desc", null, null, null);
     }
     
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems) {
+    public AnswerList<Tag> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems) {
         return tagDAO.readByVariousByCriteria(null, startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
     }
     
     @Override
-    public AnswerList readByVariousByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<Tag> readByVariousByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return tagDAO.readByVariousByCriteria(campaign, startPosition, length, columnName, sort, searchParameter, individualSearch, null);
     }
     

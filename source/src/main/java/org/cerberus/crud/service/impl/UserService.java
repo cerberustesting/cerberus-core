@@ -203,17 +203,17 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public AnswerItem readByKey(String login) {
+    public AnswerItem<User> readByKey(String login) {
         return userDAO.readByKey(login);
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
+    public AnswerList<User> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
         return userDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, string);
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<User> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return userDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 

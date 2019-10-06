@@ -43,17 +43,16 @@ public interface ITestDataLibService {
      * @param system
      * @param environment
      * @param country
-     * @param type
      * @return
      */
-    AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country);
+    AnswerItem<TestDataLib> readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country);
 
     /**
      *
      * @param testDatalib
      * @return
      */
-    AnswerItem readByKey(int testDatalib);
+    AnswerItem<TestDataLib> readByKey(int testDatalib);
 
     /**
      *
@@ -62,13 +61,13 @@ public interface ITestDataLibService {
      * @param like
      * @return
      */
-    AnswerList readNameListByName(String testDataLibName, int limit, boolean like);
+    AnswerList<TestDataLib> readNameListByName(String testDataLibName, int limit, boolean like);
 
     /**
      *
      * @return All TestDataLib
      */
-    AnswerList readAll();
+    AnswerList<TestDataLib> readAll();
     
     /**
     *
@@ -94,7 +93,7 @@ public interface ITestDataLibService {
      * resultSet
      * @return
      */
-    AnswerList readByVariousByCriteria(String name, List<String> systems, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<TestDataLib> readByVariousByCriteria(String name, List<String> systems, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      * Auxiliary method that retrieves all the group names that were already
@@ -102,7 +101,7 @@ public interface ITestDataLibService {
      *
      * @return list of group values for the type
      */
-    AnswerList readDistinctGroups();
+    AnswerList<String> readDistinctGroups();
 
     /**
      * Read distinct Value of specified column
@@ -135,7 +134,7 @@ public interface ITestDataLibService {
      * @param object
      * @return
      */
-    AnswerItem create(TestDataLib object);
+    AnswerItem<TestDataLib> create(TestDataLib object);
 
     /**
      *

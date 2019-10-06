@@ -806,8 +806,8 @@ public class PropertyService implements IPropertyService {
                         for (int i = 0; i < json.length(); i++) {
                             JSONObject explrObject = json.getJSONObject(i);
                             LOG.debug(explrObject.toString());
-                            HashMap<String, String> resultHash = new HashMap<String, String>();
-                            Iterator<String> nameItr = explrObject.keys();
+                            HashMap<String, String> resultHash = new HashMap<>();
+                            Iterator<String> nameItr = (Iterator<String>) explrObject.keys();
                             while (nameItr.hasNext()) {
                                 String name = nameItr.next();
                                 if (name.equals("KEY")) {
@@ -1448,7 +1448,7 @@ public class PropertyService implements IPropertyService {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answer.getItem() != null) {
             testDataLib = (TestDataLib) answer.getItem();
 
-            AnswerList serviceAnswer;
+            AnswerList<HashMap<String, String>> serviceAnswer;
 
             //check if there are properties defined in the data specification
             try {

@@ -20,7 +20,6 @@
 package org.cerberus.service.email.impl;
 
 import org.cerberus.service.email.entity.Email;
-import com.mysql.jdbc.StringUtils;
 import org.apache.commons.mail.HtmlEmail;
 import org.cerberus.service.email.IEmailService;
 import org.cerberus.util.StringUtil;
@@ -53,7 +52,7 @@ public class EmailService implements IEmailService {
 //        email.setTLS(cerberusEmail.isSetTls());
             email.setDebug(true);
 
-            if (!StringUtils.isNullOrEmpty(cerberusEmail.getUserName()) || !StringUtils.isNullOrEmpty(cerberusEmail.getPassword())) {
+            if (!StringUtil.isNullOrEmpty(cerberusEmail.getUserName()) || !StringUtil.isNullOrEmpty(cerberusEmail.getPassword())) {
                 email.setAuthentication(cerberusEmail.getUserName(), cerberusEmail.getPassword());
             }
 
