@@ -333,6 +333,9 @@ function editEntryClick(param) {
         formEdit.find("#channel").val(obj["SlackChannel"]);
         formEdit.find("#cIScoreThreshold").val(obj["CIScoreThreshold"]);
         formEdit.find("#description").prop("value", obj["description"]);
+        formEdit.find("#group1").prop("value", obj["group1"]);
+        formEdit.find("#group2").prop("value", obj["group2"]);
+        formEdit.find("#group3").prop("value", obj["group3"]);
         if (tinyMCE.get('longDescription') != null)
             tinyMCE.get('longDescription').setContent(obj["longDescription"]);
 
@@ -358,6 +361,9 @@ function editEntryClick(param) {
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
             formEdit.find("#campaign").prop("readonly", "readonly");
             formEdit.find("#description").prop("readonly", "readonly");
+            formEdit.find("#group1").prop("readonly", "readonly");
+            formEdit.find("#group2").prop("readonly", "readonly");
+            formEdit.find("#group3").prop("readonly", "readonly");
             formEdit.find("#id").prop("readonly", "readonly");
 
             $('#editTestcampaignButton').attr('class', '');
@@ -513,6 +519,9 @@ function editEntryModalSaveHandler() {
             SlackChannel: data.channel,
             CIScoreThreshold: data.cIScoreThreshold,
             Description: data.description,
+            Group1: data.group1,
+            Group2: data.group2,
+            Group3: data.group3,
             LongDescription: data.longDescription,
             Labels: JSON.stringify(labels),
             Parameters: JSON.stringify(parameters),
@@ -670,6 +679,9 @@ function addEntryModalSaveHandler() {
             SlackChannel: data.channel,
             CIScoreThreshold: data.cIScoreThreshold,
             Description: data.description,
+            Group1: data.group1,
+            Group2: data.group2,
+            Group3: data.group3,
             LongDescription: data.longDescription,
             Labels: JSON.stringify(labels),
             Parameters: JSON.stringify(parameters),

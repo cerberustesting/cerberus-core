@@ -109,6 +109,9 @@ public class UpdateCampaign extends HttpServlet {
         String distriblist = ParameterParserUtil.parseStringParam(request.getParameter("DistribList"), "");
         String desc = ParameterParserUtil.parseStringParam(request.getParameter("Description"), null);
         String longDesc = ParameterParserUtil.parseStringParam(request.getParameter("LongDescription"), null);
+        String group1 = ParameterParserUtil.parseStringParam(request.getParameter("Group1"), "");
+        String group2 = ParameterParserUtil.parseStringParam(request.getParameter("Group2"), "");
+        String group3 = ParameterParserUtil.parseStringParam(request.getParameter("Group3"), "");
 
         String slackWebhook = ParameterParserUtil.parseStringParam(request.getParameter("SlackWebhook"), "");
         String slackChannel = ParameterParserUtil.parseStringParam(request.getParameter("SlackChannel"), "");
@@ -155,6 +158,9 @@ public class UpdateCampaign extends HttpServlet {
                 camp.setNotifyEndTagExecution(notifyend);
                 camp.setDescription(desc);
                 camp.setLongDescription(longDesc);
+                camp.setGroup1(group1);
+                camp.setGroup2(group2);
+                camp.setGroup3(group3);
                 camp.setSlackChannel(slackChannel);
                 camp.setSlackNotifyEndTagExecution(slackNotifyEndTagExecution);
                 camp.setSlackNotifyStartTagExecution(slackNotifyStartTagExecution);

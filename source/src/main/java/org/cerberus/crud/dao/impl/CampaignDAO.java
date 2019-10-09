@@ -383,8 +383,8 @@ public class CampaignDAO implements ICampaignDAO {
         query.append("INSERT INTO campaign (`campaign`, `DistribList`, `NotifyStartTagExecution`, `NotifyEndTagExecution`"
                 + ", SlackNotifyStartTagExecution, SlackNotifyEndTagExecution, SlackWebhook, SlackChannel"
                 + ", CIScoreThreshold, Tag, Verbose, Screenshot, PageSource, RobotLog, Timeout, Retries, Priority, ManualExecution"
-                + ", `Description`, LongDescription, UsrCreated) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                + ", `Description`, LongDescription, Group1, Group2, Group3, UsrCreated) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -415,6 +415,9 @@ public class CampaignDAO implements ICampaignDAO {
                 preStat.setString(i++, object.getManualExecution());
                 preStat.setString(i++, object.getDescription());
                 preStat.setString(i++, object.getLongDescription());
+                preStat.setString(i++, object.getGroup1());
+                preStat.setString(i++, object.getGroup2());
+                preStat.setString(i++, object.getGroup3());
                 preStat.setString(i++, object.getUsrCreated());
 
                 preStat.executeUpdate();
@@ -456,7 +459,7 @@ public class CampaignDAO implements ICampaignDAO {
         final String query = "UPDATE campaign cpg SET campaign = ?, DistribList = ?, NotifyStartTagExecution = ?, NotifyEndTagExecution = ?"
                 + ", SlackNotifyStartTagExecution = ?,  SlackNotifyEndTagExecution = ?, SlackWebhook = ?, SlackChannel = ?"
                 + ", CIScoreThreshold = ?, Tag = ?, Verbose = ?, Screenshot = ?, PageSource = ?, RobotLog = ?, Timeout = ?, Retries = ?, Priority = ?, ManualExecution = ?"
-                + ", Description = ?, LongDescription = ?, UsrModif = ?, DateModif =  NOW() WHERE campaignID = ?";
+                + ", Description = ?, LongDescription = ?, Group1 = ?, Group2 = ?, Group3 = ?, UsrModif = ?, DateModif =  NOW() WHERE campaignID = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -487,6 +490,9 @@ public class CampaignDAO implements ICampaignDAO {
                 preStat.setString(i++, object.getManualExecution());
                 preStat.setString(i++, object.getDescription());
                 preStat.setString(i++, object.getLongDescription());
+                preStat.setString(i++, object.getGroup1());
+                preStat.setString(i++, object.getGroup2());
+                preStat.setString(i++, object.getGroup3());
                 preStat.setString(i++, object.getUsrModif());
                 preStat.setInt(i++, object.getCampaignID());
 
@@ -583,6 +589,10 @@ public class CampaignDAO implements ICampaignDAO {
 
         String desc = ParameterParserUtil.parseStringParam(rs.getString("cpg.description"), "");
         String longDesc = ParameterParserUtil.parseStringParam(rs.getString("cpg.LongDescription"), "");
+        String group1 = ParameterParserUtil.parseStringParam(rs.getString("cpg.Group1"), "");
+        String group2 = ParameterParserUtil.parseStringParam(rs.getString("cpg.Group2"), "");
+        String group3 = ParameterParserUtil.parseStringParam(rs.getString("cpg.Group3"), "");
+
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("cpg.UsrModif"), "");
         String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("cpg.UsrCreated"), "");
         Timestamp dateModif = rs.getTimestamp("cpg.DateModif");
@@ -592,7 +602,7 @@ public class CampaignDAO implements ICampaignDAO {
                 slackNotifyStartTagExecution, slackNotifyEndTagExecution, slackWebhook, slackChannel,
                 cIScoreThreshold,
                 tag, verbose, screenshot, pageSource, robotLog, timeout, retries, priority, manualExecution,
-                desc, longDesc,
+                desc, longDesc, group1, group2, group3,
                 usrCreated, dateCreated, usrModif, dateModif);
     }
 

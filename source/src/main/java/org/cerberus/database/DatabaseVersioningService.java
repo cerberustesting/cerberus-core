@@ -8211,7 +8211,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("ALTER TABLE testcasestepactioncontrol ADD Value3 TEXT after Value2;");
         a.add("ALTER TABLE testcasestepactioncontrolexecution ADD Value3 TEXT AFTER Value2, ADD Value3Init TEXT AFTER Value2Init;");
 
-        // add colums for Value3 and ConditionValue3 fields
+        // add columns for Value3 and ConditionValue3 fields
         // 1431-1438
         a.add("ALTER TABLE testcase ADD ConditionVal3 TEXT AFTER ConditionVal2;");
         a.add("ALTER TABLE testcasestep ADD ConditionVal3 TEXT AFTER ConditionVal2;");
@@ -8221,6 +8221,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("ALTER TABLE testcasestepexecution ADD ConditionVal3Init TEXT AFTER ConditionVal2Init, ADD ConditionVal3 TEXT AFTER ConditionVal2;");
         a.add("ALTER TABLE testcasestepactionexecution ADD Value3 TEXT AFTER Value2, ADD Value3Init TEXT AFTER Value2Init, ADD ConditionVal3 TEXT AFTER ConditionVal2, ADD ConditionVal3Init TEXT AFTER ConditionVal2Init;");
         a.add("ALTER TABLE testcasestepactioncontrolexecution ADD ConditionVal3 TEXT AFTER ConditionVal2, ADD ConditionVal3Init TEXT AFTER ConditionVal2Init;");
+
+        // add groups columns for Campaign fields
+        // 1439
+        a.add("ALTER TABLE campaign ADD Group1 VARCHAR(100) NOT NULL DEFAULT '' AFTER LongDescription, ADD Group2 VARCHAR(100) NOT NULL DEFAULT '' AFTER Group1, ADD Group3 VARCHAR(100) NOT NULL DEFAULT '' AFTER Group2;");
 
         return a;
     }

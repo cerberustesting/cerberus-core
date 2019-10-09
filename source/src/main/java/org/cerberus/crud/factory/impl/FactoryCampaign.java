@@ -37,7 +37,7 @@ public class FactoryCampaign implements IFactoryCampaign {
             String SlackNotifyStartTagExecution, String SlackNotifyEndTagExecution, String SlackWebhook, String SlackChannel,
             String CIScoreThreshold,
             String Tag, String Verbose, String Screenshot, String PageSource, String RobotLog, String Timeout, String Retries, String Priority, String ManualExecution,
-            String description, String longDescription,
+            String description, String longDescription, String group1, String group2, String group3,
             String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif) {
         Campaign newObject = new Campaign();
         newObject.setCampaignID(campaignID);
@@ -61,6 +61,9 @@ public class FactoryCampaign implements IFactoryCampaign {
         newObject.setManualExecution(ManualExecution);
         newObject.setDescription(description);
         newObject.setLongDescription(longDescription);
+        newObject.setGroup1(group1);
+        newObject.setGroup2(group2);
+        newObject.setGroup3(group3);
         newObject.setUsrCreated(UsrCreated);
         newObject.setDateCreated(DateCreated);
         newObject.setUsrModif(UsrModif);

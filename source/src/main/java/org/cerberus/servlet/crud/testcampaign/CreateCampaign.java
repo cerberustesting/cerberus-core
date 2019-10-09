@@ -106,6 +106,9 @@ public class CreateCampaign extends HttpServlet {
         String label = ParameterParserUtil.parseStringParam(request.getParameter("Labels"), null);
         String desc = ParameterParserUtil.parseStringParam(request.getParameter("Description"), null);
         String longDesc = ParameterParserUtil.parseStringParam(request.getParameter("LongDescription"), null);
+        String group1 = ParameterParserUtil.parseStringParam(request.getParameter("Group1"), "");
+        String group2 = ParameterParserUtil.parseStringParam(request.getParameter("Group2"), "");
+        String group3 = ParameterParserUtil.parseStringParam(request.getParameter("Group3"), "");
 
         String slackWebhook = ParameterParserUtil.parseStringParam(request.getParameter("SlackWebhook"), "");
         String slackChannel = ParameterParserUtil.parseStringParam(request.getParameter("SlackChannel"), "");
@@ -134,7 +137,7 @@ public class CreateCampaign extends HttpServlet {
                     slackNotifyStartTagExecution, slackNotifyEndTagExecution, slackWebhook, slackChannel,
                     cIScoreThreshold,
                     tag, verbose, screenshot, pageSource, robotLog, timeout, retries, priority, manualExecution,
-                    desc, longDesc,
+                    desc, longDesc, group1, group2, group3,
                     request.getRemoteUser(), null, null, null);
 
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
