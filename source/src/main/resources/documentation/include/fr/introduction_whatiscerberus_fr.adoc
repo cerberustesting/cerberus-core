@@ -1,1 +1,1 @@
-Cerberus is a webapplication, open source, test repository, user freindly, can interface with robot in multiple technologies.
+Cerberus is a webapplication, open source, test repository, user friendly, can interface with robot in multiple technologies.
