@@ -123,6 +123,23 @@ public class ActionService implements IActionService {
         AnswerItem<String> answerDecode = new AnswerItem<>();
 
         /**
+         * Decode the step action description
+         */
+        try {
+            // When starting a new action, we reset the property list that was already calculated.
+            tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+
+            answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getDescription(),
+                    tCExecution, testCaseStepActionExecution, false);
+            testCaseStepActionExecution.setDescription((String) answerDecode.getItem());
+        } catch (CerberusEventException cex) {
+            testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
+            testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            testCaseStepActionExecution.setEnd(new Date().getTime());
+            return testCaseStepActionExecution;
+        }
+
+        /**
          * Decode the object field before doing the action.
          */
         try {

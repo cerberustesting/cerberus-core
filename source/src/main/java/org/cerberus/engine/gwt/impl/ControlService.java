@@ -90,6 +90,22 @@ public class ControlService implements IControlService {
         AnswerItem<String> answerDecode = new AnswerItem<>();
 
         /**
+         * Decode the step action control description
+         */
+        try {
+            // When starting a new action, we reset the property list that was already calculated.
+            tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+
+            answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getDescription(),
+                    tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
+            testCaseStepActionControlExecution.setDescription((String) answerDecode.getItem());
+        } catch (CerberusEventException cex) {
+            testCaseStepActionControlExecution.setControlResultMessage(cex.getMessageError());
+            testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            return testCaseStepActionControlExecution;
+        }
+
+        /**
          * Decode the 2 fields property and values before doing the control.
          */
         try {
