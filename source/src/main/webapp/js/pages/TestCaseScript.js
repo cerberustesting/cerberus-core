@@ -661,16 +661,11 @@ function saveScript(property) {
 
 function isPropertyListDisplayed() {
 
-    var displayedPropertiesNumber = document.getElementById('propList').getElementsByTagName('li').length;
-    console.log("-------VERIF AVANT SAUVEGARDE----------");
-    console.log("nb propriétés chargée depuis bdd : " + loadedPropertiesNumber);
-    console.log("nb propriétés affichées : " + displayedPropertiesNumber);
-    console.log("displayedPropertiesNumber < loadedPropertiesNumber ? : " + displayedPropertiesNumber < loadedPropertiesNumber);
-    if (loadedPropertiesNumber === -1 || displayedPropertiesNumber < loadedPropertiesNumber) {
-        console.log("/!\\ ERREUR ARRET SAUVERGARDE :/!\\");
+    //var displayedPropertiesNumber = document.getElementById('propList').getElementsByTagName('li').length;
+    if (loadedPropertiesNumber === -1) {
         return false;
     }
-    console.log("controle OK");
+
     return true;
 
 }
