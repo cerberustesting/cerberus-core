@@ -411,7 +411,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
             }
         }
 
-        AnswerList brpList = brpService.readDistinctValuesByCriteria(system,  searchParameter, individualSearch, columnName);
+        AnswerList<String> brpList = brpService.readDistinctValuesByCriteria(system,  searchParameter, individualSearch, columnName);
 
         object.put("distinctValues", brpList.getDataList());
 

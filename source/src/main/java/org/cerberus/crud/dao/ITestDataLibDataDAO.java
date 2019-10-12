@@ -57,7 +57,7 @@ public interface ITestDataLibDataDAO {
      * @param columnPositionEmpty
      * @return
      */
-    AnswerList readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String columnPositionEmpty);
+    AnswerList<TestDataLibData> readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String columnPositionEmpty);
 
     /**
      *

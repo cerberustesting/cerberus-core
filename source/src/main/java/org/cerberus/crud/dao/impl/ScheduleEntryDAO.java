@@ -40,6 +40,7 @@ import org.cerberus.crud.factory.IFactoryScheduleEntry;
 import org.springframework.stereotype.Repository;
 import org.cerberus.crud.dao.IScheduleEntryDAO;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -123,10 +124,10 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
     }
 
     @Override
-    public AnswerItem<List> readByName(String name) {
+    public AnswerList<ScheduleEntry> readByName(String name) {
         //LOG.debug("readAllActive is running");
-        AnswerItem<List> ans = new AnswerItem();
-        List<ScheduleEntry> objectList = new ArrayList<ScheduleEntry>();
+        AnswerList<ScheduleEntry> ans = new AnswerList<>();
+        List<ScheduleEntry> objectList = new ArrayList<>();
         final String query = "SELECT * FROM `scheduleentry` WHERE `name` = ?";
         MessageEvent msg = null;
         // Debug message on SQL.        
@@ -182,16 +183,16 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
             }
         }
         ans.setResultMessage(msg);
-        ans.setItem(objectList);
+        ans.setDataList(objectList);
         //sets the message
         return ans;
     }
 
     @Override
-    public AnswerItem<List> readAllActive() {
+    public AnswerList<ScheduleEntry> readAllActive() {
         //LOG.debug("readAllActive is running");
-        AnswerItem<List> ans = new AnswerItem();
-        List<ScheduleEntry> objectList = new ArrayList<ScheduleEntry>();
+        AnswerList<ScheduleEntry> ans = new AnswerList<>();
+        List<ScheduleEntry> objectList = new ArrayList<>();
         final String query = "SELECT * FROM `scheduleentry` WHERE `active` = 'Y'";
         MessageEvent msg;
         // Debug message on SQL.        
@@ -241,7 +242,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
             }
         }
         ans.setResultMessage(msg);
-        ans.setItem(objectList);
+        ans.setDataList(objectList);
         //sets the message
         return ans;
     }
@@ -267,7 +268,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
     @Override
     public AnswerItem<Integer> create(ScheduleEntry scheduler) {
         MessageEvent msg = null;
-        AnswerItem<Integer> ans = new AnswerItem();
+        AnswerItem<Integer> ans = new AnswerItem<>();
         final StringBuilder query = new StringBuilder("INSERT INTO `scheduleentry` (`type`, `name`,`cronDefinition`,`active`,`description`,`UsrCreated`) VALUES ( ?, ?, ?, ?, ?, ?);");
 
         // Debug message on SQL.

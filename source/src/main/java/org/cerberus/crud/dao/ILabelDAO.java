@@ -57,13 +57,13 @@ public interface ILabelDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList<List<Label>> readBySystemByCriteria(List<String> system, boolean strictSystemFilter, List<String> type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Label> readBySystemByCriteria(List<String> system, boolean strictSystemFilter, List<String> type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
      * @return
      */
-    AnswerList<List<Label>> readAllLinks();
+    AnswerList<Label> readAllLinks();
 
     /**
      *

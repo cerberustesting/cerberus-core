@@ -67,7 +67,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
 
     @Override
     public AnswerItem<RobotExecutor> readByKey(String robot, String executor) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<RobotExecutor> ans = new AnswerItem<>();
         RobotExecutor result = null;
         final String query = "SELECT * FROM `robotexecutor` rbe WHERE `robot` = ? and `executor` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -490,7 +490,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
 
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String robot, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();

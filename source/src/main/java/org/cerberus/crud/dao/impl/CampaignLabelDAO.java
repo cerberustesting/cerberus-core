@@ -74,7 +74,7 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
 
     @Override
     public AnswerItem<CampaignLabel> readByKeyTech(Integer campaignLabelID) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<CampaignLabel> ans = new AnswerItem<>();
         CampaignLabel result = null;
         final String query = "SELECT * FROM `campaignLabel` cpl WHERE `campaignlabelid` = ? JOIN label lab ON lab.id = cpl.labelid ";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -136,7 +136,7 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
 
     @Override
     public AnswerItem<CampaignLabel> readByKey(String campaign, Integer LabelId) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<CampaignLabel> ans = new AnswerItem<>();
         CampaignLabel result = null;
         final String query = "SELECT * FROM `campaignlabel` src WHERE `campaign` = ? and `labelid` = ? JOIN label lab ON lab.id = cpl.labelid";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -200,7 +200,7 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
 
     @Override
     public AnswerList<CampaignLabel> readByVariousByCriteria(String campaign, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+        AnswerList<CampaignLabel> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<CampaignLabel> objectList = new ArrayList<CampaignLabel>();
@@ -525,7 +525,7 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
 
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String campaign, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();

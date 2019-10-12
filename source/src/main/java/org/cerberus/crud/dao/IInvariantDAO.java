@@ -58,14 +58,14 @@ public interface IInvariantDAO {
      * @param gp
      * @return
      */
-    AnswerList readByIdnameByGp1(String idName, String gp);
+    AnswerList<Invariant> readByIdnameByGp1(String idName, String gp);
 
     /**
      * @param idName
      * @param gp
      * @return
      */
-    AnswerList readByIdnameByNotGp1(String idName, String gp);
+    AnswerList<Invariant> readByIdnameByNotGp1(String idName, String gp);
 
     /**
      * @param start
@@ -77,7 +77,7 @@ public interface IInvariantDAO {
      * @param PublicPrivateFilter
      * @return
      */
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter);
+    public AnswerList<Invariant> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter);
 
     /**
      * @param start
@@ -100,7 +100,7 @@ public interface IInvariantDAO {
      * @param columnName
      * @return
      */
-    public AnswerList readDistinctValuesByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter, String columnName);
 
     /**
      * Getting the list of country invariant for which exist at least 1 change

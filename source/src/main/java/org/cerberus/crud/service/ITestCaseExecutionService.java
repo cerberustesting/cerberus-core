@@ -120,7 +120,6 @@ public interface ITestCaseExecutionService {
      */
     void setTagToExecution(long id, String tag) throws CerberusException;
 
-    AnswerList findTagList(int tagnumber) throws CerberusException;
 
     /**
      *
@@ -155,7 +154,7 @@ public interface ITestCaseExecutionService {
      * @return
      * @throws CerberusException
      */
-    AnswerList readByTag(String tag) throws CerberusException;
+    AnswerList<TestCaseExecution> readByTag(String tag) throws CerberusException;
 
     /**
      *
@@ -191,7 +190,7 @@ public interface ITestCaseExecutionService {
      * @param executionId : ID of the execution
      * @return AnswerItem with returncode and testcaseexecution object as item.
      */
-    AnswerItem readByKey(long executionId);
+    AnswerItem<TestCaseExecution> readByKey(long executionId);
 
     /**
      * Read TestCaseExecution knowing the Key
@@ -233,7 +232,7 @@ public interface ITestCaseExecutionService {
      * @param columnName
      * @return
      */
-    public AnswerList readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      *

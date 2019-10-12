@@ -137,7 +137,7 @@ public interface ITestCaseDAO {
      * @param testCase
      * @return
      */
-    public AnswerItem readByKey(String test, String testCase);
+    public AnswerItem<TestCase> readByKey(String test, String testCase);
 
     /**
      *

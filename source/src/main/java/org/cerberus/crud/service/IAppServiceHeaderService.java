@@ -40,13 +40,13 @@ public interface IAppServiceHeaderService {
      * @param key
      * @return
      */
-    AnswerItem readByKey(String service, String key);
+    AnswerItem<AppServiceHeader> readByKey(String service, String key);
 
     /**
      *
      * @return
      */
-    AnswerList readAll();
+    AnswerList<AppServiceHeader> readAll();
 
     /**
      *
@@ -54,7 +54,7 @@ public interface IAppServiceHeaderService {
      * @param active
      * @return
      */
-    AnswerList readByVarious(String service, String active);
+    AnswerList<AppServiceHeader> readByVarious(String service, String active);
 
     /**
      *
@@ -66,7 +66,7 @@ public interface IAppServiceHeaderService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<AppServiceHeader> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -80,7 +80,7 @@ public interface IAppServiceHeaderService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByVariousByCriteria(String service, String active, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<AppServiceHeader> readByVariousByCriteria(String service, String active, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *

@@ -76,7 +76,7 @@ public interface ITestCaseLabelService {
      * @param testCaseList
      * @return
      */
-    AnswerList readByTestTestCase(String test, String testCase, List<TestCase> testCaseList);
+    AnswerList<TestCaseLabel> readByTestTestCase(String test, String testCase, List<TestCase> testCaseList);
 
     /**
      *

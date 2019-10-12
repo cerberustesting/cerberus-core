@@ -122,7 +122,7 @@ public class DeleteCampaign extends HttpServlet {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "Scheduler").replace("%OPERATION%", "No Insert"));
                     schedAns.setResultMessage(msg);
-                    List<ScheduleEntry> schList = scheduleentryservice.readByName(key).getItem();
+                    List<ScheduleEntry> schList = scheduleentryservice.readByName(key).getDataList();
                     if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         if (!schList.isEmpty()) {
                             finalAnswer = scheduleentryservice.deleteByCampaignName(camp.getCampaign());

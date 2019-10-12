@@ -171,11 +171,6 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public AnswerList findTagList(int tagnumber) throws CerberusException {
-        return testCaseExecutionDao.findTagList(tagnumber);
-    }
-
-    @Override
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         return AnswerUtil.convertToAnswerList(() -> testCaseExecutionDao.readByTagByCriteria(tag, start, amount, sort, searchTerm, individualSearch));
     }
@@ -186,7 +181,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public AnswerList readByTag(String tag) throws CerberusException {
+    public AnswerList<TestCaseExecution> readByTag(String tag) throws CerberusException {
         return testCaseExecutionDao.readByTag(tag);
     }
 
@@ -227,13 +222,13 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public AnswerItem readByKey(long executionId) {
+    public AnswerItem<TestCaseExecution> readByKey(long executionId) {
         return testCaseExecutionDao.readByKey(executionId);
     }
 
     @Override
-    public AnswerItem readByKeyWithDependency(long executionId) {
-        AnswerItem tce = this.readByKey(executionId);
+    public AnswerItem<TestCaseExecution> readByKeyWithDependency(long executionId) {
+        AnswerItem<TestCaseExecution> tce = this.readByKey(executionId);
         TestCaseExecution testCaseExecution = (TestCaseExecution) tce.getItem();
 
         if (!StringUtil.isNullOrEmpty(testCaseExecution.getTag())) {
@@ -287,7 +282,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         AnswerList files = testCaseExecutionFileService.readByVarious(executionId, "");
         testCaseExecution.setFileList((List<TestCaseExecutionFile>) files.getDataList());
 
-        AnswerItem response = new AnswerItem<>(testCaseExecution, tce.getResultMessage());
+        AnswerItem<TestCaseExecution> response = new AnswerItem<>(testCaseExecution, tce.getResultMessage());
         return response;
     }
 
@@ -319,7 +314,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return testCaseExecutionDao.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
     }
 

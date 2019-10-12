@@ -41,7 +41,7 @@ public interface ITestService {
      * @param test
      * @return
      */
-    public AnswerItem readByKey(String test);
+    public AnswerItem<Test> readByKey(String test);
 
     /**
      *

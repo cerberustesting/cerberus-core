@@ -45,8 +45,20 @@ public interface ITestCaseExecutionDAO {
      */
     long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
+    /**
+     *
+     * @param tCExecution
+     * @throws CerberusException
+     */
     void updateTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param country
+     * @return
+     */
     List<String> getIDListOfLastExecutions(String test, String testcase, String country);
 
     /**
@@ -55,7 +67,7 @@ public interface ITestCaseExecutionDAO {
      * @param application
      * @return
      */
-    AnswerItem readLastByCriteria(String application);
+    AnswerItem<TestCaseExecution> readLastByCriteria(String application);
 
     /**
      *
@@ -67,10 +79,26 @@ public interface ITestCaseExecutionDAO {
      * @param revision
      * @return TestCaseExecution Object created only with attributes from
      * database
+     * @throws org.cerberus.exception.CerberusException
      */
     TestCaseExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
             String build, String revision) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param environment
+     * @param country
+     * @param build
+     * @param revision
+     * @param browser
+     * @param browserVersion
+     * @param ip
+     * @param port
+     * @param tag
+     * @return
+     */
     TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
             String build, String revision, String browser, String browserVersion,
             String ip, String port, String tag);
@@ -100,7 +128,6 @@ public interface ITestCaseExecutionDAO {
      */
     TestCaseExecution findTCExecutionByKey(long id) throws CerberusException;
 
-
     /**
      * @param withUUIDTag determine of we must retreive UUID tag or not
      * @return a list of String tag
@@ -108,6 +135,13 @@ public interface ITestCaseExecutionDAO {
      */
     List<String> findDistinctTag(boolean withUUIDTag) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @return
+     * @throws CerberusException
+     */
     TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase) throws CerberusException;
 
     /**
@@ -138,8 +172,6 @@ public interface ITestCaseExecutionDAO {
      */
     public void setTagToExecution(long id, String tag) throws CerberusException;
 
-    AnswerList findTagList(int tagnumber) throws CerberusException;
-
     /**
      *
      * @param tag
@@ -155,16 +187,20 @@ public interface ITestCaseExecutionDAO {
 
     /**
      * Read TestCaseExecution By Tag
+     *
      * @param tag Tag used to filter execution
-     * @return AnswerList that contains a list of TestCaseExecution object enriched with TestCase and Application objects
+     * @return AnswerList that contains a list of TestCaseExecution object
+     * enriched with TestCase and Application objects
      * @throws CerberusException
      */
-    public AnswerList readByTag(String tag) throws CerberusException;
+    public AnswerList<TestCaseExecution> readByTag(String tag) throws CerberusException;
 
     /**
      * Read TestCaseExecution By Tag
+     *
      * @param tag Tag used to filter execution
-     * @return AnswerList that contains a list of TestCaseExecution object enriched with TestCase and Application objects
+     * @return AnswerList that contains a list of TestCaseExecution object
+     * enriched with TestCase and Application objects
      * @throws CerberusException
      */
     public Integer readNbByTag(String tag) throws CerberusException;
@@ -206,12 +242,13 @@ public interface ITestCaseExecutionDAO {
      * @param executionId
      * @return
      */
-    public AnswerItem readByKey(long executionId);
+    public AnswerItem<TestCaseExecution> readByKey(long executionId);
 
     /**
      * Uses data of ResultSet to create object {@link TestCaseExecution}
      *
-     * @param resultSet ResultSet relative to select from table TestCaseExecution
+     * @param resultSet ResultSet relative to select from table
+     * TestCaseExecution
      * @return object {@link TestCaseExecution}
      * @throws SQLException when trying to get value from
      * {@link java.sql.ResultSet#getString(String)}
@@ -221,6 +258,7 @@ public interface ITestCaseExecutionDAO {
 
     /**
      * Get the distinct value of the specified colum
+     *
      * @param system
      * @param test
      * @param searchParameter
@@ -228,6 +266,6 @@ public interface ITestCaseExecutionDAO {
      * @param columnName Name of the column
      * @return object {@link TestCaseExecution}
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

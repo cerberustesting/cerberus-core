@@ -807,9 +807,9 @@ public class PropertyService implements IPropertyService {
                             JSONObject explrObject = json.getJSONObject(i);
                             LOG.debug(explrObject.toString());
                             HashMap<String, String> resultHash = new HashMap<>();
-                            Iterator<String> nameItr = (Iterator<String>) explrObject.keys();
+                            Iterator<?> nameItr = explrObject.keys();
                             while (nameItr.hasNext()) {
-                                String name = nameItr.next();
+                                String name = (String) nameItr.next();
                                 if (name.equals("KEY")) {
                                     resultHash.put("", explrObject.getString(name));
                                 } else {

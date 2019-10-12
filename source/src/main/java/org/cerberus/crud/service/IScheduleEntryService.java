@@ -23,6 +23,7 @@ import java.util.List;
 import org.cerberus.crud.entity.ScheduleEntry;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -37,7 +38,11 @@ public interface IScheduleEntryService {
      */
     public AnswerItem<ScheduleEntry> readbykey(long id);
   
-    public AnswerItem<List> readAllActive ();
+    /**
+     *
+     * @return
+     */
+    public AnswerList<ScheduleEntry> readAllActive ();
     
     /**
      *
@@ -65,7 +70,7 @@ public interface IScheduleEntryService {
      * @param name
      * @return
      */
-    public AnswerItem<List> readByName(String name);
+    public AnswerList<ScheduleEntry> readByName(String name);
      
     /**
      *

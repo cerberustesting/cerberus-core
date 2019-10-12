@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
@@ -52,7 +53,7 @@ public class ApplicationService implements IApplicationService {
     private final String OBJECT_NAME = "Application";
 
     @Override
-    public AnswerItem readByKey(String id) {
+    public AnswerItem<Application> readByKey(String id) {
         return ApplicationDAO.readByKey(id);
     }
 
@@ -77,7 +78,7 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    public AnswerItem readTestCaseCountersBySystemByStatus(List<String> system) {
+    public AnswerItem<HashMap<String, HashMap<String, Integer>>> readTestCaseCountersBySystemByStatus(List<String> system) {
         return this.ApplicationDAO.readTestCaseCountersBySystemByStatus(system);
     }
 

@@ -75,7 +75,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
     @Override
     public AnswerItem<TestDataLib> readByKey(int testDataLibID) {
-        AnswerItem answer = new AnswerItem<>();
+        AnswerItem<TestDataLib> answer = new AnswerItem<>();
         MessageEvent msg;
         TestDataLib result;
         final String query = "SELECT * FROM testdatalib tdl "
@@ -144,8 +144,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country) {
-        AnswerItem answer = new AnswerItem<>();
+    public AnswerItem<TestDataLib> readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country) {
+        AnswerItem<TestDataLib> answer = new AnswerItem<>();
         TestDataLib result = null;
         MessageEvent msg;
 
@@ -280,10 +280,10 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public AnswerList readNameListByName(String testDataLibName, int limit, boolean like) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<TestDataLib> readNameListByName(String testDataLibName, int limit, boolean like) {
+        AnswerList<TestDataLib> answer = new AnswerList<>();
         MessageEvent msg;
-        List<TestDataLib> list = new ArrayList<TestDataLib>();
+        List<TestDataLib> list = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 
@@ -375,8 +375,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public AnswerList readAll() {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<TestDataLib> readAll() {
+        AnswerList<TestDataLib> answer = new AnswerList<>();
         MessageEvent msg;
 
         List<TestDataLib> list = new ArrayList<TestDataLib>();
@@ -445,9 +445,9 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String name, List<String> systems, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<TestDataLib> readByVariousByCriteria(String name, List<String> systems, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
 
-        AnswerList answer = new AnswerList<>();
+        AnswerList<TestDataLib> answer = new AnswerList<>();
         MessageEvent msg;
         int nrTotalRows = 0;
         List<TestDataLib> objectList = new ArrayList<>();
@@ -720,7 +720,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public AnswerItem create(TestDataLib testDataLib) {
+    public AnswerItem<TestDataLib> create(TestDataLib testDataLib) {
         MessageEvent msg;
         AnswerItem answer = new AnswerItem<>();
         StringBuilder query = new StringBuilder();

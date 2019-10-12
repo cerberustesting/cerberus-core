@@ -69,7 +69,7 @@ public class TestDataLibService implements ITestDataLibService {
     public AnswerItem<TestDataLib> readByKey(int testDatalib) {
         return testDataLibDAO.readByKey(testDatalib);
     }
-    
+
     @Override
     public Answer uploadFile(int id, FileItem file) {
         return testDataLibDAO.uploadFile(id, file);
@@ -97,35 +97,30 @@ public class TestDataLibService implements ITestDataLibService {
 
     @Override
     public AnswerList<HashMap<String, String>> readINTERNALWithSubdataByCriteria(String dataName, String dataSystem, String dataCountry, String dataEnvironment, int rowLimit, String system) {
-        AnswerList answer = new AnswerList<>();
-        AnswerList answerData = new AnswerList<>();
+        AnswerList<HashMap<String, String>> answer = new AnswerList<>();
+        AnswerList<TestDataLib> answerDataLib = new AnswerList<>();
+        AnswerList<TestDataLibData> answerData = new AnswerList<>();
         MessageEvent msg;
 
-        List<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
+        List<HashMap<String, String>> result = new ArrayList<>();
 
         // We start by calculating the max nb of row we can fetch. Either specified by rowLimit either defined by a parameter.
-        int maxSecurityFetch = 100;
-        try {
-            String maxSecurityFetch1 = parameterService.findParameterByKey("cerberus_testdatalib_fetchmax", system).getValue();
-            maxSecurityFetch = Integer.valueOf(maxSecurityFetch1);
-        } catch (CerberusException ex) {
-            LOG.error(ex, ex);
-        }
+        int maxSecurityFetch = parameterService.getParameterIntegerByKey("cerberus_testdatalib_fetchmax", system, 100);
         int maxFetch = maxSecurityFetch;
         if (rowLimit > 0 && rowLimit < maxSecurityFetch) {
             maxFetch = rowLimit;
         } else {
             maxFetch = maxSecurityFetch;
         }
-        answer = this.readByVariousByCriteria(dataName, new ArrayList<>(Arrays.asList(dataSystem)), dataEnvironment, dataCountry, "INTERNAL", 0, maxFetch, null, null, null, null);
-        List<TestDataLib> objectList = new ArrayList<TestDataLib>();
-        objectList = answer.getDataList();
+        answerDataLib = this.readByVariousByCriteria(dataName, new ArrayList<>(Arrays.asList(dataSystem)), dataEnvironment, dataCountry, "INTERNAL", 0, maxFetch, null, null, null, null);
+        List<TestDataLib> objectList = new ArrayList<>();
+        objectList = (List<TestDataLib>) answerDataLib.getDataList();
         for (TestDataLib tdl : objectList) {
 
             answerData = testDataLibDataService.readByVarious(tdl.getTestDataLibID(), null, null, null);
-            List<TestDataLibData> objectDataList = new ArrayList<TestDataLibData>();
+            List<TestDataLibData> objectDataList = new ArrayList<>();
             objectDataList = answerData.getDataList();
-            HashMap<String, String> row = new HashMap<String, String>();
+            HashMap<String, String> row = new HashMap<>();
             for (TestDataLibData tdld : objectDataList) {
                 row.put(tdld.getSubData(), tdld.getValue());
             }
@@ -142,7 +137,7 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public AnswerItem create(TestDataLib object) {
+    public AnswerItem<TestDataLib> create(TestDataLib object) {
         return testDataLibDAO.create(object);
     }
 
@@ -155,17 +150,17 @@ public class TestDataLibService implements ITestDataLibService {
     public Answer update(TestDataLib object) {
         return testDataLibDAO.update(object);
     }
-    
+
     @Override
     public List<Answer> bulkRename(String oldName, String newName) {
-    	// Call the 2 DAO updates
-    	Answer answerDataLib = testDataLibDAO.bulkRenameDataLib(oldName,newName);
-    	Answer answerProperties = testCaseCountryProperties.bulkRenameProperties(oldName,newName);
-    	List<Answer> ansList = new ArrayList<Answer>();
-    	ansList.add(answerDataLib);
-    	ansList.add(answerProperties);
-    	return ansList;
-       // TO DO : get the updated numbers of datalib and properties
+        // Call the 2 DAO updates
+        Answer answerDataLib = testDataLibDAO.bulkRenameDataLib(oldName, newName);
+        Answer answerProperties = testCaseCountryProperties.bulkRenameProperties(oldName, newName);
+        List<Answer> ansList = new ArrayList<Answer>();
+        ansList.add(answerDataLib);
+        ansList.add(answerProperties);
+        return ansList;
+        // TO DO : get the updated numbers of datalib and properties
     }
 
     @Override
@@ -194,7 +189,7 @@ public class TestDataLibService implements ITestDataLibService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
-    
+
     @Override
     public boolean userHasPermission(TestDataLib lib, String userName) {
         if ("Y".equals(lib.getPrivateData())) {

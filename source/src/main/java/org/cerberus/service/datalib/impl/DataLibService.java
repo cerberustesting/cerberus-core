@@ -466,12 +466,12 @@ public class DataLibService implements IDataLibService {
      * @return
      */
     private AnswerItem<HashMap<String, String>> getSubDataFromType(TestDataLib lib) {
-        AnswerList answerData = new AnswerList<>();
+        AnswerList<TestDataLibData> answerData = new AnswerList<>();
         AnswerItem<HashMap<String, String>> result = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
 
-        List<TestDataLibData> objectDataList = new ArrayList<TestDataLibData>();
-        HashMap<String, String> row = new HashMap<String, String>();
+        List<TestDataLibData> objectDataList = new ArrayList<>();
+        HashMap<String, String> row = new HashMap<>();
 
         switch (lib.getType()) {
 
@@ -593,9 +593,8 @@ public class DataLibService implements IDataLibService {
      * @param columnList
      * @return
      */
-    private AnswerList<HashMap<String, String>> getDataObjectList(TestDataLib lib, HashMap<String, String> columnList, int rowLimit,
-            TestCaseExecution tCExecution, TestCaseExecutionData testCaseExecutionData) {
-        AnswerList result = new AnswerList<>();
+    private AnswerList<HashMap<String, String>> getDataObjectList(TestDataLib lib, HashMap<String, String> columnList, int rowLimit, TestCaseExecution tCExecution, TestCaseExecutionData testCaseExecutionData) {
+        AnswerList<HashMap<String, String>> result = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         CountryEnvironmentDatabase countryEnvironmentDatabase;
         AnswerList responseList;
@@ -985,8 +984,8 @@ public class DataLibService implements IDataLibService {
                                         msg.setDescription(msg.getDescription()
                                                 .replace("%XPATH%", lib.getSubDataParsingAnswer())
                                                 .replace("%SUBDATA%", "")
-                                                .replace("%REASON%", ex.toString() +
-                                                        "\n api response : " + appService.getResponseHTTPBody()));
+                                                .replace("%REASON%", ex.toString()
+                                                        + "\n api response : " + appService.getResponseHTTPBody()));
                                     }
                                 }
 

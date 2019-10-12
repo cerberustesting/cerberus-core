@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -104,7 +105,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         response.setCharacterEncoding("utf8");
         String echo = request.getParameter("sEcho");
 
-        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         tagService = appContext.getBean(ITagService.class);
@@ -138,7 +139,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 }
 
                 testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
-                AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null, tcList);
+                AnswerList<TestCaseLabel> testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null, tcList);
                 testCaseLabelScopeList = testCaseLabelList.getDataList();
             }
 
@@ -298,11 +299,10 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         JSONObject countryList = new JSONObject();
         try {
             IInvariantService invariantService = appContext.getBean(InvariantService.class);
-            AnswerList answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
-            for (Invariant country : (List<Invariant>) answer.getDataList()) {
+            for (Invariant country : (List<Invariant>) invariantService.readByIdName("COUNTRY")) {
                 countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
             }
-        } catch (JSONException ex) {
+        } catch (JSONException | CerberusException ex) {
             LOG.error("Error on getCountryList : " + ex, ex);
         }
 
@@ -373,7 +373,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                          * Iterate on the label retrieved and generate HashMap
                          * based on the key Test_TestCase
                          */
-                        LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap();
+                        LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap<>();
                         for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList) {
                             if (Label.TYPE_STICKER.equals(label.getLabel().getType())) { // We only display STICKER Type Label in Reporting By Tag Page..
                                 String key = label.getTest() + "_" + label.getTestcase();
@@ -707,12 +707,12 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         JSONArray jsonArraySTICKER = new JSONArray();
         JSONArray jsonArrayREQUIREMENT = new JSONArray();
 
-        AnswerList resp = labelService.readByVarious(new ArrayList<>(), new ArrayList<>(asList(Label.TYPE_STICKER, Label.TYPE_REQUIREMENT)));
+        AnswerList<Label> resp = labelService.readByVarious(new ArrayList<>(), new ArrayList<>(asList(Label.TYPE_STICKER, Label.TYPE_REQUIREMENT)));
 
         // Building Label inputlist with target layout
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
 
-            HashMap<Integer, TreeNode> inputList = new HashMap();
+            HashMap<Integer, TreeNode> inputList = new HashMap<>();
 
             for (Label label : (List<Label>) resp.getDataList()) {
 
@@ -756,7 +756,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 //                    LOG.debug("Label : " + node.getId() + " T : " + node);
             }
 
-            HashMap<String, List<Integer>> testCaseWithLabel1 = new HashMap();
+            HashMap<String, List<Integer>> testCaseWithLabel1 = new HashMap<>();
             for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList) {
 //                LOG.debug("TCLabel : " + label.getLabel() + " T : " + label.getTest() + " C : " + label.getTestcase() + " Type : " + label.getLabel().getType());
                 if ((Label.TYPE_STICKER.equals(label.getLabel().getType()))

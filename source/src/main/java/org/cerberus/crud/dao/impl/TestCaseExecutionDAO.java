@@ -307,8 +307,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerItem readLastByCriteria(String application) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<TestCaseExecution> readLastByCriteria(String application) {
+        AnswerItem<TestCaseExecution> ans = new AnswerItem<>();
         TestCaseExecution result = null;
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -676,65 +676,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         return list;
     }
 
-    @Override
-    public AnswerList findTagList(int tagnumber) {
-        AnswerList response = new AnswerList<>();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        List<String> list = null;
-        StringBuilder query = new StringBuilder();
-
-        query.append("SELECT DISTINCT exe.tag FROM testcaseexecution exe WHERE tag != ''");
-
-        if (tagnumber != 0) {
-            query.append("ORDER BY id desc LIMIT ");
-            query.append(tagnumber);
-        }
-
-        query.append(";");
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<String>();
-
-                    while (resultSet.next()) {
-                        list.add(resultSet.getString("exe.tag"));
-                    }
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TagList").replace("%OPERATION%", "SELECT"));
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-
-        response.setResultMessage(msg);
-        response.setDataList(list);
-        return response;
-    }
 
     @Override
     public void setTagToExecution(long id, String tag) throws CerberusException {
@@ -850,9 +791,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList readByTag(String tag) throws CerberusException {
+    public AnswerList<TestCaseExecution> readByTag(String tag) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList<>();
+        AnswerList<TestCaseExecution> answer = new AnswerList<>();
 
         final StringBuffer query = new StringBuffer();
 
@@ -866,7 +807,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             LOG.debug("SQL : " + query.toString());
             LOG.debug("SQL.param.tag : " + tag);
         }
-        List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
+        List<TestCaseExecution> testCaseExecutionList = new ArrayList<>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -981,7 +922,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Override
     public AnswerList<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList response = new AnswerList<>();
+        AnswerList<TestCaseExecution> response = new AnswerList<>();
         List<String> individalColumnSearchValues = new ArrayList<>();
         List<TestCaseExecution> objectList = new ArrayList<>();
 
@@ -1351,8 +1292,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerItem readByKey(long executionId) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<TestCaseExecution> readByKey(long executionId) {
+        AnswerItem<TestCaseExecution> ans = new AnswerItem<>();
         TestCaseExecution result = null;
         final String query = "SELECT * FROM `testcaseexecution` exe WHERE exe.`id` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -1483,12 +1424,12 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         final StringBuffer query = new StringBuffer();
 

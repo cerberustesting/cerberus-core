@@ -50,7 +50,7 @@ public interface IBatchInvariantService {
      * @param individualSearch
      * @return
      */
-    AnswerList readBySystemByCriteria(List<String> system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<BatchInvariant> readBySystemByCriteria(List<String> system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -113,7 +113,7 @@ public interface IBatchInvariantService {
      * @param columnName
      * @return 
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 
 }

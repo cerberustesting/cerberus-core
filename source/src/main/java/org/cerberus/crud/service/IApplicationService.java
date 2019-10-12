@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ public interface IApplicationService {
      * @param id
      * @return
      */
-    AnswerItem readByKey(String id);
+    AnswerItem<Application> readByKey(String id);
 
     /**
      *
@@ -84,7 +85,7 @@ public interface IApplicationService {
      * @param system
      * @return
      */
-    AnswerItem readTestCaseCountersBySystemByStatus(List<String> system);
+    AnswerItem<HashMap<String, HashMap<String, Integer>>> readTestCaseCountersBySystemByStatus(List<String> system);
 
     /**
      *

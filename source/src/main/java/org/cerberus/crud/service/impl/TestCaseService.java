@@ -416,7 +416,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerItem readByKey(String test, String testCase) {
+    public AnswerItem<TestCase> readByKey(String test, String testCase) {
         return testCaseDao.readByKey(test, testCase);
     }
 

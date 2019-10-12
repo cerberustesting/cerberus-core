@@ -69,7 +69,7 @@ public class TagDAO implements ITagDAO {
 
     @Override
     public AnswerItem<Tag> readByKey(String tag) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Tag> ans = new AnswerItem<>();
         Tag result = null;
         final String query = "SELECT * FROM `tag` tag WHERE `tag` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -131,7 +131,7 @@ public class TagDAO implements ITagDAO {
 
     @Override
     public AnswerItem<Tag> readByKeyTech(long id) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Tag> ans = new AnswerItem<>();
         Tag result = null;
         final String query = "SELECT * FROM `tag` tag WHERE `id` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -193,7 +193,7 @@ public class TagDAO implements ITagDAO {
 
     @Override
     public AnswerList<Tag> readByVariousByCriteria(String campaign, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, List<String> systems) {
-        AnswerList response = new AnswerList<>();
+        AnswerList<Tag> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Tag> objectList = new ArrayList<Tag>();
@@ -674,7 +674,7 @@ public class TagDAO implements ITagDAO {
 
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String campaign, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();

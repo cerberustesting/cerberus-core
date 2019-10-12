@@ -51,7 +51,7 @@ public class InvariantService implements IInvariantService {
     private static final Logger LOG = LogManager.getLogger(InvariantService.class);
 
     @Override
-    public AnswerItem readByKey(String id, String value) {
+    public AnswerItem<Invariant> readByKey(String id, String value) {
         return AnswerUtil.convertToAnswerItem(() -> invariantDao.readByKey(id, value));
     }
 
@@ -66,6 +66,7 @@ public class InvariantService implements IInvariantService {
         return AnswerUtil.convertToAnswerList(() -> invariantDao.readByIdname(idName));
     }
 
+    @Override
     public List<Invariant> readByIdName(String idName) throws CerberusException {
         return invariantDao.readByIdname(idName);
     }
@@ -95,17 +96,17 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
-    public AnswerList readByIdnameGp1(String idName, String gp) {
+    public AnswerList<Invariant> readByIdnameGp1(String idName, String gp) {
         return invariantDao.readByIdnameByGp1(idName, gp);
     }
 
     @Override
-    public AnswerList readByIdnameNotGp1(String idName, String gp) {
+    public AnswerList<Invariant> readByIdnameNotGp1(String idName, String gp) {
         return invariantDao.readByIdnameByNotGp1(idName, gp);
     }
 
     @Override
-    public AnswerList readCountryListEnvironmentLastChanges(String system, Integer nbDays) {
+    public AnswerList<Invariant> readCountryListEnvironmentLastChanges(String system, Integer nbDays) {
         return invariantDao.readCountryListEnvironmentLastChanges(system, nbDays);
     }
 

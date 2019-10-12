@@ -393,8 +393,8 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
     }
 
     @Override
-    public AnswerList readByTestTestCase(String test, String testCase, List<TestCase> testCaseList) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<TestCaseLabel> readByTestTestCase(String test, String testCase, List<TestCase> testCaseList) {
+        AnswerList<TestCaseLabel> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseLabel> objectList = new ArrayList<>();

@@ -40,6 +40,7 @@ import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -76,7 +77,7 @@ public class ReadScheduleEntry extends HttpServlet {
             throws ServletException, IOException, JSONException {
         JSONObject jsonResponse = new JSONObject();
         JSONArray jsonArray = new JSONArray();
-        AnswerItem<List> ans = new AnswerItem<>();
+        AnswerList<ScheduleEntry> ans = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
@@ -109,7 +110,7 @@ public class ReadScheduleEntry extends HttpServlet {
             IScheduleEntryService scheduleEntryService = appContext.getBean(IScheduleEntryService.class);
             ans = scheduleEntryService.readByName(name);
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-                for (ScheduleEntry sched : (List<ScheduleEntry>) ans.getItem()) {
+                for (ScheduleEntry sched : (List<ScheduleEntry>) ans.getDataList()) {
                     jsonArray.put(convertScheduleEntrytoJSONObject(sched));
                 }
             }

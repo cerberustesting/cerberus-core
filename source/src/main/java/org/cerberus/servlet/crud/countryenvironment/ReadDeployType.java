@@ -179,9 +179,9 @@ public class ReadDeployType extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findDeployTypeList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findDeployTypeList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         deployTypeService = appContext.getBean(DeployTypeService.class);
 
@@ -208,7 +208,7 @@ public class ReadDeployType extends HttpServlet {
             }
         }
 
-        AnswerList resp = deployTypeService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<DeployType> resp = deployTypeService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {  //the service was able to perform the query, then we should get all values
@@ -227,8 +227,8 @@ public class ReadDeployType extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findDeployTypeByID(String id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDeployTypeByID(String id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         IDeployTypeService libService = appContext.getBean(IDeployTypeService.class);
@@ -257,8 +257,8 @@ public class ReadDeployType extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         deployTypeService = appContext.getBean(IDeployTypeService.class);

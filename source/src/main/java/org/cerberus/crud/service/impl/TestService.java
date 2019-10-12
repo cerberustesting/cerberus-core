@@ -19,7 +19,6 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.dao.ITestDAO;
@@ -47,7 +46,7 @@ public class TestService implements ITestService {
     private ITestDAO testDao;
 
     @Override
-    public AnswerItem readByKey(String test) {
+    public AnswerItem<Test> readByKey(String test) {
         return  AnswerUtil.convertToAnswerItem(() -> testDao.readByKey(test));
     }
 

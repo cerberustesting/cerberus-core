@@ -51,12 +51,12 @@ public class CampaignParameterService implements ICampaignParameterService {
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(CampaignParameterService.class);
 
     @Override
-    public AnswerList readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
+    public AnswerList<CampaignParameter> readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
         return campaignParameterDAO.readByCampaignByCriteria(campaign, startPosition, length, columnName, sort, searchParameter, string);
     }
 
     @Override
-    public AnswerList readByCampaign(String campaign) {
+    public AnswerList<CampaignParameter> readByCampaign(String campaign) {
         return campaignParameterDAO.readByCampaign(campaign);
     }
 

@@ -119,8 +119,8 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readByIdnameByGp1(String idName, String gp) {
-        AnswerList ansList = new AnswerList<>();
+    public AnswerList<Invariant> readByIdnameByGp1(String idName, String gp) {
+        AnswerList<Invariant> ansList = new AnswerList<>();
         MessageEvent msg;
 
         List<Invariant> invariantList = new ArrayList<Invariant>();
@@ -190,11 +190,11 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readByIdnameByNotGp1(String idName, String gp) {
-        AnswerList ansList = new AnswerList<>();
+    public AnswerList<Invariant> readByIdnameByNotGp1(String idName, String gp) {
+        AnswerList<Invariant> ansList = new AnswerList<>();
         MessageEvent msg;
 
-        List<Invariant> invariantList = new ArrayList<Invariant>();
+        List<Invariant> invariantList = new ArrayList<>();
         final String query = "SELECT * FROM invariant i  WHERE i.idname = ? AND i.gp1 <> ? ORDER BY sort";
 
         // Debug message on SQL.
@@ -261,9 +261,9 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter) {
+    public AnswerList<Invariant> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter) {
         List<Invariant> invariantList = new ArrayList<>();
-        AnswerList answer = new AnswerList<>();
+        AnswerList<Invariant> answer = new AnswerList<>();
         MessageEvent msg;
 
         StringBuilder searchSQL = new StringBuilder();
@@ -506,10 +506,10 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readDistinctValuesByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter, String columnName) {
         List<String> invariantList = new ArrayList<>();
         AnswerList answer = new AnswerList<>();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
         MessageEvent msg;
 
         StringBuilder searchSQL = new StringBuilder();

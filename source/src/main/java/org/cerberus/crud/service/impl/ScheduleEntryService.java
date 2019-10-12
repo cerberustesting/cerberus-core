@@ -32,6 +32,7 @@ import org.cerberus.crud.service.IScheduleEntryService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
 
 /**
@@ -47,14 +48,14 @@ public class ScheduleEntryService implements IScheduleEntryService {
 
     @Override
     public AnswerItem<ScheduleEntry> readbykey(long id) {
-        AnswerItem<ScheduleEntry> ans = new AnswerItem();
+        AnswerItem<ScheduleEntry> ans = new AnswerItem<>();
         ans = schedulerDao.readByKey(id);
         return ans;
     }
 
     @Override
-    public AnswerItem<List> readAllActive() {
-        AnswerItem<List> ans = new AnswerItem();
+    public AnswerList<ScheduleEntry> readAllActive() {
+        AnswerList<ScheduleEntry> ans = new AnswerList<>();
         ans = schedulerDao.readAllActive();
         return ans;
     }
@@ -100,8 +101,8 @@ public class ScheduleEntryService implements IScheduleEntryService {
     }
 
     @Override
-    public AnswerItem<List> readByName(String name) {
-        AnswerItem<List> response = new AnswerItem();
+    public AnswerList<ScheduleEntry> readByName(String name) {
+        AnswerList<ScheduleEntry> response = new AnswerList<>();
         response = schedulerDao.readByName(name);
         return response;
     }
@@ -118,8 +119,8 @@ public class ScheduleEntryService implements IScheduleEntryService {
     @Override
     public Answer deleteByCampaignName(String name) {
         Answer ans = new Answer(null);
-        List<ScheduleEntry> objectList = new ArrayList<ScheduleEntry>();
-        objectList = this.readByName(name).getItem();
+        List<ScheduleEntry> objectList = new ArrayList<>();
+        objectList = this.readByName(name).getDataList();
         for (ScheduleEntry objectToDelete : objectList) {
             ans = this.delete(objectToDelete);
             if (!ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -168,8 +169,8 @@ public class ScheduleEntryService implements IScheduleEntryService {
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
-        List<ScheduleEntry> oldList = new ArrayList();
-        oldList = schedulerDao.readByName(campaign).getItem();
+        List<ScheduleEntry> oldList = new ArrayList<>();
+        oldList = schedulerDao.readByName(campaign).getDataList();
         List<ScheduleEntry> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
         List<ScheduleEntry> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);

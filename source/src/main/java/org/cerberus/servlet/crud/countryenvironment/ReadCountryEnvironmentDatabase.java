@@ -164,9 +164,9 @@ public class ReadCountryEnvironmentDatabase extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findCountryEnvDatabaseList(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findCountryEnvDatabaseList(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         cedService = appContext.getBean(ICountryEnvironmentDatabaseService.class);
 

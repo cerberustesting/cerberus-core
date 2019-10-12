@@ -66,7 +66,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public AnswerItem<TestCaseExecutionQueueDep> readByKey(long id) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<TestCaseExecutionQueueDep> ans = new AnswerItem<>();
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
@@ -104,7 +104,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public AnswerList<TestCaseExecutionQueueDep> readByExeId(long exeId) {
-        AnswerList ans = new AnswerList<>();
+        AnswerList<TestCaseExecutionQueueDep> ans = new AnswerList<>();
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
@@ -230,7 +230,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public AnswerList<Long> readExeQueueIdByExeId(long exeId) {
-        AnswerList ans = new AnswerList<>();
+        AnswerList<Long> ans = new AnswerList<>();
         MessageEvent msg = null;
 
         final String query = "SELECT DISTINCT ExeQueueID FROM testcaseexecutionqueuedep WHERE `ExeID` = ?";
@@ -273,7 +273,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public AnswerList<Long> readExeQueueIdByQueueId(long queueId) {
-        AnswerList ans = new AnswerList<>();
+        AnswerList<Long> ans = new AnswerList<>();
         MessageEvent msg = null;
 
         final String query = "SELECT DISTINCT ExeQueueID FROM testcaseexecutionqueuedep WHERE `QueueID` = ?";
@@ -359,7 +359,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public AnswerList<TestCaseExecutionQueueDep> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+        AnswerList<TestCaseExecutionQueueDep> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseExecutionQueueDep> objectList = new ArrayList<>();
@@ -475,7 +475,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public AnswerItem<Integer> insertFromTestCaseDep(long queueId, String env, String country, String tag, String test, String testcase) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
         final String query = "INSERT INTO testcaseexecutionqueuedep(ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status) "
                 + "SELECT ?, ?, ?, ?, Type, DepTest, DepTestCase, DepEvent, 'WAITING' FROM testcasedep "
@@ -519,7 +519,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public AnswerItem<Integer> insertFromExeQueueIdDep(long queueId, long fromExeQueueId) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
         final String query = "INSERT INTO testcaseexecutionqueuedep(ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status, ReleaseDate, Comment, ExeId, QueueId) "
                 + "SELECT ?, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status, ReleaseDate, Comment, ExeId, QueueId FROM testcaseexecutionqueuedep "
@@ -558,7 +558,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId, long queueId) {
-        AnswerItem<Integer> ans = new AnswerItem();
+        AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
         String query = "UPDATE `testcaseexecutionqueuedep` SET `Status` = 'RELEASED', `Comment` = ? , `ExeId` = ?, `QueueId` = ?, ReleaseDate = NOW(), DateModif = NOW() "
                 + " WHERE `Status` = 'WAITING' and `Type` = ? and `DepTest` = ? and `DepTestCase` = ? and `Tag` = ? and `Environment` = ? and `Country` = ? ";
@@ -598,7 +598,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();

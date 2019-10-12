@@ -200,7 +200,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
 
     @Override
     public AnswerList<TestDataLibData> readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String columnPositionEmpty) {
-        List<TestDataLibData> testDataLibListData = new ArrayList<TestDataLibData>();
+        List<TestDataLibData> testDataLibListData = new ArrayList<>();
         AnswerList answer = new AnswerList<>();
         MessageEvent msg;
         StringBuilder query = new StringBuilder();

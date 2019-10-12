@@ -34,7 +34,6 @@ import org.cerberus.crud.entity.MyVersion;
 import org.cerberus.crud.entity.ScheduleEntry;
 import org.cerberus.crud.factory.IFactoryScheduleEntry;
 import org.cerberus.crud.service.IMyVersionService;
-import org.cerberus.util.answer.AnswerItem;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -47,6 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.cerberus.crud.service.IScheduleEntryService;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerList;
 
 @Component
 public class SchedulerInit {
@@ -86,8 +86,8 @@ public class SchedulerInit {
     @PostConstruct
     public void init() {
         try {
-            AnswerItem<List> ans = new AnswerItem();
-            List<ScheduleEntry> listSched = new ArrayList<ScheduleEntry>();
+            AnswerList<ScheduleEntry> ans = new AnswerList();
+            List<ScheduleEntry> listSched = new ArrayList<>();
 
             // read myversion scheduler_version
             MyVersion databaseSchedulerVersion;
@@ -108,7 +108,7 @@ public class SchedulerInit {
                         try {
                             // Get all active entry of scheduleentry
                             ans = scheduleEntryService.readAllActive();
-                            listSched = ans.getItem();
+                            listSched = ans.getDataList();
                             if (ans.getMessageCodeString().equalsIgnoreCase("OK")) {
                                 // Browse all entry
                                 for (ScheduleEntry sched : listSched) {

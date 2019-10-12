@@ -46,7 +46,7 @@ public class BatchInvariantService implements IBatchInvariantService {
     }
 
     @Override
-    public AnswerList readBySystemByCriteria(List<String> system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<BatchInvariant> readBySystemByCriteria(List<String> system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return batchInvariantDAO.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
@@ -99,7 +99,7 @@ public class BatchInvariantService implements IBatchInvariantService {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return batchInvariantDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
 

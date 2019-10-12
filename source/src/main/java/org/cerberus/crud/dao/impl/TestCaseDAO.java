@@ -1635,8 +1635,8 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public AnswerItem readByKey(String test, String testCase) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<TestCase> readByKey(String test, String testCase) {
+        AnswerItem<TestCase> ans = new AnswerItem<>();
         TestCase result = null;
         final String query = "SELECT * FROM `testcase` tec "
                 + "LEFT OUTER JOIN application app "

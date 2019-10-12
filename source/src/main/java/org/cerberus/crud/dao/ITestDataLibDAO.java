@@ -42,7 +42,7 @@ public interface ITestDataLibDAO {
      * @param testDataLibID
      * @return
      */
-    AnswerItem readByKey(int testDataLibID);
+    AnswerItem<TestDataLib> readByKey(int testDataLibID);
 
     /**
      *
@@ -52,7 +52,7 @@ public interface ITestDataLibDAO {
      * @param country
      * @return
      */
-    AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country);
+    AnswerItem<TestDataLib> readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country);
 
     /**
      *
@@ -61,13 +61,13 @@ public interface ITestDataLibDAO {
      * @param like
      * @return
      */
-    AnswerList readNameListByName(String testDataLibName, int limit, boolean like);
+    AnswerList<TestDataLib> readNameListByName(String testDataLibName, int limit, boolean like);
 
     /**
      *
      * @return All TestData
      */
-    AnswerList readAll();
+    AnswerList<TestDataLib> readAll();
     
     /**
     *
@@ -93,7 +93,7 @@ public interface ITestDataLibDAO {
      * resultSet
      * @return
      */
-    AnswerList readByVariousByCriteria(String name, List<String> systems, String environment, String country, String type, int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<TestDataLib> readByVariousByCriteria(String name, List<String> systems, String environment, String country, String type, int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -106,7 +106,7 @@ public interface ITestDataLibDAO {
      * @param testDataLib
      * @return
      */
-    AnswerItem create(TestDataLib testDataLib);
+    AnswerItem<TestDataLib> create(TestDataLib testDataLib);
 
     /**
      *

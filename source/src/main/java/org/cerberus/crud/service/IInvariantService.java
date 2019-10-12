@@ -43,6 +43,12 @@ public interface IInvariantService {
     @Deprecated
     AnswerList readByIdname(String idName);
 
+    /**
+     *
+     * @param idName
+     * @return
+     * @throws CerberusException
+     */
     List<Invariant> readByIdName(String idName) throws CerberusException;
 
     /**
@@ -61,11 +67,11 @@ public interface IInvariantService {
      */
     HashMap<String, String> readToHashMapGp1StringByIdname(String idName, String defaultValue);
 
-    AnswerList readByIdnameGp1(String idName, String gp);
+    AnswerList<Invariant> readByIdnameGp1(String idName, String gp);
 
-    AnswerList readByIdnameNotGp1(String idName, String gp);
+    AnswerList<Invariant> readByIdnameNotGp1(String idName, String gp);
 
-    AnswerList readCountryListEnvironmentLastChanges(String system, Integer nbDays);
+    AnswerList<Invariant> readCountryListEnvironmentLastChanges(String system, Integer nbDays);
 
     AnswerList<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
@@ -102,7 +108,7 @@ public interface IInvariantService {
      * @param value
      * @return
      */
-    AnswerItem readByKey(String id, String value);
+    AnswerItem<Invariant> readByKey(String id, String value);
 
     /**
      *

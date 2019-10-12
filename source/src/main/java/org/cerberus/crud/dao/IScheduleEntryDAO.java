@@ -23,6 +23,7 @@ import java.util.List;
 import org.cerberus.crud.entity.ScheduleEntry;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -48,7 +49,7 @@ public interface IScheduleEntryDAO {
      *
      * @return
      */
-    public AnswerItem<List> readAllActive();
+    public AnswerList<ScheduleEntry> readAllActive();
     
     /**
      *
@@ -69,7 +70,7 @@ public interface IScheduleEntryDAO {
      * @param name
      * @return
      */
-    public AnswerItem<List> readByName(String name);
+    public AnswerList<ScheduleEntry> readByName(String name);
     
     /**
      *

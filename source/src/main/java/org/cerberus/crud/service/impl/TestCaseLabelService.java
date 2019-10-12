@@ -71,7 +71,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     }
 
     @Override
-    public AnswerList readByTestTestCase(String test, String testCase, List<TestCase> testCaseList) {
+    public AnswerList<TestCaseLabel> readByTestTestCase(String test, String testCase, List<TestCase> testCaseList) {
         return testCaseLabelDAO.readByTestTestCase(test, testCase, testCaseList);
     }
     @Override
