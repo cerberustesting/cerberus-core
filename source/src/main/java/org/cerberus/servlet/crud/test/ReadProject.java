@@ -225,8 +225,8 @@ public class ReadProject extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findProjectByID(String id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findProjectByID(String id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         IProjectService libService = appContext.getBean(IProjectService.class);
@@ -255,8 +255,8 @@ public class ReadProject extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         projectService = appContext.getBean(ProjectService.class);
@@ -279,7 +279,7 @@ public class ReadProject extends HttpServlet {
             }
         }
 
-        AnswerList testCaseList = projectService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
+        AnswerList<String> testCaseList = projectService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
 
         object.put("distinctValues", testCaseList.getDataList());
 

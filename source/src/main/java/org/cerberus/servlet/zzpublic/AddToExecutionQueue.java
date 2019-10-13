@@ -313,7 +313,7 @@ public class AddToExecutionQueue extends HttpServlet {
                 throw new ParameterException("Selected campaign does not defined any browser");
             }
             selectedTests = new ArrayList<>();
-            for (final TestCase testCase : testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()])).getItem()) {
+            for (final TestCase testCase : testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()])).getDataList()) {
                 selectedTests.add(new HashMap<String, String>() {
                     {
                         put(PARAMETER_SELECTED_TEST_TEST, testCase.getTest());

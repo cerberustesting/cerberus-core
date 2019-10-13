@@ -116,8 +116,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     }
 
     @Override
-    public AnswerItem readByKeyTech(int id) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<ApplicationObject> readByKeyTech(int id) {
+        AnswerItem<ApplicationObject> ans = new AnswerItem<>();
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
@@ -142,8 +142,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     }
 
     @Override
-    public AnswerItem readByKey(String application, String object) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<ApplicationObject> readByKey(String application, String object) {
+        AnswerItem<ApplicationObject> ans = new AnswerItem<>();
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
@@ -181,8 +181,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     }
 
     @Override
-    public AnswerList readByApplication(String Application) {
-        AnswerList ans = new AnswerList<>();
+    public AnswerList<ApplicationObject> readByApplication(String Application) {
+        AnswerList<ApplicationObject> ans = new AnswerList<>();
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
@@ -191,7 +191,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             preStat.setString(1, Application);
             ResultSet rs = preStat.executeQuery();
             try {
-            	List<ApplicationObject> al = new ArrayList<ApplicationObject>();
+            	List<ApplicationObject> al = new ArrayList<>();
                 while (rs.next()) {
                     al.add(loadFromResultSet(rs));
                 }
@@ -305,13 +305,13 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<ApplicationObject> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        AnswerList<ApplicationObject> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<ApplicationObject> objectList = new ArrayList<ApplicationObject>();
+        List<ApplicationObject> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
@@ -423,8 +423,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     }
 
     @Override
-    public AnswerList readByApplicationByCriteria(String application, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, List<String> systems) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<ApplicationObject> readByApplicationByCriteria(String application, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, List<String> systems) {
+        AnswerList<ApplicationObject> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<ApplicationObject> objectList = new ArrayList<ApplicationObject>();
@@ -465,10 +465,10 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         if ((systems != null) && (!systems.isEmpty())) {
             systems.add("");
-            searchSQL.append(" and (" + SqlUtil.generateInClause("app.`System`", systems) + ") ");
+            searchSQL.append(" and (").append(SqlUtil.generateInClause("app.`System`", systems)).append(") ");
         }
 
-        searchSQL.append( " AND " + UserSecurity.getSystemAllowForSQL("app.`System`") + " ");
+        searchSQL.append( " AND ").append(UserSecurity.getSystemAllowForSQL("app.`System`")).append(" ");
 
         query.append(searchSQL);
 
@@ -682,7 +682,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();

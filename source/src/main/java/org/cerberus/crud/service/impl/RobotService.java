@@ -269,7 +269,7 @@ public class RobotService implements IRobotService {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return robotDao.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
     }
 

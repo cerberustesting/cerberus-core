@@ -45,7 +45,7 @@ public interface IApplicationObjectDAO {
      * @param id
      * @return
      */
-    AnswerItem readByKeyTech(int id);
+    AnswerItem<ApplicationObject> readByKeyTech(int id);
 
     /**
      *
@@ -53,14 +53,14 @@ public interface IApplicationObjectDAO {
      * @param object
      * @return
      */
-    AnswerItem readByKey(String application, String object);
+    AnswerItem<ApplicationObject> readByKey(String application, String object);
 
     /**
      *
      * @param Application
      * @return
      */
-    AnswerList readByApplication(String Application);
+    AnswerList<ApplicationObject> readByApplication(String Application);
 
     /**
      *
@@ -88,7 +88,7 @@ public interface IApplicationObjectDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<ApplicationObject> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -99,9 +99,10 @@ public interface IApplicationObjectDAO {
      * @param sort
      * @param searchParameter
      * @param individualSearch
+     * @param systems
      * @return
      */
-    AnswerList readByApplicationByCriteria(String application, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems);
+    AnswerList<ApplicationObject> readByApplicationByCriteria(String application, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems);
 
     /**
      *

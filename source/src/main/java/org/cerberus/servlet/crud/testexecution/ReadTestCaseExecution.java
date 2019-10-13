@@ -226,12 +226,12 @@ public class ReadTestCaseExecution extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findExecutionColumns(ApplicationContext appContext, HttpServletRequest request, String Tag) throws CerberusException, ParseException, JSONException {
-        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+    private AnswerItem<JSONObject> findExecutionColumns(ApplicationContext appContext, HttpServletRequest request, String Tag) throws CerberusException, ParseException, JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         JSONObject jsonResponse = new JSONObject();
 
-        AnswerList testCaseExecutionList = new AnswerList<>();
-        AnswerList testCaseExecutionListInQueue = new AnswerList<>();
+        AnswerList<TestCaseExecution> testCaseExecutionList = new AnswerList<>();
+        AnswerList<TestCaseExecutionQueue> testCaseExecutionListInQueue = new AnswerList<>();
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
@@ -252,7 +252,7 @@ public class ReadTestCaseExecution extends HttpServlet {
          * Feed hash map with execution from the two list (to get only one by
          * test,testcase,country,env,browser)
          */
-        LinkedHashMap<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap();
+        LinkedHashMap<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap<>();
 
         for (TestCaseExecution testCaseWithExecution : testCaseExecutions) {
             String key = testCaseWithExecution.getBrowser() + "_"
@@ -293,9 +293,8 @@ public class ReadTestCaseExecution extends HttpServlet {
         return answer;
     }
 
-    private AnswerItem findExecutionListByTag(ApplicationContext appContext, HttpServletRequest request, String Tag)
-            throws CerberusException, ParseException, JSONException {
-        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+    private AnswerItem findExecutionListByTag(ApplicationContext appContext, HttpServletRequest request, String Tag) throws CerberusException, ParseException, JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
@@ -343,7 +342,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         /**
          * Find the list of labels
          */
-        AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null, null);
+        AnswerList<TestCaseLabel> testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null, null);
 
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             try {
@@ -392,7 +391,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                          * Iterate on the label retrieved and generate HashMap
                          * based on the key Test_TestCase
                          */
-                        LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap();
+                        LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap<>();
                         for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
                             String key = label.getTest() + "_" + label.getTestcase();
 

@@ -241,10 +241,10 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
+    public AnswerList<TestCaseExecutionQueue> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList<>();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        AnswerList<TestCaseExecutionQueue> answer = new AnswerList<>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         final StringBuilder query = new StringBuilder();
 
@@ -366,7 +366,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     @Override
     public AnswerList<TestCaseExecutionQueue> readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList<>();
+        AnswerList<TestCaseExecutionQueue> answer = new AnswerList<>();
 
         final StringBuilder query = new StringBuilder();
 
@@ -447,7 +447,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     @Override
     public AnswerList<TestCaseExecutionQueueToTreat> readByVarious2(List<String> stateList) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList<>();
+        AnswerList<TestCaseExecutionQueueToTreat> answer = new AnswerList<>();
 
         final StringBuilder query = new StringBuilder();
 
@@ -516,9 +516,9 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<TestCaseExecutionQueue> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
 
-        AnswerList response = new AnswerList<>();
+        AnswerList<TestCaseExecutionQueue> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseExecutionQueue> objectList = new ArrayList<TestCaseExecutionQueue>();
@@ -731,8 +731,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList readDistinctEnvCountryBrowserByTag(String tag) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<TestCaseExecutionQueue> readDistinctEnvCountryBrowserByTag(String tag) {
+        AnswerList<TestCaseExecutionQueue> answer = new AnswerList<>();
         StringBuilder query = new StringBuilder();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
 

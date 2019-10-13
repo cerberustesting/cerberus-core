@@ -242,7 +242,7 @@ public class DataLibService implements IDataLibService {
      * @return List of items (dataObject) from the dataObjectList filtered out
      * of records depending on the nature.
      */
-    private AnswerList<HashMap<String, String>> filterWithNature(String nature, AnswerList dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperties, int outputRequestedDimention) {
+    private AnswerList<HashMap<String, String>> filterWithNature(String nature, AnswerList<HashMap<String, String>> dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperties, int outputRequestedDimention) {
         switch (nature) {
             case TestCaseCountryProperties.NATURE_STATIC:
                 return filterWithNatureSTATIC(dataObjectList, outputRequestedDimention);
@@ -278,7 +278,7 @@ public class DataLibService implements IDataLibService {
         AnswerList<HashMap<String, String>> result = new AnswerList<>();
 
         List<HashMap<String, String>> resultObject;
-        resultObject = new ArrayList<HashMap<String, String>>();
+        resultObject = new ArrayList<>();
 
         for (int i = 0; i < outputRequestedDimention; i++) {
             resultObject.add(dataObjectList.getDataList().get(i));
@@ -597,7 +597,7 @@ public class DataLibService implements IDataLibService {
         AnswerList<HashMap<String, String>> result = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         CountryEnvironmentDatabase countryEnvironmentDatabase;
-        AnswerList responseList;
+        AnswerList<HashMap<String, String>> responseList;
         String system = tCExecution.getApplicationObj().getSystem();
         String country = tCExecution.getCountry();
         String environment = tCExecution.getEnvironment();
@@ -776,7 +776,7 @@ public class DataLibService implements IDataLibService {
             case TestDataLib.TYPE_SERVICE:
                 AppService appService = new AppService();
                 HashMap<String, String> resultHash = new HashMap<>();
-                List<HashMap<String, String>> listResult = new ArrayList<HashMap<String, String>>();
+                List<HashMap<String, String>> listResult = new ArrayList<>();
 
                 // Temporary list of string.
                 List<String> listTemp1 = null;

@@ -44,6 +44,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.servlet.ServletUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -177,7 +178,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
-        AnswerItem<List<TestCase>> testcases = null;
+        AnswerList<TestCase> testcases = null;
 
         /**
          * Adding Log entry.
@@ -367,8 +368,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 testcases = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()]));
 
                 if (testcases != null) {
-                    if (testcases.getItem() != null) {
-                        for (TestCase campaignTestCase : testcases.getItem()) {
+                    if (testcases.getDataList() != null) {
+                        for (TestCase campaignTestCase : testcases.getDataList()) {
                             selectTest.add(campaignTestCase.getTest());
                             selectTestCase.add(campaignTestCase.getTestCase());
                         }

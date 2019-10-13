@@ -404,8 +404,8 @@ public class SQLService implements ISQLService {
     }
 
     @Override
-    public AnswerList queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet) {
-        AnswerList listResult = new AnswerList<>();
+    public AnswerList<HashMap<String, String>> queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet) {
+        AnswerList<HashMap<String, String>> listResult = new AnswerList<>();
         List<HashMap<String, String>> list;
         int maxSecurityFetch = parameterService.getParameterIntegerByKey("cerberus_testdatalib_fetchmax", system, 100);
         int maxFetch;

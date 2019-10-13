@@ -104,7 +104,7 @@ public interface ITestCaseService {
      * countries
      * @since 1.0.2
      */
-    AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries);
+    AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries);
 
     public void updateTestCase(TestCase tc) throws CerberusException;
 
@@ -188,7 +188,7 @@ public interface ITestCaseService {
      * @param columnName
      * @return
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      *

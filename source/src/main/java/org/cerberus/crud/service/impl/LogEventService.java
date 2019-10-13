@@ -102,7 +102,7 @@ public class LogEventService implements ILogEventService {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return logEventDAO.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
     }
 

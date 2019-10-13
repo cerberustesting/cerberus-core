@@ -134,7 +134,7 @@ public interface ITestCaseExecutionQueueService {
      * @param tag
      * @return
      */
-    AnswerList readDistinctEnvCountryBrowserByTag(String tag);
+    AnswerList<TestCaseExecutionQueue> readDistinctEnvCountryBrowserByTag(String tag);
 
     /**
      *

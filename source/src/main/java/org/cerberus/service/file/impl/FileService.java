@@ -47,16 +47,16 @@ public class FileService implements IFileService {
     private static final Logger LOG = LogManager.getLogger(FileService.class);
 
     @Override
-    public AnswerList<List<HashMap<String, String>>> parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet) {
+    public AnswerList<HashMap<String, String>> parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet) {
         String str = "";
-        AnswerList result = new AnswerList<>();
+        AnswerList<HashMap<String, String>> result = new AnswerList<>();
         List<HashMap<String, String>> csv = new ArrayList<>();
         /**
          * Init message with generic failed message
          */
         result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_GENERIC)
                 .resolveDescription("URL", urlToCSVFile));
-        
+
         BufferedReader br = null;
 
         try {
@@ -76,7 +76,7 @@ public class FileService implements IFileService {
             }
             boolean noDataMapped = true;
             while (null != (str = br.readLine())) {
-                HashMap<String, String> line = new HashMap();
+                HashMap<String, String> line = new HashMap<>();
                 Integer columnPosition = 1;
                 /**
                  * For each line, split result by separator, and put it in
@@ -114,14 +114,14 @@ public class FileService implements IFileService {
             LOG.warn("Error Getting CSV File " + exception);
             result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_FILENOTFOUND)
                     .resolveDescription("URL", urlToCSVFile).resolveDescription("EX", exception.toString()));
-        }finally {
-        	if(br != null) {
-        		try {
-    				br.close();
-    			} catch (IOException e) {
-    				LOG.warn(e.toString());
-    			}
-        	}
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    LOG.warn(e.toString());
+                }
+            }
         }
         return result;
     }

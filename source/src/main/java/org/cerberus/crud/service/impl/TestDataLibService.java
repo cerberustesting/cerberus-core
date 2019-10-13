@@ -134,7 +134,7 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         return testDataLibDAO.readDistinctValuesByCriteria(searchTerm, individualSearch, columnName);
     }
 

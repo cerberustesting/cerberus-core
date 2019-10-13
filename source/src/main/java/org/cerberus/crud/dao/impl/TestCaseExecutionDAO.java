@@ -1110,8 +1110,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<TestCaseExecution> readDistinctEnvCoutnryBrowserByTag(String tag) {
+        AnswerList<TestCaseExecution> answer = new AnswerList<>();
         StringBuilder query = new StringBuilder();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
 

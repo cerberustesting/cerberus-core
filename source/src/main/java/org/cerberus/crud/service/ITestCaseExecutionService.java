@@ -39,7 +39,7 @@ public interface ITestCaseExecutionService {
 
     void updateTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
-    AnswerItem readLastByCriteria(String application);
+    AnswerItem<TestCaseExecution> readLastByCriteria(String application);
 
     TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
             String build, String revision) throws CerberusException;
@@ -132,7 +132,7 @@ public interface ITestCaseExecutionService {
      * @return
      * @throws CerberusException
      */
-    AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+    AnswerList<TestCaseExecution> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
     /**
      *
@@ -169,7 +169,7 @@ public interface ITestCaseExecutionService {
      * @param tag
      * @return
      */
-    AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
+    AnswerList<TestCaseExecution> readDistinctEnvCoutnryBrowserByTag(String tag);
 
     /**
      *

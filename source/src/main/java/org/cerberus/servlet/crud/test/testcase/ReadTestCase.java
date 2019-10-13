@@ -467,7 +467,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
 
         List<String> countries = parsedCampaignParameters.getItem().get(CampaignParameter.COUNTRY_PARAMETER);
 
-        AnswerItem<List<TestCase>> resp = null;
+        AnswerList<TestCase> resp = null;
 
         if (countries != null && !countries.isEmpty()) {
             resp = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()]));
@@ -476,7 +476,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         }
 
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Object c : resp.getItem()) {
+            for (Object c : resp.getDataList()) {
                 TestCase cc = (TestCase) c;
                 dataArray.put(convertToJSONObject(cc));
             }

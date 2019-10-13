@@ -65,7 +65,7 @@ public interface ICountryEnvironmentParametersService {
      * @param individualSearch
      * @return
      */
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    public AnswerList<CountryEnvironmentParameters> readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      *
@@ -75,7 +75,7 @@ public interface ICountryEnvironmentParametersService {
      * @param application
      * @return
      */
-    public AnswerList readByVarious(String system, String country, String environment, String application);
+    public AnswerList<CountryEnvironmentParameters> readByVarious(String system, String country, String environment, String application);
 
     /**
      *

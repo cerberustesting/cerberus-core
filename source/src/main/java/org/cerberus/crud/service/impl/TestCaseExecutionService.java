@@ -97,7 +97,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public AnswerItem readLastByCriteria(String application) {
+    public AnswerItem<TestCaseExecution> readLastByCriteria(String application) {
         return testCaseExecutionDao.readLastByCriteria(application);
     }
 
@@ -171,7 +171,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
+    public AnswerList<TestCaseExecution> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         return AnswerUtil.convertToAnswerList(() -> testCaseExecutionDao.readByTagByCriteria(tag, start, amount, sort, searchTerm, individualSearch));
     }
 
@@ -191,7 +191,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
+    public AnswerList<TestCaseExecution> readDistinctEnvCoutnryBrowserByTag(String tag) {
         return testCaseExecutionDao.readDistinctEnvCoutnryBrowserByTag(tag);
     }
 
@@ -202,7 +202,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
 
     @Override
     public List<TestCaseExecution> createAllTestCaseExecution(List<TestCase> testCaseList, List<String> envList, List<String> countryList) {
-        List<TestCaseExecution> result = new ArrayList<TestCaseExecution>();
+        List<TestCaseExecution> result = new ArrayList<>();
 
         for (TestCase tc : testCaseList) {
             for (String environment : envList) {

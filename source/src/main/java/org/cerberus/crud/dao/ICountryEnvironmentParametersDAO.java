@@ -64,7 +64,7 @@ public interface ICountryEnvironmentParametersDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList<CountryEnvironmentParameters> readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      *

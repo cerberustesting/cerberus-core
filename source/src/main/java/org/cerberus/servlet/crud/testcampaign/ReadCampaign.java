@@ -243,10 +243,10 @@ public class ReadCampaign extends HttpServlet {
             }
             if (request.getParameter("testcase") != null) {
                 ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
-                AnswerItem<List<TestCase>> resp = testCaseService.findTestCaseByCampaignNameAndCountries(key, null);
+                AnswerList<TestCase> resp = testCaseService.findTestCaseByCampaignNameAndCountries(key, null);
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                     JSONArray a = new JSONArray();
-                    for (Object c : resp.getItem()) {
+                    for (Object c : resp.getDataList()) {
                         TestCase cc = (TestCase) c;
                         a.put(convertTestCasetoJSONObject(cc));
                     }

@@ -292,8 +292,8 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
-        AnswerItem<List<TestCase>> result = new AnswerItem<>();
+    public AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
+        AnswerList<TestCase> result = new AnswerList<>();
         String[] status = null;
         String[] system = null;
         String[] application = null;
@@ -437,7 +437,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return testCaseDao.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
     }
 

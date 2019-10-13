@@ -111,7 +111,7 @@ public interface ITestDataLibService {
      * @param columnName
      * @return
      */
-    AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
+    AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      * Method that gets all the Static DataLib that match the criterias

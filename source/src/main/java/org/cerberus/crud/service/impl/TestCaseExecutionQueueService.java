@@ -152,7 +152,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public AnswerList readDistinctEnvCountryBrowserByTag(String tag) {
+    public AnswerList<TestCaseExecutionQueue> readDistinctEnvCountryBrowserByTag(String tag) {
         return testCaseExecutionInQueueDAO.readDistinctEnvCountryBrowserByTag(tag);
     }
 

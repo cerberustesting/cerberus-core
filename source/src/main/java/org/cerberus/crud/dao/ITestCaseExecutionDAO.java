@@ -224,7 +224,7 @@ public interface ITestCaseExecutionDAO {
      * @param tag
      * @return
      */
-    public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
+    public AnswerList<TestCaseExecution> readDistinctEnvCoutnryBrowserByTag(String tag);
 
     /**
      *

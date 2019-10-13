@@ -65,8 +65,8 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public AnswerItem readByKey(String system, String country, String environment, String database) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<CountryEnvironmentDatabase> readByKey(String system, String country, String environment, String database) {
+        AnswerItem<CountryEnvironmentDatabase> ans = new AnswerItem<>();
         CountryEnvironmentDatabase result = null;
         final String query = "SELECT * FROM countryenvironmentdatabase ceb WHERE ceb.database = ? AND ceb.environment = ? AND ceb.country = ? AND ceb.system = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -133,11 +133,11 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<CountryEnvironmentDatabase> readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        AnswerList<CountryEnvironmentDatabase> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<CountryEnvironmentDatabase> objectList = new ArrayList<CountryEnvironmentDatabase>();
+        List<CountryEnvironmentDatabase> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();

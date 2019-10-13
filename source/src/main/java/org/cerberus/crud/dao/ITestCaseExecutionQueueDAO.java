@@ -68,7 +68,7 @@ public interface ITestCaseExecutionQueueDAO {
      * @return
      * @throws CerberusException
      */
-    public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+    public AnswerList<TestCaseExecutionQueue> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
     /**
      * Read TestCaseExecutionInQueue By Tag
@@ -99,7 +99,7 @@ public interface ITestCaseExecutionQueueDAO {
      * @param individualSearch
      * @return
      */
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    public AnswerList<TestCaseExecutionQueue> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -114,7 +114,7 @@ public interface ITestCaseExecutionQueueDAO {
      * @param tag
      * @return
      */
-    public AnswerList readDistinctEnvCountryBrowserByTag(String tag);
+    public AnswerList<TestCaseExecutionQueue> readDistinctEnvCountryBrowserByTag(String tag);
 
     /**
      *

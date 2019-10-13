@@ -121,7 +121,7 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
             if (nbdep > 0) {
                 // Getting the list of impacted Queue Entries where we released dependencies.
                 List<Long> al = new ArrayList<>();
-                AnswerList ansQueueId = readExeQueueIdByExeId(tCExecution.getId());
+                AnswerList<Long> ansQueueId = readExeQueueIdByExeId(tCExecution.getId());
                 al = ansQueueId.getDataList();
                 // For each exequeue entry we just updated, we move status from QUWITHDEP to QUEUED in case there are no more WAITING dependency.
                 for (Long long1 : al) {

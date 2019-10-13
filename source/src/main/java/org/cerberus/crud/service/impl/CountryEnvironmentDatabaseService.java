@@ -51,17 +51,17 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(CountryEnvironmentDatabaseService.class);
 
     @Override
-    public AnswerItem readByKey(String system, String country, String environment, String database) {
+    public AnswerItem<CountryEnvironmentDatabase> readByKey(String system, String country, String environment, String database) {
         return countryEnvironmentDatabaseDao.readByKey(system, country, environment, database);
     }
 
     @Override
-    public AnswerList readByVarious(String system, String country, String environment) {
+    public AnswerList<CountryEnvironmentDatabase> readByVarious(String system, String country, String environment) {
         return countryEnvironmentDatabaseDao.readByVariousByCriteria(system, country, environment, 0, 0, null, null, null, null);
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList<CountryEnvironmentDatabase> readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         return countryEnvironmentDatabaseDao.readByVariousByCriteria(system, country, environment, start, amount, column, dir, searchTerm, individualSearch);
     }
 
