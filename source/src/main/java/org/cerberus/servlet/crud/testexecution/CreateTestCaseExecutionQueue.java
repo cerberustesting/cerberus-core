@@ -52,6 +52,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -231,19 +232,25 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                                     platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose, timeout,
                                     pageSource, seleniumLog, 0, retries, manualExecution, priority, request.getRemoteUser(), null, null, null);
                             executionQueueData.setDebugFlag(debugFlag);
+                            ansItem.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
                         } else {
                             // If id is defined, we get the execution queue from database.
                             executionQueueData = executionQueueService.convert(executionQueueService.readByKey(id, false));
-                            executionQueueData.setState(TestCaseExecutionQueue.State.QUEUED);
-                            executionQueueData.setComment("");
-                            executionQueueData.setDebugFlag("N");
-                            executionQueueData.setPriority(TestCaseExecutionQueue.PRIORITY_DEFAULT);
-                            executionQueueData.setUsrCreated(request.getRemoteUser());
+                            if (executionQueueData != null) {
+                                executionQueueData.setState(TestCaseExecutionQueue.State.QUEUED);
+                                executionQueueData.setComment("");
+                                executionQueueData.setDebugFlag("N");
+                                executionQueueData.setPriority(TestCaseExecutionQueue.PRIORITY_DEFAULT);
+                                executionQueueData.setUsrCreated(request.getRemoteUser());
+                                ansItem.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+                            } else {
+                                ansItem.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED).resolveDescription("ITEM", "Execution Queue").resolveDescription("OPERATION", "Read").resolveDescription("REASON", "Could not find previous queue entry " + id + ". Maybe it was purged."));
+                            }
                         }
-                        ansItem = executionQueueService.create(executionQueueData, withNewDep, id, TestCaseExecutionQueue.State.QUEUED);
 
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ansItem);
                         if (ansItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                            ansItem = executionQueueService.create(executionQueueData, withNewDep, id, TestCaseExecutionQueue.State.QUEUED);
                             TestCaseExecutionQueue addedExecution = (TestCaseExecutionQueue) ansItem.getItem();
                             insertedList.add(addedExecution);
                         }
@@ -260,8 +267,8 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
 
                     }
 
-                } catch (FactoryCreationException ex) {
-                    LOG.warn(ex);
+                } catch (FactoryCreationException | CerberusException | BeansException ex) {
+                    LOG.error(ex, ex);
                 }
 
             }

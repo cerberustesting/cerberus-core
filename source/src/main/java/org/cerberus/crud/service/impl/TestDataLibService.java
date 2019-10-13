@@ -106,7 +106,7 @@ public class TestDataLibService implements ITestDataLibService {
 
         // We start by calculating the max nb of row we can fetch. Either specified by rowLimit either defined by a parameter.
         int maxSecurityFetch = parameterService.getParameterIntegerByKey("cerberus_testdatalib_fetchmax", system, 100);
-        int maxFetch = maxSecurityFetch;
+        int maxFetch;
         if (rowLimit > 0 && rowLimit < maxSecurityFetch) {
             maxFetch = rowLimit;
         } else {
@@ -128,6 +128,8 @@ public class TestDataLibService implements ITestDataLibService {
             result.add(row);
         }
         answer.setDataList(result);
+        answer.setResultMessage(answerDataLib.getResultMessage());
+        answer.setTotalRows(answerDataLib.getTotalRows());
         return answer;
     }
 

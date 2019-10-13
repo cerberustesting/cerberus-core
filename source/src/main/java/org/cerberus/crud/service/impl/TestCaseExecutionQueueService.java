@@ -77,7 +77,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     @Override
     public AnswerItem<TestCaseExecutionQueue> readByKey(long queueId, boolean withDep) {
         AnswerItem<TestCaseExecutionQueue> result = testCaseExecutionInQueueDAO.readByKey(queueId);
-        if (withDep && result.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+        if (withDep && result.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && result.getItem() !=null) {
             TestCaseExecutionQueue obj = (TestCaseExecutionQueue) result.getItem();
             AnswerList<TestCaseExecutionQueueDep> depAnsList = testCaseExecutionQueueDepService.readByExeQueueId(queueId);
             if (depAnsList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

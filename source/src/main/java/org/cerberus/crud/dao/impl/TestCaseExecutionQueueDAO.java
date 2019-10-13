@@ -130,6 +130,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
+            LOG.debug("SQL.queueid : " + queueid);
         }
         Connection connection = this.databaseSpring.connect();
         try {
