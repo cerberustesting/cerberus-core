@@ -84,7 +84,7 @@ public enum MessageGeneralEnum {
     EXECUTION_FA_CONNECTIVITY(10, "FA", "The test case failed to be executed. Connectivity issues were found."),
     EXECUTION_FA_CERBERUS(9, "FA", "The test case failed to be executed due to error in Cerberus, please contact Administrator of Cerberus. %MES%."),
     EXECUTION_FA_CONDITION(11, "FA", "The test case failed to be executed. An error occured when evaluating the %AREA%condition '%COND%'. %MES%"),
-    EXECUTION_FA_CONDITIONDECODE(11, "FA", "The test case failed to be executed. An error occured when decoding the %AREA%condition. %MES%"),
+    EXECUTION_FA_DECODE(11, "FA", "The test case failed to be executed. An error occured when decoding the %AREA%. %MES%"),
     EXECUTION_FA_CAPABILITYDECODE(11, "FA", "The test case failed to be executed. An error occured when decoding the %AREA%. %MES%"),
     EXECUTION_FA_ROBOTNOTEXIST(11, "FA", "Robot '%ROBOT%' does not exist"),
     EXECUTION_FA_ROBOTBESTEXECUTORNOTEXIST(11, "FA", "Could not get the best Executor of Robot '%ROBOT%'"),

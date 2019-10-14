@@ -475,9 +475,9 @@ public class ExecutionRunService implements IExecutionRunService {
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CONDITIONDECODE)
+                        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_DECODE)
                                 .resolveDescription("MES", answerDecode.getMessageDescription())
-                                .resolveDescription("AREA", "TestCase Condition Value1 "));
+                                .resolveDescription("AREA", "TestCase Condition Value1"));
                         tCExecution.setEnd(new Date().getTime());
                         LOG.debug(logPrefix + "TestCase interupted due to decode 'TestCase Condition Value1' Error.");
                         conditionDecodeError = true;
@@ -491,9 +491,9 @@ public class ExecutionRunService implements IExecutionRunService {
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CONDITIONDECODE)
+                        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_DECODE)
                                 .resolveDescription("MES", answerDecode.getMessageDescription())
-                                .resolveDescription("AREA", "TestCase Condition Value2 "));
+                                .resolveDescription("AREA", "TestCase Condition Value2"));
                         tCExecution.setEnd(new Date().getTime());
                         LOG.debug(logPrefix + "TestCase interupted due to decode 'TestCase Condition Value2' Error.");
                         conditionDecodeError = true;
@@ -554,7 +554,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                                 // determine if step is executed (execute_Step) and if we trigger a new step execution after (execute_Next_Step)
                                 boolean execute_Step = true;
-                                boolean conditionStepDecodeError = false;
+                                boolean descriptionOrConditionStepDecodeError = false;
                                 boolean conditionStepError = false;
                                 AnswerItem<Boolean> conditionAnswer = new AnswerItem<>(new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_UNKNOWNCONDITION));
                                 if (testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_ONCEIFCONDITIONFALSE)
@@ -575,12 +575,12 @@ public class ExecutionRunService implements IExecutionRunService {
                                             testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                                             testCaseStepExecution.setEnd(new Date().getTime());
                                             LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value1' Error.");
-                                            conditionStepDecodeError = true;
+                                            descriptionOrConditionStepDecodeError = true;
                                         }
                                     } catch (CerberusEventException cex) {
                                         LOG.warn(cex);
                                     }
-                                    if (!conditionStepDecodeError) {
+                                    if (!descriptionOrConditionStepDecodeError) {
                                         try {
                                             answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionVal2(), tCExecution, null, false);
                                             testCaseStepExecution.setConditionVal2((String) answerDecode.getItem());
@@ -592,13 +592,31 @@ public class ExecutionRunService implements IExecutionRunService {
                                                 testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                                                 testCaseStepExecution.setEnd(new Date().getTime());
                                                 LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value2' Error.");
-                                                conditionStepDecodeError = true;
+                                                descriptionOrConditionStepDecodeError = true;
                                             }
                                         } catch (CerberusEventException cex) {
                                             LOG.warn(cex);
                                         }
                                     }
-                                    if (!(conditionStepDecodeError)) {
+                                    if (!descriptionOrConditionStepDecodeError) {
+                                        try {
+                                            answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getDescription(), tCExecution, null, false);
+                                            testCaseStepExecution.setDescription((String) answerDecode.getItem());
+                                            if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                                testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                                                testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Description"));
+                                                testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Description").getDescription());
+                                                testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
+                                                testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                                                testCaseStepExecution.setEnd(new Date().getTime());
+                                                LOG.debug(logPrefix + "Step interupted due to decode 'Step Description' Error.");
+                                                descriptionOrConditionStepDecodeError = true;
+                                            }
+                                        } catch (CerberusEventException cex) {
+                                            LOG.warn(cex);
+                                        }
+                                    }
+                                    if (!(descriptionOrConditionStepDecodeError)) {
 
                                         conditionAnswer = this.conditionService.evaluateCondition(testCaseStepExecution.getConditionOper(), testCaseStepExecution.getConditionVal1(), testCaseStepExecution.getConditionVal2(), tCExecution);
                                         execute_Step = (boolean) conditionAnswer.getItem();
@@ -650,11 +668,11 @@ public class ExecutionRunService implements IExecutionRunService {
                                     } else {
 
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                                        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CONDITIONDECODE)
-                                                .resolveDescription("AREA", "Step ")
+                                        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_DECODE)
+                                                .resolveDescription("AREA", "Step")
                                                 .resolveDescription("MES", answerDecode.getMessageDescription()));
                                         tCExecution.setEnd(new Date().getTime());
-                                        LOG.debug(logPrefix + "TestCase interupted due to decode Condition Error.");
+                                        LOG.debug(logPrefix + "TestCase interupted due to decode Error.");
 
                                         // There was an error on decode so we stop everything.
                                         if (tCExecution.getManualExecution().equals("Y")) {
@@ -709,7 +727,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                     }
 
                                 } else // We don't execute the step and record a generic execution.
-                                if ((!conditionStepDecodeError) && (!conditionStepError)) {
+                                if ((!descriptionOrConditionStepDecodeError) && (!conditionStepError)) {
 
                                     /**
                                      * Register Step in database
