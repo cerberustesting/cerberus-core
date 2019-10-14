@@ -200,12 +200,12 @@ public class ReadUser extends HttpServlet {
             }
         }
 
-        AnswerList resp = userService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<User> resp = userService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         boolean userHasPermissions = request.isUserInRole("Administrator");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (User user : (List<User>) resp.getDataList()) {
+            for (User user : resp.getDataList()) {
                 JSONObject res = convertUserToJSONObject(user);
                 res.put("isKeycloakManaged", Property.isKeycloak());
                 if (request.getParameter("systems") != null) {

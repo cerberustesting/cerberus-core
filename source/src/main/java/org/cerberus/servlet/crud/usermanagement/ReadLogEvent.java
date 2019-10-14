@@ -107,7 +107,7 @@ public class ReadLogEvent extends HttpServlet {
             msg.setDescription(msg.getDescription().replace("%REASON%", "logeventid must be an integer value."));
             idlog_error = true;
         }
-        
+
         //Get Parameters
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
@@ -206,22 +206,22 @@ public class ReadLogEvent extends HttpServlet {
 
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         for (int a = 0; a < columnToSort.length; a++) {
-            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
                 }
             }
         }
-        
-        AnswerList resp = logEventService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+
+        AnswerList<LogEvent> resp = logEventService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         boolean userHasPermissions = false;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            for (LogEvent myLogEvent : (List<LogEvent>) resp.getDataList()) {
+            for (LogEvent myLogEvent : resp.getDataList()) {
                 jsonArray.put(convertLogEventToJSONObject(myLogEvent));
             }
         }
@@ -269,7 +269,7 @@ public class ReadLogEvent extends HttpServlet {
         JSONObject object = new JSONObject();
 
         logEventService = appContext.getBean(ILogEventService.class);
-        
+
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "Time,login,Page,Action,log");
         String columnToSort[] = sColumns.split(",");
@@ -279,16 +279,16 @@ public class ReadLogEvent extends HttpServlet {
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-            	List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-            	if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
-                } 
+                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
+                }
             }
         }
 
-        AnswerList logList = logEventService.readDistinctValuesByCriteria( searchParameter, individualSearch, columnName);
+        AnswerList logList = logEventService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
 
         object.put("distinctValues", logList.getDataList());
 

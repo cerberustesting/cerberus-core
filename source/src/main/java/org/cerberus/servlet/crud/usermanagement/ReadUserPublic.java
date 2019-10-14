@@ -137,11 +137,11 @@ public class ReadUserPublic extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = userService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList<User> resp = userService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (User user : (List<User>) resp.getDataList()) {
+            for (User user : resp.getDataList()) {
                 jsonArray.put(convertUserToJSONObject(user));
             }
         }
@@ -196,11 +196,11 @@ public class ReadUserPublic extends HttpServlet {
 
     private JSONObject convertUserToJSONObject(User user) throws JSONException {
         JSONObject result = new JSONObject();
-        
+
         result.put("login", user.getLogin());
         result.put("name", user.getName());
         result.put("system", user.getDefaultSystem());
-        
+
         return result;
     }
 

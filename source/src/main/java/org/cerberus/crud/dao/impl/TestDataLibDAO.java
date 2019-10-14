@@ -456,7 +456,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
-        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testdatalib tdl ");
 
@@ -722,7 +722,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     @Override
     public AnswerItem<TestDataLib> create(TestDataLib testDataLib) {
         MessageEvent msg;
-        AnswerItem answer = new AnswerItem<>();
+        AnswerItem<TestDataLib> answer = new AnswerItem<>();
         StringBuilder query = new StringBuilder();
         TestDataLib createdTestDataLib;
         query.append("INSERT INTO testdatalib (`name`, `system`, `environment`, `country`, `privateData`, `group`, `type`, `database`, `script`, `databaseUrl`, ");

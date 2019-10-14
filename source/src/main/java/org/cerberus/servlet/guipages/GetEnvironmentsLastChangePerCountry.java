@@ -57,7 +57,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class GetEnvironmentsLastChangePerCountry extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(GetEnvironmentsLastChangePerCountry.class);
-    
+
     private IInvariantService invariantService;
     private ICountryEnvParam_logService ceplService;
 
@@ -143,19 +143,19 @@ public class GetEnvironmentsLastChangePerCountry extends HttpServlet {
         invariantService = appContext.getBean(IInvariantService.class);
         ceplService = appContext.getBean(ICountryEnvParam_logService.class);
 
-        AnswerList resp = invariantService.readCountryListEnvironmentLastChanges(system, nbDays);
+        AnswerList<Invariant> resp = invariantService.readCountryListEnvironmentLastChanges(system, nbDays);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Invariant countryInvariant : (List<Invariant>) resp.getDataList()) {
+            for (Invariant countryInvariant : resp.getDataList()) {
 
                 JSONObject countryJSON;
                 countryJSON = convertToJSONObject(countryInvariant);
 
-                AnswerList resp1 = ceplService.readLastChanges(system, countryInvariant.getValue(), nbDays, envGp);
+                AnswerList<CountryEnvParam_log> resp1 = ceplService.readLastChanges(system, countryInvariant.getValue(), nbDays, envGp);
                 JSONArray jsonArray1 = new JSONArray();
                 if (resp1.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-                    for (CountryEnvParam_log countryepl : (List<CountryEnvParam_log>) resp1.getDataList()) {
+                    for (CountryEnvParam_log countryepl : resp1.getDataList()) {
                         jsonArray1.put(convertToJSONObject(countryepl));
 
                     }

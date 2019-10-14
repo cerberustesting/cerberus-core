@@ -102,9 +102,9 @@ public class ResultCIV003 extends HttpServlet {
                     ITagService tagService = appContext.getBean(ITagService.class);
 
                     List<Tag> myList;
-                    AnswerList myAnswerList = tagService.readByVariousByCriteria(campaign, 0, 1, "id", "desc", null, null);
+                    AnswerList<Tag> myAnswerList = tagService.readByVariousByCriteria(campaign, 0, 1, "id", "desc", null, null);
                     if (myAnswerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-                        for (Tag tagCur : (List<Tag>) myAnswerList.getDataList()) {
+                        for (Tag tagCur : myAnswerList.getDataList()) {
                             tag = tagCur.getTag();
                         }
                     }
@@ -168,7 +168,7 @@ public class ResultCIV003 extends HttpServlet {
                             //RECTANGLE
                             + "<rect rx=\"3\" fill=\"#555\" width=\"250\" height=\"20\"></rect>"
                             + "<rect rx=\"3\" x=\"210\" fill=\"" + getColor(resultToDisplay) + "\" width=\"40\" height=\"20\"></rect>"
-                            //TEXT        
+                            //TEXT
                             + "<g fill=\"#fff\" text-anchor=\"start\" font-family=\"DejaVu Sans,Verdana,Geneva,sans-serif\" font-size=\"9\">"
                             + "<text x=\"10\" y=\"15\" fill=\"#010101\" fill-opacity=\".3\">" + tagToDisplay + "</text>"
                             + "<text x=\"10\" y=\"14\">" + tagToDisplay + "</text>"

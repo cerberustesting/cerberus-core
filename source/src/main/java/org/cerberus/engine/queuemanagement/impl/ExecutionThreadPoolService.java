@@ -87,12 +87,12 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     @Override
     public HashMap<String, Integer> getCurrentlyRunning() throws CerberusException {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<TestCaseExecutionQueueToTreat> answer = new AnswerList<>();
         HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
 
         // Getting all executions already running in the queue.
         answer = tceiqService.readQueueRunning();
-        List<TestCaseExecutionQueueToTreat> executionsRunning = (List<TestCaseExecutionQueueToTreat>) answer.getDataList();
+        List<TestCaseExecutionQueueToTreat> executionsRunning = answer.getDataList();
         // Calculate constrain values.
         for (TestCaseExecutionQueueToTreat exe : executionsRunning) {
             String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
@@ -127,7 +127,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     @Override
     public HashMap<String, Integer> getCurrentlyPoolSizes() throws CerberusException {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<TestCaseExecutionQueueToTreat> answer = new AnswerList<>();
         HashMap<String, Integer> constrains_current = new HashMap<>();
 
         String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
@@ -141,7 +141,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
         // Getting all executions to be treated.
         answer = tceiqService.readQueueToTreatOrRunning();
-        List<TestCaseExecutionQueueToTreat> executionsToTreat = (List<TestCaseExecutionQueueToTreat>) answer.getDataList();
+        List<TestCaseExecutionQueueToTreat> executionsToTreat = answer.getDataList();
         // Calculate constrain values.
         for (TestCaseExecutionQueueToTreat exe : executionsToTreat) {
             String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
@@ -169,12 +169,12 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     @Override
     public HashMap<String, Integer> getCurrentlyToTreat() throws CerberusException {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<TestCaseExecutionQueueToTreat> answer = new AnswerList<>();
         HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
 
         // Getting all executions to be treated.
         answer = tceiqService.readQueueToTreat();
-        List<TestCaseExecutionQueueToTreat> executionsToTreat = (List<TestCaseExecutionQueueToTreat>) answer.getDataList();
+        List<TestCaseExecutionQueueToTreat> executionsToTreat = answer.getDataList();
 
         // Calculate constrain values.
         for (TestCaseExecutionQueueToTreat exe : executionsToTreat) {
@@ -250,9 +250,9 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                     LOG.debug("Starting Queue_Processing_Job.");
 
                     // Getting all executions to be treated.
-                    AnswerList answer = new AnswerList<>();
+                    AnswerList<TestCaseExecutionQueueToTreat> answer = new AnswerList<>();
                     answer = tceiqService.readQueueToTreat();
-                    List<TestCaseExecutionQueueToTreat> executionsInQueue = (List<TestCaseExecutionQueueToTreat>) answer.getDataList();
+                    List<TestCaseExecutionQueueToTreat> executionsInQueue = answer.getDataList();
 
                     int poolSizeGeneral = 12;
                     int poolSizeRobot = 10;
@@ -516,7 +516,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                             }
                         }
 
-//                  End of Queue entry analysis accross all Executors.                    
+//                  End of Queue entry analysis accross all Executors.
                         if ((exe.getDebugFlag() != null) && (exe.getDebugFlag().equalsIgnoreCase("Y"))) {
                             if (triggerExe == false) {
                                 queueService.updateComment(exe.getId(), notTriggeredExeMessage);

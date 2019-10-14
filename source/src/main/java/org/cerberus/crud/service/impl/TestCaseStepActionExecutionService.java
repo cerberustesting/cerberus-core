@@ -57,7 +57,7 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
     ITestCaseExecutionFileService testCaseExecutionFileService;
 
     private static final Logger LOG = LogManager.getLogger(TestCaseStepActionExecutionService.class);
-    
+
     @Override
     public void insertTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
         this.testCaseStepActionExecutionDao.insertTestCaseStepActionExecution(testCaseStepActionExecution);
@@ -143,11 +143,11 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
 
             TestCaseStepActionExecution tcsae = (TestCaseStepActionExecution) action;
 
-            AnswerList controls = testCaseStepActionControlExecutionService.readByVarious1WithDependency(executionId, test, testcase, step, index, tcsae.getSequence());
-            tcsae.setTestCaseStepActionControlExecutionList((List<TestCaseStepActionControlExecution>) controls.getDataList());
+            AnswerList<TestCaseStepActionControlExecution> controls = testCaseStepActionControlExecutionService.readByVarious1WithDependency(executionId, test, testcase, step, index, tcsae.getSequence());
+            tcsae.setTestCaseStepActionControlExecutionList(controls.getDataList());
 
-            AnswerList files = testCaseExecutionFileService.readByVarious(executionId, tcsae.getTest() + "-" + tcsae.getTestCase() + "-" + tcsae.getStep() + "-" + tcsae.getIndex() + "-" + tcsae.getSequence());
-            tcsae.setFileList((List<TestCaseExecutionFile>) files.getDataList());
+            AnswerList<TestCaseExecutionFile> files = testCaseExecutionFileService.readByVarious(executionId, tcsae.getTest() + "-" + tcsae.getTestCase() + "-" + tcsae.getStep() + "-" + tcsae.getIndex() + "-" + tcsae.getSequence());
+            tcsae.setFileList(files.getDataList());
 
             tcsaeList.add(tcsae);
         }
