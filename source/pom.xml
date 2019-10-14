@@ -16,7 +16,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Cerberus.  If not, see <http://www.gnu.org/licenses />.
+    along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -73,7 +73,7 @@
         <commons-email.version>1.5</commons-email.version>
         <commons-text.version>1.3</commons-text.version>
         <poi.version>3.13</poi.version>
-        <asciidoctor.version>1.5.6</asciidoctor.version>
+        <asciidoctor.version>2.1.0</asciidoctor.version>
         <apache.tika>1.22</apache.tika>
         <fluent-hc.version>4.5.3</fluent-hc.version>
         
@@ -94,8 +94,8 @@
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <javaee-endorsed-api.version>7.0</javaee-endorsed-api.version>
         <ant-jsch.version>1.10.1</ant-jsch.version>
-        <asciidoctor-maven-plugin.version>1.5.6</asciidoctor-maven-plugin.version>
-        <license-maven-plugin.version>3.0</license-maven-plugin.version>
+        <asciidoctor-maven-plugin.version>1.6.0</asciidoctor-maven-plugin.version>
+        <license-maven-plugin.version>2.0</license-maven-plugin.version>
         
         <!-- Quartz version -->
         <quartz.version>2.3.0</quartz.version>
@@ -377,12 +377,12 @@
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj</artifactId>
             <version>${asciidoctor.version}</version>
-            <exclusions>
+<!--            <exclusions>
                 <exclusion>
                     <groupId>org.jruby</groupId>
                     <artifactId>jruby-complete</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
@@ -601,7 +601,7 @@
                 <configuration>
                     <failIfMissing>true</failIfMissing>
                     <!-- Due to https://issues.apache.org/jira/browse/MRELEASE-266, we cannot be strict as the maven-release-plugin is modifying license headers during process -->
-                    <strictCheck>false</strictCheck>
+                    <strictCheck>true</strictCheck>
                     <header>${basedir}/licenseheader.txt</header>
                     <includes>
                         <include>**/*.java</include>
