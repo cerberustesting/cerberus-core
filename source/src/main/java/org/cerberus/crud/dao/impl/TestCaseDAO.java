@@ -139,12 +139,12 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerList readByTestByCriteria(List<String> system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<TestCase> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCase> testCaseList = new ArrayList<TestCase>();
+        List<TestCase> testCaseList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 
@@ -993,12 +993,12 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
+    public AnswerList<TestCase> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
             String[] campaign, List<Integer> labelid, String[] priority, String[] group, String[] status, int length) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<TestCase> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCase> testCaseList = new ArrayList<TestCase>();
+        List<TestCase> testCaseList = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 

@@ -171,9 +171,9 @@ public class ReadParameter extends HttpServlet {
         }
     }
 
-    private AnswerItem findParameterList(String system1, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findParameterList(String system1, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         parameterService = appContext.getBean(ParameterService.class);
 
@@ -224,8 +224,8 @@ public class ReadParameter extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findParameterBySystemByKey(String system1, String key, Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findParameterBySystemByKey(String system1, String key, Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         parameterService = appContext.getBean(ParameterService.class);
@@ -255,8 +255,8 @@ public class ReadParameter extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         parameterService = appContext.getBean(IParameterService.class);

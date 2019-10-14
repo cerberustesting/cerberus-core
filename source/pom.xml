@@ -514,9 +514,14 @@
                     <compilerArguments>
                         <endorseddirs>${endorsed.dir}</endorseddirs>
                     </compilerArguments>
-<!--                    <compilerArguments>
-                        <Xlint:unchecked />
-                    </compilerArguments>-->
+                    <compilerArgs>
+                        <arg>-Xmaxerrs</arg>
+                        <arg>1000</arg>
+                        <arg>-Xlint:unchecked</arg>
+                        <arg>-Xlint:deprecation</arg>
+                        <arg>-Xmaxwarns</arg>
+                        <arg>9999</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             

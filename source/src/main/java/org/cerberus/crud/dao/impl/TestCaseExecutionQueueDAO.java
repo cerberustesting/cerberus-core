@@ -798,8 +798,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<TestCaseExecutionQueue> readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
+        AnswerList<TestCaseExecutionQueue> answer = new AnswerList<>();
         StringBuilder query = new StringBuilder();
         StringBuilder distinct = new StringBuilder();
         int prev = 0;
@@ -845,7 +845,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
         Connection connection = this.databaseSpring.connect();
 
-        List<TestCaseExecutionQueue> column = new ArrayList<TestCaseExecutionQueue>();
+        List<TestCaseExecutionQueue> column = new ArrayList<>();
 
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -921,13 +921,13 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList readDistinctValuesByCriteria(String columnName, String sort, String searchTerm, Map<String, List<String>> individualSearch, String column) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<String> readDistinctValuesByCriteria(String columnName, String sort, String searchTerm, Map<String, List<String>> individualSearch, String column) {
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 
@@ -1029,8 +1029,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList findTagList(int tagnumber) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<String> findTagList(int tagnumber) {
+        AnswerList<String> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<String> list = null;
         StringBuilder query = new StringBuilder();
@@ -1049,7 +1049,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<String>();
+                    list = new ArrayList<>();
 
                     while (resultSet.next()) {
                         list.add(resultSet.getString("tag"));
@@ -1089,11 +1089,11 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<TestCaseExecutionQueue> readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
+        AnswerList<TestCaseExecutionQueue> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        List<TestCaseExecutionQueue> tceList = new ArrayList<TestCaseExecutionQueue>();
-        List<String> whereClauses = new LinkedList<String>();
+        List<TestCaseExecutionQueue> tceqList = new ArrayList<>();
+        List<String> whereClauses = new LinkedList<>();
 
         StringBuilder query = new StringBuilder();
 
@@ -1355,9 +1355,9 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        tceList.add(this.loadWithDependenciesFromResultSet(resultSet));
+                        tceqList.add(this.loadWithDependenciesFromResultSet(resultSet));
                     }
-                    if (tceList.isEmpty()) {
+                    if (tceqList.isEmpty()) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     } else {
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
@@ -1367,12 +1367,12 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     LOG.warn("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                    tceList.clear();
+                    tceqList.clear();
                 } catch (FactoryCreationException ex) {
                     LOG.warn("Unable to execute query : " + ex.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                    tceList.clear();
+                    tceqList.clear();
                 } finally {
                     if (resultSet != null) {
                         resultSet.close();
@@ -1400,8 +1400,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 LOG.warn("Unable to execute query : " + ex.toString());
             }
         }
-        answer.setTotalRows(tceList.size());
-        answer.setDataList(tceList);
+        answer.setTotalRows(tceqList.size());
+        answer.setDataList(tceqList);
         answer.setResultMessage(msg);
         return answer;
     }

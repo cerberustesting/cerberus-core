@@ -225,7 +225,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
+    public AnswerList<TestCase> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
             String[] campaign, List<Integer> labelid, String[] priority, String[] group, String[] status, int length) {
         return testCaseDao.readByVarious(test, idProject, app, creator, implementer, system, campaign, labelid, priority, group, status, length);
     }

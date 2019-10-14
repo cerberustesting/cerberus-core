@@ -500,7 +500,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         JSONObject countryList = new JSONObject();
         try {
             IInvariantService invariantService = appContext.getBean(InvariantService.class);
-            AnswerList answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
+            AnswerList<Invariant> answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
             for (Invariant country : (List<Invariant>) answer.getDataList()) {
                 countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
             }
@@ -512,7 +512,7 @@ public class ReadTestCaseExecution extends HttpServlet {
     }
 
     private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionQueue> testCaseExecutionsInQueue) throws ParseException {
-        LinkedHashMap<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap();
+        LinkedHashMap<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap<>();
         SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {

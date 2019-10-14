@@ -140,12 +140,12 @@ public class AppServiceDAO implements IAppServiceDAO {
     }
 
     @Override
-    public AnswerList findAppServiceByLikeName(String service, int limit) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<AppService> findAppServiceByLikeName(String service, int limit) {
+        AnswerList<AppService> response = new AnswerList<>();
         boolean throwEx = false;
         AppService result = null;
         final String query = "SELECT * FROM appservice srv WHERE `service` LIKE ? limit ?";
-        List<AppService> objectList = new ArrayList<AppService>();
+        List<AppService> objectList = new ArrayList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
@@ -201,9 +201,9 @@ public class AppServiceDAO implements IAppServiceDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, List<String> systems) {
+    public AnswerList<AppService> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, List<String> systems) {
 
-        AnswerList response = new AnswerList<>();
+        AnswerList<AppService> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<AppService> objectList = new ArrayList<AppService>();
@@ -379,8 +379,8 @@ public class AppServiceDAO implements IAppServiceDAO {
     }
 
     @Override
-    public AnswerItem readByKey(String key) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<AppService> readByKey(String key) {
+        AnswerItem<AppService> ans = new AnswerItem<>();
         AppService result = null;
         final String query = "SELECT * FROM `appservice` srv WHERE `service` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -438,13 +438,13 @@ public class AppServiceDAO implements IAppServiceDAO {
     }
 
     @Override
-    public AnswerList readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT distinct ");

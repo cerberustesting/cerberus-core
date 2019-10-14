@@ -74,7 +74,7 @@ public interface ITestCaseStepActionExecutionService {
      * @param index
      * @return
      */
-    public AnswerList readByVarious1(long executionId, String test, String testcase, int step, int index);
+    public AnswerList<TestCaseStepActionExecution> readByVarious1(long executionId, String test, String testcase, int step, int index);
 
     /**
      *
@@ -86,7 +86,7 @@ public interface ITestCaseStepActionExecutionService {
      * @param sequence
      * @return
      */
-    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int index, int sequence);
+    public AnswerItem<TestCaseStepActionExecution> readByKey(long executionId, String test, String testcase, int step, int index, int sequence);
 
     /**
      *
@@ -97,5 +97,5 @@ public interface ITestCaseStepActionExecutionService {
      * @param index
      * @return
      */
-    public AnswerList readByVarious1WithDependency(long executionId, String test, String testcase, int step, int index);
+    public AnswerList<TestCaseStepActionExecution> readByVarious1WithDependency(long executionId, String test, String testcase, int step, int index);
 }

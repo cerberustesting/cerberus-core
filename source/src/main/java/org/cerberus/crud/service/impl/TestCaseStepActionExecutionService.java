@@ -125,19 +125,19 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
     }
 
     @Override
-    public AnswerList readByVarious1(long executionId, String test, String testcase, int step, int index) {
+    public AnswerList<TestCaseStepActionExecution> readByVarious1(long executionId, String test, String testcase, int step, int index) {
         return testCaseStepActionExecutionDao.readByVarious1(executionId, test, testcase, step, index);
     }
 
     @Override
-    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int index, int sequence) {
+    public AnswerItem<TestCaseStepActionExecution> readByKey(long executionId, String test, String testcase, int step, int index, int sequence) {
         return testCaseStepActionExecutionDao.readByKey(executionId, test, testcase, step, index, sequence);
     }
 
     @Override
-    public AnswerList readByVarious1WithDependency(long executionId, String test, String testcase, int step, int index) {
-        AnswerList actions = this.readByVarious1(executionId, test, testcase, step, index);
-        AnswerList response = null;
+    public AnswerList<TestCaseStepActionExecution> readByVarious1WithDependency(long executionId, String test, String testcase, int step, int index) {
+        AnswerList<TestCaseStepActionExecution> actions = this.readByVarious1(executionId, test, testcase, step, index);
+        AnswerList<TestCaseStepActionExecution> response = null;
         List<TestCaseStepActionExecution> tcsaeList = new ArrayList<>();
         for (Object action : actions.getDataList()) {
 

@@ -275,14 +275,14 @@ public class ParameterDAO implements IParameterDAO {
     }
 
     @Override
-    public AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<Parameter> readWithSystem1BySystemByCriteria(String system, String system1, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
 
-        AnswerList response = new AnswerList<>();
+        AnswerList<Parameter> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<Parameter> objectList = new ArrayList<Parameter>();
+        List<Parameter> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
@@ -425,8 +425,8 @@ public class ParameterDAO implements IParameterDAO {
     }
 
     @Override
-    public AnswerItem readWithSystem1ByKey(String system, String key, String system1) {
-        AnswerItem a = new AnswerItem<>();
+    public AnswerItem<Parameter> readWithSystem1ByKey(String system, String key, String system1) {
+        AnswerItem<Parameter> a = new AnswerItem<>();
         StringBuilder query = new StringBuilder();
         Parameter p = new Parameter();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -501,12 +501,12 @@ public class ParameterDAO implements IParameterDAO {
 
     @Override
     public AnswerList<String> readDistinctValuesWithSystem1ByCriteria(String system, String system1, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 

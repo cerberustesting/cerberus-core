@@ -65,7 +65,7 @@ public interface ITestCaseLabelDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList<List<TestCaseLabel>> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<TestCaseLabel> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *

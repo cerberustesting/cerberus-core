@@ -61,7 +61,7 @@ public interface ITestCaseStepExecutionDAO {
      * @param testcase
      * @return
      */
-    public AnswerList readByVarious1(long executionId, String test, String testcase);
+    public AnswerList<TestCaseStepExecution> readByVarious1(long executionId, String test, String testcase);
     
     /**
      *

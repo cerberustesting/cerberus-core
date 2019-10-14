@@ -367,11 +367,11 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
     }
 
     @Override
-    public AnswerList readByTestTestCase(String test, String testcase) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<TestCaseStepActionControl> readByTestTestCase(String test, String testcase) {
+        AnswerList<TestCaseStepActionControl> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCaseStepActionControl> controlList = new ArrayList<TestCaseStepActionControl>();
+        List<TestCaseStepActionControl> controlList = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ?");
 
@@ -425,10 +425,10 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
 
     @Override
     public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int step, int sequence) {
-        AnswerList response = new AnswerList<>();
+        AnswerList<TestCaseStepActionControl> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCaseStepActionControl> controlList = new ArrayList<TestCaseStepActionControl>();
+        List<TestCaseStepActionControl> controlList = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? AND step = ? AND sequence = ?");
 

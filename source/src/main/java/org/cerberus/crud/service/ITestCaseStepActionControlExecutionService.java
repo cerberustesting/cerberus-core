@@ -55,7 +55,7 @@ public interface ITestCaseStepActionControlExecutionService {
      * @param sequence : ID of the action
      * @return List of testcasestepactioncontrol object
      */
-    public AnswerList readByVarious1(long executionId, String test, String testcase, int step, int index, int sequence);
+    public AnswerList<TestCaseStepActionControlExecution> readByVarious1(long executionId, String test, String testcase, int step, int index, int sequence);
 
     /**
      * Return the testcasestepactioncontrolexecution list of an execution, step, action
@@ -68,7 +68,7 @@ public interface ITestCaseStepActionControlExecutionService {
      * @param controlSequence : ID of the control
      * @return List of testcasestepactioncontrol object
      */
-    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int index, int sequence, int controlSequence);
+    public AnswerItem<TestCaseStepActionControlExecution> readByKey(long executionId, String test, String testcase, int step, int index, int sequence, int controlSequence);
 
     /**
      * Return the testcasestepactioncontrolexecution list of an execution, step, action
@@ -80,5 +80,5 @@ public interface ITestCaseStepActionControlExecutionService {
      * @param sequence : ID of the action
      * @return List of testcasestepactioncontrol object
      */
-    public AnswerList readByVarious1WithDependency(long executionId, String test, String testcase, int step, int index, int sequence);
+    public AnswerList<TestCaseStepActionControlExecution> readByVarious1WithDependency(long executionId, String test, String testcase, int step, int index, int sequence);
 }

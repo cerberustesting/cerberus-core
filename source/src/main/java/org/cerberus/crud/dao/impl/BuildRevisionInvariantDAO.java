@@ -62,8 +62,8 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public AnswerItem readByKey(String system, Integer level, Integer seq) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<BuildRevisionInvariant> readByKey(String system, Integer level, Integer seq) {
+        AnswerItem<BuildRevisionInvariant> ans = new AnswerItem<>();
         BuildRevisionInvariant result = null;
         final String query = "SELECT * FROM `buildrevisioninvariant` WHERE `system` = ? and level = ? and seq = ? ";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -120,8 +120,8 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
     }
 
     @Override
-    public AnswerItem readByKey(String system, Integer level, String versionName) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<BuildRevisionInvariant> readByKey(String system, Integer level, String versionName) {
+        AnswerItem<BuildRevisionInvariant> ans = new AnswerItem<>();
         BuildRevisionInvariant result = null;
         final String query = "SELECT * FROM `buildrevisioninvariant` WHERE `system` = ? and level = ? and versionname = ? ";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -178,13 +178,13 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(List<String> systems, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<BuildRevisionInvariant> readByVariousByCriteria(List<String> systems, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        AnswerList<BuildRevisionInvariant> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<BuildRevisionInvariant> briList = new ArrayList<BuildRevisionInvariant>();
+        List<BuildRevisionInvariant> briList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 

@@ -235,7 +235,7 @@ public interface ITestCaseExecutionDAO {
      * @param app
      * @return
      */
-    public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
+    public AnswerList<TestCaseExecution> readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
 
     /**
      *

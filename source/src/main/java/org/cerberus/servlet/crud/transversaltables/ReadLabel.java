@@ -306,7 +306,7 @@ public class ReadLabel extends HttpServlet {
         TreeNode node;
         JSONArray jsonArray = new JSONArray();
 
-        AnswerList resp = labelService.readByVarious(system, new ArrayList<>(asList(type)));
+        AnswerList<Label> resp = labelService.readByVarious(system, new ArrayList<>(asList(type)));
 
         // Building tree Structure;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -388,11 +388,11 @@ public class ReadLabel extends HttpServlet {
         return jsonArray;
     }
 
-    private AnswerItem findLabelByKey(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findLabelByKey(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
-        ILabelService labelService = appContext.getBean(ILabelService.class);
+        labelService = appContext.getBean(ILabelService.class);
 
         //finds the project     
         AnswerItem answer = labelService.readByKey(id);
@@ -430,8 +430,8 @@ public class ReadLabel extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         labelService = appContext.getBean(ILabelService.class);

@@ -255,7 +255,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    result = new ArrayList<TestCaseStepActionControlExecution>();
+                    result = new ArrayList<>();
 
                     while (resultSet.next()) {
                         result.add(this.loadFromResultset(resultSet));
@@ -285,10 +285,10 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
     }
 
     @Override
-    public AnswerList readByVarious1(long executionId, String test, String testCase, int step, int index, int sequence) {
+    public AnswerList<TestCaseStepActionControlExecution> readByVarious1(long executionId, String test, String testCase, int step, int index, int sequence) {
         MessageEvent msg;
-        AnswerList answer = new AnswerList<>();
-        List<TestCaseStepActionControlExecution> list = new ArrayList<TestCaseStepActionControlExecution>();
+        AnswerList<TestCaseStepActionControlExecution> answer = new AnswerList<>();
+        List<TestCaseStepActionControlExecution> list = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepactioncontrolexecution a ");
         query.append("where id = ? and test = ? and testcase = ? and step = ? and `index` = ? ");
@@ -357,9 +357,9 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
     }
 
     @Override
-    public AnswerItem readByKey(long executionId, String test, String testCase, int step, int index, int sequence, int controlSequence) {
+    public AnswerItem<TestCaseStepActionControlExecution> readByKey(long executionId, String test, String testCase, int step, int index, int sequence, int controlSequence) {
         MessageEvent msg;
-        AnswerItem answer = new AnswerItem<>();
+        AnswerItem<TestCaseStepActionControlExecution> answer = new AnswerItem<>();
         TestCaseStepActionControlExecution tcsa = null;
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepactioncontrolexecution a ");

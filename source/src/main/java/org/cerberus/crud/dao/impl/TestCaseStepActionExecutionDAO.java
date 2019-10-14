@@ -108,10 +108,10 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     }
 
     @Override
-    public AnswerList readByVarious1(long executionId, String test, String testCase, int step, int index) {
+    public AnswerList<TestCaseStepActionExecution> readByVarious1(long executionId, String test, String testCase, int step, int index) {
         MessageEvent msg;
-        AnswerList answer = new AnswerList<>();
-        List<TestCaseStepActionExecution> list = new ArrayList<TestCaseStepActionExecution>();
+        AnswerList<TestCaseStepActionExecution> answer = new AnswerList<>();
+        List<TestCaseStepActionExecution> list = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepactionexecution exa ");
         query.append("where exa.id = ? and exa.test = ? and exa.testcase = ? and exa.step = ? and exa.index = ? ");
@@ -178,9 +178,9 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     }
 
     @Override
-    public AnswerItem readByKey(long executionId, String test, String testCase, int step, int index, int sequence) {
+    public AnswerItem<TestCaseStepActionExecution> readByKey(long executionId, String test, String testCase, int step, int index, int sequence) {
         MessageEvent msg;
-        AnswerItem answer = new AnswerItem<>();
+        AnswerItem<TestCaseStepActionExecution> answer = new AnswerItem<>();
         TestCaseStepActionExecution tcsa = null;
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepactionexecution exa ");

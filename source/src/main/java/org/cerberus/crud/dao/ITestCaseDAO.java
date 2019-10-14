@@ -63,6 +63,11 @@ public interface ITestCaseDAO {
      */
     List<TestCase> findTestCaseByCriteria(TestCase testCase, String text, String system);
 
+    /**
+     *
+     * @param column
+     * @return
+     */
     List<String> findUniqueDataOfColumn(String column);
 
     /**
@@ -128,7 +133,7 @@ public interface ITestCaseDAO {
      * @param length
      * @return
      */
-    public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
+    public AnswerList<TestCase> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
             String[] campaign, List<Integer> labelid, String[] priority, String[] group, String[] status, int length);
 
     /**

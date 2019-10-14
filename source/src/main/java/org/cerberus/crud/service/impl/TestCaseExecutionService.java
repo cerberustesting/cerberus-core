@@ -279,7 +279,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         AnswerList postTestCaseSteps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, Test.TEST_POSTTESTING, null);
         testCaseExecution.addTestCaseStepExecutionList(postTestCaseSteps.getDataList());
 
-        AnswerList files = testCaseExecutionFileService.readByVarious(executionId, "");
+        AnswerList<TestCaseExecutionFile> files = testCaseExecutionFileService.readByVarious(executionId, "");
         testCaseExecution.setFileList((List<TestCaseExecutionFile>) files.getDataList());
 
         AnswerItem<TestCaseExecution> response = new AnswerItem<>(testCaseExecution, tce.getResultMessage());

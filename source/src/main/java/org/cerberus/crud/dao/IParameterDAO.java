@@ -39,18 +39,68 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IParameterDAO {
 
+    /**
+     *
+     * @param system
+     * @param key
+     * @return
+     * @throws CerberusException
+     */
     Parameter findParameterByKey(String system, String key) throws CerberusException;
 
+    /**
+     *
+     * @return
+     * @throws CerberusException
+     */
     List<Parameter> findAllParameter() throws CerberusException;
 
+    /**
+     *
+     * @param system
+     * @param system1
+     * @return
+     * @throws CerberusException
+     */
     List<Parameter> findAllParameterWithSystem1(String system, String system1) throws CerberusException;
 
-    AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    /**
+     *
+     * @param system
+     * @param system1
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param individualSearch
+     * @return
+     */
+    AnswerList<Parameter> readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
-    AnswerItem readWithSystem1ByKey(String system, String key, String system1);
+    /**
+     *
+     * @param system
+     * @param key
+     * @param system1
+     * @return
+     */
+    AnswerItem<Parameter> readWithSystem1ByKey(String system, String key, String system1);
 
+    /**
+     *
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
     Parameter loadFromResultSetWithSystem1(ResultSet rs) throws SQLException;
 
+    /**
+     *
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
     Parameter loadFromResultSet(ResultSet rs) throws SQLException;
 
     AnswerList<String> readDistinctValuesWithSystem1ByCriteria(String system, String system1, String searchParameter, Map<String, List<String>> individualSearch, String columnName);

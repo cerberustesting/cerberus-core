@@ -101,7 +101,7 @@ public class AnswerUtil {
     }
 
     public static <R> AnswerItem convertToAnswerItem(AnswerItemFunction<R> answerFunction) {
-        AnswerItem answer = new AnswerItem<>();
+        AnswerItem<R> answer = new AnswerItem<>();
         MessageEvent msg = null;
         R result = null;
         try {
@@ -120,7 +120,7 @@ public class AnswerUtil {
     }
 
     public static <R> AnswerList convertToAnswerList(AnswerListFunction<R> answerFunction) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<R> answer = new AnswerList<>();
         MessageEvent msg = null;
         List<R> result = null;
 

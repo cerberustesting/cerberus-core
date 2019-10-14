@@ -115,6 +115,11 @@ public interface IParameterService {
      */
     String getParameterStringByKey(String key, String system, String defaultValue);
 
+    /**
+     *
+     * @return
+     * @throws CerberusException
+     */
     List<Parameter> findAllParameter() throws CerberusException;
 
 
@@ -142,7 +147,7 @@ public interface IParameterService {
      * @param individualSearch the string to search for each column
      * @return
      */
-    AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Parameter> readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      * Get the {@link Parameter} with the given {@link System} and the given key
@@ -152,7 +157,7 @@ public interface IParameterService {
      * @param key the key of the {@link Parameter}
      * @return
      */
-    AnswerItem readWithSystem1ByKey(String system, String key, String system1);
+    AnswerItem<Parameter> readWithSystem1ByKey(String system, String key, String system1);
 
     /**
      * @param system

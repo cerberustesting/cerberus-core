@@ -62,7 +62,7 @@ public class InvariantService implements IInvariantService {
      */
     @Override
     @Deprecated
-    public AnswerList readByIdname(String idName) {
+    public AnswerList<Invariant> readByIdname(String idName) {
         return AnswerUtil.convertToAnswerList(() -> invariantDao.readByIdname(idName));
     }
 
@@ -73,9 +73,9 @@ public class InvariantService implements IInvariantService {
 
     @Override
     public HashMap<String, Integer> readToHashMapGp1IntegerByIdname(String idName, Integer defaultValue) {
-        HashMap<String, Integer> result = new HashMap<String, Integer>();
+        HashMap<String, Integer> result = new HashMap<>();
 
-        AnswerList answer = readByIdname(idName); //TODO: handle if the response does not turn ok
+        AnswerList<Invariant> answer = readByIdname(idName); //TODO: handle if the response does not turn ok
         for (Invariant inv : (List<Invariant>) answer.getDataList()) {
             int gp1ToInt = ParameterParserUtil.parseIntegerParam(inv.getGp1(), defaultValue);
             result.put(inv.getValue(), gp1ToInt);
@@ -87,7 +87,7 @@ public class InvariantService implements IInvariantService {
     public HashMap<String, String> readToHashMapGp1StringByIdname(String idName, String defaultValue) {
         HashMap<String, String> result = new HashMap<>();
 
-        AnswerList answer = readByIdname(idName); //TODO: handle if the response does not turn ok
+        AnswerList<Invariant> answer = readByIdname(idName); //TODO: handle if the response does not turn ok
         for (Invariant inv : (List<Invariant>) answer.getDataList()) {
             String gp1 = ParameterParserUtil.parseStringParam(inv.getGp1(), defaultValue);
             result.put(inv.getValue(), gp1);

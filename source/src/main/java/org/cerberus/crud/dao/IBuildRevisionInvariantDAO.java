@@ -45,7 +45,7 @@ public interface IBuildRevisionInvariantDAO {
      * @param seq
      * @return
      */
-    AnswerItem readByKey(String system, Integer level, Integer seq);
+    AnswerItem<BuildRevisionInvariant> readByKey(String system, Integer level, Integer seq);
 
     /**
      *
@@ -54,7 +54,7 @@ public interface IBuildRevisionInvariantDAO {
      * @param versionName
      * @return
      */
-    AnswerItem readByKey(String system, Integer level, String versionName);
+    AnswerItem<BuildRevisionInvariant> readByKey(String system, Integer level, String versionName);
 
     /**
      *

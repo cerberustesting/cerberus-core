@@ -377,7 +377,7 @@ public class InvariantDAO implements IInvariantDAO {
     @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter) {
         List<Invariant> invariantList = new ArrayList<>();
-        AnswerList answer = new AnswerList<>();
+        AnswerList<Invariant> answer = new AnswerList<>();
         List<String> individalColumnSearchValues = new ArrayList<>();
         MessageEvent msg;
 
@@ -621,11 +621,11 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readCountryListEnvironmentLastChanges(String system, Integer nbdays) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<Invariant> readCountryListEnvironmentLastChanges(String system, Integer nbdays) {
+        AnswerList<Invariant> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<Invariant> objectList = new ArrayList<Invariant>();
+        List<Invariant> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();

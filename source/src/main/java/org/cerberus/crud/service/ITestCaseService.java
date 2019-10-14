@@ -176,7 +176,7 @@ public interface ITestCaseService {
      * @param length
      * @return
      */
-    public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
+    public AnswerList<TestCase> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
             String[] campaign, List<Integer> labelid, String[] priority, String[] group, String[] status, int length);
 
     /**
@@ -290,7 +290,6 @@ public interface ITestCaseService {
     /**
      *
      * @param testCase
-     * @param cerberusVersion
      * @throws org.cerberus.exception.CerberusException
      */
     public void importWithDependency(TestCase testCase) throws CerberusException;

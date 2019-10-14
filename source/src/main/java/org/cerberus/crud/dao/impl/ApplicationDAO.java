@@ -561,8 +561,8 @@ public class ApplicationDAO implements IApplicationDAO {
     @Override
     public AnswerList<String> readDistinctSystem() {
         MessageEvent msg;
-        AnswerList answer = new AnswerList<>();
-        List<String> result = new ArrayList<String>();
+        AnswerList<String> answer = new AnswerList<>();
+        List<String> result = new ArrayList<>();
         final String query = "SELECT DISTINCT a.system FROM application a ORDER BY a.system ASC";
 
         // Debug message on SQL.
@@ -651,12 +651,12 @@ public class ApplicationDAO implements IApplicationDAO {
 
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 

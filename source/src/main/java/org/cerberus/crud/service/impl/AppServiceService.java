@@ -73,18 +73,18 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public AnswerItem readByKey(String key) {
+    public AnswerItem<AppService> readByKey(String key) {
         return appServiceDao.readByKey(key);
     }
 
     @Override
     public AnswerItem readByKeyWithDependency(String key, String activedetail) {
-        AnswerItem answerAppService = this.readByKey(key);
+        AnswerItem<AppService> answerAppService = this.readByKey(key);
         AppService appService = (AppService) answerAppService.getItem();
         try {
-            AnswerList content = appServiceContentService.readByVarious(key, activedetail);
+            AnswerList<AppServiceContent> content = appServiceContentService.readByVarious(key, activedetail);
             appService.setContentList((List<AppServiceContent>) content.getDataList());
-            AnswerList header = appServiceHeaderService.readByVarious(key, activedetail);
+            AnswerList<AppServiceHeader> header = appServiceHeaderService.readByVarious(key, activedetail);
             appService.setHeaderList((List<AppServiceHeader>) header.getDataList());
             answerAppService.setItem(appService);
         } catch (Exception e) {

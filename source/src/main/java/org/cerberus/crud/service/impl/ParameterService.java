@@ -226,12 +226,12 @@ public class ParameterService implements IParameterService {
     }
 
     @Override
-    public AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<Parameter> readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return parameterDao.readWithSystem1BySystemByCriteria(system, system1, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerItem readWithSystem1ByKey(String system, String key, String system1) {
+    public AnswerItem<Parameter> readWithSystem1ByKey(String system, String key, String system1) {
         return parameterDao.readWithSystem1ByKey(system, key, system1);
     }
 

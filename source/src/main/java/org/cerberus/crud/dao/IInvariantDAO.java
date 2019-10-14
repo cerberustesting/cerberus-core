@@ -110,7 +110,7 @@ public interface IInvariantDAO {
      * @param nbdays
      * @return
      */
-    public AnswerList readCountryListEnvironmentLastChanges(String system, Integer nbdays);
+    public AnswerList<Invariant> readCountryListEnvironmentLastChanges(String system, Integer nbdays);
 
     /**
      * Create an {@link Invariant} in database

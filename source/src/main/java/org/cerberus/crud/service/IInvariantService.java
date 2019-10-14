@@ -41,7 +41,7 @@ public interface IInvariantService {
      * @return
      */
     @Deprecated
-    AnswerList readByIdname(String idName);
+    AnswerList<Invariant> readByIdname(String idName);
 
     /**
      *

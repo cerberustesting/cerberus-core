@@ -61,8 +61,8 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
     private final int MAX_ROW_SELECTED = 10000000;
 
     @Override
-    public AnswerItem readByKey(Integer testDataLibID, String subData) {
-        AnswerItem answer = new AnswerItem<>();
+    public AnswerItem<TestDataLibData> readByKey(Integer testDataLibID, String subData) {
+        AnswerItem<TestDataLibData> answer = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
 
         TestDataLibData result = null;
@@ -131,7 +131,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
     }
 
     @Override
-    public AnswerItem readByKeyTech(Integer testDataLibDataID) {
+    public AnswerItem<TestDataLibData> readByKeyTech(Integer testDataLibDataID) {
         AnswerItem answer = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
 
@@ -201,7 +201,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
     @Override
     public AnswerList<TestDataLibData> readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String columnPositionEmpty) {
         List<TestDataLibData> testDataLibListData = new ArrayList<>();
-        AnswerList answer = new AnswerList<>();
+        AnswerList<TestDataLibData> answer = new AnswerList<>();
         MessageEvent msg;
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testdatalibdata where `testDataLibID` = ? ");
@@ -295,8 +295,8 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
 
     @Override
     public AnswerList<TestDataLibData> readAll() {
-        AnswerList answerList = new AnswerList<>();
-        List<TestDataLibData> list = new ArrayList<TestDataLibData>();
+        AnswerList<TestDataLibData> answerList = new AnswerList<>();
+        List<TestDataLibData> list = new ArrayList<>();
         MessageEvent msg;
         final String query = "SELECT * FROM testdatalibdata";
 
@@ -364,11 +364,11 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<TestDataLibData> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
+        AnswerList<TestDataLibData> answer = new AnswerList<>();
         MessageEvent msg;
         int nrTotalRows = 0;
-        List<TestDataLibData> testDataLibListData = new ArrayList<TestDataLibData>();
+        List<TestDataLibData> testDataLibListData = new ArrayList<>();
 
         StringBuilder gSearch = new StringBuilder();
         StringBuilder searchSQL = new StringBuilder();
@@ -496,10 +496,10 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
     }
 
     @Override
-    public AnswerList readByName(String testDataLibName) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<TestDataLibData> readByName(String testDataLibName) {
+        AnswerList<TestDataLibData> answer = new AnswerList<>();
         MessageEvent msg;
-        List<TestDataLibData> testDataLibListData = new ArrayList<TestDataLibData>();
+        List<TestDataLibData> testDataLibListData = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         query.append("SELECT tdld.*, tdl.`name`, tdl.type, tdl.system, tdl.country, tdl.environment FROM testdatalibdata tdld ");
