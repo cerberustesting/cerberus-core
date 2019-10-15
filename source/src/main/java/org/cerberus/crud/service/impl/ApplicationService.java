@@ -58,22 +58,22 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    public AnswerList readAll() {
+    public AnswerList<Application> readAll() {
         return readBySystemByCriteria(null, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
-    public AnswerList readBySystem(List<String> system) {
+    public AnswerList<Application> readBySystem(List<String> system) {
         return ApplicationDAO.readBySystemByCriteria(system, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<Application> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return ApplicationDAO.readBySystemByCriteria(null, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerList readBySystemByCriteria(List<String> system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<Application> readBySystemByCriteria(List<String> system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return ApplicationDAO.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 

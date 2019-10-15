@@ -186,8 +186,8 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         }
     }
 
-    private AnswerItem findExecutionQueueByKeyTech(Long queueid, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findExecutionQueueByKeyTech(Long queueid, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         ITestCaseExecutionQueueService queueService = appContext.getBean(ITestCaseExecutionQueueService.class);
@@ -217,9 +217,9 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findExecutionInQueueList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findExecutionInQueueList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         executionService = appContext.getBean(ITestCaseExecutionQueueService.class);
 
@@ -266,8 +266,8 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findExecutionInQueueStatus(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findExecutionInQueueStatus(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
         parameterService = appContext.getBean(IParameterService.class);
@@ -365,8 +365,8 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
         AnswerList values = new AnswerList<>();
 

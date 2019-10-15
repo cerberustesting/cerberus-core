@@ -163,13 +163,13 @@ public class GetReportData extends HttpServlet {
             boolean browser = ParameterParserUtil.parseBooleanParam(request.getParameter("browser"), false);
             boolean app = ParameterParserUtil.parseBooleanParam(request.getParameter("app"), false);
 
-            AnswerList columnExec = testCaseExecutionService.readDistinctColumnByTag(tag, env, country, browser, app);
+            AnswerList<TestCaseExecution> columnExec = testCaseExecutionService.readDistinctColumnByTag(tag, env, country, browser, app);
             List<TestCaseExecution> columnTcExec = columnExec.getDataList();
 
-            AnswerList columnQueue = testCaseExecutionInQueueService.readDistinctColumnByTag(tag, env, country, browser, app);
+            AnswerList<TestCaseExecutionQueue> columnQueue = testCaseExecutionInQueueService.readDistinctColumnByTag(tag, env, country, browser, app);
             List<TestCaseExecutionQueue> columnInQueue = columnQueue.getDataList();
 
-            Map<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap();
+            Map<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap<>();
 
             for (TestCaseExecution column : columnTcExec) {
                 String key = column.getBrowser()

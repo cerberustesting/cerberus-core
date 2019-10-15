@@ -46,14 +46,14 @@ public interface IApplicationService {
      *
      * @return
      */
-    AnswerList readAll();
+    AnswerList<Application> readAll();
 
     /**
      *
      * @param System
      * @return
      */
-    AnswerList readBySystem(List<String> System);
+    AnswerList<Application> readBySystem(List<String> System);
 
     /**
      *
@@ -65,7 +65,7 @@ public interface IApplicationService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Application> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -78,7 +78,7 @@ public interface IApplicationService {
      * @param individualSearch
      * @return
      */
-    AnswerList readBySystemByCriteria(List<String> system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Application> readBySystemByCriteria(List<String> system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *

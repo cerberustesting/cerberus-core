@@ -149,7 +149,7 @@ public class FtpService implements IFtpService {
 
     public AnswerItem<AppService> callFTP(String chain, String system, String content, String method, String filePath, String service) {
         MessageEvent message = null;
-        AnswerItem result = new AnswerItem<>();
+        AnswerItem<AppService> result = new AnswerItem<>();
         HashMap<String, String> informations = this.fromFtpStringToHashMap(chain);
 
         if (informations.size() <= 4) {

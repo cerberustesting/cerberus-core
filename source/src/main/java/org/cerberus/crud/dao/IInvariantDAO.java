@@ -89,7 +89,7 @@ public interface IInvariantDAO {
      * @param PublicPrivateFilter
      * @return
      */
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter);
+    public AnswerList<Invariant> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter);
 
     /**
      * @param column

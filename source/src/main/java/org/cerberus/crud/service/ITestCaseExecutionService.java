@@ -180,8 +180,15 @@ public interface ITestCaseExecutionService {
      * @param app
      * @return
      */
-    AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
+    AnswerList<TestCaseExecution> readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
 
+    /**
+     *
+     * @param testCaseList
+     * @param envList
+     * @param country
+     * @return
+     */
     List<TestCaseExecution> createAllTestCaseExecution(List<TestCase> testCaseList, List<String> envList, List<String> country);
 
     /**

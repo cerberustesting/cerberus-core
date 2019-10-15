@@ -279,8 +279,8 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findlastBuildRevisionParametersBySystem(String system, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findlastBuildRevisionParametersBySystem(String system, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         IBuildRevisionParametersService libService = appContext.getBean(IBuildRevisionParametersService.class);
@@ -303,9 +303,9 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findSVNBuildRevisionParametersBySystem(String system, String country, String environment, String build, String revision, String lastbuild, String lastrevision, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem<JSONObject> findSVNBuildRevisionParametersBySystem(String system, String country, String environment, String build, String revision, String lastbuild, String lastrevision, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         brpService = appContext.getBean(IBuildRevisionParametersService.class);
         appService = appContext.getBean(IApplicationService.class);
@@ -315,7 +315,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
             lastbuild = build;
         }
 
-        AnswerList resp = brpService.readMaxSVNReleasePerApplication(system, build, revision, lastbuild, lastrevision);
+        AnswerList<BuildRevisionParameters> resp = brpService.readMaxSVNReleasePerApplication(system, build, revision, lastbuild, lastrevision);
 
         JSONArray jsonArray = new JSONArray();
         JSONObject newSubObj = new JSONObject();

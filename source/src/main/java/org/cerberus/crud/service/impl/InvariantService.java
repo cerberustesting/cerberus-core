@@ -117,7 +117,7 @@ public class InvariantService implements IInvariantService {
         // Then, we build the list of invariant entry based on the filter.
 
         //TODO this method should return a AnswerList, after complete refactoring this method should be changed
-        AnswerList answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+        AnswerList<Invariant> answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
 
         return answer;
     }
@@ -129,19 +129,19 @@ public class InvariantService implements IInvariantService {
         // Then, we build the list of invariant entry based on the filter.
 
         //TODO this method should return a AnswerList, after complete refactoring this method should be changed
-        AnswerList answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+        AnswerList<Invariant> answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
 
         return answer;
     }
 
     @Override
-    public AnswerList readDistinctValuesByPublicByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByPublicByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         // We first get the list of all Public invariant from the invariant table.
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPUBLIC");
         // Then, we build the list of invariant entry based on the filter.
 
         //TODO this method should return a AnswerList, after complete refactoring this method should be changed
-        AnswerList answer = invariantDao.readDistinctValuesByCriteria(column, dir, searchTerm, individualSearch, searchSQL, columnName);
+        AnswerList<String> answer = invariantDao.readDistinctValuesByCriteria(column, dir, searchTerm, individualSearch, searchSQL, columnName);
 
         return answer;
     }
@@ -152,7 +152,7 @@ public class InvariantService implements IInvariantService {
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPRIVATE");
         // Then, we build the list of invariant entry based on the filter.
         //TODO this method should return a AnswerList, after complete refactoring this method should be changed
-        AnswerList answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+        AnswerList<Invariant> answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
 
         return answer;
     }
@@ -163,25 +163,25 @@ public class InvariantService implements IInvariantService {
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPRIVATE");
         // Then, we build the list of invariant entry based on the filter.
         //TODO this method should return a AnswerList, after complete refactoring this method should be changed
-        AnswerList answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+        AnswerList<Invariant> answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
 
         return answer;
     }
 
     @Override
-    public AnswerList readDistinctValuesByPrivateByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByPrivateByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         // We first get the list of all Public invariant from the invariant table.
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPRIVATE");
         // Then, we build the list of invariant entry based on the filter.
 
         //TODO this method should return a AnswerList, after complete refactoring this method should be changed
-        AnswerList answer = invariantDao.readDistinctValuesByCriteria(column, dir, searchTerm, individualSearch, searchSQL, columnName);
+        AnswerList<String> answer = invariantDao.readDistinctValuesByCriteria(column, dir, searchTerm, individualSearch, searchSQL, columnName);
 
         return answer;
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList<Invariant> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         //gets all invariants
         return invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, "");//no filter public or private is sent        
     }

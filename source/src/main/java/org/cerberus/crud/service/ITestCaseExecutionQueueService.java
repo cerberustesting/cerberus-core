@@ -145,7 +145,7 @@ public interface ITestCaseExecutionQueueService {
      * @param app
      * @return
      */
-    public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
+    public AnswerList<TestCaseExecutionQueue> readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
 
     /**
      *
