@@ -114,26 +114,25 @@ public class ReadApplicationObject extends HttpServlet {
             } else if (request.getParameter("id") != null) {
                 int id = -1;
                 boolean int_error = false;
-                try{
+                try {
                     id = Integer.getInteger(request.getParameter("id"));
-                }catch(Exception e){
+                } catch (Exception e) {
                     int_error = true;
                 }
-                if(!int_error){
+                if (!int_error) {
                     answer = findApplicationObject(id, appContext, userHasPermissions, request);
                     jsonResponse = (JSONObject) answer.getItem();
                 }
             } else if (request.getParameter("columnName") != null) {
-            	answer = findValuesForColumnFilter(appContext, request);
+                answer = findValuesForColumnFilter(appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
-            }
-            else if (request.getParameter("application") == null) {
+            } else if (request.getParameter("application") == null) {
                 answer = findApplicationObjectList(null, appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (request.getParameter("iDisplayStart") == null){
+            } else if (request.getParameter("iDisplayStart") == null) {
                 answer = findApplicationObjectList(request.getParameter("application"), appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
-            }else {
+            } else {
                 answer = findApplicationObjectList(request.getParameter("application"), appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
@@ -198,9 +197,9 @@ public class ReadApplicationObject extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findApplicationObjectList(String application, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findApplicationObjectList(String application, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         applicationObjectService = appContext.getBean(IApplicationObjectService.class);
 
@@ -217,20 +216,19 @@ public class ReadApplicationObject extends HttpServlet {
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
         List<String> systems = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
 
-
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-            	List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-            	if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
-                } 
+                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
+                }
             }
         }
 
-        AnswerList resp = applicationObjectService.readByApplicationByCriteria(application, startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
+        AnswerList<ApplicationObject> resp = applicationObjectService.readByApplicationByCriteria(application, startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -249,12 +247,11 @@ public class ReadApplicationObject extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findApplicationObjectList(String application, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem<JSONObject> findApplicationObjectList(String application, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         applicationObjectService = appContext.getBean(IApplicationObjectService.class);
-
 
         AnswerList resp = applicationObjectService.readByApplication(application);
 
@@ -275,9 +272,9 @@ public class ReadApplicationObject extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findApplicationObject(String application, String objecta, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findApplicationObject(String application, String objecta, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         applicationObjectService = appContext.getBean(IApplicationObjectService.class);
 
@@ -285,7 +282,7 @@ public class ReadApplicationObject extends HttpServlet {
 
         JSONObject jsonObject = null;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null) {//the service was able to perform the query, then we should get all values
-            jsonObject = convertApplicationObjectToJSONObject((ApplicationObject)resp.getItem());
+            jsonObject = convertApplicationObjectToJSONObject((ApplicationObject) resp.getItem());
         }
 
         object.put("hasPermissions", userHasPermissions);
@@ -296,9 +293,9 @@ public class ReadApplicationObject extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findApplicationObject(int id, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findApplicationObject(int id, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         applicationObjectService = appContext.getBean(IApplicationObjectService.class);
 
@@ -306,7 +303,7 @@ public class ReadApplicationObject extends HttpServlet {
 
         JSONObject jsonObject = new JSONObject();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            jsonObject = convertApplicationObjectToJSONObject((ApplicationObject)resp.getItem());
+            jsonObject = convertApplicationObjectToJSONObject((ApplicationObject) resp.getItem());
         }
 
         object.put("hasPermissions", userHasPermissions);
@@ -323,7 +320,7 @@ public class ReadApplicationObject extends HttpServlet {
         JSONObject result = new JSONObject(gson.toJson(application));
         return result;
     }
-    
+
     /**
      * Find Values to display for Column Filter
      *
@@ -333,32 +330,32 @@ public class ReadApplicationObject extends HttpServlet {
      * @return
      * @throws JSONException
      */
-    private AnswerItem findValuesForColumnFilter(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findValuesForColumnFilter(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
-        AnswerList values = new AnswerList<>();
-        
+        AnswerList<String> values = new AnswerList<>();
+
         applicationObjectService = appContext.getBean(IApplicationObjectService.class);
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
-        
+
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-            	List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-            	if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
-                } 
+                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
+                }
             }
         }
-                
+
         values = applicationObjectService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
 
         object.put("distinctValues", values.getDataList());

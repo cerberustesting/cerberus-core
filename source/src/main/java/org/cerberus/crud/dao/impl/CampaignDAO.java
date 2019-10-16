@@ -63,13 +63,13 @@ public class CampaignDAO implements ICampaignDAO {
     private final int SQL_DUPLICATED_CODE = 23000;
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<Campaign> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        AnswerList<Campaign> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<Campaign> objectList = new ArrayList<Campaign>();
+        List<Campaign> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
@@ -199,7 +199,7 @@ public class CampaignDAO implements ICampaignDAO {
     }
 
     @Override
-    public AnswerItem readByKey(String key) {
+    public AnswerItem<Campaign> readByKey(String key) {
         AnswerItem<Campaign> ans = new AnswerItem<>();
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
@@ -240,7 +240,7 @@ public class CampaignDAO implements ICampaignDAO {
     }
 
     @Override
-    public AnswerItem readByKeyTech(int key) {
+    public AnswerItem<Campaign> readByKeyTech(int key) {
         AnswerItem<Campaign> ans = new AnswerItem<>();
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();

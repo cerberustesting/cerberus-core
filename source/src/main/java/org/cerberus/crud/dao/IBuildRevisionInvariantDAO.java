@@ -68,7 +68,7 @@ public interface IBuildRevisionInvariantDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList readByVariousByCriteria(List<String> system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<BuildRevisionInvariant> readByVariousByCriteria(List<String> system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *

@@ -33,6 +33,7 @@ import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.entity.TestCaseExecutionQueueDep;
+import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.crud.factory.IFactoryTagSystem;
 import org.cerberus.crud.service.*;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -270,13 +271,13 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         }
 
         // We first add the 'Pres Testing' testcase execution steps.
-        AnswerList preTestCaseSteps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, Test.TEST_PRETESTING, null);
+        AnswerList<TestCaseStepExecution> preTestCaseSteps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, Test.TEST_PRETESTING, null);
         testCaseExecution.setTestCaseStepExecutionList(preTestCaseSteps.getDataList());
         // Then we add the steps from the main testcase.
-        AnswerList steps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, testCaseExecution.getTest(), testCaseExecution.getTestCase());
+        AnswerList<TestCaseStepExecution> steps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, testCaseExecution.getTest(), testCaseExecution.getTestCase());
         testCaseExecution.addTestCaseStepExecutionList(steps.getDataList());
         // Then we add the Post steps .
-        AnswerList postTestCaseSteps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, Test.TEST_POSTTESTING, null);
+        AnswerList<TestCaseStepExecution> postTestCaseSteps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, Test.TEST_POSTTESTING, null);
         testCaseExecution.addTestCaseStepExecutionList(postTestCaseSteps.getDataList());
 
         AnswerList<TestCaseExecutionFile> files = testCaseExecutionFileService.readByVarious(executionId, "");

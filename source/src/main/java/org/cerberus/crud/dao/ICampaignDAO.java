@@ -47,7 +47,7 @@ public interface ICampaignDAO {
      * @param individualSearch the string to search for each column
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Campaign> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      * Get the {@link Campaign} with the given {@link System} and the given key
@@ -55,7 +55,7 @@ public interface ICampaignDAO {
      * @param key the key of the {@link Campaign}
      * @return
      */
-    AnswerItem readByKey(String key);
+    AnswerItem<Campaign> readByKey(String key);
 
     /**
      * Get the {@link Campaign} with the given {@link System} and the given key
@@ -63,7 +63,7 @@ public interface ICampaignDAO {
      * @param key the key of the {@link Campaign}
      * @return
      */
-    AnswerItem readByKeyTech(int key);
+    AnswerItem<Campaign> readByKeyTech(int key);
 
     /**
      * @param searchParameter

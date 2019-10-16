@@ -518,14 +518,14 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<SqlLibrary> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
 
-        AnswerList response = new AnswerList<>();
+        AnswerList<SqlLibrary> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<SqlLibrary> objectList = new ArrayList<SqlLibrary>();
+        List<SqlLibrary> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
@@ -660,8 +660,8 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
     }
 
     @Override
-    public AnswerItem readByKey(String key) {
-        AnswerItem a = new AnswerItem<>();
+    public AnswerItem<SqlLibrary> readByKey(String key) {
+        AnswerItem<SqlLibrary> a = new AnswerItem<>();
         StringBuilder query = new StringBuilder();
         SqlLibrary p = new SqlLibrary();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);

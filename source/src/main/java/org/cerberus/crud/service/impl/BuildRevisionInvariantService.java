@@ -42,27 +42,27 @@ public class BuildRevisionInvariantService implements IBuildRevisionInvariantSer
     private IBuildRevisionInvariantDAO BuildRevisionInvariantDAO;
 
     @Override
-    public AnswerItem readByKey(String system, Integer level, Integer seq) {
+    public AnswerItem<BuildRevisionInvariant> readByKey(String system, Integer level, Integer seq) {
         return BuildRevisionInvariantDAO.readByKey(system, level, seq);
     }
 
     @Override
-    public AnswerItem readByKey(String system, Integer level, String versionName) {
+    public AnswerItem<BuildRevisionInvariant> readByKey(String system, Integer level, String versionName) {
         return BuildRevisionInvariantDAO.readByKey(system, level, versionName);
     }
 
     @Override
-    public AnswerList readBySystemByCriteria(List<String> system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<BuildRevisionInvariant> readBySystemByCriteria(List<String> system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return BuildRevisionInvariantDAO.readByVariousByCriteria(system, level, start, amount, column, dir, searchTerm, individualSearch);
     }
 
     @Override
-    public AnswerList readBySystemLevel(List<String> system, Integer level) {
+    public AnswerList<BuildRevisionInvariant> readBySystemLevel(List<String> system, Integer level) {
         return BuildRevisionInvariantDAO.readByVariousByCriteria(system, level, 0, 0, null, null, null, null);
     }
 
     @Override
-    public AnswerList readBySystem(List<String> system) {
+    public AnswerList<BuildRevisionInvariant> readBySystem(List<String> system) {
         return BuildRevisionInvariantDAO.readByVariousByCriteria(system, -1, 0, 0, null, null, null, null);
     }
 

@@ -71,7 +71,7 @@ public class GetInvariantList extends HttpServlet {
                     for (int i = 0; i < listOfInvariants.length(); i++) {
                         String invariantName = (String) listOfInvariants.get(String.valueOf(i));
                         JSONArray array = new JSONArray();
-                        AnswerList answer = invariantService.readByIdname(invariantName); //TODO: handle if the response does not turn ok
+                        AnswerList<Invariant> answer = invariantService.readByIdname(invariantName); //TODO: handle if the response does not turn ok
                         for (Invariant myInvariant : (List<Invariant>) answer.getDataList()) {
                             array.put(myInvariant.getValue());
                         }
@@ -81,7 +81,7 @@ public class GetInvariantList extends HttpServlet {
             } else {
                     //gets one item
 
-                AnswerList answer = invariantService.readByIdname(idName); //TODO: handle if the response does not turn ok
+                AnswerList<Invariant> answer = invariantService.readByIdname(idName); //TODO: handle if the response does not turn ok
                 for (Invariant myInvariant : (List<Invariant>) answer.getDataList()) {
                     jsonResponse.put(myInvariant.getValue(), myInvariant.getValue());
                 }

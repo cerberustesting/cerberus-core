@@ -207,7 +207,7 @@ public class UserDAO implements IUserDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             try {
-                int i=1;
+                int i = 1;
                 preStat.setString(i++, user.getLogin());
                 preStat.setString(i++, user.getName());
                 preStat.setString(i++, user.getRequest());
@@ -248,8 +248,7 @@ public class UserDAO implements IUserDAO {
         }
         return bool;
     }
-    
-    
+
     @Override
     public boolean deleteUser(User user) {
         boolean bool = false;
@@ -392,8 +391,7 @@ public class UserDAO implements IUserDAO {
         MessageEvent msg = null;
         final String sql = "UPDATE user SET resetPasswordToken = '' WHERE Login LIKE ?";
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(sql)) {
+        try ( Connection connection = databaseSpring.connect();  PreparedStatement preStat = connection.prepareStatement(sql)) {
             // Prepare and execute query
             preStat.setString(1, user.getLogin());
             preStat.executeUpdate();
@@ -709,8 +707,8 @@ public class UserDAO implements IUserDAO {
     }
 
     @Override
-    public AnswerItem readByKey(String login) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<User> readByKey(String login) {
+        AnswerItem<User> ans = new AnswerItem<>();
         User result;
         final String query = "SELECT * FROM `user` usr WHERE usr.`login` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -765,11 +763,11 @@ public class UserDAO implements IUserDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<User> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        AnswerList<User> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<User> applicationList = new ArrayList<User>();
+        List<User> applicationList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
@@ -902,13 +900,13 @@ public class UserDAO implements IUserDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<User> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        AnswerList<User> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<User> applicationList = new ArrayList<User>();
+        List<User> applicationList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that

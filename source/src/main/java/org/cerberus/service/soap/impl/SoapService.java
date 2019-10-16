@@ -203,7 +203,7 @@ public class SoapService implements ISoapService {
 
     @Override
     public AnswerItem<AppService> callSOAP(String envelope, String servicePath, String soapOperation, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs, String system) {
-        AnswerItem result = new AnswerItem<>();
+        AnswerItem<AppService> result = new AnswerItem<>();
         String unescapedEnvelope = StringEscapeUtils.unescapeXml(envelope);
         boolean is12SoapVersion = SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches();
 
@@ -293,7 +293,7 @@ public class SoapService implements ISoapService {
 
                 // Create the Proxy.
                 SocketAddress sockaddr = new InetSocketAddress(proxyHost, proxyPort);
-                try (Socket socket = new Socket();) {
+                try ( Socket socket = new Socket();) {
                     socket.connect(sockaddr, 10000);
                     Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(socket.getInetAddress(), proxyPort));
 

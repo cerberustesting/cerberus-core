@@ -34,9 +34,23 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IBuildRevisionInvariantService {
 
-    AnswerItem readByKey(String system, Integer level, Integer seq);
+    /**
+     *
+     * @param system
+     * @param level
+     * @param seq
+     * @return
+     */
+    AnswerItem<BuildRevisionInvariant> readByKey(String system, Integer level, Integer seq);
 
-    AnswerItem readByKey(String system, Integer level, String versionName);
+    /**
+     *
+     * @param system
+     * @param level
+     * @param versionName
+     * @return
+     */
+    AnswerItem<BuildRevisionInvariant> readByKey(String system, Integer level, String versionName);
 
     /**
      *
@@ -50,7 +64,7 @@ public interface IBuildRevisionInvariantService {
      * @param individualSearch
      * @return
      */
-    AnswerList readBySystemByCriteria(List<String> system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<BuildRevisionInvariant> readBySystemByCriteria(List<String> system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -58,23 +72,55 @@ public interface IBuildRevisionInvariantService {
      * @param level
      * @return
      */
-    AnswerList readBySystemLevel(List<String> system, Integer level);
+    AnswerList<BuildRevisionInvariant> readBySystemLevel(List<String> system, Integer level);
 
     /**
      *
      * @param system
      * @return
      */
-    AnswerList readBySystem(List<String> system);
+    AnswerList<BuildRevisionInvariant> readBySystem(List<String> system);
 
+    /**
+     *
+     * @param system
+     * @param level
+     * @param seq
+     * @return
+     */
     boolean exist(String system, Integer level, Integer seq);
 
+    /**
+     *
+     * @param system
+     * @param level
+     * @param versionName
+     * @return
+     */
     boolean exist(String system, Integer level, String versionName);
 
+    /**
+     *
+     * @param buildRevisionInvariant
+     * @return
+     */
     Answer create(BuildRevisionInvariant buildRevisionInvariant);
 
+    /**
+     *
+     * @param buildRevisionInvariant
+     * @return
+     */
     Answer delete(BuildRevisionInvariant buildRevisionInvariant);
 
+    /**
+     *
+     * @param system
+     * @param level
+     * @param seq
+     * @param buildRevisionInvariant
+     * @return
+     */
     Answer update(String system, Integer level, Integer seq, BuildRevisionInvariant buildRevisionInvariant);
 
     /**
