@@ -60,7 +60,7 @@ public interface IAppServiceService {
      * @param systems
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems);
+    AnswerList<AppService> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems);
 
     /**
      * Get the {@link AppService} of the given key
@@ -68,7 +68,7 @@ public interface IAppServiceService {
      * @param key the key of the {@link AppService} to get
      * @return
      */
-    AnswerItem readByKey(String key);
+    AnswerItem<AppService> readByKey(String key);
 
     /**
      * Get the {@link AppService} of the given key
@@ -78,7 +78,7 @@ public interface IAppServiceService {
      * and content. null wil load all data.
      * @return
      */
-    AnswerItem readByKeyWithDependency(String key, String activeDetail);
+    AnswerItem<AppService> readByKeyWithDependency(String key, String activeDetail);
 
     /**
      * Get the distinctValue of the column

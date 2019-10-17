@@ -68,7 +68,7 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems) {
+    public AnswerList<AppService> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems) {
         return appServiceDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
     }
 
@@ -78,7 +78,7 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public AnswerItem readByKeyWithDependency(String key, String activedetail) {
+    public AnswerItem<AppService> readByKeyWithDependency(String key, String activedetail) {
         AnswerItem<AppService> answerAppService = this.readByKey(key);
         AppService appService = (AppService) answerAppService.getItem();
         try {

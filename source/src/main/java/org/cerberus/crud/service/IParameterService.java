@@ -176,7 +176,7 @@ public interface IParameterService {
      * @param param the param of the {@link Parameter} to get
      * @return
      */
-    AnswerItem readByKey(String system, String param);
+    AnswerItem<Parameter> readByKey(String system, String param);
 
 
     /**

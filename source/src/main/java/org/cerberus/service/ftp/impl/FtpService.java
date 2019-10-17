@@ -266,7 +266,7 @@ public class FtpService implements IFtpService {
     @Override
     public AnswerItem<AppService> postFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse) throws IOException {
         MessageEvent message = null;
-        AnswerItem result = new AnswerItem<>();
+        AnswerItem<AppService> result = new AnswerItem<>();
         InputStream inputStream = null;
         byte[] byteContent = null;
         LOG.info("Start retrieving ftp file");
@@ -277,7 +277,7 @@ public class FtpService implements IFtpService {
         } else if (!myResponse.getFileName().isEmpty()) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     "cerberus_ftpfile_path Parameter not found");
-            AnswerItem a = parameterService.readByKey("", "cerberus_ftpfile_path");
+            AnswerItem<Parameter> a = parameterService.readByKey("", "cerberus_ftpfile_path");
             if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 Parameter p = (Parameter) a.getItem();
                 String uploadPath = p.getValue();

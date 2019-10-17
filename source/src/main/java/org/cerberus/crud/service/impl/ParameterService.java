@@ -241,7 +241,7 @@ public class ParameterService implements IParameterService {
     }
 
     @Override
-    public AnswerItem readByKey(String system, String param) {
+    public AnswerItem<Parameter> readByKey(String system, String param) {
         return parameterDao.readByKey(system, param);
     }
 

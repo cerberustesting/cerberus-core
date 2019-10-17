@@ -111,13 +111,13 @@ public class ReadAppService extends HttpServlet {
             } else if (!Strings.isNullOrEmpty(columnName)) {
                 answer = findDistinctValuesOfColumn(appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
-            }else if (request.getParameter("service") != null && request.getParameter("limit") != null ){
+            } else if (request.getParameter("service") != null && request.getParameter("limit") != null) {
                 answer = findAppServiceByLikeName(request.getParameter("service"), appContext, Integer.parseInt(request.getParameter("limit")));
                 jsonResponse = (JSONObject) answer.getItem();
-            }else if(request.getParameter("service") != null && testcase){
-            	answer = getTestCasesUsingService(request.getParameter("service"), appContext) ;
+            } else if (request.getParameter("service") != null && testcase) {
+                answer = getTestCasesUsingService(request.getParameter("service"), appContext);
                 jsonResponse = (JSONObject) answer.getItem();
-            }else {
+            } else {
                 answer = findAppServiceBySystemByKey(request.getParameter("service"), appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             }
@@ -135,9 +135,9 @@ public class ReadAppService extends HttpServlet {
         }
     }
 
-    private AnswerItem findAppServiceList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findAppServiceList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         appServiceService = appContext.getBean(AppServiceService.class);
 
@@ -158,15 +158,15 @@ public class ReadAppService extends HttpServlet {
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
-                } 
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
+                }
             }
         }
 
-        AnswerList resp = appServiceService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
+        AnswerList<AppService> resp = appServiceService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -185,12 +185,13 @@ public class ReadAppService extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findAppServiceBySystemByKey(String key, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem<JSONObject> findAppServiceBySystemByKey(String key, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+        AnswerItem<JSONObject> answerItem = new AnswerItem<>();
 
         JSONObject response = new JSONObject();
         appServiceService = appContext.getBean(AppServiceService.class);
 
-        AnswerItem resp = appServiceService.readByKeyWithDependency(key, null);
+        AnswerItem<AppService> resp = appServiceService.readByKeyWithDependency(key, null);
         AppService p = null;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             p = (AppService) resp.getItem();
@@ -198,13 +199,13 @@ public class ReadAppService extends HttpServlet {
         JSONObject item = convertAppServiceToJSONObject(p);
         response.put("contentTable", item);
         item.put("hasPermissions", userHasPermissions);
-        resp.setItem(response);
+        answerItem.setItem(response);
 
-        return resp;
+        return answerItem;
     }
 
-    private AnswerItem findAppServiceByLikeName(String key, ApplicationContext appContext, int limit) throws JSONException {
-        AnswerItem answerItem = new AnswerItem<>();
+    private AnswerItem<JSONObject> findAppServiceByLikeName(String key, ApplicationContext appContext, int limit) throws JSONException {
+        AnswerItem<JSONObject> answerItem = new AnswerItem<>();
         JSONObject response = new JSONObject();
         appServiceService = appContext.getBean(AppServiceService.class);
         AnswerList resp = appServiceService.readByLikeName(key, limit);
@@ -224,7 +225,7 @@ public class ReadAppService extends HttpServlet {
         answerItem.setResultMessage(resp.getResultMessage());
         return answerItem;
     }
-    
+
     /**
      * Auxiliary method that extracts the list of test cases that are currently
      * using one service.
@@ -235,13 +236,13 @@ public class ReadAppService extends HttpServlet {
      * that use the entry
      * @throws JSONException
      */
-    private AnswerItem getTestCasesUsingService(String service,ApplicationContext appContext) throws JSONException {
+    private AnswerItem<JSONObject> getTestCasesUsingService(String service, ApplicationContext appContext) throws JSONException {
         JSONObject object = new JSONObject();
         JSONArray objectArray = new JSONArray();
-        AnswerItem ansItem = new AnswerItem<>();
+        AnswerItem<JSONObject> ansItem = new AnswerItem<>();
         ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
 
-        AnswerList ansList = tcService.findTestCasesThatUseService(service);
+        AnswerList<TestListDTO> ansList = tcService.findTestCasesThatUseService(service);
 
         //if the response is success then we can iterate and search for the data
         if (ansList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -277,8 +278,8 @@ public class ReadAppService extends HttpServlet {
         return ansItem;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         appServiceService = appContext.getBean(IAppServiceService.class);
@@ -292,12 +293,12 @@ public class ReadAppService extends HttpServlet {
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-            	List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-            	if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
-                } 
+                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
+                }
             }
         }
 

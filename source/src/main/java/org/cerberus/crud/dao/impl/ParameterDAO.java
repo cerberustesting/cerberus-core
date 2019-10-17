@@ -610,7 +610,7 @@ public class ParameterDAO implements IParameterDAO {
     }
 
     @Override
-    public AnswerItem readByKey(String system, String param) {
+    public AnswerItem<Parameter> readByKey(String system, String param) {
         AnswerItem<Parameter> ans = new AnswerItem<>();
         MessageEvent msg = null;
 

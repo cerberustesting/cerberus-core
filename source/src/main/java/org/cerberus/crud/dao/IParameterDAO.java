@@ -112,7 +112,7 @@ public interface IParameterDAO {
      * @param param the param of the {@link Parameter} to get
      * @return
      */
-    AnswerItem readByKey(String system, String param);
+    AnswerItem<Parameter> readByKey(String system, String param);
 
     /**
      * @param object the {@link Parameter} to Update

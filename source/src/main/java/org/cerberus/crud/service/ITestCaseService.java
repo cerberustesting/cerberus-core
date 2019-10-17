@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.cerberus.crud.entity.TestCase;
+import org.cerberus.dto.TestListDTO;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -144,7 +145,7 @@ public interface ITestCaseService {
      * @param individualSearch
      * @return
      */
-    public AnswerList readByTestByCriteria(List<String> system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
+    public AnswerList<TestCase> readByTestByCriteria(List<String> system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      * @param test
@@ -285,7 +286,7 @@ public interface ITestCaseService {
      * @param service
      * @return
      */
-    public AnswerList findTestCasesThatUseService(String service);
+    public AnswerList<TestListDTO> findTestCasesThatUseService(String service);
 
     /**
      *

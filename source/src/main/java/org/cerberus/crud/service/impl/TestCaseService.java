@@ -374,13 +374,13 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList findTestCasesThatUseService(String service) {
+    public AnswerList<TestListDTO> findTestCasesThatUseService(String service) {
 
         AnswerList<TestListDTO> testCaseByServiceByDataLib = testCaseDao.findTestCaseByServiceByDataLib(service);
         AnswerList<TestListDTO> testCaseByService = testCaseDao.findTestCaseByService(service);
         List<TestListDTO> listOfTestCaseByDataLib = testCaseByServiceByDataLib.getDataList();
         List<TestListDTO> listOfTestCaseByService = testCaseByService.getDataList();
-        List<TestListDTO> newTestCase = new ArrayList<TestListDTO>();
+        List<TestListDTO> newTestCase = new ArrayList<>();
 
         if (!listOfTestCaseByDataLib.isEmpty()) {
             for (TestListDTO datalibList : listOfTestCaseByDataLib) {
@@ -411,7 +411,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList readByTestByCriteria(List<String> system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<TestCase> readByTestByCriteria(List<String> system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch) {
         return testCaseDao.readByTestByCriteria(system, test, start, amount, sortInformation, searchTerm, individualSearch);
     }
 

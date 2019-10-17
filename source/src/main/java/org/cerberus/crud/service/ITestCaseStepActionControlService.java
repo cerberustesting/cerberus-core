@@ -52,7 +52,7 @@ public interface ITestCaseStepActionControlService {
 
     public void compareListAndUpdateInsertDeleteElements(List<TestCaseStepActionControl> newList, List<TestCaseStepActionControl> oldList, boolean duplicate) throws CerberusException;
 
-    public AnswerList readByTestTestCase(String test, String testcase);
+    public AnswerList<TestCaseStepActionControl> readByTestTestCase(String test, String testcase);
 
     /**
      *
