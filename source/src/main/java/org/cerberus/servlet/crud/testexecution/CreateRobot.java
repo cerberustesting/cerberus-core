@@ -108,8 +108,13 @@ public class CreateRobot extends HttpServlet {
         String lbexemethod = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("lbexemethod"), "", charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), "", charset);
 
-        List<RobotCapability> capabilities = (List<RobotCapability>) (request.getParameter("capabilities") == null ? Collections.emptyList() : gson.fromJson(request.getParameter("capabilities"), new TypeToken<List<RobotCapability>>() {
-        }.getType()));
+        List<RobotCapability> capabilities;
+        if (request.getParameter("capabilities") == null) {
+            capabilities = Collections.emptyList();
+        } else {
+            capabilities = gson.fromJson(request.getParameter("capabilities"), new TypeToken<List<RobotCapability>>() {
+            }.getType());
+        }
 
         JSONArray objExecutorArray = new JSONArray(request.getParameter("executors"));
         List<RobotExecutor> executors = new ArrayList<>();
@@ -118,7 +123,7 @@ public class CreateRobot extends HttpServlet {
         // Parameter that we cannot secure as we need the html --> We DECODE them
         // Securing capabilities by setting them the associated robot name
         // Check also if there is no duplicated capability
-        Map<String, Object> capabilityMap = new HashMap<String, Object>();
+        Map<String, Object> capabilityMap = new HashMap<>();
         for (RobotCapability capability : capabilities) {
             capabilityMap.put(capability.getCapability(), null);
             capability.setRobot(robot);
@@ -173,7 +178,7 @@ public class CreateRobot extends HttpServlet {
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "There is at least one duplicated executor. Please edit or remove it to continue."));
             ans.setResultMessage(msg);
-        } else if (executorMap.size() <1) {
+        } else if (executorMap.size() < 1) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
                     .replace("%OPERATION%", "Create")
@@ -231,17 +236,17 @@ public class CreateRobot extends HttpServlet {
             String deviceName = reJson.getString("deviceName");
             String deviceUdid = reJson.getString("deviceUdid");
             Integer devicePort = null;
-            if(reJson.has("devicePort") && !StringUtil.isNullOrEmpty(reJson.getString("devicePort"))) {
+            if (reJson.has("devicePort") && !StringUtil.isNullOrEmpty(reJson.getString("devicePort"))) {
                 devicePort = reJson.getInt("devicePort");
             }
             String executorProxyHost = reJson.getString("executorProxyHost");
             Integer executorProxyPort = null;
-            if(reJson.has("executorProxyPort") && !StringUtil.isNullOrEmpty(reJson.getString("executorProxyPort"))) {
+            if (reJson.has("executorProxyPort") && !StringUtil.isNullOrEmpty(reJson.getString("executorProxyPort"))) {
                 executorProxyPort = reJson.getInt("executorProxyPort");
             }
             String executorProxyActive = reJson.getBoolean("executorProxyActive") ? "Y" : "N";
             Integer executorExtensionPort = null;
-            if(reJson.has("executorExtensionPort") && !StringUtil.isNullOrEmpty(reJson.getString("executorExtensionPort"))) {
+            if (reJson.has("executorExtensionPort") && !StringUtil.isNullOrEmpty(reJson.getString("executorExtensionPort"))) {
                 executorExtensionPort = reJson.getInt("executorExtensionPort");
             }
             String description = reJson.getString("description");

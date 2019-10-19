@@ -270,11 +270,11 @@ public class ReadTestCaseExecution extends HttpServlet {
             testCaseExecutionsList.put(key, testCaseExecution);
         }
 
-        testCaseExecutions = new ArrayList<TestCaseExecution>(testCaseExecutionsList.values());
+        testCaseExecutions = new ArrayList<>(testCaseExecutionsList.values());
 
         JSONObject statusFilter = getStatusList(request);
         JSONObject countryFilter = getCountryList(request, appContext);
-        LinkedHashMap<String, JSONObject> columnMap = new LinkedHashMap<String, JSONObject>();
+        LinkedHashMap<String, JSONObject> columnMap = new LinkedHashMap<>();
 
         for (TestCaseExecution testCaseWithExecution : testCaseExecutions) {
             String controlStatus = testCaseWithExecution.getControlStatus();
@@ -333,7 +333,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         JSONArray executionList = new JSONArray();
         JSONObject statusFilter = getStatusList(request);
         JSONObject countryFilter = getCountryList(request, appContext);
-        LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
+        LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<>();
 
         String globalStart = "";
         String globalEnd = "";
@@ -427,8 +427,8 @@ public class ReadTestCaseExecution extends HttpServlet {
         return answer;
     }
 
-    private AnswerItem findTestCaseExecutionList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException, CerberusException {
-        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+    private AnswerItem<JSONObject> findTestCaseExecutionList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
         List<TestCaseExecution> testCaseExecutionList;
         JSONObject object = new JSONObject();
 
@@ -459,7 +459,7 @@ public class ReadTestCaseExecution extends HttpServlet {
             }
         }
 
-        AnswerList resp = testCaseExecutionService.readByCriteria(startPosition, length, columnName.concat(" ").concat(sort), searchParameter, individualSearch, individualLike, system);
+        AnswerList<TestCaseExecution> resp = testCaseExecutionService.readByCriteria(startPosition, length, columnName.concat(" ").concat(sort), searchParameter, individualSearch, individualLike, system);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -499,7 +499,7 @@ public class ReadTestCaseExecution extends HttpServlet {
     private JSONObject getCountryList(HttpServletRequest request, ApplicationContext appContext) {
         JSONObject countryList = new JSONObject();
         try {
-            IInvariantService invariantService = appContext.getBean(InvariantService.class);
+            invariantService = appContext.getBean(InvariantService.class);
             AnswerList<Invariant> answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
             for (Invariant country : (List<Invariant>) answer.getDataList()) {
                 countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
@@ -536,7 +536,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                 testCaseExecutionsList.put(key, testCaseExecution);
             }
         }
-        List<TestCaseExecution> result = new ArrayList<TestCaseExecution>(testCaseExecutionsList.values());
+        List<TestCaseExecution> result = new ArrayList<>(testCaseExecutionsList.values());
 
         return result;
     }
@@ -586,7 +586,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         ITestCaseExecutionService testCaseExecService = appContext.getBean(ITestCaseExecutionService.class);
 
-        ITestCaseExecutionQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
+        testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
         /**
          * Get list of execution by tag, env, country, browser
          */
@@ -617,9 +617,9 @@ public class ReadTestCaseExecution extends HttpServlet {
      * @throws JSONException
      */
     private AnswerItem findValuesForColumnFilter(List<String> system, String test, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
-        AnswerList values = new AnswerList<>();
+        AnswerList<String> values = new AnswerList<>();
         Map<String, List<String>> individualSearch = new HashMap<>();
 
         testCaseService = appContext.getBean(TestCaseService.class);

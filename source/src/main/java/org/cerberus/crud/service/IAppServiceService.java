@@ -43,7 +43,7 @@ public interface IAppServiceService {
      * @param limit the number of {@link AppService} to get
      * @return
      */
-    AnswerList readByLikeName(String name, int limit);
+    AnswerList<AppService> readByLikeName(String name, int limit);
 
     AppService findAppServiceByKey(String name) throws CerberusException;
 
@@ -88,7 +88,7 @@ public interface IAppServiceService {
      * @param individualSearch the string to search for each column
      * @return
      */
-    AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      * @param object the {@link AppService} to Create

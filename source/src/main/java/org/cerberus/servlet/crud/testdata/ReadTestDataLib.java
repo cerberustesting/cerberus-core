@@ -184,8 +184,8 @@ public class ReadTestDataLib extends HttpServlet {
      * @throws NumberFormatException
      * @throws JSONException
      */
-    private AnswerItem findTestDataLibList(ApplicationContext appContext, HttpServletRequest request) throws IOException, BeansException, NumberFormatException, JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findTestDataLibList(ApplicationContext appContext, HttpServletRequest request) throws IOException, BeansException, NumberFormatException, JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         testDataLibService = appContext.getBean(ITestDataLibService.class);
 
@@ -217,7 +217,7 @@ public class ReadTestDataLib extends HttpServlet {
             }
         }
 
-        AnswerList resp = testDataLibService.readByVariousByCriteria(null, systems, null, null, null, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<TestDataLib> resp = testDataLibService.readByVariousByCriteria(null, systems, null, null, null, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         boolean userHasPermissions = request.isUserInRole("TestDataManager");
@@ -250,8 +250,8 @@ public class ReadTestDataLib extends HttpServlet {
      * that matches the identifier
      * @throws JSONException
      */
-    private AnswerItem findTestDataLibByID(int testDatalib, ApplicationContext appContext, boolean userHasPermissions, String userName) throws JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findTestDataLibByID(int testDatalib, ApplicationContext appContext, boolean userHasPermissions, String userName) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         testDataLibService = appContext.getBean(ITestDataLibService.class);
@@ -284,14 +284,14 @@ public class ReadTestDataLib extends HttpServlet {
      * @return object containing values that match the name
      * @throws JSONException
      */
-    private AnswerItem findTestDataLibNameList(String nameToSearch, int limit, boolean like, ApplicationContext appContext) throws JSONException {
+    private AnswerItem<JSONObject> findTestDataLibNameList(String nameToSearch, int limit, boolean like, ApplicationContext appContext) throws JSONException {
 
-        AnswerItem ansItem = new AnswerItem<>();
+        AnswerItem<JSONObject> ansItem = new AnswerItem<>();
 
         JSONObject object = new JSONObject();
 
         testDataLibService = appContext.getBean(ITestDataLibService.class);
-        AnswerList ansList = testDataLibService.readNameListByName(nameToSearch, limit, like);
+        AnswerList<TestDataLib> ansList = testDataLibService.readNameListByName(nameToSearch, limit, like);
 
         JSONArray jsonArray = new JSONArray();
         if (ansList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -326,13 +326,13 @@ public class ReadTestDataLib extends HttpServlet {
      * that use the entry
      * @throws JSONException
      */
-    private AnswerItem getTestCasesUsingTestDataLib(int testDataLibId, String name, String country, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem<JSONObject> getTestCasesUsingTestDataLib(int testDataLibId, String name, String country, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
         JSONObject object = new JSONObject();
         JSONArray objectArray = new JSONArray();
-        AnswerItem ansItem = new AnswerItem<>();
+        AnswerItem<JSONObject> ansItem = new AnswerItem<>();
         tcService = appContext.getBean(ITestCaseService.class);
 
-        AnswerList ansList = tcService.findTestCasesThatUseTestDataLib(testDataLibId, name, country);
+        AnswerList<TestListDTO> ansList = tcService.findTestCasesThatUseTestDataLib(testDataLibId, name, country);
 
         //if the response is success then we can iterate and search for the data
         if (ansList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -381,8 +381,8 @@ public class ReadTestDataLib extends HttpServlet {
      * @return an object containing all the groups that belong to that type
      * @throws JSONException
      */
-    private AnswerItem findDistinctGroups(ApplicationContext appContext) throws JSONException {
-        AnswerItem answerItem = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctGroups(ApplicationContext appContext) throws JSONException {
+        AnswerItem<JSONObject> answerItem = new AnswerItem<>();
 
         ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
 
@@ -433,8 +433,8 @@ public class ReadTestDataLib extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         testDataLibService = appContext.getBean(ITestDataLibService.class);

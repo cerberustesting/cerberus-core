@@ -237,8 +237,8 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
     }
 
     @Override
-    public AnswerItem readByKey(String test, String testCase, String country) {
-        AnswerItem answer = new AnswerItem<>();
+    public AnswerItem<TestCaseCountry> readByKey(String test, String testCase, String country) {
+        AnswerItem<TestCaseCountry> answer = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         TestCaseCountry result = new TestCaseCountry();

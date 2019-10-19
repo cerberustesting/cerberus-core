@@ -720,10 +720,10 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         }
         try {
             JSONObject myJSONObj = new JSONObject(manualHost);
-            Iterator<String> nameItr = myJSONObj.keys();
+            Iterator<?> nameItr = myJSONObj.keys();
             LOG.debug("Converting from JSON.");
             while (nameItr.hasNext()) {
-                String name = nameItr.next();
+                String name = (String) nameItr.next();
                 myHostMap.put(name, myJSONObj.getString(name));
             }
             return myHostMap;

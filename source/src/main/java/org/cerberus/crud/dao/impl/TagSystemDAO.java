@@ -69,7 +69,7 @@ public class TagSystemDAO implements ITagSystemDAO {
 
     @Override
     public AnswerItem<TagSystem> readByKey(String tag, String system) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<TagSystem> ans = new AnswerItem<>();
         TagSystem result = null;
         final String query = "SELECT * FROM `tagsystem` tas WHERE `tag` = ? and `system` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -133,12 +133,12 @@ public class TagSystemDAO implements ITagSystemDAO {
 
     @Override
     public AnswerList<TagSystem> readByVariousByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+        AnswerList<TagSystem> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TagSystem> objectList = new ArrayList<TagSystem>();
+        List<TagSystem> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 

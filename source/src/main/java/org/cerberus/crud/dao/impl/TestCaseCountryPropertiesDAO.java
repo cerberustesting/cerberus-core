@@ -665,10 +665,10 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     }
 
     @Override
-    public AnswerList findTestCaseCountryPropertiesByValue1(int testDataLib, String name, String country, String propertyType) {
-        AnswerList ansList = new AnswerList<>();
+    public AnswerList<TestListDTO> findTestCaseCountryPropertiesByValue1(int testDataLib, String name, String country, String propertyType) {
+        AnswerList<TestListDTO> ansList = new AnswerList<>();
         MessageEvent rs;
-        List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();
+        List<TestListDTO> listOfTests = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("select count(*) as total, tccp.property, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application, ");
         query.append("tc.TcActive as Active, tc.`Group`, tc.UsrCreated, tc.`Status` ");

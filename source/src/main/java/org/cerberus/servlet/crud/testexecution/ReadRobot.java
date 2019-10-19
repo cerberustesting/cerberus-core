@@ -227,7 +227,7 @@ public class ReadRobot extends HttpServlet {
             }
         }
 
-        AnswerList resp = robotService.readByCriteria(withCaps, withExecutors, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<Robot> resp = robotService.readByCriteria(withCaps, withExecutors, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

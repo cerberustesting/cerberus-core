@@ -55,7 +55,7 @@ public interface IBuildRevisionBatchDAO {
      * @param string
      * @return
      */
-    AnswerList readByVariousByCriteria(String system, String country, String environment, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    AnswerList<BuildRevisionBatch> readByVariousByCriteria(String system, String country, String environment, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *

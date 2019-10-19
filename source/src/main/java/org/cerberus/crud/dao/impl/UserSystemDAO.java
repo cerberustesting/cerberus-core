@@ -332,7 +332,7 @@ public class UserSystemDAO implements IUserSystemDAO {
 
     @Override
     public AnswerList<UserSystem> readByUser(String login) {
-        AnswerList ans = new AnswerList<>();
+        AnswerList<UserSystem> ans = new AnswerList<>();
         MessageEvent msg = null;
         String query = "SELECT uss.* FROM usersystem uss JOIN invariant inv ON inv.value=uss.system and inv.idname='SYSTEM' WHERE  uss.`login` = ? order by inv.sort;";
 

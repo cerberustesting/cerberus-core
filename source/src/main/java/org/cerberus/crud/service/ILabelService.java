@@ -41,20 +41,20 @@ public interface ILabelService {
      * @param id
      * @return
      */
-    AnswerItem readByKey(Integer id);
+    AnswerItem<Label> readByKey(Integer id);
 
     /**
      *
      * @return
      */
-    AnswerList readAll();
+    AnswerList<Label> readAll();
 
     /**
      * Reading from database all lines of Parent / Child Labels.
      *
      * @return
      */
-    AnswerList readAllLinks();
+    AnswerList<Label> readAllLinks();
 
     /**
      * Add child element into list of Label Id.

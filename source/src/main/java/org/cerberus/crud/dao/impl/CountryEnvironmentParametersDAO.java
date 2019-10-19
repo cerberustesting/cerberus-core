@@ -72,7 +72,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
 
     @Override
     public AnswerItem<CountryEnvironmentParameters> readByKey(String system, String country, String environment, String application) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<CountryEnvironmentParameters> ans = new AnswerItem<>();
         CountryEnvironmentParameters result = null;
         final String query = "SELECT * FROM countryenvironmentparameters cea WHERE cea.`system` = ? AND cea.country = ? AND cea.environment = ? AND cea.application = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);

@@ -136,9 +136,9 @@ public class GetEnvironmentsLastChangePerCountry extends HttpServlet {
 
     }
 
-    private AnswerItem findBuildRevList(String system, String envGp, Integer nbDays, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findBuildRevList(String system, String envGp, Integer nbDays, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         invariantService = appContext.getBean(IInvariantService.class);
         ceplService = appContext.getBean(ICountryEnvParam_logService.class);

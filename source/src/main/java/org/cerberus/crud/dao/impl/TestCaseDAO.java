@@ -377,12 +377,12 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerList<TestListDTO> findTestCaseByService(String service) {
-        AnswerList ansList = new AnswerList<>();
+        AnswerList<TestListDTO> ansList = new AnswerList<>();
         MessageEvent rs;
-        List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();
+        List<TestListDTO> listOfTests = new ArrayList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCase> testCaseList = new ArrayList<TestCase>();
+        List<TestCase> testCaseList = new ArrayList<>();
         final String sql = " select count(*) as total, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application,"
                 + "tc.TcActive as Active, tc.`Group`, tc.UsrCreated, tc.`Status` "
                 + " from testcase tc INNER JOIN test t ON t.test = tc.test "
@@ -480,12 +480,12 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerList<TestListDTO> findTestCaseByServiceByDataLib(String service) {
-        AnswerList ansList = new AnswerList<>();
+        AnswerList<TestListDTO> ansList = new AnswerList<>();
         MessageEvent rs;
-        List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();
+        List<TestListDTO> listOfTests = new ArrayList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCase> testCaseList = new ArrayList<TestCase>();
+        List<TestCase> testCaseList = new ArrayList<>();
 
         final String sql = " select count(*) as total, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application,"
                 + "tc.TcActive as Active, tc.`Group`, tc.UsrCreated, tc.`Status` "
@@ -498,11 +498,11 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(sql.toString());
+            PreparedStatement preStat = connection.prepareStatement(sql);
             try {
                 preStat.setString(1, service);
 
-                HashMap<String, TestListDTO> map = new HashMap<String, TestListDTO>();
+                HashMap<String, TestListDTO> map = new HashMap<>();
 
                 String key, test, testCase;
                 ResultSet resultSet = preStat.executeQuery();
@@ -537,7 +537,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                     }
 
-                    listOfTests = new ArrayList<TestListDTO>(map.values());
+                    listOfTests = new ArrayList<>(map.values());
 
                     if (listOfTests.isEmpty()) {
                         rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
@@ -1556,10 +1556,10 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public AnswerList readTestCaseByStepsInLibrary(String test) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<TestCase> readTestCaseByStepsInLibrary(String test) {
+        AnswerList<TestCase> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        List<TestCase> list = new ArrayList<TestCase>();
+        List<TestCase> list = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcase tec ");
         query.append("LEFT OUTER JOIN application app ON app.application=tec.application ");
@@ -1578,7 +1578,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<TestCase>();
+                    list = new ArrayList<>();
 
                     while (resultSet.next()) {
                         list.add(loadFromResultSet(resultSet));

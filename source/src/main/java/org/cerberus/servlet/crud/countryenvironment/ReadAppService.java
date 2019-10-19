@@ -97,7 +97,7 @@ public class ReadAppService extends HttpServlet {
         boolean userHasPermissions = request.isUserInRole("TestAdmin");
 
         // Init Answer with potencial error from Parsing soapLibrary.
-        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         boolean testcase = ParameterParserUtil.parseBooleanParam(request.getParameter("testcase"), false);
 
         try {
@@ -200,6 +200,7 @@ public class ReadAppService extends HttpServlet {
         response.put("contentTable", item);
         item.put("hasPermissions", userHasPermissions);
         answerItem.setItem(response);
+        answerItem.setResultMessage(resp.getResultMessage());
 
         return answerItem;
     }
@@ -208,7 +209,7 @@ public class ReadAppService extends HttpServlet {
         AnswerItem<JSONObject> answerItem = new AnswerItem<>();
         JSONObject response = new JSONObject();
         appServiceService = appContext.getBean(AppServiceService.class);
-        AnswerList resp = appServiceService.readByLikeName(key, limit);
+        AnswerList<AppService> resp = appServiceService.readByLikeName(key, limit);
         AppService p = null;
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

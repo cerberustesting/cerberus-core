@@ -176,9 +176,9 @@ public class ReadBatchInvariant extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findBatchInvariantList(List<String> system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findBatchInvariantList(List<String> system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         biService = appContext.getBean(IBatchInvariantService.class);
 
@@ -206,7 +206,7 @@ public class ReadBatchInvariant extends HttpServlet {
             }
         }
         
-        AnswerList resp = biService.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<BatchInvariant> resp = biService.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -226,8 +226,8 @@ public class ReadBatchInvariant extends HttpServlet {
 
     }
 
-        private AnswerItem findBatchInvariantByKey(String batch, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+        private AnswerItem<JSONObject> findBatchInvariantByKey(String batch, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         IBatchInvariantService libService = appContext.getBean(IBatchInvariantService.class);
@@ -257,8 +257,8 @@ public class ReadBatchInvariant extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(List<String> system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(List<String> system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         biService = appContext.getBean(IBatchInvariantService.class);

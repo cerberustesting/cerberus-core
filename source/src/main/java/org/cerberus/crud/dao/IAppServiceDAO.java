@@ -85,7 +85,7 @@ public interface IAppServiceDAO {
      * @param individualSearch the string to search for each column
      * @return
      */
-    AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      * @param object the {@link AppService} to Create

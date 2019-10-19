@@ -136,7 +136,7 @@ public interface ITestCaseExecutionQueueDAO {
      * @param column
      * @return
      */
-    public AnswerList readDistinctValuesByCriteria(String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, String column);
+    public AnswerList<String> readDistinctValuesByCriteria(String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, String column);
 
     /**
      *

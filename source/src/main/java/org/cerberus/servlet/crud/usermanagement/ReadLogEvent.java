@@ -188,8 +188,8 @@ public class ReadLogEvent extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findLogEventList(ApplicationContext appContext, HttpServletRequest request) throws CerberusException, JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findLogEventList(ApplicationContext appContext, HttpServletRequest request) throws CerberusException, JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         logEventService = appContext.getBean(LogEventService.class);
 
@@ -243,8 +243,8 @@ public class ReadLogEvent extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findLogEventByID(ApplicationContext appContext, long id) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findLogEventByID(ApplicationContext appContext, long id) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         ILogEventService libService = appContext.getBean(ILogEventService.class);
@@ -264,8 +264,8 @@ public class ReadLogEvent extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         logEventService = appContext.getBean(ILogEventService.class);

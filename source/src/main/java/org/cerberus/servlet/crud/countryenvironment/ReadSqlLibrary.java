@@ -123,9 +123,9 @@ public class ReadSqlLibrary extends HttpServlet {
         }
     }
 
-    private AnswerItem findSqlLibraryList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findSqlLibraryList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         sqlLibraryService = appContext.getBean(SqlLibraryService.class);
 
@@ -172,24 +172,25 @@ public class ReadSqlLibrary extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findSqlLibraryBySystemByKey(String key, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem<JSONObject> findSqlLibraryBySystemByKey(String key, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
 
         sqlLibraryService = appContext.getBean(SqlLibraryService.class);
 
-        AnswerItem resp = sqlLibraryService.readByKey(key);
+        AnswerItem<SqlLibrary> resp = sqlLibraryService.readByKey(key);
         SqlLibrary p = null;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             p = (SqlLibrary) resp.getItem();
         }
         JSONObject item = convertSqlLibraryToJSONObject(p);
         item.put("hasPermissions", userHasPermissions);
-        resp.setItem(item);
+        answer.setItem(item);
 
-        return resp;
+        return answer;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         sqlLibraryService = appContext.getBean(ISqlLibraryService.class);

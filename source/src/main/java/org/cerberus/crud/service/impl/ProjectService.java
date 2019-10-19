@@ -45,17 +45,17 @@ public class ProjectService implements IProjectService {
     private IProjectDAO projectDao;
 
     @Override
-    public AnswerItem readByKey(String id) {
+    public AnswerItem<Project> readByKey(String id) {
         return projectDao.readByKey(id);
     }
 
     @Override
-    public AnswerList readAll() {
+    public AnswerList<Project> readAll() {
         return readByCriteria(0, 0, "idproject", "asc", null, null);
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> string) {
+    public AnswerList<Project> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> string) {
         return projectDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, string);
     }
 

@@ -63,7 +63,7 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public AnswerList readByLikeName(String name, int limit) {
+    public AnswerList<AppService> readByLikeName(String name, int limit) {
         return appServiceDao.findAppServiceByLikeName(name, limit);
     }
 
@@ -94,7 +94,7 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return appServiceDao.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
     }
 

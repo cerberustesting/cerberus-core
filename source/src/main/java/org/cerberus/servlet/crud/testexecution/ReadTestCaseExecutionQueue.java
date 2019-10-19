@@ -247,7 +247,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
             }
         }
 
-        AnswerList resp = executionService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<TestCaseExecutionQueue> resp = executionService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -368,7 +368,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
     private AnswerItem<JSONObject> findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
         AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
-        AnswerList values = new AnswerList<>();
+        AnswerList<String> values = new AnswerList<>();
 
         executionService = appContext.getBean(ITestCaseExecutionQueueService.class);
 

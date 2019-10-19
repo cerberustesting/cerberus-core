@@ -214,7 +214,7 @@ public class FtpService implements IFtpService {
     @Override
     public AnswerItem<AppService> getFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse) throws IOException {
         MessageEvent message = null;
-        AnswerItem result = new AnswerItem<>();
+        AnswerItem<AppService> result = new AnswerItem<>();
         LOG.info("Start retrieving ftp file");
         FTPFile[] ftpFile = ftp.listFiles(informations.get("path"));
         if (ftpFile.length != 0) {
@@ -237,7 +237,7 @@ public class FtpService implements IFtpService {
                 result.setResultMessage(message);
                 String expectedContent = IOUtils.toString(new ByteArrayInputStream(content), "UTF-8");
                 String extension = testCaseExecutionFileService.checkExtension(informations.get("path"), "");
-                if (extension == "JSON" || extension == "XML" || extension == "TXT") {
+                if ("JSON".equals(extension) || "XML".equals(extension) || "TXT".equals(extension)) {
                     myResponse.setResponseHTTPBody(expectedContent);
                 }
                 myResponse.setResponseHTTPBodyContentType(extension);

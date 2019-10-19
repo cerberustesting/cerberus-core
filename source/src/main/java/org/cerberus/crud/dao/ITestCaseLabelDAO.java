@@ -116,6 +116,6 @@ public interface ITestCaseLabelDAO {
      * @param system
      * @return
      */
-    AnswerList readByTypeSystem(String type, String system);
+    AnswerList<TestCaseLabel> readByTypeSystem(String type, String system);
 
 }

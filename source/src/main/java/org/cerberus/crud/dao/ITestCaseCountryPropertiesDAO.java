@@ -22,6 +22,7 @@ package org.cerberus.crud.dao;
 import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.dto.TestListDTO;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
@@ -35,36 +36,133 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestCaseCountryPropertiesDAO {
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param oneproperty
+     * @return
+     */
     List<TestCaseCountryProperties> findOnePropertyPerTestTestCase(String test, String testcase, String oneproperty);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @return
+     */
     List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase);
 
+    /**
+     *
+     * @param testCaseCountryProperties
+     * @return
+     */
     List<String> findCountryByProperty(TestCaseCountryProperties testCaseCountryProperties);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param property
+     * @return
+     */
     List<String> findCountryByPropertyNameAndTestCase(String test, String testcase, String property);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param country
+     * @return
+     */
     List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseCountry(String test, String testcase, String country);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param country
+     * @param property
+     * @return
+     * @throws CerberusException
+     */
     TestCaseCountryProperties findTestCaseCountryPropertiesByKey(String test, String testcase, String country, String property) throws CerberusException;
 
+    /**
+     *
+     * @param testCaseCountryProperties
+     * @throws CerberusException
+     */
     void insertTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException;
 
+    /**
+     *
+     * @param testCaseCountryProperties
+     * @throws CerberusException
+     */
     void updateTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException;
 
+    /**
+     *
+     * @param tccp
+     * @throws CerberusException
+     */
     public void deleteTestCaseCountryProperties(TestCaseCountryProperties tccp) throws CerberusException;
 
-    AnswerList findTestCaseCountryPropertiesByValue1(int testDataLib, String name, String country, String propertyType);
+    /**
+     *
+     * @param testDataLib
+     * @param name
+     * @param country
+     * @param propertyType
+     * @return
+     */
+    AnswerList<TestListDTO> findTestCaseCountryPropertiesByValue1(int testDataLib, String name, String country, String propertyType);
 
+    /**
+     *
+     * @param listOfPropertiesToInsert
+     * @return
+     */
     Answer createTestCaseCountryPropertiesBatch(List<TestCaseCountryProperties> listOfPropertiesToInsert);
 
+    /**
+     *
+     * @param object
+     * @return
+     */
     Answer create(TestCaseCountryProperties object);
 
+    /**
+     *
+     * @param object
+     * @return
+     */
     Answer delete(TestCaseCountryProperties object);
 
+    /**
+     *
+     * @param object
+     * @return
+     */
     Answer update(TestCaseCountryProperties object);
     
+    /**
+     *
+     * @param oldName
+     * @param newName
+     * @return
+     */
     Answer bulkRenameProperties(String oldName, String newName);
 
 }

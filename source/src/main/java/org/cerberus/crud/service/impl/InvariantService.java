@@ -217,11 +217,11 @@ public class InvariantService implements IInvariantService {
     public String getPublicPrivateFilter(String filter) {
         String searchSQL = " 1=0 ";
 
-        AnswerList answer = this.readByIdname(filter);
+        AnswerList<Invariant> answer = this.readByIdname(filter);
         List<Invariant> invPrivate = answer.getDataList();
 
         List<String> idnameList = null;
-        idnameList = new ArrayList<String>();
+        idnameList = new ArrayList<>();
         for (Invariant toto : invPrivate) {
             idnameList.add(toto.getValue());
         }

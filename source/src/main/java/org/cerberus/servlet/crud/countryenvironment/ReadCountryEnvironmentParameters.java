@@ -165,9 +165,9 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findCountryEnvironmentParametersList(String system, String country, String environment, String application, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findCountryEnvironmentParametersList(String system, String country, String environment, String application, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         cepService = appContext.getBean(ICountryEnvironmentParametersService.class);
 
@@ -181,7 +181,7 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = cepService.readByVariousByCriteria(system, country, environment, application, startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList<CountryEnvironmentParameters> resp = cepService.readByVariousByCriteria(system, country, environment, application, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

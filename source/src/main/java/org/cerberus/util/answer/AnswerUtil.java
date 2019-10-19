@@ -100,7 +100,7 @@ public class AnswerUtil {
         List<R> apply() throws CerberusException;
     }
 
-    public static <R> AnswerItem convertToAnswerItem(AnswerItemFunction<R> answerFunction) {
+    public static <R> AnswerItem<R> convertToAnswerItem(AnswerItemFunction<R> answerFunction) {
         AnswerItem<R> answer = new AnswerItem<>();
         MessageEvent msg = null;
         R result = null;
@@ -119,7 +119,7 @@ public class AnswerUtil {
 
     }
 
-    public static <R> AnswerList convertToAnswerList(AnswerListFunction<R> answerFunction) {
+    public static <R> AnswerList<R> convertToAnswerList(AnswerListFunction<R> answerFunction) {
         AnswerList<R> answer = new AnswerList<>();
         MessageEvent msg = null;
         List<R> result = null;

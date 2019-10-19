@@ -69,7 +69,7 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
 
     @Override
     public AnswerItem<AppServiceHeader> readByKey(String service, String key) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<AppServiceHeader> ans = new AnswerItem<>();
         AppServiceHeader result = null;
         final String query = "SELECT * FROM `appserviceheader` srh WHERE `service` = ? and `key` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -133,12 +133,12 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
 
     @Override
     public AnswerList<AppServiceHeader> readByVariousByCriteria(String service, String active, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+        AnswerList<AppServiceHeader> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<AppServiceHeader> objectList = new ArrayList<AppServiceHeader>();
+        List<AppServiceHeader> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 

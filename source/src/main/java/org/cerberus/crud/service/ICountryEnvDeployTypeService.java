@@ -42,7 +42,7 @@ public interface ICountryEnvDeployTypeService {
      * @param individualSearch
      * @return
      */
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String deployType, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    public AnswerList<CountryEnvDeployType> readByVariousByCriteria(String system, String country, String environment, String deployType, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      *

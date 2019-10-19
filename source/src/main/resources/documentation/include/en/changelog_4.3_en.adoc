@@ -1,6 +1,7 @@
 *Bug fixes*
 [square]
 * Fixed issue when saving a testcase that have properties declined on 2 different range of countries. #2021
+* Fixed an issue when a user is administror and tries to run a testcase that he does not have the corresponding system athorized.
 
 *Improvements / New features*
 [square]

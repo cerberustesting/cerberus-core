@@ -106,7 +106,7 @@ public class UserService implements IUserService {
 
     @Override
     public AnswerItem<User> updateUserPassword(User user, String currentPassword, String newPassword, String confirmPassword, String resetPasswordToken) {
-        AnswerItem answUpdate = new AnswerItem<>();
+        AnswerItem<User> answUpdate = new AnswerItem<>();
         MessageEvent msg;
         //First check if both new password are the same
         if (newPassword.equals(confirmPassword)) {
@@ -152,7 +152,7 @@ public class UserService implements IUserService {
 
     @Override
     public AnswerItem<User> updateUserPasswordAdmin(User user, String newPassword) {
-        AnswerItem answUpdate = new AnswerItem<>();
+        AnswerItem<User> answUpdate = new AnswerItem<>();
         MessageEvent msg;
         //verifications succeed, update password
         answUpdate = userDAO.updateUserPassword(user, newPassword, user.getRequest());

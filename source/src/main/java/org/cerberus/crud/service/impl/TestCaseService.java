@@ -365,7 +365,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country) {
+    public AnswerList<TestListDTO> findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country) {
         return testCaseCountryPropertiesService.findTestCaseCountryPropertiesByValue1(testDataLibId, name, country, TestCaseCountryProperties.TYPE_GETFROMDATALIB);
     }
 
@@ -421,9 +421,9 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerItem readByKeyWithDependency(String test, String testCase) {
-        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
-        AnswerItem ai = testCaseDao.readByKey(test, testCase);
+    public AnswerItem<TestCase> readByKeyWithDependency(String test, String testCase) {
+        AnswerItem<TestCase> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+        AnswerItem<TestCase> ai = testCaseDao.readByKey(test, testCase);
         if (ai.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ai.getItem() != null) {
             TestCase tc = (TestCase) ai.getItem();
             AnswerList<TestCaseStep> al = testCaseStepService.readByTestTestCaseWithDependency(tc.getTest(), tc.getTestCase());

@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -38,14 +37,13 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.BuildRevisionParameters;
 import org.cerberus.crud.entity.CountryEnvDeployType;
-
-import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IBuildRevisionParametersService;
 import org.cerberus.crud.service.ICountryEnvDeployTypeService;
+import org.cerberus.crud.service.impl.BuildRevisionParametersService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.impl.BuildRevisionParametersService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -206,9 +204,9 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findBuildRevisionParametersList(String system, String build, String revision, String application, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findBuildRevisionParametersList(String system, String build, String revision, String application, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         brpService = appContext.getBean(BuildRevisionParametersService.class);
 
@@ -224,7 +222,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
         
-        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
@@ -236,7 +234,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
             }
         }
         
-        AnswerList resp = brpService.readByVarious1ByCriteria(system, application, build, revision, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<BuildRevisionParameters> resp = brpService.readByVarious1ByCriteria(system, application, build, revision, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -255,8 +253,8 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findBuildRevisionParametersByKey(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findBuildRevisionParametersByKey(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         IBuildRevisionParametersService libService = appContext.getBean(IBuildRevisionParametersService.class);
@@ -351,9 +349,9 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findManualBuildRevisionParametersBySystem(String system, String build, String revision, String lastbuild, String lastrevision, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem<JSONObject> findManualBuildRevisionParametersBySystem(String system, String build, String revision, String lastbuild, String lastrevision, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         brpService = appContext.getBean(BuildRevisionParametersService.class);
 
@@ -361,7 +359,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
             lastbuild = build;
         }
 
-        AnswerList resp = brpService.readNonSVNRelease(system, build, revision, lastbuild, lastrevision);
+        AnswerList<BuildRevisionParameters> resp = brpService.readNonSVNRelease(system, build, revision, lastbuild, lastrevision);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -387,8 +385,8 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         brpService = appContext.getBean(IBuildRevisionParametersService.class);

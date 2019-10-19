@@ -188,7 +188,7 @@ public class GetReportData extends HttpServlet {
                 testCaseExecutionsList.put(key, testCaseExecution);
             }
 
-            List<TestCaseExecution> res = new ArrayList<TestCaseExecution>(testCaseExecutionsList.values());
+            List<TestCaseExecution> res = new ArrayList<>(testCaseExecutionsList.values());
 
             HashMap<String, SummaryStatisticsDTO> statMap = new HashMap<String, SummaryStatisticsDTO>();
             for (TestCaseExecution column : res) {
@@ -265,7 +265,7 @@ public class GetReportData extends HttpServlet {
     }// </editor-fold>
 
     private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionQueue> testCaseExecutionsInQueue) throws ParseException {
-        Map<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap();
+        Map<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap<>();
         SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
@@ -323,7 +323,7 @@ public class GetReportData extends HttpServlet {
         JSONArray dataArray = new JSONArray();
         Gson gson = new Gson();
         //sort keys
-        TreeMap<String, SummaryStatisticsDTO> sortedKeys = new TreeMap<String, SummaryStatisticsDTO>(summaryMap);
+        TreeMap<String, SummaryStatisticsDTO> sortedKeys = new TreeMap<>(summaryMap);
         for (String key : sortedKeys.keySet()) {
             SummaryStatisticsDTO sumStats = summaryMap.get(key);
             //percentage values

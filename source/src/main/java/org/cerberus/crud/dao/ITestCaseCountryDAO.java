@@ -52,7 +52,7 @@ public interface ITestCaseCountryDAO {
      * @param country
      * @return
      */
-    AnswerItem readByKey(String test, String testCase, String country);
+    AnswerItem<TestCaseCountry> readByKey(String test, String testCase, String country);
 
     /**
      *

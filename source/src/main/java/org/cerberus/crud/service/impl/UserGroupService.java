@@ -103,7 +103,7 @@ public class UserGroupService implements IUserGroupService {
     public Answer updateGroupsByUser(User user, List<UserGroup> newGroups) {
         Answer a = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                 .resolveDescription("OPERATION", "UPDATE"));
-        AnswerList an = this.readByUser(user.getLogin());
+        AnswerList<UserGroup> an = this.readByUser(user.getLogin());
         if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             List<UserGroup> oldGroups = an.getDataList();
             //delete if don't exist in new

@@ -51,12 +51,12 @@ public class TestService implements ITestService {
     }
 
     @Override
-    public AnswerList readDistinctBySystem(String system) {
+    public AnswerList<Test> readDistinctBySystem(String system) {
         return testDao.readDistinctBySystem(system);
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<Test> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return testDao.readByCriteria(start, amount, colName, dir, searchTerm, individualSearch);
     }
 

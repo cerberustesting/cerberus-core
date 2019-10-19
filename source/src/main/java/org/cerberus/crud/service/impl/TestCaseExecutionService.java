@@ -354,7 +354,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionQueue> testCaseExecutionsInQueue) throws ParseException {
-        LinkedHashMap<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap();
+        LinkedHashMap<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             String key = testCaseExecution.getRobotDecli() + "_"
                     + testCaseExecution.getCountry() + "_"

@@ -38,13 +38,13 @@ public interface IProjectService {
      * @param id
      * @return
      */
-    AnswerItem readByKey(String id);
+    AnswerItem<Project> readByKey(String id);
 
     /**
      *
      * @return
      */
-    AnswerList readAll();
+    AnswerList<Project> readAll();
 
     /**
      *
@@ -56,7 +56,7 @@ public interface IProjectService {
      * @param string
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> string);
+    AnswerList<Project> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> string);
 
     /**
      *

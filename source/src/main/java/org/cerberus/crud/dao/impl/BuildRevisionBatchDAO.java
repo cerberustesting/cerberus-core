@@ -64,8 +64,8 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public AnswerItem readByKey(long id) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<BuildRevisionBatch> readByKey(long id) {
+        AnswerItem<BuildRevisionBatch> ans = new AnswerItem<>();
         BuildRevisionBatch result = null;
         final String query = "SELECT * FROM buildrevisionbatch WHERE id = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -124,11 +124,11 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<BuildRevisionBatch> readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        AnswerList<BuildRevisionBatch> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<BuildRevisionBatch> resultList = new ArrayList<BuildRevisionBatch>();
+        List<BuildRevisionBatch> resultList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();

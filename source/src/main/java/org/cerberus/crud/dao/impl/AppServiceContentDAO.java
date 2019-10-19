@@ -69,7 +69,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
 
     @Override
     public AnswerItem<AppServiceContent> readByKey(String service, String key) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<AppServiceContent> ans = new AnswerItem<>();
         AppServiceContent result = null;
         final String query = "SELECT * FROM `appservicecontent` src WHERE `service` = ? and `key` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);

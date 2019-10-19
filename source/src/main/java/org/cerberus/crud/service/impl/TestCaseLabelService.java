@@ -56,17 +56,17 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     private final String OBJECT_NAME = "TestCaseLabel";
 
     @Override
-    public AnswerItem readByKeyTech(Integer id) {
+    public AnswerItem<TestCaseLabel> readByKeyTech(Integer id) {
         return testCaseLabelDAO.readByKeyTech(id);
     }
 
     @Override
-    public AnswerItem readByKey(String test, String testCase, Integer id) {
+    public AnswerItem<TestCaseLabel> readByKey(String test, String testCase, Integer id) {
         return testCaseLabelDAO.readByKey(test, testCase, id);
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<TestCaseLabel> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return testCaseLabelDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
@@ -75,7 +75,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
         return testCaseLabelDAO.readByTestTestCase(test, testCase, testCaseList);
     }
     @Override
-    public AnswerList readByTypeSystem(String type, String system) {
+    public AnswerList<TestCaseLabel> readByTypeSystem(String type, String system) {
         return testCaseLabelDAO.readByTypeSystem(type, system);
     }
 

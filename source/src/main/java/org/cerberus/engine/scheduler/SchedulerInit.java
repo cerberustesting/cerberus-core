@@ -65,7 +65,7 @@ public class SchedulerInit {
     Scheduler myScheduler;
     //Création du job
     JobDetail scheduledJob = JobBuilder.newJob(ScheduledJob.class).withIdentity("ScheduledJob", "group1").build();
-    private Set<Trigger> myTriggersSet = new HashSet();
+    private Set<Trigger> myTriggersSet = new HashSet<>();
 
     public void setMyTriggersSet(Set<Trigger> myTriggersSet) {
         this.myTriggersSet = myTriggersSet;
@@ -86,7 +86,7 @@ public class SchedulerInit {
     @PostConstruct
     public void init() {
         try {
-            AnswerList<ScheduleEntry> ans = new AnswerList();
+            AnswerList<ScheduleEntry> ans = new AnswerList<>();
             List<ScheduleEntry> listSched = new ArrayList<>();
 
             // read myversion scheduler_version
@@ -103,7 +103,7 @@ public class SchedulerInit {
                     if (isRunning == false) {
                         isRunning = true;
                         LOG.info("Start of Reload Scheduler entries from database.");
-                        Set<Trigger> myTriggersSetList = new HashSet();
+                        Set<Trigger> myTriggersSetList = new HashSet<>();
 
                         try {
                             // Get all active entry of scheduleentry

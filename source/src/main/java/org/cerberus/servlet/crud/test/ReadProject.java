@@ -178,7 +178,7 @@ public class ReadProject extends HttpServlet {
 
     private AnswerItem findProjectList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         projectService = appContext.getBean(ProjectService.class);
 
@@ -206,7 +206,7 @@ public class ReadProject extends HttpServlet {
             }
         }
         
-        AnswerList resp = projectService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<Project> resp = projectService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

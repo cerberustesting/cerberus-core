@@ -121,9 +121,9 @@ public class ReadUserPublic extends HttpServlet {
         }
     }
 
-    private AnswerItem findUserList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    private AnswerItem<JSONObject> findUserList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         userService = appContext.getBean(UserService.class);
 

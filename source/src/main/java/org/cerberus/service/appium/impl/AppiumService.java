@@ -79,7 +79,10 @@ public abstract class AppiumService implements IAppiumService {
         MessageEvent message;
         AppiumDriver driver = session.getAppiumDriver();
         String newContext = "";
+
+        @SuppressWarnings("unchecked")
         Set<String> contextNames = driver.getContextHandles();
+
         for (String contextName : contextNames) {
             LOG.error("Context : " + contextName);
             if (contextName.contains("WEBVIEW")) {

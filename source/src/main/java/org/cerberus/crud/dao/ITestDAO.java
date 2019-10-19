@@ -24,7 +24,6 @@ import java.util.Map;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -36,17 +35,32 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestDAO {
 
+    /**
+     *
+     * @param test
+     * @return
+     * @throws CerberusException
+     */
+    public Test readByKey(String test) throws CerberusException;
 
+    /**
+     *
+     * @param system
+     * @return
+     */
+    public AnswerList<Test> readDistinctBySystem(String system);
 
-
-
-
-
-    public Test readByKey(String test) throws CerberusException ;
-
-    public AnswerList readDistinctBySystem(String system);
-    
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    /**
+     *
+     * @param start
+     * @param amount
+     * @param colName
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    public AnswerList<Test> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -62,14 +76,14 @@ public interface ITestDAO {
      * @return
      */
     public Answer update(String keyTest, Test test);
-    
+
     /**
      *
      * @param test
      * @return
      */
     public Answer delete(Test test);
-    
+
     /**
      *
      * @param searchTerm
@@ -77,6 +91,6 @@ public interface ITestDAO {
      * @param columnName
      * @return
      */
-    public AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) ;
+    public AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 
 }

@@ -132,7 +132,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
 
     @Override
     public AnswerItem<TestDataLibData> readByKeyTech(Integer testDataLibDataID) {
-        AnswerItem answer = new AnswerItem<>();
+        AnswerItem<TestDataLibData> answer = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
 
         TestDataLibData result = null;

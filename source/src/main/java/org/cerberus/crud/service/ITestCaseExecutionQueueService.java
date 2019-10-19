@@ -65,7 +65,7 @@ public interface ITestCaseExecutionQueueService {
      * @return
      * @throws CerberusException
      */
-    AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+    AnswerList<TestCaseExecutionQueue> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
     /**
      *
@@ -75,7 +75,7 @@ public interface ITestCaseExecutionQueueService {
      * @return
      * @throws CerberusException
      */
-    AnswerList readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException;
+    AnswerList<TestCaseExecutionQueue> readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException;
 
     /**
      * All entries that are taken by the queue engine for processing.
@@ -119,7 +119,7 @@ public interface ITestCaseExecutionQueueService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<TestCaseExecutionQueue> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -156,7 +156,7 @@ public interface ITestCaseExecutionQueueService {
      * @param column
      * @return
      */
-    public AnswerList readDistinctValuesByCriteria(String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, String column);
+    public AnswerList<String> readDistinctValuesByCriteria(String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, String column);
 
     /**
      *

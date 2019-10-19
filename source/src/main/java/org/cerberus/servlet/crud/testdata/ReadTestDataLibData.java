@@ -181,7 +181,7 @@ public class ReadTestDataLibData extends HttpServlet {
         
         
         AnswerItem datalib = testDataLibService.readByKey(testDatalib);
-        AnswerList answer = testDataLibDataService.readByVarious(testDatalib, null, null, null);
+        AnswerList<TestDataLibData> answer = testDataLibDataService.readByVarious(testDatalib, null, null, null);
 
         boolean hasPermissionToSeePrivateValue = false;
         
@@ -203,7 +203,7 @@ public class ReadTestDataLibData extends HttpServlet {
 
         jsonResponse.put("contentTable", jsonArray);
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         item.setItem(jsonResponse);
         item.setResultMessage(answer.getResultMessage());
 
@@ -217,48 +217,4 @@ public class ReadTestDataLibData extends HttpServlet {
         return result;
     }
 
-//    private AnswerItem readByName(ApplicationContext appContext, String testDataLibName) throws JSONException {
-//        JSONObject jsonResponse = new JSONObject();
-//        ITestDataLibDataService testDataLibDataService = appContext.getBean(ITestDataLibDataService.class);
-//        AnswerList answer = testDataLibDataService.readByName(testDataLibName);
-//
-//        //retrieves the data for the entry
-//        JSONArray jsonArray = new JSONArray();
-//
-//        for (TestDataLibData subdata : (List<TestDataLibData>) answer.getDataList()) {
-//            jsonArray.put(convertTestDataLibDataToJSONObject(subdata));
-//        }
-//
-//        jsonResponse.put("contentTable", jsonArray);
-//        jsonResponse.put("iTotalRecords", answer.getTotalRows());
-//        jsonResponse.put("iTotalDisplayRecords", answer.getTotalRows());
-//
-//        AnswerItem item = new AnswerItem<>();
-//        item.setItem(jsonResponse);
-//        item.setResultMessage(answer.getResultMessage());
-//
-//        return item;
-//    }
-//
-//     
-//    private AnswerItem readAll(ApplicationContext appContext) throws JSONException {
-//        JSONObject jsonResponse = new JSONObject();
-//        ITestDataLibDataService testDataLibDataService = appContext.getBean(ITestDataLibDataService.class);
-//        AnswerList answer = testDataLibDataService.readAll();
-//
-//        //retrieves the data for the entry
-//        JSONArray jsonArray = new JSONArray();
-//        Gson gson = new Gson();
-//        for (TestDataLibData subData : (List<TestDataLibData>) answer.getDataList()) {
-//            jsonArray.put(new JSONObject(gson.toJson(subData)));
-//        }
-//
-//        jsonResponse.put("contentTable", jsonArray);
-//
-//        AnswerItem item = new AnswerItem<>();
-//        item.setItem(jsonResponse);
-//        item.setResultMessage(answer.getResultMessage());
-//
-//        return item;
-//    }
 }

@@ -180,7 +180,7 @@ public class ReadCountryEnvironmentDatabase extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = cedService.readByVariousByCriteria(system, country, environment, startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList<CountryEnvironmentDatabase> resp = cedService.readByVariousByCriteria(system, country, environment, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

@@ -61,17 +61,17 @@ public class LabelService implements ILabelService {
     private final String OBJECT_NAME = "Label";
 
     @Override
-    public AnswerItem readByKey(Integer id) {
+    public AnswerItem<Label> readByKey(Integer id) {
         return labelDAO.readByKey(id);
     }
 
     @Override
-    public AnswerList readAll() {
+    public AnswerList<Label> readAll() {
         return readByVariousByCriteria(new ArrayList<>(), false, new ArrayList<>(), 0, 0, "Label", "asc", null, null);
     }
 
     @Override
-    public AnswerList readAllLinks() {
+    public AnswerList<Label> readAllLinks() {
         return labelDAO.readAllLinks();
     }
 

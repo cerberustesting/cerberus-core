@@ -172,9 +172,9 @@ public class ReadBuildRevisionBatch extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findBuildRevisionBatchList(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findBuildRevisionBatchList(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         brbService = appContext.getBean(IBuildRevisionBatchService.class);
 
@@ -214,8 +214,8 @@ public class ReadBuildRevisionBatch extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         brbService = appContext.getBean(IBuildRevisionBatchService.class);

@@ -137,8 +137,8 @@ public class ReadCampaignParameter extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findParameterListByCampaign(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response, String campaign) throws JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findParameterListByCampaign(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response, String campaign) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         campaignParameterService = appContext.getBean(ICampaignParameterService.class);
 

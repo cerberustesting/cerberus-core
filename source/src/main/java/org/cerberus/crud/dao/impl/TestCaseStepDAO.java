@@ -665,10 +665,10 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
 
     @Override
     public AnswerList<TestCaseStep> readByTestTestCase(String test, String testcase) {
-        AnswerList response = new AnswerList<>();
+        AnswerList<TestCaseStep> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCaseStep> stepList = new ArrayList<TestCaseStep>();
+        List<TestCaseStep> stepList = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("SELECT tcs.*, CASE WHEN tcs1.test + tcs1.testcase + tcs1.step is NULL THEN 0 ELSE 1 END as isStepInUseByOtherTestCase FROM testcasestep tcs LEFT JOIN testcasestep tcs1 ON tcs1.useStep = 'Y' AND tcs1.useStepTest = ? AND tcs1.useStepTestCase = ? AND tcs1.useStepStep = tcs.step WHERE tcs.test = ? AND tcs.testcase = ? GROUP BY tcs.test, tcs.testcase, tcs.step ORDER BY tcs.sort");
 

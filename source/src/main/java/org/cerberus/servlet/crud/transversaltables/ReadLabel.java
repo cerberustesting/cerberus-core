@@ -205,9 +205,9 @@ public class ReadLabel extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findLabelList(List<String> system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findLabelList(List<String> system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         labelService = appContext.getBean(LabelService.class);
 
@@ -235,7 +235,7 @@ public class ReadLabel extends HttpServlet {
                 }
             }
         }
-        AnswerList resp = labelService.readByVariousByCriteria(system, strictSystemFilter, new ArrayList<>(), startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<Label> resp = labelService.readByVariousByCriteria(system, strictSystemFilter, new ArrayList<>(), startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -259,10 +259,10 @@ public class ReadLabel extends HttpServlet {
         return item;
     }
 
-    private AnswerItem getLabelHierarchy(List<String> system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request, boolean isSelectable, boolean hasButtons) throws JSONException {
+    private AnswerItem<JSONObject> getLabelHierarchy(List<String> system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request, boolean isSelectable, boolean hasButtons) throws JSONException {
         testCaseLabelService = appContext.getBean(TestCaseLabelService.class);
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         List<TestCaseLabel> labelList = new ArrayList<>();
