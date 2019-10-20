@@ -32,6 +32,7 @@ import java.nio.charset.Charset;
  *
  * @author Aurelien Bourdon
  */
+@SuppressWarnings("unchecked")
 public class DefaultJsonHttpMapper implements HttpMapper {
 
     private static final String CONTENT_TYPE = MediaType.APPLICATION_JSON_VALUE;

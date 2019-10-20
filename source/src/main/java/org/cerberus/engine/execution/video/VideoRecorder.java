@@ -54,6 +54,9 @@ public abstract class VideoRecorder {
     /**
      * Create a new instance of VideoRecorder
      *
+     * @param testCaseExecution
+     * @param recorderService
+     * @return 
      * @throws UnsupportedOperationException if application type is not
      * supported (only supported by APK at this time)
      */

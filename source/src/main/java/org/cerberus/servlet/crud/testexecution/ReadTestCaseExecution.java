@@ -500,12 +500,13 @@ public class ReadTestCaseExecution extends HttpServlet {
         JSONObject countryList = new JSONObject();
         try {
             invariantService = appContext.getBean(InvariantService.class);
-            AnswerList<Invariant> answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
-            for (Invariant country : (List<Invariant>) answer.getDataList()) {
+            for (Invariant country : invariantService.readByIdName("COUNTRY")) {
                 countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
             }
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.warn("JSON exception when getting Country List.", ex);
+        } catch (CerberusException ex) {
+            LOG.error("JSON exception when getting Country List.", ex);
         }
 
         return countryList;

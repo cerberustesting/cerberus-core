@@ -30,6 +30,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -1060,7 +1061,8 @@ public class WebDriverService implements IWebDriverService {
                     //focus the browser window for Robot to work
                     if (this.focusBrowserWindow(session)) {
                         //wait until the browser is focused
-                        wait.withTimeout(TIMEOUT_FOCUS, TimeUnit.MILLISECONDS);
+                        Duration mydur = Duration.ofMillis(TIMEOUT_FOCUS);
+                        wait.withTimeout(mydur);
                     }
 
                     //gets the robot
@@ -1073,7 +1075,8 @@ public class WebDriverService implements IWebDriverService {
                         r.keyPress(keyCode);
                         r.keyRelease(keyCode);
                         //wait until the action is performed
-                        wait.withTimeout(TIMEOUT_WEBELEMENT, TimeUnit.MILLISECONDS);
+                        Duration mydur = Duration.ofMillis(TIMEOUT_WEBELEMENT);
+                        wait.withTimeout(mydur);
 
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT);
                     } else {

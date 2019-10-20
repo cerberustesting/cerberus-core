@@ -57,6 +57,7 @@ public class InvariantService implements IInvariantService {
 
     /**
      * Use readByIdName instead to avoid Answer
+     *
      * @param idName
      * @return
      */
@@ -75,10 +76,13 @@ public class InvariantService implements IInvariantService {
     public HashMap<String, Integer> readToHashMapGp1IntegerByIdname(String idName, Integer defaultValue) {
         HashMap<String, Integer> result = new HashMap<>();
 
-        AnswerList<Invariant> answer = readByIdname(idName); //TODO: handle if the response does not turn ok
-        for (Invariant inv : (List<Invariant>) answer.getDataList()) {
-            int gp1ToInt = ParameterParserUtil.parseIntegerParam(inv.getGp1(), defaultValue);
-            result.put(inv.getValue(), gp1ToInt);
+        try {
+            for (Invariant inv : readByIdName(idName)) {
+                int gp1ToInt = ParameterParserUtil.parseIntegerParam(inv.getGp1(), defaultValue);
+                result.put(inv.getValue(), gp1ToInt);
+            }
+        } catch (CerberusException ex) {
+            LOG.error("Exception catched when getting invariant list.", ex);
         }
         return result;
     }
@@ -87,10 +91,13 @@ public class InvariantService implements IInvariantService {
     public HashMap<String, String> readToHashMapGp1StringByIdname(String idName, String defaultValue) {
         HashMap<String, String> result = new HashMap<>();
 
-        AnswerList<Invariant> answer = readByIdname(idName); //TODO: handle if the response does not turn ok
-        for (Invariant inv : (List<Invariant>) answer.getDataList()) {
-            String gp1 = ParameterParserUtil.parseStringParam(inv.getGp1(), defaultValue);
-            result.put(inv.getValue(), gp1);
+        try {
+            for (Invariant inv : readByIdName(idName)) {
+                String gp1 = ParameterParserUtil.parseStringParam(inv.getGp1(), defaultValue);
+                result.put(inv.getValue(), gp1);
+            }
+        } catch (CerberusException ex) {
+            LOG.error("Exception catched when getting invariant list.", ex);
         }
         return result;
     }
@@ -217,15 +224,19 @@ public class InvariantService implements IInvariantService {
     public String getPublicPrivateFilter(String filter) {
         String searchSQL = " 1=0 ";
 
-        AnswerList<Invariant> answer = this.readByIdname(filter);
-        List<Invariant> invPrivate = answer.getDataList();
+        List<Invariant> invPrivate;
+        try {
+            invPrivate = this.readByIdName(filter);
 
-        List<String> idnameList = null;
-        idnameList = new ArrayList<>();
-        for (Invariant toto : invPrivate) {
-            idnameList.add(toto.getValue());
+            List<String> idnameList = null;
+            idnameList = new ArrayList<>();
+            for (Invariant toto : invPrivate) {
+                idnameList.add(toto.getValue());
+            }
+            searchSQL = SqlUtil.createWhereInClause("idname", idnameList, true);
+        } catch (CerberusException ex) {
+            LOG.warn("JSON exception when getting Country List.", ex);
         }
-        searchSQL = SqlUtil.createWhereInClause("idname", idnameList, true);
 
         return searchSQL;
     }

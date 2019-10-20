@@ -132,6 +132,7 @@ public final class XmlUtil {
      * @author abourdon
      * @see https://www.ibm.com/developerworks/library/x-nmspccontext/#N10158
      */
+    @SuppressWarnings("unchecked")
     public static final class UniversalNamespaceCache implements NamespaceContext {
 
         /**
@@ -481,11 +482,15 @@ public final class XmlUtil {
     }
 
     /**
-     * Create a new {@link DocumentBuilder} according to the given configuration parameters
+     * Create a new {@link DocumentBuilder} according to the given configuration
+     * parameters
      *
-     * @param namespaceAwareness if the created {@link DocumentBuilder} has to be aware of namespaces
-     * @param ignoringComment    if the created {@link DocumentBuilder} has to ignore comments
-     * @return a new {@link DocumentBuilder} configured by the given configuration parameters
+     * @param namespaceAwareness if the created {@link DocumentBuilder} has to
+     * be aware of namespaces
+     * @param ignoringComment if the created {@link DocumentBuilder} has to
+     * ignore comments
+     * @return a new {@link DocumentBuilder} configured by the given
+     * configuration parameters
      */
     private static DocumentBuilder newDocumentBuilder(final boolean namespaceAwareness, final boolean ignoringComment) throws ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

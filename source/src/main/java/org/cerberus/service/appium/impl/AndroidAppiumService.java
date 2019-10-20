@@ -21,8 +21,9 @@ package org.cerberus.service.appium.impl;
 
 import com.google.common.collect.Lists;
 import io.appium.java_client.TouchAction;
-import io.appium.java_client.android.AndroidKeyCode;
 import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.nativekey.AndroidKey;
+import io.appium.java_client.android.nativekey.KeyEvent;
 import java.time.Duration;
 
 import io.appium.java_client.touch.WaitOptions;
@@ -78,16 +79,16 @@ public class AndroidAppiumService extends AppiumService {
     @Override
     public MessageEvent keyPress(Session session, String keyName) {
         // First, check if key name exists
-        KeyCode keyToPress;
+        KeyEventCrb keyToPress;
         try {
-            keyToPress = KeyCode.valueOf(keyName);
+            keyToPress = KeyEventCrb.valueOf(keyName);
         } catch (IllegalArgumentException e) {
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NOT_AVAILABLE).resolveDescription("KEY", keyName);
         }
 
         // Then press the key
         try {
-            ((AndroidDriver) session.getAppiumDriver()).pressKeyCode(keyToPress.getCode());
+            ((AndroidDriver) session.getAppiumDriver()).pressKey(new KeyEvent(keyToPress.getCode()));
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT).resolveDescription("KEY", keyName);
         } catch (Exception e) {
             LOG.warn("Unable to key press due to " + e.getMessage(), e);
@@ -118,21 +119,21 @@ public class AndroidAppiumService extends AppiumService {
     /**
      * Translator between Cerberus key names and Android key codes
      */
-    private enum KeyCode {
+    private enum KeyEventCrb {
 
-        RETURN(AndroidKeyCode.ENTER),
-        ENTER(AndroidKeyCode.ENTER),
-        SEARCH(AndroidKeyCode.KEYCODE_SEARCH),
-        BACKSPACE(AndroidKeyCode.BACKSPACE),
-        BACK(AndroidKeyCode.BACK); 
+        RETURN(AndroidKey.ENTER),
+        ENTER(AndroidKey.ENTER),
+        SEARCH(AndroidKey.SEARCH),
+        BACKSPACE(AndroidKey.DEL),
+        BACK(AndroidKey.BACK); 
 
-        private int code;
+        private AndroidKey code;
 
-        KeyCode(int code) {
+        KeyEventCrb(AndroidKey code) {
             this.code = code;
         }
 
-        public int getCode() {
+        public AndroidKey getCode() {
             return code;
         }
 

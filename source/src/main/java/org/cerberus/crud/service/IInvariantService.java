@@ -40,7 +40,6 @@ public interface IInvariantService {
      * @param idName
      * @return
      */
-    @Deprecated
     AnswerList<Invariant> readByIdname(String idName);
 
     /**

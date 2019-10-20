@@ -1105,11 +1105,13 @@ public class ActionService implements IActionService {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.MAC.toString())
                         || tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.IOS.toString())) {
                     return iosAppiumService.keyPress(tCExecution.getSession(), value2);
+                    
                 } else if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), objectIdentifier, value2, false, false);
                 }
                 if (objectIdentifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                     return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), objectIdentifier.getLocator(), value2);
+                    
                 } else {
                     identifierService.checkWebElementIdentifier(objectIdentifier.getIdentifier());
                     return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), objectIdentifier, value2, true, true);
