@@ -50,8 +50,7 @@ public interface IParameterDAO {
 
     /**
      *
-     * @return
-     * @throws CerberusException
+     * @return @throws CerberusException
      */
     List<Parameter> findAllParameter() throws CerberusException;
 
@@ -103,6 +102,15 @@ public interface IParameterDAO {
      */
     Parameter loadFromResultSet(ResultSet rs) throws SQLException;
 
+    /**
+     *
+     * @param system
+     * @param system1
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return
+     */
     AnswerList<String> readDistinctValuesWithSystem1ByCriteria(String system, String system1, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
@@ -120,4 +128,10 @@ public interface IParameterDAO {
      */
     Answer update(Parameter object);
 
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer create(Parameter object);
 }

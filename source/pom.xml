@@ -52,6 +52,8 @@
         <!-- Appium/Selenium scope Version -->
         <appium.version>7.0.0</appium.version>
         <selenium.version>3.14.0</selenium.version>
+<!--        <appium.version>7.2.0</appium.version>
+        <selenium.version>3.141.59</selenium.version>-->
         <jna.version>4.1.0</jna.version>
         <!-- Log4J Version -->
         <log4j.version>2.9.1</log4j.version>

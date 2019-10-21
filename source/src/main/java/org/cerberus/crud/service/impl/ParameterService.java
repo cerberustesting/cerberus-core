@@ -255,9 +255,18 @@ public class ParameterService implements IParameterService {
     }
 
     @Override
-    public Answer save(Parameter object) {
+    public Answer create(Parameter object) {
+        Answer answer = parameterDao.create(object);
+        if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getSource())) {
+            purgeCacheEntry(object.getParam());
+        }
+        return answer;
+    }
+
+    @Override
+    public Answer save(Parameter object, HttpServletRequest request) {
         Answer finalAnswer = new Answer();
-        if (!hasPermissionsUpdate(object, null)) {
+        if (!hasPermissionsUpdate(object, request)) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNAUTHORISED);
             msg.setDescription(msg.getDescription()
                     .replace("%ITEM%", "Parameter")
@@ -267,12 +276,15 @@ public class ParameterService implements IParameterService {
             LOG.warn("Attempt to modify Parameter '" + object.getParam() + "' to value '" + object.getValue() + "' refused !");
             return finalAnswer;
         }
-        AnswerItem resp = readByKey(object.getSystem(), object.getParam());
+        AnswerItem<Parameter> resp = readByKey(object.getSystem(), object.getParam());
         if (!MessageEventEnum.DATA_OPERATION_OK.equals(resp.getResultMessage().getSource())) {
             /**
              * Object could not be found. We stop here and report the error.
              */
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+
+        } else if (resp.getItem() == null) {
+            finalAnswer = create(object);
         } else if (!((object.getValue()).equals(((Parameter) resp.getItem()).getValue()))) {
             finalAnswer = update(object);
         } else {

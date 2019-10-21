@@ -117,11 +117,9 @@ public interface IParameterService {
 
     /**
      *
-     * @return
-     * @throws CerberusException
+     * @return @throws CerberusException
      */
     List<Parameter> findAllParameter() throws CerberusException;
-
 
     /**
      * Get the {@link Parameter} List of the given {@link System}
@@ -178,19 +176,25 @@ public interface IParameterService {
      */
     AnswerItem<Parameter> readByKey(String system, String param);
 
-
     /**
      * @param object the {@link Parameter} to Update
      * @return {@link AnswerItem}
      */
     Answer update(Parameter object);
 
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer create(Parameter object);
 
     /**
      * @param object the {@link Parameter} to Save
+     * @param request
      * @return {@link AnswerItem}
      */
-    Answer save(Parameter object);
+    Answer save(Parameter object, HttpServletRequest request);
 
     /**
      *
