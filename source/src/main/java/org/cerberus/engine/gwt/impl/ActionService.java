@@ -53,6 +53,7 @@ import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.appium.IAppiumService;
 import org.cerberus.service.appservice.IServiceService;
+import org.cerberus.service.cerberuscommand.ICerberusCommand;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.service.sikuli.impl.SikuliService;
@@ -98,6 +99,9 @@ public class ActionService implements IActionService {
     @Autowired
     @Qualifier("IOSAppiumService")
     private IAppiumService iosAppiumService;
+    @Autowired
+    @Qualifier("CerberusCommand")
+    private ICerberusCommand cerberusCommand;
     @Autowired
     private ISQLService sqlService;
     @Autowired
@@ -299,6 +303,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_EXECUTECOMMAND:
                     res = this.doActionExecuteCommand(tCExecution, value1, value2);
                     break;
+                case TestCaseStepAction.ACTION_EXECUTECERBERUSCOMMAND:
+                    res = this.doActionExecuteCerberusCommand(tCExecution, value1);
+                    break;
                 case TestCaseStepAction.ACTION_SCROLLTO:
                     res = this.doActionScrollTo(tCExecution, value1, value2);
                     break;
@@ -460,26 +467,7 @@ public class ActionService implements IActionService {
         MessageEvent message;
 
         try {
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                return androidAppiumService.executeCommand(tCExecution.getSession(), command, args);
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_BAT)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
-                if (tCExecution.getDescription().contains("[test command]")) {
-                    LOG.warn("executeCommand action has been launched in development mode, be aware when using this hidden feature");
-                    return executeCommand(command, args);
-                } else {
-                    message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-                    message.setDescription(message.getDescription().replace("%ACTION%", "executeCommand"));
-                    message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
-                    return message;
-                }
-            } else {
-                message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-                message.setDescription(message.getDescription().replace("%ACTION%", "executeCommand"));
-                message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
-                return message;
-            }
+            return androidAppiumService.executeCommand(tCExecution.getSession(), command, args);
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
             String messageString = e.getMessage().split("\n")[0];
@@ -489,81 +477,19 @@ public class ActionService implements IActionService {
         }
     }
 
-    /**
-     * This method can be used in order to execute a script that is located on
-     * the application server.
-     *
-     * @param command script file name (with extention)
-     * @param args (optionnal) arguments
-     *
-     * @return
-     */
-    private MessageEvent executeCommand(String command, String args) {
+    private MessageEvent doActionExecuteCerberusCommand(TestCaseExecution tCExecution, String command) {
+
+        LOG.warn("PASSAGE PAR DOACTIONEXECUTECERBERUSCOMMAND");
 
         MessageEvent message;
 
-        String scriptFeatureEnable = parameterService.getParameterStringByKey("cerberus_script_feature_enable", "", "Y");
-
-        if (scriptFeatureEnable.equals("Y")) {
-
-            // cerberus parameters check
-            String scriptFolder = parameterService.getParameterStringByKey("cerberus_script_folder", "", "CerberusScripts");
-            String scriptUser = parameterService.getParameterStringByKey("cerberus_script_user", "", "cerberus");
-            String scriptPassword = parameterService.getParameterStringByKey("cerberus_script_password", "", "scripts");
-
-            // command and args check
-            if (command.isEmpty()) {
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
-                message.setDescription(message.getDescription().replace("%EXCEPTION%", "no command defined"));
-                return message;
-            } else {
-                // array of string to be passed to the processBuilder
-                String[] commandToRun;
-
-                boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
-                if (1 == 2) {
-                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_NOTSUPPORTED_FOR_OS);
-                    message.setDescription(message.getDescription().replace("%OS%", System.getProperty("os.name")));
-                    return message;
-                } else {
-                    String firstChar = Character.toString(command.charAt(0));
-                    // secure the command
-                    if (firstChar.equalsIgnoreCase("/")) {
-                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_ILLEGALSTART);
-                        message.setDescription(message.getDescription().replace("%FIRST_CHAR%", firstChar));
-                        return message;
-                    }
-                    commandToRun = new String[]{"bash", "-c", "echo -n \"" + scriptPassword + "\" | su - " + scriptUser + " -c \"bash /" + scriptFolder + "/" + command + "\""};
-                }
-
-                try {
-                    ProcessBuilder processBuilder = new ProcessBuilder(commandToRun);
-                    Process process = processBuilder.start();
-                    StringBuilder output = new StringBuilder();
-                    BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(process.getInputStream()));
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        output.append(line).append("\n");
-                    }
-                    int exitVal = process.waitFor();
-                    if (exitVal == 0) {
-                        message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTECOMMAND);
-                        message.setDescription(message.getDescription().replace("%LOG%", command + " Output : " + output));
-                        return message;
-                    } else {
-                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
-                        message.setDescription(message.getDescription().replace("%EXCEPTION%", command));
-                        return message;
-                    }
-                } catch (IOException | InterruptedException e) {
-                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
-                    message.setDescription(message.getDescription().replace("%EXCEPTION%", e.toString()));
-                    return message;
-                }
-            }
-        } else {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_DISABLED);
+        try {
+            LOG.warn("executeCerberusCommand action has been launched in development mode, be aware when using this hidden feature");
+            LOG.warn("LANCEMENT DE L'ACTION CERBERUS COMMAND");
+            return cerberusCommand.executeCommand(command);
+        } catch (CerberusEventException e) {
+            message = e.getMessageError();
+            LOG.debug("Exception Running Shell :" + message.getMessage().getDescription());
             return message;
         }
     }
@@ -1105,13 +1031,13 @@ public class ActionService implements IActionService {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.MAC.toString())
                         || tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.IOS.toString())) {
                     return iosAppiumService.keyPress(tCExecution.getSession(), value2);
-                    
+
                 } else if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), objectIdentifier, value2, false, false);
                 }
                 if (objectIdentifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                     return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), objectIdentifier.getLocator(), value2);
-                    
+
                 } else {
                     identifierService.checkWebElementIdentifier(objectIdentifier.getIdentifier());
                     return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), objectIdentifier, value2, true, true);

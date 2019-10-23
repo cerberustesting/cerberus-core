@@ -8226,6 +8226,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1439
         a.add("ALTER TABLE campaign ADD Group1 VARCHAR(100) NOT NULL DEFAULT '' AFTER LongDescription, ADD Group2 VARCHAR(100) NOT NULL DEFAULT '' AFTER Group1, ADD Group3 VARCHAR(100) NOT NULL DEFAULT '' AFTER Group2;");
 
+        // add new action executeCerberusCommand
+        // 1440
+        a.add("INSERT INTO invariant(idname, value, sort, description, VeryShortDesc) VALUES('ACTION', 'executeCerberusCommand', 6552, 'execute Cerberus command', 'execute Cerberus command');");
+
         return a;
     }
 

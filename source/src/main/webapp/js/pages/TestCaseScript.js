@@ -3089,6 +3089,7 @@ function editPropertiesModalSaveHandler() {
 }
 
 function setPlaceholderAction(actionElement) {
+    console.log("setPlaceholderAction");
     /**
      * Todo : GetFromDatabase
      */
@@ -3113,6 +3114,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "openUrl", "object": "URL à appeler (ex : http://www.domain.com)", "property": null},
             {"type": "executeJS", "object": "JavaScript à executer", "property": null},
             {"type": "executeCommand", "object": "Commande (ex : \"grep\")", "property": "Arguments (ex : \"--name toto\")"},
+            {"type": "executeCerberusCommand", "object": "Commande (ex : \"grep\")", "property": null},
             {"type": "openApp", "object": "Nom ou chemin de l'application, package pour android", "property": "[Optionnel, obligatoire pour Android] Activity"},
             {"type": "closeApp", "object": "Nom ou chemin de l'application", "property": null},
             {"type": "select", "object": "Chemin vers l'élement", "property": "Chemin vers l'option"},
@@ -3153,6 +3155,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "openUrl", "object": "URL to call (ex : http://www.domain.com)", "property": null},
             {"type": "executeJS", "object": "JavaScript to execute", "property": null},
             {"type": "executeCommand", "object": "Command (ex : \"grep\")", "property": "Arguments (ex : \"--name toto\")"},
+            {"type": "executeCerberusCommand", "object": "Command (ex : \"grep\")", "property": null},
             {"type": "openApp", "object": "Application name or path or package for Android", "property": "[Optional, required for Android] Activity"},
             {"type": "closeApp", "object": "Application name or path", "property": null},
             {"type": "select", "object": "Element path", "property": "Option path"},
