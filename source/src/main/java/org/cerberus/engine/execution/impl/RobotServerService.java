@@ -984,8 +984,12 @@ public class RobotServerService implements IRobotServerService {
     private void startRemoteProxy(TestCaseExecution tce) {
 
         String url = "http://" + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/startProxy";
+        if (tce.getRobotExecutorObj().getExecutorProxyPort() != 0) {
+            url += "?port=" + tce.getRobotExecutorObj().getExecutorProxyPort();
+        }
+        LOG.debug("Starting Proxy on Cerberus Executor calling : " + url);
 
-        try (InputStream is = new URL(url).openStream()) {
+        try ( InputStream is = new URL(url).openStream()) {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
             StringBuilder sb = new StringBuilder();
             int cp;
@@ -997,6 +1001,9 @@ public class RobotServerService implements IRobotServerService {
             JSONObject json = new JSONObject(jsonText);
             tce.setRemoteProxyPort(json.getInt("port"));
             tce.setRemoteProxyUUID(json.getString("uuid"));
+
+            LOG.debug("Cerberus Executor Proxy extention started on port : " + tce.getRemoteProxyPort() + " ( uuid : " + tce.getRemoteProxyUUID() + ")");
+
         } catch (Exception ex) {
             LOG.error("Exception Starting Remote Proxy " + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString(), ex);
         }
