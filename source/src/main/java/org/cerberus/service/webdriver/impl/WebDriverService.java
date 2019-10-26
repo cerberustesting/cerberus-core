@@ -549,11 +549,16 @@ public class WebDriverService implements IWebDriverService {
                 final WebElement webElement = (WebElement) answer.getItem();
 
                 if (webElement != null) {
-
-                    ((WebElement) answer.getItem()).click();
-//                    Actions actions = new Actions(session.getDriver());
-//                    actions.click(webElement);
-//                    actions.build().perform();
+                    /**
+                     * webElement.click(); did not provide good result
+                     * generating Selenium error : Element is not clickable at
+                     * point
+                     * https://github.com/cerberustesting/cerberus-source/issues/2030
+                     */
+//                    webElement.click();
+                    Actions actions = new Actions(session.getDriver());
+                    actions.click(webElement);
+                    actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
