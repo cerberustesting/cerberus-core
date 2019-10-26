@@ -1,7 +1,10 @@
 *Bug fixes*
 [square]
 * Fixed issue when saving a testcase that have properties declined on 2 different range of countries. #2021
-* Fixed an issue when a user is administror and tries to run a testcase that he does not have the corresponding system athorized.
+* Fixed an issue when a user is administrator and tries to run a testcase that he does not have the corresponding system athorized.
+* Fixed issue on selenium click (element is not clickable at point...) #2030
+* Fixed issue on parameter update
+* Removed a lot of compilation warnings.
 
 *Improvements / New features*
 [square]
