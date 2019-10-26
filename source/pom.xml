@@ -602,7 +602,7 @@
                 <configuration>
                     <failIfMissing>true</failIfMissing>
                     <!-- Due to https://issues.apache.org/jira/browse/MRELEASE-266, we cannot be strict as the maven-release-plugin is modifying license headers during process -->
-                    <strictCheck>true</strictCheck>
+                    <strictCheck>false</strictCheck>
                     <header>${basedir}/licenseheader.txt</header>
                     <includes>
                         <include>**/*.java</include>
