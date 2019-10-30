@@ -739,6 +739,17 @@ public class RobotServerService implements IRobotServerService {
 //                additionalCapabilities.add(factoryRobotCapability.create(0, "", ChromeOptions.CAPABILITY, options.toString()));
 
             } else if (browser.contains("android")) {
+                
+                // Launch the proxy with the settings specified in the robot options (executor)
+                // since proxy Settings is out the Appium's scope, you must set it manually on your device
+                // set the same port on device and robot
+                if ("Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                    this.startRemoteProxy(tCExecution);
+                    Proxy proxy = new Proxy();
+                    proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                    proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                }
+                
                 capabilities = DesiredCapabilities.android();
 
             } else if (browser.contains("ipad")) {
@@ -872,6 +883,7 @@ public class RobotServerService implements IRobotServerService {
                         && tce.getVerbose() >= 1) {
                     String url = "http://" + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + tce.getRemoteProxyUUID();
                     tce.addFileList(recorderService.recordHarLog(tce, url));
+                    LOG.debug("Retrieved Har file by calling : "+url);
                 }
             } catch (Exception ex) {
                 LOG.error("Exception Getting Har File from Cerberus Executor " + tce.getId(), ex);

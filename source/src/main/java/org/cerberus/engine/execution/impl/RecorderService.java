@@ -725,7 +725,8 @@ public class RecorderService implements IRecorderService {
     public TestCaseExecutionFile recordHarLog(TestCaseExecution testCaseExecution, String url) {
         TestCaseExecutionFile object = null;
 
-        if (testCaseExecution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
+        if (testCaseExecution.getApplicationObj().getType().equals(Application.TYPE_GUI)
+                || testCaseExecution.getApplicationObj().getType().equals(Application.TYPE_APK)) {
 
             if (testCaseExecution.getSeleniumLog() == 2 || (testCaseExecution.getSeleniumLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
                 LOG.debug("Starting to save Har log file.");
@@ -767,7 +768,7 @@ public class RecorderService implements IRecorderService {
                 }
             }
         } else {
-            LOG.debug("Har Log not recorded because test on non GUI application");
+            LOG.debug("Har Log not recorded because the test case isn't linked to a supported application type (GUI or APK)");
         }
         return object;
     }
