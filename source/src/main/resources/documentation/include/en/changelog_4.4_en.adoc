@@ -8,4 +8,5 @@
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* Selenium client moved to latest 3.141.59
+* Appium client moved to latest 7.2.0
