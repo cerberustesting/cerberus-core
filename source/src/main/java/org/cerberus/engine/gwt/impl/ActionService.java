@@ -134,6 +134,16 @@ public class ActionService implements IActionService {
             answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getDescription(),
                     tCExecution, testCaseStepActionExecution, false);
             testCaseStepActionExecution.setDescription((String) answerDecode.getItem());
+
+            if (!(answerDecode.isCodeStringEquals("OK"))) {
+                // If anything wrong with the decode --> we stop here with decode message in the action result.
+                testCaseStepActionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Description"));
+                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                testCaseStepActionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                testCaseStepActionExecution.setEnd(new Date().getTime());
+                LOG.debug("Action interupted due to decode 'Description' Error.");
+                return testCaseStepActionExecution;
+            }
         } catch (CerberusEventException cex) {
             testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
             testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));

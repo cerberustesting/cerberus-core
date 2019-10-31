@@ -21,5 +21,5 @@
 
 -->
 <Context path="/Cerberus">
-<!--      <Valve className="org.keycloak.adapters.tomcat.KeycloakAuthenticatorValve"/>-->
+  <Valve className="org.keycloak.adapters.tomcat.KeycloakAuthenticatorValve"/>
 </Context>

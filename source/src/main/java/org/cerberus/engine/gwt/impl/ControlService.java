@@ -99,6 +99,16 @@ public class ControlService implements IControlService {
             answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getDescription(),
                     tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
             testCaseStepActionControlExecution.setDescription((String) answerDecode.getItem());
+
+            if (!(answerDecode.isCodeStringEquals("OK"))) {
+                // If anything wrong with the decode --> we stop here with decode message in the control result.
+                testCaseStepActionControlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Description"));
+                testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                testCaseStepActionControlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                testCaseStepActionControlExecution.setEnd(new Date().getTime());
+                LOG.debug("Control interupted due to decode 'Description' Error.");
+                return testCaseStepActionControlExecution;
+            }
         } catch (CerberusEventException cex) {
             testCaseStepActionControlExecution.setControlResultMessage(cex.getMessageError());
             testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));

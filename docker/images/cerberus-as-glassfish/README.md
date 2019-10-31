@@ -11,6 +11,7 @@ Hereafter list of available tags:
 Tag     | Description                        | Source
 --------|------------------------------------|-------------------------------
 latest  | Use the latest Cerberus version    | [latest/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/latest/Dockerfile)
+4.3   | Use the 4.3 Cerberus version     | [4.3/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/4.3/Dockerfile)
 4.2   | Use the 4.2 Cerberus version     | [4.2/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/4.2/Dockerfile)
 4.2   | Use the 4.2 Cerberus version     | [4.2/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/4.2/Dockerfile)
 4.1   | Use the 4.1 Cerberus version     | [4.1/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/4.1/Dockerfile)

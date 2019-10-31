@@ -16,7 +16,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+    along with Cerberus.  If not, see <http://www.gnu.org/licenses />.
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -25,7 +25,7 @@
 
     <groupId>org.cerberus</groupId>
     <artifactId>cerberus</artifactId>
-    <version>4.3-SNAPSHOT</version>
+    <version>4.4-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>Cerberus</name>
@@ -578,7 +578,7 @@
                 <configuration>
                     <failIfMissing>true</failIfMissing>
                     <!-- Due to https://issues.apache.org/jira/browse/MRELEASE-266, we cannot be strict as the maven-release-plugin is modifying license headers during process -->
-                    <strictCheck>true</strictCheck>
+                    <strictCheck>false</strictCheck>
                     <header>${basedir}/licenseheader.txt</header>
                     <includes>
                         <include>**/*.java</include>
