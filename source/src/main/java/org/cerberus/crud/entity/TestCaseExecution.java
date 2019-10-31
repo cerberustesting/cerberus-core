@@ -149,6 +149,7 @@ public class TestCaseExecution {
     private long cerberus_featureflipping_websocketpushperiod;
     private long lastWebsocketPush;
     // Remote Proxy data.
+    private boolean remoteProxyStarted;
     private Integer remoteProxyPort;
     private String remoteProxyUUID;
     private String remoteProxyLastHarMD5;
@@ -184,6 +185,14 @@ public class TestCaseExecution {
     public static final String ROBOTPROVIDER_BROWSERSTACK = "BROWSERSTACK";
     public static final String ROBOTPROVIDER_KOBITON = "KOBITON";
     public static final String ROBOTPROVIDER_NONE = "NONE";
+
+    public boolean isRemoteProxyStarted() {
+        return remoteProxyStarted;
+    }
+
+    public void setRemoteProxyStarted(boolean remoteProxyStarted) {
+        this.remoteProxyStarted = remoteProxyStarted;
+    }
 
     public String getRobotSessionID() {
         return robotSessionID;

@@ -19,13 +19,11 @@
  */
 package org.cerberus.engine.gwt.impl;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -1009,19 +1007,13 @@ public class ActionService implements IActionService {
         try {
             String appType = tCExecution.getApplicationObj().getType();
             /**
-             * Check object and property are not null For IPA and APK, only
+             * Check value1 and value2 are not null For IPA and APK, only
              * value2 (key to press) is mandatory For GUI and FAT, both
              * parameters are mandatory
              */
-//            if (appType.equalsIgnoreCase(Application.TYPE_APK) || appType.equalsIgnoreCase(Application.TYPE_IPA)) {
             if (StringUtil.isNullOrEmpty(value2)) {
                 return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_MISSINGKEY).resolveDescription("APPLICATIONTYPE", appType);
             }
-//            } else if (appType.equalsIgnoreCase(Application.TYPE_GUI) || appType.equalsIgnoreCase(Application.TYPE_FAT)) {
-//                if (StringUtil.isNullOrEmpty(value1) || StringUtil.isNullOrEmpty(value2)) {
-//                    return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS);
-//                }
-//            }
             /**
              * Get Identifier (identifier, locator)
              */

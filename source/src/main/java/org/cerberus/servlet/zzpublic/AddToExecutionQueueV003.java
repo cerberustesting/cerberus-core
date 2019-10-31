@@ -104,7 +104,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     private static final String PARAMETER_EXECUTOR = "executor";
 
     private static final String DEFAULT_VALUE_TAG = "";
-    private static final int DEFAULT_VALUE_SCREENSHOT = 0;
+    private static final int DEFAULT_VALUE_SCREENSHOT = 1;
     private static final int DEFAULT_VALUE_MANUAL_URL = 0;
     private static final int DEFAULT_VALUE_VERBOSE = 1;
     private static final long DEFAULT_VALUE_TIMEOUT = 300;

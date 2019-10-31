@@ -114,7 +114,7 @@ public interface IWebDriverService {
 
     MessageEvent doSeleniumActionWaitVanish(Session session, Identifier identifier);
 
-    MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String property, boolean waitForVisibility, boolean waitForClickability);
+    MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String keyToPress, boolean waitForVisibility, boolean waitForClickability);
 
     MessageEvent doSeleniumActionOpenURL(Session session, String host, Identifier identifier, boolean withBase);
 

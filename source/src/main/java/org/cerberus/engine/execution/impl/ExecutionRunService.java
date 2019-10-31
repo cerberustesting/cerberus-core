@@ -1490,26 +1490,18 @@ public class ExecutionRunService implements IExecutionRunService {
             default:
         }
 
-//        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-//                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-//                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-//            try {
-//                this.robotServerService.stopServer(tCExecution);
-//                if (LOG.isDebugEnabled()) {
-//                    LOG.debug("Stop server for execution " + tCExecution.getId());
-//                }
-//            } catch (WebDriverException exception) {
-//                LOG.warn("Selenium didn't manage to close connection for execution " + tCExecution.getId() + " due to " + exception.toString(), exception);
-//            }
-//        }
-//        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-//            if (LOG.isDebugEnabled()) {
-//                LOG.debug("Stop Sikuli server for execution " + tCExecution.getId() + " closing application " + tCExecution.getCountryEnvironmentParameters().getIp());
-//            }
-//            if (!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getIp())) {
-//                this.sikuliService.doSikuliActionCloseApp(tCExecution.getSession(), tCExecution.getCountryEnvironmentParameters().getIp());
-//            }
-//        }
+        /**
+         * Stopping remote proxy.
+         */
+        try {
+            this.robotServerService.stopRemoteProxy(tCExecution);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Stop Cerberus Executor Proxy for execution " + tCExecution.getId());
+            }
+        } catch (Exception exception) {
+            LOG.warn("Exception on Cerberus Executor Proxy stop for execution " + tCExecution.getId(), exception);
+        }
+
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         updateTCExecutionWebSocketOnly(tCExecution, false);
 

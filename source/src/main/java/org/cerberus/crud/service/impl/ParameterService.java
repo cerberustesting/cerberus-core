@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ConcurrentModificationException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -68,14 +69,20 @@ public class ParameterService implements IParameterService {
             cacheEntry.clear();
             LOG.debug("All Parameter cache entries purged.");
         } else {
-            for (Map.Entry<String, Parameter> entry : cacheEntry.entrySet()) {
-                String key = entry.getKey();
-                Parameter value = entry.getValue();
-                if (parameter == null || key.contains(parameter)) {
-                    cacheEntry.remove(key);
-                    LOG.debug("Purged Parameter " + key + " from cache entries.");
+            try {
+                for (Map.Entry<String, Parameter> entry : cacheEntry.entrySet()) {
+                    String key = entry.getKey();
+                    Parameter value = entry.getValue();
+                    if (parameter == null || key.contains(parameter)) {
+                        cacheEntry.remove(key);
+                        LOG.debug("Purged Parameter " + key + " from cache entries.");
 
+                    }
                 }
+            } catch (ConcurrentModificationException e) {
+                // If we failed to removed the parameter entries (ConcurrentModificationException) , we purge everything ;-).
+                cacheEntry.clear();
+                LOG.debug("All Parameter cache entries purged. (specific parameter execution failed).");
             }
         }
     }

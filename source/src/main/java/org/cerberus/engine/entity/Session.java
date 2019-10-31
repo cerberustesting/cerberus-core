@@ -20,8 +20,8 @@
 package org.cerberus.engine.entity;
 
 import io.appium.java_client.AppiumDriver;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
  *
@@ -44,7 +44,7 @@ public class Session {
     private Integer cerberus_appium_action_longpress_wait;
     private boolean started;
     private boolean cerberus_selenium_autoscroll;
-    private DesiredCapabilities desiredCapabilities;
+    private MutableCapabilities desiredCapabilities;
 
     public Integer getCerberus_selenium_pageLoadTimeout() {
         return cerberus_selenium_pageLoadTimeout;
@@ -94,11 +94,11 @@ public class Session {
         this.appiumDriver = appiumDriver;
     }
 
-    public DesiredCapabilities getDesiredCapabilities() {
+    public MutableCapabilities getDesiredCapabilities() {
         return desiredCapabilities;
     }
 
-    public void setDesiredCapabilities(DesiredCapabilities capabilities) {
+    public void setDesiredCapabilities(MutableCapabilities capabilities) {
         this.desiredCapabilities = capabilities;
     }
 

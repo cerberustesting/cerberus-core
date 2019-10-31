@@ -550,11 +550,18 @@ public class ExecutionStartService implements IExecutionStartService {
                     LOG.debug("Starting to Stop the Selenium Server.");
                     this.serverService.stopServer(tCExecution);
                     LOG.debug("Selenium Server stopped.");
+                    this.serverService.stopRemoteProxy(tCExecution);
+
                 }
             } catch (Exception ex) {
                 LOG.warn(ex.toString(), ex);
             }
         }
+
+        /**
+         * Stop the Cerberus Executor Proxy
+         */
+        this.serverService.stopRemoteProxy(tCExecution);
 
         /**
          * Feature Flipping. Should be removed when websocket push is fully

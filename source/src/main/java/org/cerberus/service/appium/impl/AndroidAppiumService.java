@@ -55,19 +55,20 @@ public class AndroidAppiumService extends AppiumService {
      * Associated {@link Logger} to this class
      */
     private static final Logger LOG = LogManager.getLogger(IOSAppiumService.class);
-    
+
     @Autowired
     private ParameterService parameters;
-    
+
     /**
      * The Appium swipe duration parameter which is got thanks to the
      * {@link ParameterService}
      */
     private static final String CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER = "cerberus_appium_swipe_duration";
-    
+
     /**
      * The default Appium swipe duration if no
-     * {@link AppiumService#CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER} has been defined
+     * {@link AppiumService#CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER} has been
+     * defined
      */
     private static final int DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION = 2000;
 
@@ -78,18 +79,15 @@ public class AndroidAppiumService extends AppiumService {
 
     @Override
     public MessageEvent keyPress(Session session, String keyName) {
-        // First, check if key name exists
-        KeyEventCrb keyToPress;
-        try {
-            keyToPress = KeyEventCrb.valueOf(keyName);
-        } catch (IllegalArgumentException e) {
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NOT_AVAILABLE).resolveDescription("KEY", keyName);
-        }
 
         // Then press the key
         try {
-            ((AndroidDriver) session.getAppiumDriver()).pressKey(new KeyEvent(keyToPress.getCode()));
+            ((AndroidDriver) session.getAppiumDriver()).pressKey(new KeyEvent(AndroidKey.valueOf(keyName)));
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT).resolveDescription("KEY", keyName);
+
+        } catch (IllegalArgumentException e) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NOT_AVAILABLE).resolveDescription("KEY", keyName);
+
         } catch (Exception e) {
             LOG.warn("Unable to key press due to " + e.getMessage(), e);
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_OTHER)
@@ -116,29 +114,6 @@ public class AndroidAppiumService extends AppiumService {
         }
     }
 
-    /**
-     * Translator between Cerberus key names and Android key codes
-     */
-    private enum KeyEventCrb {
-
-        RETURN(AndroidKey.ENTER),
-        ENTER(AndroidKey.ENTER),
-        SEARCH(AndroidKey.SEARCH),
-        BACKSPACE(AndroidKey.DEL),
-        BACK(AndroidKey.BACK); 
-
-        private AndroidKey code;
-
-        KeyEventCrb(AndroidKey code) {
-            this.code = code;
-        }
-
-        public AndroidKey getCode() {
-            return code;
-        }
-
-    }
-    
     @Override
     public MessageEvent swipe(Session session, SwipeAction action) {
         try {
@@ -152,12 +127,12 @@ public class AndroidAppiumService extends AppiumService {
                     = new TouchAction(session.getAppiumDriver()).press(PointOption.point(direction.getX1(), direction.getY1())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(duration == null ? DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue()))))
                             .moveTo(PointOption.point(direction.getX2(), direction.getY2())).release();
             dragNDrop.perform();
-                       
+
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE).resolveDescription("DIRECTION", action.getActionType().name());
         } catch (IllegalArgumentException e) {
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
-                            .resolveDescription("DIRECTION", action.getActionType().name())
-                            .resolveDescription("REASON", "Unknown direction");
+                    .resolveDescription("DIRECTION", action.getActionType().name())
+                    .resolveDescription("REASON", "Unknown direction");
         } catch (Exception e) {
             LOG.warn("Unable to swipe screen due to " + e.getMessage(), e);
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
@@ -169,7 +144,7 @@ public class AndroidAppiumService extends AppiumService {
     @Override
     public MessageEvent executeCommand(Session session, String cmd, String args) throws IllegalArgumentException {
         try {
-            String message = executeCommandString(session,cmd,args);
+            String message = executeCommandString(session, cmd, args);
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTECOMMAND).resolveDescription("LOG", message);
         } catch (Exception e) {
@@ -190,14 +165,15 @@ public class AndroidAppiumService extends AppiumService {
         String value = driver.executeScript("mobile: shell", argss).toString();
 
         // execute Script return an \n or \r\n sometimes, so we delete the last occurence of it
-        if(value.endsWith("\r\n"))
-            value = value.substring(0,value.lastIndexOf("\r\n"));
-        if(value.endsWith("\n"))
-            value = value.substring(0,value.lastIndexOf("\n"));
+        if (value.endsWith("\r\n")) {
+            value = value.substring(0, value.lastIndexOf("\r\n"));
+        }
+        if (value.endsWith("\n")) {
+            value = value.substring(0, value.lastIndexOf("\n"));
+        }
 
         return value;
     }
-
 
     @Override
     public MessageEvent installApp(Session session, String appPath) throws IllegalArgumentException {
@@ -219,7 +195,7 @@ public class AndroidAppiumService extends AppiumService {
         try {
             AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
 
-            if(driver.isAppInstalled(appPackage)) {
+            if (driver.isAppInstalled(appPackage)) {
                 driver.removeApp(appPackage);
             }
 
@@ -228,7 +204,8 @@ public class AndroidAppiumService extends AppiumService {
             LOG.warn("Unable to remove app " + e.getMessage(), e);
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
                     .resolveDescription("DETAIL", "Unable to remove app " + e.getMessage());
-        }    }
+        }
+    }
 
     @Override
     public MessageEvent openApp(Session session, String appPackage, String appActivity) {

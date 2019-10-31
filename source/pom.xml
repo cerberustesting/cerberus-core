@@ -50,10 +50,8 @@
         <groovy.version>2.4.7</groovy.version>
         <groovy-sandbox.version>1.10</groovy-sandbox.version>
         <!-- Appium/Selenium scope Version -->
-        <appium.version>7.0.0</appium.version>
-        <selenium.version>3.14.0</selenium.version>
-<!--        <appium.version>7.2.0</appium.version>
-        <selenium.version>3.141.59</selenium.version>-->
+        <appium.version>7.2.0</appium.version>
+        <selenium.version>3.141.59</selenium.version>
         <jna.version>4.1.0</jna.version>
         <!-- Log4J Version -->
         <log4j.version>2.9.1</log4j.version>
@@ -107,6 +105,7 @@
     </properties>
 
     <dependencies>
+        
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -139,6 +138,7 @@
             <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
+        
         <!-- JSON Lib -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -165,6 +165,7 @@
             <artifactId>jackson-mapper-asl</artifactId>
             <version>${jackson-mapper-asl.version}</version>
         </dependency>
+        
         <!-- Groovy -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
@@ -176,41 +177,12 @@
             <artifactId>groovy-sandbox</artifactId>
             <version>${groovy-sandbox.version}</version>
         </dependency>
+        
         <!-- Appium/Selenium scope -->
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
             <version>${appium.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>asm</groupId>
-                    <artifactId>asm</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>asm</groupId>
-                    <artifactId>asm-attrs</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>cglib</groupId>
-                    <artifactId>cglib</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>cglib</groupId>
-                    <artifactId>cglib</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-java</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-support</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -233,6 +205,7 @@
             <artifactId>jna-platform</artifactId>
             <version>${jna.version}</version>
         </dependency>
+        
         <!-- Log4J -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -249,12 +222,14 @@
             <artifactId>log4j-api</artifactId>
             <version>${log4j.version}</version>
         </dependency>
+        
         <!-- jsonpath -->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>${jsonxpath.version}</version>
         </dependency>
+        
         <!-- Compile scope -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -378,7 +353,7 @@
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj</artifactId>
             <version>${asciidoctor.version}</version>
-<!--            <exclusions>
+            <!--            <exclusions>
                 <exclusion>
                     <groupId>org.jruby</groupId>
                     <artifactId>jruby-complete</artifactId>
@@ -469,6 +444,7 @@
             <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
+        
     </dependencies>
 
     <build>

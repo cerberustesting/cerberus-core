@@ -35,19 +35,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.imageio.ImageIO;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
@@ -179,7 +173,7 @@ public class WebDriverService implements IWebDriverService {
     }
 
     private AnswerItem<WebElement> getSeleniumElement(Session session, Identifier identifier, boolean visible, boolean clickable) {
-        AnswerItem<WebElement> answer = new AnswerItem<WebElement>();
+        AnswerItem<WebElement> answer = new AnswerItem<>();
         MessageEvent msg;
         By locator = this.getBy(identifier);
         LOG.debug("Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
@@ -549,11 +543,16 @@ public class WebDriverService implements IWebDriverService {
                 final WebElement webElement = (WebElement) answer.getItem();
 
                 if (webElement != null) {
-
-                    ((WebElement) answer.getItem()).click();
-//                    Actions actions = new Actions(session.getDriver());
-//                    actions.click(webElement);
-//                    actions.build().perform();
+                    /**
+                     * webElement.click(); did not provide good result
+                     * generating Selenium error : Element is not clickable at
+                     * point
+                     * https://github.com/cerberustesting/cerberus-source/issues/2030
+                     */
+//                    webElement.click();
+                    Actions actions = new Actions(session.getDriver());
+                    actions.click(webElement);
+                    actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
@@ -1031,7 +1030,7 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String property, boolean waitForVisibility, boolean waitForClickability) {
+    public MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String keyToPress, boolean waitForVisibility, boolean waitForClickability) {
 
         MessageEvent message;
         try {
@@ -1040,10 +1039,10 @@ public class WebDriverService implements IWebDriverService {
                 if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                     WebElement webElement = (WebElement) answer.getItem();
                     if (webElement != null) {
-                        webElement.sendKeys(Keys.valueOf(property));
+                        webElement.sendKeys(Keys.valueOf(keyToPress));
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
                         message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-                        message.setDescription(message.getDescription().replace("%DATA%", property));
+                        message.setDescription(message.getDescription().replace("%DATA%", keyToPress));
                         return message;
                     }
 
@@ -1068,7 +1067,7 @@ public class WebDriverService implements IWebDriverService {
                     //gets the robot
                     Robot r = new Robot();
                     //converts the Key description sent through Cerberus into the AWT key code
-                    int keyCode = KeyCodeEnum.getAWTKeyCode(property);
+                    int keyCode = KeyCodeEnum.getAWTKeyCode(keyToPress);
 
                     if (keyCode != KeyCodeEnum.NOT_VALID.getKeyCode()) {
                         //if the code is valid then presses the key and releases the key
@@ -1082,10 +1081,10 @@ public class WebDriverService implements IWebDriverService {
                     } else {
                         //the key enterer is not valid
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NOT_AVAILABLE);
-                        LOG.debug("Key " + property + "is not available in the current environment");
+                        LOG.debug("Key " + keyToPress + "is not available in the current environment");
                     }
 
-                    message.setDescription(message.getDescription().replace("%KEY%", property));
+                    message.setDescription(message.getDescription().replace("%KEY%", keyToPress));
 
                 } catch (AWTException ex) {
                     LOG.warn(ex);

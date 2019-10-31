@@ -404,7 +404,7 @@ public class RecorderService implements IRecorderService {
 
             File file = new File(recorder.getFullFilename());
 
-            try (FileOutputStream fileOutputStream = new FileOutputStream(file);) {
+            try ( FileOutputStream fileOutputStream = new FileOutputStream(file);) {
                 fileOutputStream.write(this.webdriverService.getPageSource(testCaseExecution.getSession()).getBytes());
                 fileOutputStream.close();
 
@@ -685,7 +685,7 @@ public class RecorderService implements IRecorderService {
 
                     File file = new File(recorder.getFullFilename());
 
-                    try (FileOutputStream fileOutputStream = new FileOutputStream(file);) {
+                    try ( FileOutputStream fileOutputStream = new FileOutputStream(file);) {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         DataOutputStream out = new DataOutputStream(baos);
                         for (String element : this.webdriverService.getSeleniumLog(testCaseExecution.getSession())) {
@@ -725,49 +725,45 @@ public class RecorderService implements IRecorderService {
     public TestCaseExecutionFile recordHarLog(TestCaseExecution testCaseExecution, String url) {
         TestCaseExecutionFile object = null;
 
-        if (testCaseExecution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
+        if (testCaseExecution.getSeleniumLog() == 2
+                || (testCaseExecution.getSeleniumLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
+            LOG.debug("Starting to save Har log file.");
 
-            if (testCaseExecution.getSeleniumLog() == 2 || (testCaseExecution.getSeleniumLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
-                LOG.debug("Starting to save Har log file.");
+            try {
+                Recorder recorder = this.initFilenames(testCaseExecution.getId(), null, null, null, null, null, null, null, 0, "har_log", "json", false);
 
-                try {
-                    Recorder recorder = this.initFilenames(testCaseExecution.getId(), null, null, null, null, null, null, null, 0, "har_log", "json", false);
+                File dir = new File(recorder.getFullPath());
+                dir.mkdirs();
 
-                    File dir = new File(recorder.getFullPath());
-                    dir.mkdirs();
+                File file = new File(recorder.getFullFilename());
 
-                    File file = new File(recorder.getFullFilename());
+                try ( InputStream initialStream = new URL(url).openStream();  OutputStream outStream = new FileOutputStream(file)) {
 
-                    try (InputStream initialStream = new URL(url).openStream(); OutputStream outStream = new FileOutputStream(file)) {
-
-                        byte[] buffer = new byte[8 * 1024];
-                        int bytesRead;
-                        while ((bytesRead = initialStream.read(buffer)) != -1) {
-                            outStream.write(buffer, 0, bytesRead);
-                        }
-                        //IOUtils.closeQuietly(initialStream);
-                        //IOUtils.closeQuietly(outStream);
-
-                        LOG.info("File saved : " + recorder.getFullFilename());
-
-                        // Index file created to database.
-                        object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Har log", recorder.getRelativeFilenameURL(), "JSON", "", null, "", null);
-                        testCaseExecutionFileService.save(object);
-
-                    } catch (FileNotFoundException ex) {
-                        LOG.error("Exception in Har log recording.", ex);
-                    } catch (IOException ex) {
-                        LOG.error("Exception in Har log recording.", ex);
+                    byte[] buffer = new byte[8 * 1024];
+                    int bytesRead;
+                    while ((bytesRead = initialStream.read(buffer)) != -1) {
+                        outStream.write(buffer, 0, bytesRead);
                     }
+                    //IOUtils.closeQuietly(initialStream);
+                    //IOUtils.closeQuietly(outStream);
 
-                    LOG.debug("Har log recorded in : " + recorder.getRelativeFilenameURL());
+                    LOG.info("File saved : " + recorder.getFullFilename());
 
-                } catch (CerberusException ex) {
+                    // Index file created to database.
+                    object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Har log", recorder.getRelativeFilenameURL(), "JSON", "", null, "", null);
+                    testCaseExecutionFileService.save(object);
+
+                } catch (FileNotFoundException ex) {
+                    LOG.error("Exception in Har log recording.", ex);
+                } catch (IOException ex) {
                     LOG.error("Exception in Har log recording.", ex);
                 }
+
+                LOG.debug("Har log recorded in : " + recorder.getRelativeFilenameURL());
+
+            } catch (CerberusException ex) {
+                LOG.error("Exception in Har log recording.", ex);
             }
-        } else {
-            LOG.debug("Har Log not recorded because test on non GUI application");
         }
         return object;
     }
@@ -814,7 +810,7 @@ public class RecorderService implements IRecorderService {
             dir.mkdirs();
         }
 
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dir.getAbsolutePath() + File.separator + fileName), StandardCharsets.UTF_8));) {
+        try ( BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dir.getAbsolutePath() + File.separator + fileName), StandardCharsets.UTF_8));) {
             writer.write(content);
             writer.close();
             LOG.info("File saved : " + path + File.separator + fileName);
