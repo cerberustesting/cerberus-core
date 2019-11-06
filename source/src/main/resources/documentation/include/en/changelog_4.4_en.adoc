@@ -4,9 +4,12 @@
 
 *Improvements / New features*
 [square]
-* none
+* Improved error message when could not connect to Cerberus Executor.
+* Starting Cerberus Executor Proxy no matter application type.
+* Secured to close Cerberus Executor Proxy at the end of each execution (even when selenium server fail).
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * Selenium client moved to latest 3.141.59
 * Appium client moved to latest 7.2.0
+

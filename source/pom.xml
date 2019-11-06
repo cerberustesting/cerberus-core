@@ -420,7 +420,7 @@
         </dependency>
         
         <!-- Test scope -->
-        <dependency>
+<!--        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
@@ -443,7 +443,7 @@
             <artifactId>powermock-api-mockito</artifactId>
             <version>${powermock.version}</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         
     </dependencies>
 
