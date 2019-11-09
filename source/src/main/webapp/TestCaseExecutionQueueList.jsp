@@ -95,14 +95,21 @@
 
                             <div class="panel panel-default"  id="QueueJobActive" style="padding:10px;background-color: #fafafa;">
                                 <div class="row">
-                                    <div class="form-group col-sm-6">
+                                    <div class="form-group col-sm-5">
                                         <label for="jobActive" name="jobActiveField">Job Activated</label>
                                         <input type="text" class="form-control" name="jobActive" id="jobActive" aria-describedby="basic-addon1" readonly>
+                                    </div>
+                                    <div class="form-group col-sm-1">
+                                        <h2 id="jobActiveStatus" class="glyphicon pull-left text-info" style="font-size:3em"></h2>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="instanceJobActive" name="jobActiveField">Instance Job Activated</label>
+                                        <input type="text" class="form-control" name="instanceJobActive" id="instanceJobActive" aria-describedby="basic-addon1" readonly>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-sm-6">
-                                        <button type="button" class="btn btn-default" style="margin-left: 10px;" id="modifyParambutton" onclick="enableDisableJob();"><span class="glyphicon glyphicon-play"></span> <span class="glyphicon glyphicon-pause"></span> Modify Parameter in order to Activate / Desactivate Queue Job</button>
+                                        <button type="button" class="btn btn-default" style="margin-left: 10px;" id="modifyParambutton" onclick="enableDisableJob();"><span class="glyphicon glyphicon-play"></span> <span class="glyphicon glyphicon-pause"></span> Activate / Desactivate Queue Job</button>
                                     </div>
                                 </div>
                             </div>

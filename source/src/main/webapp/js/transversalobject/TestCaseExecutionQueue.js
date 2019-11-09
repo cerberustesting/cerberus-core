@@ -566,9 +566,21 @@ function robot_change() {
 }
 
 function enableDisableJob() {
-    openModalParameter('cerberus_queueexecution_enable', getSys());
+    var newValue = "N";
+    var curValue = $('#jobActive').val();
+    if (curValue === "true") {
+        newValue = "N";
+    } else {
+        newValue = "Y";
+    }
+    var jqxhr = $.getJSON("UpdateParameter", "id=cerberus_queueexecution_enable&value=" + newValue + "&system1=" + getUser().defaultSystem);
+    $.when(jqxhr).then(function (data) {
+        displayAndRefresh_jobStatus();
+    });
+
+
+//    openModalParameter('cerberus_queueexecution_enable', getSys());
     // Trap closure of modal in order to trigger that refresh.
-    displayAndRefresh_jobStatus();
 }
 
 

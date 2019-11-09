@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.crud.testexecution;
+package org.cerberus.servlet.administration;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -55,13 +55,13 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author abourdon
  */
-@WebServlet(name = "ExecuteNextInQueue", urlPatterns = {"/ExecuteNextInQueue"})
-public class ExecuteNextInQueue extends HttpServlet {
+@WebServlet(name = "GetExecutionsInQueue", urlPatterns = {"/GetExecutionsInQueue"})
+public class GetExecutionsInQueue extends HttpServlet {
 
     /**
      * The associated {@link Logger} to this class
      */
-    private static final Logger LOG = LogManager.getLogger(ExecuteNextInQueue.class);
+    private static final Logger LOG = LogManager.getLogger(GetExecutionsInQueue.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -69,6 +69,7 @@ public class ExecuteNextInQueue extends HttpServlet {
     private IMyVersionService myVersionService;
     private IParameterService parameterService;
     private ITestCaseExecutionQueueService testCaseExectionQueueService;
+    private IExecutionThreadPoolService executionThreadPoolService;
 
     @Override
     public void init() throws ServletException {
@@ -77,6 +78,7 @@ public class ExecuteNextInQueue extends HttpServlet {
         myVersionService = appContext.getBean(IMyVersionService.class);
         parameterService = appContext.getBean(IParameterService.class);
         testCaseExectionQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
+        executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
     }
 
     @Override
@@ -115,8 +117,10 @@ public class ExecuteNextInQueue extends HttpServlet {
             String jobStart = myVersionService.getMyVersionStringByKey("queueprocessingjobstart", "");
             jsonResponse.put("jobStart", jobStart);
 
-            String jobActive = parameterService.getParameterStringByKey("cerberus_queueexecution_enable", "", "Y");
+            boolean jobActive = parameterService.getParameterBooleanByKey("cerberus_queueexecution_enable", "", true);
             jsonResponse.put("jobActive", jobActive);
+
+            jsonResponse.put("executionThreadPoolInstanceActive", executionThreadPoolService.isInstanceActive());
 
             jsonResponse.put("jobActiveHasPermissionsUpdate", parameterService.hasPermissionsUpdate("cerberus_queueexecution_enable", request));
 

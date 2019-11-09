@@ -462,8 +462,8 @@ public class RobotServerService implements IRobotServerService {
             mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort()));
             throw new CerberusException(mes, exception);
         } catch (UnreachableBrowserException exception) {
-            LOG.error("Could not connect to : " + tCExecution.getSeleniumIP() + ":" + tCExecution.getSeleniumPort());
-            LOG.error("UnreachableBrowserException catched.", exception);
+            LOG.warn("Could not connect to : " + tCExecution.getSeleniumIP() + ":" + tCExecution.getSeleniumPort());
+//            LOG.error("UnreachableBrowserException catched.", exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
             mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
             mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));

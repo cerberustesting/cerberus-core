@@ -33,8 +33,10 @@ import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.factory.IFactoryParameter;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -53,6 +55,8 @@ public class ParameterService implements IParameterService {
     private IParameterDAO parameterDao;
     @Autowired
     private IFactoryParameter factoryParameter;
+    @Autowired
+    private IExecutionThreadPoolService executionThreadPoolService;
 
     private HashMap<String, Parameter> cacheEntry = new HashMap<>();
 
@@ -256,7 +260,19 @@ public class ParameterService implements IParameterService {
     public Answer update(Parameter object) {
         Answer answer = parameterDao.update(object);
         if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getSource())) {
+
+            // A parameter is changed so we purge the cache.
             purgeCacheEntry(object.getParam());
+
+            // If we activate the parameter to active the job, we trigger it directly.
+            if (Parameter.VALUE_cerberus_queueexecution_enable.equals(object.getParam()) && ParameterParserUtil.parseBooleanParam(object.getValue(), false)) {
+                try {
+                    // Run the Execution pool Job.
+                    executionThreadPoolService.executeNextInQueueAsynchroneously(false);
+                } catch (CerberusException ex) {
+                    LOG.error("Exeption triggering the ThreadPool job.", ex);
+                }
+            }
         }
         return answer;
     }

@@ -124,13 +124,22 @@ function displayAndRefresh_jobStatus() {
     showLoader('#QueueJobStatus');
     showLoader('#QueueJobActive');
 
-    var jqxhr = $.getJSON("ExecuteNextInQueue");
+    var jqxhr = $.getJSON("GetExecutionsInQueue");
     $.when(jqxhr).then(function (data) {
         var obj = data;
 
         $("#jobRunning").val(data["jobRunning"]);
         $("#jobStart").val(data["jobStart"]);
-        $("#jobActive").val(data["jobActive"]);
+        $("#jobActive").val(data["jobActive"].toString());
+        $("#instanceJobActive").val(data["executionThreadPoolInstanceActive"].toString());
+        console.log("toto" + data["jobActive"].toString());
+        if (data["jobActive"]) {
+            $("#jobActiveStatus").removeClass("glyphicon-pause blink");
+            $("#jobActiveStatus").addClass("glyphicon-refresh spin");
+        } else {
+            $("#jobActiveStatus").removeClass("glyphicon-refresh spin");
+            $("#jobActiveStatus").addClass("glyphicon-pause blink");
+        }
 
         if (data["jobActiveHasPermissionsUpdate"]) {
             $("#modifyParambutton").attr("disabled", false);
@@ -146,13 +155,9 @@ function displayAndRefresh_jobStatus() {
 
 function forceExecution() {
 
-    var jqxhr = $.getJSON("ExecuteNextInQueue?forceExecution=Y");
+    var jqxhr = $.getJSON("GetExecutionsInQueue?forceExecution=Y");
     $.when(jqxhr).then(function (data) {
         var obj = data;
-
-        $("#jobRunning").val(data["jobRunning"]);
-        $("#jobStart").val(data["jobStart"]);
-        $("#jobActive").val(data["jobActive"]);
 
         displayAndRefresh_jobStatus();
 
