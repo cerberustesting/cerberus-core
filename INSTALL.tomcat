@@ -49,6 +49,9 @@ In conf folder, in 'server.xml' add the following sections (remove mariadb/mysql
             roleNameCol="GroupName">
             <CredentialHandler className="org.apache.catalina.realm.MessageDigestCredentialHandler" algorithm="SHA-1" />
         </Realm>
+		
+Warning : your url could running on other device than localhost, in this case changed localhost by your SGBD device URL
+For docker users : used default machine docker URL when your container run with another system than hyper v (virtualbox for example)
 
 In conf folder, in 'context.xml' add the following sections :
 
