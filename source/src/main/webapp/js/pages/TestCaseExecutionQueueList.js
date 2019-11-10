@@ -132,13 +132,15 @@ function displayAndRefresh_jobStatus() {
         $("#jobStart").val(data["jobStart"]);
         $("#jobActive").val(data["jobActive"].toString());
         $("#instanceJobActive").val(data["executionThreadPoolInstanceActive"].toString());
-        console.log("toto" + data["jobActive"].toString());
         if (data["jobActive"]) {
             $("#jobActiveStatus").removeClass("glyphicon-pause blink");
             $("#jobActiveStatus").addClass("glyphicon-refresh spin");
+            $("#modifyParambutton").html("<span class='glyphicon glyphicon-pause'></span> Stop Queue Job");
         } else {
             $("#jobActiveStatus").removeClass("glyphicon-refresh spin");
             $("#jobActiveStatus").addClass("glyphicon-pause blink");
+            $("#modifyParambutton").html("<span class='glyphicon glyphicon-play'></span> Start Queue Job");
+            
         }
 
         if (data["jobActiveHasPermissionsUpdate"]) {

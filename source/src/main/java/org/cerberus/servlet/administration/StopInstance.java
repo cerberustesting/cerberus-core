@@ -28,10 +28,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.service.IMyVersionService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.database.IDatabaseVersioningService;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
-import org.cerberus.version.Infos;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -47,6 +47,7 @@ public class StopInstance extends HttpServlet {
     private static final Logger LOG = LogManager.getLogger(StopInstance.class);
     
     private IExecutionThreadPoolService executionThreadPoolService;
+    private IParameterService parameterService;
     
     private IDatabaseVersioningService databaseVersionService;
     private IMyVersionService myVersionService;
@@ -63,7 +64,6 @@ public class StopInstance extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        Infos infos = new Infos();
         JSONObject data = new JSONObject();
         
         response.setContentType("application/json");
@@ -74,6 +74,7 @@ public class StopInstance extends HttpServlet {
             ExecutionUUID euuid = appContext.getBean(ExecutionUUID.class);
             
             executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
+            parameterService = appContext.getBean(IParameterService.class);
 
             /**
              * We start to desactivte the instance to process queue and start
@@ -85,7 +86,7 @@ public class StopInstance extends HttpServlet {
              * We loop every second until maxIteration session in order to wait
              * until no more executions are running on that instance.
              */
-            int maxIteration = 300;
+            int maxIteration = parameterService.getParameterIntegerByKey("cerberus_stopinstance_timeout", "", 300);
             int cntIteration = 0;
             int pendingExecutionNb = euuid.size();
             while (pendingExecutionNb > 0 && cntIteration <= maxIteration) {

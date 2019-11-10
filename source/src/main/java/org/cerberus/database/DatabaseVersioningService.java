@@ -8230,6 +8230,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1440
         a.add("INSERT INTO invariant(idname, value, sort, description, VeryShortDesc) VALUES('ACTION', 'executeCerberusCommand', 6552, 'execute Cerberus command', 'execute Cerberus command');");
 
+        // Add the cerberus-stop
+        // 1441
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + "('', 'cerberus_stopinstance_timeout', '300', 'Integer value that correspond to the nb of s until the stopinstance servlet will stop waiting.');");
+
         return a;
     }
 

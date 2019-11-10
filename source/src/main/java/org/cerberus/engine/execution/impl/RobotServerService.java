@@ -314,11 +314,11 @@ public class RobotServerService implements IRobotServerService {
             AppiumDriver appiumDriver = null;
             switch (tCExecution.getApplicationObj().getType().toUpperCase()) {
                 case Application.TYPE_GUI:
-                    if (caps.getPlatform().is(Platform.ANDROID)) {
+                    if (caps.getPlatform() != null && caps.getPlatform().is(Platform.ANDROID)) {
                         // Appium does not support connection from HTTPCommandExecutor. When connecting from Executor, it stops to work after a couple of instructions.
                         appiumDriver = new AndroidDriver(url, caps);
                         driver = (WebDriver) appiumDriver;
-                    } else if (caps.getPlatform().is(Platform.IOS) || caps.getPlatform().is(Platform.MAC)) {
+                    } else if (caps.getPlatform() != null && (caps.getPlatform().is(Platform.IOS) || caps.getPlatform().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, caps);
                         driver = (WebDriver) appiumDriver;
                     } else {
@@ -738,7 +738,7 @@ public class RobotServerService implements IRobotServerService {
                     options.setHeadless(true);
                 }
                 // Add the WebDriver proxy capability.
-                if ("Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
                     Proxy proxy = new Proxy();
                     proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                     proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
@@ -750,7 +750,7 @@ public class RobotServerService implements IRobotServerService {
             } else if (browser.equalsIgnoreCase("IE")) {
                 InternetExplorerOptions options = new InternetExplorerOptions();
                 // Add the WebDriver proxy capability.
-                if ("Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
                     Proxy proxy = new Proxy();
                     proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                     proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
@@ -788,7 +788,7 @@ public class RobotServerService implements IRobotServerService {
                 }
 
                 // Add the WebDriver proxy capability.
-                if ("Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
                     Proxy proxy = new Proxy();
                     proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                     proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
@@ -803,7 +803,7 @@ public class RobotServerService implements IRobotServerService {
                 // Launch the proxy with the settings specified in the robot options (executor)
                 // since proxy Settings is out the Appium's scope, you must set it manually on your device
                 // set the same port on device and robot
-                if ("Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
                     this.startRemoteProxy(tCExecution);
                     Proxy proxy = new Proxy();
                     proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
@@ -1049,7 +1049,7 @@ public class RobotServerService implements IRobotServerService {
         }
         LOG.debug("Starting Proxy on Cerberus Executor calling : " + url);
 
-        try ( InputStream is = new URL(url).openStream()) {
+        try (InputStream is = new URL(url).openStream()) {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
             StringBuilder sb = new StringBuilder();
             int cp;

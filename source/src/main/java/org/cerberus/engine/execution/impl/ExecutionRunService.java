@@ -307,7 +307,8 @@ public class ExecutionRunService implements IExecutionRunService {
                             this.robotServerService.startServer(tCExecution);
                             LOG.debug(logPrefix + "Robot Server Started.");
                         } catch (CerberusException ex) {
-                            LOG.debug(logPrefix + ex.getMessageError().getDescription());
+                            // No need to report exception message as it will be catched and reported later
+                            // LOG.debug(logPrefix + ex.getMessageError().getDescription());
                             throw new CerberusException(ex.getMessageError(), ex);
                         }
 
@@ -344,7 +345,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     tCExecution.setVersion(caps.getVersion());
                     tCExecution.setPlatform(caps.getPlatform().toString());
                 } catch (Exception ex) {
-                    LOG.error(logPrefix + "Exception on selenium getting Used Capabilities :" + ex.toString(), ex);
+                    LOG.error(logPrefix + "Exception on Selenium getting Used Capabilities.", ex);
                 }
                 LOG.debug(logPrefix + "Selenium capabitities loaded.");
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
@@ -819,8 +820,7 @@ public class ExecutionRunService implements IExecutionRunService {
             MessageGeneral messageFin = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA);
             messageFin.setDescription(messageFin.getDescription() + " " + ex.getMessageError().getDescription());
             tCExecution.setResultMessage(messageFin);
-            tCExecution.setControlMessage(tCExecution.getControlMessage() + " Exception: " + ex);
-            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception : " + ex.toString());
+            LOG.debug(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " : " + ex.getMessageError().getDescription());
         } catch (Exception ex) {
             /**
              * If an exception is found, set the execution to FA and print the

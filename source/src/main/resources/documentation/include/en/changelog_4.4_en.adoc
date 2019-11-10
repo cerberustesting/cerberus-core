@@ -1,12 +1,16 @@
 *Bug fixes*
 [square]
-* none
+* Avoid null pointer Exception when robot not defined.
 
 *Improvements / New features*
 [square]
 * Improved error message when could not connect to Cerberus Executor.
 * Starting Cerberus Executor Proxy no matter application type.
 * Secured to close Cerberus Executor Proxy at the end of each execution (even when selenium server fail).
+* Cleaner error message (avoid duplicating the Selenium or Appium exception message when they occur)
+* Better UI on queue management screen. Allowing to start and stop queue management by a one click button.
+* New stopInstance servlet that allow to smoothly stop processing new execution in one instance before it gets restarted. Servlet timeout can now be setup with parameter 'cerberus_stopinstance_timeout' (default to 300 seconds)
+* Execution, Steps, Action and Control descriptions can now also be decoded from variables.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
