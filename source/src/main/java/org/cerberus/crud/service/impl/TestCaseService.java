@@ -281,10 +281,6 @@ public class TestCaseService implements ITestCaseService {
         return testCaseDao.deleteTestCase(testCase);
     }
 
-    @Override
-    public void updateTestCase(TestCase tc) throws CerberusException {
-        testCaseDao.updateTestCase(tc);
-    }
 
     @Override
     public String getMaxNumberTestCase(String test) {
