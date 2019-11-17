@@ -8235,6 +8235,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
                 + "('', 'cerberus_stopinstance_timeout', '300', 'Integer value that correspond to the nb of s until the stopinstance servlet will stop waiting.');");
 
+        // Add the manage servlet parameters
+        // 1442-1443
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + "('', 'cerberus_manage_token', LEFT(MD5(RAND()), 32), 'Token in order to secure public access to manage api.');");
+        a.add("UPDATE `parameter` SET `param` = 'cerberus_manage_timeout', `description` = 'Integer value that correspond to the nb of s until the manage servlet will stop waiting a clean stop of a global or instance stop.' WHERE (`param` = 'cerberus_stopinstance_timeout');");
+
         return a;
     }
 

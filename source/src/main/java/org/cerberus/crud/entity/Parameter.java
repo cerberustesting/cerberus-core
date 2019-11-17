@@ -57,6 +57,8 @@ public class Parameter {
     public static final String VALUE_cerberus_smtp_password = "cerberus_smtp_password";
     public static final String VALUE_cerberus_smtp_isSetTls = "cerberus_smtp_isSetTls";
     public static final String VALUE_cerberus_queueexecution_enable = "cerberus_queueexecution_enable";
+    public static final String VALUE_cerberus_manage_token = "cerberus_manage_token";
+    public static final String VALUE_cerberus_manage_timeout = "cerberus_manage_timeout";
 
     public static final String SECUREDPARAMINSQLCLAUSE = "(\"cerberus_accountcreation_defaultpassword\",\"cerberus_proxyauthentification_password\",\"cerberus_jenkinsadmin_password\",\"cerberus_smtp_password\")";
 

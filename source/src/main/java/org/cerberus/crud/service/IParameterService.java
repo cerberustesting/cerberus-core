@@ -183,6 +183,15 @@ public interface IParameterService {
     Answer update(Parameter object);
 
     /**
+     * @param parameterKey
+     * @param system
+     * @param value
+     * @return {@link AnswerItem}
+     */
+    Answer setParameter(String parameterKey, String system, String value);
+    
+    
+    /**
      *
      * @param object
      * @return

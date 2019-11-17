@@ -60,11 +60,11 @@ public class GetTestCasesV001 {
     /*
     * Response.Testcase object target is to construct testcase object formatted for webservice response
     * expected attributes is : test, testCase, description, application, status.
-    */
+     */
     public static class ResponseTC {
 
-        public static class TestCase implements Serializable{
-            
+        public static class TestCase implements Serializable {
+
             // TO DO : rework with auto generated serialization, this method should create bug when other object are import with same serialVersionUID
             private static final long serialVersionUID = 1L;
 
@@ -81,7 +81,7 @@ public class GetTestCasesV001 {
                 this.application = application;
                 this.status = status;
             }
-            
+
             public String getTest() {
                 return test;
             }
@@ -103,11 +103,11 @@ public class GetTestCasesV001 {
             }
         }
     }
-    
+
     protected String getVersion() {
         return VERSION;
     }
-    
+
     /*
      *method getTestCaseByApplication 
      *Called by user GET request
@@ -123,18 +123,18 @@ public class GetTestCasesV001 {
         Map<String, Object> mapResponse = new HashMap<>();
         try {
             if (!StringUtil.isNullOrEmpty(application)) {
-                    //Process to get testcase by application
-                    List<ResponseTC.TestCase> testCaseListResponse = new ArrayList<>();
-                    testCaseListResponse = findTestCasesByApplication(application, servletContext);
-                    mapResponse.put("testCases", testCaseListResponse);
-            }else{
-            //TO DO : rework for get same exception than GetTestCasesV000
-            mapResponse.put("Version", getVersion());    
-            mapResponse.put("Error", "no parameter application found");
+                //Process to get testcase by application
+                List<ResponseTC.TestCase> testCaseListResponse = new ArrayList<>();
+                testCaseListResponse = findTestCasesByApplication(application, servletContext);
+                mapResponse.put("testCases", testCaseListResponse);
+            } else {
+                //TO DO : rework for get same exception than GetTestCasesV000
+                mapResponse.put("Version", getVersion());
+                mapResponse.put("Error", "no parameter application found");
             }
-        }catch (Exception exception){
+        } catch (Exception exception) {
             //TO DO : rework for get same exception than GetTestCasesV000
-            mapResponse.put("Version", getVersion());    
+            mapResponse.put("Version", getVersion());
             mapResponse.put("Error", exception.getMessage());
         }
         //Final response send to client
@@ -152,9 +152,9 @@ public class GetTestCasesV001 {
     private List<ResponseTC.TestCase> findTestCasesByApplication(final String application, ServletContext servletContext) throws SinglePointHttpServlet.RequestProcessException {
         //Process to get testCase by application
         getTestCaseServiceFromSpring(servletContext);
-        List<ResponseTC.TestCase> response = new ArrayList();
+        List<ResponseTC.TestCase> response = new ArrayList<>();
         final List<TestCase> testCases = testCaseService.findTestCaseByApplication(application);
-        
+
         if (testCases == null) {
             LOG.error("TestCase list for application {} is null", application);
             throw new SinglePointHttpServlet.RequestProcessException(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Unable to find test cases for application '%s'. Contact your administrator", application));
@@ -185,9 +185,9 @@ public class GetTestCasesV001 {
     public List<ResponseTC.TestCase> testCaseListConversionToResponse(List<TestCase> testCaseList) {
         //using stream method, to learn more about it : https://blog.ippon.fr/2014/03/17/api-stream-une-nouvelle-facon-de-gerer-les-collections-en-java-8/
         List<ResponseTC.TestCase> responseList = testCaseList.stream()
-                .map(testCase -> new ResponseTC.TestCase( testCase.getTest(),
-                                                        testCase.getTestCase(), testCase.getDescription(),
-                                                        testCase.getApplication(), testCase.getStatus()))
+                .map(testCase -> new ResponseTC.TestCase(testCase.getTest(),
+                testCase.getTestCase(), testCase.getDescription(),
+                testCase.getApplication(), testCase.getStatus()))
                 .collect(Collectors.toList());
         return responseList;
     }

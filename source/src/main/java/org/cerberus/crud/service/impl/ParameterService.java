@@ -104,7 +104,7 @@ public class ParameterService implements IParameterService {
         if (cacheEntry == null) {
             cacheEntry = new HashMap<>();
         }
-        if (Parameter.CACHE_DURATION > 0) {
+        if (Parameter.CACHE_DURATION > 0 && !Parameter.VALUE_cerberus_queueexecution_enable.equals(key)) {
             if (cacheEntry.containsKey(cacheKey)
                     && cacheEntry.get(cacheKey) != null
                     && cacheEntry.get(cacheKey).getCacheEntryCreation() != null
@@ -278,6 +278,27 @@ public class ParameterService implements IParameterService {
     }
 
     @Override
+    public Answer setParameter(String parameterKey, String system, String value) {
+        Answer answer = parameterDao.setParameter(parameterKey, system, value);
+        if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getSource())) {
+
+            // A parameter is changed so we purge the cache.
+            purgeCacheEntry(parameterKey);
+
+            // If we activate the parameter to active the job, we trigger it directly.
+            if (Parameter.VALUE_cerberus_queueexecution_enable.equals(parameterKey) && ParameterParserUtil.parseBooleanParam(value, false)) {
+                try {
+                    // Run the Execution pool Job.
+                    executionThreadPoolService.executeNextInQueueAsynchroneously(false);
+                } catch (CerberusException ex) {
+                    LOG.error("Exeption triggering the ThreadPool job.", ex);
+                }
+            }
+        }
+        return answer;
+    }
+
+    @Override
     public Answer create(Parameter object) {
         Answer answer = parameterDao.create(object);
         if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getSource())) {
@@ -347,6 +368,8 @@ public class ParameterService implements IParameterService {
                     || Parameter.VALUE_cerberus_smtp_password.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_smtp_port.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_smtp_username.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_manage_timeout.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_manage_token.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_url.equalsIgnoreCase(parameter.getParam())) {
 
                 return false;

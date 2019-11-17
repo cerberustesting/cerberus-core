@@ -230,6 +230,13 @@
             <version>${jsonxpath.version}</version>
         </dependency>
         
+        <!-- Kafka -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        
         <!-- Compile scope -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -420,7 +427,7 @@
         </dependency>
         
         <!-- Test scope -->
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
