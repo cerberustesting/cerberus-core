@@ -60,6 +60,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -544,15 +545,24 @@ public class WebDriverService implements IWebDriverService {
 
                 if (webElement != null) {
                     /**
-                     * webElement.click(); did not provide good result
+                     * Actions implementation doesn't work properly for test on browser on real mobile device
+                     * use the implementation click from Selenium instead
+                     */
+                    if (Platform.ANDROID.equals(session.getDesiredCapabilities().getPlatform())
+                            || Platform.IOS.equals(session.getDesiredCapabilities().getPlatform())) {
+                         webElement.click();
+                    } else {
+                     /**
+                     * webElement.click(); did not provide good result for 
                      * generating Selenium error : Element is not clickable at
                      * point
                      * https://github.com/cerberustesting/cerberus-source/issues/2030
                      */
-//                    webElement.click();
-                    Actions actions = new Actions(session.getDriver());
-                    actions.click(webElement);
-                    actions.build().perform();
+                     //                    webElement.click();
+                        Actions actions = new Actions(session.getDriver());
+                        actions.click(webElement);
+                        actions.build().perform();
+                    }
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
