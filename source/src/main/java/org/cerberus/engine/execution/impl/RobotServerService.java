@@ -188,6 +188,18 @@ public class RobotServerService implements IRobotServerService {
             tCExecution.setRobotProvider(guessRobotProvider(session.getHost()));
             LOG.debug("Session is set.");
 
+            
+            /**
+             * Starting Cerberus Executor Proxy if it has been activated at
+             * robot level.
+             */
+            if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                LOG.debug("Start Remote Proxy");
+                this.startRemoteProxy(tCExecution);
+                LOG.debug("Started Remote Proxy on port:"+tCExecution.getRemoteProxyPort());
+            }
+            
+            
             /**
              * SetUp Capabilities
              */
@@ -218,13 +230,7 @@ public class RobotServerService implements IRobotServerService {
                 LOG.error("Exception Saving Robot Caps " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
             }
 
-            /**
-             * Starting Cerberus Executor Proxy if it has been activated at
-             * robot level.
-             */
-            if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
-                this.startRemoteProxy(tCExecution);
-            }
+            
 
             /**
              * SetUp Proxy
@@ -318,7 +324,7 @@ public class RobotServerService implements IRobotServerService {
                         // Appium does not support connection from HTTPCommandExecutor. When connecting from Executor, it stops to work after a couple of instructions.
                         appiumDriver = new AndroidDriver(url, caps);
                         driver = (WebDriver) appiumDriver;
-                    } else if (caps.getPlatform().is(Platform.IOS) || caps.getPlatform().is(Platform.MAC)) {
+                    } else if (caps.getPlatform().is(Platform.IOS)) {
                         appiumDriver = new IOSDriver(url, caps);
                         driver = (WebDriver) appiumDriver;
                     } else {
@@ -731,7 +737,7 @@ public class RobotServerService implements IRobotServerService {
                 if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
                     profile.setPreference("general.useragent.override", usedUserAgent);
                 }
-                options.setProfile(profile);
+                
 //                capabilities.setCapability(FirefoxDriver.PROFILE, profile);
 
                 if (tCExecution.getVerbose() <= 0) {
@@ -742,8 +748,10 @@ public class RobotServerService implements IRobotServerService {
                     Proxy proxy = new Proxy();
                     proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                     proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    options.setCapability("proxy", proxy);
+                    options.setProxy(proxy);
                 }
+                
+                options.setProfile(profile);
                 return options;
 //                capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, options);
 
@@ -1063,6 +1071,7 @@ public class RobotServerService implements IRobotServerService {
             tce.setRemoteProxyUUID(json.getString("uuid"));
             tce.setRemoteProxyStarted(true);
 
+            LOG.warn(tce.getRemoteProxyPort());
             LOG.debug("Cerberus Executor Proxy extention started on port : " + tce.getRemoteProxyPort() + " (uuid : " + tce.getRemoteProxyUUID() + ")");
 
         } catch (Exception ex) {
