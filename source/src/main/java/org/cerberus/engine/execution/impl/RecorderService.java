@@ -355,11 +355,12 @@ public class RecorderService implements IRecorderService {
                     dir.mkdirs();
                 }
                 // Getting the max size of the screenshot.
-                long maxSizeParam = parameterService.getParameterIntegerByKey("cerberus_screenshot_max_size", "", 1048576);
-                if (maxSizeParam < newImage.length()) {
-                    LOG.warn(logPrefix + "Screen-shot size exceeds the maximum defined in configurations " + newImage.getName() + " destination: " + recorder.getRelativeFilenameURL());
-                }
-                //copies the temp file to the execution file
+//                long maxSizeParam = parameterService.getParameterIntegerByKey("cerberus_screenshot_max_size", "", 1048576);
+//                if (maxSizeParam < newImage.length()) {
+//                    LOG.warn(logPrefix + "Screenshot size exceeds the maximum defined in configurations (" + newImage.length() + ">=" + maxSizeParam + ") " + newImage.getName() + " destination: " + recorder.getRelativeFilenameURL());
+//                }
+                
+                // Copies the temp file to the execution file
                 FileUtils.copyFile(newImage, new File(recorder.getFullFilename()));
                 LOG.debug(logPrefix + "Copy file finished with success - source: " + newImage.getName() + " destination: " + recorder.getRelativeFilenameURL());
 
@@ -404,7 +405,7 @@ public class RecorderService implements IRecorderService {
 
             File file = new File(recorder.getFullFilename());
 
-            try ( FileOutputStream fileOutputStream = new FileOutputStream(file);) {
+            try (FileOutputStream fileOutputStream = new FileOutputStream(file);) {
                 fileOutputStream.write(this.webdriverService.getPageSource(testCaseExecution.getSession()).getBytes());
                 fileOutputStream.close();
 
@@ -685,7 +686,7 @@ public class RecorderService implements IRecorderService {
 
                     File file = new File(recorder.getFullFilename());
 
-                    try ( FileOutputStream fileOutputStream = new FileOutputStream(file);) {
+                    try (FileOutputStream fileOutputStream = new FileOutputStream(file);) {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         DataOutputStream out = new DataOutputStream(baos);
                         for (String element : this.webdriverService.getSeleniumLog(testCaseExecution.getSession())) {
@@ -737,7 +738,7 @@ public class RecorderService implements IRecorderService {
 
                 File file = new File(recorder.getFullFilename());
 
-                try ( InputStream initialStream = new URL(url).openStream();  OutputStream outStream = new FileOutputStream(file)) {
+                try (InputStream initialStream = new URL(url).openStream(); OutputStream outStream = new FileOutputStream(file)) {
 
                     byte[] buffer = new byte[8 * 1024];
                     int bytesRead;
@@ -810,7 +811,7 @@ public class RecorderService implements IRecorderService {
             dir.mkdirs();
         }
 
-        try ( BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dir.getAbsolutePath() + File.separator + fileName), StandardCharsets.UTF_8));) {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dir.getAbsolutePath() + File.separator + fileName), StandardCharsets.UTF_8));) {
             writer.write(content);
             writer.close();
             LOG.info("File saved : " + path + File.separator + fileName);

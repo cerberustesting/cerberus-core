@@ -864,7 +864,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * Log execution is finished
              */
             LOG.info("Execution Finished : UUID=" + tCExecution.getExecutionUUID()
-                    + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus() + "__"
+                    + " ID=" + tCExecution.getId() + " RC=" + tCExecution.getControlStatus() + " "
                     + "TestName=" + tCExecution.getEnvironment() + "." + tCExecution.getCountry() + "."
                     + tCExecution.getBuild() + "." + tCExecution.getRevision() + "." + tCExecution.getTest() + "_"
                     + tCExecution.getTestCase() + "_" + tCExecution.getTestCaseObj().getDescription().replace(".", ""));
@@ -939,7 +939,7 @@ public class ExecutionRunService implements IExecutionRunService {
         LOG.debug(tCExecution.getId() + " - Stop the execution " + tCExecution.getId() + " UUID:" + tCExecution.getExecutionUUID());
         try {
             //TODO:FN debug messages to be removed
-            LOG.debug("[DEBUG] STOP " + "__ID=" + tCExecution.getId());
+            LOG.debug("[DEBUG] STOP " + " ID=" + tCExecution.getId());
             this.stopRunTestCase(tCExecution);
         } catch (Exception ex) {
             LOG.warn("Exception Stopping Execution " + tCExecution.getId() + " Exception :" + ex.toString());

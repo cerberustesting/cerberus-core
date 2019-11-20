@@ -188,7 +188,6 @@ public class RobotServerService implements IRobotServerService {
             tCExecution.setRobotProvider(guessRobotProvider(session.getHost()));
             LOG.debug("Session is set.");
 
-            
             /**
              * Starting Cerberus Executor Proxy if it has been activated at
              * robot level.
@@ -196,10 +195,9 @@ public class RobotServerService implements IRobotServerService {
             if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
                 LOG.debug("Start Remote Proxy");
                 this.startRemoteProxy(tCExecution);
-                LOG.debug("Started Remote Proxy on port:"+tCExecution.getRemoteProxyPort());
+                LOG.debug("Started Remote Proxy on port:" + tCExecution.getRemoteProxyPort());
             }
-            
-            
+
             /**
              * SetUp Capabilities
              */
@@ -229,8 +227,6 @@ public class RobotServerService implements IRobotServerService {
             } catch (Exception ex) {
                 LOG.error("Exception Saving Robot Caps " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
             }
-
-            
 
             /**
              * SetUp Proxy
@@ -737,9 +733,8 @@ public class RobotServerService implements IRobotServerService {
                 if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
                     profile.setPreference("general.useragent.override", usedUserAgent);
                 }
-                
-//                capabilities.setCapability(FirefoxDriver.PROFILE, profile);
 
+//                capabilities.setCapability(FirefoxDriver.PROFILE, profile);
                 if (tCExecution.getVerbose() <= 0) {
                     options.setHeadless(true);
                 }
@@ -750,7 +745,7 @@ public class RobotServerService implements IRobotServerService {
                     proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                     options.setProxy(proxy);
                 }
-                
+
                 options.setProfile(profile);
                 return options;
 //                capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, options);
@@ -1071,7 +1066,6 @@ public class RobotServerService implements IRobotServerService {
             tce.setRemoteProxyUUID(json.getString("uuid"));
             tce.setRemoteProxyStarted(true);
 
-            LOG.warn(tce.getRemoteProxyPort());
             LOG.debug("Cerberus Executor Proxy extention started on port : " + tce.getRemoteProxyPort() + " (uuid : " + tce.getRemoteProxyUUID() + ")");
 
         } catch (Exception ex) {
