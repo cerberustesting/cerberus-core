@@ -20,7 +20,6 @@
 package org.cerberus.service.cerberuscommand;
 
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.engine.entity.Session;
 import org.cerberus.exception.CerberusEventException;
 
 /**
@@ -29,5 +28,11 @@ import org.cerberus.exception.CerberusEventException;
  */
 public interface ICerberusCommand {
 
+    /**
+     *
+     * @param cmd
+     * @return
+     * @throws CerberusEventException
+     */
     MessageEvent executeCommand(String cmd) throws CerberusEventException;
 }

@@ -130,6 +130,15 @@ public interface IParameterDAO {
 
     /**
      *
+     * @param parameterKey
+     * @param system
+     * @param value
+     * @return
+     */
+    Answer setParameter(String parameterKey, String system, String value);
+
+    /**
+     *
      * @param object
      * @return
      */

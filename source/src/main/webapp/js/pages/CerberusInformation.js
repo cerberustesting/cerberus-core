@@ -43,6 +43,12 @@ function displayPageLabel() {
 
 function feedContent() {
 
+    showLoader('#panelActivity');
+    showLoader('#panelInformation');
+    showLoader('#paneljvmInformation');
+    showLoader('#paneldtbInformation');
+    showLoader('#panelschInformation');
+
     var jqxhr = $.getJSON("ReadCerberusDetailInformation");
     $.when(jqxhr).then(function (data) {
         var table = $("#cerberusTableBody");
@@ -119,7 +125,9 @@ function feedContent() {
         table.empty();
         var row = $("<tr></tr>");
         var cel1 = $("<td></td>").append(data.simultaneous_execution);
+        var cel2 = $("<td></td>").append(data.executionThreadPoolInstanceActive.toString());
         row.append(cel1);
+        row.append(cel2);
         table.append(row);
 
         var table = $("#exeTableBody");
@@ -207,6 +215,12 @@ function feedContent() {
             row.append(cel1);
             table.append(row);
         });
+
+        hideLoader('#panelActivity');
+        hideLoader('#panelInformation');
+        hideLoader('#paneljvmInformation');
+        hideLoader('#paneldtbInformation');
+        hideLoader('#panelschInformation');
 
     });
 

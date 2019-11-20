@@ -159,13 +159,6 @@ public interface ITestCaseService {
     AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries);
 
     /**
-     *
-     * @param tc
-     * @throws CerberusException
-     */
-    public void updateTestCase(TestCase tc) throws CerberusException;
-
-    /**
      * @param test
      * @return
      * @since 1.0.2

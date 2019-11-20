@@ -47,6 +47,7 @@ import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITagSystemService;
 import org.cerberus.database.IDatabaseVersioningService;
+import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.engine.scheduler.SchedulerInit;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;
@@ -71,6 +72,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
     private IMyVersionService myVersionService;
     private IParameterService parameterService;
     private ITagSystemService tagSystemService;
+    private IExecutionThreadPoolService executionThreadPoolService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -219,6 +221,10 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             objCache.put("cacheTagSystemEntry", cacheValuesArray);
 
             jsonResponse.put("cache", objCache);
+            
+            executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
+            jsonResponse.put("executionThreadPoolInstanceActive", executionThreadPoolService.isInstanceActive());
+            
 
         } catch (JSONException ex) {
             LOG.warn(ex);

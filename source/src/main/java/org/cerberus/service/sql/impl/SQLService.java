@@ -206,7 +206,7 @@ public class SQLService implements ISQLService {
              }
              */
             try {
-                LOG.info("Sending to external Database (queryDatabase) : '" + connectionName + "' SQL '" + sql + "'");
+                LOG.info("Sending to external Database (queryDatabase) : '" + connectionName + "' SQL '" + sql.replaceAll("(\\r|\\n)", " ") + "'");
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<String>();
                 try {
@@ -426,7 +426,7 @@ public class SQLService implements ISQLService {
         		PreparedStatement preStat = connection.prepareStatement(sql);) {
             preStat.setQueryTimeout(defaultTimeOut);
             try {
-                LOG.info("Sending to external Database (queryDatabaseNColumns) : '" + connectionName + "' SQL '" + sql + "'");
+                LOG.info("Sending to external Database (queryDatabaseNColumns) : '" + connectionName + "' SQL '" + sql.replaceAll("(\\r|\\n)", " ") + "'");
                 ResultSet resultSet = preStat.executeQuery();
 
                 int nrColumns = resultSet.getMetaData().getColumnCount();

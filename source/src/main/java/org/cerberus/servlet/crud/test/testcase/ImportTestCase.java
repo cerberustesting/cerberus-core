@@ -225,6 +225,8 @@ public class ImportTestCase extends HttpServlet {
         try {
             String fileVersion = json.getString("cerberus_version");
             String projectVersion = Infos.getInstance().getProjectVersion();
+            LOG.info(fileVersion);
+            LOG.info(projectVersion);
             
             //Compatibility Matrix. To update if testcase (including dependencies) model change.
             Map<String, String> compatibilityMatrix = new HashMap<>();
@@ -233,6 +235,10 @@ public class ImportTestCase extends HttpServlet {
             
             //Check fileVersion and projectVersion are in the same rank in the compatibility Matrix
             for (Map.Entry<String,String> entry : compatibilityMatrix.entrySet()){  
+                LOG.info("File - Key : " + VersionComparator.compare(fileVersion, entry.getKey()));
+                LOG.info("File - Value : " + VersionComparator.compare(fileVersion, entry.getValue()));
+                LOG.info("Project - Key : " + VersionComparator.compare(projectVersion, entry.getKey()));
+                LOG.info("Project - Value : " + VersionComparator.compare(projectVersion, entry.getValue()));
                 if(VersionComparator.compare(fileVersion, entry.getKey())*VersionComparator.compare(fileVersion, entry.getValue())<0){
                     return VersionComparator.compare(projectVersion, entry.getKey())*VersionComparator.compare(projectVersion, entry.getValue())<0;
                 }

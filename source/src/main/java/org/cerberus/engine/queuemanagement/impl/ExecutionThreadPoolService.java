@@ -62,6 +62,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     private static final String CONST_SEPARATOR = "////";
 
+    private boolean instanceActive = true;
+
     @Autowired
     private ITestCaseExecutionQueueService tceiqService;
     @Autowired
@@ -86,9 +88,19 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     private IFactoryRobotExecutor factoryRobotExecutor;
 
     @Override
+    public boolean isInstanceActive() {
+        return instanceActive;
+    }
+
+    @Override
+    public void setInstanceActive(boolean instanceActive) {
+        this.instanceActive = instanceActive;
+    }
+
+    @Override
     public HashMap<String, Integer> getCurrentlyRunning() throws CerberusException {
         AnswerList<TestCaseExecutionQueueToTreat> answer = new AnswerList<>();
-        HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
+        HashMap<String, Integer> constrains_current = new HashMap<>();
 
         // Getting all executions already running in the queue.
         answer = tceiqService.readQueueRunning();
@@ -213,6 +225,12 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
      */
     @Override
     public void executeNextInQueue(boolean forceExecution) throws CerberusException {
+
+        if (!instanceActive) {
+            LOG.warn("Queue execution disable on that JVM instance.");
+            return;
+        }
+
         // Job can be desactivated by parameter.
         if (!(parameterService.getParameterBooleanByKey("cerberus_queueexecution_enable", "", true))) {
             LOG.debug("Queue_Processing_Job disabled by parameter : 'cerberus_queueexecution_enable'.");

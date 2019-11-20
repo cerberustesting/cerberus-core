@@ -620,8 +620,8 @@
     </servlet>
     <servlet>
         <description>Execute the next record from the execution queue.</description>
-        <servlet-name>ExecuteNextInQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testexecution.ExecuteNextInQueue</servlet-class>
+        <servlet-name>GetExecutionsInQueue</servlet-name>
+        <servlet-class>org.cerberus.servlet.administration.GetExecutionsInQueue</servlet-class>
     </servlet>
     <servlet>
         <description>Get a list of test cases based on criteria.</description>
@@ -659,6 +659,10 @@
     <servlet>
         <servlet-name>ReadCerberusDetailInformation</servlet-name>
         <servlet-class>org.cerberus.servlet.information.ReadCerberusDetailInformation</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>manage</servlet-name>
+        <servlet-class>org.cerberus.servlet.administration.Manage</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SetTagToExecution</servlet-name>
@@ -793,9 +797,30 @@
         <servlet-name>ImportTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.testcase.ImportTestCase</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>JerseyWebapp</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>org.cerberus.servlet.zzpublic</param-value>
+        </init-param>
+        <init-param>
+            <param-name>jersey.config.server.provider.scanning.recursive</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>JerseyWebapp</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>springrest</servlet-name>
         <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>manage</servlet-name>
+        <url-pattern>/manage</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadCerberusDetailInformation</servlet-name>
@@ -1358,8 +1383,8 @@
         <url-pattern>/AddToExecutionQueueV003</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ExecuteNextInQueue</servlet-name>
-        <url-pattern>/ExecuteNextInQueue</url-pattern>
+        <servlet-name>GetExecutionsInQueue</servlet-name>
+        <url-pattern>/GetExecutionsInQueue</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetTestCasesV000</servlet-name>
@@ -2004,6 +2029,7 @@
             <url-pattern>/NewEnvironmentEventV000</url-pattern>
             <url-pattern>/GetTagExecutions</url-pattern>
             <url-pattern>/GetTestCasesV000</url-pattern>
+            <url-pattern>/manage</url-pattern>
             <!--            Password Management Servlets -->
             <url-pattern>/ForgotPassword</url-pattern>
             <url-pattern>/ForgotPasswordEmailConfirmation</url-pattern>
@@ -2053,7 +2079,7 @@
             <url-pattern>/ReadTestCaseExecution</url-pattern>
             <url-pattern>/ReadTag</url-pattern>
             <url-pattern>/ReadParameter</url-pattern>
-            <url-pattern>/ExecuteNextInQueue</url-pattern>
+            <url-pattern>/GetExecutionsInQueue</url-pattern>
             <url-pattern>/ReadDocumentation</url-pattern>
             <url-pattern>/ReadApplicationObjectImage</url-pattern>
             <url-pattern>/ReadLabel</url-pattern>

@@ -37,27 +37,29 @@
             <h1 class="page-title-line" id="title">Cerberus Information</h1>
 
 
+            <div class="row">
+                <div class="form-group col-xs-12">
+                    <button type="button" class="btn btn-default" id="btnRefresh" name="btnRefresh"  onclick="feedContent()">Refresh</button>
+                </div>
+            </div>
+
             <div id="FiltersPanel">
 
-                <div class="panel panel-default">
+                <div class="panel panel-default" id="panelActivity">
                     <div class="panel-heading card clearfix" data-toggle="collapse" data-target="#cerberusActivity">
                         <span class="fa fa-tag fa-fw"></span>
                         <label id="filters" name="filtersField">Cerberus Instance Activity</label>
                         <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                     </div>
                     <div class="panel-body collapse in" id="cerberusActivity">
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <button type="button" class="btn btn-default" id="btnRefresh" name="btnRefresh"  onclick="feedContent()">Refresh</button>
-                            </div>
-                        </div>
 
                         <div class="row">
                             <div class="form-group col-xs-12">
                                 <table class="table table-bordered table-hover nomarginbottom dataTable" id="exeNbTable">
                                     <thead>
                                         <tr>
-                                            <th class="text-center" id="systemHeader" name="systemHeader">Number of Actual Simultaneous Execution</th>
+                                            <th class="text-center" id="systemHeader" name="systemHeader">Number of Pending Execution on that instance</th>
+                                            <th class="text-center" id="systemHeader" name="systemHeader">Instance active to run executions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="exeNbTableBody">
@@ -95,7 +97,7 @@
                 <div class="form-group col-md-6">
 
                     <div class="" id="FiltersPanel">
-                        <div class="panel panel-default">
+                        <div class="panel panel-default" id="panelInformation">
                             <div class="panel-heading card" data-toggle="collapse"  data-target="#cerberusInformation">
                                 <span class="fa fa-tag fa-fw"></span>
                                 <label id="filters" name="filtersField">Cerberus Information</label>
@@ -159,7 +161,7 @@
 
                 <div class="form-group col-md-6">
                     <div class="" id="FiltersPanel">
-                        <div class="panel panel-default">
+                        <div class="panel panel-default" id="paneljvmInformation">
                             <div class="panel-heading card" data-toggle="collapse"  data-target="#jvmInformation">
                                 <span class="fa fa-tag fa-fw"></span>
                                 <label id="filters" name="filtersField">JVM Information</label>
@@ -220,7 +222,7 @@
                 <div class="form-group col-md-6">
 
                     <div id="FiltersPanel">
-                        <div class="panel panel-default">
+                        <div class="panel panel-default" id="paneldtbInformation">
                             <div class="panel-heading card" data-toggle="collapse"  data-target="#dtbInformation">
                                 <span class="fa fa-tag fa-fw"></span>
                                 <label id="filters" name="filtersField">Database Information</label>
@@ -278,12 +280,12 @@
                     </div>
 
                 </div>
-                
-                
+
+
                 <div class="form-group col-md-6">
 
                     <div id="FiltersPanel">
-                        <div class="panel panel-default">
+                        <div class="panel panel-default" id="panelschInformation">
                             <div class="panel-heading card" data-toggle="collapse"  data-target="#schInformation">
                                 <span class="fa fa-tag fa-fw"></span>
                                 <label id="schedulerfilters" name="filtersField">Scheduler Instance Information</label>
@@ -325,8 +327,8 @@
                     </div>
 
                 </div>
-                
-                
+
+
             </div>
 
 

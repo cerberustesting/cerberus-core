@@ -218,7 +218,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 tc.setUsrModif(request.getUserPrincipal().getName());
                 tc.setTestCaseVersion(tc.getTestCaseVersion() + 1);
 
-                testCaseService.updateTestCase(tc);
+                testCaseService.update(tc.getTest(), tc.getTestCase(), tc);
 
                 /**
                  * Adding Log entry.
