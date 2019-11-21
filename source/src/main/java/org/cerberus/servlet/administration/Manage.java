@@ -19,10 +19,10 @@
  */
 package org.cerberus.servlet.administration;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -112,6 +112,8 @@ public class Manage extends HttpServlet {
                             instancePendingExecutionNb = euuid.size();
                             LOG.info("Stopping instance : Check " + cntIteration + "/" + maxIteration + " on pending executions on that instance. Still running : " + instancePendingExecutionNb);
                         }
+                        data.put("waitedIterations", cntIteration);
+
                     } else if (request.getParameter("scope") != null && request.getParameter("scope").equals("global")) {
                         /**
                          * We desactivate globally the queue processing accross
@@ -129,6 +131,8 @@ public class Manage extends HttpServlet {
                             globalPendingExecutionNb = getNbPendingExecutions(appContext);
                             LOG.info("Stopping global : Check " + cntIteration + "/" + maxIteration + " on global pending executions. Still running : " + globalPendingExecutionNb);
                         }
+                        data.put("waitedIterations", cntIteration);
+
                     } else {
                         message += "Scope parameter 'scope' not defined.";
                     }
@@ -158,13 +162,27 @@ public class Manage extends HttpServlet {
 
                 }
 
-                data.put("instanceActive", executionThreadPoolService.isInstanceActive());
-                data.put("globalActive", globalActive);
-                data.put("instanceRunningExecutions", instancePendingExecutionNb);
-                data.put("globalRunningExecutions", globalPendingExecutionNb);
-                data.put("waitedIterations", cntIteration);
-                data.put("instanceReadyToStop", (instancePendingExecutionNb <= 0));
-                data.put("globalReadyToStop", (globalPendingExecutionNb <= 0));
+                JSONObject instance = new JSONObject();
+                JSONObject global = new JSONObject();
+
+                instance.put("active", executionThreadPoolService.isInstanceActive());
+                instance.put("runningExecutions", instancePendingExecutionNb);
+                instance.put("readyToStop", (instancePendingExecutionNb <= 0));
+                data.put("instance", instance);
+
+                global.put("active", globalActive);
+                global.put("runningExecutions", globalPendingExecutionNb);
+                global.put("readyToStop", (globalPendingExecutionNb <= 0));
+                data.put("global", global);
+
+                JSONObject fsSize = new JSONObject();
+                fsSize.put("cerberus_exeautomedia_path", getFSSize(parameterService.getParameterStringByKey("cerberus_exeautomedia_path", "", "/")));
+                fsSize.put("cerberus_applicationobject_path", getFSSize(parameterService.getParameterStringByKey("cerberus_applicationobject_path", "", "/")));
+                fsSize.put("cerberus_exemanualmedia_path", getFSSize(parameterService.getParameterStringByKey("cerberus_exemanualmedia_path", "", "/")));
+                fsSize.put("cerberus_ftpfile_path", getFSSize(parameterService.getParameterStringByKey("cerberus_ftpfile_path", "", "/")));
+                fsSize.put("cerberus_testdatalibcsv_path", getFSSize(parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", "/")));
+                data.put("fileSystemSize", fsSize);
+
             } else {
                 message = "Invalid Token";
             }
@@ -187,9 +205,39 @@ public class Manage extends HttpServlet {
             return executionsRunning.size();
 
         } catch (CerberusException ex) {
-            java.util.logging.Logger.getLogger(Manage.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex);
         }
         return 0;
+    }
+
+    private JSONObject getFSSize(String path) {
+        JSONObject exeFS = new JSONObject();
+        LOG.debug(path);
+        try {
+
+            exeFS.put("path", path);
+            if (new File(path).exists()) {
+
+                long freeSpace = new File(path).getFreeSpace();
+                exeFS.put("freeSpace", freeSpace);
+
+                long totalSpace = new File(path).getTotalSpace();
+                exeFS.put("totalSpace", totalSpace);
+                if (totalSpace > 0) {
+                    exeFS.put("perUsed", (totalSpace - freeSpace) * 100 / totalSpace);
+                }
+            } else {
+                exeFS.put("message", "Folder does not Exist.");
+
+            }
+            return exeFS;
+
+        } catch (JSONException ex) {
+            LOG.error("Exception getting FS space for : " + path, ex);
+        } catch (Exception ex) {
+            LOG.error("Exception getting FS space for : " + path, ex);
+        }
+        return exeFS;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

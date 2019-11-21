@@ -361,6 +361,7 @@ public class ParameterService implements IParameterService {
                     || Parameter.VALUE_cerberus_exeautomedia_path.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_exemanualmedia_path.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_ftpfile_path.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_testdatalibcsv_path.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_gui_url.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_screenshot_max_size.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_smtp_host.equalsIgnoreCase(parameter.getParam())

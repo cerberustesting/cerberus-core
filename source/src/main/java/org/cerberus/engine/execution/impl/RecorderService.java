@@ -98,7 +98,7 @@ public class RecorderService implements IRecorderService {
         boolean getPageSource;
         String applicationType;
         String returnCode;
-        Integer controlNumber = 0;
+        Integer controlNumber = -1;
 
         if (testCaseStepActionControlExecution == null) {
             myExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
@@ -182,7 +182,7 @@ public class RecorderService implements IRecorderService {
             //Record the Request and Response.
             AppService se = (AppService) testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getLastServiceCalled();
             if (se != null) { // No Calls were performed previously
-                List<TestCaseExecutionFile> objectFileSOAPList = new ArrayList<TestCaseExecutionFile>();
+                List<TestCaseExecutionFile> objectFileSOAPList = new ArrayList<>();
                 objectFileSOAPList = this.recordServiceCall(myExecution, testCaseStepActionExecution, controlNumber, null, se);
                 if (objectFileSOAPList.isEmpty() != true) {
                     for (TestCaseExecutionFile testCaseExecutionFile : objectFileSOAPList) {
@@ -323,7 +323,7 @@ public class RecorderService implements IRecorderService {
         String step = String.valueOf(testCaseStepActionExecution.getStep());
         String index = String.valueOf(testCaseStepActionExecution.getIndex());
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
-        String controlString = control.equals(0) ? null : String.valueOf(control);
+        String controlString = (control < 0) ? null : String.valueOf(control);
         long runId = testCaseExecution.getId();
         String applicationType = testCaseExecution.getApplicationObj().getType();
 
@@ -355,19 +355,20 @@ public class RecorderService implements IRecorderService {
                     dir.mkdirs();
                 }
                 // Getting the max size of the screenshot.
-//                long maxSizeParam = parameterService.getParameterIntegerByKey("cerberus_screenshot_max_size", "", 1048576);
-//                if (maxSizeParam < newImage.length()) {
-//                    LOG.warn(logPrefix + "Screenshot size exceeds the maximum defined in configurations (" + newImage.length() + ">=" + maxSizeParam + ") " + newImage.getName() + " destination: " + recorder.getRelativeFilenameURL());
-//                }
-                
-                // Copies the temp file to the execution file
-                FileUtils.copyFile(newImage, new File(recorder.getFullFilename()));
-                LOG.debug(logPrefix + "Copy file finished with success - source: " + newImage.getName() + " destination: " + recorder.getRelativeFilenameURL());
-
-                LOG.info("File saved : " + recorder.getFullFilename());
+                long maxSizeParam = parameterService.getParameterIntegerByKey("cerberus_screenshot_max_size", "", 1048576);
+                String fileDesc = "Screenshot";
+                if (maxSizeParam < newImage.length()) {
+                    LOG.warn(logPrefix + "Screenshot size exceeds the maximum defined in configurations (" + newImage.length() + ">=" + maxSizeParam + ") " + newImage.getName() + " destination: " + recorder.getRelativeFilenameURL());
+                    fileDesc = "Screenshot Too Big !!";
+                } else {
+                    // Copies the temp file to the execution file
+                    FileUtils.copyFile(newImage, new File(recorder.getFullFilename()));
+                    LOG.debug(logPrefix + "Copy file finished with success - source: " + newImage.getName() + " destination: " + recorder.getRelativeFilenameURL());
+                    LOG.info("File saved : " + recorder.getFullFilename());
+                }
 
                 // Index file created to database.
-                object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Screenshot", recorder.getRelativeFilenameURL(), "PNG", "", null, "", null);
+                object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), fileDesc, recorder.getRelativeFilenameURL(), "PNG", "", null, "", null);
                 testCaseExecutionFileService.save(object);
 
                 //deletes the temporary file

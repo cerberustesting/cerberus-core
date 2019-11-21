@@ -48,6 +48,7 @@ public class Parameter {
     public static final String VALUE_cerberus_exeautomedia_path = "cerberus_exeautomedia_path";
     public static final String VALUE_cerberus_exemanualmedia_path = "cerberus_exemanualmedia_path";
     public static final String VALUE_cerberus_ftpfile_path = "cerberus_ftpfile_path";
+    public static final String VALUE_cerberus_testdatalibcsv_path = "cerberus_testdatalibcsv_path";
     public static final String VALUE_cerberus_url = "cerberus_url";
     public static final String VALUE_cerberus_gui_url = "cerberus_gui_url";
     public static final String VALUE_cerberus_screenshot_max_size = "cerberus_screenshot_max_size";
