@@ -56,7 +56,7 @@ function initModalRobot() {
     $("#editRobotModal [name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("#editRobotModal [name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
     $("#editRobotModal [name='buttonDuplicate']").html(doc.getDocLabel("page_global", "btn_duplicate"));
-    $("#editRobotModal [name='buttonEdit']").html(doc.getDocLabel("page_global", "btn_edit"));
+    $("#editRobotModal [name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
 
     $("#editRobotModal [name='addEntryField']").html(doc.getDocLabel("page_robot", "button_create"));
     $("#editRobotModal [name='confirmationField']").html(doc.getDocLabel("page_robot", "button_delete"));

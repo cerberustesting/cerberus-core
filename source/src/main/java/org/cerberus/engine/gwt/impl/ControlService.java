@@ -1585,7 +1585,7 @@ public class ControlService implements IControlService {
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
             TestCaseExecutionFile file = recorderService.recordPageSource(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlSequence());
             if (file != null) {
-                List<TestCaseExecutionFile> fileList = new ArrayList<TestCaseExecutionFile>();
+                List<TestCaseExecutionFile> fileList = new ArrayList<>();
                 fileList.add(file);
                 testCaseStepActionControlExecution.setFileList(fileList);
             }

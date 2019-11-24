@@ -212,6 +212,7 @@ public class ActionService implements IActionService {
 
         String value1 = testCaseStepActionExecution.getValue1();
         String value2 = testCaseStepActionExecution.getValue2();
+        String value3 = testCaseStepActionExecution.getValue3();
         String propertyName = testCaseStepActionExecution.getPropertyName();
         LOG.debug("Doing Action : " + testCaseStepActionExecution.getAction() + " with value1 : " + value1 + " and value2 : " + value2);
 
@@ -294,7 +295,7 @@ public class ActionService implements IActionService {
                     res = this.doActionWaitVanish(tCExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_CALLSERVICE:
-                    res = this.doActionCallService(testCaseStepActionExecution, value1);
+                    res = this.doActionCallService(testCaseStepActionExecution, value1, value2, value3);
                     break;
                 case TestCaseStepAction.ACTION_EXECUTESQLUPDATE:
                     res = this.doActionExecuteSQLUpdate(tCExecution, value1, value2);
@@ -1017,9 +1018,9 @@ public class ActionService implements IActionService {
         try {
             String appType = tCExecution.getApplicationObj().getType();
             /**
-             * Check value1 and value2 are not null For IPA and APK, only
-             * value2 (key to press) is mandatory For GUI and FAT, both
-             * parameters are mandatory
+             * Check value1 and value2 are not null For IPA and APK, only value2
+             * (key to press) is mandatory For GUI and FAT, both parameters are
+             * mandatory
              */
             if (StringUtil.isNullOrEmpty(value2)) {
                 return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_MISSINGKEY).resolveDescription("APPLICATIONTYPE", appType);
@@ -1301,13 +1302,13 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionCallService(TestCaseStepActionExecution testCaseStepActionExecution, String value1) {
+    private MessageEvent doActionCallService(TestCaseStepActionExecution testCaseStepActionExecution, String value1, String value2, String value3) {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
         AnswerItem lastServiceCalledAnswer;
 
-        lastServiceCalledAnswer = serviceService.callService(value1, null, null, null, null, tCExecution);
+        lastServiceCalledAnswer = serviceService.callService(value1, value2, value3, null, null, null, null, tCExecution);
         message = lastServiceCalledAnswer.getResultMessage();
 
         if (lastServiceCalledAnswer.getItem() != null) {

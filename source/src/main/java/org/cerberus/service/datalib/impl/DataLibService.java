@@ -794,7 +794,7 @@ public class DataLibService implements IDataLibService {
                 LOG.debug("Service Path : " + lib.getServicePath());
 
                 // Service Call is made here.
-                AnswerItem ai = serviceService.callService(lib.getService(), lib.getDatabaseUrl(), lib.getEnvelope(), lib.getServicePath(), lib.getMethod(), tCExecution);
+                AnswerItem ai = serviceService.callService(lib.getService(), null, null, lib.getDatabaseUrl(), lib.getEnvelope(), lib.getServicePath(), lib.getMethod(), tCExecution);
 
                 msg = ai.getResultMessage();
 

@@ -459,11 +459,19 @@ public class RecorderService implements IRecorderService {
 
             // Service Call META data information.
             Recorder recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "call", "json", false);
-            if (se.getType().equals("FTP")) {
-                recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toFTPJSONOnExecution().toString());
-            } else {
-                recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toJSONOnExecution().toString());
+
+            switch (se.getType()) {
+                case AppService.TYPE_FTP:
+                    recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toFTPJSONOnExecution().toString());
+                    break;
+                case AppService.TYPE_KAFKA:
+                    recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toKAFKAOnExecution().toString());
+                    break;
+                default:
+                    recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toJSONOnExecution().toString());
+                    break;
             }
+
             // Index file created to database.
             object = testCaseExecutionFileFactory.create(0, runId, recorderRequest.getLevel(), "Service Call", recorderRequest.getRelativeFilenameURL(), "JSON", "", null, "", null);
             testCaseExecutionFileService.save(object);

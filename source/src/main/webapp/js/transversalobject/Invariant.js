@@ -56,7 +56,7 @@ function initModalInvariant() {
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
     $("[name='buttonDuplicate']").html(doc.getDocLabel("page_global", "btn_duplicate"));
-    $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "btn_edit"));
+    $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
 
     $("[name='descriptionField']").html(doc.getDocLabel("page_invariant", "description"));
     $("[name='idnameField']").html(doc.getDocLabel("page_invariant", "idname"));

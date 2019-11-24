@@ -38,8 +38,10 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.service.appservice.IServiceService;
 import org.cerberus.service.file.IFileService;
 import org.cerberus.service.ftp.IFtpService;
+import org.cerberus.service.kafka.IKafkaService;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.service.soap.ISoapService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,12 +73,14 @@ public class ServiceService implements IServiceService {
     @Autowired
     private IRestService restService;
     @Autowired
+    private IKafkaService kafkaService;
+    @Autowired
     private IFtpService ftpService;
     @Autowired
     private ICountryEnvironmentDatabaseService countryEnvironmentDatabaseService;
 
     @Override
-    public AnswerItem<AppService> callService(String service, String database, String request, String servicePathParam, String operation, TestCaseExecution tCExecution) {
+    public AnswerItem<AppService> callService(String service, String targetNbEvents, String targetNbSec, String database, String request, String servicePathParam, String operation, TestCaseExecution tCExecution) {
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
         String decodedRequest;
         String decodedServicePath = null;
@@ -94,7 +98,7 @@ public class ServiceService implements IServiceService {
             // If Service information is not defined, we create it from request, servicePath and operation parameters forcing in SOAP mode.
             if (StringUtil.isNullOrEmpty(service)) {
                 LOG.debug("Creating AppService from parameters.");
-                appService = factoryAppService.create("null", AppService.TYPE_SOAP, "", "", "", request, "Automatically created Service from datalib.",
+                appService = factoryAppService.create("null", AppService.TYPE_SOAP, "", "", "", request, "", "", "", "", "Automatically created Service from datalib.",
                         servicePathParam, "", operation, null, null, null, null, null);
                 service = "null";
 
@@ -114,42 +118,32 @@ public class ServiceService implements IServiceService {
 
             } else if (StringUtil.isNullOrEmpty(appService.getServicePath())) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE).resolveDescription("DESCRIPTION", "Service path is not defined");
+
             } else {
 
                 // We start by calculating the servicePath and decode it.
                 servicePath = appService.getServicePath();
-                if (!(StringUtil.isURL(servicePath))) {
-                    // The URL defined inside the Service or directly from parameter is not complete and we need to add the first part taken either 
-                    // the data from tCExecution of related database.
+                if (!appService.getType().equals(AppService.TYPE_KAFKA)) {
 
-                    if (StringUtil.isNullOrEmpty(database)) {
+                    if (!(StringUtil.isURL(servicePath))) {
+                        // The URL defined inside the Service or directly from parameter is not complete and we need to add the first part taken either 
+                        // the data from tCExecution of related database.
 
-                        // We reformat servicePath in order to add the context from the application execution.
-                        servicePath = StringUtil.getURLFromString(tCExecution.getUrl(),
-                                "", appService.getServicePath(), "http://");
+                        if (StringUtil.isNullOrEmpty(database)) {
 
-                    } else {
+                            // We reformat servicePath in order to add the context from the application execution.
+                            servicePath = StringUtil.getURLFromString(tCExecution.getUrl(),
+                                    "", appService.getServicePath(), "http://");
 
-                        // We reformat servicePath in order to add the context from the databaseUrl definition and corresponding from the country and environment of the execution.
-                        try {
-                            CountryEnvironmentDatabase countryEnvironmentDatabase;
-                            countryEnvironmentDatabase = countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(system,
-                                    country, environment, database));
-                            if (countryEnvironmentDatabase == null) {
-                                message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_URLKOANDDATABASESOAPURLNOTEXIST);
-                                message.setDescription(message.getDescription()
-                                        .replace("%SERVICEURL%", appService.getServicePath())
-                                        .replace("%SYSTEM%", system)
-                                        .replace("%COUNTRY%", country)
-                                        .replace("%ENV%", environment)
-                                        .replace("%DATABASE%", database));
-                                result.setResultMessage(message);
-                                return result;
+                        } else {
 
-                            } else {
-                                String soapURL = countryEnvironmentDatabase.getSoapUrl();
-                                if (StringUtil.isNullOrEmpty(soapURL)) {
-                                    message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_URLKOANDDATABASESOAPURLEMPTY);
+                            // We reformat servicePath in order to add the context from the databaseUrl definition and corresponding from the country and environment of the execution.
+                            try {
+                                CountryEnvironmentDatabase countryEnvironmentDatabase;
+                                countryEnvironmentDatabase = countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(system,
+                                        country, environment, database));
+                                if (countryEnvironmentDatabase == null) {
+                                    message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_URLKOANDDATABASESOAPURLNOTEXIST);
                                     message.setDescription(message.getDescription()
                                             .replace("%SERVICEURL%", appService.getServicePath())
                                             .replace("%SYSTEM%", system)
@@ -158,37 +152,51 @@ public class ServiceService implements IServiceService {
                                             .replace("%DATABASE%", database));
                                     result.setResultMessage(message);
                                     return result;
+
+                                } else {
+                                    String soapURL = countryEnvironmentDatabase.getSoapUrl();
+                                    if (StringUtil.isNullOrEmpty(soapURL)) {
+                                        message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_URLKOANDDATABASESOAPURLEMPTY);
+                                        message.setDescription(message.getDescription()
+                                                .replace("%SERVICEURL%", appService.getServicePath())
+                                                .replace("%SYSTEM%", system)
+                                                .replace("%COUNTRY%", country)
+                                                .replace("%ENV%", environment)
+                                                .replace("%DATABASE%", database));
+                                        result.setResultMessage(message);
+                                        return result;
+                                    }
+                                    // soapURL from database is not empty so we prefix the Service URL with it.
+                                    servicePath = StringUtil.getURLFromString(soapURL, "", servicePath, "");
+
+                                    if (!StringUtil.isURL(servicePath)) {
+                                        message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_URLKO);
+                                        message.setDescription(message.getDescription()
+                                                .replace("%SERVICEURL%", servicePath)
+                                                .replace("%SOAPURL%", soapURL)
+                                                .replace("%SERVICEPATH%", appService.getServicePath()));
+                                        result.setResultMessage(message);
+                                        return result;
+
+                                    }
+
                                 }
-                                // soapURL from database is not empty so we prefix the Service URL with it.
-                                servicePath = StringUtil.getURLFromString(soapURL, "", servicePath, "");
 
-                                if (!StringUtil.isURL(servicePath)) {
-                                    message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_URLKO);
-                                    message.setDescription(message.getDescription()
-                                            .replace("%SERVICEURL%", servicePath)
-                                            .replace("%SOAPURL%", soapURL)
-                                            .replace("%SERVICEPATH%", appService.getServicePath()));
-                                    result.setResultMessage(message);
-                                    return result;
-
-                                }
-
+                            } catch (CerberusException ex) {
+                                message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_URLKOANDDATABASESOAPURLNOTEXIST);
+                                message.setDescription(message.getDescription()
+                                        .replace("%SERVICEURL%", servicePath)
+                                        .replace("%SYSTEM%", system)
+                                        .replace("%COUNTRY%", country)
+                                        .replace("%ENV%", environment)
+                                        .replace("%DATABASE%", database));
+                                result.setResultMessage(message);
+                                return result;
                             }
 
-                        } catch (CerberusException ex) {
-                            message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_URLKOANDDATABASESOAPURLNOTEXIST);
-                            message.setDescription(message.getDescription()
-                                    .replace("%SERVICEURL%", servicePath)
-                                    .replace("%SYSTEM%", system)
-                                    .replace("%COUNTRY%", country)
-                                    .replace("%ENV%", environment)
-                                    .replace("%DATABASE%", database));
-                            result.setResultMessage(message);
-                            return result;
                         }
 
                     }
-
                 }
 
                 // appService object and target servicePath is now clean. We can start to decode.
@@ -315,7 +323,7 @@ public class ServiceService implements IServiceService {
                                 result.setResultMessage(message);
                                 return result;
                             }
-                            
+
                             answerDecode = variableService.decodeStringCompletly(decodedAttachement, tCExecution, null, false);
                             decodedAttachement = (String) answerDecode.getItem();
                             if (!(answerDecode.isCodeStringEquals("OK"))) {
@@ -354,20 +362,20 @@ public class ServiceService implements IServiceService {
                          * REST.
                          */
                         switch (appService.getMethod()) {
-                        	
-                            case AppService.METHOD_HTTPGET:                           	
+
+                            case AppService.METHOD_HTTPGET:
                             case AppService.METHOD_HTTPPOST:
                             case AppService.METHOD_HTTPDELETE:
                             case AppService.METHOD_HTTPPUT:
                             case AppService.METHOD_HTTPPATCH:
-                            	/**
+                                /**
                                  * Call REST and store it into the execution.
                                  */
-                            	 result = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(),
-                                         appService.getHeaderList(), appService.getContentList(), token, timeOutMs, system, tCExecution);
-                                 message = result.getResultMessage();
-                                 break;
-                       
+                                result = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(),
+                                        appService.getHeaderList(), appService.getContentList(), token, timeOutMs, system, tCExecution);
+                                message = result.getResultMessage();
+                                break;
+
                             default:
                                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
                                 message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Method : '" + appService.getMethod() + "' for REST Service is not supported by the engine."));
@@ -375,24 +383,68 @@ public class ServiceService implements IServiceService {
                         }
 
                         break;
-                    
-                    case AppService.TYPE_FTP:
-                    	/**
-                    	 * FTP.
-                    	 */
-                    	switch(appService.getMethod()) {
-                    		case AppService.METHOD_HTTPGET:
-                    		case AppService.METHOD_HTTPPOST:
-                    			result = ftpService.callFTP(decodedServicePath, system, appService.getServiceRequest(),
-                    					appService.getMethod(), appService.getFileName(), appService.getService());
-                    			message = result.getResultMessage();
+
+                    /**
+                     * KAFKA.
+                     */
+                    case AppService.TYPE_KAFKA:
+
+                        decodedOperation = appService.getOperation();
+
+                        answerDecode = variableService.decodeStringCompletly(decodedOperation, tCExecution, null, false);
+                        decodedOperation = (String) answerDecode.getItem();
+
+                        if (!(answerDecode.isCodeStringEquals("OK"))) {
+                            // If anything wrong with the decode --> we stop here with decode message in the action result.
+                            String field = "Operation";
+                            message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                            LOG.debug("Property interupted due to decode '" + field + "'.");
+                            result.setResultMessage(message);
+                            return result;
+                        }
+
+                        switch (appService.getMethod()) {
+
+                            case AppService.METHOD_KAFKAPRODUCE:
+                                /**
+                                 * Call REST and store it into the execution.
+                                 */
+                                result = kafkaService.produceEvent(appService.getKafkaTopic(), appService.getKafkaKey(), decodedRequest, decodedServicePath, appService.getHeaderList());
+                                message = result.getResultMessage();
                                 break;
-                    		default:
+
+                            case AppService.METHOD_KAFKASEEK:
+                                int targetNbEventsInt = ParameterParserUtil.parseIntegerParam(targetNbEvents, 1);
+                                int targetNbSecInt = ParameterParserUtil.parseIntegerParam(targetNbSec, 30);
+                                result = kafkaService.seekEvent(appService.getKafkaTopic(), appService.getKafkaKey(), decodedRequest, decodedServicePath, appService.getHeaderList(), targetNbEventsInt, targetNbSecInt);
+                                message = result.getResultMessage();
+                                break;
+
+                            default:
+                                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                                message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Method : '" + appService.getMethod() + "' for KAFKA Service is not supported by the engine (Use " + AppService.METHOD_KAFKAPRODUCE + " or " + AppService.METHOD_KAFKASEEK + ")."));
+                                result.setResultMessage(message);
+                        }
+
+                        break;
+
+                    case AppService.TYPE_FTP:
+                        /**
+                         * FTP.
+                         */
+                        switch (appService.getMethod()) {
+                            case AppService.METHOD_HTTPGET:
+                            case AppService.METHOD_HTTPPOST:
+                                result = ftpService.callFTP(decodedServicePath, system, appService.getServiceRequest(),
+                                        appService.getMethod(), appService.getFileName(), appService.getService());
+                                message = result.getResultMessage();
+                                break;
+                            default:
                                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
                                 message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Method : '" + appService.getMethod() + "' for FTP Service is not supported by the engine."));
                                 result.setResultMessage(message);
-                    	}
-                    	break;
+                        }
+                        break;
 
                     default:
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);

@@ -8241,6 +8241,21 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + "('', 'cerberus_manage_token', LEFT(MD5(RAND()), 32), 'Token in order to secure public access to manage api.');");
         a.add("UPDATE `parameter` SET `param` = 'cerberus_manage_timeout', `description` = 'Integer value that correspond to the nb of s until the manage servlet will stop waiting a clean stop of a global or instance stop.' WHERE (`param` = 'cerberus_stopinstance_timeout');");
 
+        // add columns for Kafka support
+        // 1444
+        a.add("ALTER TABLE `appservice` "
+                + "ADD COLUMN `KafkaTopic` VARCHAR(1000) NULL DEFAULT '' AFTER `ServiceRequest`,"
+                + "ADD COLUMN `KafkaKey` VARCHAR(1000) NULL DEFAULT '' AFTER `KafkaTopic`,"
+                + "ADD COLUMN `KafkaFilterPath` VARCHAR(1000) NULL DEFAULT '' AFTER `KafkaKey`,"
+                + "ADD COLUMN `KafkaFilterValue` VARCHAR(1000) NULL DEFAULT '' AFTER `KafkaFilterPath`;");
+
+        // ADD Kafka Method and type in invariants
+        // 1445
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES "
+                + "  ('SRVMETHOD', 'PRODUCE', 600 , 'PRODUCE Kafka method'),"
+                + "  ('SRVMETHOD', 'SEEK', 700 , 'SEEK Kafka method'),"
+                + "  ('SRVTYPE', 'KAFKA', 400 , 'KAFKA method')");
+
         return a;
     }
 

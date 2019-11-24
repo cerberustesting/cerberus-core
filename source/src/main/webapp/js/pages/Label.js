@@ -121,6 +121,7 @@ function displayPageLabel() {
     $("[name='confirmationField']").html(doc.getDocLabel("page_label", "btn_delete"));
     $("[name='editLabelField']").html(doc.getDocLabel("page_label", "btn_edit"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "buttonAdd"));
+    $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
     $("[name='buttonDismiss']").html(doc.getDocLabel("page_global", "buttonDismiss"));

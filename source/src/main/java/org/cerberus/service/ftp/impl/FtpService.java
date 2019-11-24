@@ -163,7 +163,7 @@ public class FtpService implements IFtpService {
 
         FTPClient ftp = new FTPClient();
         AppService myResponse = factoryAppService.create(service, AppService.TYPE_FTP,
-                method, "", "", content, "", informations.get("path"), "", "", "", null, "", null, filePath);
+                method, "", "", content, "", "", "", "", "", informations.get("path"), "", "", "", null, "", null, filePath);
 
         try {
             if (proxyService.useProxy(StringUtil.getURLFromString(informations.get("host"), "", "", "ftp://"), system)) {
