@@ -567,7 +567,7 @@ public class AppServiceDAO implements IAppServiceDAO {
     public Answer create(AppService object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `Operation`, `ServiceRequest`, `KafkaTopic`, `KafkaKey`, `KafkaFileterPath`, `KafkaFilterValue`, `AttachementURL`, `Description`, `FileName`) ");
+        query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `Operation`, `ServiceRequest`, `KafkaTopic`, `KafkaKey`, `KafkaFilterPath`, `KafkaFilterValue`, `AttachementURL`, `Description`, `FileName`) ");
         if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
             query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         } else {
