@@ -8252,9 +8252,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // ADD Kafka Method and type in invariants
         // 1445
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES "
-                + "  ('SRVMETHOD', 'PRODUCE', 600 , 'PRODUCE Kafka method'),"
-                + "  ('SRVMETHOD', 'SEEK', 700 , 'SEEK Kafka method'),"
-                + "  ('SRVTYPE', 'KAFKA', 400 , 'KAFKA method')");
+                + "  ('SRVMETHOD', 'PRODUCE', 600 , 'Produce a Kafka event'),"
+                + "  ('SRVMETHOD', 'SEARCH', 700 , 'Search in a Kafka stream'),"
+                + "  ('SRVTYPE', 'KAFKA', 400 , 'KAFKA Service')");
 
         return a;
     }

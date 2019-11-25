@@ -91,7 +91,7 @@ public class AppService {
     public static final String METHOD_HTTPPUT = "PUT";
     public static final String METHOD_HTTPPATCH = "PATCH";
     public static final String METHOD_KAFKAPRODUCE = "PRODUCE";
-    public static final String METHOD_KAFKASEEK = "SEEK";
+    public static final String METHOD_KAFKASEARCH = "SEARCH";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_XML = "XML";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_JSON = "JSON";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_TXT = "TXT";
@@ -490,6 +490,7 @@ public class AppService {
                 jsonMyRequest.put("KAFKA-PropsHeader", jsonHeaders);
             }
             jsonMyRequest.put("KAFKA-Request", this.getServiceRequest());
+            jsonMyRequest.put("KAFKA-Key", this.getKafkaKey());
             if (!(this.getKafkaWaitNbEvent() == 0)) {
                 jsonMyRequest.put("WaitNbEvents", this.getKafkaWaitNbEvent());
             }

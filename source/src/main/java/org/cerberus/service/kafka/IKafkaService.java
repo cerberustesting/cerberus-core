@@ -48,8 +48,8 @@ public interface IKafkaService {
     /**
      *
      * @param topic
-     * @param key
-     * @param eventMessage
+     * @param filterPath
+     * @param filterValue
      * @param bootstrapServers
      * @param serviceHeader
      * @param targetNbEventsInt
@@ -58,7 +58,7 @@ public interface IKafkaService {
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    public AnswerItem<AppService> seekEvent(String topic, String key, String eventMessage,
+    public AnswerItem<AppService> searchEvent(String topic, String filterPath, String filterValue,
             String bootstrapServers,
             List<AppServiceHeader> serviceHeader, int targetNbEventsInt, int targetNbSecInt) throws InterruptedException, ExecutionException;
 

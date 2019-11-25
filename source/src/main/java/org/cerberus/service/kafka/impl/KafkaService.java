@@ -21,16 +21,13 @@ package org.cerberus.service.kafka.impl;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.OffsetAndTimestamp;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -47,7 +44,6 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.service.kafka.Condition;
 import org.cerberus.service.kafka.IKafkaService;
 import org.cerberus.service.proxy.IProxyService;
 import org.cerberus.util.StringUtil;
@@ -144,21 +140,21 @@ public class KafkaService implements IKafkaService {
     }
 
     @Override
-    public AnswerItem<AppService> seekEvent(String topic, String key, String eventMessage,
+    public AnswerItem<AppService> searchEvent(String topic, String filterPath, String filterValue,
             String bootstrapServers,
             List<AppServiceHeader> serviceHeader, int targetNbEventsInt, int targetNbSecInt) throws InterruptedException, ExecutionException {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKKAFKA);
         AnswerItem<AppService> result = new AnswerItem<>();
-        AppService serviceREST = factoryAppService.create("", AppService.TYPE_KAFKA, AppService.METHOD_KAFKASEEK, "", "", "", "", "", "", "", "", "", "", "", "", null, "", null, null);
+        AppService serviceREST = factoryAppService.create("", AppService.TYPE_KAFKA, AppService.METHOD_KAFKASEARCH, "", "", "", "", "", "", "", "", "", "", "", "", null, "", null, null);
 
         if (targetNbEventsInt <= 0) {
             // We get at least 1 Event.
             targetNbEventsInt = 1;
         }
-        if (targetNbSecInt <= 0) {
+        if (targetNbSecInt <= 4) {
             // We wait at least 1 second.
-            targetNbSecInt = 1;
+            targetNbSecInt = 5;
         }
 
         KafkaConsumer consumer = null;
@@ -184,41 +180,21 @@ public class KafkaService implements IKafkaService {
 
             serviceREST.setServicePath(bootstrapServers);
             serviceREST.setKafkaTopic(topic);
-            serviceREST.setKafkaKey(key);
-            serviceREST.setServiceRequest(eventMessage);
+            serviceREST.setKafkaKey(null);
+            serviceREST.setServiceRequest(null);
             serviceREST.setHeaderList(serviceHeader);
             serviceREST.setKafkaWaitNbEvent(targetNbEventsInt);
             serviceREST.setKafkaWaitSecond(targetNbSecInt);
 
             consumer = new KafkaConsumer<>(props);
-            final Thread mainThread = Thread.currentThread();
-            //Shutdown hook to allow clean finish in the case of interruption i.e. pod delete etc 
-            //https://www.oreilly.com/library/view/kafka-the-definitive/9781491936153/ch04.html#callout_kafka_consumers__reading_data_from_kafka_CO2-1
-//            Runtime.getRuntime().addShutdownHook(new Thread() {
-//                public void run() {
-//                    consumer.wakeup();
-//                    try {
-//                        mainThread.join();
-//                    } catch (InterruptedException e) {
-//                        // do nothing we are shutting down 
-//                    }
-//                }
-//            });
 
-            long startFromTimestamp = 0l;
             //Get a list of the topics' partitions
+            @SuppressWarnings("unchecked")
             List<PartitionInfo> partitionList = consumer.partitionsFor(topic);
             List<TopicPartition> topicPartitionList = partitionList.stream().map(info -> new TopicPartition(topic, info.partition())).collect(Collectors.toList());
             //Assign all the partitions to this consumer
             consumer.assign(topicPartitionList);
             consumer.seekToEnd(topicPartitionList); //default to latest offset for all partitions
-
-            Map<TopicPartition, OffsetAndTimestamp> partitionOffset = consumer.endOffsets(topicPartitionList);
-            for (Map.Entry<TopicPartition, OffsetAndTimestamp> entry : partitionOffset.entrySet()) {
-                TopicPartition keyPart = entry.getKey();
-//                OffsetAndTimestamp valOffset = entry.getValue();
-                LOG.debug("Partition : " + keyPart.partition() + " - Offset : " + entry.getValue());
-            }
 
 //        if (startFromTimestamp > 0l) {
 //            //Format a Query to get the partitions/offset information to determine the offsets for records that are at the timestamp
@@ -242,11 +218,15 @@ public class KafkaService implements IKafkaService {
             boolean consume = true;
             long timeoutTime = Instant.now().plusSeconds(targetNbSecInt).toEpochMilli(); //default to 30 seconds
             int nbFound = 0;
+            int pollDurationSec = 5;
+            if (targetNbSecInt < pollDurationSec) {
+                pollDurationSec = targetNbSecInt;
+            }
 
-            List<Condition> conditions = new ArrayList<>();
             while (consume) {
                 LOG.debug("Start Poll.");
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(targetNbSecInt));
+                @SuppressWarnings("unchecked")
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(pollDurationSec));
                 LOG.debug("End Poll.");
                 if (Instant.now().toEpochMilli() > timeoutTime) {
                     LOG.debug("Timed out searching for record");
@@ -298,7 +278,7 @@ public class KafkaService implements IKafkaService {
         serviceREST.setResponseHTTPBodyContentType(AppServiceService.guessContentType(serviceREST, AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON));
 
         result.setItem(serviceREST);
-        message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", AppService.METHOD_KAFKASEEK));
+        message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", AppService.METHOD_KAFKASEARCH));
         message.setDescription(message.getDescription().replace("%TOPIC%", topic));
         result.setResultMessage(message);
         return result;

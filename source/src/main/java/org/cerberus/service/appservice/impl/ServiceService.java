@@ -389,16 +389,14 @@ public class ServiceService implements IServiceService {
                      */
                     case AppService.TYPE_KAFKA:
 
-                        decodedOperation = appService.getOperation();
-
-                        answerDecode = variableService.decodeStringCompletly(decodedOperation, tCExecution, null, false);
-                        decodedOperation = (String) answerDecode.getItem();
-
+                        String decodedKey = appService.getKafkaKey();
+                        answerDecode = variableService.decodeStringCompletly(decodedKey, tCExecution, null, false);
+                        decodedKey = (String) answerDecode.getItem();
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
-                            String field = "Operation";
+                            String field = "Kafka Key";
                             message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
-                            LOG.debug("Property interupted due to decode '" + field + "'.");
+                            LOG.debug("Service Call interupted due to decode '" + field + "'.");
                             result.setResultMessage(message);
                             return result;
                         }
@@ -409,20 +407,20 @@ public class ServiceService implements IServiceService {
                                 /**
                                  * Call REST and store it into the execution.
                                  */
-                                result = kafkaService.produceEvent(appService.getKafkaTopic(), appService.getKafkaKey(), decodedRequest, decodedServicePath, appService.getHeaderList());
+                                result = kafkaService.produceEvent(appService.getKafkaTopic(), decodedKey, decodedRequest, decodedServicePath, appService.getHeaderList());
                                 message = result.getResultMessage();
                                 break;
 
-                            case AppService.METHOD_KAFKASEEK:
+                            case AppService.METHOD_KAFKASEARCH:
                                 int targetNbEventsInt = ParameterParserUtil.parseIntegerParam(targetNbEvents, 1);
                                 int targetNbSecInt = ParameterParserUtil.parseIntegerParam(targetNbSec, 30);
-                                result = kafkaService.seekEvent(appService.getKafkaTopic(), appService.getKafkaKey(), decodedRequest, decodedServicePath, appService.getHeaderList(), targetNbEventsInt, targetNbSecInt);
+                                result = kafkaService.searchEvent(appService.getKafkaTopic(), decodedKey, decodedRequest, decodedServicePath, appService.getHeaderList(), targetNbEventsInt, targetNbSecInt);
                                 message = result.getResultMessage();
                                 break;
 
                             default:
                                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                                message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Method : '" + appService.getMethod() + "' for KAFKA Service is not supported by the engine (Use " + AppService.METHOD_KAFKAPRODUCE + " or " + AppService.METHOD_KAFKASEEK + ")."));
+                                message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Method : '" + appService.getMethod() + "' for KAFKA Service is not supported by the engine (Use " + AppService.METHOD_KAFKAPRODUCE + " or " + AppService.METHOD_KAFKASEARCH + ")."));
                                 result.setResultMessage(message);
                         }
 
