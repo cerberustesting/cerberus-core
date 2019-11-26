@@ -488,13 +488,9 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionExecuteCerberusCommand(TestCaseExecution tCExecution, String command) {
 
-        LOG.warn("PASSAGE PAR DOACTIONEXECUTECERBERUSCOMMAND");
-
         MessageEvent message;
 
         try {
-            LOG.warn("executeCerberusCommand action has been launched in development mode, be aware when using this hidden feature");
-            LOG.warn("LANCEMENT DE L'ACTION CERBERUS COMMAND");
             return cerberusCommand.executeCommand(command);
         } catch (CerberusEventException e) {
             message = e.getMessageError();
