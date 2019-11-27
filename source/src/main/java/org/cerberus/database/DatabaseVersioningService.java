@@ -8258,15 +8258,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // ADD parameters to perform execute Cerberus command action
         // 1446-1448
-        a.add("INSERT INTO cerberus.`parameter`"
+        a.add("INSERT INTO parameter"
                 + "(`system`, param, value, description)"
                 + "VALUES('', 'cerberus_executeCerberusCommand_folder', '/opt/Cerberus-Media-PROD/scripts/', 'path to the Cerberus script folder')");
 
-        a.add("INSERT INTO cerberus.`parameter`"
+        a.add("INSERT INTO parameter"
                 + "(`system`, param, value, description)"
                 + "VALUES('', 'cerberus_executeCerberusCommand_user', 'cerberus', 'user used to execute a script with Ceberus')");
 
-        a.add("INSERT INTO cerberus.`parameter`"
+        a.add("INSERT INTO parameter"
                 + "(`system`, param, value, description)"
                 + "VALUES('', 'cerberus_executeCerberusCommand_password', 'Vy1F08s8O5Jx', 'password used to execute a script with Cerberus')");
 
