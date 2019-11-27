@@ -1070,13 +1070,13 @@ function loadLabel(labelList, mySystem, myLabelDiv, labelSize, test, testCase) {
 
             //DRAW LABEL TREE
 
-            $('#selectLabelS').treeview({data: data.labelHierarchy.stickers, enableLinks: false, showTags: true, multiSelect: true});
-            $('#selectLabelB').treeview({data: data.labelHierarchy.batteries, enableLinks: false, showTags: true, multiSelect: true});
-            $('#selectLabelR').treeview({data: data.labelHierarchy.requirements, enableLinks: false, showTags: true, multiSelect: true});
+            $(labelDiv + 'S').treeview({data: data.labelHierarchy.stickers, enableLinks: false, showTags: true, multiSelect: true});
+            $(labelDiv + 'B').treeview({data: data.labelHierarchy.batteries, enableLinks: false, showTags: true, multiSelect: true});
+            $(labelDiv + 'R').treeview({data: data.labelHierarchy.requirements, enableLinks: false, showTags: true, multiSelect: true});
 
-            $('#selectLabelS').treeview('expandAll', {levels: 20, silent: true});
-            $('#selectLabelB').treeview('expandAll', {levels: 20, silent: true});
-            $('#selectLabelR').treeview('expandAll', {levels: 20, silent: true});
+            $(labelDiv + 'S').treeview('expandAll', {levels: 20, silent: true});
+            $(labelDiv + 'B').treeview('expandAll', {levels: 20, silent: true});
+            $(labelDiv + 'R').treeview('expandAll', {levels: 20, silent: true});
 
 //            $(labelDiv + "S").empty();
 //            $(labelDiv + "R").empty();

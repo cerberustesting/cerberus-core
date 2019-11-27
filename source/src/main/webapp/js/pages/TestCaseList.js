@@ -382,7 +382,7 @@ function deleteMassTestCase() {
 
 function massActionModalCloseHandler() {
     // reset form values
-    $('#massActionTestCaseModal #massActionTestCaseModalForm')[0].reset();
+    $('#massActionTestCaseModal #massActionTestCaseModalFormUpdate')[0].reset();
     // remove all errors on the form fields
     $(this).find('div.has-error').removeClass("has-error");
     // clear the response messages of the modal
