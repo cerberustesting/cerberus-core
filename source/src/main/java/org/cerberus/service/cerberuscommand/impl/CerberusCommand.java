@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.cerberuscommand;
+package org.cerberus.service.cerberuscommand.impl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,6 +32,7 @@ import org.cerberus.engine.gwt.impl.ActionService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.cerberuscommand.ICerberusCommand;
 import org.cerberus.util.ParameterParserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,10 +78,10 @@ public class CerberusCommand implements ICerberusCommand {
         this.command = command;
 
         try {
-            checkScriptFeatureEnable();
             checkCommandContent();
             checkOS();
             initializeParameters();
+            checkParametersNotEmpty();
             checkCommandFirstCharacter();
             concatenateCommandToRun();
             executeProcessBuilder();
@@ -91,13 +92,6 @@ public class CerberusCommand implements ICerberusCommand {
         }
 
         return this.message;
-    }
-
-    private void checkScriptFeatureEnable() throws CerberusEventException {
-
-        if (!ParameterParserUtil.parseBooleanParam(parameterService.getParameterStringByKey("cerberus_script_feature_enable", "", "Y"), false)) {
-            throw new CerberusEventException(new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_DISABLED));
-        }
     }
 
     private void checkCommandContent() throws CerberusEventException {
@@ -120,9 +114,15 @@ public class CerberusCommand implements ICerberusCommand {
 
     private void initializeParameters() {
 
-        this.scriptFolder = parameterService.getParameterStringByKey("cerberus_script_folder", "", "CerberusScripts");
-        this.scriptUser = parameterService.getParameterStringByKey("cerberus_script_user", "", "cerberus");
-        this.scriptPassword = parameterService.getParameterStringByKey("cerberus_script_password", "", "scripts");
+        this.scriptFolder = parameterService.getParameterStringByKey("cerberus_executeCerberusCommand_folder", "", "");
+        this.scriptUser = parameterService.getParameterStringByKey("cerberus_executeCerberusCommand_user", "", "");
+        this.scriptPassword = parameterService.getParameterStringByKey("cerberus_executeCerberusCommand_password", "", "");
+    }
+
+    private void checkParametersNotEmpty() throws CerberusEventException {
+        if (this.scriptFolder.isEmpty() || this.scriptPassword.isEmpty() || this.scriptUser.isEmpty()) {
+            throw new CerberusEventException(new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_MISSINGPARAMETER));
+        }
     }
 
     private void checkCommandFirstCharacter() throws CerberusEventException {
