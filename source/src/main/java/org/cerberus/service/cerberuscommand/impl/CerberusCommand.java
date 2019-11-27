@@ -78,7 +78,6 @@ public class CerberusCommand implements ICerberusCommand {
         this.command = command;
 
         try {
-            //checkScriptFeatureEnable();
             checkCommandContent();
             checkOS();
             initializeParameters();
@@ -95,12 +94,6 @@ public class CerberusCommand implements ICerberusCommand {
         return this.message;
     }
 
-//    private void checkScriptFeatureEnable() throws CerberusEventException {
-//
-//        if (!ParameterParserUtil.parseBooleanParam(parameterService.getParameterStringByKey("cerberus_script_feature_enable", "", "Y"), false)) {
-//            throw new CerberusEventException(new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_DISABLED));
-//        }
-//    }
     private void checkCommandContent() throws CerberusEventException {
 
         if (this.command.isEmpty()) {
