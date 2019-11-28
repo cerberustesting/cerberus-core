@@ -8257,18 +8257,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + "  ('SRVTYPE', 'KAFKA', 400 , 'KAFKA Service')");
 
         // ADD parameters to perform execute Cerberus command action
-        // 1446-1448
-        a.add("INSERT INTO parameter"
-                + "(`system`, param, value, description)"
-                + "VALUES('', 'cerberus_executeCerberusCommand_folder', '/opt/Cerberus-Media-PROD/scripts/', 'path to the Cerberus script folder')");
-
-        a.add("INSERT INTO parameter"
-                + "(`system`, param, value, description)"
-                + "VALUES('', 'cerberus_executeCerberusCommand_user', 'cerberus', 'user used to execute a script with Ceberus')");
-
-        a.add("INSERT INTO parameter"
-                + "(`system`, param, value, description)"
-                + "VALUES('', 'cerberus_executeCerberusCommand_password', 'Vy1F08s8O5Jx', 'password used to execute a script with Cerberus')");
+        // 1446
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_executeCerberusCommand_path', '/opt/CerberusMedias/scripts/', 'Path to the Cerberus script folder'),"
+                + " ('', 'cerberus_executeCerberusCommand_user', 'cerberus', 'User used to execute a script with Cerberus'),"
+                + " ('', 'cerberus_executeCerberusCommand_password', LEFT(MD5(RAND()), 32), 'Password used to execute a script with Cerberus')");
 
         // ADD
         return a;

@@ -851,14 +851,6 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
-            "data": "project",
-            "visible": false,
-            "sName": "tec.project",
-            "title": doc.getDocOnline("project", "idproject"),
-            "sWidth": "100px",
-            "sDefaultContent": ""
-        },
-        {
             "data": "origine",
             "visible": false,
             "sName": "tec.origine",
