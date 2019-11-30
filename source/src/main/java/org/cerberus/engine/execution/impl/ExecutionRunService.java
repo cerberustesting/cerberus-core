@@ -47,7 +47,7 @@ import org.cerberus.crud.factory.IFactoryTestCaseExecutionSysVer;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControlExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepExecution;
-import org.cerberus.crud.factory.IFactoryTag;
+import org.cerberus.crud.service.IAppServiceService;
 import org.cerberus.crud.service.ICountryEnvLinkService;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ILoadTestCaseService;
@@ -81,6 +81,7 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.enums.Screenshot;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.kafka.IKafkaService;
 import org.cerberus.service.robotproviders.IBrowserstackService;
 import org.cerberus.service.robotproviders.IKobitonService;
 import org.cerberus.service.sikuli.ISikuliService;
@@ -168,6 +169,10 @@ public class ExecutionRunService implements IExecutionRunService {
     private IBrowserstackService browserstackService;
     @Autowired
     private IKobitonService kobitonService;
+    @Autowired
+    private IKafkaService kafkaService;
+    @Autowired
+    private IAppServiceService appServiceService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
@@ -454,6 +459,11 @@ public class ExecutionRunService implements IExecutionRunService {
             mainExecutionTestCaseStepList.addAll(preTestCaseStepList);
             mainExecutionTestCaseStepList.addAll(testCaseStepList);
             mainExecutionTestCaseStepList.addAll(postTestCaseStepList);
+
+            /**
+             * Open Kafka Consumers
+             */
+            tCExecution.setKafkaConsumer(kafkaService.getAllConsumers(mainExecutionTestCaseStepList));
 
             /**
              * Initialize the global TestCaseExecution Data List.
@@ -815,7 +825,7 @@ public class ExecutionRunService implements IExecutionRunService {
         } catch (CerberusException ex) {
             /**
              * If an exception is found, set the execution to FA and print the
-             * exception
+             * exception (only in debug mode)
              */
             MessageGeneral messageFin = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA);
             messageFin.setDescription(messageFin.getDescription() + " " + ex.getMessageError().getDescription());
@@ -859,6 +869,11 @@ public class ExecutionRunService implements IExecutionRunService {
             } catch (Exception ex) {
                 LOG.error(logPrefix + "Exception cleaning Memory: " + ex.toString(), ex);
             }
+
+            /**
+             * Clean Kafka Consumers
+             */
+            kafkaService.closeAllConsumers(tCExecution);
 
             /**
              * Log execution is finished

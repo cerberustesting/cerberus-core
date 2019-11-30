@@ -59,6 +59,26 @@ public final class StringUtil {
     }
 
     /**
+     *
+     * @param ex
+     * @return
+     */
+    public static String getExceptionCause(Exception ex) {
+        StringBuilder result = new StringBuilder();
+        StackTraceElement[] ste = ex.getStackTrace();
+        String[] exString = ex.getMessage().split("\n");
+//        LOG.debug(exString.length);
+//        LOG.debug("toto " + ex.getMessage());
+        for (StackTraceElement string : ste) {
+//            LOG.debug("toto : " + string.toString());
+            if (string.toString().contains("Caused by")) {
+                result.append(string.toString());
+            }
+        }
+        return result.toString();
+    }
+
+    /**
      * Determine if the passed parameter boolean value
      *
      * @param parse to check for boolean validity

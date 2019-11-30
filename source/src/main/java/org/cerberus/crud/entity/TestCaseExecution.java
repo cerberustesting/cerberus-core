@@ -20,8 +20,10 @@
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -131,6 +133,7 @@ public class TestCaseExecution {
 
     private List<String> videos;
 
+    // Used in reporting page to report the previous executions from the same tag.
     private long previousExeId;
     private String previousExeStatus;
 
@@ -153,7 +156,9 @@ public class TestCaseExecution {
     private Integer remoteProxyPort;
     private String remoteProxyUUID;
     private String remoteProxyLastHarMD5;
-
+    // Kafka Consumers
+    private HashMap<String, KafkaConsumer> kafkaConsumer;
+    
     /**
      * Invariant PROPERTY TYPE String.
      */
@@ -185,6 +190,14 @@ public class TestCaseExecution {
     public static final String ROBOTPROVIDER_BROWSERSTACK = "BROWSERSTACK";
     public static final String ROBOTPROVIDER_KOBITON = "KOBITON";
     public static final String ROBOTPROVIDER_NONE = "NONE";
+
+    public HashMap<String, KafkaConsumer> getKafkaConsumer() {
+        return kafkaConsumer;
+    }
+
+    public void setKafkaConsumer(HashMap<String, KafkaConsumer> kafkaConsumer) {
+        this.kafkaConsumer = kafkaConsumer;
+    }
 
     public boolean isRemoteProxyStarted() {
         return remoteProxyStarted;

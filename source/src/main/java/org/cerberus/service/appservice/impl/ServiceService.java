@@ -414,8 +414,36 @@ public class ServiceService implements IServiceService {
                             case AppService.METHOD_KAFKASEARCH:
                                 int targetNbEventsInt = ParameterParserUtil.parseIntegerParam(targetNbEvents, 1);
                                 int targetNbSecInt = ParameterParserUtil.parseIntegerParam(targetNbSec, 30);
-                                result = kafkaService.searchEvent(appService.getKafkaTopic(), decodedKey, decodedRequest, decodedServicePath, appService.getHeaderList(), targetNbEventsInt, targetNbSecInt);
-                                message = result.getResultMessage();
+                                if (targetNbEventsInt <= 0) {
+                                    // We get at least 1 Event.
+                                    targetNbEventsInt = 1;
+                                }
+                                if (targetNbSecInt <= 4) {
+                                    // We wait at least 1 second.
+                                    targetNbSecInt = 5;
+                                }
+
+                                appService.setServicePath(decodedServicePath);
+                                appService.setKafkaTopic(appService.getKafkaTopic());
+                                appService.setKafkaKey(null);
+                                appService.setServiceRequest(null);
+                                appService.setHeaderList(appService.getHeaderList());
+                                appService.setKafkaWaitNbEvent(targetNbEventsInt);
+                                appService.setKafkaWaitSecond(targetNbSecInt);
+                                appService.setKafkaResponsePartition(-1);
+                                appService.setKafkaResponseOffset(-1);
+
+                                AnswerItem<String> resultSearch = new AnswerItem<>();
+                                String kafkaKey = kafkaService.getKafkaConsumerKey(appService.getKafkaTopic(), appService.getServicePath());
+                                resultSearch = kafkaService.searchEvent(tCExecution.getKafkaConsumer().get(kafkaKey), appService.getKafkaFilterPath(), appService.getKafkaFilterValue(), targetNbEventsInt, targetNbSecInt);
+                                message = resultSearch.getResultMessage();
+
+                                appService.setResponseHTTPBody(resultSearch.getItem());
+                                appService.setResponseHTTPBodyContentType(appServiceService.guessContentType(appService, AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON));
+
+                                result.setItem(appService);
+                                result.setResultMessage(message);
+
                                 break;
 
                             default:
@@ -450,6 +478,8 @@ public class ServiceService implements IServiceService {
                         message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Service Type : '" + appService.getType() + "' is not supported by the engine."));
                         result.setResultMessage(message);
                 }
+                message.setDescription(message.getDescription().replace("%TOPIC%", appService.getKafkaTopic()));
+
             }
 
         } catch (CerberusException ex) {
@@ -467,6 +497,7 @@ public class ServiceService implements IServiceService {
         }
 
         message.setDescription(message.getDescription().replace("%SERVICENAME%", service));
+        message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", AppService.METHOD_KAFKASEARCH));
         result.setResultMessage(message);
         LOG.debug("Ended callService : " + service + " with database : " + database + " Result : " + message.getDescription());
         return result;

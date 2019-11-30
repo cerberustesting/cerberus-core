@@ -194,7 +194,7 @@ public enum MessageEventEnum {
     ACTION_SUCCESS_KEYPRESS_ALERT(200, "OK", "Keypress '%KEY%' done on alert popup !", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CALLSOAP(200, "OK", "Call to SOAP Operation '%SOAPMETHOD%' on Service Path %SERVICEPATH% executed successfully and stored to memory!", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CALLSERVICE(200, "OK", "'%SERVICEMETHOD%' Call to Service '%SERVICENAME%' to '%SERVICEPATH%' executed successfully and stored to memory!", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    ACTION_SUCCESS_CALLSERVICE_PRODUCEKAFKA(200, "OK", "'%SERVICEMETHOD%' Call to Kafka topic '%TOPIC%' executed successfully. Event sent to offset %OFFSET% of partition %PART%", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_CALLSERVICE_PRODUCEKAFKA(200, "OK", "'%SERVICEMETHOD%' Call to Kafka topic '%TOPIC%' executed successfully. Event sent to partition %PART% offset %OFFSET%", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CALLSERVICE_SEEKKAFKA(200, "OK", "'%SERVICEMETHOD%' Call to Kafka topic '%TOPIC%' executed successfully.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_MOUSEDOWNMOUSEUP(200, "OK", "Mouse Left Click pressed and released on Element '%ELEMENT%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_REMOVEDIFFERENCE(200, "OK", "Difference '%DIFFERENCE%' removed from '%DIFFERENCES%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
