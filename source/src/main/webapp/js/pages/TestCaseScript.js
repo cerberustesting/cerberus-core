@@ -22,6 +22,944 @@ var canUpdate = false;
 var allDelete = false;
 var loadedPropertiesNumber = -1;
 var Tags = [];
+
+var actionUIList = {
+    "fr": [
+        {"type": "Unknown", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "click", "aval1": "Chemin vers l'élement à cliquer", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "longPress", "aval1": "Chemin vers l'élement à cliquer", "acol1": "col-lg-7", "aval2": "[opt] Valeur (ms) : 8000 par défaut", "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "mouseLeftButtonPress", "aval1": "Chemin vers l'élement à cibler", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "mouseLeftButtonRelease", "aval1": "Chemin vers l'élement", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "doubleClick", "aval1": "Chemin vers l'élement à double-cliquer", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "rightClick", "aval1": "Chemin vers l'élement à clicker avec le bouton droit", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "mouseOver", "aval1": "Chemin vers l'élement", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "focusToIframe", "aval1": "Chemin vers l'élement de l'iFrame à cibler", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "focusDefaultIframe", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "switchToWindow", "aval1": "Titre ou url de la fenêtre", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "manageDialog", "aval1": "ok ou cancel", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "manageDialogKeypress", "aval1": "Touches à appuyer.", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "openUrlWithBase", "aval1": "URI à appeler (ex : /index.html)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "openUrlLogin", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "openUrl", "aval1": "URL à appeler (ex : http://www.domain.com)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "executeJS", "aval1": "JavaScript à executer", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "executeCommand", "aval1": "Commande (ex : \"grep\")", "acol1": "col-lg-4", "aval2": "Arguments (ex : \"--name toto\")", "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "executeCerberusCommand", "aval1": "Commande (ex : \"grep\")", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "openApp", "aval1": "Nom ou chemin de l'application, package pour android", "acol1": "col-lg-6", "aval2": "[Optionnel, obligatoire pour Android] Activity", "acol2": "col-lg-3", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "closeApp", "aval1": "Nom ou chemin de l'application", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "dragAndDrop", "aval1": "Chemin de l'élement", "acol1": "col-lg-5", "aval2": "Destination de l'élément", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "select", "aval1": "Chemin vers l'élement", "acol1": "col-lg-5", "aval2": "Chemin vers l'option", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "keypress", "aval1": "[opt] Chemin vers l'élement à cibler", "acol1": "col-lg-7", "aval2": "Touche à appuyer", "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "type", "aval1": "Chemin vers l'élement", "acol1": "col-lg-5", "aval2": "Texte à entrer", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "hideKeyboard", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "clearField", "aval1": "Chemin vers l'élement à effacer", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "swipe", "aval1": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "acol1": "col-lg-5", "aval2": "Direction x;y;z;y", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "wait", "aval1": "Valeur(ms) ou élement", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "waitVanish", "aval1": "Element", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "callService", "aval1": "Nom du Service", "acol1": "col-lg-5", "aval2": "Nb Evt à attendre (Kafka)", "acol2": "col-lg-2", "aval3": "Tps d'attente en sec (Kafka)", "acol3": "col-lg-2"},
+        {"type": "executeSqlUpdate", "aval1": "Nom de Base de donnée", "acol1": "col-lg-3", "aval2": "Script à executer", "acol2": "col-lg-6", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "executeSqlStoredProcedure", "aval1": "Nom de Base de donnée", "acol1": "col-lg-3", "aval2": "Procedure Stoquée à executer", "acol2": "col-lg-6", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "calculateProperty", "aval1": "Nom d'une Proprieté", "acol1": "col-lg-5", "aval2": "[opt] Nom d'une autre propriété", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "scrollTo", "aval1": "element (id, xpath, ..., et text=)", "acol1": "col-lg-5", "aval2": "Nombre maximum de scroll vers le bas (8 par defaut)", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "installApp", "aval1": "Chemin vers l'application (ex : /root/toto.apk)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "removeApp", "aval1": "Package de l'application (ex : com.cerberus.appmobile)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "doNothing", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "mouseOverAndWait", "aval1": "Action Depreciée", "acol1": "col-lg-5", "aval2": "Action Depreciée", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "removeDifference", "aval1": "Action Depreciée", "acol1": "col-lg-5", "aval2": "Action Depreciée", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"}
+    ], "en": [
+        {"type": "Unknown", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "click", "aval1": "Element path", "acol1": "col-lg-9", "aval2": null, "acol2": "", "aval3": null, "acol3": ""},
+        {"type": "longPress", "aval1": "Element path", "acol1": "col-lg-7", "aval2": "[opt] Duration (ms) : 8000 by default", "acol2": "col-lg-2", "aval3": null, "acol3": ""},
+        {"type": "mouseLeftButtonPress", "aval1": "Element path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "mouseLeftButtonRelease", "aval1": "Element path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "doubleClick", "aval1": "Element path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "rightClick", "aval1": "Element path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "mouseOver", "aval1": "Element path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "focusToIframe", "aval1": "Element path of the target iFrame", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "focusDefaultIframe", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "switchToWindow", "aval1": "Window title or url", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "manageDialog", "aval1": "ok or cancel", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "manageDialogKeypress", "aval1": "keys to press.", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "openUrlWithBase", "aval1": "URI to call  (ex : /index.html)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "openUrlLogin", "aval1": null, "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "openUrl", "aval1": "URL to call (ex : http://www.domain.com)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "executeJS", "aval1": "JavaScript to execute", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "executeCommand", "aval1": "Command (ex : \"grep\")", "acol1": "col-lg-4", "aval2": "Arguments (ex : \"--name toto\")", "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "executeCerberusCommand", "aval1": "Command (ex : \"grep\")", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "openApp", "aval1": "Application name or path or package for Android", "acol1": "col-lg-6", "aval2": "[Optional, required for Android] Activity", "acol2": "col-lg-3", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "closeApp", "aval1": "Application name or path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "dragAndDrop", "aval1": "Element path", "acol1": "col-lg-5", "aval2": "Destination Element Path", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "select", "aval1": "Element path", "acol1": "col-lg-5", "aval2": "Option path", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "keypress", "aval1": "[opt] Target element path", "acol1": "col-lg-7", "aval2": "Key to press", "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "type", "aval1": "Element path", "acol1": "col-lg-5", "aval2": "Text to type", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "hideKeyboard", "aval1": null, "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "clearField", "aval1": "Element path to Clear", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "swipe", "aval1": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "acol1": "col-lg-5", "aval2": "Direction x;y;z;y", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "wait", "aval1": "Duration(ms) or Element", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "waitVanish", "aval1": "Element", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "callService", "aval1": "Service Name", "acol1": "col-lg-5", "aval2": "Nb Evt (Kafka)", "acol2": "col-lg-2", "aval3": "Evt Wait sec (Kafka)", "acol3": "col-lg-2"},
+        {"type": "executeSqlUpdate", "aval1": "Database Name", "acol1": "col-lg-3", "aval2": "Script", "acol2": "col-lg-6", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "executeSqlStoredProcedure", "aval1": "Database Name", "acol1": "col-lg-3", "aval2": "Stored Procedure", "acol2": "col-lg-6", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "calculateProperty", "aval1": "Property Name", "acol1": "col-lg-5", "aval2": "[opt] Name of an other property", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "scrollTo", "aval1": "element ('id=ressource-id'. Empty if you want use text)", "acol1": "col-lg-5", "aval2": "text (empty if you want use element)", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "installApp", "aval1": "Application path (ex : /root/toto.apk)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "removeApp", "aval1": "Application package (ex : com.cerberus.appmobile)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "doNothing", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "mouseOverAndWait", "aval1": "[Deprecated]", "acol1": "col-lg-5", "aval2": "[Deprecated]", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "removeDifference", "aval1": "[Deprecated]", "acol1": "col-lg-5", "aval2": "[Deprecated]", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"}
+    ]
+};
+
+var propertyUIList = {
+    "fr": [
+        {
+            "type": "text",
+            "value1": "Value",
+            "value1Class": "col-sm-10",
+            "value1EditorMode": "ace/mode/cerberus",
+            "value2": null,
+            "database": null,
+            "length": "[opt] Length",
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": "Nature",
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "getFromSql",
+            "value1": "SQL Query",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/sql",
+            "value2": null,
+            "database": "Database",
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": "Row Limit",
+            "nature": "Nature",
+            "retry": "Number of retry (until non-empty result)",
+            "period": "Retry period (ms)"
+        },
+        {
+            "type": "getFromDataLib",
+            "value1": "DataLib name",
+            "value1Class": "col-sm-10",
+            "value1EditorMode": "ace/mode/cerberus",
+            "value2": null,
+            "database": null,
+            "length": "Length (nb of rows)",
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": "[opt] Row Limit",
+            "nature": "Nature",
+            "retry": "Number of retry (until non-empty result)",
+            "period": "Retry period (ms)"
+        },
+        {
+            "type": "getFromHtml",
+            "value1": "Element path",
+            "value1Class": "col-sm-10",
+            "value1EditorMode": "ace/mode/xquery",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "getFromHtmlVisible",
+            "value1": "Element path",
+            "value1Class": "col-sm-10",
+            "value1EditorMode": "ace/mode/xquery",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "getFromJS",
+            "value1": "Javascript command",
+            "value1Class": "col-sm-10",
+            "value1EditorMode": "ace/mode/javascript",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "getAttributeFromHtml",
+            "value1": "Element path",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/xquery",
+            "value2": "Attribute name",
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "getFromCookie",
+            "value1": "Cookie name",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/cerberus",
+            "value2": "Cookie attribute",
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "getFromXml",
+            "value1": "Xpath",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/xquery",
+            "value2": "[opt] XML or URL to XML file",
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "getDifferencesFromXml",
+            "value1": "value1",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/xquery",
+            "value2": "value2",
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "getFromJson",
+            "value1": "JSONPath",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/json",
+            "value2": "[opt] JSON or URL to JSON file",
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "getFromGroovy",
+            "value1": "Groovy command",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/groovy",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "getFromCommand",
+            "value1": "Executer une commande shell",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/shell",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "getElementPosition",
+            "value1": "Récupérer la position en Pixel d'un élement (use id=/xpath=/etc syntax - return \"px;py\")",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/cerberus",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "executeSoapFromLib",
+            "value1": "Service lib name",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/cerberus",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "executeSqlFromLib",
+            "value1": "SQL Lib name",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/cerberus",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        }
+    ], "en": [
+        {
+            "type": "text",
+            "value1": "Value",
+            "value1Class": "col-sm-10",
+            "value1EditorMode": "ace/mode/cerberus",
+            "value2": null,
+            "database": null,
+            "length": "[opt] Length",
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": "Nature",
+            "retry": null,
+            "period": null,
+            "rank": "Rank"
+        },
+        {
+            "type": "getFromSql",
+            "value1": "SQL Query",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/sql",
+            "value2": null,
+            "database": "Database",
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": "Row Limit",
+            "nature": "Nature",
+            "retry": "Number of retry (until non-empty result)",
+            "period": "Retry period (ms)",
+            "rank": "Rank"
+        },
+        {
+            "type": "getFromDataLib",
+            "value1": "DataLib name",
+            "value1Class": "col-sm-10",
+            "value1EditorMode": "ace/mode/cerberus",
+            "value2": null,
+            "database": null,
+            "length": "Length (nb of rows)",
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": "[opt] Row Limit",
+            "nature": "Nature",
+            "retry": "Number of retry (until non-empty result)",
+            "period": "Retry period (ms)",
+            "rank": "Rank"
+        },
+        {
+            "type": "getFromHtml",
+            "value1": "Element path",
+            "value1Class": "col-sm-10",
+            "value1EditorMode": "ace/mode/xquery",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null,
+            "rank": "Rank"
+        },
+        {
+            "type": "getFromHtmlVisible",
+            "value1": "Element path",
+            "value1Class": "col-sm-10",
+            "value1EditorMode": "ace/mode/xquery",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null,
+            "rank": "Rank"
+        },
+        {
+            "type": "getFromJS",
+            "value1": "Javascript command",
+            "value1Class": "col-sm-10",
+            "value1EditorMode": "ace/mode/javascript",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null,
+            "rank": "Rank"
+        },
+        {
+            "type": "getAttributeFromHtml",
+            "value1": "Element path",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/xquery",
+            "value2": "Attribute name",
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null,
+            "rank": "Rank"
+        },
+        {
+            "type": "getFromCookie",
+            "value1": "Cookie name",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/cerberus",
+            "value2": "Cookie attribute",
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null,
+            "rank": "Rank"
+        },
+        {
+            "type": "getFromXml",
+            "value1": "Xpath",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/xquery",
+            "value2": "[opt] XML or URL to XML file",
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null,
+            "rank": "Rank"
+        },
+        {
+            "type": "getDifferencesFromXml",
+            "value1": "value1",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/xquery",
+            "value2": "value2",
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null,
+            "rank": "Rank"
+        },
+        {
+            "type": "getFromJson",
+            "value1": "JSONPath",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/json",
+            "value2": "[opt] JSON or URL to JSON file",
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null,
+            "rank": "Rank"
+        },
+        {
+            "type": "getFromGroovy",
+            "value1": "Groovy command",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/groovy",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null,
+            "rank": "Rank"
+        },
+        {
+            "type": "getFromCommand",
+            "value1": "Execute a shell command",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/shell",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null,
+            "rank": "Rank"
+        },
+        {
+            "type": "getElementPosition",
+            "value1": "Get an element pixel position (use id=/xpath=/etc syntax - return \"px;py\")",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/cerberus",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "executeSoapFromLib",
+            "value1": "Service lib name",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/cerberus",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null,
+            "rank": "Rank"
+        },
+        {
+            "type": "executeSqlFromLib",
+            "value1": "SQL Lib name",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/cerberus",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null,
+            "rank": "Rank"
+        }
+    ]
+};
+
+var conditionUIList = {
+    "fr": [
+        {"type": "always", "object": null, "property": null, "value3": null},
+        {"type": "ifPropertyExist", "object": "Propriété (ex : PROP1)", "property": null, "condValue3": null},
+        {"type": "ifPropertyNotExist", "object": "Propriété (ex : PROP1)", "property": null, "condValue3": null},
+        {"type": "ifElementPresent", "object": "Element", "property": null, "condValue3": null},
+        {"type": "ifElementNotPresent", "object": "Element (ex : data-cerberus=fieldTest)", "property": null, "condValue3": null},
+        {"type": "ifTextInElement", "object": "Element", "property": "Texte", "condValue3": "isCaseSensitive"},
+        {"type": "ifTextNotInElement", "object": "Element", "property": "Texte", "condValue3": "isCaseSensitive"},
+        {"type": "ifNumericEqual", "object": "Integer1", "property": "Integer2", "condValue3": null},
+        {"type": "ifNumericDifferent", "object": "Integer1", "property": "Integer2", "condValue3": null},
+        {"type": "ifNumericGreater", "object": "Integer1 (ex : 20)", "property": "Integer2 (ex : 10)", "condValue3": null},
+        {"type": "ifNumericGreaterOrEqual", "object": "Integer1 (ex : 20)", "property": "Integer2 (ex : 10)", "condValue3": null},
+        {"type": "ifNumericMinor", "object": "Integer1 (ex : 10)", "property": "Integer2 (ex : 20)", "condValue3": null},
+        {"type": "ifNumericMinorOrEqual", "object": "Integer1 (ex : 10)", "property": "Integer2 (ex : 20)", "condValue3": null},
+        {"type": "ifStringEqual", "object": "String1", "property": "String2", "condValue3": "isCaseSensitive"},
+        {"type": "ifStringDifferent", "object": "String1", "property": "String2", "condValue3": "isCaseSensitive"},
+        {"type": "ifStringGreater", "object": "String1 (ex : ZZZ)", "property": "String2 (ex : AAA)", "condValue3": null},
+        {"type": "ifStringMinor", "object": "String2 (ex : AAA)", "property": "String2 (ex : ZZZ)", "condValue3": null},
+        {"type": "ifStringContains", "object": "String1 (ex : toto)", "property": "String2 (ex : ot)", "condValue3": "isCaseSensitive"},
+        {"type": "ifStringNotContains", "object": "String1 (ex : toto)", "property": "String2 (ex : zot)", "condValue3": "isCaseSensitive"},
+        {"type": "Never", "object": null, "property": null, "condValue3": null}
+    ], "en": [
+        {"type": "always", "object": null, "property": null, "condValue3": null},
+        {"type": "ifPropertyExist", "object": "Property name  (ex : PROP1)", "property": null, "condValue3": null},
+        {"type": "ifPropertyNotExist", "object": "Property name  (ex : PROP1)", "property": null, "condValue3": null},
+        {"type": "ifElementPresent", "object": "Element (ex : data-cerberus=fieldTest)", "property": null, "condValue3": null},
+        {"type": "ifElementNotPresent", "object": "Element (ex : data-cerberus=fieldTest)", "property": null, "condValue3": null},
+        {"type": "ifTextInElement", "object": "Element", "property": "Text", "condValue3": "isCaseSensitive"},
+        {"type": "ifTextNotInElement", "object": "Element", "property": "Text", "condValue3": "isCaseSensitive"},
+        {"type": "ifNumericEqual", "object": "Integer1", "property": "Integer2", "condValue3": null},
+        {"type": "ifNumericDifferent", "object": "Integer1", "property": "Integer2", "condValue3": null},
+        {"type": "ifNumericGreater", "object": "Integer1 (ex : 20)", "property": "Integer2 (ex : 10)", "condValue3": null},
+        {"type": "ifNumericGreaterOrEqual", "object": "Integer1 (ex : 20)", "property": "Integer2 (ex : 10)", "condValue3": null},
+        {"type": "ifNumericMinor", "object": "Integer1 (ex : 10)", "property": "Integer2 (ex : 20)", "condValue3": null},
+        {"type": "ifNumericMinorOrEqual", "object": "Integer1 (ex : 10)", "property": "Integer2 (ex : 20)", "condValue3": null},
+        {"type": "ifStringEqual", "object": "String1", "property": "String2", "condValue3": "isCaseSensitive"},
+        {"type": "ifStringDifferent", "object": "String1", "property": "String2", "condValue3": "isCaseSensitive"},
+        {"type": "ifStringGreater", "object": "String1 (ex : ZZZ)", "property": "String2 (ex : AAA)", "condValue3": null},
+        {"type": "ifStringMinor", "object": "String1 (ex : AAA)", "property": "String (ex : ZZZ)", "condValue3": null},
+        {"type": "ifStringContains", "object": "String1 (ex : toto)", "property": "String2 (ex : ot)", "condValue3": "isCaseSensitive"},
+        {"type": "ifStringNotContains", "object": "String1 (ex : toto)", "property": "String2 (ex : zot)", "condValue3": "isCaseSensitive"},
+        {"type": "never", "object": null, "property": null, "condValue3": null}
+    ]
+};
+
+var controlUIList = {
+    "fr": [
+        {
+            "type": "Unknown",
+            "controlValue": null,
+            "controlProp": null,
+            "value3": null,
+            "fatal": null
+        },
+        {
+            "type": "verifyStringEqual",
+            "controlValue": "String2",
+            "controlProp": "String1",
+            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "fatal": ""
+        },
+        {
+            "type": "verifyStringDifferent",
+            "controlValue": "String2",
+            "controlProp": "String1",
+            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "fatal": ""
+        },
+        {
+            "type": "verifyStringGreater",
+            "controlValue": "String2 (ex : AAA)",
+            "controlProp": "String1 (ex: ZZZ)",
+            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "fatal": ""
+        },
+        {
+            "type": "verifyStringMinor",
+            "controlValue": "String2 (ex : ZZZ)",
+            "controlProp": "String1 (ex: AAA)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyStringContains",
+            "controlValue": "String2 (ex : ot)",
+            "controlProp": "String1 (ex : toto)",
+            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "fatal": ""
+        },
+        {
+            "type": "verifyStringNotContains",
+            "controlValue": "String2 (ex : zot)",
+            "controlProp": "String1 (ex : toto)",
+            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "fatal": ""
+        },
+        {
+            "type": "verifyNumericEquals",
+            "controlValue": "Integer2",
+            "controlProp": "Integer1",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyNumericDifferent",
+            "controlValue": "Integer2",
+            "controlProp": "Integer1",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyNumericGreater",
+            "controlValue": "Integer2 (ex : 10)",
+            "controlProp": "Integer1 (ex : 20)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyNumericGreaterOrEqual",
+            "controlValue": "Integer2 (ex : 10)",
+            "controlProp": "Integer1 (ex : 20)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyNumericMinor",
+            "controlValue": "Integer2 (ex : 20)",
+            "controlProp": "Integer1 (ex : 10)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyNumericMinorOrEqual",
+            "controlValue": "Integer2 (ex : 20)",
+            "controlProp": "Integer1 (ex : 10)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementPresent",
+            "controlValue": null,
+            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNotPresent",
+            "controlValue": null,
+            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementVisible",
+            "controlValue": null,
+            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNotVisible",
+            "controlValue": null,
+            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementEquals",
+            "controlValue": "Expected element",
+            "controlProp": "XPath of the element",
+            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementDifferent",
+            "controlValue": "Not Expected element",
+            "controlProp": "XPath of the element",
+            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementInElement",
+            "controlValue": "Sub Element",
+            "controlProp": "Master Element",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementClickable",
+            "controlValue": null,
+            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNotClickable",
+            "controlValue": null,
+            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value3": null,
+            "fatal": ""
+        },
+        {"type": "verifyTextInElement", "controlValue": "Text", "controlProp": "Element", "value3": "[opt] Sensible à la Casse (Y/N)", "fatal": ""},
+        {"type": "verifyTextNotInElement", "controlValue": "Text", "controlProp": "Element", "value3": "[opt] Sensible à la Casse (Y/N)", "fatal": ""},
+        {"type": "verifyRegexInElement", "controlValue": "Regex", "controlProp": "Element", "value3": null, "fatal": ""},
+        {"type": "verifyTextInPage", "controlValue": null, "controlProp": "Regex", "value3": null, "fatal": ""},
+        {"type": "verifyTextNotInPage", "controlValue": null, "controlProp": "Regex", "value3": null, "fatal": ""},
+        {"type": "verifyTitle", "controlValue": null, "controlProp": "Title", "value3": "[opt] Sensible à la Casse (Y/N)", "fatal": ""},
+        {"type": "verifyUrl", "controlValue": null, "controlProp": "URL", "value3": null, "fatal": ""},
+        {"type": "verifyTextInDialog", "controlValue": null, "controlProp": "Text", "value3": null, "fatal": ""},
+        {"type": "verifyXmlTreeStructure", "controlValue": "Tree", "controlProp": "XPath", "value3": null, "fatal": ""},
+        {"type": "takeScreenshot", "controlValue": null, "controlProp": "[opt] Cadrer en pixel (gauche,droite,haut,bas)", "value3": null, "fatal": null},
+        {"type": "getPageSource", "controlValue": null, "controlProp": null, "value3": null, "fatal": null}
+    ], "en": [
+        {
+            "type": "Unknown",
+            "controlValue": null,
+            "controlProp": null,
+            "value3": null,
+            "fatal": null
+        },
+        {
+            "type": "verifyStringEqual",
+            "controlValue": "String2",
+            "controlProp": "String1",
+            "value3": "isCaseSensitive",
+            "fatal": ""
+        },
+        {
+            "type": "verifyStringDifferent",
+            "controlValue": "String2",
+            "controlProp": "String1",
+            "value3": "isCaseSensitive",
+            "fatal": ""
+        },
+        {
+            "type": "verifyStringGreater",
+            "controlValue": "String2 (ex : AAA)",
+            "controlProp": "String1 (ex: ZZZ)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyStringMinor",
+            "controlValue": "String2 (ex : ZZZ)",
+            "controlProp": "String1 (ex: AAA)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyStringContains",
+            "controlValue": "String2 (ex : ot)",
+            "controlProp": "String1 (ex : toto)",
+            "value3": "isCaseSensitive",
+            "fatal": ""
+        },
+        {
+            "type": "verifyStringNotContains",
+            "controlValue": "String2 (ex : zot)",
+            "controlProp": "String1 (ex : toto)",
+            "value3": "isCaseSensitive",
+            "fatal": ""
+        },
+        {
+            "type": "verifyNumericEquals",
+            "controlValue": "Integer2",
+            "controlProp": "Integer1",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyNumericDifferent",
+            "controlValue": "Integer2",
+            "controlProp": "Integer1",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyNumericGreater",
+            "controlValue": "Integer2 (ex : 10)",
+            "controlProp": "Integer1 (ex : 20)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyNumericGreaterOrEqual",
+            "controlValue": "Integer2 (ex : 10)",
+            "controlProp": "Integer1 (ex : 20)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyNumericMinor",
+            "controlValue": "Integer2 (ex : 20)",
+            "controlProp": "Integer1 (ex : 10)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyNumericMinorOrEqual",
+            "controlValue": "Integer2 (ex : 20)",
+            "controlProp": "Integer1 (ex : 10)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementPresent",
+            "controlValue": null,
+            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNotPresent",
+            "controlValue": null,
+            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementVisible",
+            "controlValue": null,
+            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNotVisible",
+            "controlValue": null,
+            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementEquals",
+            "controlValue": "Expected element",
+            "controlProp": "XPath of the element",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementDifferent",
+            "controlValue": "Not Expected element",
+            "controlProp": "XPath of the element",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementInElement",
+            "controlValue": "Sub Element",
+            "controlProp": "Master Element",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementClickable",
+            "controlValue": null,
+            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNotClickable",
+            "controlValue": null,
+            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value3": null,
+            "fatal": ""
+        },
+        {"type": "verifyTextInElement", "controlValue": "Text", "controlProp": "Element", "value3": "[opt] Case Sensitive (Y/N)", "fatal": ""},
+        {"type": "verifyTextNotInElement", "controlValue": "Text", "controlProp": "Element", "value3": "[opt] Case Sensitive (Y/N)", "fatal": ""},
+        {"type": "verifyRegexInElement", "controlValue": "Regex", "controlProp": "Element", "value3": null, "fatal": ""},
+        {"type": "verifyTextInPage", "controlValue": null, "controlProp": "Regex", "value3": null, "fatal": ""},
+        {"type": "verifyTextNotInPage", "controlValue": null, "controlProp": "Regex", "value3": null, "fatal": ""},
+        {"type": "verifyTitle", "controlValue": null, "controlProp": "Title", "value3": "[opt] Case Sensitive (Y/N)", "fatal": ""},
+        {"type": "verifyUrl", "controlValue": null, "controlProp": "URL", "value3": null, "fatal": ""},
+        {"type": "verifyTextInDialog", "controlValue": null, "controlProp": "Text", "value3": null, "fatal": ""},
+        {"type": "verifyXmlTreeStructure", "controlValue": "Tree", "controlProp": "XPath", "value3": null, "fatal": ""},
+        {"type": "takeScreenshot", "controlValue": null, "controlProp": "[opt] Crop values in pixels (left,right,top,bottom)", "value3": null, "fatal": null},
+        {"type": "getPageSource", "controlValue": null, "controlProp": null, "value3": null, "fatal": null}
+    ]
+};
+
 $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.js")).then(function () {
     $(document).ready(function () {
         loadedPropertiesNumber = -1;
@@ -2079,6 +3017,7 @@ function Action(json, parentStep, canUpdate) {
         this.screenshotFileName = json.screenshotFileName;
         this.value1 = json.value1;
         this.value2 = json.value2;
+        this.value3 = json.value3;
         this.controlList = [];
         this.setControlList(json.controlList, canUpdate);
     } else {
@@ -2096,6 +3035,7 @@ function Action(json, parentStep, canUpdate) {
         this.screenshotFileName = "";
         this.value1 = "";
         this.value2 = "";
+        this.value3 = "";
         this.controlList = [];
     }
 
@@ -2233,8 +3173,9 @@ Action.prototype.generateContent = function () {
 
     var actionList = $("<select></select>").addClass("form-control input-sm");
 
-    var value1Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
-    var value2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+    var value1Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v1");
+    var value2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v2");
+    var value3Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v3");
 
     var actionconditionoper = $("<select></select>").addClass("form-control input-sm");
     var actionconditionval1 = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
@@ -2310,15 +3251,22 @@ Action.prototype.generateContent = function () {
         obj.value2 = value2Field.val();
     });
 
+    value3Field.val(this.value3);
+    value3Field.css("width", "100%");
+    value3Field.on("change", function () {
+        setModif(true);
+        obj.value3 = value3Field.val();
+    });
 
     firstRow.append(descContainer);
-    secondRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
-    secondRow.append($("<div></div>").addClass("col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(value1Field));
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
+    secondRow.append($("<div></div>").addClass("v1 col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(value1Field));
     /*
      * if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers
      * l'élement" ){ console.log(".append(choiceField)") }
      */
-    secondRow.append($("<div></div>").addClass("col-lg-5 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Field));
+    secondRow.append($("<div></div>").addClass("v2 col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Field));
+    secondRow.append($("<div></div>").addClass("v3 col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value3_field"))).append(value3Field));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval2));
@@ -2358,6 +3306,7 @@ Action.prototype.getJsonData = function () {
     json.action = this.action;
     json.object = this.value1;
     json.property = this.value2;
+    json.value3 = this.value3;
     json.forceExeStatus = this.forceExeStatus;
     json.conditionOper = this.conditionOper;
     json.conditionVal1 = this.conditionVal1;
@@ -2846,18 +3795,20 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                             dataType: "json",
                             success: function (data) {
                                 var dataContent = data.contentTable
-                                if (dataContent != undefined) {
-                                    var editEntry = $('<span class="input-group-btn ' + encodeURIComponent(htmlElement.val()) + '"><button id="editEntry" onclick="openModalAppService(\'' + encodeURIComponent(htmlElement.val()) + '\',\'EDIT\'  ,\'TestCase\' );"\n\
+                                if ($(htmlElement).parent().find(".v1").val() != undefined) {
+                                    if (dataContent != undefined) {
+                                        var editEntry = $('<span class="input-group-btn ' + encodeURIComponent(htmlElement.val()) + '"><button id="editEntry" onclick="openModalAppService(\'' + encodeURIComponent(htmlElement.val()) + '\',\'EDIT\'  ,\'TestCase\' );"\n\
         								class="buttonObject btn btn-default input-sm " \n\
         								title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
         						<span class="glyphicon glyphicon-pencil"></span></button></span>');
-                                    $(htmlElement).parent().append(editEntry);
-                                } else {
-                                    var addEntry = '<span class="input-group-btn ' + encodeURIComponent(htmlElement.val()) + '"><button id="editEntry" onclick="openModalAppService(\'' + encodeURIComponent(htmlElement.val()) + '\',\'ADD\'  ,\'TestCase\' );"\n\
+                                        $(htmlElement).parent().append(editEntry);
+                                    } else {
+                                        var addEntry = '<span class="input-group-btn ' + encodeURIComponent(htmlElement.val()) + '"><button id="editEntry" onclick="openModalAppService(\'' + encodeURIComponent(htmlElement.val()) + '\',\'ADD\'  ,\'TestCase\' );"\n\
         						class="buttonObject btn btn-default input-sm " \n\
         						title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
         						<span class="glyphicon glyphicon-plus"></span></button></span>';
-                                    $(htmlElement).parent().append(addEntry);
+                                        $(htmlElement).parent().append(addEntry);
+                                    }
                                 }
                             }
                         });
@@ -3089,113 +4040,33 @@ function editPropertiesModalSaveHandler() {
 }
 
 function setPlaceholderAction(actionElement) {
-    console.log("setPlaceholderAction");
-    /**
-     * Todo : GetFromDatabase
-     */
-    var placeHoldersList = {
-        "fr": [
-            {"type": "Unknown", "object": null, "property": null},
-            {"type": "dragAndDrop", "object": "Chemin de l'élement", "property": "Destination de l'élément"},
-            {"type": "click", "object": "Chemin vers l'élement à cliquer", "property": null},
-            {"type": "longPress", "object": "Chemin vers l'élement à cliquer", "property": "[opt] Valeur (ms) : 8000 par défaut"},
-            {"type": "mouseLeftButtonPress", "object": "Chemin vers l'élement à cibler", "property": null},
-            {"type": "mouseLeftButtonRelease", "object": "Chemin vers l'élement", "property": null},
-            {"type": "doubleClick", "object": "Chemin vers l'élement à double-cliquer", "property": null},
-            {"type": "rightClick", "object": "Chemin vers l'élement à clicker avec le bouton droit", "property": null},
-            {"type": "mouseOver", "object": "Chemin vers l'élement", "property": null},
-            {"type": "focusToIframe", "object": "Chemin vers l'élement de l'iFrame à cibler", "property": null},
-            {"type": "focusDefaultIframe", "object": null, "property": null},
-            {"type": "switchToWindow", "object": "Titre ou url de la fenêtre", "property": null},
-            {"type": "manageDialog", "object": "ok ou cancel", "property": null},
-            {"type": "manageDialogKeypress", "object": "Touches à appuyer.", "property": null},
-            {"type": "openUrlWithBase", "object": "URI à appeler (ex : /index.html)", "property": null},
-            {"type": "openUrlLogin", "object": null, "property": null},
-            {"type": "openUrl", "object": "URL à appeler (ex : http://www.domain.com)", "property": null},
-            {"type": "executeJS", "object": "JavaScript à executer", "property": null},
-            {"type": "executeCommand", "object": "Commande (ex : \"grep\")", "property": "Arguments (ex : \"--name toto\")"},
-            {"type": "executeCerberusCommand", "object": "Commande (ex : \"grep\")", "property": null},
-            {"type": "openApp", "object": "Nom ou chemin de l'application, package pour android", "property": "[Optionnel, obligatoire pour Android] Activity"},
-            {"type": "closeApp", "object": "Nom ou chemin de l'application", "property": null},
-            {"type": "select", "object": "Chemin vers l'élement", "property": "Chemin vers l'option"},
-            {"type": "keypress", "object": "[opt] Chemin vers l'élement à cibler", "property": "Touche à appuyer"},
-            {"type": "type", "object": "Chemin vers l'élement", "property": "Texte à entrer"},
-            {"type": "hideKeyboard", "object": null, "property": null},
-            {"type": "clearField", "object": "Chemin vers l'élement à effacer", "property": null},
-            {"type": "swipe", "object": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "property": "Direction x;y;z;y"},
-            {"type": "wait", "object": "Valeur(ms) ou élement", "property": null},
-            {"type": "waitVanish", "object": "Element", "property": null},
-            {"type": "callService", "object": "Nom du Service", "property": "Nb Event to wait (Kafka)"},
-            {"type": "executeSqlUpdate", "object": "Nom de Base de donnée", "property": "Script à executer"},
-            {"type": "scrollTo", "object": "element (id, xpath, ..., et text=)", "property": "Nombre maximum de scroll vers le bas (8 par defaut)"},
-            {"type": "installApp", "object": "Chemin vers l'application (ex : /root/toto.apk)", "property": null},
-            {"type": "removeApp", "object": "Package de l'application (ex : com.cerberus.appmobile)", "property": null},
-            {"type": "executeSqlStoredProcedure", "object": "Nom de Base de donnée", "property": "Procedure Stoquée à executer"},
-            {"type": "calculateProperty", "object": "Nom d'une Proprieté", "property": "[opt] Nom d'une autre propriété"},
-            {"type": "doNothing", "object": null, "property": null},
-            {"type": "mouseOverAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
-            {"type": "removeDifference", "object": "Action Depreciée", "property": "Action Depreciée"}
-        ], "en": [
-            {"type": "Unknown", "object": null, "property": null},
-            {"type": "dragAndDrop", "object": "Element path", "property": "Destination Element Path"},
-            {"type": "click", "object": "Element path", "property": null},
-            {"type": "longPress", "object": "Element path", "property": "[opt] Duration (ms) : 8000 by default"},
-            {"type": "mouseLeftButtonPress", "object": "Element path", "property": null},
-            {"type": "mouseLeftButtonRelease", "object": "Element path", "property": null},
-            {"type": "doubleClick", "object": "Element path", "property": null},
-            {"type": "rightClick", "object": "Element path", "property": null},
-            {"type": "mouseOver", "object": "Element path", "property": null},
-            {"type": "focusToIframe", "object": "Element path of the target iFrame", "property": null},
-            {"type": "focusDefaultIframe", "object": null, "property": null},
-            {"type": "switchToWindow", "object": "Window title or url", "property": null},
-            {"type": "manageDialog", "object": "ok or cancel", "property": null},
-            {"type": "manageDialogKeypress", "object": "keys to press.", "property": null},
-            {"type": "openUrlWithBase", "object": "URI to call  (ex : /index.html)", "property": null},
-            {"type": "openUrlLogin", "object": null, "property": null},
-            {"type": "openUrl", "object": "URL to call (ex : http://www.domain.com)", "property": null},
-            {"type": "executeJS", "object": "JavaScript to execute", "property": null},
-            {"type": "executeCommand", "object": "Command (ex : \"grep\")", "property": "Arguments (ex : \"--name toto\")"},
-            {"type": "executeCerberusCommand", "object": "Command (ex : \"grep\")", "property": null},
-            {"type": "openApp", "object": "Application name or path or package for Android", "property": "[Optional, required for Android] Activity"},
-            {"type": "closeApp", "object": "Application name or path", "property": null},
-            {"type": "select", "object": "Element path", "property": "Option path"},
-            {"type": "keypress", "object": "[opt] Target element path", "property": "Key to press"},
-            {"type": "type", "object": "Element path", "property": "Text to type"},
-            {"type": "hideKeyboard", "object": null, "property": null},
-            {"type": "clearField", "object": "Element path to Clear", "property": null},
-            {"type": "swipe", "object": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "property": "Direction x;y;z;y"},
-            {"type": "wait", "object": "Duration(ms) or Element", "property": null},
-            {"type": "waitVanish", "object": "Element", "property": null},
-            {"type": "callService", "object": "Service Name", "property": "Nb Evt (Kafka)"},
-            {"type": "executeSqlUpdate", "object": "Database Name", "property": "Script"},
-            {"type": "executeSqlStoredProcedure", "object": "Database Name", "property": "Stored Procedure"},
-            {"type": "calculateProperty", "object": "Property Name", "property": "[opt] Name of an other property"},
-            {"type": "scrollTo", "object": "element ('id=ressource-id'. Empty if you want use text)", "property": "text (empty if you want use element)"},
-            {"type": "installApp", "object": "Application path (ex : /root/toto.apk)", "property": null},
-            {"type": "removeApp", "object": "Application package (ex : com.cerberus.appmobile)", "property": null},
-            {"type": "doNothing", "object": null, "property": null},
-            {"type": "mouseOverAndWait", "object": "[Deprecated]", "property": "[Deprecated]"},
-            {"type": "removeDifference", "object": "[Deprecated]", "property": "[Deprecated]"}
-        ]
-    };
 
     var user = getUser();
-    var placeHolders = placeHoldersList[user.language];
+    var placeHolders = actionUIList[user.language];
 
     $(actionElement).find('select#actionSelect option:selected').each(function (i, e) {
         for (var i = 0; i < placeHolders.length; i++) {
             if (placeHolders[i].type === e.value) {
-                if (placeHolders[i].object !== null) {
+                if (placeHolders[i].aval1 !== null) {
+                    $(e).parent().parent().next().removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders[i].acol1);
                     $(e).parent().parent().next().show();
-                    $(e).parent().parent().next().find('label').text(placeHolders[i].object);
+                    $(e).parent().parent().next().find('label').text(placeHolders[i].aval1);
                 } else {
                     $(e).parent().parent().next().hide();
                 }
-                if (placeHolders[i].property !== null) {
+                if (placeHolders[i].aval2 !== null) {
+                    $(e).parent().parent().next().next().removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders[i].acol2);
                     $(e).parent().parent().next().next().show();
-                    $(e).parent().parent().next().next().find('label').text(placeHolders[i].property);
+                    $(e).parent().parent().next().next().find('label').text(placeHolders[i].aval2);
                 } else {
                     $(e).parent().parent().next().next().hide();
+                }
+                if (placeHolders[i].aval3 !== null) {
+                    $(e).parent().parent().next().next().next().removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders[i].acol3);
+                    $(e).parent().parent().next().next().next().show();
+                    $(e).parent().parent().next().next().next().find('label').text(placeHolders[i].aval3);
+                } else {
+                    $(e).parent().parent().next().next().next().hide();
                 }
             }
         }
@@ -3203,57 +4074,9 @@ function setPlaceholderAction(actionElement) {
 }
 
 function setPlaceholderCondition(conditionElement) {
-    /**
-     * Todo : GetFromDatabase
-     */
-    var placeHoldersList = {
-        "fr": [
-            {"type": "always", "object": null, "property": null, "value3": null},
-            {"type": "ifPropertyExist", "object": "Propriété (ex : PROP1)", "property": null, "condValue3": null},
-            {"type": "ifPropertyNotExist", "object": "Propriété (ex : PROP1)", "property": null, "condValue3": null},
-            {"type": "ifElementPresent", "object": "Element", "property": null, "condValue3": null},
-            {"type": "ifElementNotPresent", "object": "Element (ex : data-cerberus=fieldTest)", "property": null, "condValue3": null},
-            {"type": "ifTextInElement", "object": "Element", "property": "Texte", "condValue3": "isCaseSensitive"},
-            {"type": "ifTextNotInElement", "object": "Element", "property": "Texte", "condValue3": "isCaseSensitive"},
-            {"type": "ifNumericEqual", "object": "Integer1", "property": "Integer2", "condValue3": null},
-            {"type": "ifNumericDifferent", "object": "Integer1", "property": "Integer2", "condValue3": null},
-            {"type": "ifNumericGreater", "object": "Integer1 (ex : 20)", "property": "Integer2 (ex : 10)", "condValue3": null},
-            {"type": "ifNumericGreaterOrEqual", "object": "Integer1 (ex : 20)", "property": "Integer2 (ex : 10)", "condValue3": null},
-            {"type": "ifNumericMinor", "object": "Integer1 (ex : 10)", "property": "Integer2 (ex : 20)", "condValue3": null},
-            {"type": "ifNumericMinorOrEqual", "object": "Integer1 (ex : 10)", "property": "Integer2 (ex : 20)", "condValue3": null},
-            {"type": "ifStringEqual", "object": "String1", "property": "String2", "condValue3": "isCaseSensitive"},
-            {"type": "ifStringDifferent", "object": "String1", "property": "String2", "condValue3": "isCaseSensitive"},
-            {"type": "ifStringGreater", "object": "String1 (ex : ZZZ)", "property": "String2 (ex : AAA)", "condValue3": null},
-            {"type": "ifStringMinor", "object": "String2 (ex : AAA)", "property": "String2 (ex : ZZZ)", "condValue3": null},
-            {"type": "ifStringContains", "object": "String1 (ex : toto)", "property": "String2 (ex : ot)", "condValue3": "isCaseSensitive"},
-            {"type": "ifStringNotContains", "object": "String1 (ex : toto)", "property": "String2 (ex : zot)", "condValue3": "isCaseSensitive"},
-            {"type": "Never", "object": null, "property": null, "condValue3": null}
-        ], "en": [
-            {"type": "always", "object": null, "property": null, "condValue3": null},
-            {"type": "ifPropertyExist", "object": "Property name  (ex : PROP1)", "property": null, "condValue3": null},
-            {"type": "ifPropertyNotExist", "object": "Property name  (ex : PROP1)", "property": null, "condValue3": null},
-            {"type": "ifElementPresent", "object": "Element (ex : data-cerberus=fieldTest)", "property": null, "condValue3": null},
-            {"type": "ifElementNotPresent", "object": "Element (ex : data-cerberus=fieldTest)", "property": null, "condValue3": null},
-            {"type": "ifTextInElement", "object": "Element", "property": "Text", "condValue3": "isCaseSensitive"},
-            {"type": "ifTextNotInElement", "object": "Element", "property": "Text", "condValue3": "isCaseSensitive"},
-            {"type": "ifNumericEqual", "object": "Integer1", "property": "Integer2", "condValue3": null},
-            {"type": "ifNumericDifferent", "object": "Integer1", "property": "Integer2", "condValue3": null},
-            {"type": "ifNumericGreater", "object": "Integer1 (ex : 20)", "property": "Integer2 (ex : 10)", "condValue3": null},
-            {"type": "ifNumericGreaterOrEqual", "object": "Integer1 (ex : 20)", "property": "Integer2 (ex : 10)", "condValue3": null},
-            {"type": "ifNumericMinor", "object": "Integer1 (ex : 10)", "property": "Integer2 (ex : 20)", "condValue3": null},
-            {"type": "ifNumericMinorOrEqual", "object": "Integer1 (ex : 10)", "property": "Integer2 (ex : 20)", "condValue3": null},
-            {"type": "ifStringEqual", "object": "String1", "property": "String2", "condValue3": "isCaseSensitive"},
-            {"type": "ifStringDifferent", "object": "String1", "property": "String2", "condValue3": "isCaseSensitive"},
-            {"type": "ifStringGreater", "object": "String1 (ex : ZZZ)", "property": "String2 (ex : AAA)", "condValue3": null},
-            {"type": "ifStringMinor", "object": "String1 (ex : AAA)", "property": "String (ex : ZZZ)", "condValue3": null},
-            {"type": "ifStringContains", "object": "String1 (ex : toto)", "property": "String2 (ex : ot)", "condValue3": "isCaseSensitive"},
-            {"type": "ifStringNotContains", "object": "String1 (ex : toto)", "property": "String2 (ex : zot)", "condValue3": "isCaseSensitive"},
-            {"type": "never", "object": null, "property": null, "condValue3": null}
-        ]
-    };
 
     var user = getUser();
-    var placeHolders = placeHoldersList[user.language];
+    var placeHolders = conditionUIList[user.language];
 
 
     if ($(conditionElement).find('select#conditionSelect option:selected').length) {
@@ -3335,347 +4158,9 @@ function setPlaceholderCondition(conditionElement) {
 }
 
 function setPlaceholderControl(controlElement) {
-    /**
-     * Todo : GetFromDatabase
-     */
-    var placeHoldersList = {
-        "fr": [
-            {
-                "type": "Unknown",
-                "controlValue": null,
-                "controlProp": null,
-                "value3": null,
-                "fatal": null
-            },
-            {
-                "type": "verifyStringEqual",
-                "controlValue": "String2",
-                "controlProp": "String1",
-                "value3": "[opt] Sensible à la Casse (Y/N)",
-                "fatal": ""
-            },
-            {
-                "type": "verifyStringDifferent",
-                "controlValue": "String2",
-                "controlProp": "String1",
-                "value3": "[opt] Sensible à la Casse (Y/N)",
-                "fatal": ""
-            },
-            {
-                "type": "verifyStringGreater",
-                "controlValue": "String2 (ex : AAA)",
-                "controlProp": "String1 (ex: ZZZ)",
-                "value3": "[opt] Sensible à la Casse (Y/N)",
-                "fatal": ""
-            },
-            {
-                "type": "verifyStringMinor",
-                "controlValue": "String2 (ex : ZZZ)",
-                "controlProp": "String1 (ex: AAA)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyStringContains",
-                "controlValue": "String2 (ex : ot)",
-                "controlProp": "String1 (ex : toto)",
-                "value3": "[opt] Sensible à la Casse (Y/N)",
-                "fatal": ""
-            },
-            {
-                "type": "verifyStringNotContains",
-                "controlValue": "String2 (ex : zot)",
-                "controlProp": "String1 (ex : toto)",
-                "value3": "[opt] Sensible à la Casse (Y/N)",
-                "fatal": ""
-            },
-            {
-                "type": "verifyNumericEquals",
-                "controlValue": "Integer2",
-                "controlProp": "Integer1",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyNumericDifferent",
-                "controlValue": "Integer2",
-                "controlProp": "Integer1",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyNumericGreater",
-                "controlValue": "Integer2 (ex : 10)",
-                "controlProp": "Integer1 (ex : 20)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyNumericGreaterOrEqual",
-                "controlValue": "Integer2 (ex : 10)",
-                "controlProp": "Integer1 (ex : 20)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyNumericMinor",
-                "controlValue": "Integer2 (ex : 20)",
-                "controlProp": "Integer1 (ex : 10)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyNumericMinorOrEqual",
-                "controlValue": "Integer2 (ex : 20)",
-                "controlProp": "Integer1 (ex : 10)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementPresent",
-                "controlValue": null,
-                "controlProp": "Element (ex : data-cerberus=fieldToto)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementNotPresent",
-                "controlValue": null,
-                "controlProp": "Element (ex : data-cerberus=fieldToto)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementVisible",
-                "controlValue": null,
-                "controlProp": "Element (ex : data-cerberus=fieldToto)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementNotVisible",
-                "controlValue": null,
-                "controlProp": "Element (ex : data-cerberus=fieldToto)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementEquals",
-                "controlValue": "Expected element",
-                "controlProp": "XPath of the element",
-                "value3": "[opt] Sensible à la Casse (Y/N)",
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementDifferent",
-                "controlValue": "Not Expected element",
-                "controlProp": "XPath of the element",
-                "value3": "[opt] Sensible à la Casse (Y/N)",
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementInElement",
-                "controlValue": "Sub Element",
-                "controlProp": "Master Element",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementClickable",
-                "controlValue": null,
-                "controlProp": "Element (ex : data-cerberus=fieldToto)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementNotClickable",
-                "controlValue": null,
-                "controlProp": "Element (ex : data-cerberus=fieldToto)",
-                "value3": null,
-                "fatal": ""
-            },
-            {"type": "verifyTextInElement", "controlValue": "Text", "controlProp": "Element", "value3": "[opt] Sensible à la Casse (Y/N)", "fatal": ""},
-            {"type": "verifyTextNotInElement", "controlValue": "Text", "controlProp": "Element", "value3": "[opt] Sensible à la Casse (Y/N)", "fatal": ""},
-            {"type": "verifyRegexInElement", "controlValue": "Regex", "controlProp": "Element", "value3": null, "fatal": ""},
-            {"type": "verifyTextInPage", "controlValue": null, "controlProp": "Regex", "value3": null, "fatal": ""},
-            {"type": "verifyTextNotInPage", "controlValue": null, "controlProp": "Regex", "value3": null, "fatal": ""},
-            {"type": "verifyTitle", "controlValue": null, "controlProp": "Title", "value3": "[opt] Sensible à la Casse (Y/N)", "fatal": ""},
-            {"type": "verifyUrl", "controlValue": null, "controlProp": "URL", "value3": null, "fatal": ""},
-            {"type": "verifyTextInDialog", "controlValue": null, "controlProp": "Text", "value3": null, "fatal": ""},
-            {"type": "verifyXmlTreeStructure", "controlValue": "Tree", "controlProp": "XPath", "value3": null, "fatal": ""},
-            {"type": "takeScreenshot", "controlValue": null, "controlProp": "[opt] Cadrer en pixel (gauche,droite,haut,bas)", "value3": null, "fatal": null},
-            {"type": "getPageSource", "controlValue": null, "controlProp": null, "value3": null, "fatal": null}
-        ], "en": [
-            {
-                "type": "Unknown",
-                "controlValue": null,
-                "controlProp": null,
-                "value3": null,
-                "fatal": null
-            },
-            {
-                "type": "verifyStringEqual",
-                "controlValue": "String2",
-                "controlProp": "String1",
-                "value3": "isCaseSensitive",
-                "fatal": ""
-            },
-            {
-                "type": "verifyStringDifferent",
-                "controlValue": "String2",
-                "controlProp": "String1",
-                "value3": "isCaseSensitive",
-                "fatal": ""
-            },
-            {
-                "type": "verifyStringGreater",
-                "controlValue": "String2 (ex : AAA)",
-                "controlProp": "String1 (ex: ZZZ)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyStringMinor",
-                "controlValue": "String2 (ex : ZZZ)",
-                "controlProp": "String1 (ex: AAA)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyStringContains",
-                "controlValue": "String2 (ex : ot)",
-                "controlProp": "String1 (ex : toto)",
-                "value3": "isCaseSensitive",
-                "fatal": ""
-            },
-            {
-                "type": "verifyStringNotContains",
-                "controlValue": "String2 (ex : zot)",
-                "controlProp": "String1 (ex : toto)",
-                "value3": "isCaseSensitive",
-                "fatal": ""
-            },
-            {
-                "type": "verifyNumericEquals",
-                "controlValue": "Integer2",
-                "controlProp": "Integer1",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyNumericDifferent",
-                "controlValue": "Integer2",
-                "controlProp": "Integer1",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyNumericGreater",
-                "controlValue": "Integer2 (ex : 10)",
-                "controlProp": "Integer1 (ex : 20)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyNumericGreaterOrEqual",
-                "controlValue": "Integer2 (ex : 10)",
-                "controlProp": "Integer1 (ex : 20)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyNumericMinor",
-                "controlValue": "Integer2 (ex : 20)",
-                "controlProp": "Integer1 (ex : 10)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyNumericMinorOrEqual",
-                "controlValue": "Integer2 (ex : 20)",
-                "controlProp": "Integer1 (ex : 10)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementPresent",
-                "controlValue": null,
-                "controlProp": "Element (ex : data-cerberus=fieldToto)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementNotPresent",
-                "controlValue": null,
-                "controlProp": "Element (ex : data-cerberus=fieldToto)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementVisible",
-                "controlValue": null,
-                "controlProp": "Element (ex : data-cerberus=fieldToto)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementNotVisible",
-                "controlValue": null,
-                "controlProp": "Element (ex : data-cerberus=fieldToto)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementEquals",
-                "controlValue": "Expected element",
-                "controlProp": "XPath of the element",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementDifferent",
-                "controlValue": "Not Expected element",
-                "controlProp": "XPath of the element",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementInElement",
-                "controlValue": "Sub Element",
-                "controlProp": "Master Element",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementClickable",
-                "controlValue": null,
-                "controlProp": "Element (ex : data-cerberus=fieldToto)",
-                "value3": null,
-                "fatal": ""
-            },
-            {
-                "type": "verifyElementNotClickable",
-                "controlValue": null,
-                "controlProp": "Element (ex : data-cerberus=fieldToto)",
-                "value3": null,
-                "fatal": ""
-            },
-            {"type": "verifyTextInElement", "controlValue": "Text", "controlProp": "Element", "value3": "[opt] Case Sensitive (Y/N)", "fatal": ""},
-            {"type": "verifyTextNotInElement", "controlValue": "Text", "controlProp": "Element", "value3": "[opt] Case Sensitive (Y/N)", "fatal": ""},
-            {"type": "verifyRegexInElement", "controlValue": "Regex", "controlProp": "Element", "value3": null, "fatal": ""},
-            {"type": "verifyTextInPage", "controlValue": null, "controlProp": "Regex", "value3": null, "fatal": ""},
-            {"type": "verifyTextNotInPage", "controlValue": null, "controlProp": "Regex", "value3": null, "fatal": ""},
-            {"type": "verifyTitle", "controlValue": null, "controlProp": "Title", "value3": "[opt] Case Sensitive (Y/N)", "fatal": ""},
-            {"type": "verifyUrl", "controlValue": null, "controlProp": "URL", "value3": null, "fatal": ""},
-            {"type": "verifyTextInDialog", "controlValue": null, "controlProp": "Text", "value3": null, "fatal": ""},
-            {"type": "verifyXmlTreeStructure", "controlValue": "Tree", "controlProp": "XPath", "value3": null, "fatal": ""},
-            {"type": "takeScreenshot", "controlValue": null, "controlProp": "[opt] Crop values in pixels (left,right,top,bottom)", "value3": null, "fatal": null},
-            {"type": "getPageSource", "controlValue": null, "controlProp": null, "value3": null, "fatal": null}
-        ]
-    };
 
     var user = getUser();
-    var placeHolders = placeHoldersList[user.language];
+    var placeHolders = controlUIList[user.language];
 
     $(controlElement).find('select#controlSelect option:selected').each(function (i, e) {
 
@@ -3715,477 +4200,8 @@ function setPlaceholderProperty(propertyElement, property) {
      * Todo : GetFromDatabase Translate for FR
      */
 
-    var placeHoldersList = {
-        "fr": [
-            {
-                "type": "text",
-                "value1": "Value",
-                "value1Class": "col-sm-10",
-                "value1EditorMode": "ace/mode/cerberus",
-                "value2": null,
-                "database": null,
-                "length": "[opt] Length",
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": "Nature",
-                "retry": null,
-                "period": null
-            },
-            {
-                "type": "getFromSql",
-                "value1": "SQL Query",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/sql",
-                "value2": null,
-                "database": "Database",
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": "Row Limit",
-                "nature": "Nature",
-                "retry": "Number of retry (until non-empty result)",
-                "period": "Retry period (ms)"
-            },
-            {
-                "type": "getFromDataLib",
-                "value1": "DataLib name",
-                "value1Class": "col-sm-10",
-                "value1EditorMode": "ace/mode/cerberus",
-                "value2": null,
-                "database": null,
-                "length": "Length (nb of rows)",
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": "[opt] Row Limit",
-                "nature": "Nature",
-                "retry": "Number of retry (until non-empty result)",
-                "period": "Retry period (ms)"
-            },
-            {
-                "type": "getFromHtml",
-                "value1": "Element path",
-                "value1Class": "col-sm-10",
-                "value1EditorMode": "ace/mode/xquery",
-                "value2": null,
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null
-            },
-            {
-                "type": "getFromHtmlVisible",
-                "value1": "Element path",
-                "value1Class": "col-sm-10",
-                "value1EditorMode": "ace/mode/xquery",
-                "value2": null,
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null
-            },
-            {
-                "type": "getFromJS",
-                "value1": "Javascript command",
-                "value1Class": "col-sm-10",
-                "value1EditorMode": "ace/mode/javascript",
-                "value2": null,
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null
-            },
-            {
-                "type": "getAttributeFromHtml",
-                "value1": "Element path",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/xquery",
-                "value2": "Attribute name",
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null
-            },
-            {
-                "type": "getFromCookie",
-                "value1": "Cookie name",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/cerberus",
-                "value2": "Cookie attribute",
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null
-            },
-            {
-                "type": "getFromXml",
-                "value1": "Xpath",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/xquery",
-                "value2": "[opt] XML or URL to XML file",
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null
-            },
-            {
-                "type": "getDifferencesFromXml",
-                "value1": "value1",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/xquery",
-                "value2": "value2",
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null
-            },
-            {
-                "type": "getFromJson",
-                "value1": "JSONPath",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/json",
-                "value2": "[opt] JSON or URL to JSON file",
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null
-            },
-            {
-                "type": "getFromGroovy",
-                "value1": "Groovy command",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/groovy",
-                "value2": null,
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null
-            },
-            {
-                "type": "getFromCommand",
-                "value1": "Executer une commande shell",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/shell",
-                "value2": null,
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null
-            },
-            {
-                "type": "getElementPosition",
-                "value1": "Récupérer la position en Pixel d'un élement (use id=/xpath=/etc syntax - return \"px;py\")",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/cerberus",
-                "value2": null,
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null
-            },
-            {
-                "type": "executeSoapFromLib",
-                "value1": "Service lib name",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/cerberus",
-                "value2": null,
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null
-            },
-            {
-                "type": "executeSqlFromLib",
-                "value1": "SQL Lib name",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/cerberus",
-                "value2": null,
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null
-            }
-        ], "en": [
-            {
-                "type": "text",
-                "value1": "Value",
-                "value1Class": "col-sm-10",
-                "value1EditorMode": "ace/mode/cerberus",
-                "value2": null,
-                "database": null,
-                "length": "[opt] Length",
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": "Nature",
-                "retry": null,
-                "period": null,
-                "rank": "Rank"
-            },
-            {
-                "type": "getFromSql",
-                "value1": "SQL Query",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/sql",
-                "value2": null,
-                "database": "Database",
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": "Row Limit",
-                "nature": "Nature",
-                "retry": "Number of retry (until non-empty result)",
-                "period": "Retry period (ms)",
-                "rank": "Rank"
-            },
-            {
-                "type": "getFromDataLib",
-                "value1": "DataLib name",
-                "value1Class": "col-sm-10",
-                "value1EditorMode": "ace/mode/cerberus",
-                "value2": null,
-                "database": null,
-                "length": "Length (nb of rows)",
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": "[opt] Row Limit",
-                "nature": "Nature",
-                "retry": "Number of retry (until non-empty result)",
-                "period": "Retry period (ms)",
-                "rank": "Rank"
-            },
-            {
-                "type": "getFromHtml",
-                "value1": "Element path",
-                "value1Class": "col-sm-10",
-                "value1EditorMode": "ace/mode/xquery",
-                "value2": null,
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null,
-                "rank": "Rank"
-            },
-            {
-                "type": "getFromHtmlVisible",
-                "value1": "Element path",
-                "value1Class": "col-sm-10",
-                "value1EditorMode": "ace/mode/xquery",
-                "value2": null,
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null,
-                "rank": "Rank"
-            },
-            {
-                "type": "getFromJS",
-                "value1": "Javascript command",
-                "value1Class": "col-sm-10",
-                "value1EditorMode": "ace/mode/javascript",
-                "value2": null,
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null,
-                "rank": "Rank"
-            },
-            {
-                "type": "getAttributeFromHtml",
-                "value1": "Element path",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/xquery",
-                "value2": "Attribute name",
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null,
-                "rank": "Rank"
-            },
-            {
-                "type": "getFromCookie",
-                "value1": "Cookie name",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/cerberus",
-                "value2": "Cookie attribute",
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null,
-                "rank": "Rank"
-            },
-            {
-                "type": "getFromXml",
-                "value1": "Xpath",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/xquery",
-                "value2": "[opt] XML or URL to XML file",
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null,
-                "rank": "Rank"
-            },
-            {
-                "type": "getDifferencesFromXml",
-                "value1": "value1",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/xquery",
-                "value2": "value2",
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null,
-                "rank": "Rank"
-            },
-            {
-                "type": "getFromJson",
-                "value1": "JSONPath",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/json",
-                "value2": "[opt] JSON or URL to JSON file",
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null,
-                "rank": "Rank"
-            },
-            {
-                "type": "getFromGroovy",
-                "value1": "Groovy command",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/groovy",
-                "value2": null,
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null,
-                "rank": "Rank"
-            },
-            {
-                "type": "getFromCommand",
-                "value1": "Execute a shell command",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/shell",
-                "value2": null,
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null,
-                "rank": "Rank"
-            },
-            {
-                "type": "getElementPosition",
-                "value1": "Get an element pixel position (use id=/xpath=/etc syntax - return \"px;py\")",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/cerberus",
-                "value2": null,
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null
-            },
-            {
-                "type": "executeSoapFromLib",
-                "value1": "Service lib name",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/cerberus",
-                "value2": null,
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null,
-                "rank": "Rank"
-            },
-            {
-                "type": "executeSqlFromLib",
-                "value1": "SQL Lib name",
-                "value1Class": "col-sm-8",
-                "value1EditorMode": "ace/mode/cerberus",
-                "value2": null,
-                "database": null,
-                "length": null,
-                "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": null,
-                "nature": null,
-                "retry": null,
-                "period": null,
-                "rank": "Rank"
-            }
-        ]
-    };
-
     var user = getUser();
-    var placeHolders = placeHoldersList[user.language];
+    var placeHolders = propertyUIList[user.language];
 
     $(propertyElement).find('select[name="propertyType"] option:selected').each(function (i, e) {
 

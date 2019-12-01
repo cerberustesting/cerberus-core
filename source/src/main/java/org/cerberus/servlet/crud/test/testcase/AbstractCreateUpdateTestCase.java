@@ -72,12 +72,13 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
     @Autowired
     private ITestCaseDepService testCaseDepService;
 
+    protected abstract String getTypeOperation();
 
-    protected abstract String getTypeOperation ();
-    protected abstract void fireLogEvent (String keyTest, String keyTestCase, TestCase tc, HttpServletRequest request, HttpServletResponse response);
-    protected abstract TestCase getTestCaseBeforeTraitment (String keyTest, String keyTestCase) throws CerberusException, UnsupportedEncodingException;
+    protected abstract void fireLogEvent(String keyTest, String keyTestCase, TestCase tc, HttpServletRequest request, HttpServletResponse response);
+
+    protected abstract TestCase getTestCaseBeforeTraitment(String keyTest, String keyTestCase) throws CerberusException, UnsupportedEncodingException;
+
     protected abstract void updateTestCase(String originalTest, String originalTestCase, TestCase tc) throws CerberusException;
-
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, CerberusException, JSONException {
 
@@ -100,15 +101,14 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
         String originalTest = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("originalTest"), "");
         String originalTestCase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("originalTestCase"), "");
 
-        boolean primaryKeyChanged = ! ( originalTest!=null && originalTestCase!=null && originalTest.equals(test) && originalTestCase.equals(testcase) );
-
+        boolean primaryKeyChanged = !(originalTest != null && originalTestCase != null && originalTest.equals(test) && originalTestCase.equals(testcase));
 
         // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
         /**
-         *  Checking all constrains before calling the services.
+         * Checking all constrains before calling the services.
          */
         if (StringUtil.isNullOrEmpty(test) && StringUtil.isNullOrEmpty(testcase)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
@@ -172,7 +172,6 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
 
                 }
 
-
                 // update testcase dependency
                 if (request.getParameter("testcaseDependency") != null) {
                     List<TestCaseDep> tcdList = getDependencyFromRequest(request, tc);
@@ -180,7 +179,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
                     testCaseDepService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestCase(), tcdList);
                 }
 
-                if( primaryKeyChanged ) {
+                if (primaryKeyChanged) {
                     List<TestCaseStep> tcsList = new ArrayList<>();
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         tcsList = testCaseStepService.getListOfSteps(originalTest, originalTestCase);
@@ -227,9 +226,6 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
 
     }
 
-
-
-
     private List<TestCaseCountry> getCountryListFromRequest(HttpServletRequest request, String test, String testCase, JSONArray json) throws CerberusException, JSONException, UnsupportedEncodingException {
         List<TestCaseCountry> tdldList = new ArrayList<>();
 
@@ -270,32 +266,33 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
         return labelList;
     }
 
-
-
     protected List<TestCaseDep> getDependencyFromRequest(HttpServletRequest request, TestCase tc) throws JSONException {
         List<TestCaseDep> res = new LinkedList<>();
         jsonArrayFoEach(request, "testcaseDependency", (jsonObj) -> {
-                    String testcase = jsonObj.getString("testcase");
-                    Long testcaseid = jsonObj.getLong("id");
-                    String test = jsonObj.getString("test");
-                    String description = jsonObj.getString("description");
+            String testcase = jsonObj.getString("testcase");
+            Long testcaseid = jsonObj.getLong("id");
+            String test = jsonObj.getString("test");
+            String description = jsonObj.getString("description");
 
-                    String active = jsonObj.getString("active");
-                    if(Boolean.valueOf(active)) active = "Y";
-                    else active = "N";
+            String active = jsonObj.getString("active");
+            if (Boolean.valueOf(active)) {
+                active = "Y";
+            } else {
+                active = "N";
+            }
 
-                    Timestamp creationDate = new Timestamp(new Date().getTime());
+            Timestamp creationDate = new Timestamp(new Date().getTime());
 
-                    res.add(testCaseDepFactory.create(testcaseid, tc.getTest(), tc.getTestCase(), test, testcase, "", TestCaseExecutionQueueDep.TYPE_TCEXEEND,active, description, request.getRemoteUser(), creationDate, request.getRemoteUser(), creationDate));
-                }
+            res.add(testCaseDepFactory.create(testcaseid, tc.getTest(), tc.getTestCase(), test, testcase, "", TestCaseExecutionQueueDep.TYPE_TCEXEEND, active, description, request.getRemoteUser(), creationDate, request.getRemoteUser(), creationDate));
+        }
         );
 
         return res;
     }
 
-
     @FunctionalInterface
     protected interface JsonFunction<T> {
+
         void foreach(T t) throws JSONException;
     }
 

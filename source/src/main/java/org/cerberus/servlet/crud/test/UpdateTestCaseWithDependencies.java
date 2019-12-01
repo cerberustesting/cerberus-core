@@ -402,8 +402,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String action = tcsaJson.getString("action");
             String object = tcsaJson.getString("object");
             String property = tcsaJson.getString("property");
-            //String value3 = tcsaJson.getString("value3");
-            String value3 = "";
+            String value3 = tcsaJson.getString("value3");
             String forceExeStatus = tcsaJson.getString("forceExeStatus");
             String description = tcsaJson.getString("description");
             String screenshot = tcsaJson.getString("screenshotFileName");
