@@ -452,7 +452,9 @@
             <scope>test</scope>
         </dependency>-->
         
+        <!-- Comment temporary the dependency --> 
         <!-- Jax-RS Scope-->
+        <!-- 
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
@@ -476,6 +478,7 @@
             <artifactId>jersey-media-jaxb</artifactId>
             <version>2.28</version>
         </dependency>
+            --> 
     </dependencies>
 
     <build>

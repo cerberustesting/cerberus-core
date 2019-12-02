@@ -797,6 +797,7 @@
         <servlet-name>ImportTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.testcase.ImportTestCase</servlet-class>
     </servlet>
+    <!-- 
     <servlet>
         <servlet-name>JerseyWebapp</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
@@ -814,6 +815,7 @@
         <servlet-name>JerseyWebapp</servlet-name>
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
+    --> 
     <servlet-mapping>
         <servlet-name>springrest</servlet-name>
         <url-pattern>/api/*</url-pattern>
