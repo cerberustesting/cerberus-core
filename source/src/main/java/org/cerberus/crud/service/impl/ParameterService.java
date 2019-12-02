@@ -411,7 +411,8 @@ public class ParameterService implements IParameterService {
         if (parameter.getParam().equals("cerberus_accountcreation_defaultpassword")
                 || parameter.getParam().equals("cerberus_proxyauthentification_password")
                 || parameter.getParam().equals("cerberus_jenkinsadmin_password")
-                || parameter.getParam().equals("cerberus_smtp_password")) {
+                || parameter.getParam().equals("cerberus_smtp_password")
+                || parameter.getParam().equals("cerberus_executeCerberusCommand_password")) {
             return true;
         }
         return false;
