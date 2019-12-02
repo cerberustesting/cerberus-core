@@ -114,7 +114,7 @@ public class CerberusCommand implements ICerberusCommand {
 
     private void initializeParameters() {
 
-        this.scriptFolder = parameterService.getParameterStringByKey("cerberus_executeCerberusCommand_folder", "", "");
+        this.scriptFolder = parameterService.getParameterStringByKey("cerberus_executeCerberusCommand_path", "", "");
         this.scriptUser = parameterService.getParameterStringByKey("cerberus_executeCerberusCommand_user", "", "");
         this.scriptPassword = parameterService.getParameterStringByKey("cerberus_executeCerberusCommand_password", "", "");
     }
