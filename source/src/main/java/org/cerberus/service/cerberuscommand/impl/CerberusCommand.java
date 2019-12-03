@@ -99,7 +99,7 @@ public class CerberusCommand implements ICerberusCommand {
         if (this.command.isEmpty()) {
             this.messageDescriptionToReplace = "%EXCEPTION%";
             this.newMessageDescription = "no command defined";
-            throw new CerberusEventException(new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND));
+            throw new CerberusEventException(new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_MISSINGCOMMAND));
         }
     }
 
@@ -146,6 +146,8 @@ public class CerberusCommand implements ICerberusCommand {
             + this.scriptFolder + "/"
             + this.command
             + "\""};
+
+        LOG.debug("COMMAND CERBERUS_COMMAND : " + this.commandToRun);
     }
 
     private MessageEvent executeProcessBuilder() {
