@@ -491,7 +491,7 @@ public class ActionService implements IActionService {
         MessageEvent message;
 
         try {
-            return cerberusCommand.executeCommand(command);
+            return cerberusCommand.executeCerberusCommand(command);
         } catch (CerberusEventException e) {
             message = e.getMessageError();
             LOG.debug("Exception Running Shell :" + message.getMessage().getDescription());

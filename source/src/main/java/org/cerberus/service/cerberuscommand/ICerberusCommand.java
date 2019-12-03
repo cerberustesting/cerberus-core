@@ -34,5 +34,5 @@ public interface ICerberusCommand {
      * @return
      * @throws CerberusEventException
      */
-    MessageEvent executeCommand(String cmd) throws CerberusEventException;
+    MessageEvent executeCerberusCommand(String cmd) throws CerberusEventException;
 }

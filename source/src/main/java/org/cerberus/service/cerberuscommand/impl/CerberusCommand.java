@@ -50,7 +50,7 @@ public class CerberusCommand implements ICerberusCommand {
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(ActionService.class);
 
     private MessageEvent message;
-    private String scriptFolder;
+    private String scriptPath;
     private String scriptUser;
     private String scriptPassword;
     private String newMessageDescription;
@@ -71,17 +71,16 @@ public class CerberusCommand implements ICerberusCommand {
      * @throws org.cerberus.exception.CerberusEventException
      */
     @Override
-    public MessageEvent executeCommand(String command) throws CerberusEventException {
-
-        LOG.warn("Starting executeCerberusCommand");
-
+    public MessageEvent executeCerberusCommand(String command) throws CerberusEventException {
         this.command = command;
 
         try {
             checkCommandContent();
             checkOS();
             initializeParameters();
-            checkParametersNotEmpty();
+            checkPathParameterNotEmpty();
+            checkPasswordParameterNotEmpty();
+            checkUserParameterNotEmpty();
             checkCommandFirstCharacter();
             concatenateCommandToRun();
             executeProcessBuilder();
@@ -90,21 +89,18 @@ public class CerberusCommand implements ICerberusCommand {
             checkNewMessageDescription();
             throw new CerberusEventException(this.message);
         }
-
         return this.message;
     }
 
     private void checkCommandContent() throws CerberusEventException {
-
         if (this.command.isEmpty()) {
-            this.messageDescriptionToReplace = "%EXCEPTION%";
-            this.newMessageDescription = "no command defined";
+            this.messageDescriptionToReplace = "%FIELD%";
+            this.newMessageDescription = "Command";
             throw new CerberusEventException(new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_MISSINGCOMMAND));
         }
     }
 
     private void checkOS() throws CerberusEventException {
-
         if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
             this.messageDescriptionToReplace = "%OS%";
             this.newMessageDescription = System.getProperty("os.name");
@@ -113,14 +109,31 @@ public class CerberusCommand implements ICerberusCommand {
     }
 
     private void initializeParameters() {
-
-        this.scriptFolder = parameterService.getParameterStringByKey("cerberus_executeCerberusCommand_path", "", "");
+        this.scriptPath = parameterService.getParameterStringByKey("cerberus_executeCerberusCommand_path", "", "");
         this.scriptUser = parameterService.getParameterStringByKey("cerberus_executeCerberusCommand_user", "", "");
         this.scriptPassword = parameterService.getParameterStringByKey("cerberus_executeCerberusCommand_password", "", "");
     }
 
-    private void checkParametersNotEmpty() throws CerberusEventException {
-        if (this.scriptFolder.isEmpty() || this.scriptPassword.isEmpty() || this.scriptUser.isEmpty()) {
+    private void checkPathParameterNotEmpty() throws CerberusEventException {
+        if (this.scriptPath.isEmpty()) {
+            this.messageDescriptionToReplace = "%PARAM%";
+            this.newMessageDescription = "cerberus_executeCerberusCommand_path";
+            throw new CerberusEventException(new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_MISSINGPARAMETER));
+        }
+    }
+
+    private void checkPasswordParameterNotEmpty() throws CerberusEventException {
+        if (this.scriptPassword.isEmpty()) {
+            this.messageDescriptionToReplace = "%PARAM%";
+            this.newMessageDescription = "cerberus_executeCerberusCommand_password";
+            throw new CerberusEventException(new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_MISSINGPARAMETER));
+        }
+    }
+
+    private void checkUserParameterNotEmpty() throws CerberusEventException {
+        if (this.scriptUser.isEmpty()) {
+            this.messageDescriptionToReplace = "%PARAM%";
+            this.newMessageDescription = "cerberus_executeCerberusCommand_user";
             throw new CerberusEventException(new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_MISSINGPARAMETER));
         }
     }
@@ -131,7 +144,7 @@ public class CerberusCommand implements ICerberusCommand {
 
         if (firstChar.equalsIgnoreCase("/")) {
             this.messageDescriptionToReplace = "%FIRST_CHAR%";
-            this.newMessageDescription = System.getProperty(firstChar);
+            this.newMessageDescription = firstChar;
             throw new CerberusEventException(new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_ILLEGALSTART));
         }
     }
@@ -143,11 +156,9 @@ public class CerberusCommand implements ICerberusCommand {
             + "\" | su - "
             + this.scriptUser
             + " -c \"bash /"
-            + this.scriptFolder + "/"
+            + this.scriptPath + "/"
             + this.command
             + "\""};
-
-        LOG.debug("COMMAND CERBERUS_COMMAND : " + this.commandToRun);
     }
 
     private MessageEvent executeProcessBuilder() {
