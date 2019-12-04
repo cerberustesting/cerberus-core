@@ -165,6 +165,27 @@ public class ControlService implements IControlService {
                 }
 
             }
+
+            if (testCaseStepActionControlExecution.getValue3().contains("%")) {
+
+                // When starting a new control, we reset the property list that was already calculated.
+                tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+
+                answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue3(),
+                        tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
+                testCaseStepActionControlExecution.setValue3((String) answerDecode.getItem());
+
+                if (!(answerDecode.isCodeStringEquals("OK"))) {
+                    // If anything wrong with the decode --> we stop here with decode message in the control result.
+                    testCaseStepActionControlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value3"));
+                    testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                    testCaseStepActionControlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                    testCaseStepActionControlExecution.setEnd(new Date().getTime());
+                    LOG.debug("Control interupted due to decode 'Control Value3' Error.");
+                    return testCaseStepActionControlExecution;
+                }
+
+            }
         } catch (CerberusEventException cex) {
             testCaseStepActionControlExecution.setControlResultMessage(cex.getMessageError());
             testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
@@ -318,11 +339,13 @@ public class ControlService implements IControlService {
             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_DIFFERENT);
             mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
             mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+            mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_DIFFERENT);
         mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
         mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+        mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
         return mes;
     }
 
@@ -332,11 +355,13 @@ public class ControlService implements IControlService {
             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_EQUAL);
             mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
             mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+            mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_EQUAL);
         mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
         mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+        mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
         return mes;
 
     }
@@ -347,11 +372,13 @@ public class ControlService implements IControlService {
             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_CONTAINS);
             mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
             mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+            mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_CONTAINS);
         mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
         mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+        mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
         return mes;
 
     }
@@ -363,11 +390,14 @@ public class ControlService implements IControlService {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCONTAINS);
             mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
             mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+            mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
+
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTCONTAINS);
         mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
         mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+        mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
         return mes;
 
     }
@@ -937,6 +967,7 @@ public class ControlService implements IControlService {
                 mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                 mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                 mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                mes.setDescription(mes.getDescription().replace("%STRING4%", isCaseSensitive));
                 return mes;
 
             } else if (Application.TYPE_SRV.equalsIgnoreCase(applicationType)) {
@@ -963,6 +994,7 @@ public class ControlService implements IControlService {
                             mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                             mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                             mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                            mes.setDescription(mes.getDescription().replace("%STRING4%", isCaseSensitive));
                             return mes;
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
@@ -984,6 +1016,7 @@ public class ControlService implements IControlService {
                         mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                         mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                         mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                        mes.setDescription(mes.getDescription().replace("%STRING4%", isCaseSensitive));
                         return mes;
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
@@ -1054,6 +1087,7 @@ public class ControlService implements IControlService {
                 mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                 mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                 mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                mes.setDescription(mes.getDescription().replace("%STRING4%", isCaseSensitive));
                 return mes;
 
             } else if (Application.TYPE_SRV.equalsIgnoreCase(applicationType)) {
@@ -1081,6 +1115,7 @@ public class ControlService implements IControlService {
                             mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                             mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                             mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                            mes.setDescription(mes.getDescription().replace("%STRING4%", isCaseSensitive));
                             return mes;
 
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
@@ -1428,11 +1463,13 @@ public class ControlService implements IControlService {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TITLE);
                     mes.setDescription(mes.getDescription().replace("%STRING1%", pageTitle));
                     mes.setDescription(mes.getDescription().replace("%STRING2%", title));
+                    mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
                     return mes;
                 } else {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TITLE);
                     mes.setDescription(mes.getDescription().replace("%STRING1%", pageTitle));
                     mes.setDescription(mes.getDescription().replace("%STRING2%", title));
+                    mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
                     return mes;
                 }
             } catch (WebDriverException exception) {

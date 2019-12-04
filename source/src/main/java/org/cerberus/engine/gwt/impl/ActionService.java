@@ -214,7 +214,7 @@ public class ActionService implements IActionService {
         String value2 = testCaseStepActionExecution.getValue2();
         String value3 = testCaseStepActionExecution.getValue3();
         String propertyName = testCaseStepActionExecution.getPropertyName();
-        LOG.debug("Doing Action : " + testCaseStepActionExecution.getAction() + " with value1 : " + value1 + " and value2 : " + value2);
+        LOG.debug("Doing Action : " + testCaseStepActionExecution.getAction() + " with value1 : " + value1 + " and value2 : " + value2 + " and value3 : " + value3);
 
         // When starting a new action, we reset the property list that was already calculated.
         tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
