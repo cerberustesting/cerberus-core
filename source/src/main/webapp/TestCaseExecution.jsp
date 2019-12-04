@@ -25,7 +25,7 @@
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <title id="pageTitle">Execution Detail</title>        
+        <title id="pageTitle">Execution Detail</title>
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseExecution.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
@@ -211,6 +211,10 @@
                                                             <label>Param2 Init</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionVal2Init">
                                                         </div>
+                                                        <div class="col-lg-5 form-group">
+                                                            <label>Param3 Init</label>
+                                                            <input class="form-control input-sm" readonly id="stepConditionVal3Init">
+                                                        </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-lg-2 form-group">
@@ -224,6 +228,10 @@
                                                         <div class="col-lg-5 form-group">
                                                             <label>Param2</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionVal2">
+                                                        </div>
+                                                        <div class="col-lg-5 form-group">
+                                                            <label>Param3</label>
+                                                            <input class="form-control input-sm" readonly id="stepConditionVal3">
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -246,14 +254,14 @@
                                     <div class="" id="propPanelWrapper">
                                         <div class="panel-body collapse in" id="propertiesPanel">
                                             <div id="propTable" class="list-group">
-                                            </div>                                           
+                                            </div>
                                             <div class="row" id="secondaryPropTableHeader" class="list-group" style="display:none;">
                                                 <div class="col-sm-6">
-                                                    <button id="showSecondaryProp" type="button" class="btn btn-default center-block"><span class="glyphicon glyphicon-collapse-down"></span> Show <span id="secondaryPropCount"></span> Secondary Properties</button>                  
+                                                    <button id="showSecondaryProp" type="button" class="btn btn-default center-block"><span class="glyphicon glyphicon-collapse-down"></span> Show <span id="secondaryPropCount"></span> Secondary Properties</button>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <button id="hideSecondaryProp" type="button" class="btn btn-default center-block"><span class="glyphicon glyphicon-collapse-up"></span> Hide Secondary Properties</button>             
-                                                </div>                               			
+                                                    <button id="hideSecondaryProp" type="button" class="btn btn-default center-block"><span class="glyphicon glyphicon-collapse-up"></span> Hide Secondary Properties</button>
+                                                </div>
                                             </div>
                                             <div id="secondaryPropTable" style="margin-top:20px;">
                                             </div>
@@ -279,7 +287,7 @@
                                 <div class="col-sm-8">
                                     <div class="form-group">
                                         <label for="controlmessage">Control Message</label>
-                                        <textarea class="form-control" id="controlmessage" readonly></textarea> 
+                                        <textarea class="form-control" id="controlmessage" readonly></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -337,25 +345,25 @@
                                         <label for="exetest">Test</label>
                                         <input type="text" class="form-control" id="exetest"  readonly>
                                     </div>
-                                </div> 
+                                </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="exetestcase">TestCase</label>
                                         <input type="text" class="form-control" id="exetestcase" readonly>
                                     </div>
-                                </div> 
+                                </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="testcaseversion">Version</label>
                                         <input type="text" class="form-control" id="testcaseversion" readonly>
                                     </div>
-                                </div> 
+                                </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="status">Status</label>
                                         <input type="text" class="form-control" id="status" readonly>
                                     </div>
-                                </div> 
+                                </div>
                             </div>
 
                             <div class="row">
@@ -552,8 +560,8 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                </div>  
-                            </div>   
+                                </div>
+                            </div>
                         </div>
 
                     </div>
