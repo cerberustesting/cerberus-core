@@ -21,11 +21,11 @@ package org.cerberus.service.kafka;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceHeader;
-import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerItem;
@@ -67,21 +67,25 @@ public interface IKafkaService {
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    public AnswerItem<KafkaConsumer> seekEvent(String topic, String bootstrapServers,
+    public AnswerItem<Map<TopicPartition, Long>> seekEvent(String topic, String bootstrapServers,
             List<AppServiceHeader> serviceHeader) throws InterruptedException, ExecutionException;
 
     /**
      *
-     * @param consumer
+     * @param mapOffsetPosition
+     * @param topic
+     * @param bootstrapServers
      * @param filterPath
      * @param filterValue
+     * @param serviceHeader
      * @param targetNbEventsInt
      * @param targetNbSecInt
      * @return
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    public AnswerItem<String> searchEvent(KafkaConsumer consumer, String filterPath, String filterValue, int targetNbEventsInt, int targetNbSecInt) throws InterruptedException, ExecutionException;
+    public AnswerItem<String> searchEvent(Map<TopicPartition, Long> mapOffsetPosition, String topic, String bootstrapServers,
+            List<AppServiceHeader> serviceHeader, String filterPath, String filterValue, int targetNbEventsInt, int targetNbSecInt) throws InterruptedException, ExecutionException;
 
     /**
      *
@@ -91,12 +95,6 @@ public interface IKafkaService {
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    public HashMap<String, KafkaConsumer> getAllConsumers(List<TestCaseStep> mainExecutionTestCaseStepList) throws CerberusException, InterruptedException, ExecutionException;
-
-    /**
-     *
-     * @param tCExecution
-     */
-    public void closeAllConsumers(TestCaseExecution tCExecution);
+    public HashMap<String, Map<TopicPartition, Long>> getAllConsumers(List<TestCaseStep> mainExecutionTestCaseStepList) throws CerberusException, InterruptedException, ExecutionException;
 
 }

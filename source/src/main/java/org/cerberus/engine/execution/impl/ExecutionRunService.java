@@ -463,7 +463,7 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Open Kafka Consumers
              */
-            tCExecution.setKafkaConsumer(kafkaService.getAllConsumers(mainExecutionTestCaseStepList));
+            tCExecution.setKafkaLatestOffset(kafkaService.getAllConsumers(mainExecutionTestCaseStepList));
 
             /**
              * Initialize the global TestCaseExecution Data List.
@@ -869,11 +869,6 @@ public class ExecutionRunService implements IExecutionRunService {
             } catch (Exception ex) {
                 LOG.error(logPrefix + "Exception cleaning Memory: " + ex.toString(), ex);
             }
-
-            /**
-             * Clean Kafka Consumers
-             */
-            kafkaService.closeAllConsumers(tCExecution);
 
             /**
              * Log execution is finished

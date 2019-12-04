@@ -23,7 +23,9 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.Map;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -157,7 +159,7 @@ public class TestCaseExecution {
     private String remoteProxyUUID;
     private String remoteProxyLastHarMD5;
     // Kafka Consumers
-    private HashMap<String, KafkaConsumer> kafkaConsumer;
+    private HashMap<String, Map<TopicPartition, Long>>  kafkaLatestOffset;
     
     /**
      * Invariant PROPERTY TYPE String.
@@ -191,12 +193,12 @@ public class TestCaseExecution {
     public static final String ROBOTPROVIDER_KOBITON = "KOBITON";
     public static final String ROBOTPROVIDER_NONE = "NONE";
 
-    public HashMap<String, KafkaConsumer> getKafkaConsumer() {
-        return kafkaConsumer;
+    public HashMap<String, Map<TopicPartition, Long>> getKafkaLatestOffset() {
+        return kafkaLatestOffset;
     }
 
-    public void setKafkaConsumer(HashMap<String, KafkaConsumer> kafkaConsumer) {
-        this.kafkaConsumer = kafkaConsumer;
+    public void setKafkaLatestOffset(HashMap<String, Map<TopicPartition, Long>> kafkaLatestOffset) {
+        this.kafkaLatestOffset = kafkaLatestOffset;
     }
 
     public boolean isRemoteProxyStarted() {

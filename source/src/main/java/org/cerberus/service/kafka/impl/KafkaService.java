@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.OffsetAndTimestamp;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -40,7 +39,6 @@ import org.apache.kafka.common.errors.WakeupException;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceHeader;
-import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.factory.IFactoryAppService;
@@ -156,11 +154,11 @@ public class KafkaService implements IKafkaService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public AnswerItem<KafkaConsumer> seekEvent(String topic, String bootstrapServers,
+    public AnswerItem<Map<TopicPartition, Long>> seekEvent(String topic, String bootstrapServers,
             List<AppServiceHeader> serviceHeader) throws InterruptedException, ExecutionException {
 
-        MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEEKKAFKA);
-        AnswerItem<KafkaConsumer> result = new AnswerItem<>();
+        MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEARCHKAFKA);
+        AnswerItem<Map<TopicPartition, Long>> result = new AnswerItem<>();
 
         KafkaConsumer consumer = null;
 
@@ -179,6 +177,7 @@ public class KafkaService implements IKafkaService {
                 }
             }
 
+            LOG.info("Open Consumer : " + getKafkaConsumerKey(topic, bootstrapServers));
             consumer = new KafkaConsumer<>(props);
 
             //Get a list of the topics' partitions
@@ -188,57 +187,70 @@ public class KafkaService implements IKafkaService {
             consumer.assign(topicPartitionList);
             consumer.seekToEnd(topicPartitionList); //default to latest offset for all partitions
 
-            Map<TopicPartition, OffsetAndTimestamp> partitionOffset = consumer.endOffsets(topicPartitionList);
-            for (Map.Entry<TopicPartition, OffsetAndTimestamp> entry : partitionOffset.entrySet()) {
-                TopicPartition keyPart = entry.getKey();
-//                OffsetAndTimestamp valOffset = entry.getValue();
-                LOG.debug(getKafkaConsumerKey(topic, bootstrapServers) + " Partition : " + keyPart.partition() + " - Offset : " + entry.getValue());
-            }
+            HashMap<TopicPartition, Long> valueResult = new HashMap<>();
 
-            result.setItem(consumer);
+            Map<TopicPartition, Long> partitionOffset = consumer.endOffsets(topicPartitionList);
+
+            result.setItem(partitionOffset);
 
         } catch (Exception ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKKAFKA);
             message.setDescription(message.getDescription().replace("%EX%", ex.toString()).replace("%TOPIC%", topic));
             LOG.debug(ex, ex);
+        } finally {
+            consumer.close();
+            LOG.info("Closed Consumer : " + getKafkaConsumerKey(topic, bootstrapServers));
         }
         result.setResultMessage(message);
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public AnswerItem<String> searchEvent(KafkaConsumer consumer, String filterPath, String filterValue, int targetNbEventsInt, int targetNbSecInt) throws InterruptedException, ExecutionException {
+    public AnswerItem<String> searchEvent(Map<TopicPartition, Long> mapOffsetPosition, String topic, String bootstrapServers,
+            List<AppServiceHeader> serviceHeader, String filterPath, String filterValue, int targetNbEventsInt, int targetNbSecInt) throws InterruptedException, ExecutionException {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKKAFKA);
         AnswerItem<String> result = new AnswerItem<>();
         AppService serviceREST = factoryAppService.create("", AppService.TYPE_KAFKA, AppService.METHOD_KAFKASEARCH, "", "", "", "", "", "", "", "", "", "", "", "", null, "", null, null);
+        Instant date1 = Instant.now();
 
         JSONArray resultJSON = new JSONArray();
 
+        KafkaConsumer consumer = null;
+        int nbFound = 0;
+
         try {
 
-//        if (startFromTimestamp > 0l) {
-//            //Format a Query to get the partitions/offset information to determine the offsets for records that are at the timestamp
-//            Map<TopicPartition, Long> query = new HashMap<>();
-//            for (TopicPartition partition : topicPartitionList) {
-//                query.put(partition, startFromTimestamp);
-//            }
-//            //Execute the query to reset the offset to the timestamp for each partition
-//            //If there is no corresponding offset for a timestamp in a partition it will return null and we'll leave the offset as set above at latest
-//            Map<TopicPartition, OffsetAndTimestamp> partitionOffsetForTimestamp = consumer.offsetsForTimes(query);
-//            for (Map.Entry<TopicPartition, OffsetAndTimestamp> entry : partitionOffsetForTimestamp.entrySet()) {
-//                if (entry.getValue() != null) {
-//                    //If we have an offset that corresponds to a timestamp then reset the offset for partition
-//                    consumer.seek(entry.getKey(), entry.getValue().offset());
-//                    LOG.info("Setting offset for partition " + entry.getKey().partition() + " to " + entry.getValue().offset());
-//                } else {
-//                    LOG.info("Leaving offset for partition " + entry.getKey().partition() + " to Latest");
-//                }
-//            }
-//        }
+            Properties props = new Properties();
+            serviceHeader.add(factoryAppServiceHeader.create(null, "bootstrap.servers", bootstrapServers, "Y", 0, "", "", null, "", null));
+            serviceHeader.add(factoryAppServiceHeader.create(null, "enable.auto.commit", "false", "Y", 0, "", "", null, "", null));
+            serviceHeader.add(factoryAppServiceHeader.create(null, "max.poll.records", "10", "Y", 0, "", "", null, "", null));
+            serviceHeader.add(factoryAppServiceHeader.create(null, "key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer", "Y", 0, "", "", null, "", null));
+            serviceHeader.add(factoryAppServiceHeader.create(null, "value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer", "Y", 0, "", "", null, "", null));
+
+            for (AppServiceHeader object : serviceHeader) {
+                if (StringUtil.parseBoolean(object.getActive())) {
+                    props.put(object.getKey(), object.getValue());
+                }
+            }
+
+            LOG.info("Open Consumer : " + getKafkaConsumerKey(topic, bootstrapServers));
+            consumer = new KafkaConsumer<>(props);
+
+            //Get a list of the topics' partitions
+            List<PartitionInfo> partitionList = consumer.partitionsFor(topic);
+            List<TopicPartition> topicPartitionList = partitionList.stream().map(info -> new TopicPartition(topic, info.partition())).collect(Collectors.toList());
+            //Assign all the partitions to this consumer
+            consumer.assign(topicPartitionList);
+            // Setting each partition to correct Offset.
+            for (Map.Entry<TopicPartition, Long> entry : mapOffsetPosition.entrySet()) {
+                consumer.seek(entry.getKey(), entry.getValue());
+                LOG.debug("Partition : " + entry.getKey().partition() + " set to offset : " + entry.getValue());
+            }
+
             boolean consume = true;
             long timeoutTime = Instant.now().plusSeconds(targetNbSecInt).toEpochMilli(); //default to 30 seconds
-            int nbFound = 0;
             int pollDurationSec = 5;
             if (targetNbSecInt < pollDurationSec) {
                 pollDurationSec = targetNbSecInt;
@@ -279,12 +291,16 @@ public class KafkaService implements IKafkaService {
                     }
                 }
             }
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEEKKAFKA);
             result.setItem(resultJSON.toString());
+            Instant date2 = Instant.now();
+            Duration duration = Duration.between(date1, date2);
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEARCHKAFKA).resolveDescription("NBEVENT", String.valueOf(nbFound)).resolveDescription("NBSEC", String.valueOf(duration.getSeconds()));
         } catch (WakeupException e) {
             LOG.debug("Kafka Wake UP Exception.", e);
             result.setItem(resultJSON.toString());
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEEKKAFKA);
+            Instant date2 = Instant.now();
+            Duration duration = Duration.between(date1, date2);
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEARCHKAFKAPARTIALRESULT).resolveDescription("NBEVENT", String.valueOf(nbFound)).resolveDescription("NBSEC", String.valueOf(duration.getSeconds()));
             //Ignore
         } catch (Exception ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKKAFKA);
@@ -292,6 +308,7 @@ public class KafkaService implements IKafkaService {
             LOG.debug(ex, ex);
         } finally {
             if (consumer != null) {
+                LOG.info("Closed Consumer : " + getKafkaConsumerKey(topic, bootstrapServers));
                 consumer.close();
             }
         }
@@ -303,9 +320,9 @@ public class KafkaService implements IKafkaService {
     }
 
     @Override
-    public HashMap<String, KafkaConsumer> getAllConsumers(List<TestCaseStep> mainExecutionTestCaseStepList) throws CerberusException, InterruptedException, ExecutionException {
-        HashMap<String, KafkaConsumer> tempKafka = new HashMap<>();
-        AnswerItem<KafkaConsumer> resultConsume = new AnswerItem<>();
+    public HashMap<String, Map<TopicPartition, Long>> getAllConsumers(List<TestCaseStep> mainExecutionTestCaseStepList) throws CerberusException, InterruptedException, ExecutionException {
+        HashMap<String, Map<TopicPartition, Long>> tempKafka = new HashMap<>();
+        AnswerItem<Map<TopicPartition, Long>> resultConsume = new AnswerItem<>();
         for (TestCaseStep testCaseStep : mainExecutionTestCaseStepList) {
             for (TestCaseStepAction testCaseStepAction : testCaseStep.getTestCaseStepAction()) {
                 if (testCaseStepAction.getAction().equals(TestCaseStepAction.ACTION_CALLSERVICE)
@@ -315,7 +332,7 @@ public class KafkaService implements IKafkaService {
                     if (localService.getItem() != null) {
                         if (localService.getItem().getType().equals(AppService.TYPE_KAFKA) && localService.getItem().getMethod().equals(AppService.METHOD_KAFKASEARCH)) {
                             resultConsume = seekEvent(localService.getItem().getKafkaTopic(), localService.getItem().getServicePath(), localService.getItem().getHeaderList());
-                            if (!(resultConsume.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEEKKAFKA.getCode()))) {
+                            if (!(resultConsume.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEARCHKAFKA.getCode()))) {
                                 LOG.debug("TestCase interupted due to error when opening Kafka consume. " + resultConsume.getMessageDescription());
                                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_KAFKACONSUMERSEEK)
                                         .resolveDescription("DETAIL", resultConsume.getMessageDescription()));
@@ -323,27 +340,12 @@ public class KafkaService implements IKafkaService {
                             tempKafka.put(getKafkaConsumerKey(localService.getItem().getKafkaTopic(), localService.getItem().getServicePath()), resultConsume.getItem());
                         }
                     }
+
                 }
             }
         }
-        LOG.debug(tempKafka.size() + " consumers open.");
+        LOG.debug(tempKafka.size() + " consumers lastest offset retrieved.");
         return tempKafka;
-
-    }
-
-    @Override
-    public void closeAllConsumers(TestCaseExecution tCExecution) {
-        if (tCExecution.getKafkaConsumer() != null) {
-            for (Map.Entry<String, KafkaConsumer> en : tCExecution.getKafkaConsumer().entrySet()) {
-                String key = en.getKey();
-                KafkaConsumer val = en.getValue();
-                if (val != null) {
-                    val.close();
-                    LOG.debug("Close consumer : " + key);
-                }
-            }
-        }
-
     }
 
 }

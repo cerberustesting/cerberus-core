@@ -435,7 +435,8 @@ public class ServiceService implements IServiceService {
 
                                 AnswerItem<String> resultSearch = new AnswerItem<>();
                                 String kafkaKey = kafkaService.getKafkaConsumerKey(appService.getKafkaTopic(), appService.getServicePath());
-                                resultSearch = kafkaService.searchEvent(tCExecution.getKafkaConsumer().get(kafkaKey), appService.getKafkaFilterPath(), appService.getKafkaFilterValue(), targetNbEventsInt, targetNbSecInt);
+                                //resultSearch = kafkaService.searchEvent(tCExecution.getKafkaConsumer().get(kafkaKey), appService.getKafkaFilterPath(), appService.getKafkaFilterValue(), targetNbEventsInt, targetNbSecInt);
+                                resultSearch = kafkaService.searchEvent(tCExecution.getKafkaLatestOffset().get(kafkaKey), appService.getKafkaTopic(), appService.getServicePath(), appService.getHeaderList(), appService.getKafkaFilterPath(), appService.getKafkaFilterValue(), targetNbEventsInt, targetNbSecInt);
                                 message = resultSearch.getResultMessage();
 
                                 appService.setResponseHTTPBody(resultSearch.getItem());
