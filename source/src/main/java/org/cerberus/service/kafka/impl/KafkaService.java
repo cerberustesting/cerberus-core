@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.kafka.impl;
 
+import com.jayway.jsonpath.JsonPath;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -51,6 +52,7 @@ import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.json.IJsonService;
 import org.cerberus.service.kafka.IKafkaService;
 import org.cerberus.service.proxy.IProxyService;
 import org.cerberus.util.StringUtil;
@@ -81,6 +83,8 @@ public class KafkaService implements IKafkaService {
     IAppServiceService appServiceService;
     @Autowired
     IProxyService proxyService;
+    @Autowired
+    IJsonService jsonService;
 
     protected final Logger LOG = org.apache.logging.log4j.LogManager.getLogger(getClass());
 
@@ -268,20 +272,35 @@ public class KafkaService implements IKafkaService {
                 //Now for each record in the batch of records we got from Kafka
                 for (ConsumerRecord<String, String> record : records) {
                     try {
-                        LOG.debug("Found matching record " + record.topic() + " " + record.partition() + " " + record.offset());
+                        LOG.debug("New record " + record.topic() + " " + record.partition() + " " + record.offset());
                         LOG.debug("  " + record.key() + " | " + record.value());
-                        JSONObject messageJSON = new JSONObject();
                         JSONObject recordJSON = new JSONObject(record.value());
-                        messageJSON.put("key", record.key());
-                        messageJSON.put("value", recordJSON);
-                        messageJSON.put("offset", record.offset());
-                        messageJSON.put("partition", record.partition());
-                        resultJSON.put(messageJSON);
-                        nbFound++;
-                        if (nbFound >= targetNbEventsInt) {
-                            consume = false;  //exit the consume loop
-                            consumer.wakeup(); //takes effect on the next poll loop so need to break.
-                            break; //if we've found a match, stop looping through the current record batch
+
+                        boolean match = true;
+
+                        if (!StringUtil.isNullOrEmpty(filterPath)) {
+                            String recordJSONfiltered = jsonService.getStringFromJson(record.value(), filterPath);
+                            LOG.debug("Filtered value : " + recordJSONfiltered);
+                            if (!recordJSONfiltered.equals(filterValue)) {
+                                match = false;
+                                LOG.debug("Record discarded.");
+
+                            }
+                        }
+
+                        if (match) {
+                            JSONObject messageJSON = new JSONObject();
+                            messageJSON.put("key", record.key());
+                            messageJSON.put("value", recordJSON);
+                            messageJSON.put("offset", record.offset());
+                            messageJSON.put("partition", record.partition());
+                            resultJSON.put(messageJSON);
+                            nbFound++;
+                            if (nbFound >= targetNbEventsInt) {
+                                consume = false;  //exit the consume loop
+                                consumer.wakeup(); //takes effect on the next poll loop so need to break.
+                                break; //if we've found a match, stop looping through the current record batch
+                            }
                         }
 
                     } catch (Exception ex) {
@@ -296,7 +315,6 @@ public class KafkaService implements IKafkaService {
             Duration duration = Duration.between(date1, date2);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEARCHKAFKA).resolveDescription("NBEVENT", String.valueOf(nbFound)).resolveDescription("NBSEC", String.valueOf(duration.getSeconds()));
         } catch (WakeupException e) {
-            LOG.debug("Kafka Wake UP Exception.", e);
             result.setItem(resultJSON.toString());
             Instant date2 = Instant.now();
             Duration duration = Duration.between(date1, date2);

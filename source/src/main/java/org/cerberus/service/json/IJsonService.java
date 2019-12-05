@@ -20,6 +20,7 @@
 package org.cerberus.service.json;
 
 import java.util.List;
+import org.json.JSONObject;
 
 /**
  *
@@ -52,4 +53,13 @@ public interface IJsonService {
      * @throws java.lang.Exception
      */
     List<String> getFromJson(String jsonMessage, String attribute) throws Exception;
+
+    /**
+     *
+     * @param jsonMessage
+     * @param filterPath
+     * @return
+     * @throws Exception
+     */
+    String getStringFromJson(String jsonMessage, String filterPath) throws Exception;
 }
