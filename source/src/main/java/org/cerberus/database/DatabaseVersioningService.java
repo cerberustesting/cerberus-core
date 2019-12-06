@@ -8273,15 +8273,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
 
         // ADD type in dashboardTypeReportItem
-        // 1448-1952
-        a.add("INSERT INTO `dashboardTypeReportItem` (`codeTypeRepItem`,`descTypeRepItem`) VALUES ('CAMPAIGN','Report-Item associés aux campagnes');");
-        a.add("INSERT INTO `dashboardTypeReportItem` (`codeTypeRepItem`,`descTypeRepItem`) VALUES ('CAMPAIGN_GROUP','Report-Item associés aux groupes de campagnes');");
-        a.add("INSERT INTO `dashboardTypeReportItem` (`codeTypeRepItem`,`descTypeRepItem`) VALUES ('APPLICATION','Report-Item associés aux applications');");
-        a.add("INSERT INTO `dashboardTypeReportItem` (`codeTypeRepItem`,`descTypeRepItem`) VALUES ('GENERIC','Report-Item génériques sur l instance de Cerberus');");
-        a.add("INSERT INTO `dashboardTypeReportItem` (`codeTypeRepItem`,`descTypeRepItem`) VALUES ('ENVIRONMENT','Report-Item associés aux environnements');");
+        // 1448
+        a.add("INSERT INTO `dashboardTypeReportItem` (`codeTypeRepItem`,`descTypeRepItem`) VALUES "
+                + "('CAMPAIGN','Report-Item associés aux campagnes'),"
+                + "('CAMPAIGN_GROUP','Report-Item associés aux groupes de campagnes'),"
+                + " ('APPLICATION','Report-Item associés aux applications'),"
+                + "('GENERIC','Report-Item génériques sur l\\'instance de Cerberus'),"
+                + "('ENVIRONMENT','Report-Item associés aux environnements');");
 
         // create table dashboardReportItem, store existing report-item for dashboard
-        // 1453
+        // 1449
         a.add("CREATE TABLE `dashboardReportItem` ("
                 + "`reportItemCode` varchar(50) NOT NULL,"
                 + "`reportItemTitre` varchar(50) NOT NULL,"
@@ -8292,12 +8293,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
 
         // ADD first report item : campaign evolution
-        // 1454
+        // 1450
         a.add("INSERT INTO `dashboardReportItem` (`reportItemCode`,`reportItemTitre`,`isConfigurable`,`reportItemType`) VALUES"
                 + "('CAMPAIGN_EVOLUTION','Campaign evolution',true,'1');");
 
         // create table dashboardGroupEntries, store Group entries report-item for dashboard
-        // 1455
+        // 1451
         a.add("CREATE TABLE `dashboardGroupEntries` ("
                 + "`idGroupEntries` int(11) NOT NULL AUTO_INCREMENT,"
                 + "`codeGroupeEntries` varchar(50) NOT NULL,"
@@ -8310,7 +8311,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
 
         // create table dashboardGroupEntriesCampaign, store Group entries campaign link for dashboard
-        //1456
+        //1452
         a.add("CREATE TABLE `dashboardGroupEntriesCampaign` ("
                 + "`idGroupEntries` int(11) NOT NULL,"
                 + "`idCampaign` int(10) UNSIGNED NOT NULL,"
@@ -8320,7 +8321,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
 
         // create table dashboardGroupEntriesApplication, store Group entries application link for dashboard
-        //1457
+        //1453
         a.add("CREATE TABLE `dashboardGroupEntriesApplication` ("
                 + "`idGroupEntries` int(11) NOT NULL,"
                 + "`application` varchar(200) NOT NULL,"
@@ -8330,7 +8331,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
 
         // create table dashboardEntry, store entries report item for dashboard
-        //1458
+        //1454
         a.add("CREATE TABLE `dashboardEntry` ("
                 + "`idGroupEntries` int(11) NOT NULL,"
                 + "`reportItemCode` varchar(50) NOT NULL,"
@@ -8345,7 +8346,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + "CONSTRAINT `FK_dashboardEntry_02` FOREIGN KEY (`reportItemCode`) REFERENCES `dashboardReportItem` (`reportItemCode`)"
                 + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
 
-        // ADD
         return a;
     }
 
