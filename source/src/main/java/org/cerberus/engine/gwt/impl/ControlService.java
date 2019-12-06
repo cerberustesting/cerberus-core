@@ -124,7 +124,10 @@ public class ControlService implements IControlService {
             //if the getvalue() indicates that the execution should stop then we stop it before the doControl  or
             //if the property service was unable to decode the property that is specified in the object,
             //then the execution of this control should not performed
-            if (!StringUtil.isNullOrEmpty(testCaseStepActionControlExecution.getValue1()) && testCaseStepActionControlExecution.getValue1().contains("%")) {
+            if (testCaseStepActionControlExecution.getValue1() == null) {
+                testCaseStepActionControlExecution.setValue1("");
+            }
+            if (testCaseStepActionControlExecution.getValue1().contains("%")) {
 
                 // When starting a new control, we reset the property list that was already calculated.
                 tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
@@ -145,7 +148,10 @@ public class ControlService implements IControlService {
 
             }
 
-            if (!StringUtil.isNullOrEmpty(testCaseStepActionControlExecution.getValue2()) && testCaseStepActionControlExecution.getValue2().contains("%")) {
+            if (testCaseStepActionControlExecution.getValue2() == null) {
+                testCaseStepActionControlExecution.setValue2("");
+            }
+            if (testCaseStepActionControlExecution.getValue2().contains("%")) {
 
                 // When starting a new control, we reset the property list that was already calculated.
                 tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
@@ -166,7 +172,10 @@ public class ControlService implements IControlService {
 
             }
 
-            if (!StringUtil.isNullOrEmpty(testCaseStepActionControlExecution.getValue3()) && testCaseStepActionControlExecution.getValue3().contains("%")) {
+            if (testCaseStepActionControlExecution.getValue3() == null) {
+                testCaseStepActionControlExecution.setValue3("");
+            }
+            if (testCaseStepActionControlExecution.getValue3().contains("%")) {
 
                 // When starting a new control, we reset the property list that was already calculated.
                 tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
