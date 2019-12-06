@@ -8263,6 +8263,88 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + " ('', 'cerberus_executeCerberusCommand_user', 'cerberus', 'User used to execute a script with Cerberus'),"
                 + " ('', 'cerberus_executeCerberusCommand_password', LEFT(MD5(RAND()), 32), 'Password used to execute a script with Cerberus')");
 
+        // create table dashboardTypeReportItem, store type of report-item for front dashboard
+        // 1447
+        a.add("CREATE TABLE `dashboardTypeReportItem` ("
+                + "`idTypeRepItem` int(11) NOT NULL AUTO_INCREMENT,"
+                + "`codeTypeRepItem` varchar(50) NOT NULL ,"
+                + "`descTypeRepItem` varchar(255) NOT NULL,"
+                + "PRIMARY KEY (`idTypeRepItem`)"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // ADD type in dashboardTypeReportItem
+        // 1448-1952
+        a.add("INSERT INTO `dashboardTypeReportItem` (`codeTypeRepItem`,`descTypeRepItem`) VALUES ('CAMPAIGN','Report-Item associés aux campagnes');");
+        a.add("INSERT INTO `dashboardTypeReportItem` (`codeTypeRepItem`,`descTypeRepItem`) VALUES ('CAMPAIGN_GROUP','Report-Item associés aux groupes de campagnes');");
+        a.add("INSERT INTO `dashboardTypeReportItem` (`codeTypeRepItem`,`descTypeRepItem`) VALUES ('APPLICATION','Report-Item associés aux applications');");
+        a.add("INSERT INTO `dashboardTypeReportItem` (`codeTypeRepItem`,`descTypeRepItem`) VALUES ('GENERIC','Report-Item génériques sur l instance de Cerberus');");
+        a.add("INSERT INTO `dashboardTypeReportItem` (`codeTypeRepItem`,`descTypeRepItem`) VALUES ('ENVIRONMENT','Report-Item associés aux environnements');");
+
+        // create table dashboardReportItem, store existing report-item for dashboard
+        // 1453
+        a.add("CREATE TABLE `dashboardReportItem` ("
+                + "`reportItemCode` varchar(50) NOT NULL,"
+                + "`reportItemTitre` varchar(50) NOT NULL,"
+                + "`isConfigurable` BOOL,"
+                + "`reportItemType` int(11) NOT NULL,"
+                + "PRIMARY KEY (`reportItemCode`),"
+                + "CONSTRAINT `FK_typeReportItem_01` FOREIGN KEY (`reportItemType`) REFERENCES `dashboardTypeReportItem` (`idTypeRepItem`)"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // ADD first report item : campaign evolution
+        // 1454
+        a.add("INSERT INTO `dashboardReportItem` (`reportItemCode`,`reportItemTitre`,`isConfigurable`,`reportItemType`) VALUES"
+                + "('CAMPAIGN_EVOLUTION','Campaign evolution',true,'1');");
+
+        // create table dashboardGroupEntries, store Group entries report-item for dashboard
+        // 1455
+        a.add("CREATE TABLE `dashboardGroupEntries` ("
+                + "`idGroupEntries` int(11) NOT NULL AUTO_INCREMENT,"
+                + "`codeGroupeEntries` varchar(50) NOT NULL,"
+                + "`sort` int(11) DEFAULT 10,"
+                + "`dashboardUserId` int(10) UNSIGNED NOT NULL,"
+                + "`reportItemType` int(11) NOT NULL,"
+                + "PRIMARY KEY (`idGroupEntries`),"
+                + "CONSTRAINT `FK_dashboardGroup_01` FOREIGN KEY (`dashboardUserId`) REFERENCES `user` (`UserID`) ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "CONSTRAINT `FK_dashboardGroup_02` FOREIGN KEY (`reportItemType`) REFERENCES `dashboardTypeReportItem` (`idTypeRepItem`)"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // create table dashboardGroupEntriesCampaign, store Group entries campaign link for dashboard
+        //1456
+        a.add("CREATE TABLE `dashboardGroupEntriesCampaign` ("
+                + "`idGroupEntries` int(11) NOT NULL,"
+                + "`idCampaign` int(10) UNSIGNED NOT NULL,"
+                + "PRIMARY KEY (`idGroupEntries`,`idCampaign`),"
+                + "CONSTRAINT `FK_dashboardGroupCampaign_01` FOREIGN KEY (`idGroupEntries`) REFERENCES `dashboardGroupEntries` (`idGroupEntries`) ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "CONSTRAINT `FK_dashboardGroupCampaign_02` FOREIGN KEY (`idCampaign`) REFERENCES `campaign` (`campaignId`) ON DELETE CASCADE ON UPDATE CASCADE"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // create table dashboardGroupEntriesApplication, store Group entries application link for dashboard
+        //1457
+        a.add("CREATE TABLE `dashboardGroupEntriesApplication` ("
+                + "`idGroupEntries` int(11) NOT NULL,"
+                + "`application` varchar(200) NOT NULL,"
+                + "PRIMARY KEY (`idGroupEntries`,`application`),"
+                + "CONSTRAINT `FK_dashboardGroupApplication_01` FOREIGN KEY (`idGroupEntries`) REFERENCES `dashboardGroupEntries` (`idGroupEntries`) ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "CONSTRAINT `FK_dashboardGroupApplication_02` FOREIGN KEY (`application`) REFERENCES `application` (`Application`) ON DELETE CASCADE ON UPDATE CASCADE"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // create table dashboardEntry, store entries report item for dashboard
+        //1458
+        a.add("CREATE TABLE `dashboardEntry` ("
+                + "`idGroupEntries` int(11) NOT NULL,"
+                + "`reportItemCode` varchar(50) NOT NULL,"
+                + "`paramId1` varchar(255) DEFAULT NULL,"
+                + "`paramId2` varchar(255) DEFAULT NULL,"
+                + "`UsrCreated` varchar(45) DEFAULT NULL,"
+                + "`DateCreated` timestamp NULL DEFAULT NULL,"
+                + "`UsrModif` varchar(45) DEFAULT NULL,"
+                + "`DateModif` timestamp NULL DEFAULT NULL,"
+                + "PRIMARY KEY (`idGroupEntries`),"
+                + "CONSTRAINT `FK_dashboardEntry_01` FOREIGN KEY (`idGroupEntries`) REFERENCES `dashboardGroupEntries` (`idGroupEntries`) ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "CONSTRAINT `FK_dashboardEntry_02` FOREIGN KEY (`reportItemCode`) REFERENCES `dashboardReportItem` (`reportItemCode`)"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
         // ADD
         return a;
     }
