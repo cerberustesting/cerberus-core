@@ -19,7 +19,7 @@
  */
 package org.cerberus.service.kafka.impl;
 
-import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -214,7 +214,7 @@ public class KafkaService implements IKafkaService {
     public AnswerItem<String> searchEvent(Map<TopicPartition, Long> mapOffsetPosition, String topic, String bootstrapServers,
             List<AppServiceHeader> serviceHeader, String filterPath, String filterValue, int targetNbEventsInt, int targetNbSecInt) throws InterruptedException, ExecutionException {
 
-        MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKKAFKA);
+        MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEARCHKAFKA);
         AnswerItem<String> result = new AnswerItem<>();
         AppService serviceREST = factoryAppService.create("", AppService.TYPE_KAFKA, AppService.METHOD_KAFKASEARCH, "", "", "", "", "", "", "", "", "", "", "", "", null, "", null, null);
         Instant date1 = Instant.now();
@@ -223,6 +223,7 @@ public class KafkaService implements IKafkaService {
 
         KafkaConsumer consumer = null;
         int nbFound = 0;
+        int nbEvents = 0;
 
         try {
 
@@ -275,16 +276,26 @@ public class KafkaService implements IKafkaService {
                         LOG.debug("New record " + record.topic() + " " + record.partition() + " " + record.offset());
                         LOG.debug("  " + record.key() + " | " + record.value());
                         JSONObject recordJSON = new JSONObject(record.value());
+                        nbEvents++;
 
                         boolean match = true;
 
                         if (!StringUtil.isNullOrEmpty(filterPath)) {
-                            String recordJSONfiltered = jsonService.getStringFromJson(record.value(), filterPath);
+                            String recordJSONfiltered = "";
+                            try {
+                                recordJSONfiltered = jsonService.getStringFromJson(record.value(), filterPath);
+                            } catch (PathNotFoundException ex) {
+                                //Catch any exceptions thrown from message processing/testing as they should have already been reported/dealt with
+                                //but we don't want to trigger the catch block for Kafka consumption
+                                match = false;
+                                LOG.debug("Record discarded - Path not found.");
+                            } catch (Exception ex) {
+                                LOG.error(ex, ex);
+                            }
                             LOG.debug("Filtered value : " + recordJSONfiltered);
                             if (!recordJSONfiltered.equals(filterValue)) {
                                 match = false;
-                                LOG.debug("Record discarded.");
-
+                                LOG.debug("Record discarded - Value different.");
                             }
                         }
 
@@ -313,15 +324,21 @@ public class KafkaService implements IKafkaService {
             result.setItem(resultJSON.toString());
             Instant date2 = Instant.now();
             Duration duration = Duration.between(date1, date2);
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEARCHKAFKA).resolveDescription("NBEVENT", String.valueOf(nbFound)).resolveDescription("NBSEC", String.valueOf(duration.getSeconds()));
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEARCHKAFKA)
+                    .resolveDescription("NBEVENT", String.valueOf(nbFound))
+                    .resolveDescription("NBTOT", String.valueOf(nbEvents))
+                    .resolveDescription("NBSEC", String.valueOf(duration.getSeconds()));
         } catch (WakeupException e) {
             result.setItem(resultJSON.toString());
             Instant date2 = Instant.now();
             Duration duration = Duration.between(date1, date2);
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEARCHKAFKAPARTIALRESULT).resolveDescription("NBEVENT", String.valueOf(nbFound)).resolveDescription("NBSEC", String.valueOf(duration.getSeconds()));
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEARCHKAFKAPARTIALRESULT)
+                    .resolveDescription("NBEVENT", String.valueOf(nbFound))
+                    .resolveDescription("NBTOT", String.valueOf(nbEvents))
+                    .resolveDescription("NBSEC", String.valueOf(duration.getSeconds()));
             //Ignore
         } catch (Exception ex) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKKAFKA);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEARCHKAFKA);
             message.setDescription(message.getDescription().replace("%EX%", ex.toString()));
             LOG.debug(ex, ex);
         } finally {
@@ -332,7 +349,7 @@ public class KafkaService implements IKafkaService {
         }
 
         result.setItem(resultJSON.toString());
-        message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", AppService.METHOD_KAFKASEARCH));
+        message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", AppService.METHOD_KAFKASEARCH).replace("%TOPIC%", topic));
         result.setResultMessage(message);
         return result;
     }

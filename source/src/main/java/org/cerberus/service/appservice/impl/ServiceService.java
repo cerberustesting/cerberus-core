@@ -412,6 +412,41 @@ public class ServiceService implements IServiceService {
                                 break;
 
                             case AppService.METHOD_KAFKASEARCH:
+
+                                String decodedFilterPath = appService.getKafkaFilterPath();
+                                String decodedFilterValue = appService.getKafkaFilterValue();
+                                try {
+
+                                    answerDecode = variableService.decodeStringCompletly(decodedFilterPath, tCExecution, null, false);
+                                    decodedFilterPath = (String) answerDecode.getItem();
+                                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                                        String field = "Filter Path";
+                                        message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                                        LOG.debug("Property interupted due to decode '" + field + "'.");
+                                        result.setResultMessage(message);
+                                        return result;
+                                    }
+
+                                    answerDecode = variableService.decodeStringCompletly(decodedFilterValue, tCExecution, null, false);
+                                    decodedFilterValue = (String) answerDecode.getItem();
+                                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                                        String field = "Filter Value";
+                                        message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                                        LOG.debug("Property interupted due to decode '" + field + "'.");
+                                        result.setResultMessage(message);
+                                        return result;
+                                    }
+
+                                } catch (CerberusEventException cee) {
+                                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEARCHKAFKA);
+                                    message.setDescription(message.getDescription().replace("%TOPIC%", appService.getKafkaTopic()));
+                                    message.setDescription(message.getDescription().replace("%EX%", cee.getMessageError().getDescription()));
+                                    result.setResultMessage(message);
+                                    return result;
+                                }
+
                                 int targetNbEventsInt = ParameterParserUtil.parseIntegerParam(targetNbEvents, 1);
                                 int targetNbSecInt = ParameterParserUtil.parseIntegerParam(targetNbSec, 30);
                                 if (targetNbEventsInt <= 0) {
@@ -432,11 +467,13 @@ public class ServiceService implements IServiceService {
                                 appService.setKafkaWaitSecond(targetNbSecInt);
                                 appService.setKafkaResponsePartition(-1);
                                 appService.setKafkaResponseOffset(-1);
+                                appService.setKafkaFilterPath(decodedFilterPath);
+                                appService.setKafkaFilterValue(decodedFilterValue);
 
                                 AnswerItem<String> resultSearch = new AnswerItem<>();
                                 String kafkaKey = kafkaService.getKafkaConsumerKey(appService.getKafkaTopic(), appService.getServicePath());
                                 //resultSearch = kafkaService.searchEvent(tCExecution.getKafkaConsumer().get(kafkaKey), appService.getKafkaFilterPath(), appService.getKafkaFilterValue(), targetNbEventsInt, targetNbSecInt);
-                                resultSearch = kafkaService.searchEvent(tCExecution.getKafkaLatestOffset().get(kafkaKey), appService.getKafkaTopic(), appService.getServicePath(), appService.getHeaderList(), appService.getKafkaFilterPath(), appService.getKafkaFilterValue(), targetNbEventsInt, targetNbSecInt);
+                                resultSearch = kafkaService.searchEvent(tCExecution.getKafkaLatestOffset().get(kafkaKey), appService.getKafkaTopic(), decodedServicePath, appService.getHeaderList(), decodedFilterPath, decodedFilterValue, targetNbEventsInt, targetNbSecInt);
                                 message = resultSearch.getResultMessage();
 
                                 appService.setResponseHTTPBody(resultSearch.getItem());

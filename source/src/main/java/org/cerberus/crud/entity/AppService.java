@@ -497,6 +497,8 @@ public class AppService {
             if (!(this.getKafkaWaitSecond() == 0)) {
                 jsonMyRequest.put("WaitSeconds", this.getKafkaWaitSecond());
             }
+            jsonMyRequest.put("KAFKA-FilterPath", this.getKafkaFilterPath());
+            jsonMyRequest.put("KAFKA-FilterValue", this.getKafkaFilterValue());
 
             jsonMain.put("Request", jsonMyRequest);
 
