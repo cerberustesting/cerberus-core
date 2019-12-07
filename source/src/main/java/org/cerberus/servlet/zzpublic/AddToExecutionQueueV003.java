@@ -422,6 +422,10 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         if (StringUtil.isNullOrEmpty(robotIP)) {
             if (robots == null || robots.isEmpty()) {
                 // RobotIP is not defined and no robot are provided so the content is probably testcases that does not require robot definition.
+                if (manualExecution.equalsIgnoreCase("Y") || manualExecution.equalsIgnoreCase("A")) {
+                    robotIP = "manual";
+                    robotsMap.put("", robotFactory.create(0, "", platform, browser, "", "Y", "", "", "", screenSize, browser, ""));
+                }
                 nbrobot = 1;
             } else {
                 // Not RobotIP defined but at least 1 robot has been found from servlet call or campaign definition.
@@ -508,7 +512,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                     && (app.getType() != null)
                                                     && (app.getType().equalsIgnoreCase(Application.TYPE_GUI) || app.getType().equalsIgnoreCase(Application.TYPE_APK)
                                                     || app.getType().equalsIgnoreCase(Application.TYPE_IPA) || app.getType().equalsIgnoreCase(Application.TYPE_FAT))) {
-
+                                                
                                                 for (Map.Entry<String, Robot> entry : robotsMap.entrySet()) {
                                                     String key = entry.getKey();
                                                     Robot robot = entry.getValue();
