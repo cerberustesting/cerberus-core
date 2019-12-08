@@ -8346,6 +8346,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + "CONSTRAINT `FK_dashboardEntry_02` FOREIGN KEY (`reportItemCode`) REFERENCES `dashboardReportItem` (`reportItemCode`)"
                 + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
 
+        // Alter ReportItem, replace boolean by String to match with Cerberus standard
+        // 1455
+        a.add("ALTER TABLE `dashboardReportItem` MODIFY `isConfigurable` varchar(1);");
+
+        // Replace ReportItem value from boolean to string value
+        // 1456
+        a.add("UPDATE dashboardReportItem SET `isConfigurable`='Y' WHERE 1=1;");
+
         return a;
     }
 
