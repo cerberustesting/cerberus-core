@@ -186,7 +186,7 @@ function addHtmlForDependencyLine(id, test, testCase, testCaseTxt, activate, des
 }
 
 function getHtmlIdForTestCase(test, testCase) {
-    return (test + '-' + testCase).replace(/ /g, '_').replace(/\./g, '_').replace(/\:/g, '_');
+    return (test + '-' + testCase).replace(/ /g, '_').replace(/\./g, '_').replace(/\:/g, '_').replace(/\)/g, '_').replace(/\(/g, '_');
 }
 
 function removeTestCaseDependency(test, testCase) {
