@@ -349,8 +349,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionOper = step.getString("conditionOper");
             String conditionVal1 = step.getString("conditionVal1");
             String conditionVal2 = step.getString("conditionVal2");
-            //String conditionVal3 = step.getString("conditionVal3");
-            String conditionVal3 = "";
+            String conditionVal3 = step.getString("conditionVal3");
             String description = step.getString("description");
             String useStep = step.getString("useStep");
             String useStepTest = step.getString("useStepTest");
@@ -397,8 +396,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionOper = tcsaJson.getString("conditionOper");
             String conditionVal1 = tcsaJson.getString("conditionVal1");
             String conditionVal2 = tcsaJson.getString("conditionVal2");
-            //String conditionVal3 = tcsaJson.getString("conditionVal3");
-            String conditionVal3 = "";
+            String conditionVal3 = tcsaJson.getString("conditionVal3");
             String action = tcsaJson.getString("action");
             String object = tcsaJson.getString("object");
             String property = tcsaJson.getString("property");

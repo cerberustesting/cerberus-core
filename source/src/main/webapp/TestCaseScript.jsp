@@ -25,7 +25,7 @@
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <title id="pageTitle">Test Case</title>        
+        <title id="pageTitle">Test Case</title>
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <script type="text/javascript" src="dependencies/Ace-1.2.6/ext-language_tools.js"></script>
@@ -47,9 +47,9 @@
             <%@ include file="include/pages/testcasescript/manageProperties.html"%>
             <%@ include file="include/pages/testcasescript/addStep.html"%>
             <%@ include file="include/transversalobject/ApplicationObject.html"%>
-            <%@ include file="include/transversalobject/TestDataLib.html"%>              
-            <%@ include file="include/transversalobject/AppService.html"%> 
-            <%@ include file="include/transversalobject/Property.html"%> 
+            <%@ include file="include/transversalobject/TestDataLib.html"%>
+            <%@ include file="include/transversalobject/AppService.html"%>
+            <%@ include file="include/transversalobject/Property.html"%>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
 
 
@@ -195,6 +195,10 @@
                                                     <div class="col-lg-3 form-group">
                                                         <label>Step Condition Parameter:</label>
                                                         <input class="form-control input-sm" id="stepConditionVal2">
+                                                    </div>
+                                                    <div class="col-lg-3 form-group">
+                                                        <label>Step Condition Parameter:</label>
+                                                        <input class="form-control input-sm" id="stepConditionVal3">
                                                     </div>
                                                 </div>
                                                 <div class="row">

@@ -93,6 +93,7 @@ function initModalTestCase() {
     $("[name='conditionOperField']").html(doc.getDocOnline("testcase", "ConditionOper"));
     $("[name='conditionVal1Field']").html(doc.getDocOnline("testcase", "ConditionVal1"));
     $("[name='conditionVal2Field']").html(doc.getDocOnline("testcase", "ConditionVal2"));
+    $("[name='conditionVal3Field']").html(doc.getDocOnline("testcase", "ConditionVal3"));
     $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
     $("[name='versionActivation']").html(doc.getDocOnline("testcase", "versionActivation"));
     $("[name='activationConditions']").html(doc.getDocOnline("testcase", "activationConditions"));
@@ -142,11 +143,11 @@ function initModalTestCase() {
     $('#editTestCaseModal').find("#function").autocomplete({
         source: availableFunctions
     });
-    $("#select_all").change(function () {  //"select all" change
+    $("#select_all").change(function() {  //"select all" change
         $("#countryList input").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
     });
 
-    $("#addTestCaseDependencyButton").click(function () {
+    $("#addTestCaseDependencyButton").click(function() {
 
         var test = $("#selectTest").val();
         var testCase = $("#selectTestCase").val();
@@ -203,7 +204,7 @@ function removeTestCaseDependency(test, testCase) {
 function editTestCaseClick(test, testCase) {
 
     $("#editTestCaseButton").off("click");
-    $("#editTestCaseButton").click(function () {
+    $("#editTestCaseButton").click(function() {
         confirmTestCaseModalHandler("EDIT");
     });
 
@@ -221,13 +222,13 @@ function editTestCaseClick(test, testCase) {
 
     // In Edit TestCase form, if we change the test, we get the latest testcase from that test.
     $('#editTestCaseModalForm select[name="test"]').off("change");
-    $('#editTestCaseModalForm select[name="test"]').change(function () {
+    $('#editTestCaseModalForm select[name="test"]').change(function() {
         feedTestCaseField(test, "editTestCaseModalForm");
         // Compare with original value in order to display the warning message.
         displayWarningOnChangeTestCaseKey(test, testCase);
     });
     $('#editTestCaseModalForm input[name="testCase"]').off("change");
-    $('#editTestCaseModalForm input[name="testCase"]').change(function () {
+    $('#editTestCaseModalForm input[name="testCase"]').change(function() {
         // Compare with original value in order to display the warning message.
         displayWarningOnChangeTestCaseKey(test, testCase);
     });
@@ -258,7 +259,7 @@ function displayWarningOnChangeTestCaseKey(test, testCase) {
 function duplicateTestCaseClick(test, testCase) {
 
     $("#duplicateTestCaseButton").off("click");
-    $("#duplicateTestCaseButton").click(function () {
+    $("#duplicateTestCaseButton").click(function() {
         confirmTestCaseModalHandler("DUPLICATE");
     });
 
@@ -277,7 +278,7 @@ function duplicateTestCaseClick(test, testCase) {
 
     // In Add and duplicate TestCase form, if we change the test, we don't display any warning.
     $('#editTestCaseModalForm select[name="test"]').off("change");
-    $('#editTestCaseModalForm select[name="test"]').change(function () {
+    $('#editTestCaseModalForm select[name="test"]').change(function() {
         feedTestCaseField(test, "editTestCaseModalForm");
     });
     $('#editTestCaseModalForm input[name="testCase"]').off("change");
@@ -293,7 +294,7 @@ function duplicateTestCaseClick(test, testCase) {
 function addTestCaseClick(defaultTest) {
 
     $("#addTestCaseButton").off("click");
-    $("#addTestCaseButton").click(function () {
+    $("#addTestCaseButton").click(function() {
         confirmTestCaseModalHandler("ADD");
     });
 
@@ -311,7 +312,7 @@ function addTestCaseClick(defaultTest) {
 
     // In Add and duplicate TestCase form, if we change the test, we don't display any warning.
     $('#editTestCaseModalForm select[name="test"]').off("change");
-    $('#editTestCaseModalForm select[name="test"]').change(function () {
+    $('#editTestCaseModalForm select[name="test"]').change(function() {
         feedTestCaseField(defaultTest, "editTestCaseModalForm");
     });
     $('#editTestCaseModalForm input[name="testCase"]').off("change");
@@ -320,7 +321,7 @@ function addTestCaseClick(defaultTest) {
 }
 
 /***
- * Feed the testcase field inside modalForm modal with a new occurence value 
+ * Feed the testcase field inside modalForm modal with a new occurence value
  * for the given test. used when create or duplicate a new testcase.
  * @param {String} test - test used to calculate the new testcase value.
  * @param {String} modalForm - modal name where the testcase will be filled.
@@ -355,7 +356,7 @@ function feedTestCaseField(test, modalForm) {
             method: "GET",
             data: {test: encodeURIComponent(test), getMaxTC: true},
             dataType: "json",
-            success: function (data) {
+            success: function(data) {
                 var testCaseNumber = data.maxTestCase + 1;
                 var tcnumber;
 
@@ -545,6 +546,7 @@ function confirmTestCaseModalHandler(mode) {
             conditionOper: data.conditionOper,
             conditionVal1: data.conditionVal1,
             conditionVal2: data.conditionVal2,
+            conditionVal3: data.conditionVal3,
             ticket: data.ticket,
             toRev: data.toRev,
             toSprint: data.toSprint,
@@ -553,7 +555,7 @@ function confirmTestCaseModalHandler(mode) {
             labelList: JSON.stringify(table_label),
             countryList: JSON.stringify(table_country),
             testcaseDependency: JSON.stringify(testcaseDependency)},
-        success: function (dataMessage) {
+        success: function(dataMessage) {
             hideLoaderInModal('#editTestCaseModal');
             if (getAlertType(dataMessage.messageType) === "success") {
                 var oTable = $("#testCaseTable").dataTable();
@@ -608,13 +610,13 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
 
 
     var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
 
         var testCase = data.contentTable;
 
         var appInfo = $.getJSON("ReadApplication", "application=" + encodeURIComponent(testCase.application));
 
-        $.when(appInfo).then(function (appData) {
+        $.when(appInfo).then(function(appData) {
             var currentSys = getUser().defaultSystem;
             var t = appData.contentTable;
             var bugTrackerUrl = t.bugTrackerUrl;
@@ -635,7 +637,7 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
             formEdit.find("#link").prop("href", newbugTrackerUrl).text(testCase.bugID);
             formEdit.find("#link").prop("target", "_blank");
 
-            formEdit.find("#bugId").change(function () {
+            formEdit.find("#bugId").change(function() {
                 var newbugid = formEdit.find("#bugId").val();
                 var newbugTrackerUrl = "";
                 if (newbugid !== "" && bugTrackerUrl) {
@@ -652,7 +654,7 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
     });
 
     fillTestAndTestCaseSelect("#selectTest", "#selectTestCase", undefined, undefined, true)
-    $("#selectTest").change(function () {
+    $("#selectTest").change(function() {
         fillTestCaseSelect("#selectTestCase", $("#selectTest").val(), undefined, true);
     })
 
@@ -674,8 +676,8 @@ function fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases
         $.ajax({
             url: "ReadTestCase?test=" + encodeURIComponent(test) + url1,
             async: true,
-            success: function (data) {
-                data.contentTable.sort(function (a, b) {
+            success: function(data) {
+                data.contentTable.sort(function(a, b) {
                     var aa = a.testCase.toLowerCase();
                     var bb = b.testCase.toLowerCase();
                     if (aa > bb) {
@@ -714,8 +716,8 @@ function fillTestAndTestCaseSelect(selectorTestSelect, selectorTestCaseSelect, t
     $.ajax({
         url: "ReadTest",
         async: true,
-        success: function (data) {
-            data.contentTable.sort(function (a, b) {
+        success: function(data) {
+            data.contentTable.sort(function(a, b) {
                 var aa = a.test.toLowerCase();
                 var bb = b.test.toLowerCase();
                 if (aa > bb) {
@@ -750,7 +752,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
 
 //    $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
 
-    var observer = new MutationObserver(function (mutations, me) {
+    var observer = new MutationObserver(function(mutations, me) {
         var behaviorOrValueExpected = tinyMCE.get('behaviorOrValueExpected');
         if (behaviorOrValueExpected != null) {
             if (isEmpty(testCase)) {
@@ -814,6 +816,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#conditionOper").prop("value", "always");
         formEdit.find("#conditionVal1").prop("value", "");
         formEdit.find("#conditionVal2").prop("value", "");
+        formEdit.find("#conditionVal3").prop("value", "");
         formEdit.find("#comment").prop("value", "");
     } else {
         formEdit.find("#test").prop("value", testCase.test);
@@ -834,6 +837,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#conditionOper").prop("value", testCase.conditionOper);
         formEdit.find("#conditionVal1").prop("value", testCase.conditionVal1);
         formEdit.find("#conditionVal2").prop("value", testCase.conditionVal2);
+        formEdit.find("#conditionVal3").prop("value", testCase.conditionVal3);
         formEdit.find("#comment").prop("value", testCase.comment);
         formEdit.find("#testcaseversion").prop("value", testCase.testCaseVersion);
         appendTestCaseDepList(testCase);
@@ -876,6 +880,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#conditionOper").prop("disabled", "disabled");
         formEdit.find("#conditionVal1").prop("disabled", "disabled");
         formEdit.find("#conditionVal2").prop("disabled", "disabled");
+        formEdit.find("#conditionVal3").prop("disabled", "disabled");
         formEdit.find("#bugId").prop("readonly", "readonly");
         // feed the country list.
         appendTestCaseCountryList(testCase, true);
@@ -911,6 +916,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#conditionOper").removeProp("disabled");
         formEdit.find("#conditionVal1").removeProp("disabled");
         formEdit.find("#conditionVal2").removeProp("disabled");
+        formEdit.find("#conditionVal3").removeProp("disabled");
         formEdit.find("#bugId").removeProp("readonly");
         formEdit.find("#comment").removeProp("readonly");
         // feed the country list.
@@ -928,7 +934,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
 function appendBuildRevListOnTestCase(system, editData) {
 
     var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=1");
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         var fromBuild = $("[name=fromSprint]");
         var toBuild = $("[name=toSprint]");
         var targetBuild = $("[name=targetSprint]");
@@ -958,7 +964,7 @@ function appendBuildRevListOnTestCase(system, editData) {
     });
 
     var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=2");
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         var fromRev = $("[name=fromRev]");
         var toRev = $("[name=toRev]");
         var targetRev = $("[name=targetRev]");
@@ -1001,7 +1007,7 @@ function appendTestCaseCountryList(testCase, isReadOnly) {
     var countryList = $("[name=countryList]");
 
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
 
         for (var index = 0; index < data.length; index++) {
             var country = data[index].value;
@@ -1010,7 +1016,7 @@ function appendTestCaseCountryList(testCase, isReadOnly) {
                                 <input class="countrycb" type="checkbox" ' + ' name="' + country + '"/>' + country + '\
                                 </label>');
         }
-        $("[class='countrycb']").click(function () {
+        $("[class='countrycb']").click(function() {
             //uncheck "select all", if one of the listed checkbox item is unchecked
             if (false == $(this).prop("checked")) { //if this item is unchecked
                 $("#select_all").prop('checked', false); //change "select all" checked status to false
@@ -1062,7 +1068,7 @@ function loadLabel(labelList, mySystem, myLabelDiv, labelSize, test, testCase) {
 
     var jqxhr = $.get("ReadLabel?system=" + targetSystem + "&withHierarchy=true&isSelectable=Y&testSelect=" + encodeURI(test) + "&testCaseSelect=" + encodeURI(testCase), "", "json");
 
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         var messageType = getAlertType(data.messageType);
 
         //DRAW LABEL LIST
@@ -1104,7 +1110,7 @@ function loadLabel(labelList, mySystem, myLabelDiv, labelSize, test, testCase) {
         } else {
             showMessageMainPage(messageType, data.message, true);
         }
-        // Put the selected testcaselabel at the top and check them. 
+        // Put the selected testcaselabel at the top and check them.
 //        if (!(isEmpty(labelList))) {
 //            var index;
 //            for (index = 0; index < labelList.length; index++) {
@@ -1146,7 +1152,7 @@ function appendApplicationList(defautValue, mySystem) {
     }
 
     var jqxhr = $.getJSON("ReadApplication", "q=1" + getUser().systemQuery);
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         var applicationList = $("[name=application]");
 
         for (var index = 0; index < data.contentTable.length; index++) {
