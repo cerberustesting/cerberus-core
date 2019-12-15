@@ -218,7 +218,7 @@ function deleteEntryHandlerClick() {
         showMessageMainPage(messageType, data.message, false);
         //close confirmation window
         $('#confirmationModal').modal('hide');
-        
+
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
@@ -235,6 +235,19 @@ function massActionModalSaveHandler_addLabel() {
     var formNewValues = $('#massActionTestCaseModal #massActionTestCaseModalFormAddLabel');
     var formList = $('#massActionForm');
     var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
+
+    var table2 = $('#selectLabelAddS').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
+    var table2 = $('#selectLabelAddR').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
+    var table2 = $('#selectLabelAddB').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
 
     showLoaderInModal('#massActionTestCaseModal');
 
@@ -259,6 +272,19 @@ function massActionModalSaveHandler_removeLabel() {
     var formNewValues = $('#massActionTestCaseModal #massActionTestCaseModalFormAddLabel');
     var formList = $('#massActionForm');
     var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
+
+    var table2 = $('#selectLabelAddS').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
+    var table2 = $('#selectLabelAddR').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
+    var table2 = $('#selectLabelAddB').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
 
     showLoaderInModal('#massActionTestCaseModal');
 
@@ -335,7 +361,7 @@ function massActionModalSaveHandler_delete() {
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_testcase", "message_delete_all");
     messageComplete += "</br></br>";
-    
+
     $("input[data-line=select]:checked").each(function (index, file) {
         var t = $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
         var test = t.split("test=")[1].split("&testcase=")[0];
@@ -344,17 +370,17 @@ function massActionModalSaveHandler_delete() {
         messageComplete += "</br>";
     });
     showModalConfirmation(deleteMassTestCase, undefined, "Delete", messageComplete);
-    
+
 }
 
 function deleteMassTestCase() {
     var returnMessage = '{"messageType":"OK","message":"Delete OK"}';
-    
+
     //Loop on TestCase Selected to delete them 
     $("input[data-line=select]:checked").each(function (index, file) {
         var t = $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testCase=');
-        var url = "DeleteTestCase?"+t;
-        
+        var url = "DeleteTestCase?" + t;
+
         $.ajax({
             url: url,
             async: true,
@@ -372,12 +398,12 @@ function deleteMassTestCase() {
 
     });
     showMessage(JSON.parse(returnMessage));
-    
+
     $('#testCaseTable').DataTable().draw();
     $("#selectAll").prop("checked", false);
     $('#confirmationModal').modal('hide');
     $('#massActionTestCaseModal').modal('hide');
-    
+
 }
 
 function massActionModalCloseHandler() {
@@ -453,11 +479,11 @@ function importTestCaseClick() {
     $("#importTestCaseButton").click(function () {
         confirmImportTestCaseModalHandler();
     });
-    
+
     var doc = new Doc();
     var text = doc.getDocLabel("page_testcaselist", "import_testcase_msg");
     $('#importTestCaseModalText').text(text);
-    
+
     $('#importTestCaseModal').modal('show');
 }
 
@@ -700,7 +726,7 @@ function aoColumnsFunc(countries, tableId) {
             "sWidth": "120px",
             "sDefaultContent": "",
             "mRender": function (data, type, oObj, full) {
-                    if(full.row == 0){
+                if (full.row == 0) {
                     testAutomaticModal = oObj.test;
                 }
                 return oObj.test;
