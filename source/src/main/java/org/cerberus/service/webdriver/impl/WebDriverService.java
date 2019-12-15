@@ -545,20 +545,21 @@ public class WebDriverService implements IWebDriverService {
 
                 if (webElement != null) {
                     /**
-                     * Actions implementation doesn't work properly for test on browser on real mobile device
-                     * use the implementation click from Selenium instead
+                     * Actions implementation doesn't work properly for test on
+                     * browser on real mobile device use the implementation
+                     * click from Selenium instead
                      */
                     if (Platform.ANDROID.equals(session.getDesiredCapabilities().getPlatform())
                             || Platform.IOS.equals(session.getDesiredCapabilities().getPlatform())) {
-                         webElement.click();
+                        webElement.click();
                     } else {
-                     /**
-                     * webElement.click(); did not provide good result for 
-                     * generating Selenium error : Element is not clickable at
-                     * point
-                     * https://github.com/cerberustesting/cerberus-source/issues/2030
-                     */
-                     //                    webElement.click();
+                        /**
+                         * webElement.click(); did not provide good result for
+                         * generating Selenium error : Element is not clickable
+                         * at point
+                         * https://github.com/cerberustesting/cerberus-source/issues/2030
+                         */
+                        //                    webElement.click();
                         Actions actions = new Actions(session.getDriver());
                         actions.click(webElement);
                         actions.build().perform();
@@ -1013,29 +1014,35 @@ public class WebDriverService implements IWebDriverService {
     public boolean focusBrowserWindow(Session session) {
         WebDriver driver = session.getDriver();
         String title = driver.getTitle();
-        User32 user32 = User32.instance;
+        try {
+            User32 user32 = User32.instance;
 
-        // Arbitrary
-        String[] browsers = new String[]{
-            "",
-            "Google Chrome",
-            "Mozilla Firefox",
-            "Opera",
-            "Safari",
-            "Internet Explorer",
-            "Microsoft Edge",};
+            // Arbitrary
+            String[] browsers = new String[]{
+                "",
+                "Google Chrome",
+                "Mozilla Firefox",
+                "Opera",
+                "Safari",
+                "Internet Explorer",
+                "Microsoft Edge",};
 
-        for (String browser : browsers) {
-            HWND window;
-            if (browser.isEmpty()) {
-                window = user32.FindWindow(null, title);
-            } else {
-                window = user32.FindWindow(null, title + " - " + browser);
+            for (String browser : browsers) {
+                HWND window;
+                if (browser.isEmpty()) {
+                    window = user32.FindWindow(null, title);
+                } else {
+                    window = user32.FindWindow(null, title + " - " + browser);
+                }
+                if (user32.ShowWindow(window, User32.SW_SHOW)) {
+                    return user32.SetForegroundWindow(window);
+                }
             }
-            if (user32.ShowWindow(window, User32.SW_SHOW)) {
-                return user32.SetForegroundWindow(window);
-            }
+
+        } catch (Exception e) {
+            LOG.error(e, e);
         }
+
         return false;
     }
 
@@ -1091,7 +1098,7 @@ public class WebDriverService implements IWebDriverService {
                     } else {
                         //the key enterer is not valid
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NOT_AVAILABLE);
-                        LOG.debug("Key " + keyToPress + "is not available in the current environment");
+                        LOG.debug("Key " + keyToPress + "is not available in the current context");
                     }
 
                     message.setDescription(message.getDescription().replace("%KEY%", keyToPress));
@@ -1099,6 +1106,12 @@ public class WebDriverService implements IWebDriverService {
                 } catch (AWTException ex) {
                     LOG.warn(ex);
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_ENV_ERROR);
+
+                } catch (Exception exception) {
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
+                    message.setDescription(message.getDescription().replace("%DETAIL%", exception.toString()));
+                    LOG.debug(exception.toString());
+
                 }
             }
 
@@ -1115,6 +1128,11 @@ public class WebDriverService implements IWebDriverService {
         } catch (WebDriverException exception) {
             LOG.warn(exception.toString());
             return parseWebDriverException(exception);
+
+        } catch (Exception exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
+            message.setDescription(message.getDescription().replace("%DETAIL%", exception.toString()));
+            LOG.debug(exception.toString());
 
         }
         return message;

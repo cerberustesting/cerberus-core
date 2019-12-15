@@ -1024,6 +1024,9 @@ public class ActionService implements IActionService {
             /**
              * Get Identifier (identifier, locator)
              */
+            if (StringUtil.isNullOrEmpty(value1) && appType.equalsIgnoreCase(Application.TYPE_GUI)) {
+                value1 = "xpath=//body";
+            }
             Identifier objectIdentifier = identifierService.convertStringToIdentifier(value1);
 
             if (appType.equalsIgnoreCase(Application.TYPE_GUI)) {
@@ -1057,8 +1060,13 @@ public class ActionService implements IActionService {
                         .resolveDescription("APPLICATIONTYPE", appType);
             }
         } catch (CerberusEventException ex) {
-            LOG.fatal("Error doing Action KeyPress :" + ex);
+            LOG.debug("Error doing Action KeyPress :" + ex);
             return ex.getMessageError();
+
+        } catch (Exception ex) {
+            LOG.debug("Error doing Action KeyPress :" + ex);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", ex.toString());
         }
     }
 
