@@ -661,8 +661,8 @@
         <servlet-class>org.cerberus.servlet.information.ReadCerberusDetailInformation</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>manage</servlet-name>
-        <servlet-class>org.cerberus.servlet.administration.Manage</servlet-class>
+        <servlet-name>manageV001</servlet-name>
+        <servlet-class>org.cerberus.servlet.zzpublic.ManageV001</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SetTagToExecution</servlet-name>
@@ -815,14 +815,14 @@
         <servlet-name>JerseyWebapp</servlet-name>
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
-    --> 
+    -->
     <servlet-mapping>
         <servlet-name>springrest</servlet-name>
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>manage</servlet-name>
-        <url-pattern>/manage</url-pattern>
+        <servlet-name>manageV001</servlet-name>
+        <url-pattern>/manageV001</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadCerberusDetailInformation</servlet-name>
@@ -2031,7 +2031,7 @@
             <url-pattern>/NewEnvironmentEventV000</url-pattern>
             <url-pattern>/GetTagExecutions</url-pattern>
             <url-pattern>/GetTestCasesV000</url-pattern>
-            <url-pattern>/manage</url-pattern>
+            <url-pattern>/manageV001</url-pattern>
             <!--            Password Management Servlets -->
             <url-pattern>/ForgotPassword</url-pattern>
             <url-pattern>/ForgotPasswordEmailConfirmation</url-pattern>
@@ -2100,12 +2100,6 @@
             <role-name>Administrator</role-name>
         </auth-constraint>
     </security-constraint>
-    <!--
-    <login-config>
-        <auth-method>BASIC</auth-method>
-        <realm-name>Enable this in order to activate KeyCloak</realm-name>
-    </login-config>
-    -->
     <login-config>
         <auth-method>FORM</auth-method>
         <form-login-config>

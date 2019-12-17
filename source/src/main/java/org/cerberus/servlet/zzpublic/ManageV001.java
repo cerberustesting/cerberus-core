@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.administration;
+package org.cerberus.servlet.zzpublic;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,10 +48,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-@WebServlet(name = "manage", urlPatterns = {"/manage"})
-public class Manage extends HttpServlet {
+@WebServlet(name = "manageV001", urlPatterns = {"/manageV001"})
+public class ManageV001 extends HttpServlet {
 
-    private static final Logger LOG = LogManager.getLogger(Manage.class);
+    private static final Logger LOG = LogManager.getLogger(ManageV001.class);
 
     private IExecutionThreadPoolService executionThreadPoolService;
     private IParameterService parameterService;
