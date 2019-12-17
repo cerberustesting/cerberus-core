@@ -177,8 +177,8 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setConditionVal1Init(conditionVal1Init);
         newTce.setConditionVal2(conditionVal2);
         newTce.setConditionVal2Init(conditionVal2Init);
-        newTce.setConditionVal2(conditionVal3);
-        newTce.setConditionVal2Init(conditionVal3Init);
+        newTce.setConditionVal3(conditionVal3);
+        newTce.setConditionVal3Init(conditionVal3Init);
         newTce.setManualExecution(manualExecution);
         newTce.setUserAgent(userAgent);
         newTce.setDescription(description);
