@@ -628,8 +628,10 @@ function setConfigPanel(data) {
     configPanel.find("input#conditionOperTC").val(data.conditionOper);
     configPanel.find("input#conditionVal1InitTC").val(data.conditionVal1Init);
     configPanel.find("input#conditionVal2InitTC").val(data.conditionVal2Init);
+    configPanel.find("input#conditionVal3InitTC").val(data.conditionVal3Init);
     configPanel.find("input#conditionVal1TC").val(data.conditionVal1);
     configPanel.find("input#conditionVal2TC").val(data.conditionVal2);
+    configPanel.find("input#conditionVal3TC").val(data.conditionVal3);
 
     //setTestCaseControlStatue(data.controlStatus);
     setLoadBar(data);

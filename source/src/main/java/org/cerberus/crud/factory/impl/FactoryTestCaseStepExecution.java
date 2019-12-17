@@ -67,8 +67,10 @@ public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecuti
         testCaseStepExecution.setConditionOper(conditionOper);
         testCaseStepExecution.setConditionVal1Init(conditionVal1Init);
         testCaseStepExecution.setConditionVal2Init(conditionVal2Init);
+        testCaseStepExecution.setConditionVal3Init(conditionVal3Init);
         testCaseStepExecution.setConditionVal1(conditionVal1);
         testCaseStepExecution.setConditionVal2(conditionVal2);
+        testCaseStepExecution.setConditionVal3(conditionVal3);
         testCaseStepExecution.setTest(test);
         testCaseStepExecution.setTestCase(testCase);
         testCaseStepExecution.setTimeElapsed(timeElapsed);

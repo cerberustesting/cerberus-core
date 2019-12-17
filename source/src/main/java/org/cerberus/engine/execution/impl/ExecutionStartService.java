@@ -152,6 +152,8 @@ public class ExecutionStartService implements IExecutionStartService {
                 tCExecution.setConditionVal1Init(tCase.getConditionVal1());
                 tCExecution.setConditionVal2(tCase.getConditionVal2());
                 tCExecution.setConditionVal2Init(tCase.getConditionVal2());
+                tCExecution.setConditionVal3(tCase.getConditionVal3());
+                tCExecution.setConditionVal3Init(tCase.getConditionVal3());
                 tCExecution.setTestCaseVersion(tCase.getTestCaseVersion());
                 tCExecution.setTestCasePriority(tCase.getPriority());
             } else {
