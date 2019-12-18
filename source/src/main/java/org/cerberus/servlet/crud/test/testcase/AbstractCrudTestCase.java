@@ -150,7 +150,7 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             // Parameter that we cannot secure as we need the html --> We DECODE them
             tc.setConditionVal1(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionVal1"), tc.getConditionVal1(), charset));
             tc.setConditionVal2(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionVal2"), tc.getConditionVal2(), charset));
-            tc.setConditionVal3(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionVal3"), tc.getConditionVal2(), charset));
+            tc.setConditionVal3(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionVal3"), tc.getConditionVal3(), charset));
 
             return tc;
         } catch (UnsupportedOperationException e) {

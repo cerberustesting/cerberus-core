@@ -8354,6 +8354,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1456
         a.add("UPDATE dashboardReportItem SET `isConfigurable`='Y' WHERE 1=1;");
 
+        // Update value3 and conditionValue3 to avoid null value that will fail tc saving
+        // 1457-1462
+        a.add("UPDATE testcase SET ConditionVal3 = '' WHERE ConditionVal3 IS NULL");
+        a.add("UPDATE testcasestep SET ConditionVal3 = '' WHERE ConditionVal3 IS NULL");
+        a.add("UPDATE testcasestepaction SET ConditionVal3 = '' WHERE ConditionVal3 IS NULL");
+        a.add("UPDATE testcasestepaction SET Value3 = '' WHERE Value3 IS NULL");
+        a.add("UPDATE testcasestepactioncontrol SET ConditionVal3 = '' WHERE ConditionVal3 IS NULL");
+        a.add("UPDATE testcasestepactioncontrol SET Value3 = '' WHERE Value3 IS NULL");
+
         return a;
     }
 

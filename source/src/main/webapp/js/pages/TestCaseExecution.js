@@ -1530,8 +1530,10 @@ function Action(json, parentStep) {
         this.testcase = json.testcase;
         this.value1 = json.value1;
         this.value2 = json.value2;
+        this.value3 = json.value3;
         this.value1init = json.value1init;
         this.value2init = json.value2init;
+        this.value3init = json.value3init;
         this.screenshotFileName = json.screenshotFileName;
         this.controlListJson = json.testCaseStepActionControlExecutionList;
         this.controlList = [];
