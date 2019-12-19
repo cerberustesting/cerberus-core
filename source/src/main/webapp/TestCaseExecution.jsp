@@ -202,17 +202,15 @@
                                                         </div>
                                                     </div>
                                                     <div class="row">
-                                                        <div class="col-lg-2 form-group">
-                                                        </div>
-                                                        <div class="col-lg-5 form-group">
+                                                        <div class="col-lg-4 form-group">
                                                             <label>Param1 Init</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionVal1Init">
                                                         </div>
-                                                        <div class="col-lg-5 form-group">
+                                                        <div class="col-lg-4 form-group">
                                                             <label>Param2 Init</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionVal2Init">
                                                         </div>
-                                                        <div class="col-lg-5 form-group">
+                                                        <div class="col-lg-4 form-group">
                                                             <label>Param3 Init</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionVal3Init">
                                                         </div>
@@ -222,15 +220,15 @@
                                                             <label>Condition Operation</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionOper">
                                                         </div>
-                                                        <div class="col-lg-5 form-group">
+                                                        <div class="col-lg-4 form-group">
                                                             <label>Param1</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionVal1">
                                                         </div>
-                                                        <div class="col-lg-5 form-group">
+                                                        <div class="col-lg-4 form-group">
                                                             <label>Param2</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionVal2">
                                                         </div>
-                                                        <div class="col-lg-5 form-group">
+                                                        <div class="col-lg-2 form-group">
                                                             <label>Param3</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionVal3">
                                                         </div>
@@ -373,6 +371,8 @@
                             <div class="row">
                                 <div class="col-sm-2">
                                     <div class="form-group">
+                                        <label for="conditionOperTC">conditionOperTC</label>
+                                        <input type="text" class="form-control" id="conditionOperTC" readonly>
                                     </div>
                                 </div>
                                 <div class="col-sm-5">
@@ -409,8 +409,6 @@
                             <div class="row">
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="conditionOperTC">conditionOperTC</label>
-                                        <input type="text" class="form-control" id="conditionOperTC" readonly>
                                     </div>
                                 </div>
                                 <div class="col-sm-5">
