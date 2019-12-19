@@ -2162,9 +2162,10 @@ Action.prototype.generateContent = function() {
     row4.append($("<div></div>").addClass("col-sm-5").append(forceexecGroup));
     row4.append($("<div></div>").addClass("col-sm-5").append(timeGroup));
     row5.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
+    row6.append($("<div></div>").addClass("col-sm-2"));
     row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal1InitGroup));
     row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal2InitGroup));
-    row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal3InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-2").append(conditionVal3InitGroup));
     row7.append($("<div></div>").addClass("col-sm-2").append(conditionOperGroup));
     row7.append($("<div></div>").addClass("col-sm-4").append(conditionVal1Group));
     row7.append($("<div></div>").addClass("col-sm-4").append(conditionVal2Group));
@@ -2620,9 +2621,10 @@ Control.prototype.generateContent = function() {
 
     row1.append($("<div></div>").addClass("col-sm-2").append(returncodeGroup));
     row1.append($("<div></div>").addClass("col-sm-10").append(descGroup));
+    row2.append($("<div></div>").addClass("col-sm-2"));
     row2.append($("<div></div>").addClass("col-sm-4").append(controlValue1InitGroup));
     row2.append($("<div></div>").addClass("col-sm-4").append(controlValue2InitGroup));
-    row2.append($("<div></div>").addClass("col-sm-4").append(controlValue3InitGroup));
+    row2.append($("<div></div>").addClass("col-sm-2").append(controlValue3InitGroup));
     row3.append($("<div></div>").addClass("col-sm-2").append(controlTypeGroup));
     row3.append($("<div></div>").addClass("col-sm-4").append(controlValue1Group));
     row3.append($("<div></div>").addClass("col-sm-4").append(controlValue2Group));
@@ -2631,9 +2633,10 @@ Control.prototype.generateContent = function() {
     row4.append($("<div></div>").addClass("col-sm-5").append(fatalGroup));
     row4.append($("<div></div>").addClass("col-sm-5").append(timeGroup));
     row5.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
+    row6.append($("<div></div>").addClass("col-sm-2"));
     row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal1InitGroup));
     row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal2InitGroup));
-    row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal3InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-2").append(conditionVal3InitGroup));
     row7.append($("<div></div>").addClass("col-sm-2").append(conditionOperGroup));
     row7.append($("<div></div>").addClass("col-sm-4").append(conditionVal1Group));
     row7.append($("<div></div>").addClass("col-sm-4").append(conditionVal2Group));

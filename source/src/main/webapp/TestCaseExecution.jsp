@@ -202,6 +202,8 @@
                                                         </div>
                                                     </div>
                                                     <div class="row">
+                                                        <div class="col-lg-2">                                                          
+                                                        </div>
                                                         <div class="col-lg-4 form-group">
                                                             <label>Param1 Init</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionVal1Init">
@@ -210,7 +212,7 @@
                                                             <label>Param2 Init</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionVal2Init">
                                                         </div>
-                                                        <div class="col-lg-4 form-group">
+                                                        <div class="col-lg-2 form-group">
                                                             <label>Param3 Init</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionVal3Init">
                                                         </div>
@@ -368,59 +370,59 @@
                             <div class="row">
                             </div>
 
-                            <div class="row">
+                            <div class="row">                        
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="conditionVal1InitTC">conditionVal1InitTC</label>
+                                        <input type="text" class="form-control" id="conditionVal1InitTC" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="conditionVal2InitTC">conditionVal2InitTC</label>
+                                        <input type="text" class="form-control" id="conditionVal2InitTC" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="conditionVal3InitTC">conditionVal3InitTC</label>
+                                        <input type="text" class="form-control" id="conditionVal3InitTC" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">                            
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="conditionOperTC">conditionOperTC</label>
                                         <input type="text" class="form-control" id="conditionOperTC" readonly>
                                     </div>
                                 </div>
-                                <div class="col-sm-5">
-                                    <div class="form-group">
-                                        <label for="conditionVal1InitTC">conditionVal1InitTC</label>
-                                        <input type="text" class="form-control" id="conditionVal1InitTC" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-sm-5">
+                                <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="conditionVal1TC">conditionVal1TC</label>
                                         <input type="text" class="form-control" id="conditionVal1TC" readonly>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                    </div>
-                                </div>
-                                <div class="col-sm-5">
-                                    <div class="form-group">
-                                        <label for="conditionVal2InitTC">conditionVal2InitTC</label>
-                                        <input type="text" class="form-control" id="conditionVal2InitTC" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-sm-5">
+                                <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="conditionVal2TC">conditionVal2TC</label>
                                         <input type="text" class="form-control" id="conditionVal1TC" readonly>
                                     </div>
                                 </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="conditionVal3TC">conditionVal3TC</label>
+                                        <input type="text" class="form-control" id="conditionVal3TC" readonly>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                    </div>
-                                </div>
-                                <div class="col-sm-5">
-                                    <div class="form-group">
-                                        <label for="conditionVal3InitTC">conditionVal3InitTC</label>
-                                        <input type="text" class="form-control" id="conditionVal3InitTC" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-sm-5">
-                                    <div class="form-group">
-                                        <label for="conditionVal3TC">conditionVal3TC</label>
-                                        <input type="text" class="form-control" id="conditionVal3TC" readonly>
                                     </div>
                                 </div>
                             </div>
