@@ -396,9 +396,12 @@ function feedAppServiceModal(serviceName, modalId, mode) {
 
     if (mode === "DUPLICATE" || mode === "EDIT") {
         $.ajax({
-            url: "ReadAppService?service=" + serviceName,
+            url: "ReadAppService",
             async: true,
-            method: "GET",
+            method: "POST",
+            data: {
+                service: serviceName
+            },
             success: function (data) {
                 if (data.messageType === "OK") {
 
