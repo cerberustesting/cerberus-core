@@ -1,3 +1,3 @@
 language: java
 script:
-  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./source/src/travis/run.sh; else bash ./source/src/travis/run_on_pull_request.sh; fi'
+  - 'if [ "$TRAVIS_BRANCH" = "master" ]; then if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./source/src/travis/run.sh; else bash ./source/src/travis/run_on_pull_request.sh; fi; fi'
