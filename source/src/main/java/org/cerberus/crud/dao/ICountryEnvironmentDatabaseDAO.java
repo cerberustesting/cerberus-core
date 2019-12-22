@@ -41,7 +41,7 @@ public interface ICountryEnvironmentDatabaseDAO {
      * @param database
      * @return
      */
-    AnswerItem readByKey(String system, String country, String environment, String database);
+    AnswerItem<CountryEnvironmentDatabase> readByKey(String system, String country, String environment, String database);
 
     /**
      *
@@ -56,7 +56,7 @@ public interface ICountryEnvironmentDatabaseDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList<CountryEnvironmentDatabase> readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      *

@@ -21,12 +21,12 @@ package org.cerberus.crud.service;
 
 import java.util.List;
 import java.util.Map;
-
 import org.cerberus.crud.entity.Tag;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.json.JSONArray;
 
 /**
  *
@@ -59,7 +59,7 @@ public interface ITagService {
      * @param campaign
      * @return
      */
-    AnswerList readByCampaign(String campaign);
+    AnswerList<Tag> readByCampaign(String campaign);
 
     /**
      *
@@ -69,9 +69,10 @@ public interface ITagService {
      * @param sort
      * @param searchParameter
      * @param individualSearch
+     * @param system
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Tag> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> system);
 
     /**
      *
@@ -84,7 +85,7 @@ public interface ITagService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByVariousByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Tag> readByVariousByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -128,9 +129,22 @@ public interface ITagService {
      * @param tag
      * @param campaign
      * @param user
+     * @param reqEnvironmentList
+     * @param reqCountryList
      * @return
      */
-    Answer createAuto(String tag, String campaign, String user);
+    Answer createAuto(String tag, String campaign, String user, JSONArray reqEnvironmentList, JSONArray reqCountryList);
+
+    /**
+     * will enrich the tag with Browserstack buildId hash.
+     *
+     * @param system
+     * @param tagS
+     * @param user
+     * @param pass
+     * @return
+     */
+    String enrichTagWithBrowserStackBuild(String system, String tagS, String user, String pass);
 
     /**
      *
@@ -164,4 +178,18 @@ public interface ITagService {
      * @return
      */
     AnswerList<String> readDistinctValuesByCriteria(String campaign, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    /**
+     * After every execution finished, <br>
+     * if the execution has a tag that has a campaign associated  <br>
+     * and no more executions are in the queue, <br>
+     * we trigger : <br>
+     * 1/ The update of the EndExeQueue of the tag <br>
+     * 2/ We notify the Distribution List with execution report status
+     *
+     * @param tag
+     * @throws org.cerberus.exception.CerberusException
+     */
+    void manageCampaignEndOfExecution(String tag) throws CerberusException;
+
 }

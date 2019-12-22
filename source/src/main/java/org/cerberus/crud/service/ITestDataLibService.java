@@ -43,17 +43,16 @@ public interface ITestDataLibService {
      * @param system
      * @param environment
      * @param country
-     * @param type
      * @return
      */
-    AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country);
+    AnswerItem<TestDataLib> readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country);
 
     /**
      *
      * @param testDatalib
      * @return
      */
-    AnswerItem readByKey(int testDatalib);
+    AnswerItem<TestDataLib> readByKey(int testDatalib);
 
     /**
      *
@@ -62,18 +61,18 @@ public interface ITestDataLibService {
      * @param like
      * @return
      */
-    AnswerList readNameListByName(String testDataLibName, int limit, boolean like);
+    AnswerList<TestDataLib> readNameListByName(String testDataLibName, int limit, boolean like);
 
     /**
      *
      * @return All TestDataLib
      */
-    AnswerList readAll();
+    AnswerList<TestDataLib> readAll();
     
     /**
     *
     * @param id
-    * @param files
+    * @param file
     * @return
     */
    Answer uploadFile(int id, FileItem file);
@@ -81,7 +80,7 @@ public interface ITestDataLibService {
     /**
      *
      * @param name
-     * @param system
+     * @param systems
      * @param environment
      * @param country
      * @param type
@@ -94,7 +93,7 @@ public interface ITestDataLibService {
      * resultSet
      * @return
      */
-    AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<TestDataLib> readByVariousByCriteria(String name, List<String> systems, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      * Auxiliary method that retrieves all the group names that were already
@@ -102,7 +101,7 @@ public interface ITestDataLibService {
      *
      * @return list of group values for the type
      */
-    AnswerList readDistinctGroups();
+    AnswerList<String> readDistinctGroups();
 
     /**
      * Read distinct Value of specified column
@@ -112,7 +111,7 @@ public interface ITestDataLibService {
      * @param columnName
      * @return
      */
-    AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
+    AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      * Method that gets all the Static DataLib that match the criterias
@@ -135,7 +134,7 @@ public interface ITestDataLibService {
      * @param object
      * @return
      */
-    AnswerItem create(TestDataLib object);
+    AnswerItem<TestDataLib> create(TestDataLib object);
 
     /**
      *
@@ -181,5 +180,13 @@ public interface ITestDataLibService {
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
-
+    
+    /**
+     * 
+     * @param lib
+     * @param userName
+     * @return 
+     */
+    boolean userHasPermission(TestDataLib lib, String userName);
+    
 }

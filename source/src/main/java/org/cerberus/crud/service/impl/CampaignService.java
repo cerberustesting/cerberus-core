@@ -55,17 +55,17 @@ public class CampaignService implements ICampaignService {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<Campaign> readByCriteria(int start, int amount, String colName, String dir, String searchParameter, Map<String, List<String>> individualSearch) {
         return campaignDAO.readByCriteria(start, amount, colName, dir, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerItem readByKey(String key) {
+    public AnswerItem<Campaign> readByKey(String key) {
         return campaignDAO.readByKey(key);
     }
 
     @Override
-    public AnswerItem readByKeyTech(int key) {
+    public AnswerItem<Campaign> readByKeyTech(int key) {
         return campaignDAO.readByKeyTech(key);
     }
 
@@ -115,5 +115,5 @@ public class CampaignService implements ICampaignService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
-
+    
 }

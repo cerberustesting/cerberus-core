@@ -43,6 +43,12 @@ function displayPageLabel() {
 
 function feedContent() {
 
+    showLoader('#panelActivity');
+    showLoader('#panelInformation');
+    showLoader('#paneljvmInformation');
+    showLoader('#paneldtbInformation');
+    showLoader('#panelschInformation');
+
     var jqxhr = $.getJSON("ReadCerberusDetailInformation");
     $.when(jqxhr).then(function (data) {
         var table = $("#cerberusTableBody");
@@ -58,6 +64,34 @@ function feedContent() {
         row.append(cel3);
         row.append(cel4);
         row.append(cel5);
+        table.append(row);
+
+        var table = $("#cerberusAuthTableBody");
+        table.empty();
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.authentification);
+        var cel2 = $("<td></td>").append(data.isKeycloak);
+        var cel3 = $("<td></td>").append(data.keycloakRealm);
+        var cel4 = $("<td></td>").append(data.keycloakClient);
+        var cel5 = $("<td></td>").append(data.keycloakUrl);
+        row.append(cel1);
+        row.append(cel2);
+        row.append(cel3);
+        row.append(cel4);
+        row.append(cel5);
+        table.append(row);
+
+        var table = $("#cerberusSaaSTableBody");
+        table.empty();
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.saaS);
+        var cel2 = $("<td></td>").append(data.isSaaS.toString());
+        var cel3 = $("<td></td>").append(data.saasInstance);
+        var cel4 = $("<td></td>").append(data.saasParallelrun);
+        row.append(cel1);
+        row.append(cel2);
+        row.append(cel3);
+        row.append(cel4);
         table.append(row);
 
         var table = $("#jvmTableBody");
@@ -87,28 +121,13 @@ function feedContent() {
         row.append(cel4);
         table.append(row);
 
-
-//        var table = $("#sessionNbTableBody");
-//        table.empty();
-//        var row = $("<tr></tr>");
-//        var cel1 = $("<td></td>").append(data.simultaneous_session);
-//        row.append(cel1);
-//        table.append(row);
-//
-//        var table = $("#sessionTableBody");
-//        table.empty();
-//        $.each(data["active_users"], function (idx, obj) {
-//            var row = $("<tr></tr>");
-//            var cel1 = $("<td></td>").append(obj);
-//            row.append(cel1);
-//            table.append(row);
-//        });
-
         var table = $("#exeNbTableBody");
         table.empty();
         var row = $("<tr></tr>");
         var cel1 = $("<td></td>").append(data.simultaneous_execution);
+        var cel2 = $("<td></td>").append(data.executionThreadPoolInstanceActive.toString());
         row.append(cel1);
+        row.append(cel2);
         table.append(row);
 
         var table = $("#exeTableBody");
@@ -141,10 +160,10 @@ function feedContent() {
         var table = $("#databaseTableBody");
         table.empty();
         var row = $("<tr></tr>");
-        var cel1 = $("<td></td>").append(data.DatabaseProductName);
-        var cel2 = $("<td></td>").append(data.DatabaseProductVersion);
-        var cel3 = $("<td></td>").append(data.DatabaseMajorVersion);
-        var cel4 = $("<td></td>").append(data.DatabaseMinorVersion);
+        var cel1 = $("<td></td>").append(data.databaseProductName);
+        var cel2 = $("<td></td>").append(data.databaseProductVersion);
+        var cel3 = $("<td></td>").append(data.databaseMajorVersion);
+        var cel4 = $("<td></td>").append(data.databaseMinorVersion);
         row.append(cel1);
         row.append(cel2);
         row.append(cel3);
@@ -154,10 +173,10 @@ function feedContent() {
         var table = $("#driverTableBody");
         table.empty();
         var row = $("<tr></tr>");
-        var cel1 = $("<td></td>").append(data.DriverName);
-        var cel2 = $("<td></td>").append(data.DriverVersion);
-        var cel3 = $("<td></td>").append(data.DriverMajorVersion);
-        var cel4 = $("<td></td>").append(data.DriverMinorVersion);
+        var cel1 = $("<td></td>").append(data.driverName);
+        var cel2 = $("<td></td>").append(data.driverVersion);
+        var cel3 = $("<td></td>").append(data.driverMajorVersion);
+        var cel4 = $("<td></td>").append(data.driverMinorVersion);
         row.append(cel1);
         row.append(cel2);
         row.append(cel3);
@@ -167,11 +186,42 @@ function feedContent() {
         var table = $("#jdbcTableBody");
         table.empty();
         var row = $("<tr></tr>");
-        var cel1 = $("<td></td>").append(data.JDBCMinorVersion);
-        var cel2 = $("<td></td>").append(data.JDBCMajorVersion);
+        var cel1 = $("<td></td>").append(data.jDBCMinorVersion);
+        var cel2 = $("<td></td>").append(data.jDBCMajorVersion);
         row.append(cel1);
         row.append(cel2);
         table.append(row);
+
+        var table = $("#schedulerTableBody");
+        table.empty();
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.scheduler.schedulerInstanceVersion);
+        var cel2 = $("<td></td>").append(data.scheduler.schedulerReloadIsRunning.toString());
+        row.append(cel1);
+        row.append(cel2);
+        table.append(row);
+
+        var table = $("#schDetTableBody");
+        table.empty();
+        $.each(data.scheduler["schedulerTriggers"], function (idx, obj) {
+            var row = $("<tr></tr>");
+            var cel1 = $("<td></td>").append(obj.triggerType);
+            row.append(cel1);
+            var cel1 = $("<td></td>").append(obj.triggerName);
+            row.append(cel1);
+            var cel1 = $("<td></td>").append(obj.triggerNextFiretime);
+            row.append(cel1);
+            var cel1 = $("<td></td>").append(obj.triggerUserCreated);
+            row.append(cel1);
+            table.append(row);
+        });
+
+        hideLoader('#panelActivity');
+        hideLoader('#panelInformation');
+        hideLoader('#paneljvmInformation');
+        hideLoader('#paneldtbInformation');
+        hideLoader('#panelschInformation');
+
     });
 
 }

@@ -20,7 +20,6 @@
 /* global handleErrorAjaxAfterTimeout */
 
 var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"];
-
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
 
@@ -100,6 +99,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
             'placement': 'auto',
             'container': 'body'}
         );
+
+
     });
 });
 
@@ -278,6 +279,9 @@ function loadReportingData(selectTag) {
                 $("#TagcampaignCel1").removeClass("hidden");
                 $("#TagcampaignCel2").removeClass("hidden");
                 $("#buttonRunCampaign").attr("href", "./RunTests.jsp?campaign=" + data.tagObject.campaign);
+                $("#buttonSeeStatsCampaign").on("click", function () {
+                    viewStatEntryClick(data.tagObject.campaign);
+                });
             }
 
             $("#durExe").val(data.tagDuration);
@@ -308,13 +312,13 @@ function loadReportingData(selectTag) {
 
             // Report By Label
             $("#progressLabel").empty();
-//        if (!$.isEmptyObject(data.labelStat)) {
             loadLabelReport(data.labelStat);
 //        }
 
             // Detailed Test Case List Report
             loadReportList(data.table, selectTag);
         } else {
+
             hideLoader($("#TagDetail"));
             hideLoader($("#ReportByStatus"));
             hideLoader($("#functionChart"));
@@ -325,6 +329,17 @@ function loadReportingData(selectTag) {
             showMessageMainPage("danger", "Tag '" + selectTag + "' does not exist.", false);
 
         }
+
+        $('[data-toggle="popover"]').popover({
+            'placement': 'auto',
+            'container': 'body'}
+        ).on('shown.bs.popover', function () {
+            // Manually offer possibility to popover elemt to know when it's loading
+            let idPopup = $(this).attr("aria-describedby")
+            let elmt = $("#" + idPopup).find("[onload]")
+            if (elmt.length > 0)
+                eval(elmt.attr("onload")) // TODO eval la method
+        });
     });
 
 }
@@ -1093,13 +1108,16 @@ function generateTooltip(data) {
     } else {
         htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.ID + '</div>';
     }
-    htmlRes += 
-            '<div><span class=\'bold\'>Environment : </span>' + data.Environment + '</div>' +
-            '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>' +
-            '<div><span class=\'bold\'>Robot Decli : </span>' + data.RobotDecli + '</div>' +
-            '<div><span class=\'bold\'>Start : </span>' + new Date(data.Start) + '</div>' +
-            '<div><span class=\'bold\'>End : </span>' + new Date(data.End) + '</div>' +
-            '<div>' + ctrlmessage + '</div>';
+    htmlRes += '<div><span class=\'bold\'>Environment : </span>' + data.Environment + '</div>';
+    htmlRes += '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>';
+    if ((data.RobotDecli !== undefined) && (data.RobotDecli !== '')) {
+        htmlRes += '<div><span class=\'bold\'>Robot Decli : </span>' + data.RobotDecli + '</div>';
+    }
+    htmlRes += '<div><span class=\'bold\'>Start : </span>' + getDateShort(data.Start) + '</div>';
+    if (getDateShort(data.End) !== "") {
+        htmlRes += '<div><span class=\'bold\'>End : </span>' + getDateShort(data.End) + '</div>';
+    }
+    htmlRes += '<div>' + ctrlmessage + '</div>';
 
     return htmlRes;
 }
@@ -1114,7 +1132,7 @@ function openModalTestCase_FromRepTag(element, test, testcase, mode) {
             // when modal is closed, we check that testcase object exist and has been saved in order to update the comment and bugid on reportbytag screen.
             var newComment = $('#editTestCaseModal').data("testcase").comment;
             var newBugId = $('#editTestCaseModal').data("testcase").bugId;
-            $(element).parent().parent().find('td.comment').text(newComment);
+            $(element).parent().parent().find('td.comment').text(decodeURI(newComment).replace(/\+/g, ' ').replace(/%2B/g, '+'));
             $(element).parent().parent().find('td.bugid').text(newBugId);
         }
     });
@@ -1128,6 +1146,7 @@ function selectAllQueue(checkboxid, manualExecution, status) {
             $("[data-line='selectA-" + status + "']").prop("checked", true);
             $("[data-line='selectN-" + status + "']").prop("checked", true);
             $("[data-line='selectY-" + status + "']").prop("checked", true);
+            $("[data-line='select-" + status + "']").prop("checked", true);
         }
     } else {
         if (!isEmpty(manualExecution)) {
@@ -1136,6 +1155,7 @@ function selectAllQueue(checkboxid, manualExecution, status) {
             $("[data-line='selectA-" + status + "']").prop("checked", false);
             $("[data-line='selectN-" + status + "']").prop("checked", false);
             $("[data-line='selectY-" + status + "']").prop("checked", false);
+            $("[data-line='select-" + status + "']").prop("checked", false);
         }
     }
     refreshNbChecked();
@@ -1147,9 +1167,13 @@ function refreshNbChecked() {
     if (nbchecked > 0) {
         $('#submitExe').prop("disabled", false);
         $('#submitExe').html("<span class='glyphicon glyphicon-play'></span> Submit Again (" + nbchecked + ")");
+        $('#submitExewithDep').prop("disabled", false);
+        $('#submitExewithDep').html("<span class='glyphicon glyphicon-play'></span> Submit Again with Dep (" + nbchecked + ")");
     } else {
         $('#submitExe').prop("disabled", true);
         $('#submitExe').html("<span class='glyphicon glyphicon-play'></span> Submit Again");
+        $('#submitExewithDep').prop("disabled", true);
+        $('#submsubmitExewithDepitExe').html("<span class='glyphicon glyphicon-play'></span> Submit Again with Dep");
     }
 }
 
@@ -1164,9 +1188,13 @@ function renderOptionsForExeList(selectTag) {
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKO' type='checkbox'></input>KO</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKOManual' type='checkbox'></input>KO (Manual)</label>";
         contentToAdd += "<label class='checkbox-inline marginRight10'><input id='selectAllQueueNA' type='checkbox'></input>NA</label>";
+        contentToAdd += "<div class='btn-group marginRight20'>";
         contentToAdd += "<button id='submitExe' type='button' disabled='disabled' title='Submit again the selected executions.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again</button>";
-        contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
-        contentToAdd += "<button id='refresh' type='button' title='Refresh.' class='btn btn-default' onclick='loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
+        contentToAdd += "<button id='btnGroupDrop4' type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
+        contentToAdd += "<div class='dropdown-menu'><button id='submitExewithDep' type='button' disabled='disabled' title='Submit again the selected executions with all dependencies.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again with Dep</button></div>";
+        contentToAdd += "</div>";
+        contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default marginLeft20'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
+        contentToAdd += "<button id='refresh' type='button' title='Refresh.' class='btn btn-default marginLeft20' onclick='loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
         contentToAdd += "</div>";
 
         $("#listTable_length").before(contentToAdd);
@@ -1189,12 +1217,16 @@ function renderOptionsForExeList(selectTag) {
         $('#selectAllQueueNA').click(function () {
             selectAllQueue("selectAllQueueNA", "", "NA");
         });
-        $('#submitExe').click(massAction_copyQueue);
+        $('#submitExe').click(massAction_copyQueueWithoutDep);
+        $('#submitExewithDep').click(massAction_copyQueueWithDep);
     }
 }
 
-function massAction_copyQueue() {
+function massAction_copyQueue(option) {
 
+    if (option === undefined) {
+        option = "toQUEUED";
+    }
     clearResponseMessageMainPage();
 
     var doc = new Doc();
@@ -1206,7 +1238,7 @@ function massAction_copyQueue() {
         showMessage(localMessage, null);
     } else {
 
-        var jqxhr = $.post("CreateTestCaseExecutionQueue", paramSerialized + "&actionState=toQUEUED&actionSave=save", "json");
+        var jqxhr = $.post("CreateTestCaseExecutionQueue", paramSerialized + "&actionState=" + option + "&actionSave=save", "json");
         $.when(jqxhr).then(function (data) {
             // unblock when remote call returns 
             if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
@@ -1222,7 +1254,14 @@ function massAction_copyQueue() {
 
 }
 
+function massAction_copyQueueWithDep() {
+    massAction_copyQueue("toQUEUEDwithDep");
+}
+function massAction_copyQueueWithoutDep() {
+    massAction_copyQueue("toQUEUED");
+}
 
+var cptDep = 0;
 function aoColumnsFunc(Columns) {
     var doc = new Doc();
     var colNb = Columns.length;
@@ -1276,6 +1315,7 @@ function aoColumnsFunc(Columns) {
             "title": title,
             "bSortable": true,
             "bSearchable": true,
+            "class": "mainCell",
             "sWidth": "40px",
             "data": function (row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
@@ -1289,11 +1329,12 @@ function aoColumnsFunc(Columns) {
             "mRender": function (data, type, row, meta) {
                 if (data !== "") {
                     // Getting selected Tag;
-                    var executionLink = generateExecutionLink(data.ControlStatus, data.ID, tag);
                     var glyphClass = getRowClass(data.ControlStatus);
                     var tooltip = generateTooltip(data);
+                    let idProgressBar = (data.Test + "_" + data.TestCase + "_" + data.Country + "_" + data.Environment + "_" + data.RobotDecli).replace(/\./g, '_').replace(/ /g, '_').replace(/\:/g, '_');
                     var cell = "";
-                    cell += '<div class="input-group"><span style="border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon status' + data.ControlStatus + '">';
+                    cell += '<div class="input-group mainCell" id="' + idProgressBar + '">';
+                    cell += '<span style="border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon status' + data.ControlStatus + '">';
                     var state = data.ControlStatus;
                     if (!isEmpty(data.QueueState)) {
                         state += data.QueueState;
@@ -1302,24 +1343,48 @@ function aoColumnsFunc(Columns) {
                         cell += '<input id="selectLine" name="id" value=' + data.QueueID + ' onclick="refreshNbChecked()" data-select="id" data-line="select' + data.ManualExecution + '-' + state + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input>';
                     }
                     cell += '</span>';
-                    if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
-                        cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" ';
-                    } else {
-                        cell += '<div class="progress-bar status' + data.ControlStatus + '" ';
+                    let statWidth = "100";
+                    if (data.previousExeControlStatus !== undefined) {
+                        cell += '<div style="width: 20%;cursor: pointer; height: 40px;" class="progress-bar status' + data.previousExeControlStatus + '"';
+                        cell += ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + data.previousExeId + '\')">';
+                        cell += data.previousExeControlStatus;
+                        cell += '</div>';
+                        statWidth = "80";
                     }
-                    cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;"';
+                    if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
+                        cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" id1="' + idProgressBar + '" ';
+                    } else {
+                        cell += '<div class="progress-bar status' + data.ControlStatus + '" id1="' + idProgressBar + '" ';
+                    }
+                    cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: ' + statWidth + '%;cursor: pointer; height: 40px;"';
                     cell += 'data-toggle="tooltip" data-html="true" title="' + tooltip + '"';
                     if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
                         cell += ' onclick="openModalTestCaseExecutionQueue(' + data.QueueID + ', \'EDIT\');">\n\' ';
                     } else {
-                        cell += ' onclick="window.open(\'' + executionLink + '\')">';
+                        cell += ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + data.ID + '\')">';
                     }
                     cell += '<span class="' + glyphClass.glyph + ' marginRight5"></span>';
-                    cell += '<span>' + data.ControlStatus + '<span>';
+                    cell += '<span name="tcResult">' + data.ControlStatus + '</span>';
                     if (data.QueueState !== undefined) {
-                        cell += '<br><span style="font-size: xx-small">' + data.QueueState + '<span>';
+                        cell += '<br><span style="font-size: xx-small">' + data.QueueState + " " + '</span>';
+                    }
+                    if (data.TestCaseDep.length > 0) {
+                        let button = ""
+                        let txt = ""
+                        let dependencyArray = ""
+                        for (let dep of data.TestCaseDep) {
+                            dependencyArray += "{test:'" + dep.test + "',testcase:'" + dep.testcase + "',Country:'" + data.Country + "',Environment:'" + data.Environment + "',robotdecli:'" + data.RobotDecli + "'},"
+                        }
+                        var dependency = "renderDependency('dep" + cptDep + "',[" + dependencyArray + "]);"
                     }
                     cell += '</div>';
+                    if (data.TestCaseDep.length > 0) {
+                        cell += '<span style="padding:0px; border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon ">';
+                        cell += '<a id="dep' + cptDep + '" role="button" class="btn btn-info hideFeatureTCDependencies" onclick="stopPropagation(event);' + dependency + '" data-html="true" data-toggle="popover" data-placement="right">' +
+                                '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> </a>'
+                        cell += '</span>';
+                        cptDep++;
+                    }
                     cell += '</div>';
                     return cell;
                 } else {
@@ -1376,6 +1441,26 @@ function aoColumnsFunc(Columns) {
     aoColumns.push(col);
 
     return aoColumns;
+}
+
+
+function renderDependency(id, dependencyArray) {
+    let text = ""
+    // Remove all background of mainCell
+    $(".mainCell").parent().removeClass("info");
+    dependencyArray.forEach(dep => {
+        let idProgressBar = (dep.test + "_" + dep.testcase + "_" + dep.Country + "_" + dep.Environment + "_" + dep.robotdecli).replace(/ /g, '_').replace(/\./g, '_').replace(/\:/g, '_');
+        let tcDepResult = $("#" + idProgressBar).find("[name='tcResult']").text();
+        text += "<a style='cursor: pointer;' onclick='$(\"#" + idProgressBar + "\").click()' style='font-size: xx-small'><div style='width: 20%' class='progress-bar status" + tcDepResult + "'>" + tcDepResult + "</div></a><a href='#" + idProgressBar + "'>" + dep.test + " - " + dep.testcase + "</a><br>";
+        // Add background of mainCell that are dependent.
+        $("#" + idProgressBar).parent().addClass("info");
+    });
+    $("#" + id).attr('title', "Dependency")
+            .addClass("info")
+            .popover('fixTitle')
+            .attr("data-content", text)
+            .attr("data-placement", "right")
+            .popover('show');
 }
 
 function customConfig(config) {

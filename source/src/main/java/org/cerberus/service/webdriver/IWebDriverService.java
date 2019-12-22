@@ -82,37 +82,43 @@ public interface IWebDriverService {
 
     String getFromCookie(Session session, String cookieName, String cookieParameter);
 
-    File takeScreenShotFile(Session session);
+    Integer getNumberOfElements(Session session, Identifier object);
+
+    File takeScreenShotFile(Session session, String cropValues);
 
     BufferedImage takeScreenShot(Session session);
 
     List<String> getSeleniumLog(Session session);
 
+    MessageEvent scrollTo(Session session, Identifier identifier, String text);
+
     MessageEvent doSeleniumActionClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
 
-    MessageEvent doSeleniumActionMouseDown(Session session, Identifier identifier);
+    MessageEvent doSeleniumActionMouseDown(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
 
-    MessageEvent doSeleniumActionMouseUp(Session session, Identifier identifier);
+    MessageEvent doSeleniumActionMouseUp(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
 
     MessageEvent doSeleniumActionSwitchToWindow(Session session, Identifier identifier);
 
     MessageEvent doSeleniumActionManageDialog(Session session, Identifier identifier);
 
+    MessageEvent doSeleniumActionManageDialogKeyPress(Session session, String valueToPress);
+
     MessageEvent doSeleniumActionDoubleClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
 
-    MessageEvent doSeleniumActionType(Session session, Identifier identifier, String property, String propertyName);
+    MessageEvent doSeleniumActionType(Session session, Identifier identifier, String property, String propertyName, boolean waitForVisibility, boolean waitForClickability);
 
-    MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier);
+    MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
 
     MessageEvent doSeleniumActionWait(Session session, Identifier identifier);
 
     MessageEvent doSeleniumActionWaitVanish(Session session, Identifier identifier);
 
-    MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String property);
+    MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String keyToPress, boolean waitForVisibility, boolean waitForClickability);
 
     MessageEvent doSeleniumActionOpenURL(Session session, String host, Identifier identifier, boolean withBase);
 
-    MessageEvent doSeleniumActionSelect(Session session, Identifier object, Identifier property);
+    MessageEvent doSeleniumActionSelect(Session session, Identifier object, Identifier property, boolean waitForVisibility, boolean waitForClickability);
 
     MessageEvent doSeleniumActionUrlLogin(Session session, String host, String uri);
 
@@ -122,5 +128,7 @@ public interface IWebDriverService {
 
     MessageEvent doSeleniumActionRightClick(Session session, Identifier identifier);
 
-    MessageEvent doSeleniumActionDragAndDrop(Session session, Identifier object, Identifier property) throws IOException;
+    MessageEvent doSeleniumActionDragAndDrop(Session session, Identifier object, Identifier property, boolean waitForVisibility, boolean waitForClickability) throws IOException;
+
+    MessageEvent doSeleniumActionRefreshCurrentPage(Session session);
 }

@@ -49,6 +49,7 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -115,8 +116,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     }
 
     @Override
-    public AnswerItem readByKeyTech(int id) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<ApplicationObject> readByKeyTech(int id) {
+        AnswerItem<ApplicationObject> ans = new AnswerItem<>();
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
@@ -141,8 +142,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     }
 
     @Override
-    public AnswerItem readByKey(String application, String object) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<ApplicationObject> readByKey(String application, String object) {
+        AnswerItem<ApplicationObject> ans = new AnswerItem<>();
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
@@ -180,8 +181,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     }
 
     @Override
-    public AnswerList readByApplication(String Application) {
-        AnswerList ans = new AnswerList<>();
+    public AnswerList<ApplicationObject> readByApplication(String Application) {
+        AnswerList<ApplicationObject> ans = new AnswerList<>();
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
@@ -190,7 +191,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             preStat.setString(1, Application);
             ResultSet rs = preStat.executeQuery();
             try {
-            	List<ApplicationObject> al = new ArrayList<ApplicationObject>();
+            	List<ApplicationObject> al = new ArrayList<>();
                 while (rs.next()) {
                     al.add(loadFromResultSet(rs));
                 }
@@ -304,13 +305,13 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<ApplicationObject> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        AnswerList<ApplicationObject> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<ApplicationObject> objectList = new ArrayList<ApplicationObject>();
+        List<ApplicationObject> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
@@ -340,6 +341,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         }
 
         query.append(searchSQL);
+
+
 
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
@@ -420,8 +423,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     }
 
     @Override
-    public AnswerList readByApplicationByCriteria(String application, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<ApplicationObject> readByApplicationByCriteria(String application, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, List<String> systems) {
+        AnswerList<ApplicationObject> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<ApplicationObject> objectList = new ArrayList<ApplicationObject>();
@@ -431,19 +434,20 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM applicationobject ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS obj.* FROM applicationobject obj ");
+        query.append(" left outer JOIN application app ON obj.Application = app.Application ");
 
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`Application` like ?");
-            searchSQL.append(" or `Object` like ?");
-            searchSQL.append(" or `Value` like ?");
-            searchSQL.append(" or `ScreenshotFileName` like ?");
-            searchSQL.append(" or `UsrCreated` like ?");
-            searchSQL.append(" or `DateCreated` like ?");
-            searchSQL.append(" or `UsrModif` like ?");
-            searchSQL.append(" or `DateModif` like ?)");
+            searchSQL.append(" and (obj.`Application` like ?");
+            searchSQL.append(" or obj.`Object` like ?");
+            searchSQL.append(" or obj.`Value` like ?");
+            searchSQL.append(" or obj.`ScreenshotFileName` like ?");
+            searchSQL.append(" or obj.`UsrCreated` like ?");
+            searchSQL.append(" or obj.`DateCreated` like ?");
+            searchSQL.append(" or obj.`UsrModif` like ?");
+            searchSQL.append(" or obj.`DateModif` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -456,9 +460,18 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         }
 
         if (!StringUtil.isNullOrEmpty(application)) {
-            searchSQL.append(" and (`Application` = ? )");
+            searchSQL.append(" and (obj.`Application` = ? )");
         }
+
+        if ((systems != null) && (!systems.isEmpty())) {
+            systems.add("");
+            searchSQL.append(" and (").append(SqlUtil.generateInClause("app.`System`", systems)).append(") ");
+        }
+
+        searchSQL.append( " AND ").append(UserSecurity.getSystemAllowForSQL("app.`System`")).append(" ");
+
         query.append(searchSQL);
+
 
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
@@ -495,6 +508,13 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 if (!StringUtil.isNullOrEmpty(application)) {
                     preStat.setString(i++, application);
                 }
+
+                if ((systems != null) && (!systems.isEmpty())) {
+                    for (String mysystem : systems) {
+                        preStat.setString(i++, mysystem);
+                    }
+                }
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
@@ -662,7 +682,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
@@ -773,12 +793,12 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
     @Override
     public AnswerList<String> readDistinctValuesByApplicationByCriteria(String application, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 

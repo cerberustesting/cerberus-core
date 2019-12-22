@@ -65,6 +65,7 @@ public class TestCaseStepService implements ITestCaseStepService {
                 masterStep.setConditionOper(usedStep.getConditionOper());
                 masterStep.setConditionVal1(usedStep.getConditionVal1());
                 masterStep.setConditionVal2(usedStep.getConditionVal2());
+                masterStep.setConditionVal3(usedStep.getConditionVal3());
             }
         }
 

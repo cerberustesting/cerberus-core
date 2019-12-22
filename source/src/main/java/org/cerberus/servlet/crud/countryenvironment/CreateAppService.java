@@ -95,7 +95,7 @@ public class CreateAppService extends HttpServlet {
 
         response.setContentType("text/html;charset=UTF-8");
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
-        
+
         Map<String, String> fileData = new HashMap<String, String>();
         FileItem file = null;
 
@@ -133,9 +133,13 @@ public class CreateAppService extends HttpServlet {
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String servicePath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("servicePath"), "", charset);
         String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(fileData.get("srvRequest"), null, charset);
+        String kafkaTopic = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaTopic"), "", charset);
+        String kafkaKey = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaKey"), "", charset);
+        String kafkaFilterPath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterPath"), "", charset);
+        String kafkaFilterValue = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterValue"), "", charset);
         String fileName = null;
-        if(file != null) {
-        	fileName = file.getName();
+        if (file != null) {
+            fileName = file.getName();
         }
 
         // Prepare the final answer.
@@ -163,7 +167,7 @@ public class CreateAppService extends HttpServlet {
             appServiceContentFactory = appContext.getBean(IFactoryAppServiceContent.class);
             appServiceHeaderFactory = appContext.getBean(IFactoryAppServiceHeader.class);
 
-            AppService appService = appServiceFactory.create(service, type, method, application, group, serviceRequest, description, servicePath, attachementurl, operation, request.getRemoteUser(), null, null, null, fileName);
+            AppService appService = appServiceFactory.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, description, servicePath, attachementurl, operation, request.getRemoteUser(), null, null, null, fileName);
             ans = appServiceService.create(appService);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
@@ -173,13 +177,13 @@ public class CreateAppService extends HttpServlet {
                  */
                 logEventService = appContext.getBean(ILogEventService.class);
                 logEventService.createForPrivateCalls("/CreateAppService", "CREATE", "Create AppService : " + service, request);
-                              
-                if(file != null) {
-                	AppService an = appServiceService.findAppServiceByKey(service);
+
+                if (file != null) {
+                    AppService an = appServiceService.findAppServiceByKey(service);
                     if (an != null) {
                         appServiceService.uploadFile(an.getService(), file);
                     }
-                }               
+                }
             }
             // Update content
             if (fileData.get("contentList") != null) {
@@ -200,7 +204,7 @@ public class CreateAppService extends HttpServlet {
                 // Update the Database with the new list.
                 ans = appServiceHeaderService.compareListAndUpdateInsertDeleteElements(service, headerList);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-            }         
+            }
         }
 
         /**

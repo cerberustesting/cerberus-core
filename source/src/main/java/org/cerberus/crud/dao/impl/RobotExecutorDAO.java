@@ -67,7 +67,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
 
     @Override
     public AnswerItem<RobotExecutor> readByKey(String robot, String executor) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<RobotExecutor> ans = new AnswerItem<>();
         RobotExecutor result = null;
         final String query = "SELECT * FROM `robotexecutor` rbe WHERE `robot` = ? and `executor` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -119,9 +119,8 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         }
 
         List<RobotExecutor> res = RequestDbUtils.executeQueryList(databaseSpring, query,
-                ps -> ps.setString(1, robot) ,
+                ps -> ps.setString(1, robot),
                 rs -> loadFromResultSet(rs));
-
 
         return res;
     }
@@ -272,8 +271,8 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
     public Answer create(RobotExecutor object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO robotexecutor (`robot`, `executor`, `active`, `rank`, `host`, `port`, `host_user`, `host_password`, `deviceudid`, `devicename`, `deviceport`, `description`, `usrcreated`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO robotexecutor (`robot`, `executor`, `active`, `rank`, `host`, `port`, `host_user`, `host_password`, `deviceudid`, `devicename`, `deviceport`, `devicelockunlock`, `executorextensionport`, `executorproxyhost`, `executorproxyport`, `executorproxyactive`, `description`, `usrcreated`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -294,10 +293,25 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
                 preStat.setString(i++, object.getHostPassword());
                 preStat.setString(i++, object.getDeviceUuid());
                 preStat.setString(i++, object.getDeviceName());
-                if(object.getDevicePort() != null)
+                if (object.getDevicePort() != null) {
                     preStat.setInt(i++, object.getDevicePort());
-                else
-                    preStat.setNull(i++, Types.INTEGER);                preStat.setString(i++, object.getDescription());
+                } else {
+                    preStat.setNull(i++, Types.INTEGER);
+                }
+                preStat.setString(i++, object.getDeviceLockUnlock());
+                if (object.getExecutorExtensionPort() != null) {
+                    preStat.setInt(i++, object.getExecutorExtensionPort());
+                } else {
+                    preStat.setNull(i++, Types.INTEGER);
+                }
+                preStat.setString(i++, object.getExecutorProxyHost());
+                if (object.getExecutorProxyPort() != null) {
+                    preStat.setInt(i++, object.getExecutorProxyPort());
+                } else {
+                    preStat.setNull(i++, Types.INTEGER);
+                }
+                preStat.setString(i++, object.getExecutorProxyActive());
+                preStat.setString(i++, object.getDescription());
                 preStat.setString(i++, object.getUsrCreated());
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -354,7 +368,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
     @Override
     public Answer update(String robot, String executor, RobotExecutor object) {
         MessageEvent msg = null;
-        final String query = "UPDATE robotexecutor SET `robot` = ?, `executor` = ?, description = ?, active = ?, `rank` = ?, `host` = ?, `port` = ?, `host_user` = ?, `host_password` = ?, `deviceudid` = ?, `devicename` = ?, `deviceport` = ?, "
+        final String query = "UPDATE robotexecutor SET `robot` = ?, `executor` = ?, description = ?, active = ?, `rank` = ?, `host` = ?, `port` = ?, `host_user` = ?, `host_password` = ?, `deviceudid` = ?, `devicename` = ?, `deviceport` = ?,  `devicelockunlock` = ?,  `executorextensionport` = ?, `executorproxyhost` = ?,  `executorproxyport` = ?, `executorproxyactive` = ?, "
                 + "dateModif = NOW(), usrModif= ?  WHERE `robot` = ? and `executor` = ?";
 
         // Debug message on SQL.
@@ -378,10 +392,24 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
             preStat.setString(i++, object.getHostPassword());
             preStat.setString(i++, object.getDeviceUuid());
             preStat.setString(i++, object.getDeviceName());
-            if(object.getDevicePort() != null)
+            if (object.getDevicePort() != null) {
                 preStat.setInt(i++, object.getDevicePort());
-            else
+            } else {
                 preStat.setNull(i++, Types.INTEGER);
+            }
+            preStat.setString(i++, object.getDeviceLockUnlock());
+            if (object.getExecutorExtensionPort() != null) {
+                preStat.setInt(i++, object.getExecutorExtensionPort());
+            } else {
+                preStat.setNull(i++, Types.INTEGER);
+            }
+            preStat.setString(i++, object.getExecutorProxyHost());
+            if (object.getExecutorProxyPort() != null) {
+                preStat.setInt(i++, object.getExecutorProxyPort());
+            } else {
+                preStat.setNull(i++, Types.INTEGER);
+            }
+            preStat.setString(i++, object.getExecutorProxyActive());
             preStat.setString(i++, object.getUsrModif());
             preStat.setString(i++, robot);
             preStat.setString(i++, executor);
@@ -403,7 +431,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
                 + " WHERE `robot` = ? and `executor` = ?";
 
         long now = new Date().getTime();
-        
+
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
@@ -442,6 +470,11 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         String deviceudid = ParameterParserUtil.parseStringParam(rs.getString("rbe.deviceudid"), "");
         String devicename = ParameterParserUtil.parseStringParam(rs.getString("rbe.devicename"), "");
         Integer deviceport = rs.getInt("rbe.deviceport");
+        String devicelockunlock = rs.getString("rbe.devicelockunlock");
+        Integer executorExtensionPort = rs.getInt("rbe.executorextensionport");
+        String executorProxyHost = rs.getString("rbe.executorproxyhost");
+        Integer executorProxyPort = rs.getInt("rbe.executorproxyport");
+        String executorProxyActive = rs.getString("rbe.executorproxyactive");
         if(deviceport == 0) deviceport=null;
         String description = ParameterParserUtil.parseStringParam(rs.getString("rbe.description"), "");
         long dateLastExe = rs.getLong("rbe.DateLastExeSubmitted");
@@ -452,12 +485,12 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
 
         //TODO remove when working in test with mockito and autowired
         factoryRobotExecutor = new FactoryRobotExecutor();
-        return factoryRobotExecutor.create(id, robot, executor, active, rank, host, port, host_user, host_password, deviceudid, devicename, deviceport, description, usrCreated, dateCreated, usrModif, dateModif);
+        return factoryRobotExecutor.create(id, robot, executor, active, rank, host, port, host_user, host_password, deviceudid, devicename, deviceport, devicelockunlock, executorExtensionPort, executorProxyHost, executorProxyPort, executorProxyActive, description, usrCreated, dateCreated, usrModif, dateModif);
     }
 
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String robot, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();

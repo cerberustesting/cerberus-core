@@ -1,0 +1,41 @@
+# List of commands to execute in order to release this project
+#
+# Prerequisities
+# --------------
+#
+#   1. Have Git 2.7+ installed
+#   2. Be able to push to [Cerberus Testing's repositories](https://github.com/cerberustesting)
+#   3. Have Docker 1.12+ installed
+#   4. Be able to push to the [Cerberus Testing's Docker hub space](https://hub.docker.com/r/cerberustesting)
+#   5. Be logged to the public Docker hub registry
+#
+# How to run it
+# -------------
+#
+#   In order to run this command execution flow, use the runcmds tool by executing:
+#
+#   runcmds.sh
+#       -e RELEASE_VERSION <release version> \
+#       -s ./release.cmds
+#
+#   Where:
+#       - <release version> is the needed release version
+
+
+# Prepare the release version
+awk '/ARG CERBERUS_VERSION/ {$0="ARG CERBERUS_VERSION=${RELEASE_VERSION}"} {print}' latest/Dockerfile > latest/Dockerfile.back && mv latest/Dockerfile.back latest/Dockerfile
+cp -R latest ${RELEASE_VERSION}
+awk '/Use the latest Cerberus version/{print; print "${RELEASE_VERSION}   | Use the ${RELEASE_VERSION} Cerberus version     | [${RELEASE_VERSION}/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat/${RELEASE_VERSION}/Dockerfile)"; next}1' README.md > README.md.back && mv README.md.back README.md
+
+# Create Docker image
+docker build -t cerberustesting/cerberus-as-tomcat:${RELEASE_VERSION} ${RELEASE_VERSION}
+docker tag `docker images --format {{.ID}} cerberustesting/cerberus-as-tomcat:${RELEASE_VERSION}` cerberustesting/cerberus-as-tomcat:latest
+
+# Push Docker image to the public Docker hub
+docker push cerberustesting/cerberus-as-tomcat:${RELEASE_VERSION}
+docker push cerberustesting/cerberus-as-tomcat:latest
+
+# Apply changes to SCM
+git add README.md ${RELEASE_VERSION} latest
+git commit -m 'chore:docker new cerberus-as-tomcat-${RELEASE_VERSION} version'
+git push origin master

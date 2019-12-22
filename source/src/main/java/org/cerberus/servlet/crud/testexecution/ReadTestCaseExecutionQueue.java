@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.factory.IFactoryInvariant;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
@@ -66,6 +67,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
     private IExecutionThreadPoolService executionThreadPoolService;
     private IParameterService parameterService;
     private IInvariantService invariantService;
+    private IFactoryInvariant factoryInvariant;
 
     private static final Logger LOG = LogManager.getLogger(ReadTestCaseExecutionQueue.class);
 
@@ -184,22 +186,27 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         }
     }
 
-    private AnswerItem findExecutionQueueByKeyTech(Long queueid, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findExecutionQueueByKeyTech(Long queueid, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         ITestCaseExecutionQueueService queueService = appContext.getBean(ITestCaseExecutionQueueService.class);
 
         //finds the project     
-        AnswerItem answer = queueService.readByKey(queueid);
+        AnswerItem answer = queueService.readByKey(queueid, true);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
-            TestCaseExecutionQueue lib = (TestCaseExecutionQueue) answer.getItem();
-            JSONObject response = convertTestCaseExecutionInQueueToJSONObject(lib);
+            TestCaseExecutionQueue queueEntry = (TestCaseExecutionQueue) answer.getItem();
+            JSONObject response = convertTestCaseExecutionInQueueToJSONObject(queueEntry);
+
+            // Adding nb of entries in the queue before it gets triggered.
             int nb = 0;
-            nb = queueService.getNbEntryToGo(lib.getId(), lib.getPriority());
+            if (TestCaseExecutionQueue.State.QUEUED.equals(queueEntry.getState())) {
+                nb = queueService.getNbEntryToGo(queueEntry.getId(), queueEntry.getPriority());
+            }
             response.put("nbEntryInQueueToGo", nb);
+
             object.put("contentTable", response);
         }
 
@@ -210,9 +217,9 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findExecutionInQueueList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findExecutionInQueueList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         executionService = appContext.getBean(ITestCaseExecutionQueueService.class);
 
@@ -232,15 +239,15 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
                 }
             }
         }
 
-        AnswerList resp = executionService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<TestCaseExecutionQueue> resp = executionService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -259,12 +266,13 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findExecutionInQueueStatus(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findExecutionInQueueStatus(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
         parameterService = appContext.getBean(IParameterService.class);
         invariantService = appContext.getBean(IInvariantService.class);
+        factoryInvariant = appContext.getBean(IFactoryInvariant.class);
         JSONArray jsonArray = new JSONArray();
 
         try {
@@ -290,7 +298,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                             jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name, 0));
                             jsonObject.put("hasPermissionsUpdate", parameterService.hasPermissionsUpdate("cerberus_queueexecution_global_threadpoolsize", request));
                             break;
-                        case TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLICATION:
+                        case TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV:
                             jsonObject.put("contrainId", data[0]);
                             jsonObject.put("system", data[1]);
                             jsonObject.put("environment", data[2]);
@@ -300,9 +308,21 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                             jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column), 0));
                             jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column), 0));
                             jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name, 0));
-                            jsonObject.put("hasPermissionsUpdate", parameterService.hasPermissionsUpdate("cerberus_queueexecution_global_threadpoolsize", request));
+                            jsonObject.put("hasPermissionsUpdate", true);
                             break;
-                        case TestCaseExecutionQueueToTreat.CONSTRAIN3_ROBOT:
+                        case TestCaseExecutionQueueToTreat.CONSTRAIN3_APPLICATION:
+                            jsonObject.put("contrainId", data[0]);
+                            jsonObject.put("system", "");
+                            jsonObject.put("environment", "");
+                            jsonObject.put("country", "");
+                            jsonObject.put("application", data[1]);
+                            jsonObject.put("robot", "");
+                            jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column), 0));
+                            jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column), 0));
+                            jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name, 0));
+                            jsonObject.put("hasPermissionsUpdate", true);
+                            break;
+                        case TestCaseExecutionQueueToTreat.CONSTRAIN4_ROBOT:
                             jsonObject.put("contrainId", data[0]);
                             jsonObject.put("system", "");
                             jsonObject.put("environment", "");
@@ -324,7 +344,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                             jsonObject.put("nbInQueue", "");
                             jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column), 0));
                             jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name, 0));
-                            jsonObject.put("hasPermissionsUpdate", parameterService.hasPermissionsUpdate("cerberus_queueexecution_global_threadpoolsize", request));
+                            jsonObject.put("hasPermissionsUpdate", invariantService.hasPermissionsUpdate(factoryInvariant.create("ROBOTHOST", "", 0, "", "", "", "", "", "", "", "", "", "", ""), request));
                             break;
                     }
                     jsonArray.put(jsonObject);
@@ -333,7 +353,9 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
             object.put("contentTable", jsonArray);
 
         } catch (CerberusException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
+        } catch (Exception ex) {
+            LOG.error(ex, ex);
         }
 
         object.put("messageType", "");
@@ -343,10 +365,10 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
-        AnswerList values = new AnswerList<>();
+        AnswerList<String> values = new AnswerList<>();
 
         executionService = appContext.getBean(ITestCaseExecutionQueueService.class);
 
@@ -385,12 +407,12 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                 Map<String, List<String>> individualSearch = new HashMap<>();
                 for (int a = 0; a < columnToSort.length; a++) {
                     if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-                    	List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                    	if(individualLike.contains(columnToSort[a])) {
-                        	individualSearch.put(columnToSort[a]+":like", search);
-                        }else {
-                        	individualSearch.put(columnToSort[a], search);
-                        } 
+                        List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                        if (individualLike.contains(columnToSort[a])) {
+                            individualSearch.put(columnToSort[a] + ":like", search);
+                        } else {
+                            individualSearch.put(columnToSort[a], search);
+                        }
                     }
                 }
                 values = executionService.readDistinctValuesByCriteria(columnName, sort, searchParameter, individualSearch, column);

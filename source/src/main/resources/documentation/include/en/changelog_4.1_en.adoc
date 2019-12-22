@@ -1,0 +1,35 @@
+*Bug fixes*
+[square]
+* Closing execution depencies in QE status even when previous execution ended in QE Queue Error. #1973
+* Adding dependency on testcase modal when test has more than 1 space now works. #1976
+* Fixed issue when adding new attributes on Invariant Modal. #1987
+* SQL optimisations on executions with dependencies and shorter SQL when retreiving labels from ReportByTag and TestCaseList pages.
+* Fixed error message when starting a new execution on a robot that has no available executor.
+
+*Improvements / New features*
+[square]
+* Display only System you have access on the System Combo. #1358
+* Filter All Cerberus Screens (TestCase, DataObject, Services, Object, ReportingByTag, etc.) according to the system(s) you choose on the System Combo. #1358
+* Added new action 'manageDialogKeypress' in order to perform keypress inside browser dialog popup.
+* Added new actions 'longPress' and 'clearField' for Android and IOS devices.
+* Added new action 'executeCommand' for BAT, FAT and SRV applications.
+* Added new condition operator : ifStringNotContains and ifPropertyNotExist. #1984
+* Added new control : verifyStringNotContains.
+* Added Pagination feature on TestCaseExecution List page.
+* Export/Import TestCase feature.
+* Support of Cerberus-executor application on Robot side in order to allow controls and generation of har files.
+* Labels Tree are now sorted by label name. #1962
+* Separated Campaign label modal that display list of testcase from the one that display the stats of past tag executions. #1962
+* Tag now store the list of requested countries and environments at the start of the campaign execution. It also store the real executed list of countries, environments, robot declinations, systems and applications. #1815
+* On start email notification the variables %REQENVIRONMENTLIST% and %REQCOUNTRYLIST% can be used. #1815
+* At the end of notification, the variables %ENVIRONMENTLIST% %COUNTRYLIST% %APPLICATIONLIST% %SYSTEMLIST% %ROBOTDECLILIST% %REQENVIRONMENTLIST% %REQCOUNTRYLIST% can be used. #1815
+* On tag definition (at campaign level or on runtest page), the variables %REQENVIRONMENTLIST% and %REQCOUNTRYLIST% can be used. ('cerberus_tagvariable_separator' parameter can be used in order to define the separator to use). #1815
+* New constrain has been created at application level. constrain2_application has been renamed to constrain2_applienvironment. constrain3_application was created in order to handle constrain on application accross all environments. You can configure the poolsize at application level.
+* Sorted end of tag notification email detail table by prio (valid ci prio first.), test folder and test case ID.
+* Tag variable are also decoded from runtest page.
+* myhost parameter on AddToExecutionQueueV003 for multiple application can be defined in JSON string format (don't forget to encode URL).
+* cors : add FRONT_URL en variable to enable CORS on this URL. If FRONT_URL doesn't exist, CORS is disable
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* none

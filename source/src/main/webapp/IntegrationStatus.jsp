@@ -40,7 +40,7 @@
             <%@ include file="include/global/messagesArea.html"%>
             <h1 class="page-title-line" id="title">Integration Status</h1>
             <div class="row">
-                <div class="col-lg-9" id="FiltersPanel">
+                <div class="col-lg-12" id="FiltersPanel">
                     <div class="panel panel-default">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#DeployHisto">
                             <span class="glyphicon glyphicon-list"></span>
@@ -51,15 +51,15 @@
                             <div class="row">
                                 <div class="col-lg-12" id="filterContainer">
                                     <div class="row" id="tagFilter">
-                                        <div class="col-xs-3">
+                                        <div class="col-sm-5">
                                             <label for="selectEngGp" id="selectEngGpLabel">Environment Group :</label>
-                                            <select class="form-control col-lg-7" name="selectEngGp" id="selectEngGp"></select>
+                                            <select class="form-control" name="selectEngGp" id="selectEngGp"></select>
                                         </div>
-                                        <div class="col-xs-3">
+                                        <div class="col-sm-5">
                                             <label for="selectSince" id="selectSinceLabel">Since (days) :</label>
-                                            <select class="form-control col-lg-7" name="selectSince" id="selectSince"></select>
+                                            <select class="form-control" name="selectSince" id="selectSince"></select>
                                         </div>
-                                        <div class="col-xs-3">
+                                        <div class="col-xs-2 marginTop20">
                                             <button type="button" class="btn btn-default" style="margin-left: 10px;" id="loadLastModifbutton">Load</button>
                                         </div>
                                     </div>
@@ -76,7 +76,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3" id="ReportByStatusPanel">
+                <div class="col-lg-6 col-md-9" id="ReportByStatusPanel">
                     <div class="panel panel-default">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#EnvStatus">
                             <span class="glyphicon glyphicon-list"></span>
@@ -89,6 +89,7 @@
                                     <table class="table table-bordered table-hover nomarginbottom dataTable" id="envTable">
                                         <thead>
                                             <tr>
+                                                <th class="text-center" id="systemHeader" name="systemHeader">System</th>
                                                 <th class="text-center" id="buildHeader" name="buildHeader">Build</th>
                                                 <th class="text-center" id="revisionHeader" name="revisionHeader">Revision</th>
                                                 <th class="text-center" id="devHeader" name="devHeader">DEV</th>

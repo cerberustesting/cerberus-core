@@ -43,6 +43,7 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -61,8 +62,8 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public AnswerItem readByKey(String system, Integer level, Integer seq) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<BuildRevisionInvariant> readByKey(String system, Integer level, Integer seq) {
+        AnswerItem<BuildRevisionInvariant> ans = new AnswerItem<>();
         BuildRevisionInvariant result = null;
         final String query = "SELECT * FROM `buildrevisioninvariant` WHERE `system` = ? and level = ? and seq = ? ";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -119,8 +120,8 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
     }
 
     @Override
-    public AnswerItem readByKey(String system, Integer level, String versionName) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<BuildRevisionInvariant> readByKey(String system, Integer level, String versionName) {
+        AnswerItem<BuildRevisionInvariant> ans = new AnswerItem<>();
         BuildRevisionInvariant result = null;
         final String query = "SELECT * FROM `buildrevisioninvariant` WHERE `system` = ? and level = ? and versionname = ? ";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -177,13 +178,13 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<BuildRevisionInvariant> readByVariousByCriteria(List<String> systems, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        AnswerList<BuildRevisionInvariant> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<BuildRevisionInvariant> briList = new ArrayList<BuildRevisionInvariant>();
+        List<BuildRevisionInvariant> briList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
@@ -206,9 +207,13 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
             }
             searchSQL.append(" )");
         }
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System` like ? )");
+        if (systems != null && !systems.isEmpty()) {
+            searchSQL.append(" AND ");
+            searchSQL.append(SqlUtil.generateInClause("`System`", systems));
         }
+        searchSQL.append(" AND "); 
+        searchSQL.append(UserSecurity.getSystemAllowForSQL("`System`"));
+
         if (level != -1) {
             searchSQL.append(" and (`level`= ?)");
         }
@@ -241,8 +246,10 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
                 for (String individualColumnSearchValue : individalColumnSearchValues) {
                     preStat.setString(i++, individualColumnSearchValue);
                 }
-                if (!StringUtil.isNullOrEmpty(system)) {
-                    preStat.setString(i++, system);
+                if (systems != null && !systems.isEmpty()) {
+                    for (String sys : systems) {
+                        preStat.setString(i++, sys);
+                    }
                 }
                 if (level != -1) {
                     preStat.setInt(i++, level);
@@ -427,7 +434,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                int i=1;
+                int i = 1;
                 preStat.setString(i++, buildRevisionInvariant.getSystem());
                 preStat.setInt(i++, buildRevisionInvariant.getLevel());
                 preStat.setInt(i++, buildRevisionInvariant.getSeq());
@@ -474,8 +481,8 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> systems, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
@@ -489,9 +496,12 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
         query.append(" as distinctValues FROM buildrevisioninvariant ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System` = ? )");
+        if (systems != null && !systems.isEmpty()) {
+            query.append(" AND ");
+            query.append(SqlUtil.generateInClause("`System`", systems));
         }
+        query.append(" AND ");
+        query.append(UserSecurity.getSystemAllowForSQL("`System`"));
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`seq` like ?");
@@ -516,11 +526,13 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(system)) {
-                preStat.setString(i++, system);
+            if (systems != null && !systems.isEmpty()) {
+                for (String sys : systems) {
+                    preStat.setString(i++, sys);
+                }
             }
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -531,9 +543,9 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try( ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");){
-            	//gets the data
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
@@ -557,7 +569,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));

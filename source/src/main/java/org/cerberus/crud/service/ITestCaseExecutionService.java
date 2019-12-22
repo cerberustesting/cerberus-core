@@ -39,7 +39,7 @@ public interface ITestCaseExecutionService {
 
     void updateTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
-    AnswerItem readLastByCriteria(String application);
+    AnswerItem<TestCaseExecution> readLastByCriteria(String application);
 
     TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
             String build, String revision) throws CerberusException;
@@ -120,7 +120,6 @@ public interface ITestCaseExecutionService {
      */
     void setTagToExecution(long id, String tag) throws CerberusException;
 
-    AnswerList findTagList(int tagnumber) throws CerberusException;
 
     /**
      *
@@ -133,7 +132,7 @@ public interface ITestCaseExecutionService {
      * @return
      * @throws CerberusException
      */
-    AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+    AnswerList<TestCaseExecution> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
     /**
      *
@@ -143,10 +142,11 @@ public interface ITestCaseExecutionService {
      * @param searchTerm
      * @param individualSearch
      * @param individualLike
+     * @param system
      * @return
      * @throws CerberusException
      */
-    AnswerList readByCriteria( int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike) throws CerberusException;
+    AnswerList<TestCaseExecution>  readByCriteria( int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException;
 
     /**
      *
@@ -154,7 +154,7 @@ public interface ITestCaseExecutionService {
      * @return
      * @throws CerberusException
      */
-    AnswerList readByTag(String tag) throws CerberusException;
+    AnswerList<TestCaseExecution> readByTag(String tag) throws CerberusException;
 
     /**
      *
@@ -169,7 +169,7 @@ public interface ITestCaseExecutionService {
      * @param tag
      * @return
      */
-    AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
+    AnswerList<TestCaseExecution> readDistinctEnvCoutnryBrowserByTag(String tag);
 
     /**
      *
@@ -180,14 +180,16 @@ public interface ITestCaseExecutionService {
      * @param app
      * @return
      */
-    AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
+    AnswerList<TestCaseExecution> readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
 
+    /**
+     *
+     * @param testCaseList
+     * @param envList
+     * @param country
+     * @return
+     */
     List<TestCaseExecution> createAllTestCaseExecution(List<TestCase> testCaseList, List<String> envList, List<String> country);
-
-    AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList,
-            List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList,
-            List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion,
-            String comment, String bugid, String ticket);
 
     /**
      * Read TestCaseExecution knowing the Key
@@ -195,7 +197,7 @@ public interface ITestCaseExecutionService {
      * @param executionId : ID of the execution
      * @return AnswerItem with returncode and testcaseexecution object as item.
      */
-    AnswerItem readByKey(long executionId);
+    AnswerItem<TestCaseExecution> readByKey(long executionId);
 
     /**
      * Read TestCaseExecution knowing the Key
@@ -228,7 +230,16 @@ public interface ITestCaseExecutionService {
      */
     void convert(Answer answer) throws CerberusException;
 
-    public AnswerList readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    /**
+     *
+     * @param system
+     * @param test
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return
+     */
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      *

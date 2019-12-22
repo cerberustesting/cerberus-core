@@ -36,9 +36,11 @@ public interface IMyVersionDAO {
      * @return
      */
     MyVersion findMyVersionByKey(String key);
-    
-    boolean updateMyVersion(MyVersion myVersion);
-    
+
+    boolean update(MyVersion myVersion);
+
     boolean updateMyVersionString(MyVersion myVersion);
-    
+
+    boolean flagMyVersionString(String key);
+
 }

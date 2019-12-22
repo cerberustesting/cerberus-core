@@ -218,9 +218,9 @@ public final class ParameterParserUtil {
      * Parses and decode a list from the given inParams one by decoding each of
      * them
      *
-     * @param param
+     * @param inParams
+     * @param charset
      * @param defaultVal
-     * @param req
      * @return
      */
     public static List<String> parseListParamAndDecode(String[] inParams, List<String> defaultVal, String charset) {
@@ -228,7 +228,7 @@ public final class ParameterParserUtil {
             return defaultVal;
         }
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (String item : inParams) {
             try {
                 result.add(POLICY.sanitize(URLDecoder.decode(item, charset)));

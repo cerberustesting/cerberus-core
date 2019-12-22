@@ -159,7 +159,7 @@
                                                 <span class="input-group-addon " id="user-icon2">
                                                     <span class="glyphicon glyphicon-user"></span>
                                                 </span>
-                                                <input name="login" class="form-control" id="loginForgotPassword" title="Username" placeholder="Username" value="" size="30" maxlength="10" aria-describedby="user-icon2" autofocus>
+                                                <input name="login" class="form-control" id="loginForgotPassword" title="Username" placeholder="Username" value="" size="30" aria-describedby="user-icon2" autofocus>
                                             </div>
                                         </div>
                                     </div>

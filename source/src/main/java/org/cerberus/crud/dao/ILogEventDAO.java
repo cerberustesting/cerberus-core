@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.cerberus.crud.entity.LogEvent;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -41,7 +40,7 @@ public interface ILogEventDAO {
      * @param logEventID
      * @return
      */
-    AnswerItem readByKey(long logEventID);
+    AnswerItem<LogEvent> readByKey(long logEventID);
 
     /**
      * @param start
@@ -52,7 +51,7 @@ public interface ILogEventDAO {
      * @param individualSearch
      * @return a list of all LogEvent.
      */
-    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<LogEvent> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      * Insert a logEvent into the database.
@@ -77,6 +76,6 @@ public interface ILogEventDAO {
      * @param columnName
      * @return 
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

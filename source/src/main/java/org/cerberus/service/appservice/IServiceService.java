@@ -30,13 +30,15 @@ import org.cerberus.util.answer.AnswerItem;
 public interface IServiceService {
 
     /**
-     * Perform a service call and feed the AppService object in return. If URL
+     * Perform a service call and feed the AppService object in return.If URL
      * coming from service object is enriched from the context of either the
-     * database or the tCExecution. service is defined, If database is defined
+     * database or the tCExecution.service is defined, If database is defined
      * the URL is enriched from context is coming from database if not, context
      * will be taken from tCExecution.
      *
      * @param service
+     * @param targetNbEvents
+     * @param targetNbSec
      * @param database
      * @param request
      * @param servicePath
@@ -44,6 +46,6 @@ public interface IServiceService {
      * @param tCExecution
      * @return
      */
-    AnswerItem<AppService> callService(String service, String database, String request, String servicePath, String operation, TestCaseExecution tCExecution);
+    AnswerItem<AppService> callService(String service, String targetNbEvents, String targetNbSec, String database, String request, String servicePath, String operation, TestCaseExecution tCExecution);
 
 }

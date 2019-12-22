@@ -12,6 +12,11 @@
 * New Slack connector that can be configured at campaign level in order to notify at the beginning and end of campaign execution. Slack WebHook and channel can be configured at campaign level.
 * REST service now allow Request data on DELETE Method. #1670
 * Add default execution settings into Cerberus campaign, you can parameter it in the modal of creation or update for campaign.
+* Implement scrollTo action for Selenium.
+* Implement auto-scroll in parameter list for automatate the scroll on all action executed.
+* Rework modal for create and update the service
+* Rework Application selector for application object, it become a select2
+
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

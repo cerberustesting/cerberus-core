@@ -205,7 +205,7 @@ public class AddToExecutionQueue extends HttpServlet {
             if (!StringUtil.isNullOrEmpty(tag)) {
                 // We create or update it.
                 ITagService tagService = appContext.getBean(ITagService.class);
-                tagService.createAuto(tag, "", "");
+                tagService.createAuto(tag, "", "", null, null);
             }
 
             // Part 1: Getting all test cases which have been sent to this servlet.
@@ -223,7 +223,7 @@ public class AddToExecutionQueue extends HttpServlet {
             List<String> errorMessages = new ArrayList<String>();
             for (TestCaseExecutionQueue toInsert : toInserts) {
                 try {
-                    inQueueService.convert(inQueueService.create(toInsert, true));
+                    inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUEUED));
                 } catch (CerberusException e) {
                     String errorMessage = "Unable to insert " + toInsert.toString() + " due to " + e.getMessage();
                     LOG.warn(errorMessage);
@@ -313,7 +313,7 @@ public class AddToExecutionQueue extends HttpServlet {
                 throw new ParameterException("Selected campaign does not defined any browser");
             }
             selectedTests = new ArrayList<>();
-            for (final TestCase testCase : testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()])).getItem()) {
+            for (final TestCase testCase : testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()])).getDataList()) {
                 selectedTests.add(new HashMap<String, String>() {
                     {
                         put(PARAMETER_SELECTED_TEST_TEST, testCase.getTest());

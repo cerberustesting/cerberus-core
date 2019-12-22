@@ -20,8 +20,12 @@
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.Map;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -53,10 +57,11 @@ public class TestCaseExecution {
     private String robotHost; // Host the Selenium IP
     private String robotPort; // host the Selenium Port
     private String robotDecli;
+    private String robotProvider;
+    private String robotSessionID;
     private String browser;
     private String version;
     private String platform;
-    private String browserFullVersion;
     private long start;
     private long end;
     private String controlStatus;
@@ -71,8 +76,10 @@ public class TestCaseExecution {
     private String conditionOper;
     private String conditionVal1Init;
     private String conditionVal2Init;
+    private String conditionVal3Init;
     private String conditionVal1;
     private String conditionVal2;
+    private String conditionVal3;
     private String manualExecution;
     private String userAgent;
     private long queueID;
@@ -81,6 +88,7 @@ public class TestCaseExecution {
     private String UsrModif;
     private Timestamp DateModif;
     private int testCaseVersion;
+    private int testCasePriority;
 
     /**
      * From here are data outside database model.
@@ -109,6 +117,7 @@ public class TestCaseExecution {
     private Invariant CountryObj;
     private Test testObj;
     private TestCase testCaseObj;
+    private Tag tagObj;
     private CountryEnvParam countryEnvParam;
     private CountryEnvironmentParameters countryEnvironmentParameters;
     private Invariant environmentDataObj;
@@ -122,7 +131,13 @@ public class TestCaseExecution {
     private List<String> recursiveAlreadyCalculatedPropertiesList;
     private List<TestCaseCountryProperties> testCaseCountryPropertyList;
 
+    private List<TestCaseExecutionQueueDep> testCaseExecutionQueueDepList;
+
     private List<String> videos;
+
+    // Used in reporting page to report the previous executions from the same tag.
+    private long previousExeId;
+    private String previousExeStatus;
 
     // Others
     private MessageGeneral resultMessage;
@@ -138,7 +153,14 @@ public class TestCaseExecution {
     private boolean cerberus_featureflipping_activatewebsocketpush;
     private long cerberus_featureflipping_websocketpushperiod;
     private long lastWebsocketPush;
-
+    // Remote Proxy data.
+    private boolean remoteProxyStarted;
+    private Integer remoteProxyPort;
+    private String remoteProxyUUID;
+    private String remoteProxyLastHarMD5;
+    // Kafka Consumers
+    private HashMap<String, Map<TopicPartition, Long>>  kafkaLatestOffset;
+    
     /**
      * Invariant PROPERTY TYPE String.
      */
@@ -166,6 +188,58 @@ public class TestCaseExecution {
     public static final String MANUAL_Y = "Y";
     public static final String MANUAL_N = "N";
     public static final String MANUAL_A = "A";
+
+    public static final String ROBOTPROVIDER_BROWSERSTACK = "BROWSERSTACK";
+    public static final String ROBOTPROVIDER_KOBITON = "KOBITON";
+    public static final String ROBOTPROVIDER_NONE = "NONE";
+
+    public HashMap<String, Map<TopicPartition, Long>> getKafkaLatestOffset() {
+        return kafkaLatestOffset;
+    }
+
+    public void setKafkaLatestOffset(HashMap<String, Map<TopicPartition, Long>> kafkaLatestOffset) {
+        this.kafkaLatestOffset = kafkaLatestOffset;
+    }
+
+    public boolean isRemoteProxyStarted() {
+        return remoteProxyStarted;
+    }
+
+    public void setRemoteProxyStarted(boolean remoteProxyStarted) {
+        this.remoteProxyStarted = remoteProxyStarted;
+    }
+
+    public String getRobotSessionID() {
+        return robotSessionID;
+    }
+
+    public void setRobotSessionID(String robotSessionID) {
+        this.robotSessionID = robotSessionID;
+    }
+
+    public String getRobotProvider() {
+        return robotProvider;
+    }
+
+    public void setRobotProvider(String robotProvider) {
+        this.robotProvider = robotProvider;
+    }
+
+    public long getPreviousExeId() {
+        return previousExeId;
+    }
+
+    public void setPreviousExeId(long previousExeId) {
+        this.previousExeId = previousExeId;
+    }
+
+    public String getPreviousExeStatus() {
+        return previousExeStatus;
+    }
+
+    public void setPreviousExeStatus(String previousExeStatus) {
+        this.previousExeStatus = previousExeStatus;
+    }
 
     public RobotExecutor getRobotExecutorObj() {
         return robotExecutorObj;
@@ -327,6 +401,14 @@ public class TestCaseExecution {
         this.conditionVal2Init = conditionVal2Init;
     }
 
+    public String getConditionVal3Init() {
+        return conditionVal3Init;
+    }
+
+    public void setConditionVal3Init(String conditionVal3Init) {
+        this.conditionVal3Init = conditionVal3Init;
+    }
+
     public String getConditionVal1() {
         return conditionVal1;
     }
@@ -341,6 +423,14 @@ public class TestCaseExecution {
 
     public void setConditionVal2(String conditionVal2) {
         this.conditionVal2 = conditionVal2;
+    }
+
+    public String getConditionVal3() {
+        return conditionVal3;
+    }
+
+    public void setConditionVal3(String conditionVal3) {
+        this.conditionVal3 = conditionVal3;
     }
 
     public long getCerberus_featureflipping_websocketpushperiod() {
@@ -691,14 +781,6 @@ public class TestCaseExecution {
         this.browser = browser;
     }
 
-    public String getBrowserFullVersion() {
-        return browserFullVersion;
-    }
-
-    public void setBrowserFullVersion(String browserFullVersion) {
-        this.browserFullVersion = browserFullVersion;
-    }
-
     public String getBuild() {
         return build;
     }
@@ -827,6 +909,14 @@ public class TestCaseExecution {
         this.tag = tag;
     }
 
+    public Tag getTagObj() {
+        return tagObj;
+    }
+
+    public void setTagObj(Tag tagObj) {
+        this.tagObj = tagObj;
+    }
+
     public String getTest() {
         return test;
     }
@@ -883,12 +973,52 @@ public class TestCaseExecution {
         this.testCaseVersion = testCaseVersion;
     }
 
+    public int getTestCasePriority() {
+        return testCasePriority;
+    }
+
+    public void setTestCasePriority(int testCasePriority) {
+        this.testCasePriority = testCasePriority;
+    }
+
     public List<String> getVideos() {
         return videos;
     }
 
     public void setVideos(List<String> videos) {
         this.videos = videos;
+    }
+
+    public List<TestCaseExecutionQueueDep> getTestCaseExecutionQueueDepList() {
+        return testCaseExecutionQueueDepList;
+    }
+
+    public void setTestCaseExecutionQueueDep(List<TestCaseExecutionQueueDep> testCaseExecutionQueueDep) {
+        this.testCaseExecutionQueueDepList = testCaseExecutionQueueDep;
+    }
+
+    public Integer getRemoteProxyPort() {
+        return remoteProxyPort;
+    }
+
+    public void setRemoteProxyPort(Integer remoteProxyPort) {
+        this.remoteProxyPort = remoteProxyPort;
+    }
+
+    public String getRemoteProxyUUID() {
+        return remoteProxyUUID;
+    }
+
+    public void setRemoteProxyUUID(String remoteProxyUUID) {
+        this.remoteProxyUUID = remoteProxyUUID;
+    }
+
+    public String getRemoteProxyLastHarMD5() {
+        return remoteProxyLastHarMD5;
+    }
+
+    public void setRemoteProxyLastHarMD5(String remoteProxyLastHarMD5) {
+        this.remoteProxyLastHarMD5 = remoteProxyLastHarMD5;
     }
 
     /**
@@ -913,7 +1043,6 @@ public class TestCaseExecution {
             result.put("browser", this.getBrowser());
             result.put("version", this.getVersion());
             result.put("platform", this.getPlatform());
-            result.put("browserFullVersion", this.getBrowserFullVersion());
             result.put("start", this.getStart());
             result.put("end", this.getEnd());
             result.put("controlStatus", this.getControlStatus());
@@ -933,15 +1062,21 @@ public class TestCaseExecution {
             result.put("conditionOper", this.getConditionOper());
             result.put("conditionVal1Init", this.getConditionVal1Init());
             result.put("conditionVal2Init", this.getConditionVal2Init());
+            result.put("conditionVal3Init", this.getConditionVal3Init());
             result.put("conditionVal1", this.getConditionVal1());
             result.put("conditionVal2", this.getConditionVal2());
+            result.put("conditionVal3", this.getConditionVal3());
             result.put("userAgent", this.getUserAgent());
             result.put("queueId", this.getQueueID());
             result.put("manualExecution", this.getManualExecution());
             result.put("testCaseVersion", this.getTestCaseVersion());
             result.put("system", this.getSystem());
             result.put("robotDecli", this.getRobotDecli());
+            result.put("robotProvider", this.getRobotProvider());
+            result.put("robotSessionId", this.getRobotSessionID());
             result.put("videos", this.getVideos());
+            result.put("previousExeId", this.getPreviousExeId());
+            result.put("previousExeStatus", this.getPreviousExeStatus());
 
             if (withChilds) {
                 // Looping on ** Step **
@@ -953,10 +1088,24 @@ public class TestCaseExecution {
                 }
                 result.put("testCaseStepExecutionList", array);
 
+                array = new JSONArray();
+                if (this.getTestCaseExecutionQueueDepList() != null) {
+                    for (Object tceQDep : this.getTestCaseExecutionQueueDepList()) {
+                        array.put(((TestCaseExecutionQueueDep) tceQDep).toJson());
+                    }
+                }
+                result.put("testCaseExecutionQueueDepList", array);
+
                 // ** TestCase **
                 if (this.getTestCaseObj() != null) {
                     TestCase tc = this.getTestCaseObj();
                     result.put("testCaseObj", tc.toJson());
+                }
+
+                // ** Tag **
+                if (this.getTagObj() != null) {
+                    Tag tagO = this.getTagObj();
+                    result.put("tagObj", tagO.toJsonLight());
                 }
 
                 // Looping on ** Execution Data **

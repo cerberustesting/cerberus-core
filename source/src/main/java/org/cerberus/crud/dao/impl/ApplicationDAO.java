@@ -70,7 +70,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
     @Override
     public AnswerItem<Application> readByKey(String application) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Application> ans = new AnswerItem<>();
         Application result = null;
         final String query = "SELECT * FROM `application` app WHERE `application` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -131,8 +131,8 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public AnswerList<Application> readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<Application> readBySystemByCriteria(List<String> system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        AnswerList<Application> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Application> objectList = new ArrayList<Application>();
@@ -169,8 +169,9 @@ public class ApplicationDAO implements IApplicationDAO {
             searchSQL.append(" )");
         }
 
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System` = ? )");
+        if (system != null && !system.isEmpty()) {
+            searchSQL.append(" and ");
+            searchSQL.append(SqlUtil.generateInClause("`System`", system));
         }
         query.append(searchSQL);
 
@@ -209,8 +210,10 @@ public class ApplicationDAO implements IApplicationDAO {
                 for (String individualColumnSearchValue : individalColumnSearchValues) {
                     preStat.setString(i++, individualColumnSearchValue);
                 }
-                if (!StringUtil.isNullOrEmpty(system)) {
-                    preStat.setString(i++, system);
+                if (system != null && !system.isEmpty()) {
+                    for (String syst : system) {
+                        preStat.setString(i++, syst);
+                    }
                 }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -284,19 +287,22 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public AnswerItem<HashMap<String, HashMap<String, Integer>>> readTestCaseCountersBySystemByStatus(String system) {
-        AnswerItem response = new AnswerItem<>();
+    public AnswerItem<HashMap<String, HashMap<String, Integer>>> readTestCaseCountersBySystemByStatus(List<String> system) {
+        AnswerItem<HashMap<String, HashMap<String, Integer>>> response = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         StringBuilder query = new StringBuilder();
-        query.append("SELECT a.application as ApplicationName, inv.`value` as `Status`, count(inv.`value`) as CountStatus ");
+        query.append("SELECT a.system as SystemName, a.application as ApplicationName, inv.`value` as `Status`, count(inv.`value`) as CountStatus ");
         query.append("FROM application a ");
+        query.append("JOIN invariant isys ON isys.value=a.system and isys.idname='SYSTEM' ");
         query.append("inner join testcase tc on a.application = tc.application ");
         query.append("inner join invariant inv on tc.`Status` = inv.`value` ");
-        query.append("where a.system = ? ");
-        query.append("and inv.idname='TCSTATUS' and inv.gp1<>'N' ");
-        query.append("group by a.application, inv.`value` ");
+        query.append("where ");
+        query.append(SqlUtil.generateInClause("a.system", system));
+        query.append(" and inv.idname='TCSTATUS' and inv.gp1<>'N' ");
+        query.append("group by isys.sort asc, a.system, a.application, inv.`value` ");
+        query.append("order by isys.sort, a.system, a.application ");
 
         HashMap<String, HashMap<String, Integer>> result = new HashMap<String, HashMap<String, Integer>>();
 
@@ -308,7 +314,10 @@ public class ApplicationDAO implements IApplicationDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, system);
+                int i = 1;
+                for (String string : system) {
+                    preStat.setString(i++, string);
+                }
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -316,6 +325,7 @@ public class ApplicationDAO implements IApplicationDAO {
                     boolean has_data = false;
                     while (resultSet.next()) {
                         has_data = true;
+                        String sysName = resultSet.getString("SystemName");
                         String appName = resultSet.getString("ApplicationName");
                         String tcStatus = resultSet.getString("Status");
                         int countStatus = resultSet.getInt("CountStatus");
@@ -380,13 +390,12 @@ public class ApplicationDAO implements IApplicationDAO {
     public Answer create(Application object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`");
+        query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `poolSize`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`");
         query.append(", `mavengroupid`, `usrcreated` ) ");
         if (StringUtil.isNullOrEmpty(object.getDeploytype())) {
-            query.append("VALUES (?,?,?,?,?,?,?,?,?,null,?,?)");
-
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,null,?,?)");
         } else {
-            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         }
 
@@ -406,6 +415,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 preStat.setString(i++, object.getSystem());
                 preStat.setString(i++, object.getSubsystem());
                 preStat.setString(i++, object.getSvnurl());
+                preStat.setInt(i++, object.getPoolSize());
                 preStat.setString(i++, object.getBugTrackerUrl());
                 preStat.setString(i++, object.getBugTrackerNewUrl());
                 if (!StringUtil.isNullOrEmpty(object.getDeploytype())) {
@@ -494,7 +504,7 @@ public class ApplicationDAO implements IApplicationDAO {
         if (StringUtil.isNullOrEmpty(object.getDeploytype())) {
             object.setDeploytype(null);
         }
-        final String query = "UPDATE application SET Application = ?, description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, "
+        final String query = "UPDATE application SET Application = ?, description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, poolSize = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, "
                 + "deploytype = ?, mavengroupid = ?, dateModif = NOW(), usrModif= ?  WHERE Application = ?";
 
         // Debug message on SQL.
@@ -514,6 +524,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 preStat.setString(i++, object.getSystem());
                 preStat.setString(i++, object.getSubsystem());
                 preStat.setString(i++, object.getSvnurl());
+                preStat.setInt(i++, object.getPoolSize());
                 preStat.setString(i++, object.getBugTrackerUrl());
                 preStat.setString(i++, object.getBugTrackerNewUrl());
                 preStat.setString(i++, object.getDeploytype());
@@ -550,8 +561,8 @@ public class ApplicationDAO implements IApplicationDAO {
     @Override
     public AnswerList<String> readDistinctSystem() {
         MessageEvent msg;
-        AnswerList answer = new AnswerList<>();
-        List<String> result = new ArrayList<String>();
+        AnswerList<String> answer = new AnswerList<>();
+        List<String> result = new ArrayList<>();
         final String query = "SELECT DISTINCT a.system FROM application a ORDER BY a.system ASC";
 
         // Debug message on SQL.
@@ -622,6 +633,7 @@ public class ApplicationDAO implements IApplicationDAO {
         String system = ParameterParserUtil.parseStringParam(rs.getString("app.system"), "");
         String subsystem = ParameterParserUtil.parseStringParam(rs.getString("app.subsystem"), "");
         String svnUrl = ParameterParserUtil.parseStringParam(rs.getString("app.svnurl"), "");
+        int poolSize = ParameterParserUtil.parseIntegerParam(rs.getString("app.poolSize"), 0);
         String deployType = ParameterParserUtil.parseStringParam(rs.getString("app.deploytype"), "");
         String mavenGroupId = ParameterParserUtil.parseStringParam(rs.getString("app.mavengroupid"), "");
         String bugTrackerUrl = ParameterParserUtil.parseStringParam(rs.getString("app.bugtrackerurl"), "");
@@ -633,18 +645,18 @@ public class ApplicationDAO implements IApplicationDAO {
 
         //TODO remove when working in test with mockito and autowired
         factoryApplication = new FactoryApplication();
-        return factoryApplication.create(application, description, sort, type, system, subsystem, svnUrl, deployType, mavenGroupId,
+        return factoryApplication.create(application, description, sort, type, system, subsystem, svnUrl, poolSize, deployType, mavenGroupId,
                 bugTrackerUrl, bugTrackerNewUrl, usrCreated, dateCreated, usrModif, dateModif);
     }
 
     @Override
-    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 
@@ -653,8 +665,9 @@ public class ApplicationDAO implements IApplicationDAO {
         query.append(" as distinctValues FROM application ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System` = ? )");
+        if (system != null && !system.isEmpty()) {
+            searchSQL.append(" AND ");
+            searchSQL.append(SqlUtil.generateInClause("`System`", system));
         }
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -688,11 +701,13 @@ public class ApplicationDAO implements IApplicationDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(system)) {
-                preStat.setString(i++, system);
+            if (system != null && !system.isEmpty()) {
+                for (String string : system) {
+                    preStat.setString(i++, string);
+                }
             }
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -711,9 +726,9 @@ public class ApplicationDAO implements IApplicationDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-            	//gets the data
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
@@ -737,11 +752,11 @@ public class ApplicationDAO implements IApplicationDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 LOG.warn("Unable to execute query : " + e.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                         e.toString());
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",

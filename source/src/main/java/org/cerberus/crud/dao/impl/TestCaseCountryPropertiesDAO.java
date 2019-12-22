@@ -32,6 +32,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
+import org.cerberus.crud.utils.RequestDbUtils;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.dto.PropertyListDTO;
 import org.cerberus.dto.TestCaseListDTO;
@@ -74,61 +75,40 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) {
-        List<TestCaseCountryProperties> list = null;
-        final String query = "SELECT * FROM testcasecountryproperties WHERE test = ? AND testcase = ?";
+    public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) throws CerberusException {
+        final String query = "SELECT * FROM testcasecountryproperties tcp WHERE test = ? AND testcase = ? " ;
+        // TestCase dependency should only be used on testcasedataexecution.
+        // In other words, when a test case is linked to another testcase, it should have access to its data at execution level but should not inherit from testcase property definition.
+        // As a consequece this method should not return properties from dependencies.
+//                "OR exists (select 1 from  testcasedep  where DepTest = tcp.Test AND DepTestCase = tcp.TestCase AND Test = ? AND TestCase = ?)"; // Manage tc dependencies
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testcase);
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<TestCaseCountryProperties>();
-
-                    while (resultSet.next()) {
-                        String country = resultSet.getString("country");
-                        String property = resultSet.getString("property");
-                        String description = resultSet.getString("description");
-                        String type = resultSet.getString("type");
-                        String database = resultSet.getString("database");
-                        String value1 = resultSet.getString("value1");
-                        String value2 = resultSet.getString("value2");
-                        String length = resultSet.getString("length");
-                        int rowLimit = resultSet.getInt("rowLimit");
-                        String nature = resultSet.getString("nature");
-                        int retryNb = resultSet.getInt("RetryNb");
-                        int retryPeriod = resultSet.getInt("RetryPeriod");
-                        int cacheExpire = resultSet.getInt("CacheExpire");
-                        int rank = resultSet.getInt("Rank");
-                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature, retryNb, retryPeriod, cacheExpire, rank));
-
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+        return RequestDbUtils.executeQueryList(databaseSpring, query,
+                ps -> {
+                    ps.setString(1, test);
+                    ps.setString(2, testcase);
+                    //ps.setString(3, test);
+                    //ps.setString(4, testcase);
+                },
+                resultSet -> {
+                    String country = resultSet.getString("country");
+                    String property = resultSet.getString("property");
+                    String description = resultSet.getString("description");
+                    String type = resultSet.getString("type");
+                    String database = resultSet.getString("database");
+                    String value1 = resultSet.getString("value1");
+                    String value2 = resultSet.getString("value2");
+                    String length = resultSet.getString("length");
+                    int rowLimit = resultSet.getInt("rowLimit");
+                    String nature = resultSet.getString("nature");
+                    int retryNb = resultSet.getInt("RetryNb");
+                    int retryPeriod = resultSet.getInt("RetryPeriod");
+                    int cacheExpire = resultSet.getInt("CacheExpire");
+                    int rank = resultSet.getInt("Rank");
+                    return factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature, retryNb, retryPeriod, cacheExpire, rank);
                 }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn(exception.toString());
-            }
-        }
-        return list;
+        );
+
     }
 
     @Override
@@ -685,10 +665,10 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     }
 
     @Override
-    public AnswerList findTestCaseCountryPropertiesByValue1(int testDataLib, String name, String country, String propertyType) {
-        AnswerList ansList = new AnswerList<>();
+    public AnswerList<TestListDTO> findTestCaseCountryPropertiesByValue1(int testDataLib, String name, String country, String propertyType) {
+        AnswerList<TestListDTO> ansList = new AnswerList<>();
         MessageEvent rs;
-        List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();
+        List<TestListDTO> listOfTests = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("select count(*) as total, tccp.property, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application, ");
         query.append("tc.TcActive as Active, tc.`Group`, tc.UsrCreated, tc.`Status` ");

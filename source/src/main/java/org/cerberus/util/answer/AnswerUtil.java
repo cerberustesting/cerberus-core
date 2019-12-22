@@ -19,8 +19,12 @@
  */
 package org.cerberus.util.answer;
 
+import org.apache.logging.log4j.*;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
+
+import java.util.*;
 
 /**
  * Auxiliary class that provides methods related to error messages
@@ -28,6 +32,8 @@ import org.cerberus.enums.MessageEventEnum;
  * @author FNogueira
  */
 public class AnswerUtil {
+
+    private static final Logger LOG = LogManager.getLogger(AnswerUtil.class);
 
     private AnswerUtil() {
     }
@@ -82,4 +88,55 @@ public class AnswerUtil {
         return null; // That should never happen.
     }
 
+    @FunctionalInterface
+    public interface AnswerItemFunction<R> {
+
+        R apply() throws CerberusException;
+    }
+
+    @FunctionalInterface
+    public interface AnswerListFunction<R> {
+
+        List<R> apply() throws CerberusException;
+    }
+
+    public static <R> AnswerItem<R> convertToAnswerItem(AnswerItemFunction<R> answerFunction) {
+        AnswerItem<R> answer = new AnswerItem<>();
+        MessageEvent msg = null;
+        R result = null;
+        try {
+            result = answerFunction.apply();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK_GENERIC);
+        } catch (CerberusException exception) {
+            LOG.error("A CerberusException occured : " + exception.toString(), exception);
+            msg = new MessageEvent(exception.getMessageError().getCodeString(), exception.getMessageError().getDescription());
+        }
+
+        answer.setItem(result);
+        answer.setResultMessage(msg);
+
+        return answer;
+
+    }
+
+    public static <R> AnswerList<R> convertToAnswerList(AnswerListFunction<R> answerFunction) {
+        AnswerList<R> answer = new AnswerList<>();
+        MessageEvent msg = null;
+        List<R> result = null;
+
+        try {
+            result = answerFunction.apply();
+            answer.setTotalRows(result.size());
+            answer.setDataList(result);
+
+        } catch (CerberusException exception) {
+            LOG.error("A CerberusException occured : " + exception.toString(), exception);
+            msg = new MessageEvent(exception.getMessageError().getCodeString(), exception.getMessageError().getDescription());
+        }
+
+        answer.setResultMessage(msg);
+
+        return answer;
+
+    }
 }

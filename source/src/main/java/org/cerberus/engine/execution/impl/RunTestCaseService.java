@@ -19,7 +19,6 @@
  */
 package org.cerberus.engine.execution.impl;
 
-import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -60,13 +59,13 @@ public class RunTestCaseService implements IRunTestCaseService {
          *
          */
         try {
-            LOG.debug("Start Execution " + "__ID=" + tCExecution.getId());
+            LOG.debug("Start Execution " + "ID=" + tCExecution.getId());
             tCExecution = executionStartService.startExecution(tCExecution);
-            LOG.info("Execution Started : UUID=" + tCExecution.getExecutionUUID() + "__ID=" + tCExecution.getId());
+            LOG.info("Execution Started : UUID=" + tCExecution.getExecutionUUID() + " ID=" + tCExecution.getId());
 
         } catch (CerberusException ex) {
             tCExecution.setResultMessage(ex.getMessageError());
-            LOG.info("Execution not Launched : UUID=" + tCExecution.getExecutionUUID() + "__causedBy=" + ex.getMessageError().getDescription());
+            LOG.info("Execution not Launched : UUID=" + tCExecution.getExecutionUUID() + " causedBy=" + ex.getMessageError().getDescription());
             try {
                 // After every execution finished we try to trigger more from the queue;-).
                 executionThreadPoolService.executeNextInQueueAsynchroneously(false);
@@ -97,7 +96,7 @@ public class RunTestCaseService implements IRunTestCaseService {
                 }
             } catch (Exception ex) {
                 tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR));
-                LOG.warn("Execution stopped due to exception : UUID=" + tCExecution.getExecutionUUID() + "__causedBy=" + ex.toString(), ex);
+                LOG.warn("Execution stopped due to exception : UUID=" + tCExecution.getExecutionUUID() + " causedBy=" + ex.toString(), ex);
                 try {
                     // After every execution finished we try to trigger more from the queue;-).
                     executionThreadPoolService.executeNextInQueueAsynchroneously(false);

@@ -48,14 +48,18 @@ public interface IUserService {
 
     /**
      * @param user
-     * @return
      * @throws CerberusException
      */
     void insertUser(User user) throws CerberusException;
 
     /**
      * @param user
-     * @return
+     * @throws CerberusException
+     */
+    void insertUserNoAuth(User user) throws CerberusException;
+
+    /**
+     * @param user
      * @throws CerberusException
      */
     void deleteUser(User user) throws CerberusException;
@@ -100,7 +104,6 @@ public interface IUserService {
     /**
      *
      * @param user
-     * @param User
      * @return true if user exist. false if not.
      */
     boolean isUserExist(String user);
@@ -142,7 +145,7 @@ public interface IUserService {
      * @param login
      * @return
      */
-    AnswerItem readByKey(String login);
+    AnswerItem<User> readByKey(String login);
 
     /**
      *
@@ -154,7 +157,7 @@ public interface IUserService {
      * @param string
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    AnswerList<User> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *
@@ -166,7 +169,7 @@ public interface IUserService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<User> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *

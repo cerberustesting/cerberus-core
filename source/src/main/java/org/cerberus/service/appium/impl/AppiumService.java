@@ -24,6 +24,9 @@ import io.appium.java_client.MobileBy;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidElement;
+import io.appium.java_client.touch.WaitOptions;
+import io.appium.java_client.touch.offset.ElementOption;
+import io.appium.java_client.touch.offset.PointOption;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.Identifier;
@@ -35,20 +38,17 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.appium.IAppiumService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
+import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.geom.Line2D;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
+import java.time.Duration;
 import org.cerberus.engine.entity.SwipeAction.Direction;
 
 /**
@@ -79,7 +79,10 @@ public abstract class AppiumService implements IAppiumService {
         MessageEvent message;
         AppiumDriver driver = session.getAppiumDriver();
         String newContext = "";
+
+        @SuppressWarnings("unchecked")
         Set<String> contextNames = driver.getContextHandles();
+
         for (String contextName : contextNames) {
             LOG.error("Context : " + contextName);
             if (contextName.contains("WEBVIEW")) {
@@ -100,11 +103,11 @@ public abstract class AppiumService implements IAppiumService {
         try {
             if (!StringUtil.isNull(property)) {
                 WebElement elmt = this.getElement(session, identifier, false, false);
-                if(elmt instanceof MobileElement) {
+                if (elmt instanceof MobileElement) {
                     ((MobileElement) this.getElement(session, identifier, false, false)).setValue(property);
                 } else { // FIXME See if we can delete it ??
                     TouchAction action = new TouchAction(session.getAppiumDriver());
-                    action.press(this.getElement(session, identifier, false, false)).release().perform();
+                    action.press(ElementOption.element(this.getElement(session, identifier, false, false))).release().perform();
                     try {
                         Thread.sleep(3000);
                     } catch (InterruptedException e) {
@@ -138,9 +141,9 @@ public abstract class AppiumService implements IAppiumService {
             final TouchAction action = new TouchAction(session.getAppiumDriver());
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
                 final Coordinates coordinates = getCoordinates(identifier);
-                action.tap(coordinates.getX(), coordinates.getY()).perform();
+                action.tap(PointOption.point(coordinates.getX(), coordinates.getY())).perform();
             } else {
-                action.tap(getElement(session, identifier, false, false)).perform();
+                action.tap(ElementOption.element(getElement(session, identifier, false, false))).perform();
             }
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK).resolveDescription("ELEMENT", identifier.toString());
         } catch (NoSuchElementException e) {
@@ -221,6 +224,9 @@ public abstract class AppiumService implements IAppiumService {
         } else if (identifier.getIdentifier().equalsIgnoreCase("data-cerberus")) {
             return By.xpath("//*[@data-cerberus='" + identifier.getLocator() + "']");
 
+        } else if (identifier.getIdentifier().equalsIgnoreCase("accesibility-id")) {
+            return MobileBy.AccessibilityId(identifier.getLocator());
+
         } else {
             throw new NoSuchElementException(identifier.getIdentifier());
         }
@@ -268,7 +274,7 @@ public abstract class AppiumService implements IAppiumService {
                                 window.getWidth() / 2,
                                 2 * window.getHeight() / 3,
                                 0,
-                                - window.getHeight() / 3
+                                -window.getHeight() / 3
                         )
                 );
                 break;
@@ -287,7 +293,7 @@ public abstract class AppiumService implements IAppiumService {
                         new Line2D.Double(
                                 2 * window.getWidth() / 3,
                                 window.getHeight() / 2,
-                                - window.getWidth() / 3,
+                                -window.getWidth() / 3,
                                 0
                         )
                 );
@@ -328,9 +334,8 @@ public abstract class AppiumService implements IAppiumService {
             // check text
             if (element.getIdentifier().equals("text")) {
                 scrollDown(driver, By.xpath("//*[contains(@text,'" + element.getLocator() + "')]"), numberOfScrollDown);
-            }
-            else {
-                scrollDown(driver,this.getBy(element), numberOfScrollDown);
+            } else {
+                scrollDown(driver, this.getBy(element), numberOfScrollDown);
             }
 
             message.setDescription(message.getDescription().replace("%VALUE%", element.toString()));
@@ -346,6 +351,7 @@ public abstract class AppiumService implements IAppiumService {
 
     /**
      * Scroll down and stop when element is present
+     *
      * @param driver
      * @param element
      * @return
@@ -354,25 +360,26 @@ public abstract class AppiumService implements IAppiumService {
 
         int pressX = driver.manage().window().getSize().width / 2;
 
-        int bottomY = driver.manage().window().getSize().height * 4/5;
+        int bottomY = driver.manage().window().getSize().height * 4 / 5;
 
         int topY = driver.manage().window().getSize().height / 8;
 
         int i = 0;
 
-        do{
-            boolean isPresent = driver.findElements(element).size()>0;
-            if(isPresent){
+        do {
+            boolean isPresent = driver.findElements(element).size() > 0;
+            if (isPresent) {
                 Object elmtObj = driver.findElements(element).get(0);
 
-                if(elmtObj != null && ((MobileElement) elmtObj).isDisplayed())
+                if (elmtObj != null && ((MobileElement) elmtObj).isDisplayed()) {
                     return true;
+                }
+            } else {
+                scroll(driver, pressX, bottomY, pressX, topY);
             }
-            else{
-                scroll(driver, pressX, bottomY, pressX, topY);}
             i++;
 
-        } while(i <= numberOfScrollDown);
+        } while (i <= numberOfScrollDown);
 
         return false;
     }
@@ -380,9 +387,70 @@ public abstract class AppiumService implements IAppiumService {
     private void scroll(AppiumDriver driver, int fromX, int fromY, int toX, int toY) {
         TouchAction touchAction = new TouchAction(driver);
 
-        touchAction.longPress(fromX, fromY).moveTo(toX, toY).release().perform();
+        touchAction.longPress(PointOption.point(fromX, fromY)).moveTo(PointOption.point(toX, toY)).release().perform();
 
     }
 
     public abstract String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException;
+
+    public String getElementPosition(Session session, Identifier identifier) {
+        AppiumDriver driver = session.getAppiumDriver();
+
+        MobileElement element = (MobileElement) driver.findElement(this.getBy(identifier));
+        Point location = element.getLocation();
+
+        return location.getX() + ";" + location.getY();
+    }
+
+    @Override
+    public MessageEvent longPress(final Session session, final Identifier identifier, final Integer timeDuration) {
+        try {
+            final TouchAction action = new TouchAction(session.getAppiumDriver());
+            if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
+                final Coordinates coordinates = getCoordinates(identifier);
+                action.press(PointOption.point(coordinates.getX(), coordinates.getY())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(timeDuration))).release().perform();
+            } else {
+                action.press(ElementOption.element(getElement(session, identifier, false, false))).waitAction(WaitOptions.waitOptions(Duration.ofMillis(timeDuration))).release().perform();
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_LONG_CLICK).resolveDescription("ELEMENT", identifier.toString());
+        } catch (NoSuchElementException e) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(e.getMessage());
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_LONG_CLICK_NO_SUCH_ELEMENT).resolveDescription("ELEMENT", identifier.toString());
+        } catch (WebDriverException e) {
+            LOG.warn(e.getMessage());
+            return parseWebDriverException(e);
+        }
+
+    }
+
+    @Override
+    public MessageEvent clearField(final Session session, final Identifier identifier) {
+        try {
+            final TouchAction action = new TouchAction(session.getAppiumDriver());
+            if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
+                final Coordinates coordinates = getCoordinates(identifier);
+                click(session, identifier);
+            } else {
+                click(session, identifier);
+                //action.press(ElementOption.element(getElement(session, identifier, false, false))).waitAction(WaitOptions.waitOptions(Duration.ofMillis(8000))).release().perform();
+                //MobileElement element = (MobileElement) session.getAppiumDriver().findElementByAccessibilityId("SomeAccessibilityID");
+                //element.clear();
+                // WebElement elmt = this.getElement(session, identifier, false, false);
+                ((MobileElement) this.getElement(session, identifier, false, false)).clear();
+
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLEAR).resolveDescription("ELEMENT", identifier.toString());
+        } catch (NoSuchElementException e) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(e.getMessage());
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLEAR_NO_SUCH_ELEMENT).resolveDescription("ELEMENT", identifier.toString());
+        } catch (WebDriverException e) {
+            LOG.warn(e.getMessage());
+            return parseWebDriverException(e);
+        }
+
+    }
 }

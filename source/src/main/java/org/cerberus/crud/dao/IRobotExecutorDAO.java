@@ -52,6 +52,7 @@ public interface IRobotExecutorDAO {
      *
      * @param robot
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     List<RobotExecutor> readBestByKey(String robot) throws CerberusException;
 

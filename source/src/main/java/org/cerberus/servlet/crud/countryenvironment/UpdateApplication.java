@@ -104,6 +104,7 @@ public class UpdateApplication extends HttpServlet {
         String mavenGpID = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavengroupid"), "", charset);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
+        int poolSize = ParameterParserUtil.parseIntegerParam(request.getParameter("poolSize"), 0);
         String svnURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("svnurl"), "", charset);
         String bugTrackerURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerurl"), "", charset);
         String newBugURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackernewurl"), "", charset);
@@ -173,6 +174,7 @@ public class UpdateApplication extends HttpServlet {
                 applicationData.setMavengroupid(mavenGpID);
                 applicationData.setDeploytype(deployType);
                 applicationData.setSvnurl(svnURL);
+                applicationData.setPoolSize(poolSize);
                 applicationData.setBugTrackerUrl(bugTrackerURL);
                 applicationData.setBugTrackerNewUrl(newBugURL);
                 applicationData.setDescription(description);

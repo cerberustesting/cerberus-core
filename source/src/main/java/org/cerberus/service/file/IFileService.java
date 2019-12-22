@@ -20,7 +20,6 @@
 package org.cerberus.service.file;
 
 import java.util.HashMap;
-import java.util.List;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -36,5 +35,5 @@ public interface IFileService {
      * @param columnsToGet
      * @return
      */
-    AnswerList<List<HashMap<String, String>>> parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet);
+    AnswerList<HashMap<String, String>> parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet);
 }

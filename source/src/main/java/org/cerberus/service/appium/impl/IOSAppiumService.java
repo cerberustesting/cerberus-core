@@ -23,6 +23,10 @@ import io.appium.java_client.TouchAction;
 import io.appium.java_client.ios.IOSTouchAction;
 import java.time.Duration;
 import java.util.HashMap;
+
+import io.appium.java_client.touch.WaitOptions;
+import io.appium.java_client.touch.offset.ElementOption;
+import io.appium.java_client.touch.offset.PointOption;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.service.impl.ParameterService;
@@ -60,7 +64,7 @@ public class IOSAppiumService extends AppiumService {
 
     /**
      * The default Appium swipe duration if no
-     * {@link AppiumService#APPIUM_SWIPE_DURATION_PARAMETER} has been defined
+     * {@link AppiumService#CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER} has been defined
      */
     private static final int DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION = 2000;
 
@@ -155,8 +159,8 @@ public class IOSAppiumService extends AppiumService {
 
             // Do the swipe thanks to the Appium driver
             TouchAction dragNDrop
-                    = new TouchAction(session.getAppiumDriver()).press(direction.getX1(), direction.getY1()).waitAction(Duration.ofMillis(myduration))
-                            .moveTo(direction.getX2(), direction.getY2()).release();
+                    = new TouchAction(session.getAppiumDriver()).press(PointOption.point(direction.getX1(), direction.getY1())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(myduration)))
+                            .moveTo(PointOption.point(direction.getX2(), direction.getY2())).release();
             dragNDrop.perform();
 
 //            JavascriptExecutor js = (JavascriptExecutor) session.getAppiumDriver();

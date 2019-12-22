@@ -57,8 +57,8 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
     private DatabaseSpring databaseSpring;
 
     @Override
-    public AnswerItem readByKeyTech(int id) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<BuildRevisionParameters> readByKeyTech(int id) {
+        AnswerItem<BuildRevisionParameters> ans = new AnswerItem<>();
         BuildRevisionParameters result = null;
         final String query = "SELECT * FROM `buildrevisionparameters` WHERE `id` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -117,8 +117,8 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
     }
 
     @Override
-    public AnswerItem readLastBySystem(String system) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<BuildRevisionParameters> readLastBySystem(String system) {
+        AnswerItem<BuildRevisionParameters> ans = new AnswerItem<>();
         BuildRevisionParameters result = null;
         StringBuilder query = new StringBuilder();
 
@@ -188,8 +188,8 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
     }
 
     @Override
-    public AnswerItem readByVarious2(String build, String revision, String release, String application) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<BuildRevisionParameters> readByVarious2(String build, String revision, String release, String application) {
+        AnswerItem<BuildRevisionParameters> ans = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         BuildRevisionParameters result = null;
@@ -252,14 +252,14 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
     }
 
     @Override
-    public AnswerList readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount,
+    public AnswerList<BuildRevisionParameters> readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount,
             String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+        AnswerList<BuildRevisionParameters> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<BuildRevisionParameters> brpList = new ArrayList<BuildRevisionParameters>();
+        List<BuildRevisionParameters> brpList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
@@ -433,11 +433,11 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
     }
 
     @Override
-    public AnswerList readMaxSVNReleasePerApplication(String system, String build, String revision, String lastBuild, String lastRevision) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<BuildRevisionParameters> readMaxSVNReleasePerApplication(String system, String build, String revision, String lastBuild, String lastRevision) {
+        AnswerList<BuildRevisionParameters> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<BuildRevisionParameters> brpList = new ArrayList<BuildRevisionParameters>();
+        List<BuildRevisionParameters> brpList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
@@ -574,11 +574,11 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
     }
 
     @Override
-    public AnswerList readNonSVNRelease(String system, String build, String revision, String lastBuild, String lastRevision) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<BuildRevisionParameters> readNonSVNRelease(String system, String build, String revision, String lastBuild, String lastRevision) {
+        AnswerList<BuildRevisionParameters> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<BuildRevisionParameters> brpList = new ArrayList<BuildRevisionParameters>();
+        List<BuildRevisionParameters> brpList = new ArrayList<>();
         BuildRevisionParameters brpItem = null;
         StringBuilder searchSQL = new StringBuilder();
 
@@ -907,8 +907,8 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();

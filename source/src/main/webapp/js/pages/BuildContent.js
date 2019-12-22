@@ -17,6 +17,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+var currentSystem = getUser().defaultSystem;
+var urlBuild = "";
+var urlRevision = "";
+var urlApplication = "";
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
@@ -30,34 +36,36 @@ $.when($.getScript("js/global/global.js")).then(function () {
 function initPage() {
     displayPageLabel();
 
-    var urlBuild = GetURLParameter('build', 'ALL'); // Feed Build combo with Build list.
-    var urlRevision = GetURLParameter('revision', 'ALL'); // Feed Revision combo with Revision list.
-    var urlApplication = GetURLParameter('application', 'ALL');
+    urlBuild = GetURLParameter('build', 'ALL'); // Feed Build combo with Build list.
+    urlRevision = GetURLParameter('revision', 'ALL'); // Feed Revision combo with Revision list.
+    urlApplication = GetURLParameter('application', 'ALL');
 
-    // Filter combo
-    displayBuildList('#selectBuild', getUser().defaultSystem, "1", urlBuild, "Y", "Y", true);
-    displayBuildList('#selectRevision', getUser().defaultSystem, "2", urlRevision, "Y", "Y", true);
+    loadCombo();
 
-    // Combo in install instruction Modal
-    displayBuildList('#selectBuildFrom', getUser().defaultSystem, "1", urlBuild, "N", "N", false);
-    displayBuildList('#selectRevisionFrom', getUser().defaultSystem, "2", urlRevision, "N", "Y", false);
-    displayBuildList('#selectBuildTo', getUser().defaultSystem, "1", urlBuild, "N", "N", false);
-    displayBuildList('#selectRevisionTo', getUser().defaultSystem, "2", urlRevision, "N", "N", false);
-
-    // Add and edit Modal combo
-    displayBuildList('#addBuild', getUser().defaultSystem, "1", urlBuild, "N", "Y", false);
-    displayBuildList('#addRevision', getUser().defaultSystem, "2", urlRevision, "N", "Y", false);
-    displayBuildList('#editBuild', getUser().defaultSystem, "1", urlBuild, "N", "Y", false);
-    displayBuildList('#editRevision', getUser().defaultSystem, "2", urlRevision, "N", "Y", false);
-
-    // Mass Action Modal combo
-    displayBuildList('#massBuild', getUser().defaultSystem, "1", null, "N", "Y", false);
-    displayBuildList('#massRevision', getUser().defaultSystem, "2", null, "N", "Y", false);
-
-    // Feed Application combo with Application list.
+    displayInvariantList('system', "SYSTEM", false, getUser().defaultSystem);
     var select = $('#selectApplication');
+    select.empty();
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
-    displayApplicationList("application", getUser().defaultSystem, urlApplication);
+    displayApplicationList("application", currentSystem, urlApplication, undefined);
+
+    $("#selectSystem").on('change', function (data) {
+        console.info($("#selectSystem").val());
+//        var jqxhr = $.getJSON("ReadApplication", "application=" + $("#selectApplication").val());
+//        $.when(jqxhr).then(function (result) {
+//            console.info(result["contentTable"].system);
+        if (currentSystem !== $("#selectSystem").val()) {
+            currentSystem = $("#selectSystem").val();
+
+            // Feed Application combo with Application list.
+            var select = $('#selectApplication');
+            select.empty();
+            select.append($('<option></option>').text("-- ALL --").val("ALL"));
+            displayApplicationList("application", currentSystem, urlApplication, undefined);
+
+            loadCombo();
+        }
+//        }).fail(handleErrorAjaxAfterTimeout);
+    });
 
     displayProjectList("project");
     displayUserList("releaseowner");
@@ -65,11 +73,11 @@ function initPage() {
     var table = loadBCTable(urlBuild, urlRevision, urlApplication);
     // React on table redraw
     table.on(
-        'draw.dt',
-        function () {
-            // Un-check the select all checkbox
-            $('#selectAll')[0].checked = false;
-        }
+            'draw.dt',
+            function () {
+                // Un-check the select all checkbox
+                $('#selectAll')[0].checked = false;
+            }
     );
 
     // handle the click for specific action buttons
@@ -84,6 +92,32 @@ function initPage() {
     $('#massActionBrpModal').on('hidden.bs.modal', massActionModalCloseHandler);
 
     $('#listInstallInstructions').on('hidden.bs.modal', listInstallInstructionsModalCloseHandler);
+}
+
+function loadCombo() {
+    // Filter combo
+    $('#selectBuild').empty();
+    $('#selectRevision').empty();
+
+    displayBuildList('#selectBuild', currentSystem, "1", urlBuild, "Y", "Y", true);
+    displayBuildList('#selectRevision', currentSystem, "2", urlRevision, "Y", "Y", true);
+
+    // Combo in install instruction Modal
+    displayBuildList('#selectBuildFrom', currentSystem, "1", urlBuild, "N", "N", false);
+    displayBuildList('#selectRevisionFrom', currentSystem, "2", urlRevision, "N", "Y", false);
+    displayBuildList('#selectBuildTo', currentSystem, "1", urlBuild, "N", "N", false);
+    displayBuildList('#selectRevisionTo', currentSystem, "2", urlRevision, "N", "N", false);
+
+    // Add and edit Modal combo
+    displayBuildList('#addBuild', currentSystem, "1", urlBuild, "N", "Y", false);
+    displayBuildList('#addRevision', currentSystem, "2", urlRevision, "N", "Y", false);
+    displayBuildList('#editBuild', currentSystem, "1", urlBuild, "N", "Y", false);
+    displayBuildList('#editRevision', currentSystem, "2", urlRevision, "N", "Y", false);
+
+    // Mass Action Modal combo
+    displayBuildList('#massBuild', currentSystem, "1", null, "N", "Y", false);
+    displayBuildList('#massRevision', currentSystem, "2", null, "N", "Y", false);
+
 }
 
 function displayPageLabel() {
@@ -172,7 +206,7 @@ function loadBCTable(selectBuild, selectRevision, selectApplication) {
                                             </table><div class="marginBottom20"></div>');
 
     //configure and create the dataTable
-    var contentUrl = "ReadBuildRevisionParameters?system=" + getUser().defaultSystem;
+    var contentUrl = "ReadBuildRevisionParameters?system=" + currentSystem;
     if (selectRevision !== 'ALL') {
         contentUrl += "&revision=" + selectRevision;
     }
@@ -240,7 +274,7 @@ function setLatest() {
     var myRevision = "";
 
     // We get the last build revision from ReadBuildRevisionParameters servlet with getlast parameter.
-    var param = "getlast=&system=" + getUser().defaultSystem;
+    var param = "getlast=&system=" + currentSystem;
     var jqxhr = $.get("ReadBuildRevisionParameters", param, "json");
 
     $.when(jqxhr).then(function (data) {
@@ -482,10 +516,10 @@ function refreshlistInstallInstructions() {
 
     var URL2param = "";
     if (selectRevisionFrom === 'NONE') {
-        URL2param = "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom
+        URL2param = "system=" + currentSystem + "&lastbuild=" + selectBuildFrom
                 + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getSVNRelease";
     } else {
-        URL2param = "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom + "&lastrevision=" + selectRevisionFrom
+        URL2param = "system=" + currentSystem + "&lastbuild=" + selectBuildFrom + "&lastrevision=" + selectRevisionFrom
                 + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getSVNRelease";
     }
     var jqxhr = $.getJSON("ReadBuildRevisionParameters", URL2param);
@@ -498,10 +532,10 @@ function refreshlistInstallInstructions() {
 
     var URL1param = "";
     if (selectRevisionFrom === 'NONE') {
-        URL1param = "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom
+        URL1param = "system=" + currentSystem + "&lastbuild=" + selectBuildFrom
                 + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getNonSVNRelease";
     } else {
-        URL1param = "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom + "&lastrevision=" + selectRevisionFrom
+        URL1param = "system=" + currentSystem + "&lastbuild=" + selectBuildFrom + "&lastrevision=" + selectRevisionFrom
                 + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getNonSVNRelease";
     }
     var jqxhr = $.getJSON("ReadBuildRevisionParameters", URL1param);
@@ -539,14 +573,14 @@ function displayInstallInstructions() {
 
         var formEdit = $('#listInstallInstructions');
 
-        var jqxhr = $.getJSON("ReadBuildRevisionParameters", "system=" + getUser().defaultSystem + "&build=" + selectBuild + "&revision=" + selectRevision + "&getSVNRelease");
+        var jqxhr = $.getJSON("ReadBuildRevisionParameters", "system=" + currentSystem + "&build=" + selectBuild + "&revision=" + selectRevision + "&getSVNRelease");
         $.when(jqxhr).then(function (result) {
             $.each(result["contentTable"], function (idx, obj) {
                 appendNewInstallRow(obj.build, obj.revision, obj.application, obj.release, "", obj.mavenVersion);
             });
         }).fail(handleErrorAjaxAfterTimeout);
 
-        var jqxhr = $.getJSON("ReadBuildRevisionParameters", "system=" + getUser().defaultSystem + "&build=" + selectBuild + "&revision=" + selectRevision + "&getNonSVNRelease");
+        var jqxhr = $.getJSON("ReadBuildRevisionParameters", "system=" + currentSystem + "&build=" + selectBuild + "&revision=" + selectRevision + "&getNonSVNRelease");
         $.when(jqxhr).then(function (result) {
             $.each(result["contentTable"], function (idx, obj) {
                 appendNewInstallRow(obj.build, obj.revision, obj.application, obj.release, obj.link, "");
@@ -669,7 +703,8 @@ function refreshTable() {
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": null,
+        {
+            "data": null,
             "title": '<input id="selectAll" title="' + doc.getDocLabel("page_global", "tooltip_massAction") + '" type="checkbox"></input>',
             "bSortable": false,
             "sWidth": "30px",
@@ -688,7 +723,8 @@ function aoColumnsFunc(tableId) {
 
             }
         },
-        {"data": null,
+        {
+            "data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "sWidth": "80px",
@@ -715,38 +751,57 @@ function aoColumnsFunc(tableId) {
 
             }
         },
-        {"data": "build",
+        {
+            "data": "build",
             "sName": "build",
             "sWidth": "70px",
-            "title": doc.getDocOnline("buildrevisionparameters", "Build")},
-        {"data": "revision",
+            "title": doc.getDocOnline("buildrevisionparameters", "Build")
+        },
+        {
+            "data": "revision",
             "sName": "revision",
             "sWidth": "70px",
-            "title": doc.getDocOnline("buildrevisionparameters", "Revision")},
-        {"data": "release",
+            "title": doc.getDocOnline("buildrevisionparameters", "Revision")
+        },
+        {
+            "data": "release",
             "sName": "release",
             "sWidth": "100px",
-            "title": doc.getDocOnline("buildrevisionparameters", "Release")},
-        {"data": "application",
+            "title": doc.getDocOnline("buildrevisionparameters", "Release")
+        },
+        {
+            "data": "application",
             "sName": "application",
             "sWidth": "130px",
-            "title": doc.getDocOnline("buildrevisionparameters", "application")},
-        {"data": "project",
+            "title": doc.getDocOnline("buildrevisionparameters", "application")
+        },
+        {
+            "data": "project",
+            "visible": false,
             "sName": "project",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "project")},
-        {"data": "ticketIdFixed",
-            "like":true,
+            "title": doc.getDocOnline("buildrevisionparameters", "project")
+        },
+        {
+            "data": "ticketIdFixed",
+            "visible": false,
+            "like": true,
             "sName": "ticketIdFixed",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "TicketIDFixed")},
-        {"data": "bugIdFixed",
-            "like":true,
+            "title": doc.getDocOnline("buildrevisionparameters", "TicketIDFixed")
+        },
+        {
+            "data": "bugIdFixed",
+            "visible": false,
+            "like": true,
             "sName": "bugIdFixed",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "BugIDFixed")},
-        {"data": "link",
-            "like":true,
+            "title": doc.getDocOnline("buildrevisionparameters", "BugIDFixed")
+        },
+        {
+            "data": "link",
+            "visible": false,
+            "like": true,
             "sName": "link",
             "sWidth": "250px",
             "title": doc.getDocOnline("buildrevisionparameters", "Link"),
@@ -754,44 +809,66 @@ function aoColumnsFunc(tableId) {
                 return drawURL(data);
             }
         },
-        {"data": "releaseOwner",
+        {
+            "data": "releaseOwner",
             "sName": "releaseOwner",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "ReleaseOwner")},
-        {"data": "subject",
+            "title": doc.getDocOnline("buildrevisionparameters", "ReleaseOwner")
+        },
+        {
+            "data": "subject",
             "sName": "subject",
             "sWidth": "500px",
-            "title": doc.getDocOnline("buildrevisionparameters", "subject")},
-        {"data": "datecre",
+            "title": doc.getDocOnline("buildrevisionparameters", "subject")
+        },
+        {
+            "data": "datecre",
+            "visible": false,
             "sName": "datecre",
-            "like":true,
+            "like": true,
             "sWidth": "150px",
-            "title": doc.getDocOnline("buildrevisionparameters", "datecre")},
-        {"data": "jenkinsBuildId",
-            "like":true,
+            "title": doc.getDocOnline("buildrevisionparameters", "datecre")
+        },
+        {
+            "data": "jenkinsBuildId",
+            "visible": false,
+            "like": true,
             "sName": "jenkinsBuildId",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "jenkinsBuildId")},
-        {"data": "mavenGroupId",
-            "like":true,
+            "title": doc.getDocOnline("buildrevisionparameters", "jenkinsBuildId")
+        },
+        {
+            "data": "mavenGroupId",
+            "visible": false,
+            "like": true,
             "sName": "mavenGroupId",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "mavenGroupId")},
-        {"data": "mavenArtifactId",
-            "like":true,	
+            "title": doc.getDocOnline("buildrevisionparameters", "mavenGroupId")
+        },
+        {
+            "data": "mavenArtifactId",
+            "visible": false,
+            "like": true,
             "sName": "mavenArtifactId",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "mavenArtifactId")},
-        {"data": "mavenVersion",
-            "like":true,	
+            "title": doc.getDocOnline("buildrevisionparameters", "mavenArtifactId")
+        },
+        {
+            "data": "mavenVersion",
+            "visible": false,
+            "like": true,
             "sName": "mavenVersion",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "mavenVersion")},
-        {"data": "repositoryUrl",
-            "like":true,
+            "title": doc.getDocOnline("buildrevisionparameters", "mavenVersion")
+        },
+        {
+            "data": "repositoryUrl",
+            "visible": false,
+            "like": true,
             "sName": "repositoryUrl",
             "sWidth": "200px",
-            "title": doc.getDocOnline("buildrevisionparameters", "repositoryUrl")}
+            "title": doc.getDocOnline("buildrevisionparameters", "repositoryUrl")
+        }
     ];
     return aoColumns;
 }

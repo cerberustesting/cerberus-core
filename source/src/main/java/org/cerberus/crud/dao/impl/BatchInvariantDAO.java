@@ -116,7 +116,7 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
     }
 
     @Override
-    public AnswerList<BatchInvariant> readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<BatchInvariant> readBySystemByCriteria(List<String> system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList<BatchInvariant> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -145,9 +145,11 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
             }
             searchSQL.append(" )");
         }
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System` = ? )");
+        if (system != null && !system.isEmpty()) {
+            searchSQL.append(" and ");
+            searchSQL.append(SqlUtil.generateInClause("`System`", system));
         }
+
         query.append(searchSQL);
 
         if (!StringUtil.isNullOrEmpty(column)) {
@@ -177,8 +179,10 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
                 for (String individualColumnSearchValue : individalColumnSearchValues) {
                     preStat.setString(i++, individualColumnSearchValue);
                 }
-                if (!StringUtil.isNullOrEmpty(system)) {
-                    preStat.setString(i++, system);
+                if (system != null && !system.isEmpty()) {
+                    for (String sys : system) {
+                        preStat.setString(i++, sys);
+                    }
                 }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -357,7 +361,7 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                int i=1;
+                int i = 1;
                 preStat.setString(i++, object.getBatch());
                 preStat.setString(i++, object.getDescription());
                 preStat.setString(i++, object.getSystem());
@@ -389,19 +393,9 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
         return new Answer(msg);
     }
 
-    private BatchInvariant loadFromResultSet(ResultSet rs) throws SQLException {
-        String system = ParameterParserUtil.parseStringParam(rs.getString("System"), "");
-        String batch = ParameterParserUtil.parseStringParam(rs.getString("Batch"), "");
-        String description = ParameterParserUtil.parseStringParam(rs.getString("Description"), "");
-
-        //TODO remove when working in test with mockito and autowired
-        factoryBatchInvariant = new FactoryBatchInvariant();
-        return factoryBatchInvariant.create(system, batch, description);
-    }
-
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchTerm,  Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
@@ -415,8 +409,9 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
         query.append(" as distinctValues FROM batchinvariant ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System` = ? )");
+        if (system != null && !system.isEmpty()) {
+            searchSQL.append(" and ");
+            searchSQL.append(SqlUtil.generateInClause("`System`", system));
         }
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -442,11 +437,13 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(system)) {
-                preStat.setString(i++, system);
+            if (system != null && !system.isEmpty()) {
+                for (String sys : system) {
+                    preStat.setString(i++, sys);
+                }
             }
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -457,10 +454,10 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-            	//gets the data
-            	while (resultSet.next()) {
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
+                while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
 
@@ -483,7 +480,7 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
@@ -501,6 +498,16 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
         answer.setResultMessage(msg);
         answer.setDataList(distinctValues);
         return answer;
+    }
+
+    private BatchInvariant loadFromResultSet(ResultSet rs) throws SQLException {
+        String system = ParameterParserUtil.parseStringParam(rs.getString("System"), "");
+        String batch = ParameterParserUtil.parseStringParam(rs.getString("Batch"), "");
+        String description = ParameterParserUtil.parseStringParam(rs.getString("Description"), "");
+
+        //TODO remove when working in test with mockito and autowired
+        factoryBatchInvariant = new FactoryBatchInvariant();
+        return factoryBatchInvariant.create(system, batch, description);
     }
 
 }

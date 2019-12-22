@@ -22,6 +22,8 @@ package org.cerberus.crud.entity;
 import java.sql.Timestamp;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class TestCaseExecutionQueueDep {
 
@@ -38,6 +40,7 @@ public class TestCaseExecutionQueueDep {
     private Timestamp releaseDate;
     private String comment;
     private long exeId;
+    private long queueId;
     private String usrCreated;
     private Timestamp dateCreated;
     private String usrModif;
@@ -158,6 +161,14 @@ public class TestCaseExecutionQueueDep {
         this.exeId = exeId;
     }
 
+    public long getQueueId() {
+        return queueId;
+    }
+
+    public void setQueueId(long queueId) {
+        this.queueId = queueId;
+    }
+
     public String getUsrCreated() {
         return usrCreated;
     }
@@ -188,6 +199,40 @@ public class TestCaseExecutionQueueDep {
 
     public void setDateModif(Timestamp dateModif) {
         this.dateModif = dateModif;
+    }
+    /**
+     * Convert the current TestCaseExecution into JSON format
+     *
+     * @return TestCaseExecution in JSONObject format
+     */
+    public JSONObject toJson() {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("id", this.getId());
+            result.put("exeQueueId", this.getExeQueueId());
+            result.put("comment", this.getComment());
+            result.put("releaseDate", this.getReleaseDate());
+            result.put("country", this.getCountry());
+            result.put("dateCreated", this.getDateCreated());
+            result.put("dateModif", this.getDateModif());
+            result.put("depEvent", this.getDepEvent());
+            result.put("depTest", this.getDepTest());
+            result.put("depTestCase", this.getDepTestCase());
+            result.put("environment", this.getEnvironment());
+            result.put("exeId", this.getExeId());
+            result.put("queueId", this.getQueueId());
+            result.put("status", this.getStatus());
+            result.put("tag", this.getTag());
+            result.put("type", this.getType());
+            result.put("usrCreated", this.getUsrCreated());
+            result.put("usrModif", this.getUsrModif());
+
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        } catch (Exception ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return result;
     }
 
 }

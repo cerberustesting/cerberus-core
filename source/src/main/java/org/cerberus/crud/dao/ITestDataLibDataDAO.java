@@ -19,9 +19,6 @@
  */
 package org.cerberus.crud.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -40,14 +37,14 @@ public interface ITestDataLibDataDAO {
      * @param subData
      * @return
      */
-    AnswerItem readByKey(Integer testDataLibID, String subData);
+    AnswerItem<TestDataLibData> readByKey(Integer testDataLibID, String subData);
 
     /**
      *
      * @param testDataLibDataID
      * @return
      */
-    AnswerItem readByKeyTech(Integer testDataLibDataID);
+    AnswerItem<TestDataLibData> readByKeyTech(Integer testDataLibDataID);
 
     /**
      *
@@ -57,7 +54,7 @@ public interface ITestDataLibDataDAO {
      * @param columnPositionEmpty
      * @return
      */
-    AnswerList readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String columnPositionEmpty);
+    AnswerList<TestDataLibData> readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String columnPositionEmpty);
 
     /**
      *
@@ -75,7 +72,7 @@ public interface ITestDataLibDataDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
+    AnswerList<TestDataLibData> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
 
     /**
      * Finds all subdata entries (testdatalibdata) that are associated with an
@@ -84,7 +81,7 @@ public interface ITestDataLibDataDAO {
      * @param testDataLibName - entry name used to filter the subdata entries
      * @return Answer indicating the status of the operation
      */
-    AnswerList readByName(String testDataLibName);
+    AnswerList<TestDataLibData> readByName(String testDataLibName);
 
     /**
      *

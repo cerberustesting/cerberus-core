@@ -20,11 +20,14 @@
 package org.cerberus.servlet.crud.test.testcase;
 
 import com.google.common.base.Strings;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
+import org.json.JSONException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -33,10 +36,63 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public abstract class AbstractCrudTestCase extends HttpServlet {
 
     private WebApplicationContext springContext;
+
+    private static final Logger LOG = LogManager.getLogger(AbstractCrudTestCase.class);
+
+    protected abstract void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, CerberusException, JSONException;
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            processRequest(request, response);
+        } catch (CerberusException | JSONException ex) {
+            LOG.warn(ex, ex);
+        } // FIXME where Exception is managed ?
+    }
+
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            processRequest(request, response);
+        } catch (CerberusException | JSONException ex) {
+            LOG.warn(ex, ex);
+        }
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }
+
     @Override
     public void init(final ServletConfig config) throws ServletException {
         super.init(config);
@@ -45,12 +101,10 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
         beanFactory.autowireBean(this);
     }
 
-
     protected TestCase getTestCaseFromRequest(HttpServletRequest request, TestCase tc) throws CerberusException {
         try {
 
             String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
-
 
             // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
             tc.setImplementer(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("implementer"), tc.getImplementer(), charset));
@@ -63,7 +117,6 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             } else {
                 tc.setProject(tc.getProject());
             }
-
 
             tc.setApplication(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), tc.getApplication(), charset));
             tc.setActiveQA(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeQA"), tc.getActiveQA(), charset));
@@ -87,20 +140,22 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             tc.setBugID(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugId"), tc.getBugID(), charset));
             tc.setComment(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("comment"), tc.getComment(), charset));
             tc.setFunction(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("function"), tc.getFunction(), charset));
+            tc.setUserAgent(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("userAgent"), tc.getUserAgent(), charset));
             tc.setScreenSize(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("screenSize"), tc.getScreenSize(), charset));
             tc.setHowTo(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("howTo"), tc.getHowTo(), charset));
             tc.setBehaviorOrValueExpected(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("behaviorOrValueExpected"), tc.getBehaviorOrValueExpected(), charset));
-
 
             // TODO verify, this setteer was not call on "create test case"
             tc.setConditionOper(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("conditionOper"), tc.getConditionOper(), charset));
             // Parameter that we cannot secure as we need the html --> We DECODE them
             tc.setConditionVal1(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionVal1"), tc.getConditionVal1(), charset));
             tc.setConditionVal2(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionVal2"), tc.getConditionVal2(), charset));
+            tc.setConditionVal3(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionVal3"), tc.getConditionVal3(), charset));
 
             return tc;
         } catch (UnsupportedOperationException e) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR), e);
         }
     }
+
 }

@@ -1,0 +1,27 @@
+*Bug fixes*
+[square]
+* Filter in runtest page issue
+* Robot update issue
+* Various improvements and bug fixes on dependency management.
+* fixed issue when saving userAgent #2012
+
+*Improvements / New features*
+[square]
+* Scheduled campaign with Quartz cron expression through campaign modal. You can now schedule your campaign directly inside Cerberus #1932
+* When defining a campaign or selecting a list of testcase from runtest page, Label selection automaticly select all child labels in order to get the list of testcases. #1962
+* Labels selection on testcase modal is now done from a hierarchy tree (that gives more visibility on label structure when sorting a testcase). #1972
+* Execution Cels in reportingbytag page now also display previous execution when current one is in PE or QU state. That allow to start analysing a test case where some retries are necessary before a campaign finish to execute #1983 
+* Better integration with Browserstack service. Session Id is now displayed in detail execution page with button in order to reach browserstack page. Build and project are feed automaticly from Tag and Application name. Execution name can also be configured thanks to parameter cerberus_browserstack_defaultexename. At the end of the execution, status is updated into browserstack automaticly. #1956
+* Better integration with Kobiton service.  Session Id is now displayed in detail execution page with button in order to reach Kobiton detail execution page. Session name and Session description are feed automaticly from parameters cerberus_kobiton_defaultsessionname and cerberus_kobiton_defaultsessiondescription.
+* For new users, by default, Cerberus will only display important columns on tables. All columns can still be added by using button 'Display/Hide Columns'.
+* New tab inside detail execution page and execution queue modal that display the dependency status and release timings. #1970
+* Rerun some execution from ReportByTag page can now be done including the associated dependencies. Using this new button, Cerberus will automaticly reruns all the dependent testcases before the requested one. #2003
+* A lot of UI responsive improvements for small screens on many modals.
+* Parameter caching (for 60s) in order to reduce SQL stress.
+* Added to configure takeScreenshot control in order to allow crop of the screenshot taken. Allow to remove left, right, top or bottom side of the screen in order to remove taskbar or header and get cleaner screenshots for release process. #2019
+* Allow to define if a text control is CaseSensitive or not. #1960
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* SQL 1422 and 1435 to 1438  can be quite long on database with large amount of executions (new column on testcaseexecution tables).
+* if you installed Cerberus on a multi instance environment, the parameter caching feature may slow down by 60 seconds the time for a parameter change to be considered.

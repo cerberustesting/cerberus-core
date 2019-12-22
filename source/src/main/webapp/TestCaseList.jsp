@@ -32,6 +32,7 @@
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
+        <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseList.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
         <title id="pageTitle">Test Case List</title>
@@ -43,6 +44,7 @@
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/transversalobject/TestCase.html"%>
             <%@ include file="include/pages/testcaselist/massActionTestCase.html"%>
+            <%@ include file="include/pages/testcaselist/importTestCase.html"%>
 
             <h1 class="page-title-line" id="title">Test Case List</h1>
 

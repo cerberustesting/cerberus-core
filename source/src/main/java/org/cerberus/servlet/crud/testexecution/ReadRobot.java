@@ -197,9 +197,9 @@ public class ReadRobot extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findRobotList(boolean withCaps, boolean withExecutors, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findRobotList(boolean withCaps, boolean withExecutors, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         robotService = appContext.getBean(RobotService.class);
 
@@ -227,7 +227,7 @@ public class ReadRobot extends HttpServlet {
             }
         }
 
-        AnswerList resp = robotService.readByCriteria(withCaps, withExecutors, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<Robot> resp = robotService.readByCriteria(withCaps, withExecutors, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -246,8 +246,8 @@ public class ReadRobot extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findRobotByKeyTech(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findRobotByKeyTech(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         IRobotService libService = appContext.getBean(IRobotService.class);
@@ -269,8 +269,8 @@ public class ReadRobot extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findRobotByKey(String robot, ApplicationContext appContext, HttpServletRequest request) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findRobotByKey(String robot, ApplicationContext appContext, HttpServletRequest request) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         robotService = appContext.getBean(IRobotService.class);
@@ -292,7 +292,7 @@ public class ReadRobot extends HttpServlet {
                 item.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             }
         } catch (CerberusException e) {
-            item.setItem(robot);
+            item.setItem(null);
             item.setResultMessage(new MessageEvent(e.getMessageError().getCodeString(), e.getMessageError().getDescription()));
         }
 
@@ -310,8 +310,8 @@ public class ReadRobot extends HttpServlet {
         return robot.toJson(true, true);
     }
 
-    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         robotService = appContext.getBean(RobotService.class);

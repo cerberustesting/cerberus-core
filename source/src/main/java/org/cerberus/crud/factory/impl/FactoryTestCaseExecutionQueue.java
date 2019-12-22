@@ -33,9 +33,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQueue {
-    
+
     private static final long NEW_ENTRY_INDEX = -1;
-    
+
     @Override
     public TestCaseExecutionQueue create(long id, String system, String test, String testCase, String country, String environment, String robot, String robotDecli, String robotIP, String robotPort,
             String browser, String browserVersion, String platform, String screenSize, int manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL,
@@ -86,7 +86,7 @@ public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQ
             throw new FactoryCreationException("Unable to create a TestCaseExecutionInQueue instance", ise);
         }
     }
-    
+
     @Override
     public TestCaseExecutionQueue create(String system, String test, String testCase, String country, String environment, String robot, String robotDecli, String robotIP, String robotPort, String browser,
             String browserVersion, String platform, String screenSize, int manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
@@ -102,7 +102,7 @@ public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQ
         inQueue.setPriority(priority);
         return inQueue;
     }
-    
+
     @Override
     public TestCaseExecutionQueue create(long id, String system, String test, String testCase, String country, String environment, String robot, String robotDecli, String robotIP, String robotPort, String browser,
             String browserVersion, String platform, String screenSize, int manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,

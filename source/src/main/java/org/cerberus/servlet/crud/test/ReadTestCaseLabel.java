@@ -169,9 +169,9 @@ public class ReadTestCaseLabel extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findTestCaseLabelList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findTestCaseLabelList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
 
@@ -193,7 +193,7 @@ public class ReadTestCaseLabel extends HttpServlet {
                 individualSearch.put(columnToSort[a], search);
             }
         }
-        AnswerList resp = testCaseLabelService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<TestCaseLabel> resp = testCaseLabelService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -212,8 +212,8 @@ public class ReadTestCaseLabel extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findLabelByKey(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findLabelByKey(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         ITestCaseLabelService labelService = appContext.getBean(ITestCaseLabelService.class);
@@ -242,14 +242,14 @@ public class ReadTestCaseLabel extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findByTestTestCase(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findByTestTestCase(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
 
         String test = request.getParameter("test");
         String testcase = request.getParameter("testcase");
-        AnswerList resp = testCaseLabelService.readByTestTestCase(test, testcase, null);
+        AnswerList<TestCaseLabel> resp = testCaseLabelService.readByTestTestCase(test, testcase, null);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

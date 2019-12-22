@@ -53,8 +53,8 @@ public class ImportFileService implements IImportFileService{
     private static final Logger LOG = LogManager.getLogger(ImportFileService.class);
     
     @Override
-    public AnswerItem importAndValidateXMLFromInputStream(InputStream filecontent, InputStream schemaContent, XMLHandlerEnumType handlerType) {
-        AnswerItem answer = new AnswerItem<>();
+    public AnswerItem<Object> importAndValidateXMLFromInputStream(InputStream filecontent, InputStream schemaContent, XMLHandlerEnumType handlerType) {
+        AnswerItem<Object> answer = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Library").replace("%OPERATION%", "Import"));
         if(schemaContent != null){

@@ -16,3 +16,6 @@
 *.DS_Store
 
 source/\.idea/
+
+# docker-compose generated files #
+docker/compositions/*/localdata/

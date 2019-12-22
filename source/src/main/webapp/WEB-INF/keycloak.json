@@ -1,0 +1,10 @@
+{
+    "realm": "${org.cerberus.keycloak.realm}",
+    "auth-server-url": "${org.cerberus.keycloak.url}",
+    "ssl-required": "external",
+    "resource": "${org.cerberus.keycloak.client}",
+    "public-client": true,
+    "confidential-port": 0,
+    "principal-attribute" : "preferred_username",
+    "enable-cors" : true
+}

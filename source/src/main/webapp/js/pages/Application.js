@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+var nbRow = 0;
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
@@ -56,7 +58,7 @@ function initPage() {
 
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationsTable"), [3, 'asc']);
+    var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication", "contentTable", aoColumnsFunc("applicationsTable"), [3, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplication, "#applicationList", undefined, true);
 }
 
@@ -71,6 +73,7 @@ function displayPageLabel() {
     $("[name='confirmationField']").html(doc.getDocLabel("page_application", "button_delete"));
     $("[name='editApplicationField']").html(doc.getDocLabel("page_application", "button_edit"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "buttonAdd"));
+    $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
     $("[name='buttonDismiss']").html(doc.getDocLabel("page_global", "buttonDismiss"));
@@ -81,6 +84,7 @@ function displayPageLabel() {
     //$("[name='sortField']").html(doc.getDocOnline("application", "sort"));
     $("[name='typeField']").html(doc.getDocOnline("application", "type"));
     $("[name='systemField']").html(doc.getDocOnline("application", "system"));
+    $("[name='poolSizeField']").html(doc.getDocOnline("application", "poolSize"));
     $("[name='subsystemField']").html(doc.getDocOnline("application", "subsystem"));
     $("[name='svnurlField']").html(doc.getDocOnline("application", "svnurl"));
     $("[name='bugtrackerurlField']").html(doc.getDocOnline("application", "bugtrackerurl"));
@@ -138,9 +142,9 @@ function renderOptionsForApplicationObject(id, data) {
 
 function deleteEntryHandlerClick() {
     var idApplication = $('#confirmationModal').find('#hiddenField1').prop("value");
-    
-    
-   
+
+
+
     var jqxhr = $.post("DeleteApplication", {application: idApplication}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -254,6 +258,7 @@ function editEntryModalSaveHandler() {
             sort: data.sort,
             type: data.type,
             system: data.system,
+            poolSize: data.poolSize,
             subsystem: data.subsystem,
             svnurl: data.svnurl,
             bugtrackerurl: data.bugtrackerurl,
@@ -310,6 +315,7 @@ function editEntryClick(id, system) {
         formEdit.find("#type").prop("value", obj["type"]);
         formEdit.find("#system").prop("value", obj["system"]);
         formEdit.find("#subsystem").prop("value", obj["subsystem"]);
+        formEdit.find("#poolSize").prop("value", obj["poolSize"]);
         formEdit.find("#svnurl").prop("value", obj["svnurl"]);
         formEdit.find("#bugtrackerurl").prop("value", obj["bugTrackerUrl"]);
         formEdit.find("#bugtrackernewurl").prop("value", obj["bugTrackerNewUrl"]);
@@ -322,6 +328,7 @@ function editEntryClick(id, system) {
             formEdit.find("#type").prop("disabled", "disabled");
             formEdit.find("#system").prop("disabled", "disabled");
             formEdit.find("#subsystem").prop("readonly", "readonly");
+            formEdit.find("#poolSize").prop("readonly", "readonly");
             formEdit.find("#svnurl").prop("readonly", "readonly");
             formEdit.find("#bugtrackerurl").prop("readonly", "readonly");
             formEdit.find("#bugtrackernewurl").prop("readonly", "readonly");
@@ -359,6 +366,7 @@ function loadEnvironmentTable(selectSystem, selectApplication) {
 }
 
 function appendEnvironmentRow(env) {
+    nbRow++;
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectEnvironment = getSelectInvariant("ENVIRONMENT", false);
@@ -378,16 +386,38 @@ function appendEnvironmentRow(env) {
     var table = $("#environmentTableBody");
 
     var row = $("<tr></tr>");
-    var deleteBtnRow = $("<td></td>").append(deleteBtn);
-    var environment = $("<td></td>").append(selectEnvironment.val(env.environment));
-    var country = $("<td></td>").append(selectCountry.val(env.country));
 
-    var ipName = $("<td></td>").append(ipInput).append(urlLoginInput);
-    var urlName = $("<td></td>").append(urlInput).append(domainInput);
-    var var1Name = $("<td></td>").append(var1Input).append(var2Input);
-    var var3Name = $("<td></td>").append(var3Input).append(var4Input);
-    var poolSize = $("<td></td>").append(poolSizeInput);
-    var mobileData = $("<td></td>").append(mobileActivity).append(mobilePackage);
+    var td1 = $("<td></td>").append(deleteBtn);
+
+    var environment = $("<div class='form-group col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("invariant", "ENVIRONMENT") + "</label>").append(selectEnvironment.val(env.environment));
+    var drow01 = $("<div class='row'></div>").append(environment);
+    var country = $("<div class='form-group col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("invariant", "COUNTRY") + "</label>").append(selectCountry.val(env.country));
+    var drow02 = $("<div class='row'></div>").append(country);
+    var td2 = $("<td></td>").append(drow01).append(drow02);
+
+    var ipName = $("<div class='form-group col-sm-5'></div>").append("<label for='ip'>" + doc.getDocOnline("countryenvironmentparameters", "IP") + "</label>").append(ipInput);
+    var urlName = $("<div class='form-group col-sm-3'></div>").append("<label for='url'>" + doc.getDocOnline("countryenvironmentparameters", "URL") + "</label>").append(urlInput);
+    var poolSizeName = $("<div class='form-group col-sm-2'></div>").append("<label for='poolSize'>" + doc.getDocOnline("countryenvironmentparameters", "poolSize") + "</label>").append(poolSizeInput);
+    var expandName = $("<div class='form-group col-sm-2'></div>").append("<button class='btn btn-primary' type='button' data-toggle='collapse' data-target='#col" + nbRow + "' aria-expanded='false' aria-controls='col" + nbRow + "'><span class='glyphicon glyphicon-chevron-down'></span></button>");
+    var drow1 = $("<div class='row'></div>").append(ipName).append(urlName).append(poolSizeName).append(expandName);
+
+    var loginName = $("<div class='form-group col-sm-6'></div>").append("<label for='login'>" + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN") + "</label>").append(urlLoginInput);
+    var domainName = $("<div class='form-group col-sm-6'></div>").append("<label for='domain'>" + doc.getDocOnline("countryenvironmentparameters", "domain") + "</label>").append(domainInput);
+    var drow2 = $("<div class='row'></div>").append(loginName).append(domainName);
+
+    var var1Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var1'>" + doc.getDocOnline("countryenvironmentparameters", "Var1") + "</label>").append(var1Input);
+    var var2Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var2'>" + doc.getDocOnline("countryenvironmentparameters", "Var2") + "</label>").append(var2Input);
+    var var3Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var3'>" + doc.getDocOnline("countryenvironmentparameters", "Var3") + "</label>").append(var3Input);
+    var var4Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "Var4") + "</label>").append(var4Input);
+    var drow3 = $("<div class='row'></div>").append(var1Name).append(var2Name).append(var3Name).append(var4Name);
+
+    var mobileActivityName = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobileActivity") + "</label>").append(mobileActivity);
+    var mobilePackageName = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobilePackage") + "</label>").append(mobilePackage);
+    var drow4 = $("<div class='row'></div>").append(mobileActivityName).append(mobilePackageName);
+
+    var panelExtra = $("<div class='collapse' id='col" + nbRow + "'></div>").append(drow2).append(drow3).append(drow4);
+
+    var td3 = $("<td></td>").append(drow1).append(panelExtra);
 
     deleteBtn.click(function () {
         env.toDelete = (env.toDelete) ? false : true;
@@ -436,15 +466,10 @@ function appendEnvironmentRow(env) {
     mobilePackage.change(function () {
         env.mobilePackage = $(this).val();
     });
-    row.append(deleteBtnRow);
-    row.append(environment);
-    row.append(country);
-    row.append(ipName);
-    row.append(urlName);
-    row.append(var1Name);
-    row.append(var3Name);
-    row.append(poolSize);
-    row.append(mobileData);
+    row.append(td1);
+    row.append(td2);
+    row.append(td3);
+
     env.environment = selectEnvironment.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     env.country = selectCountry.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     row.data("environment", env);
@@ -464,8 +489,8 @@ function addNewEnvironmentRow() {
         var3: "",
         var4: "",
         poolSize: "",
-        mobileActivity : "",
-        mobilePackage : "",
+        mobileActivity: "",
+        mobilePackage: "",
         toDelete: false
     };
     appendEnvironmentRow(newEnvironment);
@@ -486,7 +511,8 @@ function displayWarningOnChangeApplicationKey() {
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": null,
+        {
+            "data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
@@ -512,41 +538,57 @@ function aoColumnsFunc(tableId) {
                 return '<div class="center btn-group width150">' + viewApplication + '</div>';
             }
         },
-        {"data": "application",
+        {
+            "data": "application",
             "sName": "application",
             "sWidth": "60px",
             "title": doc.getDocOnline("application", "Application")},
-        {"data": "description",
-            "like":true,
+        {
+            "data": "description",
+            "like": true,
             "sName": "description",
             "sWidth": "80px",
             "title": doc.getDocOnline("application", "Description")},
-        {"data": "sort",
+        {
+            "data": "sort",
+            "visible": false,
             "sName": "sort",
             "sWidth": "60px",
             "title": doc.getDocOnline("application", "sort")},
-        {"data": "type",
+        {
+            "data": "type",
             "sName": "type",
             "sWidth": "60px",
             "title": doc.getDocOnline("application", "type")},
-        {"data": "system",
+        {
+            "data": "system",
             "sName": "system",
             "sWidth": "60px",
             "title": doc.getDocOnline("application", "system")},
-        {"data": "subsystem",
+        {
+            "data": "subsystem",
+            "visible": false,
             "sName": "subsystem",
             "sWidth": "60px",
-            "title": doc.getDocOnline("application", "subsystem")},
-        {"data": "svnurl",
-            "sName": "svnurl",
-            "sWidth": "80px",
-            "title": doc.getDocOnline("application", "svnurl"),
-            "mRender": function (data, type, oObj) {
-                return drawURL(data);
-            }
+            "title": doc.getDocOnline("application", "subsystem")
         },
-        {"data": "bugTrackerUrl",
-        	"like":true,
+        {
+            "data": "subsystem",
+            "visible": false,
+            "sName": "subsystem",
+            "sWidth": "60px",
+            "title": doc.getDocOnline("application", "subsystem")
+        },
+        {
+            "data": "poolSize",
+            "sName": "poolSize",
+            "sWidth": "80px",
+            "title": doc.getDocOnline("application", "poolSize"),
+        },
+        {
+            "data": "bugTrackerUrl",
+            "visible": false,
+            "like": true,
             "sName": "bugTrackerUrl",
             "sWidth": "80px",
             "title": doc.getDocOnline("application", "bugtrackerurl"),
@@ -554,8 +596,10 @@ function aoColumnsFunc(tableId) {
                 return drawURL(data);
             }
         },
-        {"data": "bugTrackerNewUrl",
-        	"like":true,
+        {
+            "data": "bugTrackerNewUrl",
+            "visible": false,
+            "like": true,
             "sName": "bugTrackerNewUrl",
             "sWidth": "80px",
             "title": doc.getDocOnline("application", "bugtrackernewurl"),
@@ -563,14 +607,20 @@ function aoColumnsFunc(tableId) {
                 return drawURL(data);
             }
         },
-        {"data": "deploytype",
+        {
+            "data": "deploytype",
+            "visible": false,
             "sName": "deploytype",
             "sWidth": "60px",
-            "title": doc.getDocOnline("application", "deploytype")},
-        {"data": "mavengroupid",
+            "title": doc.getDocOnline("application", "deploytype")
+        },
+        {
+            "data": "mavengroupid",
+            "visible": false,
             "sName": "mavengroupid",
             "sWidth": "60px",
-            "title": doc.getDocOnline("application", "mavengroupid")}
+            "title": doc.getDocOnline("application", "mavengroupid")
+        }
     ];
     return aoColumns;
 }
@@ -578,34 +628,66 @@ function aoColumnsFunc(tableId) {
 function aoColumnsFunc_object(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": "application",
+        {
+            "data": "application",
             "sName": "application",
-            "title": doc.getDocOnline("application", "Application")},
-        {"data": "object",
+            "visible" : false,
+            "title": doc.getDocOnline("application", "Application")
+        },
+        {
+            "data": "object",
             "sName": "object",
-            "title": doc.getDocOnline("applicationObject", "Object")},
-        {"data": "value",
+            "title": doc.getDocOnline("applicationObject", "Object")
+        },
+        {
+            "data": "value",
             "sName": "value",
-            "title": doc.getDocOnline("applicationObject", "Value")},
-        {"data": "screenshotfilename",
+            "title": doc.getDocOnline("applicationObject", "Value")
+        },
+        {
+            "data": "screenshotfilename",
             "sName": "screenshotfilename",
-            "title": doc.getDocOnline("applicationObject", "ScreenshotFileName")},
-        {"data": "usrcreated",
+            "title": doc.getDocOnline("applicationObject", "ScreenshotFileName")
+        },
+        {
+            "data": "usrcreated",
             "sName": "usrcreated",
-            "title": doc.getDocOnline("transversal", "UsrCreated")},
-        {"data": "datecreated",
-            "like":true,
+            "visible" : false,
+            "title": doc.getDocOnline("transversal", "UsrCreated")
+        },
+        {
+            "data": "datecreated",
+            "like": true,
+            "visible" : false,
             "sName": "datecreated",
-            "title": doc.getDocOnline("transversal", "DateCreated")},
-        {"data": "usrmodif",
+            "title": doc.getDocOnline("transversal", "DateCreated")
+        },
+        {
+            "data": "usrmodif",
+            "visible" : false,
             "sName": "usrmodif",
             "title": doc.getDocOnline("transversal", "UsrModif")
         },
-        {"data": "datemodif",
-        	"like":true,
+        {
+            "data": "datemodif",
+            "like": true,
+            "visible" : false,
             "sName": "datemodif",
             "title": doc.getDocOnline("transversal", "DateModif")
         }
     ];
     return aoColumns;
 }
+
+function app_keyispressed(e, modalName) {
+    var idname = $('#' + modalName + 'ApplicationModal #application').val();
+    var toto = "|\"|'|&|";
+    var charval = "|" + e.key + "|";
+    if (toto.indexOf(charval) !== -1) {
+        var localMessage = new Message("WARNING", "Character '" + e.key + "' is not allowed for application names.");
+        showMessage(localMessage, $('#' + modalName + 'ApplicationModal'), false, 1000);
+        return false;
+    }
+    return true;
+}
+

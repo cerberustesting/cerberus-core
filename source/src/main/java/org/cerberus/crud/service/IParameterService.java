@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -27,14 +28,25 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
-import org.cerberus.util.observe.Observable;
 
 /**
  * @author bcivel
  */
-public interface IParameterService extends Observable<String, Parameter> {
+public interface IParameterService {
 
-    String DEFAULT_SYSTEM = "";
+    /**
+     *
+     * @return
+     */
+    HashMap<String, Parameter> getCacheEntry();
+
+    /**
+     * remove all cache entries where key contains parameter. Purge all entries
+     * if parameter is null.
+     *
+     * @param parameter
+     */
+    void purgeCacheEntry(String parameter);
 
     /**
      * Getting the parameter from database with system (priority) rule. If
@@ -103,13 +115,11 @@ public interface IParameterService extends Observable<String, Parameter> {
      */
     String getParameterStringByKey(String key, String system, String defaultValue);
 
+    /**
+     *
+     * @return @throws CerberusException
+     */
     List<Parameter> findAllParameter() throws CerberusException;
-
-    void updateParameter(Parameter parameter) throws CerberusException;
-
-    void insertParameter(Parameter parameter) throws CerberusException;
-
-    void saveParameter(Parameter parameter) throws CerberusException;
 
     /**
      * Get the {@link Parameter} List of the given {@link System}
@@ -135,7 +145,7 @@ public interface IParameterService extends Observable<String, Parameter> {
      * @param individualSearch the string to search for each column
      * @return
      */
-    AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Parameter> readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      * Get the {@link Parameter} with the given {@link System} and the given key
@@ -145,7 +155,7 @@ public interface IParameterService extends Observable<String, Parameter> {
      * @param key the key of the {@link Parameter}
      * @return
      */
-    AnswerItem readWithSystem1ByKey(String system, String key, String system1);
+    AnswerItem<Parameter> readWithSystem1ByKey(String system, String key, String system1);
 
     /**
      * @param system
@@ -162,15 +172,9 @@ public interface IParameterService extends Observable<String, Parameter> {
      *
      * @param system the system of the {@link Parameter} to get
      * @param param the param of the {@link Parameter} to get
-     * @return 
+     * @return
      */
-    AnswerItem readByKey(String system, String param);
-
-    /**
-     * @param object the {@link Parameter} to Create
-     * @return {@link AnswerItem}
-     */
-    Answer create(Parameter object);
+    AnswerItem<Parameter> readByKey(String system, String param);
 
     /**
      * @param object the {@link Parameter} to Update
@@ -179,16 +183,27 @@ public interface IParameterService extends Observable<String, Parameter> {
     Answer update(Parameter object);
 
     /**
-     * @param object the {@link Parameter} to Delete
+     * @param parameterKey
+     * @param system
+     * @param value
      * @return {@link AnswerItem}
      */
-    Answer delete(Parameter object);
+    Answer setParameter(String parameterKey, String system, String value);
+    
+    
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer create(Parameter object);
 
     /**
      * @param object the {@link Parameter} to Save
+     * @param request
      * @return {@link AnswerItem}
      */
-    Answer save(Parameter object);
+    Answer save(Parameter object, HttpServletRequest request);
 
     /**
      *
@@ -236,7 +251,7 @@ public interface IParameterService extends Observable<String, Parameter> {
      * @return
      */
     Parameter secureParameter(Parameter parameter);
-    
+
     /**
      *
      * @param parameter

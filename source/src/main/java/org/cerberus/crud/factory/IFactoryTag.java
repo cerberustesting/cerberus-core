@@ -49,6 +49,14 @@ public interface IFactoryTag {
      * @param nbNA
      * @param nbWE
      * @param nbNE
+     * @param environmentList
+     * @param countryList
+     * @param robotDecliList
+     * @param systemList
+     * @param applicationList
+     * @param reqEnvironmentList
+     * @param reqCountryList
+     * @param BrowserstackBuildHash
      * @param dateModif
      * @param ciResult
      * @param ciScoreThreshold
@@ -58,6 +66,8 @@ public interface IFactoryTag {
     Tag create(long id, String tag, String description, String campaign, Timestamp dateEndQueue,
             int nbExe, int nbExeUsefull, int nbOK, int nbKO, int nbFA, int nbNA, int nbNE, int nbWE, int nbPE, int nbQU, int nbQE, int nbCA,
             int ciScore, int ciScoreThreshold, String ciResult,
+            String environmentList, String countryList, String robotDecliList, String systemList, String applicationList,
+            String reqEnvironmentList, String reqCountryList, String BrowserstackBuildHash,
             String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
     /**

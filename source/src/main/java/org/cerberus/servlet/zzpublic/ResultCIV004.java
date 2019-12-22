@@ -103,7 +103,7 @@ public class ResultCIV004 extends HttpServlet {
                     ITagService tagService = appContext.getBean(ITagService.class);
 
                     List<Tag> myList;
-                    AnswerList myAnswerList = tagService.readByVariousByCriteria(campaign, 0, 1, "id", "desc", null, null);
+                    AnswerList<Tag> myAnswerList = tagService.readByVariousByCriteria(campaign, 0, 1, "id", "desc", null, null);
                     if (myAnswerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                         for (Tag tagCur : (List<Tag>) myAnswerList.getDataList()) {
                             tag = tagCur.getTag();
@@ -121,7 +121,7 @@ public class ResultCIV004 extends HttpServlet {
             if (!error) {
 
                 ICIService ciService = appContext.getBean(ICIService.class);
-                jsonResponse = ciService.getCIResultV004(tag);
+                jsonResponse = ciService.getCIResult(tag, null);
 
                 // Log the result with calculation detail.
                 logEventService.createForPublicCalls("/ResultCIV004", "CALLRESULT", "ResultCIV004 calculated for tag " + tag + " result [" + jsonResponse.getString("result") + "]", request);

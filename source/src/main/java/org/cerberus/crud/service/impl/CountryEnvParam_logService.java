@@ -48,22 +48,22 @@ public class CountryEnvParam_logService implements ICountryEnvParam_logService {
     private IFactoryCountryEnvParam_log countryEnvParamLogFactory;
 
     @Override
-    public AnswerItem readByKey(Long id) {
+    public AnswerItem<CountryEnvParam_log> readByKey(Long id) {
         return countryEnvParamLogDao.readByKey(id);
     }
 
     @Override
-    public AnswerList readAll() {
+    public AnswerList<CountryEnvParam_log> readAll() {
         return readByVariousByCriteria(null, null, null, null, null, 0, 0, "id", "asc", null, null);
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<CountryEnvParam_log> readByVariousByCriteria(String system, String country, String environment, String build, String revision, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return countryEnvParamLogDao.readByVariousByCriteria(system, country, environment, build, revision, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerList readLastChanges(String system, String country, Integer nbDays, String envGp) {
+    public AnswerList<CountryEnvParam_log> readLastChanges(String system, String country, Integer nbDays, String envGp) {
         return countryEnvParamLogDao.readLastChanges(system, country, nbDays, envGp);
     }
 
@@ -121,7 +121,7 @@ public class CountryEnvParam_logService implements ICountryEnvParam_logService {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return countryEnvParamLogDao.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
 

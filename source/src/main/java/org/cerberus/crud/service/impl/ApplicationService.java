@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
@@ -52,32 +53,32 @@ public class ApplicationService implements IApplicationService {
     private final String OBJECT_NAME = "Application";
 
     @Override
-    public AnswerItem readByKey(String id) {
+    public AnswerItem<Application> readByKey(String id) {
         return ApplicationDAO.readByKey(id);
     }
 
     @Override
-    public AnswerList readAll() {
+    public AnswerList<Application> readAll() {
         return readBySystemByCriteria(null, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
-    public AnswerList readBySystem(String System) {
-        return ApplicationDAO.readBySystemByCriteria(System, 0, 0, "sort", "asc", null, null);
+    public AnswerList<Application> readBySystem(List<String> system) {
+        return ApplicationDAO.readBySystemByCriteria(system, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<Application> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return ApplicationDAO.readBySystemByCriteria(null, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<Application> readBySystemByCriteria(List<String> system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return ApplicationDAO.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerItem readTestCaseCountersBySystemByStatus(String system) {
+    public AnswerItem<HashMap<String, HashMap<String, Integer>>> readTestCaseCountersBySystemByStatus(List<String> system) {
         return this.ApplicationDAO.readTestCaseCountersBySystemByStatus(system);
     }
 
@@ -135,7 +136,7 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return ApplicationDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
 

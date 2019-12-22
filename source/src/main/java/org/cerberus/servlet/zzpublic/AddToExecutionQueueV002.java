@@ -62,6 +62,7 @@ import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -171,7 +172,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
-        AnswerItem<List<TestCase>> testcases = null;
+        AnswerList<TestCase> testcases = null;
 
         /**
          * Adding Log entry.
@@ -191,6 +192,10 @@ public class AddToExecutionQueueV002 extends HttpServlet {
         countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_COUNTRY), null, charset);
         List<String> environments;
         environments = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
+        
+        JSONArray countryJSONArray = new JSONArray(countries);
+        JSONArray envJSONArray = new JSONArray(environments);
+
         List<String> browsers = new ArrayList<>();;
         browsers = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_BROWSER), browsers, charset);
 
@@ -301,7 +306,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                 selectTestCase = new ArrayList<>();
                 testcases = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()]));
 
-                for (TestCase campaignTestCase : testcases.getItem()) {
+                for (TestCase campaignTestCase : testcases.getDataList()) {
                     selectTest.add(campaignTestCase.getTest());
                     selectTestCase.add(campaignTestCase.getTestCase());
                 }
@@ -393,7 +398,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                                             if (!StringUtil.isNullOrEmpty(tag) && !tagAlreadyAdded) {
                                                 // We create or update it.
                                                 ITagService tagService = appContext.getBean(ITagService.class);
-                                                tagService.createAuto(tag, campaign, user);
+                                                tagService.createAuto(tag, campaign, user, envJSONArray, countryJSONArray);
                                                 tagAlreadyAdded = true;
                                             }
 
@@ -452,7 +457,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
             List<String> errorMessages = new ArrayList<String>();
             for (TestCaseExecutionQueue toInsert : toInserts) {
                 try {
-                    inQueueService.convert(inQueueService.create(toInsert, true));
+                    inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUEUED));
                     nbExe++;
                     JSONObject value = new JSONObject();
                     value.put("queueId", toInsert.getId());

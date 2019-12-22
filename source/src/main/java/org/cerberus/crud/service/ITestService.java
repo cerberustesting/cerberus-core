@@ -41,14 +41,14 @@ public interface ITestService {
      * @param test
      * @return
      */
-    public AnswerItem readByKey(String test);
+    public AnswerItem<Test> readByKey(String test);
 
     /**
      *
      * @param system
      * @return
      */
-    public AnswerList readDistinctBySystem(String system);
+    public AnswerList<Test> readDistinctBySystem(String system);
 
     /**
      *
@@ -60,7 +60,7 @@ public interface ITestService {
      * @param individualSearch
      * @return
      */
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    public AnswerList<Test> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -122,5 +122,5 @@ public interface ITestService {
      * @param columnName
      * @return
      */
-    AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
+    AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 }

@@ -43,7 +43,7 @@ public interface IAppServiceService {
      * @param limit the number of {@link AppService} to get
      * @return
      */
-    AnswerList readByLikeName(String name, int limit);
+    AnswerList<AppService> readByLikeName(String name, int limit);
 
     AppService findAppServiceByKey(String name) throws CerberusException;
 
@@ -57,9 +57,10 @@ public interface IAppServiceService {
      * @param sort
      * @param searchParameter the string to search in the {@link AppService}
      * @param individualSearch the string to search for each column
+     * @param systems
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<AppService> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems);
 
     /**
      * Get the {@link AppService} of the given key
@@ -67,7 +68,7 @@ public interface IAppServiceService {
      * @param key the key of the {@link AppService} to get
      * @return
      */
-    AnswerItem readByKey(String key);
+    AnswerItem<AppService> readByKey(String key);
 
     /**
      * Get the {@link AppService} of the given key
@@ -77,7 +78,7 @@ public interface IAppServiceService {
      * and content. null wil load all data.
      * @return
      */
-    AnswerItem readByKeyWithDependency(String key, String activeDetail);
+    AnswerItem<AppService> readByKeyWithDependency(String key, String activeDetail);
 
     /**
      * Get the distinctValue of the column
@@ -87,7 +88,7 @@ public interface IAppServiceService {
      * @param individualSearch the string to search for each column
      * @return
      */
-    AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      * @param object the {@link AppService} to Create
@@ -149,9 +150,10 @@ public interface IAppServiceService {
      * @return
      */
     String convertContentListToQueryString(List<AppServiceContent> serviceContent);
-    
+
     /**
      * this method will store local file into application server
+     *
      * @param service
      * @param file
      * @return

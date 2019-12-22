@@ -25,38 +25,40 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import static java.util.Arrays.asList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.Invariant;
-import org.cerberus.crud.entity.Label;
-import org.cerberus.crud.entity.Tag;
-import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestCaseLabel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.entity.*;
 import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILabelService;
 import org.cerberus.crud.service.ITagService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.crud.service.impl.InvariantService;
-import org.cerberus.dto.SummaryStatisticsDTO;
+import org.cerberus.crud.service.impl.LabelService;
 import org.cerberus.dto.SummaryStatisticsBugTrackerDTO;
+import org.cerberus.dto.SummaryStatisticsDTO;
+import org.cerberus.dto.TreeNode;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.servlet.ServletUtil;
@@ -66,10 +68,6 @@ import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.JavaScriptUtils;
-import org.cerberus.crud.service.ITestCaseExecutionQueueService;
-import org.cerberus.crud.service.impl.LabelService;
-import org.cerberus.dto.TreeNode;
-import org.cerberus.util.StringUtil;
 
 /**
  *
@@ -107,7 +105,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         response.setCharacterEncoding("utf8");
         String echo = request.getParameter("sEcho");
 
-        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         tagService = appContext.getBean(ITagService.class);
@@ -141,7 +139,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 }
 
                 testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
-                AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null, tcList);
+                AnswerList<TestCaseLabel> testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null, tcList);
                 testCaseLabelScopeList = testCaseLabelList.getDataList();
             }
 
@@ -218,6 +216,10 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         result.put("ControlMessage", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlMessage()));
         result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecution.getStatus()));
         result.put("NbExecutions", String.valueOf(testCaseExecution.getNbExecutions()));
+        result.put("previousExeId", testCaseExecution.getPreviousExeId());
+        if (testCaseExecution.getPreviousExeStatus() != null) {
+            result.put("previousExeControlStatus", JavaScriptUtils.javaScriptEscape(testCaseExecution.getPreviousExeStatus()));
+        }
         if (testCaseExecution.getQueueState() != null) {
             result.put("QueueState", JavaScriptUtils.javaScriptEscape(testCaseExecution.getQueueState()));
         }
@@ -257,6 +259,18 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
         result.put("Application", JavaScriptUtils.javaScriptEscape(testCaseExecution.getApplication()));
 
+        List<JSONObject> testCaseDep = new ArrayList<>();
+
+        if (testCaseExecution.getTestCaseExecutionQueueDepList() != null) {
+            for (TestCaseExecutionQueueDep tce : testCaseExecution.getTestCaseExecutionQueueDepList()) {
+                JSONObject obj = new JSONObject();
+                obj.put("test", tce.getDepTest());
+                obj.put("testcase", tce.getDepTestCase());
+                testCaseDep.add(obj);
+            }
+        }
+        result.put("TestCaseDep", testCaseDep);
+
         return result;
     }
 
@@ -285,11 +299,10 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         JSONObject countryList = new JSONObject();
         try {
             IInvariantService invariantService = appContext.getBean(InvariantService.class);
-            AnswerList answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
-            for (Invariant country : (List<Invariant>) answer.getDataList()) {
+            for (Invariant country : (List<Invariant>) invariantService.readByIdName("COUNTRY")) {
                 countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
             }
-        } catch (JSONException ex) {
+        } catch (JSONException | CerberusException ex) {
             LOG.error("Error on getCountryList : " + ex, ex);
         }
 
@@ -360,7 +373,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                          * Iterate on the label retrieved and generate HashMap
                          * based on the key Test_TestCase
                          */
-                        LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap();
+                        LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap<>();
                         for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList) {
                             if (Label.TYPE_STICKER.equals(label.getLabel().getType())) { // We only display STICKER Type Label in Reporting By Tag Page..
                                 String key = label.getTest() + "_" + label.getTestcase();
@@ -455,13 +468,42 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         }
 
         Gson gson = new Gson();
-        jsonResult.put("axis", axisMap.values());
+        List<JSONObject> axisList = new ArrayList<>();
+
+        for (Map.Entry<String, JSONObject> entry : axisMap.entrySet()) {
+            String key = entry.getKey();
+            JSONObject value = entry.getValue();
+            axisList.add(value);
+        }
+        Collections.sort(axisList, new SortExecution());
+        jsonResult.put("axis", axisList);
         jsonResult.put("tag", tag);
         jsonResult.put("globalEnd", gson.toJson(new Timestamp(globalEndL)).replace("\"", ""));
         jsonResult.put("globalStart", globalStart);
         jsonResult.put("globalStatus", globalStatus);
 
         return jsonResult;
+    }
+
+    class SortExecution implements Comparator<JSONObject> {
+        // Used for sorting in ascending order of 
+        // name value. 
+
+        @Override
+        public int compare(JSONObject a, JSONObject b) {
+            if (a != null && b != null) {
+                try {
+                    String aS = (String) a.get("name");
+                    String bS = (String) b.get("name");
+                    return aS.compareToIgnoreCase(bS);
+                } catch (JSONException ex) {
+                    LOG.error("JSON Error Exception", ex);
+                    return 1;
+                }
+            } else {
+                return 1;
+            }
+        }
     }
 
     private JSONObject generateStats(HttpServletRequest request, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter, boolean splitStats) throws JSONException {
@@ -665,12 +707,12 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         JSONArray jsonArraySTICKER = new JSONArray();
         JSONArray jsonArrayREQUIREMENT = new JSONArray();
 
-        AnswerList resp = labelService.readByVarious(new ArrayList<>(), new ArrayList<>(asList(Label.TYPE_STICKER, Label.TYPE_REQUIREMENT)));
+        AnswerList<Label> resp = labelService.readByVarious(new ArrayList<>(), new ArrayList<>(asList(Label.TYPE_STICKER, Label.TYPE_REQUIREMENT)));
 
         // Building Label inputlist with target layout
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
 
-            HashMap<Integer, TreeNode> inputList = new HashMap();
+            HashMap<Integer, TreeNode> inputList = new HashMap<>();
 
             for (Label label : (List<Label>) resp.getDataList()) {
 
@@ -701,7 +743,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 }
 
                 // Create Node.
-                node = new TreeNode(label.getId() + "-" + label.getSystem() + "-" + label.getLabel(), label.getId(), label.getParentLabelID(), text, null, null, false);
+                node = new TreeNode(label.getId() + "-" + label.getSystem() + "-" + label.getLabel(), label.getSystem(), label.getLabel(), label.getId(), label.getParentLabelID(), text, null, null, false);
                 node.setCounter1(0);
                 node.setCounter1WithChild(0);
                 node.setTags(attributList);
@@ -709,11 +751,12 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 node.setCounter1Text("<span style='background-color:#000000' class='cnt1 badge badge-pill badge-secondary'>%COUNTER1%</span>");
                 node.setCounter1WithChildText("<span class='cnt1WC badge badge-pill badge-secondary'>%COUNTER1WITHCHILD%</span>");
                 node.setNbNodesText("<span style='background-color:#337ab7' class='nbNodes badge badge-pill badge-primary'>%NBNODESWITHCHILD%</span>");
+                node.setLabelObj(label);
                 inputList.put(node.getId(), node);
 //                    LOG.debug("Label : " + node.getId() + " T : " + node);
             }
 
-            HashMap<String, List<Integer>> testCaseWithLabel1 = new HashMap();
+            HashMap<String, List<Integer>> testCaseWithLabel1 = new HashMap<>();
             for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList) {
 //                LOG.debug("TCLabel : " + label.getLabel() + " T : " + label.getTest() + " C : " + label.getTestcase() + " Type : " + label.getLabel().getType());
                 if ((Label.TYPE_STICKER.equals(label.getLabel().getType()))

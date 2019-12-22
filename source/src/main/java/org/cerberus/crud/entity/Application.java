@@ -34,6 +34,7 @@ public class Application {
     private String svnurl;
     private String bugTrackerUrl;
     private String bugTrackerNewUrl;
+    private int poolSize;
     private String deploytype;
     private String mavengroupid;
     private String description;
@@ -52,6 +53,14 @@ public class Application {
     public static final String TYPE_IPA = "IPA";
     public static final String TYPE_FAT = "FAT";
     public static final String TYPE_NONE = "NONE";
+
+    public int getPoolSize() {
+        return poolSize;
+    }
+
+    public void setPoolSize(int poolSize) {
+        this.poolSize = poolSize;
+    }
 
     public String getUsrCreated() {
         return UsrCreated;

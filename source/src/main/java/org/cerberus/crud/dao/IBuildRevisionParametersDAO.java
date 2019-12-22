@@ -36,14 +36,14 @@ public interface IBuildRevisionParametersDAO {
      * @param id
      * @return
      */
-    AnswerItem readByKeyTech(int id);
+    AnswerItem<BuildRevisionParameters> readByKeyTech(int id);
 
     /**
      *
      * @param system
      * @return
      */
-    AnswerItem readLastBySystem(String system);
+    AnswerItem<BuildRevisionParameters> readLastBySystem(String system);
 
     /**
      *
@@ -54,7 +54,7 @@ public interface IBuildRevisionParametersDAO {
      * @return A list of BuildRevisionParameters object for a build, revision,
      * release, application
      */
-    AnswerItem readByVarious2(String build, String revision, String release, String application);
+    AnswerItem<BuildRevisionParameters> readByVarious2(String build, String revision, String release, String application);
 
     /**
      *
@@ -70,7 +70,7 @@ public interface IBuildRevisionParametersDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<BuildRevisionParameters> readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -84,7 +84,7 @@ public interface IBuildRevisionParametersDAO {
      * correspond to the max svn number. This is returned only if jenkinsbuildid
      * fiels if feed.
      */
-    AnswerList readMaxSVNReleasePerApplication(String system, String build, String revision, String lastBuild, String lastRevision);
+    AnswerList<BuildRevisionParameters> readMaxSVNReleasePerApplication(String system, String build, String revision, String lastBuild, String lastRevision);
 
     /**
      *
@@ -95,7 +95,7 @@ public interface IBuildRevisionParametersDAO {
      * @param lastRevision
      * @return
      */
-    AnswerList readNonSVNRelease(String system, String build, String revision, String lastBuild, String lastRevision);
+    AnswerList<BuildRevisionParameters> readNonSVNRelease(String system, String build, String revision, String lastBuild, String lastRevision);
 
     /**
      *
@@ -134,5 +134,5 @@ public interface IBuildRevisionParametersDAO {
      * @param columnName
      * @return 
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

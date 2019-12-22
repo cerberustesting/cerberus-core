@@ -22,7 +22,6 @@ package org.cerberus.servlet.crud.test.testcase;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,9 +32,8 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.*;
 import org.cerberus.crud.service.*;
 import org.cerberus.engine.entity.MessageEvent;
@@ -77,7 +75,8 @@ public class ReadTestCase extends AbstractCrudTestCase {
     private ICampaignParameterService campaignParameterService;
     @Autowired
     private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
-
+    @Autowired
+    private ILabelService labelService;
 
     private static final Logger LOG = LogManager.getLogger(ReadTestCase.class);
 
@@ -90,6 +89,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    @Override
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int sEcho = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("sEcho"), "0"));
@@ -109,7 +109,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
          * Parsing and securing all required parameters.
          */
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
-        String system = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("system"), "");
+        List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
         String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), null);
         String campaign = ParameterParserUtil.parseStringParam(request.getParameter("campaign"), "");
         boolean getMaxTC = ParameterParserUtil.parseBooleanParam(request.getParameter("getMaxTC"), false);
@@ -122,13 +122,13 @@ public class ReadTestCase extends AbstractCrudTestCase {
 
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem<>(msg);
+        JSONObject jsonResponse = new JSONObject();
 
         try {
-            JSONObject jsonResponse = new JSONObject();
             if (!Strings.isNullOrEmpty(test) && testCase != null && !withStep) {
                 answer = findTestCaseByTestTestCase(test, testCase, request);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (!Strings.isNullOrEmpty(test) && testCase != null && withStep) {
+            } else if (!Strings.isNullOrEmpty(test) && testCase != null && withStep) { // TestCaseScript
                 answer = findTestCaseWithStep(request, test, testCase);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(test) && getMaxTC) {
@@ -148,9 +148,13 @@ public class ReadTestCase extends AbstractCrudTestCase {
                 //If columnName is present, then return the distinct value of this column.
                 answer = findDistinctValuesOfColumn(system, test, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else {
+            } else { // Page TestCaseList
                 answer = findTestCaseByTest(system, test, request);
                 jsonResponse = (JSONObject) answer.getItem();
+            }
+
+            if (jsonResponse == null) {
+                jsonResponse = new JSONObject();
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -165,8 +169,10 @@ public class ReadTestCase extends AbstractCrudTestCase {
         } catch (CerberusException ex) {
             LOG.error(ex, ex);
             // TODO return to the gui
+        } catch (Exception ex) {
+            LOG.error(ex, ex);
+            // TODO return to the gui
         }
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -208,8 +214,8 @@ public class ReadTestCase extends AbstractCrudTestCase {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findTestCaseByTest(String system, String test, HttpServletRequest request) throws JSONException, CerberusException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findTestCaseByTest(List<String> system, String test, HttpServletRequest request) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
@@ -247,17 +253,17 @@ public class ReadTestCase extends AbstractCrudTestCase {
                 }
             }
         }
-        AnswerList testCaseList = testCaseService.readByTestByCriteria(system, test, startPosition, length, sortInformation.toString(), searchParameter, individualSearch);
+        AnswerList<TestCase> testCaseList = testCaseService.readByTestByCriteria(system, test, startPosition, length, sortInformation.toString(), searchParameter, individualSearch);
 
         /**
          * Find the list of countries
          */
-        AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(system, test, null, testCaseList.getDataList());
+        AnswerList<TestCaseCountry> testCaseCountryList = testCaseCountryService.readByTestTestCase(system, test, null, testCaseList.getDataList());
         /**
          * Iterate on the country retrieved and generate HashMap based on the
          * key Test_TestCase
          */
-        LinkedHashMap<String, JSONObject> testCaseWithCountry = new LinkedHashMap();
+        LinkedHashMap<String, JSONObject> testCaseWithCountry = new LinkedHashMap<>();
         for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountryList.getDataList()) {
             String key = country.getTest() + "_" + country.getTestCase();
 
@@ -272,8 +278,8 @@ public class ReadTestCase extends AbstractCrudTestCase {
          * find the liste of dependencies
          */
         List<TestCaseDep> testCaseDepList = testCaseDepService.readByTestAndTestCase(testCaseList.getDataList());
-        LinkedHashMap<String, JSONArray> testCaseWithDep = new LinkedHashMap();
-        for(TestCaseDep testCaseDep : testCaseDepList) {
+        LinkedHashMap<String, JSONArray> testCaseWithDep = new LinkedHashMap<>();
+        for (TestCaseDep testCaseDep : testCaseDepList) {
             String key = testCaseDep.getTest() + "_" + testCaseDep.getTestCase();
 
             JSONObject jo = convertToJSONObject(testCaseDep);
@@ -285,20 +291,18 @@ public class ReadTestCase extends AbstractCrudTestCase {
             }
         }
 
-
-
         /**
          * Find the list of labels
          */
-        AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(test, null, testCaseList.getDataList());
+        AnswerList<TestCaseLabel> testCaseLabelList = testCaseLabelService.readByTestTestCase(test, null, testCaseList.getDataList());
         /**
          * Iterate on the label retrieved and generate HashMap based on the key
          * Test_TestCase
          */
-        LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap();
-        LinkedHashMap<String, JSONArray> testCaseWithLabelSticker = new LinkedHashMap();
-        LinkedHashMap<String, JSONArray> testCaseWithLabelRequirement = new LinkedHashMap();
-        LinkedHashMap<String, JSONArray> testCaseWithLabelBattery = new LinkedHashMap();
+        LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap<>();
+        LinkedHashMap<String, JSONArray> testCaseWithLabelSticker = new LinkedHashMap<>();
+        LinkedHashMap<String, JSONArray> testCaseWithLabelRequirement = new LinkedHashMap<>();
+        LinkedHashMap<String, JSONArray> testCaseWithLabelBattery = new LinkedHashMap<>();
         for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
             String key = label.getTest() + "_" + label.getTestcase();
 
@@ -364,8 +368,8 @@ public class ReadTestCase extends AbstractCrudTestCase {
         return answer;
     }
 
-    private AnswerItem findTestCaseByTestTestCase(String test, String testCase, HttpServletRequest request) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findTestCaseByTestTestCase(String test, String testCase, HttpServletRequest request) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         //finds the project
@@ -378,7 +382,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
 
             // Country List feed.
             JSONArray countryArray = new JSONArray();
-            AnswerList answerTestCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
+            AnswerList<TestCaseCountry> answerTestCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
             for (TestCaseCountry country : (List<TestCaseCountry>) answerTestCaseCountryList.getDataList()) {
                 countryArray.put(convertToJSONObject(country));
             }
@@ -387,15 +391,14 @@ public class ReadTestCase extends AbstractCrudTestCase {
             // list of dependencies
             List<TestCaseDep> testCaseDepList = testCaseDepService.readByTestAndTestCase(test, testCase);
             JSONArray testCaseWithDep = new JSONArray();
-            for(TestCaseDep testCaseDep : testCaseDepList) {
+            for (TestCaseDep testCaseDep : testCaseDepList) {
                 testCaseWithDep.put(convertToJSONObject(testCaseDep));
             }
             response.put("dependencyList", testCaseWithDep);
 
-
             // Label List feed.
             JSONArray labelArray = new JSONArray();
-            AnswerList answerTestCaseLabelList = testCaseLabelService.readByTestTestCase(test, testCase, null);
+            AnswerList<TestCaseLabel> answerTestCaseLabelList = testCaseLabelService.readByTestTestCase(test, testCase, null);
             for (TestCaseLabel label : (List<TestCaseLabel>) answerTestCaseLabelList.getDataList()) {
                 labelArray.put(convertToJSONObject(label));
             }
@@ -413,8 +416,8 @@ public class ReadTestCase extends AbstractCrudTestCase {
         return item;
     }
 
-    private AnswerItem findTestCaseByVarious(HttpServletRequest request) throws JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findTestCaseByVarious(HttpServletRequest request) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         JSONArray dataArray = new JSONArray();
 
@@ -424,15 +427,22 @@ public class ReadTestCase extends AbstractCrudTestCase {
         String[] creator = request.getParameterValues("creator");
         String[] implementer = request.getParameterValues("implementer");
         String[] system = request.getParameterValues("system");
-        String[] testBattery = request.getParameterValues("testBattery");
         String[] campaign = request.getParameterValues("campaign");
         String[] priority = request.getParameterValues("priority");
         String[] group = request.getParameterValues("group");
         String[] status = request.getParameterValues("status");
         String[] labelid = request.getParameterValues("labelid");
+        List<Integer> labelList = new ArrayList<>();
+        if (labelid != null) {
+            for (int i = 0; i < labelid.length; i++) {
+                String string = labelid[i];
+                labelList.add(Integer.valueOf(string));
+            }
+            labelList = labelService.enrichWithChild(labelList);
+        }
         int length = ParameterParserUtil.parseIntegerParam(request.getParameter("length"), -1);
 
-        AnswerList answer = testCaseService.readByVarious(test, idProject, app, creator, implementer, system, campaign, labelid, priority, group, status, length);
+        AnswerList<TestCase> answer = testCaseService.readByVarious(test, idProject, app, creator, implementer, system, campaign, labelList, priority, group, status, length);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (TestCase tc : (List<TestCase>) answer.getDataList()) {
@@ -447,18 +457,15 @@ public class ReadTestCase extends AbstractCrudTestCase {
     }
 
     private AnswerItem findTestCaseByCampaign(String campaign) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         JSONArray dataArray = new JSONArray();
-
-        String[] campaignList = new String[1];
-        campaignList[0] = campaign;
 
         final AnswerItem<Map<String, List<String>>> parsedCampaignParameters = campaignParameterService.parseParametersByCampaign(campaign);
 
         List<String> countries = parsedCampaignParameters.getItem().get(CampaignParameter.COUNTRY_PARAMETER);
 
-        AnswerItem<List<TestCase>> resp = null;
+        AnswerList<TestCase> resp = null;
 
         if (countries != null && !countries.isEmpty()) {
             resp = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()]));
@@ -467,7 +474,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         }
 
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Object c : resp.getItem()) {
+            for (Object c : resp.getDataList()) {
                 TestCase cc = (TestCase) c;
                 dataArray.put(convertToJSONObject(cc));
             }
@@ -479,19 +486,24 @@ public class ReadTestCase extends AbstractCrudTestCase {
         return answer;
     }
 
-    private AnswerItem findTestCaseWithStep(HttpServletRequest request, String test, String testCase) throws JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findTestCaseWithStep(HttpServletRequest request, String test, String testCase) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
-        HashMap<String, JSONObject> hashProp = new HashMap<String, JSONObject>();
+        HashMap<String, JSONObject> hashProp = new HashMap<>();
         JSONObject jsonResponse = new JSONObject();
 
         //finds the testcase     
         AnswerItem answer = testCaseService.readByKey(test, testCase);
 
-        AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
-        AnswerList testCaseStepList = testCaseStepService.readByTestTestCase(test, testCase);
-        AnswerList testCaseStepActionList = testCaseStepActionService.readByTestTestCase(test, testCase);
-        AnswerList testCaseStepActionControlList = testCaseStepActionControlService.readByTestTestCase(test, testCase);
+        if (answer.getItem() == null) {
+            item.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_NOT_FOUND_OR_NOT_AUTHORIZE));
+            return item;
+        }
+
+        AnswerList<TestCaseCountry> testCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
+        AnswerList<TestCaseStep> testCaseStepList = testCaseStepService.readByTestTestCase(test, testCase);
+        AnswerList<TestCaseStepAction> testCaseStepActionList = testCaseStepActionService.readByTestTestCase(test, testCase);
+        AnswerList<TestCaseStepActionControl> testCaseStepActionControlList = testCaseStepActionControlService.readByTestTestCase(test, testCase);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
@@ -623,16 +635,17 @@ public class ReadTestCase extends AbstractCrudTestCase {
         return result;
     }
 
-
     private JSONObject convertToJSONObject(TestCaseDep testCaseDep) throws JSONException {
         return new JSONObject()
+                .put("id", testCaseDep.getId())
                 .put("test", testCaseDep.getTest())
                 .put("testCase", testCaseDep.getTestCase())
                 .put("depTest", testCaseDep.getDepTest())
                 .put("depTestCase", testCaseDep.getDepTestCase())
                 .put("type", testCaseDep.getType())
-                .put("active", testCaseDep.getActive())
+                .put("active", "Y".equals(testCaseDep.getActive()))
                 .put("description", testCaseDep.getDescription())
+                .put("depDescription", testCaseDep.getDepDescription())
                 .put("depEvent", testCaseDep.getDepEvent());
     }
 
@@ -648,8 +661,8 @@ public class ReadTestCase extends AbstractCrudTestCase {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(String system, String test, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(List<String> system, String test, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");

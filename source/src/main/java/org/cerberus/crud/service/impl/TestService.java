@@ -19,7 +19,6 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.dao.ITestDAO;
@@ -29,9 +28,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,17 +46,17 @@ public class TestService implements ITestService {
     private ITestDAO testDao;
 
     @Override
-    public AnswerItem readByKey(String test) {
-        return testDao.readByKey(test);
+    public AnswerItem<Test> readByKey(String test) {
+        return  AnswerUtil.convertToAnswerItem(() -> testDao.readByKey(test));
     }
 
     @Override
-    public AnswerList readDistinctBySystem(String system) {
+    public AnswerList<Test> readDistinctBySystem(String system) {
         return testDao.readDistinctBySystem(system);
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<Test> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return testDao.readByCriteria(start, amount, colName, dir, searchTerm, individualSearch);
     }
 
@@ -112,7 +109,7 @@ public class TestService implements ITestService {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         return testDao.readDistinctValuesByCriteria(searchTerm, individualSearch, columnName);
     }
 }

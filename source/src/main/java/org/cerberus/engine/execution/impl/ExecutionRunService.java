@@ -20,7 +20,6 @@
 package org.cerberus.engine.execution.impl;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,9 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvLink;
 import org.cerberus.crud.entity.CountryEnvParam;
-import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotCapability;
-import org.cerberus.crud.entity.RobotExecutor;
 import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCase;
@@ -50,14 +47,14 @@ import org.cerberus.crud.factory.IFactoryTestCaseExecutionSysVer;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControlExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepExecution;
+import org.cerberus.crud.service.IAppServiceService;
 import org.cerberus.crud.service.ICountryEnvLinkService;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ILoadTestCaseService;
 import org.cerberus.crud.service.IParameterService;
-import org.cerberus.crud.service.IRobotExecutorService;
-import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
+import org.cerberus.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
@@ -69,7 +66,11 @@ import org.cerberus.crud.service.ITestCaseStepExecutionService;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.engine.execution.*;
+import org.cerberus.engine.execution.IConditionService;
+import org.cerberus.engine.execution.IExecutionRunService;
+import org.cerberus.engine.execution.IRecorderService;
+import org.cerberus.engine.execution.IRetriesService;
+import org.cerberus.engine.execution.IRobotServerService;
 import org.cerberus.engine.execution.video.VideoRecorder;
 import org.cerberus.engine.gwt.IActionService;
 import org.cerberus.engine.gwt.IControlService;
@@ -80,12 +81,12 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.enums.Screenshot;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.notification.INotificationService;
+import org.cerberus.service.kafka.IKafkaService;
+import org.cerberus.service.robotproviders.IBrowserstackService;
+import org.cerberus.service.robotproviders.IKobitonService;
 import org.cerberus.service.sikuli.ISikuliService;
-import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
 import org.cerberus.websocket.TestCaseExecutionEndPoint;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriverException;
@@ -107,7 +108,7 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private ISikuliService sikuliService;
     @Autowired
-    private ISeleniumServerService seleniumServerService;
+    private IRobotServerService robotServerService;
     @Autowired
     private IActionService actionService;
     @Autowired
@@ -157,19 +158,21 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private ITagService tagService;
     @Autowired
-    private INotificationService notificationService;
-    @Autowired
     private IRetriesService retriesService;
-    @Autowired
-    private ISeleniumServerService serverService;
     @Autowired
     private IFactoryRobotCapability robotCapabilityFactory;
     @Autowired
-    private IRobotService robotService;
-    @Autowired
-    private IRobotExecutorService robotExecutorService;
-    @Autowired
     private ITestCaseExecutionQueueDepService testCaseExecutionQueueDepService;
+    @Autowired
+    private ITestCaseExecutionDataService testCaseExecutionDataService;
+    @Autowired
+    private IBrowserstackService browserstackService;
+    @Autowired
+    private IKobitonService kobitonService;
+    @Autowired
+    private IKafkaService kafkaService;
+    @Autowired
+    private IAppServiceService appServiceService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
@@ -225,83 +228,6 @@ public class ExecutionRunService implements IExecutionRunService {
                     LOG.debug(logPrefix + "No Linked environment found.");
                 }
                 LOG.debug(logPrefix + "Linked System Version Registered.");
-            }
-
-            // If Robot is feeded, we check it exist. If it exist, we overwrite the associated parameters.
-            Robot robObj = null;
-            RobotExecutor robExeObj = null;
-            String robotHost = "";
-            String robotPort = "";
-            String browser = tCExecution.getBrowser();
-            String robotDecli = "";
-            String version = "";
-            String platform = "";
-            if (!StringUtil.isNullOrEmpty(tCExecution.getRobot())) {
-                try {
-                    robObj = robotService.readByKey(tCExecution.getRobot());
-
-                    // If Robot parameter is defined and we can find the robot, we overwrite the corresponding parameters.
-                    browser = ParameterParserUtil.parseStringParam(robObj.getBrowser(), browser);
-                    robotDecli = ParameterParserUtil.parseStringParam(robObj.getRobotDecli(), "");
-                    if (StringUtil.isNullOrEmpty(robotDecli)) {
-                        robotDecli = robObj.getRobot();
-                    }
-                    version = ParameterParserUtil.parseStringParam(robObj.getVersion(), version);
-                    platform = ParameterParserUtil.parseStringParam(robObj.getPlatform(), platform);
-                    tCExecution.setUserAgent(robObj.getUserAgent());
-                    tCExecution.setScreenSize(robObj.getScreenSize());
-                    tCExecution.setBrowser(browser);
-                    tCExecution.setRobotDecli(robotDecli);
-                    tCExecution.setVersion(version);
-                    tCExecution.setPlatform(platform);
-                    tCExecution.setRobotObj(robObj);
-
-                    // We cannot execute a testcase on a desactivated Robot.
-                    if (robObj.getActive().equals("N")) {
-                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CAPABILITYDECODE)
-                                .resolveDescription("ROBOT", tCExecution.getRobot()));
-                    }
-
-                    // If executor is not set, we get the best one from the list.
-                    if (StringUtil.isNullOrEmpty(tCExecution.getRobotExecutor())) {
-                        LOG.debug(logPrefix + "Getting the best Executor on Robot : " + tCExecution.getRobot());
-                        robExeObj = robotExecutorService.readBestByKey(tCExecution.getRobot());
-                        if (robExeObj != null) {
-                            tCExecution.setRobotExecutor(robExeObj.getExecutor());
-                            tCExecution.setRobotExecutorObj(robExeObj);
-                            robotExecutorService.updateLastExe(robExeObj.getRobot(), robExeObj.getExecutor());
-                        } else {
-                            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTEXECUTORNOTEXIST)
-                                    .resolveDescription("ROBOT", tCExecution.getRobot())
-                                    .resolveDescription("EXECUTOR", tCExecution.getRobotExecutor()));
-                        }
-                        LOG.debug(logPrefix + " Executor retreived : " + robExeObj.getExecutor());
-                    } else {
-                        LOG.debug(logPrefix + " Getting Requested Robot / Executor : " + tCExecution.getRobot() + " / " + tCExecution.getRobotExecutor());
-                        robExeObj = robotExecutorService.convert(robotExecutorService.readByKey(tCExecution.getRobot(), tCExecution.getRobotExecutor()));
-                        tCExecution.setRobotExecutorObj(robExeObj);
-                        if (robExeObj == null) {
-                            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTEXECUTORNOTEXIST)
-                                    .resolveDescription("ROBOT", tCExecution.getRobot())
-                                    .resolveDescription("EXECUTOR", tCExecution.getRobotExecutor()));
-                        }
-                    }
-
-                    robotHost = ParameterParserUtil.parseStringParam(robExeObj.getHost(), tCExecution.getRobotHost());
-                    robotPort = ParameterParserUtil.parseStringParam(String.valueOf(robExeObj.getPort()), tCExecution.getRobotPort());
-                    tCExecution.setRobotHost(robotHost);
-                    tCExecution.setRobotPort(robotPort);
-                    tCExecution.setSeleniumIP(robotHost);
-                    tCExecution.setSeleniumPort(robotPort);
-                    tCExecution.setSeleniumIPUser(robExeObj.getHostUser());
-                    tCExecution.setSeleniumIPPassword(robExeObj.getHostPassword());
-
-                } catch (CerberusException ex) {
-                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTNOTEXIST)
-                            .resolveDescription("ROBOT", tCExecution.getRobot()), ex);
-                }
-            } else {
-                tCExecution.setRobotDecli(browser);
             }
 
             /**
@@ -379,14 +305,15 @@ public class ExecutionRunService implements IExecutionRunService {
 
                     } else {
                         /**
-                         * Start Selenium server
+                         * Start Robot server (Selenium/Appium/Sikuli)
                          */
-                        LOG.debug(logPrefix + "Starting Server.");
+                        LOG.debug(logPrefix + "Starting Robot Server.");
                         try {
-                            this.serverService.startServer(tCExecution);
-                            LOG.debug(logPrefix + "Server Started.");
+                            this.robotServerService.startServer(tCExecution);
+                            LOG.debug(logPrefix + "Robot Server Started.");
                         } catch (CerberusException ex) {
-                            LOG.debug(logPrefix + ex.getMessageError().getDescription());
+                            // No need to report exception message as it will be catched and reported later
+                            // LOG.debug(logPrefix + ex.getMessageError().getDescription());
                             throw new CerberusException(ex.getMessageError(), ex);
                         }
 
@@ -405,17 +332,25 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
             /**
+             * For BrowserStack only, we try to enrish the Tag with build hash.
+             */
+            if (TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK.equals(tCExecution.getRobotProvider())) {
+                String newBuildHash = tagService.enrichTagWithBrowserStackBuild(tCExecution.getSystem(), tCExecution.getTag(), tCExecution.getRobotExecutorObj().getHostUser(), tCExecution.getRobotExecutorObj().getHostPassword());
+                Tag newTag = tagService.convert(tagService.readByKey(tCExecution.getTag()));
+                tCExecution.setTagObj(newTag);
+            }
+
+            /**
              * Get used SeleniumCapabilities (empty if application is not GUI)
              */
             LOG.debug(logPrefix + "Getting Selenium capabitities for GUI applications.");
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 try {
-                    Capabilities caps = this.seleniumServerService.getUsedCapabilities(tCExecution.getSession());
-                    tCExecution.setBrowserFullVersion(caps.getBrowserName() + " " + caps.getVersion() + " " + caps.getPlatform().toString());
+                    Capabilities caps = this.robotServerService.getUsedCapabilities(tCExecution.getSession());
                     tCExecution.setVersion(caps.getVersion());
                     tCExecution.setPlatform(caps.getPlatform().toString());
                 } catch (Exception ex) {
-                    LOG.error(logPrefix + "Exception on selenium getting Used Capabilities :" + ex.toString(), ex);
+                    LOG.error(logPrefix + "Exception on Selenium getting Used Capabilities.", ex);
                 }
                 LOG.debug(logPrefix + "Selenium capabitities loaded.");
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
@@ -499,11 +434,17 @@ public class ExecutionRunService implements IExecutionRunService {
                         tCExecution.getSystem(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision());
                 tCExecution.setTestCaseCountryPropertyList(tcProperties);
             } catch (CerberusException ex) {
-                LOG.warn("Exception getting all the properties : " + ex);
+                LOG.warn("Exception getting all the properties : ", ex);
             }
             if (LOG.isDebugEnabled()) {
                 LOG.debug(logPrefix + "All Properties Loaded. " + tcProperties.size() + " property(ies) found : " + tcProperties);
             }
+
+            /**
+             * Load All Execution Data of testcases that this execution depends
+             */
+            LOG.debug(logPrefix + "Loading all Execution Data of the execution from queue dependencies.");
+            this.testCaseExecutionDataService.loadTestCaseExecutionDataFromDependencies(tCExecution);
 
             /**
              * Start Execution of the steps/Actions/controls Iterate Steps.
@@ -520,21 +461,16 @@ public class ExecutionRunService implements IExecutionRunService {
             mainExecutionTestCaseStepList.addAll(postTestCaseStepList);
 
             /**
+             * Open Kafka Consumers
+             */
+            tCExecution.setKafkaLatestOffset(kafkaService.getAllConsumers(mainExecutionTestCaseStepList));
+
+            /**
              * Initialize the global TestCaseExecution Data List.
              */
-            // 
+            //
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING));
             updateTCExecution(tCExecution, true);
-//            try {
-//                testCaseExecutionService.updateTCExecution(tCExecution);
-//            } catch (CerberusException ex) {
-//                LOG.warn(ex);
-//            }
-//
-//            // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-//            if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-//                TestCaseExecutionEndPoint.getInstance().send(tCExecution, true);
-//            }
 
             // Evaluate the condition at the step level.
             AnswerItem<Boolean> conditionAnswerTc;
@@ -550,9 +486,9 @@ public class ExecutionRunService implements IExecutionRunService {
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CONDITIONDECODE)
+                        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_DECODE)
                                 .resolveDescription("MES", answerDecode.getMessageDescription())
-                                .resolveDescription("AREA", "TestCase Condition Value1 "));
+                                .resolveDescription("AREA", "TestCase Condition Value1"));
                         tCExecution.setEnd(new Date().getTime());
                         LOG.debug(logPrefix + "TestCase interupted due to decode 'TestCase Condition Value1' Error.");
                         conditionDecodeError = true;
@@ -566,11 +502,27 @@ public class ExecutionRunService implements IExecutionRunService {
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CONDITIONDECODE)
+                        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_DECODE)
                                 .resolveDescription("MES", answerDecode.getMessageDescription())
-                                .resolveDescription("AREA", "TestCase Condition Value2 "));
+                                .resolveDescription("AREA", "TestCase Condition Value2"));
                         tCExecution.setEnd(new Date().getTime());
                         LOG.debug(logPrefix + "TestCase interupted due to decode 'TestCase Condition Value2' Error.");
+                        conditionDecodeError = true;
+                    }
+                } catch (CerberusEventException cex) {
+                    LOG.warn(cex);
+                }
+                try {
+                    answerDecode = variableService.decodeStringCompletly(tCExecution.getConditionVal3(), tCExecution, null, false);
+                    tCExecution.setConditionVal3((String) answerDecode.getItem());
+
+                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_DECODE)
+                                .resolveDescription("MES", answerDecode.getMessageDescription())
+                                .resolveDescription("AREA", "TestCase Condition Value3"));
+                        tCExecution.setEnd(new Date().getTime());
+                        LOG.debug(logPrefix + "TestCase interupted due to decode 'TestCase Condition Value3Error.");
                         conditionDecodeError = true;
                     }
                 } catch (CerberusEventException cex) {
@@ -580,7 +532,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
             if (!conditionDecodeError) {
 
-                conditionAnswerTc = this.conditionService.evaluateCondition(tCExecution.getConditionOper(), tCExecution.getConditionVal1(), tCExecution.getConditionVal2(), tCExecution);
+                conditionAnswerTc = this.conditionService.evaluateCondition(tCExecution.getConditionOper(), tCExecution.getConditionVal1(), tCExecution.getConditionVal2(), tCExecution.getConditionVal3(), tCExecution);
                 boolean execute_TestCase = (boolean) conditionAnswerTc.getItem();
 
                 if (execute_TestCase || tCExecution.getManualExecution().equals("Y")) {
@@ -614,7 +566,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                         .resolveDescription("STEPINDEX", String.valueOf(step_index));
                                 testCaseStepExecution = factoryTestCaseStepExecution.create(
                                         runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
-                                        testCaseStep.getStep(), step_index, testCaseStep.getSort(), testCaseStep.getLoop(), testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), null,
+                                        testCaseStep.getStep(), step_index, testCaseStep.getSort(), testCaseStep.getLoop(), testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal3(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal3(), null,
                                         startStep, 0, startStep, 0, new BigDecimal("0"), null, stepMess, testCaseStep, tCExecution,
                                         testCaseStep.getUseStep(), testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), testCaseStep.getDescription());
                                 testCaseStepExecution.setLoop(testCaseStep.getLoop());
@@ -629,7 +581,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                                 // determine if step is executed (execute_Step) and if we trigger a new step execution after (execute_Next_Step)
                                 boolean execute_Step = true;
-                                boolean conditionStepDecodeError = false;
+                                boolean descriptionOrConditionStepDecodeError = false;
                                 boolean conditionStepError = false;
                                 AnswerItem<Boolean> conditionAnswer = new AnswerItem<>(new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_UNKNOWNCONDITION));
                                 if (testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_ONCEIFCONDITIONFALSE)
@@ -650,12 +602,12 @@ public class ExecutionRunService implements IExecutionRunService {
                                             testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                                             testCaseStepExecution.setEnd(new Date().getTime());
                                             LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value1' Error.");
-                                            conditionStepDecodeError = true;
+                                            descriptionOrConditionStepDecodeError = true;
                                         }
                                     } catch (CerberusEventException cex) {
                                         LOG.warn(cex);
                                     }
-                                    if (!conditionStepDecodeError) {
+                                    if (!descriptionOrConditionStepDecodeError) {
                                         try {
                                             answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionVal2(), tCExecution, null, false);
                                             testCaseStepExecution.setConditionVal2((String) answerDecode.getItem());
@@ -667,15 +619,51 @@ public class ExecutionRunService implements IExecutionRunService {
                                                 testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                                                 testCaseStepExecution.setEnd(new Date().getTime());
                                                 LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value2' Error.");
-                                                conditionStepDecodeError = true;
+                                                descriptionOrConditionStepDecodeError = true;
                                             }
                                         } catch (CerberusEventException cex) {
                                             LOG.warn(cex);
                                         }
                                     }
-                                    if (!(conditionStepDecodeError)) {
+                                    if (!descriptionOrConditionStepDecodeError) {
+                                        try {
+                                            answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionVal3(), tCExecution, null, false);
+                                            testCaseStepExecution.setConditionVal3((String) answerDecode.getItem());
+                                            if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                                testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                                                testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value3"));
+                                                testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value3").getDescription());
+                                                testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
+                                                testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                                                testCaseStepExecution.setEnd(new Date().getTime());
+                                                LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value3' Error.");
+                                                descriptionOrConditionStepDecodeError = true;
+                                            }
+                                        } catch (CerberusEventException cex) {
+                                            LOG.warn(cex);
+                                        }
+                                    }
+                                    if (!descriptionOrConditionStepDecodeError) {
+                                        try {
+                                            answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getDescription(), tCExecution, null, false);
+                                            testCaseStepExecution.setDescription((String) answerDecode.getItem());
+                                            if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                                testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                                                testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Description"));
+                                                testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Description").getDescription());
+                                                testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
+                                                testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                                                testCaseStepExecution.setEnd(new Date().getTime());
+                                                LOG.debug(logPrefix + "Step interupted due to decode 'Step Description' Error.");
+                                                descriptionOrConditionStepDecodeError = true;
+                                            }
+                                        } catch (CerberusEventException cex) {
+                                            LOG.warn(cex);
+                                        }
+                                    }
+                                    if (!(descriptionOrConditionStepDecodeError)) {
 
-                                        conditionAnswer = this.conditionService.evaluateCondition(testCaseStepExecution.getConditionOper(), testCaseStepExecution.getConditionVal1(), testCaseStepExecution.getConditionVal2(), tCExecution);
+                                        conditionAnswer = this.conditionService.evaluateCondition(testCaseStepExecution.getConditionOper(), testCaseStepExecution.getConditionVal1(), testCaseStepExecution.getConditionVal2(), testCaseStepExecution.getConditionVal3(), tCExecution);
                                         execute_Step = (boolean) conditionAnswer.getItem();
                                         if (conditionAnswer.getResultMessage().getMessage().getCodeString().equals("PE")) {
                                             // There were no error when performing the condition evaluation.
@@ -725,11 +713,11 @@ public class ExecutionRunService implements IExecutionRunService {
                                     } else {
 
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                                        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CONDITIONDECODE)
-                                                .resolveDescription("AREA", "Step ")
+                                        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_DECODE)
+                                                .resolveDescription("AREA", "Step")
                                                 .resolveDescription("MES", answerDecode.getMessageDescription()));
                                         tCExecution.setEnd(new Date().getTime());
-                                        LOG.debug(logPrefix + "TestCase interupted due to decode Condition Error.");
+                                        LOG.debug(logPrefix + "TestCase interupted due to decode Error.");
 
                                         // There was an error on decode so we stop everything.
                                         if (tCExecution.getManualExecution().equals("Y")) {
@@ -784,7 +772,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                     }
 
                                 } else // We don't execute the step and record a generic execution.
-                                if ((!conditionStepDecodeError) && (!conditionStepError)) {
+                                if ((!descriptionOrConditionStepDecodeError) && (!conditionStepError)) {
 
                                     /**
                                      * Register Step in database
@@ -821,9 +809,6 @@ public class ExecutionRunService implements IExecutionRunService {
 
                                 // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
                                 updateTCExecutionWebSocketOnly(tCExecution, false);
-//                                if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-//                                    TestCaseExecutionEndPoint.getInstance().send(tCExecution, false);
-//                                }
 
                                 step_index++;
                             } while (execute_Next_Step && step_index <= maxloop);
@@ -844,12 +829,16 @@ public class ExecutionRunService implements IExecutionRunService {
                     }
 
                     /**
-                     * We record Selenium log at the end of the execution.
+                     * We notify external robot provider of end of execution
+                     * status.
                      */
-                    try {
-                        tCExecution.addFileList(recorderService.recordSeleniumLog(tCExecution));
-                    } catch (Exception ex) {
-                        LOG.error(logPrefix + "Exception Getting Selenium Logs " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
+                    switch (tCExecution.getRobotProvider()) {
+                        case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
+                            browserstackService.setSessionStatus(tCExecution.getSystem(), tCExecution.getRobotSessionID(), tCExecution.getControlStatus(), tCExecution.getControlMessage(), tCExecution.getRobotExecutorObj().getHostUser(), tCExecution.getRobotExecutorObj().getHostPassword());
+                            break;
+                        case TestCaseExecution.ROBOTPROVIDER_KOBITON:
+                            kobitonService.setSessionStatus(tCExecution.getSystem(), tCExecution.getRobotSessionID(), tCExecution.getControlStatus(), tCExecution.getControlMessage(), tCExecution.getRobotExecutorObj().getHostUser(), tCExecution.getRobotExecutorObj().getHostPassword());
+                            break;
                     }
 
                 } else { // We don't execute the testcase linked with condition.
@@ -870,13 +859,12 @@ public class ExecutionRunService implements IExecutionRunService {
         } catch (CerberusException ex) {
             /**
              * If an exception is found, set the execution to FA and print the
-             * exception
+             * exception (only in debug mode)
              */
             MessageGeneral messageFin = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA);
             messageFin.setDescription(messageFin.getDescription() + " " + ex.getMessageError().getDescription());
             tCExecution.setResultMessage(messageFin);
-            tCExecution.setControlMessage(tCExecution.getControlMessage() + " Exception: " + ex);
-            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
+            LOG.debug(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " : " + ex.getMessageError().getDescription());
         } catch (Exception ex) {
             /**
              * If an exception is found, set the execution to FA and print the
@@ -886,7 +874,7 @@ public class ExecutionRunService implements IExecutionRunService {
             messageFin.setDescription(messageFin.getDescription() + " " + ex.getMessage());
             tCExecution.setResultMessage(messageFin);
             tCExecution.setControlMessage(tCExecution.getControlMessage() + " Exception: " + ex);
-            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
+            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId(), ex);
         } finally {
 
             /**
@@ -898,7 +886,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
                 tCExecution = this.stopTestCase(tCExecution);
             } catch (Exception ex) {
-                LOG.error(logPrefix + "Exception Stopping Test " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
+                LOG.error(logPrefix + "Exception Stopping Test " + tCExecution.getId() + " Exception : " + ex.toString(), ex);
             }
 
             /**
@@ -920,7 +908,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * Log execution is finished
              */
             LOG.info("Execution Finished : UUID=" + tCExecution.getExecutionUUID()
-                    + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus() + "__"
+                    + " ID=" + tCExecution.getId() + " RC=" + tCExecution.getControlStatus() + " "
                     + "TestName=" + tCExecution.getEnvironment() + "." + tCExecution.getCountry() + "."
                     + tCExecution.getBuild() + "." + tCExecution.getRevision() + "." + tCExecution.getTest() + "_"
                     + tCExecution.getTestCase() + "_" + tCExecution.getTestCaseObj().getDescription().replace(".", ""));
@@ -929,7 +917,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * Retry management, in case the result is not (OK or NE), we
              * execute the job again reducing the retry to 1.
              */
-            retriesService.manageRetries(tCExecution);
+            boolean isRetried = retriesService.manageRetries(tCExecution);
 
             /**
              * Updating queue to done status only for execution from queue
@@ -946,41 +934,16 @@ public class ExecutionRunService implements IExecutionRunService {
              * 1/ The update of the EndExeQueue of the tag <br>
              * 2/ We notify the Distribution List with execution report status
              */
-            try {
-                if (!StringUtil.isNullOrEmpty(tCExecution.getTag())) {
-                    Tag currentTag = tagService.convert(tagService.readByKey(tCExecution.getTag()));
-                    if ((currentTag != null)) {
-                        if (currentTag.getDateEndQueue().before(Timestamp.valueOf("1980-01-01 01:01:01.000000001"))) {
-                            AnswerList answerListQueue = new AnswerList<>();
-                            answerListQueue = executionQueueService.readQueueOpen(tCExecution.getTag());
-                            if (answerListQueue.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && (answerListQueue.getDataList().isEmpty())) {
-                                LOG.debug(logPrefix + "No More executions (in queue or running) on tag : " + tCExecution.getTag() + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString() + " - ");
-                                tagService.updateEndOfQueueData(tCExecution.getTag());
-                                if (!StringUtil.isNullOrEmpty(currentTag.getCampaign())) {
-                                    // We get the campaig here and potencially send the notification.
-                                    notificationService.generateAndSendNotifyEndTagExecution(tCExecution.getTag(), currentTag.getCampaign());
-                                }
-                            } else {
-                                LOG.debug(logPrefix + "Still executions in queue on tag : " + tCExecution.getTag() + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString());
-                            }
-                        } else {
-                            LOG.debug(logPrefix + "Tag is already flaged with recent timestamp. " + currentTag.getDateEndQueue());
-                        }
+            tagService.manageCampaignEndOfExecution(tCExecution.getTag());
 
-                    }
-                }
-            } catch (Exception e) {
-                LOG.error(e, e);
-            }
-
-            
             /**
-             * Dependency management, At the end of the execution, we
-             * RELEASE the corresponding dependencies and put corresponding
-             * Queue entries to QUEUED status.
+             * Dependency management, At the end of the execution, we RELEASE
+             * the corresponding dependencies and put corresponding Queue
+             * entries to QUEUED status.
              */
-            testCaseExecutionQueueDepService.manageDependenciesEndOfExecution(tCExecution);
-            
+            if (!isRetried) {
+                testCaseExecutionQueueDepService.manageDependenciesEndOfExecution(tCExecution);
+            }
 
             // After every execution finished we try to trigger more from the queue;-).
             executionThreadPoolService.executeNextInQueueAsynchroneously(false);
@@ -1020,7 +983,7 @@ public class ExecutionRunService implements IExecutionRunService {
         LOG.debug(tCExecution.getId() + " - Stop the execution " + tCExecution.getId() + " UUID:" + tCExecution.getExecutionUUID());
         try {
             //TODO:FN debug messages to be removed
-            LOG.debug("[DEBUG] STOP " + "__ID=" + tCExecution.getId());
+            LOG.debug("[DEBUG] STOP " + " ID=" + tCExecution.getId());
             this.stopRunTestCase(tCExecution);
         } catch (Exception ex) {
             LOG.warn("Exception Stopping Execution " + tCExecution.getId() + " Exception :" + ex.toString());
@@ -1084,8 +1047,10 @@ public class ExecutionRunService implements IExecutionRunService {
             TestCaseStepActionExecution testCaseStepActionExecution = factoryTestCaseStepActionExecution.create(
                     testCaseStepExecution.getId(), testCaseStepAction.getTest(), testCaseStepAction.getTestCase(),
                     testCaseStepAction.getStep(), testCaseStepExecution.getIndex(), testCaseStepAction.getSequence(), testCaseStepAction.getSort(), null, null,
-                    testCaseStepAction.getConditionOper(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(),
-                    testCaseStepAction.getAction(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(),
+                    testCaseStepAction.getConditionOper(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), testCaseStepAction.getConditionVal3(),
+                    testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), testCaseStepAction.getConditionVal3(),
+                    testCaseStepAction.getAction(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(), testCaseStepAction.getValue3(), testCaseStepAction.getValue1(),
+                    testCaseStepAction.getValue2(), testCaseStepAction.getValue3(),
                     testCaseStepAction.getForceExeStatus(), startAction, 0, startAction, 0, new MessageEvent(MessageEventEnum.ACTION_PENDING),
                     testCaseStepAction.getDescription(), testCaseStepAction, testCaseStepExecution);
             this.testCaseStepActionExecutionService.insertTestCaseStepActionExecution(testCaseStepActionExecution);
@@ -1136,10 +1101,26 @@ public class ExecutionRunService implements IExecutionRunService {
                 } catch (CerberusEventException cex) {
                     LOG.warn(cex);
                 }
+                try {
+                    answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getConditionVal3(), tcExecution, null, false);
+                    testCaseStepActionExecution.setConditionVal3((String) answerDecode.getItem());
+
+                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                        testCaseStepActionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Condition Value3"));
+                        testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                        testCaseStepActionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                        testCaseStepActionExecution.setEnd(new Date().getTime());
+                        LOG.debug("Action interupted due to decode 'Action Condition Value3' Error.");
+                        conditionDecodeError = true;
+                    }
+                } catch (CerberusEventException cex) {
+                    LOG.warn(cex);
+                }
             }
 
             if (!(conditionDecodeError)) {
-                conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionExecution.getConditionOper(), testCaseStepActionExecution.getConditionVal1(), testCaseStepActionExecution.getConditionVal2(), tcExecution);
+                conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionExecution.getConditionOper(), testCaseStepActionExecution.getConditionVal1(), testCaseStepActionExecution.getConditionVal2(), testCaseStepActionExecution.getConditionVal3(), tcExecution);
                 boolean execute_Action = (boolean) conditionAnswer.getItem();
 
                 /**
@@ -1152,7 +1133,8 @@ public class ExecutionRunService implements IExecutionRunService {
                     // Execute or not the action here.
                     if (execute_Action || tcExecution.getManualExecution().equals("Y")) {
                         LOG.debug("Executing action : " + testCaseStepActionExecution.getAction() + " with val1 : " + testCaseStepActionExecution.getValue1()
-                                + " and val2 : " + testCaseStepActionExecution.getValue2());
+                                + " and val2 : " + testCaseStepActionExecution.getValue2()
+                                + " and val3 : " + testCaseStepActionExecution.getValue3());
 
                         /**
                          * We execute the Action
@@ -1263,10 +1245,6 @@ public class ExecutionRunService implements IExecutionRunService {
         this.testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
 
         updateTCExecutionWebSocketOnly(tcExecution, false);
-//        // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-//        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-//            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
-//        }
 
         return testCaseStepExecution;
     }
@@ -1288,7 +1266,7 @@ public class ExecutionRunService implements IExecutionRunService {
             try {
                 testCaseStepActionExecution.addFileList(recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null));
             } catch (Exception ex) {
-                LOG.warn("Unable to record Screenshot/PageSource : " + ex.toString());
+                LOG.warn("Unable to record Screenshot/PageSource : " + ex.toString(), ex);
             }
 
         } else {
@@ -1333,9 +1311,9 @@ public class ExecutionRunService implements IExecutionRunService {
                     = factoryTestCaseStepActionControlExecution.create(testCaseStepActionExecution.getId(), testCaseStepActionControl.getTest(), testCaseStepActionControl.getTestCase(),
                             testCaseStepActionControl.getStep(), testCaseStepActionExecution.getIndex(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControlSequence(), testCaseStepActionControl.getSort(),
                             null, null,
-                            testCaseStepActionControl.getConditionOper(), testCaseStepActionControl.getConditionVal1(), testCaseStepActionControl.getConditionVal2(), testCaseStepActionControl.getConditionVal1(), testCaseStepActionControl.getConditionVal2(),
-                            testCaseStepActionControl.getControl(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(),
-                            testCaseStepActionControl.getFatal(), startControl, 0, 0, 0,
+                            testCaseStepActionControl.getConditionOper(), testCaseStepActionControl.getConditionVal1(), testCaseStepActionControl.getConditionVal2(), testCaseStepActionControl.getConditionVal3(), testCaseStepActionControl.getConditionVal1(), testCaseStepActionControl.getConditionVal2(), testCaseStepActionControl.getConditionVal3(),
+                            testCaseStepActionControl.getControl(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(), testCaseStepActionControl.getValue3(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(),
+                            testCaseStepActionControl.getValue3(), testCaseStepActionControl.getFatal(), startControl, 0, 0, 0,
                             testCaseStepActionControl.getDescription(), testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
 
@@ -1383,11 +1361,27 @@ public class ExecutionRunService implements IExecutionRunService {
                 } catch (CerberusEventException cex) {
                     LOG.warn(cex);
                 }
+                try {
+                    answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getConditionVal3(), tcExecution, null, false);
+                    testCaseStepActionControlExecution.setConditionVal3((String) answerDecode.getItem());
+
+                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                        testCaseStepActionControlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Condition Value3"));
+                        testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                        testCaseStepActionControlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                        testCaseStepActionControlExecution.setEnd(new Date().getTime());
+                        LOG.debug("Control interupted due to decode 'Control Condition Value3' Error.");
+                        conditionDecodeError = true;
+                    }
+                } catch (CerberusEventException cex) {
+                    LOG.warn(cex);
+                }
             }
 
             if (!(conditionDecodeError)) {
 
-                conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionControlExecution.getConditionOper(), testCaseStepActionControlExecution.getConditionVal1(), testCaseStepActionControlExecution.getConditionVal2(), tcExecution);
+                conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionControlExecution.getConditionOper(), testCaseStepActionControlExecution.getConditionVal1(), testCaseStepActionControlExecution.getConditionVal2(), testCaseStepActionControlExecution.getConditionVal3(), tcExecution);
                 boolean execute_Control = (boolean) conditionAnswer.getItem();
                 /**
                  * If condition OK or if manual execution, then execute the
@@ -1455,9 +1449,6 @@ public class ExecutionRunService implements IExecutionRunService {
 
                         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
                         updateTCExecutionWebSocketOnly(tcExecution, false);
-//                        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-//                            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
-//                        }
 
                     }
                 } else {
@@ -1497,9 +1488,6 @@ public class ExecutionRunService implements IExecutionRunService {
 
                 // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
                 updateTCExecutionWebSocketOnly(tcExecution, false);
-//                if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-//                    TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
-//                }
             }
 
             /**
@@ -1513,9 +1501,6 @@ public class ExecutionRunService implements IExecutionRunService {
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         updateTCExecutionWebSocketOnly(tcExecution, false);
-//        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-//            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
-//        }
 
         LOG.debug("Finished execute Action : " + testCaseStepActionExecution.getAction());
         return testCaseStepActionExecution;
@@ -1552,33 +1537,46 @@ public class ExecutionRunService implements IExecutionRunService {
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         updateTCExecutionWebSocketOnly(tcExecution, false);
-//        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-//            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
-//        }
 
         return testCaseStepActionControlExecution;
     }
 
     private TestCaseExecution stopRunTestCase(TestCaseExecution tCExecution) {
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-            try {
-                this.seleniumServerService.stopServer(tCExecution);
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Stop server for execution " + tCExecution.getId());
+
+        switch (tCExecution.getApplicationObj().getType()) {
+            case Application.TYPE_GUI:
+            case Application.TYPE_APK:
+            case Application.TYPE_IPA:
+                try {
+                    this.robotServerService.stopServer(tCExecution);
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Stop server for execution " + tCExecution.getId());
+                    }
+                } catch (WebDriverException exception) {
+                    LOG.warn("Selenium/Appium didn't manage to close connection for execution " + tCExecution.getId(), exception);
                 }
-            } catch (WebDriverException exception) {
-                LOG.warn("Selenium didn't manage to close connection for execution " + tCExecution.getId() + " due to " + exception.toString(), exception);
-            }
+                break;
+            case Application.TYPE_FAT:
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Stop Sikuli server for execution " + tCExecution.getId() + " closing application " + tCExecution.getCountryEnvironmentParameters().getIp());
+                }
+                if (!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getIp())) {
+                    this.sikuliService.doSikuliActionCloseApp(tCExecution.getSession(), tCExecution.getCountryEnvironmentParameters().getIp());
+                }
+                break;
+            default:
         }
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+
+        /**
+         * Stopping remote proxy.
+         */
+        try {
+            this.robotServerService.stopRemoteProxy(tCExecution);
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Stop Sikuli server for execution " + tCExecution.getId() + " closing application " + tCExecution.getCountryEnvironmentParameters().getIp());
+                LOG.debug("Stop Cerberus Executor Proxy for execution " + tCExecution.getId());
             }
-            if (!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getIp())) {
-                this.sikuliService.doSikuliActionCloseApp(tCExecution.getSession(), tCExecution.getCountryEnvironmentParameters().getIp());
-            }
+        } catch (Exception exception) {
+            LOG.warn("Exception on Cerberus Executor Proxy stop for execution " + tCExecution.getId(), exception);
         }
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.

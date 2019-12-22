@@ -171,9 +171,9 @@ public class ReadInvariant extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findInvariantListByIdName(ApplicationContext appContext, String access, String idName) throws JSONException {
-        AnswerList answerService;
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findInvariantListByIdName(ApplicationContext appContext, String access, String idName) throws JSONException {
+        AnswerList<Invariant> answerService;
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         //finds the list of invariants by idname
@@ -198,8 +198,8 @@ public class ReadInvariant extends HttpServlet {
         return answer;
     }
 
-    private AnswerItem findInvariantListBykey(ApplicationContext appContext, String idName, String value) throws JSONException, CerberusException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<Invariant> findInvariantListBykey(ApplicationContext appContext, String idName, String value) throws JSONException, CerberusException {
+        AnswerItem<Invariant> answer = new AnswerItem<>();
 
         //finds the list of invariants by idname
         invariantService = appContext.getBean(InvariantService.class);
@@ -214,8 +214,8 @@ public class ReadInvariant extends HttpServlet {
         return answer;
     }
 
-    private AnswerItem findInvariantList(ApplicationContext appContext, String access, HttpServletRequest request, HttpServletResponse response) throws JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findInvariantList(ApplicationContext appContext, String access, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
 
         invariantService = appContext.getBean(IInvariantService.class);
@@ -231,7 +231,7 @@ public class ReadInvariant extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList answerService;
+        AnswerList<Invariant> answerInv;
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
@@ -246,34 +246,34 @@ public class ReadInvariant extends HttpServlet {
         }
 
         if ("PUBLIC".equals(access)) {
-            answerService = invariantService.readByPublicByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+            answerInv = invariantService.readByPublicByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
         } else if ("PRIVATE".equals(access)) {
-            answerService = invariantService.readByPrivateByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+            answerInv = invariantService.readByPrivateByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
         } else {
-            answerService = invariantService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+            answerInv = invariantService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
         }
 
         JSONArray jsonArray = new JSONArray();
         //boolean userHasPermissions = request.isUserInRole("Integrator"); //TODO:need to chec
-        if (answerService.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Invariant inv : (List<Invariant>) answerService.getDataList()) {
+        if (answerInv.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (Invariant inv : (List<Invariant>) answerInv.getDataList()) {
                 jsonArray.put(convertInvariantToJSONObject(inv));
             }
         }
 
         //jsonResponse.put("hasPermissions", userHasPermissions);
         jsonResponse.put("contentTable", jsonArray);
-        jsonResponse.put("iTotalRecords", answerService.getTotalRows());
-        jsonResponse.put("iTotalDisplayRecords", answerService.getTotalRows());
+        jsonResponse.put("iTotalRecords", answerInv.getTotalRows());
+        jsonResponse.put("iTotalDisplayRecords", answerInv.getTotalRows());
 
         item.setItem(jsonResponse);
-        item.setResultMessage(answerService.getResultMessage());
+        item.setResultMessage(answerInv.getResultMessage());
         return item;
 
     }
 
-    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName, String access) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName, String access) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         invariantService = appContext.getBean(IInvariantService.class);

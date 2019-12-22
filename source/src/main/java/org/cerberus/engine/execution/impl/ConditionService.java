@@ -38,6 +38,7 @@ import org.cerberus.service.json.IJsonService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.openqa.selenium.WebDriverException;
@@ -71,10 +72,10 @@ public class ConditionService implements IConditionService {
     private static final Logger LOG = LogManager.getLogger(ConditionService.class);
 
     @Override
-    public AnswerItem<Boolean> evaluateCondition(String conditionOper, String conditionValue1, String conditionValue2, TestCaseExecution tCExecution) {
+    public AnswerItem<Boolean> evaluateCondition(String conditionOper, String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution tCExecution) {
 
         LOG.debug("Starting Evaluation condition : " + conditionOper);
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
         boolean execute_Operation = true;
 
@@ -104,6 +105,11 @@ public class ConditionService implements IConditionService {
                 mes = ans.getResultMessage();
                 break;
 
+            case TestCaseStepAction.CONDITIONOPER_IFPROPERTYNOTEXIST:
+                ans = evaluateCondition_ifPropertyNotExist(conditionOper, conditionValue1, tCExecution);
+                mes = ans.getResultMessage();
+                break;
+
             case TestCaseStepAction.CONDITIONOPER_IFNUMERICEQUAL:
             case TestCaseStepAction.CONDITIONOPER_IFNUMERICDIFFERENT:
             case TestCaseStepAction.CONDITIONOPER_IFNUMERICGREATER:
@@ -115,12 +121,12 @@ public class ConditionService implements IConditionService {
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFSTRINGEQUAL:
-                ans = evaluateCondition_ifStringEqual(conditionOper, conditionValue1, conditionValue2);
+                ans = evaluateCondition_ifStringEqual(conditionOper, conditionValue1, conditionValue2, conditionValue3);
                 mes = ans.getResultMessage();
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFSTRINGDIFFERENT:
-                ans = evaluateCondition_ifStringDifferent(conditionOper, conditionValue1, conditionValue2);
+                ans = evaluateCondition_ifStringDifferent(conditionOper, conditionValue1, conditionValue2, conditionValue3);
                 mes = ans.getResultMessage();
                 break;
 
@@ -135,7 +141,12 @@ public class ConditionService implements IConditionService {
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFSTRINGCONTAINS:
-                ans = evaluateCondition_ifStringContains(conditionOper, conditionValue1, conditionValue2);
+                ans = evaluateCondition_ifStringContains(conditionOper, conditionValue1, conditionValue2, conditionValue3);
+                mes = ans.getResultMessage();
+                break;
+
+            case TestCaseStepAction.CONDITIONOPER_IFSTRINGNOTCONTAINS:
+                ans = evaluateCondition_ifStringNotContains(conditionOper, conditionValue1, conditionValue2, conditionValue3);
                 mes = ans.getResultMessage();
                 break;
 
@@ -145,12 +156,12 @@ public class ConditionService implements IConditionService {
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFTEXTINELEMENT:
-                ans = evaluateCondition_ifTextInElement(tCExecution, conditionValue1, conditionValue2, conditionOper);
+                ans = evaluateCondition_ifTextInElement(tCExecution, conditionValue1, conditionValue2, conditionOper, conditionValue3);
                 mes = ans.getResultMessage();
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFTEXTNOTINELEMENT:
-                ans = evaluateCondition_ifTextNotInElement(tCExecution, conditionValue1, conditionValue2, conditionOper);
+                ans = evaluateCondition_ifTextNotInElement(tCExecution, conditionValue1, conditionValue2, conditionOper, conditionValue3);
                 mes = ans.getResultMessage();
                 break;
 
@@ -172,14 +183,17 @@ public class ConditionService implements IConditionService {
         return ans;
     }
 
-    private AnswerItem<Boolean> evaluateCondition_ifTextInElement(TestCaseExecution tCExecution, String path, String expected, String conditionOper) {
+    private AnswerItem<Boolean> evaluateCondition_ifTextInElement(TestCaseExecution tCExecution, String path, String expected, String conditionOper, String isCaseSensitive) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking ifTextInElement on " + path + " element against value: " + expected);
 
         }
         AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent resultControlMes = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
-        resultControlMes = controlService.verifyTextInElement(tCExecution, path, expected);
+
+        isCaseSensitive = defaultIsSensitiveValue(isCaseSensitive);
+
+        resultControlMes = controlService.verifyTextInElement(tCExecution, path, expected, isCaseSensitive);
 
         if ("OK".equals(resultControlMes.getCodeString())) {
 
@@ -200,14 +214,17 @@ public class ConditionService implements IConditionService {
 
     }
 
-    private AnswerItem<Boolean> evaluateCondition_ifTextNotInElement(TestCaseExecution tCExecution, String path, String expected, String conditionOper) {
+    private AnswerItem<Boolean> evaluateCondition_ifTextNotInElement(TestCaseExecution tCExecution, String path, String expected, String conditionOper, String isCaseSensitive) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking ifTextInElement on " + path + " element against value: " + expected);
 
         }
         AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent resultMes = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
-        resultMes = controlService.verifyTextNotInElement(tCExecution, path, expected);
+
+        isCaseSensitive = defaultIsSensitiveValue(isCaseSensitive);
+
+        resultMes = controlService.verifyTextNotInElement(tCExecution, path, expected, isCaseSensitive);
 
         if ("OK".equals(resultMes.getCodeString())) {
 
@@ -232,7 +249,7 @@ public class ConditionService implements IConditionService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if property Exist");
         }
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
 
         if (StringUtil.isNullOrEmpty(conditionValue1)) {
@@ -265,11 +282,48 @@ public class ConditionService implements IConditionService {
         return ans;
     }
 
+    private AnswerItem<Boolean> evaluateCondition_ifPropertyNotExist(String conditionOper, String conditionValue1, TestCaseExecution tCExecution) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if property Does not Exist");
+        }
+        AnswerItem<Boolean> ans = new AnswerItem<>();
+        MessageEvent mes;
+
+        if (StringUtil.isNullOrEmpty(conditionValue1)) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFPROPERTYNOTEXIST_MISSINGPARAMETER);
+            mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
+
+        } else {
+            String myCountry = tCExecution.getCountry();
+            String myProperty = conditionValue1;
+            boolean execute_Action = true;
+            for (TestCaseCountryProperties prop : tCExecution.getTestCaseCountryPropertyList()) {
+                LOG.debug(prop.getCountry() + " - " + myCountry + " - " + prop.getProperty() + " - " + myProperty);
+                if ((prop.getCountry().equals(myCountry)) && (prop.getProperty().equals(myProperty))) {
+                    execute_Action = false;
+                }
+            }
+            if (execute_Action == false) {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFPROPERTYNOTEXIST);
+                mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
+                mes.setDescription(mes.getDescription().replace("%PROP%", conditionValue1));
+                mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFPROPERTYNOTEXIST);
+                mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
+                mes.setDescription(mes.getDescription().replace("%PROP%", conditionValue1));
+                mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
+            }
+        }
+        ans.setResultMessage(mes);
+        return ans;
+    }
+
     private AnswerItem<Boolean> evaluateCondition_ifElementPresent(String conditionOper, String conditionValue1, TestCaseExecution tCExecution) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if Element Present");
         }
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
 
         if (tCExecution.getManualExecution().equals("Y")) {
@@ -280,11 +334,11 @@ public class ConditionService implements IConditionService {
         } else {
             boolean condition_result = false;
 
-            Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);
-
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+
+                Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);
 
                 try {
                     if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
@@ -308,6 +362,10 @@ public class ConditionService implements IConditionService {
 
                     switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
+                            if (LOG.isDebugEnabled()) {
+                                LOG.debug("Checking if Element Present - XML");
+                            }
+
                             if (xmlUnitService.isElementPresent(responseBody, conditionValue1)) {
                                 condition_result = true;
                                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
@@ -317,7 +375,12 @@ public class ConditionService implements IConditionService {
                                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
                                 mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
                             }
-                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
+                            break;
+
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
+                            if (LOG.isDebugEnabled()) {
+                                LOG.debug("Checking if Element Present - JSON");
+                            }
                             try {
                                 if (jsonService.getFromJson(responseBody, null, conditionValue1) != null) {
                                     condition_result = true;
@@ -332,7 +395,8 @@ public class ConditionService implements IConditionService {
                                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_GENERIC);
                                 mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
                             }
-                        }
+                            break;
+
                         default:
                             condition_result = false;
                             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_MESSAGETYPE);
@@ -360,7 +424,7 @@ public class ConditionService implements IConditionService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if Element is Not Present");
         }
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
 
         if (tCExecution.getManualExecution().equals("Y")) {
@@ -406,6 +470,7 @@ public class ConditionService implements IConditionService {
                     String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
 
                     switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
+
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
                             if (!xmlUnitService.isElementPresent(responseBody, conditionValue1)) {
                                 condition_result = true;
@@ -416,7 +481,9 @@ public class ConditionService implements IConditionService {
                                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTPRESENT);
                                 mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
                             }
-                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
+                            break;
+
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                             try {
                                 if (jsonService.getFromJson(responseBody, null, conditionValue1) == null) {
                                     condition_result = true;
@@ -431,7 +498,8 @@ public class ConditionService implements IConditionService {
                                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_GENERIC);
                                 mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
                             }
-                        }
+                            break;
+
                         default:
                             condition_result = false;
                             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_MESSAGETYPE);
@@ -455,49 +523,61 @@ public class ConditionService implements IConditionService {
         return ans;
     }
 
-    private AnswerItem<Boolean> evaluateCondition_ifStringEqual(String conditionOper, String conditionValue1, String conditionValue2) {
+    private AnswerItem<Boolean> evaluateCondition_ifStringEqual(String conditionOper, String conditionValue1, String conditionValue2, String isCaseSensitive) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if String Equal");
         }
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
 
-        if (conditionValue1.equals(conditionValue2)) {
+        isCaseSensitive = defaultIsSensitiveValue(isCaseSensitive);
+
+        if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? conditionValue1.equals(conditionValue2) : conditionValue1.equalsIgnoreCase(conditionValue2)) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_STRINGEQUAL);
             mes.setDescription(mes.getDescription()
                     .replace("%COND%", conditionOper)
-                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+                    .replace("%STR1%", conditionValue1)
+                    .replace("%STR2%", conditionValue2)
+                    .replace("%STRING3%", isCaseSensitive)
             );
         } else {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STRINGEQUAL);
             mes.setDescription(mes.getDescription()
                     .replace("%COND%", conditionOper)
-                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+                    .replace("%STR1%", conditionValue1)
+                    .replace("%STR2%", conditionValue2)
+                    .replace("%STRING3%", isCaseSensitive)
             );
         }
         ans.setResultMessage(mes);
         return ans;
     }
 
-    private AnswerItem<Boolean> evaluateCondition_ifStringDifferent(String conditionOper, String conditionValue1, String conditionValue2) {
+    private AnswerItem<Boolean> evaluateCondition_ifStringDifferent(String conditionOper, String conditionValue1, String conditionValue2, String isCaseSensitive) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if String Different");
         }
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
 
+        isCaseSensitive = defaultIsSensitiveValue(isCaseSensitive);
+
         boolean execute_Action = true;
-        if (!(conditionValue1.equals(conditionValue2))) {
+        if (!(ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? conditionValue1.equals(conditionValue2) : conditionValue1.equalsIgnoreCase(conditionValue2))) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_STRINGDIFFERENT);
             mes.setDescription(mes.getDescription()
                     .replace("%COND%", conditionOper)
-                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+                    .replace("%STR1%", conditionValue1)
+                    .replace("%STR2%", conditionValue2)
+                    .replace("%STRING3%", isCaseSensitive)
             );
         } else {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STRINGDIFFERENT);
             mes.setDescription(mes.getDescription()
                     .replace("%COND%", conditionOper)
-                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+                    .replace("%STR1%", conditionValue1)
+                    .replace("%STR2%", conditionValue2)
+                    .replace("%STRING3%", isCaseSensitive)
             );
         }
         ans.setItem(execute_Action);
@@ -509,7 +589,7 @@ public class ConditionService implements IConditionService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if String Greater");
         }
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
 
         boolean execute_Action = true;
@@ -535,7 +615,7 @@ public class ConditionService implements IConditionService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if String Minor");
         }
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
 
         boolean execute_Action = true;
@@ -557,26 +637,68 @@ public class ConditionService implements IConditionService {
         return ans;
     }
 
-    private AnswerItem<Boolean> evaluateCondition_ifStringContains(String conditionOper, String conditionValue1, String conditionValue2) {
+    private AnswerItem<Boolean> evaluateCondition_ifStringContains(String conditionOper, String conditionValue1, String conditionValue2, String isCaseSensitive) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if String Contains");
         }
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
 
+        isCaseSensitive = defaultIsSensitiveValue(isCaseSensitive);
+
         boolean execute_Action = true;
-        if (conditionValue1.contains(conditionValue2)) {
+        if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? conditionValue1.contains(conditionValue2) : conditionValue1.toLowerCase().contains(conditionValue2.toLowerCase())) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_STRINGCONTAINS);
             mes.setDescription(mes.getDescription()
                     .replace("%COND%", conditionOper)
-                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+                    .replace("%STR1%", conditionValue1)
+                    .replace("%STR2%", conditionValue2)
+                    .replace("%STRING3%", isCaseSensitive)
             );
+//            execute_Action = true;
         } else {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STRINGCONTAINS);
             mes.setDescription(mes.getDescription()
                     .replace("%COND%", conditionOper)
-                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+                    .replace("%STR1%", conditionValue1)
+                    .replace("%STR2%", conditionValue2)
+                    .replace("%STRING3%", isCaseSensitive)
             );
+//            execute_Action = false;
+        }
+        ans.setItem(execute_Action);
+        ans.setResultMessage(mes);
+        return ans;
+    }
+
+    private AnswerItem<Boolean> evaluateCondition_ifStringNotContains(String conditionOper, String conditionValue1, String conditionValue2, String isCaseSensitive) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if String Does Not Contains");
+        }
+        AnswerItem<Boolean> ans = new AnswerItem<>();
+        MessageEvent mes;
+
+        isCaseSensitive = defaultIsSensitiveValue(isCaseSensitive);
+
+        boolean execute_Action = true;
+        if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? conditionValue1.contains(conditionValue2) : conditionValue1.toLowerCase().contains(conditionValue2.toLowerCase())) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STRINGCONTAINS);
+            mes.setDescription(mes.getDescription()
+                    .replace("%COND%", conditionOper)
+                    .replace("%STR1%", conditionValue1)
+                    .replace("%STR2%", conditionValue2)
+                    .replace("%STRING3%", isCaseSensitive)
+            );
+//            execute_Action = true;
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_STRINGCONTAINS);
+            mes.setDescription(mes.getDescription()
+                    .replace("%COND%", conditionOper)
+                    .replace("%STR1%", conditionValue1)
+                    .replace("%STR2%", conditionValue2)
+                    .replace("%STRING3%", isCaseSensitive)
+            );
+//            execute_Action = false;
         }
         ans.setItem(execute_Action);
         ans.setResultMessage(mes);
@@ -587,7 +709,7 @@ public class ConditionService implements IConditionService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if Numeric Equals");
         }
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_PENDING);
 
         // We first prepare the string for nueric conversion to replace , by .
@@ -740,6 +862,13 @@ public class ConditionService implements IConditionService {
         mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_SELENIUM_CONNECTIVITY);
         mes.setDescription(mes.getDescription().replace("%ERROR%", exception.getMessage().split("\n")[0]));
         return mes;
+    }
+
+    private String defaultIsSensitiveValue(String isCaseSensitive) {
+        if (StringUtil.isNullOrEmpty(isCaseSensitive)) {
+            isCaseSensitive = "N";
+        }
+        return isCaseSensitive;
     }
 
 }

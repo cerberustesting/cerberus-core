@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+var nbRow = 0;
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
@@ -34,28 +36,10 @@ function initPage() {
     var urlRevision = GetURLParameter('revision', 'ALL'); // Feed Revision combo with Revision list.
     var urlEnvGp = GetURLParameter('envgp', 'ALL'); // Feed Environment Group combo with Environment list.
     var urlActive = GetURLParameter('active', 'ALL'); // Feed Active combo with Active list.
-    
+
+    var urlSystem = GetURLParameter('system', 'ALL'); // Feed Environment combo with Environment list.
     var urlCountry = GetURLParameter('country', 'ALL'); // Feed Country combo with Country list.
     var urlEnvironment = GetURLParameter('environment', 'ALL'); // Feed Environment combo with Environment list.
-
-//    appendBuildList("build", "1", urlBuild);
-//    appendBuildList("revision", "2", urlRevision);
-//
-//    var select = $('#selectCountry');
-//    select.append($('<option></option>').text("-- ALL --").val("ALL"));
-//    displayInvariantList("country", "COUNTRY", false, urlCountry);
-//
-//    var select = $('#selectEnvironment');
-//    select.append($('<option></option>').text("-- ALL --").val("ALL"));
-//    displayInvariantList("environment", "ENVIRONMENT", false, urlEnvironment);
-//
-//    var select = $('#selectEnvGp');
-//    select.append($('<option></option>').text("-- ALL --").val("ALL"));
-//    displayInvariantList("envGp", "ENVGP", false, urlEnvGp);
-//
-//    var select = $('#selectActive');
-//    select.append($('<option></option>').text("-- ALL --").val("ALL"));
-//    displayInvariantList("active", "ENVACTIVE", false, urlActive);
 
     displayInvariantList("system", "SYSTEM", false);
     displayInvariantList("country", "COUNTRY", false);
@@ -65,16 +49,11 @@ function initPage() {
     displayInvariantList("maintenanceAct", "MNTACTIVE", false, "N");
     displayInvariantList("chain", "CHAIN", false, "Y");
     displayBatchInvariantList('batch', getUser().defaultSystem);
-    
-//    var toto = new Array;
-//    toto.push("active=[\"Y\"]");
-//    toto.push("system=cerberus");
-//    generateFiltersOnMultipleColumns("environmentsTable", toto);
 
-//    displayBuildList('#newBuild', getUser().defaultSystem, "1", "", "", "");
-//    displayBuildList('#newRevision', getUser().defaultSystem, "2", "", "", "");
+    displayBuildList('#newBuild', getUser().defaultSystem, "1", "", "", "");
+    displayBuildList('#newRevision', getUser().defaultSystem, "2", "", "", "");
 
-    var table = loadEnvTable(urlCountry, urlEnvironment, urlBuild, urlRevision, urlEnvGp, urlActive);
+    var table = loadEnvTable(urlCountry, urlEnvironment, urlBuild, urlRevision, urlEnvGp, urlActive, urlSystem);
 
     // Load the select needed in localStorage cache.
     getSelectApplication(getUser().defaultSystem, true);
@@ -163,7 +142,7 @@ function displayPageLabel() {
     $("[name='tab2Text']").html(doc.getDocOnline("page_environment", "tabInstallInstruction"));
     $("[name='buildHeader']").html(doc.getDocOnline("buildrevisionparameters", "Build"));
     $("[name='revisionHeader']").html(doc.getDocOnline("buildrevisionparameters", "Revision"));
-    $("[name='applicationHeader']").html(doc.getDocOnline("buildrevisionparameters", "application"));
+//    $("[name='applicationHeader']").html(doc.getDocOnline("buildrevisionparameters", "application"));
     $("[name='releaseHeader']").html(doc.getDocOnline("buildrevisionparameters", "Release"));
     $("[name='linkHeader']").html(doc.getDocOnline("buildrevisionparameters", "Link"));
     $("[name='versionHeader']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
@@ -184,14 +163,14 @@ function displayPageLabel() {
     $("[name='tabDeploy']").html(doc.getDocOnline("page_environment", "tabDeploy"));
     $("[name='tabNotif']").html(doc.getDocOnline("page_environment", "tabNotif"));
     // Application List
-    $("[name='applicationHeader']").html(doc.getDocOnline("application", "Application"));
-    $("[name='ipHeader']").html(doc.getDocOnline("countryenvironmentparameters", "IP") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
-    $("[name='urlHeader']").html(doc.getDocOnline("countryenvironmentparameters", "URL") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "domain"));
-    $("#var1Header").html(doc.getDocOnline("countryenvironmentparameters", "Var1") 
-            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var2"));
-    $("#var3Header").html(doc.getDocOnline("countryenvironmentparameters", "Var3") 
-            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var4"));
-    $("#poolSizeHeader").html(doc.getDocOnline("countryenvironmentparameters", "poolSize"));
+//    $("[name='applicationHeader']").html(doc.getDocOnline("application", "Application"));
+//    $("[name='ipHeader']").html(doc.getDocOnline("countryenvironmentparameters", "IP") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
+//    $("[name='urlHeader']").html(doc.getDocOnline("countryenvironmentparameters", "URL") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "domain"));
+//    $("#var1Header").html(doc.getDocOnline("countryenvironmentparameters", "Var1")
+//            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var2"));
+//    $("#var3Header").html(doc.getDocOnline("countryenvironmentparameters", "Var3")
+//            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var4"));
+//    $("#poolSizeHeader").html(doc.getDocOnline("countryenvironmentparameters", "poolSize"));
 
     // Databases List
     $("[name='databaseHeader']").html(doc.getDocOnline("countryenvironmentdatabase", "Database"));
@@ -207,8 +186,7 @@ function displayPageLabel() {
     displayFooter(doc);
 }
 
-function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevision, selectEnvGp, selectActive) {
-
+function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevision, selectEnvGp, selectActive, selectSystem) {
 
     //clear the old report content before reloading it
     $("#environmentList").empty();
@@ -216,29 +194,45 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
                                             </table><div class="marginBottom20"></div>');
 
     //configure and create the dataTable
-    var contentUrl = "ReadCountryEnvParam?forceList=Y&system=" + getUser().defaultSystem;
-//    if ((selectEnvironment!==null) && (selectEnvironment !== 'ALL')) {
-//        contentUrl = contentUrl + "&environment=" + selectEnvironment;
-//    }
-//    if ((selectCountry!==null) && (selectCountry !== 'ALL')) {
-//        contentUrl = contentUrl + "&country=" + selectCountry;
-//    }
-//    if ((selectBuild!==null) && (selectBuild !== 'ALL')) {
-//        contentUrl = contentUrl + "&build=" + selectBuild;
-//    }
-//    if ((selectRevision!==null) && (selectRevision !== 'ALL')) {
-//        contentUrl = contentUrl + "&revision=" + selectRevision;
-//    }
-//    if ((selectEnvGp!==null) && (selectEnvGp !== 'ALL')) {
-//        contentUrl = contentUrl + "&envgp=" + selectEnvGp;
-//    }
-//    if ((selectActive!==null) && (selectActive !== 'ALL')) {
-//        contentUrl = contentUrl + "&active=" + selectActive;
-//    }
+    var contentUrl = "ReadCountryEnvParam?forceList=Y";
 
     var configurations = new TableConfigurationsServerSide("environmentsTable", contentUrl, "contentTable", aoColumnsFunc("environmentsTable"), [3, 'asc']);
 
     var table = createDataTableWithPermissions(configurations, renderOptionsForEnv, "#environmentList", undefined, true);
+
+    var searchArray = [];
+    var searchObject = {param: "col", values: "val"};
+
+    if ((selectEnvironment !== null) && (selectEnvironment !== 'ALL')) {
+        searchObject = {param: "environment", values: selectEnvironment};
+        searchArray.push(searchObject);
+    }
+    if ((selectCountry !== null) && (selectCountry !== 'ALL')) {
+        searchObject = {param: "country", values: selectCountry};
+        searchArray.push(searchObject);
+    }
+    if ((selectBuild !== null) && (selectBuild !== 'ALL')) {
+        searchObject = {param: "build", values: selectBuild};
+        searchArray.push(searchObject);
+    }
+    if ((selectRevision !== null) && (selectRevision !== 'ALL')) {
+        searchObject = {param: "revision", values: selectRevision};
+        searchArray.push(searchObject);
+    }
+    if ((selectEnvGp !== null) && (selectEnvGp !== 'ALL')) {
+        searchObject = {param: "envGp", values: selectEnvGp};
+        searchArray.push(searchObject);
+    }
+    if ((selectActive !== null) && (selectActive !== 'ALL')) {
+        searchObject = {param: "active", values: selectActive};
+        searchArray.push(searchObject);
+    }
+    if ((selectSystem !== null) && (selectSystem !== 'ALL')) {
+        searchObject = {param: "system", values: selectSystem};
+        searchArray.push(searchObject);
+    }
+    applyFiltersOnMultipleColumns("environmentsTable", searchArray, false);
+
     return table;
 }
 
@@ -321,20 +315,6 @@ function addEntryModalSaveHandler() {
     clearResponseMessage($('#addEnvModal'));
     var formAdd = $("#addEnvModal #addEnvModalForm");
 
-//    var nameElement = formAdd.find("#build");
-//    var nameElementEmpty = nameElement.prop("value") === '';
-//    if (nameElementEmpty) {
-//        var localMessage = new Message("danger", "Please specify the name of the build!");
-//        nameElement.parents("div.form-group").addClass("has-error");
-//        showMessage(localMessage, $('#addEnvModal'));
-//    } else {
-//        nameElement.parents("div.form-group").removeClass("has-error");
-//    }
-//
-//    // verif if all mendatory fields are not empty
-//    if (nameElementEmpty)
-//        return;
-
     // Get the header data from the form.
     var dataForm = convertSerialToJSONObject(formAdd.serialize());
 
@@ -342,7 +322,6 @@ function addEntryModalSaveHandler() {
     var jqxhr = $.post("CreateCountryEnvParam", dataForm);
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#addEnvModal');
-        console.log(data.messageType);
         if (getAlertType(data.messageType) === 'success') {
             var oTable = $("#environmentsTable").dataTable();
             oTable.fnDraw(false);
@@ -648,32 +627,64 @@ function loadApplicationTable(selectSystem, selectCountry, selectEnvironment) {
 }
 
 function appendApplicationRow(app) {
+    nbRow++;
+    
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectApplication = getSelectApplication(getUser().defaultSystem);
-    var ipInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "IP") + " --\">").addClass("form-control input-sm").val(app.ip);
+    var ipInput = $("<input maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "IP") + " --\">").addClass("form-control input-sm").val(app.ip);
+    var urlInput = $("<input maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URL") + " --\">").addClass("form-control input-sm").val(app.url);
+    var poolSizeInput = $("<input maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "poolSize") + " --\">").addClass("form-control input-sm").val(app.poolSize);
+    
     var domainInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "domain") + " --\">").addClass("form-control input-sm").val(app.domain);
-    var urlInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URL") + " --\">").addClass("form-control input-sm").val(app.url);
     var urlLoginInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URLLOGIN") + " --\">").addClass("form-control input-sm").val(app.urlLogin);
     var variable1 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var1") + " --\">").addClass("form-control input-sm").val(app.var1);
     var variable2 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var2") + " --\">").addClass("form-control input-sm").val(app.var2);
     var variable3 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var3") + " --\">").addClass("form-control input-sm").val(app.var3);
     var variable4 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var4") + " --\">").addClass("form-control input-sm").val(app.var4);
-    var poolSizeInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "poolSize") + " --\">").addClass("form-control input-sm").val(app.poolSize);
     var mobileActivity = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobileActivity") + " --\">").addClass("form-control input-sm").val(app.mobileActivity);
     var mobilePackage = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobilePackage") + " --\">").addClass("form-control input-sm").val(app.mobilePackage);
 
     var table = $("#applicationTableBody");
 
     var row = $("<tr></tr>");
-    var deleteBtnRow = $("<td></td>").append(deleteBtn);
-    var application = $("<td></td>").append(selectApplication.val(app.application));
-    var ipName = $("<td></td>").append(ipInput).append(urlLoginInput);
-    var urlName = $("<td></td>").append(urlInput).append(domainInput);
-    var vars1 = $("<td></td>").append(variable1).append(variable2);
-    var vars2 = $("<td></td>").append(variable3).append(variable4);
-    var poolSize = $("<td></td>").append(poolSizeInput);
-    var mobileData = $("<td></td>").append(mobileActivity).append(mobilePackage);
+    
+    var td1 = $("<td></td>").append(deleteBtn);
+    
+    var td2 = $("<td></td>").append(selectApplication.val(app.application));
+//    var td2 = $("<td></td>").append(application);
+    
+    var ipName = $("<div class='form-group col-sm-5'></div>").append("<label for='ip'>" + doc.getDocOnline("countryenvironmentparameters", "IP") + "</label>").append(ipInput);
+    var urlName = $("<div class='form-group col-sm-3'></div>").append("<label for='url'>" + doc.getDocOnline("countryenvironmentparameters", "URL") + "</label>").append(urlInput);
+    var poolSizeName = $("<div class='form-group col-sm-2'></div>").append("<label for='poolSize'>" + doc.getDocOnline("countryenvironmentparameters", "poolSize") + "</label>").append(poolSizeInput);
+    var expandName = $("<div class='form-group col-sm-2'></div>").append("<button class='btn btn-primary' type='button' data-toggle='collapse' data-target='#col" + nbRow + "' aria-expanded='false' aria-controls='col" + nbRow + "'><span class='glyphicon glyphicon-chevron-down'></span></button>");
+    var drow1 = $("<div class='row'></div>").append(ipName).append(urlName).append(poolSizeName).append(expandName);
+    
+    var loginName = $("<div class='form-group col-sm-6'></div>").append("<label for='login'>" + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN") + "</label>").append(urlLoginInput);
+    var domainName = $("<div class='form-group col-sm-6'></div>").append("<label for='domain'>" + doc.getDocOnline("countryenvironmentparameters", "domain") + "</label>").append(domainInput);
+    var drow2 = $("<div class='row'></div>").append(loginName).append(domainName);
+
+    var var1Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var1'>" + doc.getDocOnline("countryenvironmentparameters", "Var1") + "</label>").append(variable1);
+    var var2Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var2'>" + doc.getDocOnline("countryenvironmentparameters", "Var2") + "</label>").append(variable2);
+    var var3Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var3'>" + doc.getDocOnline("countryenvironmentparameters", "Var3") + "</label>").append(variable3);
+    var var4Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "Var4") + "</label>").append(variable4);
+    var drow3 = $("<div class='row'></div>").append(var1Name).append(var2Name).append(var3Name).append(var4Name);
+
+    var mobileActivityName = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobileActivity") + "</label>").append(mobileActivity);
+    var mobilePackageName = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobilePackage") + "</label>").append(mobilePackage);
+    var drow4 = $("<div class='row'></div>").append(mobileActivityName).append(mobilePackageName);
+    
+    //    var ipName = $("<td></td>").append(ipInput).append(urlLoginInput);
+//    var urlName = $("<td></td>").append(urlInput).append(domainInput);
+//    var vars1 = $("<td></td>").append(variable1).append(variable2);
+//    var vars2 = $("<td></td>").append(variable3).append(variable4);
+//    var poolSize = $("<td></td>").append(poolSizeInput);
+//    var mobileData = $("<td></td>").append(mobileActivity).append(mobilePackage);
+//    var drow2 = $("<div class='row'></div>").append(vars1).append(vars2);
+    
+    var panelExtra = $("<div class='collapse' id='col" + nbRow + "'></div>").append(drow2).append(drow3).append(drow4);
+    
+    var td3 = $("<td></td>").append(drow1).append(panelExtra);
 
     deleteBtn.click(function () {
         app.toDelete = (app.toDelete) ? false : true;
@@ -714,19 +725,23 @@ function appendApplicationRow(app) {
         app.poolSize = $(this).val();
     });
     mobileActivity.change(function () {
-        env.mobileActivity = $(this).val();
+        app.mobileActivity = $(this).val();
     });
     mobilePackage.change(function () {
-        env.mobilePackage = $(this).val();
+        app.mobilePackage = $(this).val();
     });
-    row.append(deleteBtnRow);
-    row.append(application);
-    row.append(ipName);
-    row.append(urlName);
-    row.append(vars1);
-    row.append(vars2);
-    row.append(poolSize);
-    row.append(mobileData);
+    
+    row.append(td1);
+    row.append(td2);
+    row.append(td3);
+//    row.append(deleteBtnRow);
+//    row.append(application);
+//    row.append(ipName);
+//    row.append(urlName);
+//    row.append(vars1);
+//    row.append(vars2);
+//    row.append(poolSize);
+//    row.append(mobileData);
 
     app.application = selectApplication.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     row.data("application", app);
@@ -1164,7 +1179,8 @@ function eventNewChainModalConfirmHandler() {
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": null,
+        {
+            "data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "sWidth": "160px",
@@ -1216,27 +1232,38 @@ function aoColumnsFunc(tableId) {
                 return returnString;
             }
         },
-        {"data": "system",
+        {
+            "data": "system",
             "sName": "system",
             "sWidth": "100px",
-            "title": doc.getDocOnline("invariant", "SYSTEM")},
-        {"data": "country",
+            "title": doc.getDocOnline("invariant", "SYSTEM")
+        },
+        {
+            "data": "country",
             "sName": "country",
             "sWidth": "70px",
-            "title": doc.getDocOnline("invariant", "COUNTRY")},
-        {"data": "environment",
+            "title": doc.getDocOnline("invariant", "COUNTRY")
+        },
+        {
+            "data": "environment",
             "sName": "environment",
             "sWidth": "100px",
-            "title": doc.getDocOnline("invariant", "ENVIRONMENT")},
-        {"data": "description",
-            "like":true,
+            "title": doc.getDocOnline("invariant", "ENVIRONMENT")
+        },
+        {
+            "data": "description",
+            "like": true,
             "sName": "description",
             "sWidth": "150px",
-            "title": doc.getDocOnline("countryenvparam", "Description")},
-        {"data": "envGp",
+            "title": doc.getDocOnline("countryenvparam", "Description")
+        },
+        {
+            "data": "envGp",
+            "visible": false,
             "sName": "inv.gp1",
             "sWidth": "150px",
-            "title": doc.getDocOnline("page_environment", "envgp")},
+            "title": doc.getDocOnline("page_environment", "envgp")
+        },
         {
             "data": "active",
             "sName": "active",
@@ -1252,20 +1279,30 @@ function aoColumnsFunc(tableId) {
                 }
             }
         },
-        {"data": "build",
+        {
+            "data": "build",
+            "visible": false,
             "sName": "build",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisioninvariant", "versionname01")},
-        {"data": "revision",
+            "title": doc.getDocOnline("buildrevisioninvariant", "versionname01")
+        },
+        {
+            "data": "revision",
+            "visible": false,
             "sName": "revision",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisioninvariant", "versionname02")},
-        {"data": "type",
+            "title": doc.getDocOnline("buildrevisioninvariant", "versionname02")
+        },
+        {
+            "data": "type",
+            "visible": false,
             "sName": "type",
             "sWidth": "80px",
-            "title": doc.getDocOnline("countryenvparam", "Type")},
+            "title": doc.getDocOnline("countryenvparam", "Type")
+        },
         {
             "data": "maintenanceAct",
+            "visible": false,
             "sName": "maintenanceAct",
             "title": doc.getDocOnline("countryenvparam", "maintenanceact"),
             "sDefaultContent": "",
@@ -1279,18 +1316,27 @@ function aoColumnsFunc(tableId) {
                 }
             }
         },
-        {"data": "maintenanceStr",
+        {
+            "data": "maintenanceStr",
+            "visible": false,
             "sName": "maintenanceStr",
             "sWidth": "80px",
-            "title": doc.getDocOnline("countryenvparam", "maintenancestr")},
-        {"data": "maintenanceEnd",
+            "title": doc.getDocOnline("countryenvparam", "maintenancestr")
+        },
+        {
+            "data": "maintenanceEnd",
+            "visible": false,
             "sName": "maintenanceEnd",
             "sWidth": "80px",
-            "title": doc.getDocOnline("countryenvparam", "maintenanceend")},
-        {"data": "chain",
+            "title": doc.getDocOnline("countryenvparam", "maintenanceend")
+        },
+        {
+            "data": "chain",
+            "visible": false,
             "sName": "chain",
             "sWidth": "80px",
-            "title": doc.getDocOnline("countryenvparam", "chain")}
+            "title": doc.getDocOnline("countryenvparam", "chain")
+        }
     ];
     return aoColumns;
 }
@@ -1298,26 +1344,35 @@ function aoColumnsFunc(tableId) {
 function aoColumnsFuncChange(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": "datecre",
+        {
+            "data": "datecre",
             "sName": "datecre",
             "sWidth": "195px",
-            "title": doc.getDocOnline("countryenvparam_log", "datecre")},
-        {"data": "description",
+            "title": doc.getDocOnline("countryenvparam_log", "datecre")
+        },
+        {
+            "data": "description",
             "sName": "description",
             "sWidth": "360px",
-            "title": doc.getDocOnline("countryenvparam_log", "Description")},
-        {"data": "build",
+            "title": doc.getDocOnline("countryenvparam_log", "Description")
+        },
+        {
+            "data": "build",
             "sName": "build",
             "sWidth": "120px",
-            "title": doc.getDocOnline("buildrevisioninvariant", "versionname01")},
-        {"data": "revision",
+            "title": doc.getDocOnline("buildrevisioninvariant", "versionname01")
+        },
+        {
+            "data": "revision",
             "sName": "revision",
             "sWidth": "120px",
-            "title": doc.getDocOnline("buildrevisioninvariant", "versionname02")},
+            "title": doc.getDocOnline("buildrevisioninvariant", "versionname02")
+        },
         {"data": "creator",
             "sName": "creator",
             "sWidth": "110px",
-            "title": doc.getDocOnline("countryenvparam_log", "Creator")}
+            "title": doc.getDocOnline("countryenvparam_log", "Creator")
+        }
     ];
     return aoColumns;
 }
@@ -1325,22 +1380,30 @@ function aoColumnsFuncChange(tableId) {
 function aoColumnsFuncEvent(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": "dateBatch",
+        {
+            "data": "dateBatch",
             "sName": "dateBatch",
             "sWidth": "195px",
-            "title": doc.getDocOnline("buildrevisionbatch", "dateBatch")},
-        {"data": "batch",
+            "title": doc.getDocOnline("buildrevisionbatch", "dateBatch")
+        },
+        {
+            "data": "batch",
             "sName": "batch",
             "sWidth": "470px",
-            "title": doc.getDocOnline("buildrevisionbatch", "batch")},
-        {"data": "build",
+            "title": doc.getDocOnline("buildrevisionbatch", "batch")
+        },
+        {
+            "data": "build",
             "sName": "build",
             "sWidth": "120px",
-            "title": doc.getDocOnline("buildrevisionbatch", "build")},
-        {"data": "revision",
+            "title": doc.getDocOnline("buildrevisionbatch", "build")
+        },
+        {
+            "data": "revision",
             "sName": "revision",
             "sWidth": "120px",
-            "title": doc.getDocOnline("buildrevisionbatch", "revision")}
+            "title": doc.getDocOnline("buildrevisionbatch", "revision")
+        }
     ];
     return aoColumns;
 }

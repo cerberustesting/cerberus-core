@@ -61,7 +61,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public AnswerItem readByKey(String deployType) {
+    public AnswerItem<DeployType> readByKey(String deployType) {
         AnswerItem<DeployType> ans = new AnswerItem<>();
         DeployType result = null;
         final String query = "SELECT * FROM `deploytype` WHERE `deploytype` = ?";
@@ -121,7 +121,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     }
 
     @Override
-    public AnswerList readAll() {
+    public AnswerList<DeployType> readAll() {
         AnswerList<DeployType> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -208,7 +208,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<DeployType> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList<DeployType> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<DeployType> deployTypeList = new ArrayList<>();

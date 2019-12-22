@@ -3,21 +3,21 @@ Required Packages
 
 Make sure you've installed the following packages before continuing. 
 MySQL 5.6.xx or MariaDb 10.1.xx
-Java JDK 1.8
-Glassfish Server v4.1.2
-  - if necessary, copy the mysql jdbc drivers jar file on the glassfish/lib folder of your Glassfish installation.
+Java JDK 11
+Tomcat 9
+  - if necessary, copy the mysql jdbc drivers jar file on the apache-tomcat-xxx/lib folder of your Tomcat installation.
     The drivers can be downloaded at 
         http://dev.mysql.com/downloads/connector/j/ (mysql)
         https://mariadb.com/kb/en/library/about-mariadb-connector-j/ (MariaDb)
-  - In case your default distribution does not use Oracle jdk, you can get it from the web and modify glassfish config :
-      file : glassfish/config/asenv.conf (or glassfish/config/asenv.bat for Windows)
-      can be modified in order to add the following line :
-       AS_JAVA=/home/user/local/jdk1.8.0_xx
-       (or set AS_JAVA=/home/user/local/jdk1.8.0_xx for Windows)
-      pointing to the location of the choosen jdk folder.
   
 
-Installation
+Docker Installation
+------------
+
+Use composition available in folders docker/compositions/cerberus-tomcat-mysql or docker/compositions/cerberus-tomcat-keycloak-mysql (for Keycloak support that enable LDAP authentification)
+
+
+Manual Tomcat Installation
 ------------
 
 0) Download Cerberus package 
@@ -32,17 +32,66 @@ GRANT USAGE ON * . * TO 'cerberus'@'localhost' IDENTIFIED BY 'cerberus';
 CREATE DATABASE IF NOT EXISTS `cerberus` ;
 GRANT ALL PRIVILEGES ON `cerberus` . * TO 'cerberus'@'%';
 
-- modify 00Config.sh[.bat] file with your local parameters.
+2) Application Server Configuration. We made the choice to use Tomcat 
 
-2) Application Server Configuration. We made the choice to use glassfish 
+# SET ENVIRONMENT VARIABLE
+Depending on your OS (Mac, Linux or Windows) this process is different.
 
-- run installation script 
-    For MySQL --> 01AppServerConfig.mysql.sh[.bat]
-    For MariaDb --> 01AppServerConfig.mariadb.sh[.bat]
+Mac/Linux
+
+create 'setenv.sh' file in /bin folder
+edit it with this content : CATALINA_OPTS="-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=none -Xmx1024m"
+
+Windows
+
+declare the variable CATALINA_OPTS in the system variable with the following value :
+-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=none -Xmx1024m
+
+# TOMCAT CONFIGURATION
+
+In conf folder, in 'server.xml' add the following sections (remove mariadb/mysql depending on database engine choosen) :
+
+    <Resource   name="jdbc/cerberusprd"
+                global="jdbc/cerberusprd"
+                auth="Container"
+                type="javax.sql.DataSource"
+                factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+                maxTotal="100"
+                maxIdle="30"
+                maxWaitMillis="10000"
+                validationQuery="select 1"
+                testOnBorrow="true"
+                username="cerberus"
+                password="toto"
+                driverClassName="<org.mariadb.jdbc.Driver|com.mysql.jdbc.Driver>"
+                url="jdbc:<mariadb|mysql>://localhost:3306/cerberus"/>
+
+
+        <Realm className="org.apache.catalina.realm.JDBCRealm"
+            driverName="<org.mariadb.jdbc.Driver|com.mysql.jdbc.Driver>"
+            connectionURL="jdbc:<mariadb|mysql>://localhost:3306/cerberus?user=cerberus&amp;password=toto"
+            userTable="user"
+            userNameCol="Login"
+            userCredCol="Password"
+            userRoleTable="usergroup"
+            roleNameCol="GroupName">
+            <CredentialHandler className="org.apache.catalina.realm.MessageDigestCredentialHandler" algorithm="SHA-1" />
+        </Realm>
+		
+Warning : your url could running on other device than localhost, in this case changed localhost by your SGBD device URL
+For docker users : used default machine docker URL when your container run with another system than hyper v (virtualbox for example)
+
+In conf folder, in 'context.xml' add the following sections :
+
+    <ResourceLink name="jdbc/cerberusprd"
+                global="jdbc/cerberusprd"
+                type="javax.sql.DataSource"/>
+
+Sample config files can be found in docs/Tomcat Folder : (https://github.com/cerberustesting/cerberus-source/tree/master/docs/Tomcat).
 
 3) Deploy Cerberus Application
 
-- run deploy script --> 02DeployApp.sh[.bat]
+Just rename the war file to Cerberus.war and drop it to apache-tomcat-xxx/webapps/
 
 4) You can connect to cerberus and start using it.
   http://localhost:8080/Cerberus/
@@ -74,12 +123,63 @@ Update
 
 - mysqldump -u cerberus -p cerberus > CerberusBddBackup.sql
 
-2) Modify 00Config.sh file with your local parameters. Tips: you can copy file from previous installation.
+2) inside webapps folder, delete Cerberus.war file and corresponding folder and copy the new war.
 
-3) Deploy Cerberus Application
-
-- run deploy script --> 02DeployApp.sh[.bat]
-
-4) You can connect to cerberus. 
+3) You can connect to cerberus. 
 - The first connection will ask you to update the database.
 - You can start using Cerberus right after this update.
+
+
+----------------
+
+# OPTIONAL : KEYCLOAK SETUP
+
+----------------
+
+Download Server and Tomcat client adapter from :
+https://www.keycloak.org/downloads.html
+
+Install and start KeyCloak server on port 8080 by running standalone.sh command.
+
+Create and Configure a Realm 'Cerberus' with Client 'cerberus' with 'http://localhost:8180/Cerberus/*' (correspond to Cerberus URL) as Valid redirect URL.
+
+On context.xml file inside apache-tomcat-xxx/conf source, add the following line 
+Also secure the path variable match your contextroot.
+
+    <Context path="/Cerberus">
+        <Valve className="org.keycloak.adapters.tomcat.KeycloakAuthenticatorValve"/>
+    </Context>
+
+Environment variable needs to be modified, follow the method above (#SET ENVIRONMENT VARIABLE)
+
+(Max, Linux)
+CATALINA_OPTS="-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=keycloak -Dorg.cerberus.keycloak.realm=Cerberus -Dorg.cerberus.keycloak.client=cerberus -Dorg.cerberus.keycloak.url=http://localhost:8080/auth -Xmx1024m"
+(Windows)
+-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=keycloak -Dorg.cerberus.keycloak.realm=Cerberus -Dorg.cerberus.keycloak.client=cerberus -Dorg.cerberus.keycloak.url=http://localhost:8080/auth -Xmx1024m
+
+On Tomcat, in conf folder, modify 'server.xml' in order to Change port to 8180 :
+
+    <Connector port="8180" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8443" />
+
+On Tomcat, in lib folder, unzip all jar from 'keycloak-tomcat8-adapter-dist-xxxx.Final.tar.gz'
+
+On Keycloak, add the folowing Roles :
+TestRO
+Test
+TestStepLibrary
+TestAdmin
+TestDataManager
+Label
+RunTest
+IntegratorRO
+Integrator
+IntegratorNewChain
+IntegratorDeploy
+Administrator
+
+Create a User and go to "Users > your user > Role mappings" to add all Roles to your user
+
+Please also consult user migration documentation : (https://github.com/cerberustesting/cerberus-source/blob/master/docs/KeycloakMigration/README.md).
+

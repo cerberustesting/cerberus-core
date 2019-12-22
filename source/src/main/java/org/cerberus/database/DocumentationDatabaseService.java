@@ -1,4 +1,4 @@
-/*
+/**
  * Cerberus Copyright (C) 2013 - 2017 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -65,7 +65,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
             preStat.execute(SQLString);
             LOG.info("'" + SQLStringLog + "' Executed successfully.");
         } catch (Exception exception1) {
-            LOG.error(exception1.toString(), exception1);
+            LOG.warn("Could not refresh Documentation tables. Maybe database is not yet initialized ?");
+//            LOG.error(exception1.toString(), exception1);
             return exception1.toString();
         }
         return "Documentation table successfully refreshed";
@@ -87,8 +88,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
          * Cerberus Official Standard TABLES.
          */
         b.append(",('application','Application','','fr','Application','','_application_attributes')");
-        b.append(",('application','bugtrackernewurl','','en','New Bug URL','This correspond to the URL that points to the page where a new bug can be created on the Bug system of the <code class=\\'doc-crbvvoca\\'>application</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following variables can be used inside the URL</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TEST%</code></td><td class=\\'ex\\'>Test</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTCASE%</code></td><td class=\\'ex\\'>Test case reference</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTCASEDESC%</code></td><td class=\\'ex\\'>Description of the test case</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%EXEID%</code></td><td class=\\'ex\\'>Execution ID</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%EXEDATE%</code></td><td class=\\'ex\\'>Start date and time of the execution.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%ENV%</code></td><td class=\\'ex\\'>Environment</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%COUNTRY%</code></td><td class=\\'ex\\'>Country</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUILD%</code></td><td class=\\'ex\\'>Build</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%REV%</code></td><td class=\\'ex\\'>Revision</td></tr></table>','_application_attributes')");
-        b.append(",('application','bugtrackernewurl','','fr','URL pour nouveau Bug','Correspond à l\\'URL qui pointe vers la page de création de bug du Bug Tracker de l\\'<code class=\\'doc-crbvvoca\\'>application</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>Les variables suivantes peuvent être utilisées dans l\\'URL</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TEST%</code></td><td class=\\'ex\\'>Test</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTCASE%</code></td><td class=\\'ex\\'>Reference du cas de test</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTCASEDESC%</code></td><td class=\\'ex\\'>Description du cas de test</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%EXEID%</code></td><td class=\\'ex\\'>ID de l\\'execution</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%EXEDATE%</code></td><td class=\\'ex\\'>Date et heure du debut de l\\'execution.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%ENV%</code></td><td class=\\'ex\\'>Environnement</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%COUNTRY%</code></td><td class=\\'ex\\'>Pays</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUILD%</code></td><td class=\\'ex\\'>Build</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%REV%</code></td><td class=\\'ex\\'>Revision</td></tr></table>','_application_attributes')");
+        b.append(",('application','bugtrackernewurl','','en','New Bug URL','This correspond to the URL that points to the page where a new bug can be created on the Bug system of the <code class=\\'doc-crbvvoca\\'>application</code>.','_application_attributes')");
+        b.append(",('application','bugtrackernewurl','','fr','URL pour nouveau Bug','Correspond à l\\'URL qui pointe vers la page de création de bug du Bug Tracker de l\\'<code class=\\'doc-crbvvoca\\'>application</code>.','_application_attributes')");
         b.append(",('application','bugtrackerurl','','en','Bug Tracker URL','This correspond to the URL of the Bug reporting system of the <code class=\\'doc-crbvvoca\\'>application</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following variables can be used inside the URL</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUGID%</code></td><td class=\\'ex\\'>ID of the Bug</td></tr></table>','_application_attributes')");
         b.append(",('application','bugtrackerurl','','fr','URL du Bug Tracker','Correspond à l\\'URL du Bug Tracker de l\\'<code class=\\'doc-crbvvoca\\'>application</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>Les variables suivantes peuvent être utilisées dans l\\'URL</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUGID%</code></td><td class=\\'ex\\'>ID du Bug</td></tr></table>','_application_attributes')");
         b.append(",('application','deploytype','','en','Deploy Type','This information groups the <code class=\\'doc-crbvvoca\\'>application</code> by typology of deployement process.<br>It can be used as a variable in the parameter <code class=\\'doc-parameter\\'>cerberus_jenkinsdeploy_url</code> that correspond to the URL that calls a continious integration system such as Jenkins.','_application_attributes')");
@@ -101,6 +102,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('application','sort','','fr','identifiant de Tri','Correspond à une valeur entière et utilisée pour trier les differentes valeurs dans l\\'interface graphique.','_application_attributes')");
         b.append(",('application','subsystem','','en','Subsystem','A <code class=\\'doc-crbvvoca\\'>Subsystem</code> define a group of <code class=\\'doc-crbvvoca\\'>application</code> inside a <code class=\\'doc-crbvvoca\\'>system</code>.','_application_attributes')");
         b.append(",('application','subsystem','','fr','Sous Système','Le <code class=\\'doc-crbvvoca\\'>Sous système</code> regroupe un ensemble d\\'<code class=\\'doc-crbvvoca\\'>application</code> au sein d\\'un même <code class=\\'doc-crbvvoca\\'>système</code>.','_application_attributes')");
+        b.append(",('application','poolSize','','en','Pool size','Maximal number of testcases that can be executed in same time by Cerberus','_environment')");
+        b.append(",('application','poolSize','','fr','Parallelisation','Nombre maximal, de tests pouvant être exécutés en parallèle par Cerberus','_environnement')");
         b.append(",('application','svnurl','','en','SVN URL','This correspond to the URL of the svn repository of the <code class=\\'doc-crbvvoca\\'>application</code>.','_application_attributes')");
         b.append(",('application','svnurl','','fr','URL du SVN','Correspond à l\\'URL du SVN de l\\'<code class=\\'doc-crbvvoca\\'>application</code>.','_application_attributes')");
         b.append(",('application','system','','en','System','A <code class=\\'doc-crbvvoca\\'>system</code> is a group of <code class=\\'doc-crbvvoca\\'>application</code> for which all changes sometimes require to be done all together.<br> Most of the time those <code class=\\'doc-crbvvoca\\'>applications</code> all connect to a single database and share the same data structure.','_application_attributes')");
@@ -131,6 +134,22 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('appservice','srvRequest','','fr','Requête','','_librairie_de_services')");
         b.append(",('appservice','type','','en','Type','','_service_library')");
         b.append(",('appservice','type','','fr','Type','','_librairie_de_services')");
+        b.append(",('appservicecontent','Sort','','en','Sort','','_service_library')");
+        b.append(",('appservicecontent','Sort','','fr','Tri','','_librairie_de_services')");
+        b.append(",('appservicecontent','Key','','en','Key','','_service_library')");
+        b.append(",('appservicecontent','Key','','fr','Clé','','_librairie_de_services')");
+        b.append(",('appservicecontent','Value','','en','Value','','_service_library')");
+        b.append(",('appservicecontent','Value','','fr','Valeur','','_librairie_de_services')");
+        b.append(",('appservicecontent','Description','','en','Description','','_service_library')");
+        b.append(",('appservicecontent','Description','','fr','Description','','_librairie_de_services')");
+        b.append(",('appserviceheader','Sort','','en','Sort','','_service_library')");
+        b.append(",('appserviceheader','Sort','','fr','Tri','','_librairie_de_services')");
+        b.append(",('appserviceheader','Key','','en','Key','','_service_library')");
+        b.append(",('appserviceheader','Key','','fr','Clé','','_librairie_de_services')");
+        b.append(",('appserviceheader','Value','','en','Value','','_service_library')");
+        b.append(",('appserviceheader','Value','','fr','Valeur','','_librairie_de_services')");
+        b.append(",('appserviceheader','Description','','en','Description','','_service_library')");
+        b.append(",('appserviceheader','Description','','fr','Description','','_librairie_de_services')");
         b.append(",('batchinvariant','Batch','','en','Batch','','_batch_invariant_attributes')");
         b.append(",('batchinvariant','Batch','','fr','Batch','','_batch_invariant_attributes')");
         b.append(",('batchinvariant','Description','','en','Description','Description of the batch.','_batch_invariant_attributes')");
@@ -193,8 +212,12 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('buildrevisionparameters','TicketIDFixed','','fr','ID du Ticket associé','ID du ticket dont la release est associée.','_contenu_des_builds')");
         b.append(",('campaign','campaign','','en','Campaign Name','','')");
         b.append(",('campaign','campaign','','fr','Nom de la Campagne','','')");
-        b.append(",('campaign','tag','','en','Tag','Tag that will be used when running the campaign. The variables %TIMESTAMP% and %USER% can be used.','')");
-        b.append(",('campaign','tag','','fr','Tag','Tag qui sera utilisé au moment de l\\'execution de la campagne. Les variables %TIMESTAMP% et %USER% peuvent être utilisées.','')");
+        b.append(",('campaign','CIScoreThreshold','','en','CI Score Threshold','Maximum score above which the result of the tag is KO. You can leave this value empty so that global parameter will be used.','')");
+        b.append(",('campaign','CIScoreThreshold','','fr','Seuil du Score CI','Score maximum au dela duquel le resultat est KO. Si vide, le parametre global sera utilisé.','')");
+        b.append(",('campaign','longDescription','','en','Long Description','','')");
+        b.append(",('campaign','longDescription','','fr','Description longue','','')");
+        b.append(",('campaign','tag','','en','Tag','Tag that will be used when running the campaign. The variables %TIMESTAMP%, %USER%, %REQENVIRONMENTLIST% and %REQCOUNTRYLIST% can be used.','')");
+        b.append(",('campaign','tag','','fr','Tag','Tag qui sera utilisé au moment de l\\'execution de la campagne. Les variables %TIMESTAMP%, %USER%, %REQENVIRONMENTLIST%  et %REQCOUNTRYLIST% peuvent être utilisées.','')");
         b.append(",('countryenvdeploytype','JenkinsAgent','','en','Jenkins Agent','','_deploy_type')");
         b.append(",('countryenvdeploytype','JenkinsAgent','','fr','Agent Jenkins','','_type_de_déploiement')");
         b.append(",('countryenvironmentdatabase','ConnectionPoolName','','en','JDBC Resource','This is the name of the JDBC Resource used to connect to the corresponding <code class=\\'doc-crbvvoca\\'>database</code> on the <code class=\\'doc-crbvvoca\\'>country</code> / <code class=\\'doc-crbvvoca\\'>environment</code>.<br>The JDBC Resource (prefixed by <code class=\\'doc-fixed\\'>jdbc/</code> ) needs to be configured and associated to a connection pool on the application server that host the Cerberus application.<br><br>Example :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>JDBC Resource</th><th class=\\'ex\\'>Application server Resource name</th><tr>\n<td class=\\'ex\\'>MyConnection</td>\n<td class=\\'ex\\'>jdbc/MyConnection</td>\n</tr></table>\n</doc>','_environment')");
@@ -235,19 +258,19 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('countryenvparam','chain','','fr','Chaine','','_environnement')");
         b.append(",('countryenvparam','Description','','en','Description','','_environment')");
         b.append(",('countryenvparam','Description','','fr','Description','','_environnement')");
-        b.append(",('countryenvparam','DistribList','','en','Recipent list of Notification Email','This is the list of email adresses that will receive the notification on any environment event.<br>Format is ; separated.<br>Ex: &lt;name1&gt; name1@mail.com; &lt;name2&gt; name2@mail.com<br><br>In case that value is not feeded, the following parameters are used (depending on the related event) :<br><code class=\\'doc-parameter\\'>cerberus_notification_disableenvironment_to</code><br><code class=\\'doc-parameter\\'>cerberus_notification_newbuildrevision_to</code><br><code class=\\'doc-parameter\\'>cerberus_notification_newchain_to</code>','_environment')");
+        b.append(",('countryenvparam','DistribList','','en','Recipent list of Notification Email','This is the list of email adresses that will receive the notification on any environment event.<br>Format is ; separated.<br>Ex: &lt;name1&gt; name1@mail.com; &lt;name2&gt; name2@mail.com','_environment')");
         b.append(",('countryenvparam','DistribList','','fr','Emails des destinataires','','_environnement')");
-        b.append(",('countryenvparam','EMailBodyChain','','en','EMail Body on New Chain Executed Event','This is the Body of the mail that will be generated when a new Treatment has been executed on the <code class=\\'doc-crbvvoca\\'>environment</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following variable can be used</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYSTEM%</code></td><td class=\\'ex\\'>System value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%COUNTRY%</code></td><td class=\\'ex\\'>Country code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%ENV%</code></td><td class=\\'ex\\'>Environment code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUILD%</code></td><td class=\\'ex\\'>Current Build version name</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%REVISION%</code></td><td class=\\'ex\\'>Current Revision version name</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%CHAIN%</code></td><td class=\\'ex\\'>Chain value that has been executed</td></tr></table><br>In case that value is not feeded, the following parameter is used :<br><code class=\\'doc-parameter\\'>cerberus_notification_newchain_body</code>','_environment')");
+        b.append(",('countryenvparam','EMailBodyChain','','en','EMail Body on New Chain Executed Event','This is the Body of the mail that will be generated when a new Treatment has been executed on the <code class=\\'doc-crbvvoca\\'>environment</code>.','_environment')");
         b.append(",('countryenvparam','EMailBodyChain','','fr','Corps du message en cas de nouvelle Chaine','','_environnement')");
-        b.append(",('countryenvparam','EMailBodyDisableEnvironment','','en','EMail Body on Disable Environment Event','This is the Body of the mail that will be generated when <code class=\\'doc-crbvvoca\\'>environment</code> is disabled for installation purpose.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following variable can be used</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYSTEM%</code></td><td class=\\'ex\\'>System value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%COUNTRY%</code></td><td class=\\'ex\\'>Country code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%ENV%</code></td><td class=\\'ex\\'>Environment code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUILD%</code></td><td class=\\'ex\\'>Current Build version name</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%REVISION%</code></td><td class=\\'ex\\'>Current Revision version name</td></tr></table><br>In case that value is not feeded, the following parameter is used :<br><code class=\\'doc-parameter\\'>cerberus_notification_disableenvironment_body</code>','_environment')");
+        b.append(",('countryenvparam','EMailBodyDisableEnvironment','','en','EMail Body on Disable Environment Event','This is the Body of the mail that will be generated when <code class=\\'doc-crbvvoca\\'>environment</code> is disabled for installation purpose.','_environment')");
         b.append(",('countryenvparam','EMailBodyDisableEnvironment','','fr','Corps du message en cas de désactivation','','_environnement')");
-        b.append(",('countryenvparam','EMailBodyRevision','','en','EMail Body on New Build/Revision Event','This is the Body of the mail that will be generated when a new Build/Revision is installed on the <code class=\\'doc-crbvvoca\\'>environment</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following variable can be used</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYSTEM%</code></td><td class=\\'ex\\'>System value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%COUNTRY%</code></td><td class=\\'ex\\'>Country code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%ENV%</code></td><td class=\\'ex\\'>Environment code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUILD%</code></td><td class=\\'ex\\'>Current Build version name</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%REVISION%</code></td><td class=\\'ex\\'>Current Revision version name</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUILDCONTENT%</code></td><td class=\\'ex\\'>Detailed content of the sprint/revision.<br>That include the list of release of every application.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTRECAP%</code></td><td class=\\'ex\\'>A summary of test cases executed for that build and revision for the country.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTRECAPALL%</code></td><td class=\\'ex\\'>A summary of test cases executed for that build and revision for all the countries.</td></tr></table><br><br>In case that value is not feeded, the following parameter is used :<br><code class=\\'doc-parameter\\'>cerberus_notification_newbuildrevision_body</code>','_environment')");
+        b.append(",('countryenvparam','EMailBodyRevision','','en','EMail Body on New Build/Revision Event','This is the Body of the mail that will be generated when a new Build/Revision is installed on the <code class=\\'doc-crbvvoca\\'>environment</code>.','_environment')");
         b.append(",('countryenvparam','EMailBodyRevision','','fr','Corps du message en cas de nouvelle Revision','','_environnement')");
         b.append(",('countryenvparam','maintenanceact','','en','Maintenance Activation','This is the activation flag of the daily maintenance period.<br>In case the flag is activated, start and end times needs to be specified.<br>During a maintenance period, the <code class=\\'doc-crbvvoca\\'>environment</code> is considered as disable and Cerberus will prevent the test case from beeing executed.','_environment')");
         b.append(",('countryenvparam','maintenanceact','','fr','Activation de la plage de maintenance','','_environnement')");
-        b.append(",('countryenvparam','maintenanceend','','en','Maintenance End Time','This is the time when the daily maintenance period ends.<br>If start time is before end time then, any test execution request submitted between start and end will be discarded with an explicit error message that will report the maintenance period and time of the submission.<br>If start is after end then any test execution request submitted between end and start will be possible. All the overs will be discarded with an explicit error message that will report the maintenance period and time of the submission.<br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>flag</th><th class=\\'ex\\'>start</th><th class=\\'ex\\'>end</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>Yes</td><td class=\\'ex\\'>23:00:00</td><td class=\\'ex\\'><b>23:30:00</b></td><td class=\\'ex\\'>Any execution between 23H00 and 23H30 will be discarded.</td></tr><tr><td class=\\'ex\\'>Yes</td><td class=\\'ex\\'>23:00:00</td><td class=\\'ex\\'><b>02:30:00</b></td><td class=\\'ex\\'>Any execution between 23H00 and 2H30 will be discarded.</td></tr><tr><td class=\\'ex\\'>No</td><td class=\\'ex\\'>23:00:00</td><td class=\\'ex\\'><b>23:30:00</b></td><td class=\\'ex\\'>All executions will be authorised.</td></tr></table></doc>','_environment')");
+        b.append(",('countryenvparam','maintenanceend','','en','Maintenance End Time','This is the time when the daily maintenance period ends.<br>If start time is before end time then, any test execution request submitted between start and end will be discarded with an explicit error message that will report the maintenance period and time of the submission.','_environment')");
         b.append(",('countryenvparam','maintenanceend','','fr','Heure de fin de la plage de maintenance','','_environnement')");
-        b.append(",('countryenvparam','maintenancestr','','en','Maintenance Start Time','This is the time when the daily maintenance period starts.<br>If start is before end then, any test execution request submitted between start and end will be discarded with an explicit error message that will report the maintenance period and time of the submission.<br>If start is after end then any test execution request submitted between end and start will be possible. All the overs will be discarded with an explicit error message that will report the maintenance period and time of the submission.<br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>flag</th><th class=\\'ex\\'>start</th><th class=\\'ex\\'>end</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>Yes</td><td class=\\'ex\\'><b>23:00:00</b></td><td class=\\'ex\\'>23:30:00</td><td class=\\'ex\\'>Any execution between 23H00 and 23H30 will be discarded.</td></tr><tr><td class=\\'ex\\'>Yes</td><td class=\\'ex\\'><b>23:00:00</b></td><td class=\\'ex\\'>02:30:00</td><td class=\\'ex\\'>Any execution between 23H00 and 2H30 will be discarded.</td></tr><tr><td class=\\'ex\\'>No</td><td class=\\'ex\\'><b>23:00:00</b></td><td class=\\'ex\\'>23:30:00</td><td class=\\'ex\\'>All executions will be authorised.</td></tr></table></doc>','_environment')");
+        b.append(",('countryenvparam','maintenancestr','','en','Maintenance Start Time','This is the time when the daily maintenance period starts.<br>If start is before end then, any test execution request submitted between start and end will be discarded with an explicit error message that will report the maintenance period and time of the submission.','_environment')");
         b.append(",('countryenvparam','maintenancestr','','fr','Heure de début de la plage de maintenance','','_environnement')");
         b.append(",('countryenvparam','system','','en','System','','_environment')");
         b.append(",('countryenvparam','system','','fr','Système','','_environnement')");
@@ -395,10 +418,28 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('robotexecutor','deviceName','','fr','Nom du Device','Lorsque défini, renseigne automatiquement la capability \\'deviceName\\.',NULL)");
         b.append(",('robotexecutor','devicePort','','en','Device Port','Specify an unuque port > 8200 for each device to run parallel tests',NULL)");
         b.append(",('robotexecutor','devicePort','','fr','Port du device','Preciser un port > 8200 différent pour chaque device pour exécuter des tests en parallèle',NULL)");
+        b.append(",('robotexecutor','deviceLockUnlock','','en','Unlock / Lock Device','Unlock the device before and lock devices after a testcase',NULL)");
+        b.append(",('robotexecutor','deviceLockUnlock','','fr','Déverrouiller / Verrouiller le device','Déverrouiller le device avant et verrouiller après un test case',NULL)");
         b.append(",('robotexecutor','description','','en','Description','',NULL)");
         b.append(",('robotexecutor','description','','fr','Description','',NULL)");
         b.append(",('robotexecutor','dateLastExeSubmitted','','en','Timestamp of last Exe Submitted','',NULL)");
         b.append(",('robotexecutor','dateLastExeSubmitted','','fr','Timestamp de la dernière execution soumise','',NULL)");
+        b.append(",('robotexecutor','executorExtensionPort','','fr','Port de l\\'extension de l\\'Executor','Port d\\'écoute de l\\'extension de l\\'Executor. Le host est le même que celui de l\\'executor.',NULL)");
+        b.append(",('robotexecutor','executorExtensionPort','','en','Executor Extension Port', 'Port of the extension of the executor. Extension Host is the same than the executor Host.',NULL)");
+        b.append(",('robotexecutor','executorProxyHost','','fr','Nom d\\'hote du proxy', 'Nom d\\'hote du proxy de l\\'executor.',NULL)");
+        b.append(",('robotexecutor','executorProxyHost','','en','Executor Proxy Host', 'Host of the executor proxy.',NULL)");
+        b.append(",('robotexecutor','executorProxyPort','','fr','Port du proxy','Port du proxy de l\\'executor. Si 0, il sera determiné aléatoirement.',NULL)");
+        b.append(",('robotexecutor','executorProxyPort','','en','Executor Proxy Port','Port of the executor proxy. If 0, port will be determined randomly.',NULL)");
+        b.append(",('robotexecutor','executorProxyActive','','fr','Proxy Actif / Inactif', 'Activer / Désactiver l\\'utilisation du proxy de l\\'extension de l\\'executor.',NULL)");
+        b.append(",('robotexecutor','executorProxyActive','','en','Active / Unactive Proxy', 'Activate / Unactivate the usage of of proxy through the Executor Extension.',NULL)");
+        b.append(",('scheduleentry','cronDefinition','','fr','Expression Cron Quartz','Expression Cron parametree pour ordonnancer la campagne',NULL)");
+        b.append(",('scheduleentry','cronDefinition','','en','Quartz Cron Expression','Cron expression use to schedule campaign',NULL)");
+        b.append(",('scheduleentry','description','','fr','Description','',NULL)");
+        b.append(",('scheduleentry','description','','en','Description','',NULL)");
+        b.append(",('scheduleentry','active','','en','Active','Scheduler activity',NULL)");
+        b.append(",('scheduleentry','active','','fr','Active','Activité du scheduler',NULL)");
+        b.append(",('scheduleentry','lastexecution','','en','Last Execution','',NULL)");
+        b.append(",('scheduleentry','lastexecution','','fr','Dernière execution','',NULL)");
         b.append(",('tag','id','','en','Tag ID','Technical ID of the tag',NULL)");
         b.append(",('tag','id','','fr','ID du Tag','ID technique du Tag',NULL)");
         b.append(",('tag','tag','','en','Tag','',NULL)");
@@ -425,16 +466,24 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('test','Automated','','fr','Automatisé','Boléen qui définit si le test est automatisé ou non','_test')");
         b.append(",('test','dateCreation','','en','Creation date','The date when the test have been created','_test')");
         b.append(",('test','dateCreation','','fr','Date de création','Date à laquelle le test a été créé','_test')");
-        b.append(",('test','Description','','en','Test Description','This is the description of the <code class=\\'doc-crbvvoca\\'>test</code>.','_test')");
-        b.append(",('test','Description','','fr','Description du test','Description du <code class=\\'doc-crbvvoca\\'>test</code>.','_test')");
-        b.append(",('test','Test','','en','Test','A <code class=\\'doc-crbvvoca\\'>test</code> is grouping some <code class=\\'doc-crbvvoca\\'>test case</code> together. The criteria that groups the <code class=\\'doc-crbvvoca\\'>test cases</code> can be an application page or a feature.','_test')");
-        b.append(",('test','Test','','fr','Test','Un <code class=\\'doc-crbvvoca\\'>test</code> regroupe plusieurs <code class=\\'doc-crbvvoca\\'>Cas de tests</code> ensemble.','_test')");
+        b.append(",('test','Description','','en','Folder Description','This is the description of the <code class=\\'doc-crbvvoca\\'>test</code>.','_test')");
+        b.append(",('test','Description','','fr','Description du dossier','Description du <code class=\\'doc-crbvvoca\\'>test</code>.','_test')");
+        b.append(",('test','Test','','en','Test Folder','A <code class=\\'doc-crbvvoca\\'>test</code> is grouping some <code class=\\'doc-crbvvoca\\'>test case</code> together. The criteria that groups the <code class=\\'doc-crbvvoca\\'>test cases</code> can be an application page or a feature.','_test')");
+        b.append(",('test','Test','','fr','Dossier de Test','Un <code class=\\'doc-crbvvoca\\'>test</code> regroupe plusieurs <code class=\\'doc-crbvvoca\\'>Cas de tests</code> ensemble.','_test')");
         b.append(",('testcampaign','distribList','','en','Distribution List','This is the list of email adresses that will receive the notification.<br>Format is ; separated.<br><br>Ex: <br><pre><code>&lt;name1&gt; name1@mail.com; &lt;name2&gt; name2@mail.com</code></pre>',NULL)");
         b.append(",('testcampaign','distribList','','fr','Liste de distribution','Liste des emails qui recevront le mail de notification.<br>Le separateur est \\';\\'.<br>Ex: &lt;name1&gt; name1@mail.com; &lt;name2&gt; name2@mail.com',NULL)");
-        b.append(",('testcampaign','notifyEndTagExecution','','en','Notify the end of execution','',NULL)");
-        b.append(",('testcampaign','notifyEndTagExecution','','fr','Notifier la fin de l\\'execution','',NULL)");
-        b.append(",('testcampaign','notifyStartTagExecution','','en','Notify the start of execution','',NULL)");
-        b.append(",('testcampaign','notifyStartTagExecution','','fr','Notifier le debut de l\\'execution','',NULL)");
+        b.append(",('testcampaign','notifyStartTagExecution','','en','Email Notify Start of execution','Notify by email the start of the campaign execution.',NULL)");
+        b.append(",('testcampaign','notifyStartTagExecution','','fr','Notifier par email Debut de l\\'execution','Notifier par email le debut de l\\'execution de la campagne.',NULL)");
+        b.append(",('testcampaign','notifyEndTagExecution','','en','Email Notify End of execution','Notify by email the end of the campaign execution.',NULL)");
+        b.append(",('testcampaign','notifyEndTagExecution','','fr','Notifier par email Fin de l\\'execution','Notifier par email la fin de l\\'execution de la campagne.',NULL)");
+        b.append(",('testcampaign','SlackNotifyStartTagExecution','','en','Slack Notify Start of execution','Notify via Slack the start of the campaign execution.',NULL)");
+        b.append(",('testcampaign','SlackNotifyStartTagExecution','','fr','Notifier par Slack Debut de l\\'execution','Notifier via Slack le debut de l\\'execution de la campagne.',NULL)");
+        b.append(",('testcampaign','SlackNotifyEndTagExecution','','en','Slack Notify End of execution','Notify via Slack the end of the campaign execution.',NULL)");
+        b.append(",('testcampaign','SlackNotifyEndTagExecution','','fr','Notifier par Slack Fin de l\\'execution','Notifier via Slack la fin de l\\'execution de la campagne.',NULL)");
+        b.append(",('testcampaign','SlackWebhook','','en','Slack Webhook URL','',NULL)");
+        b.append(",('testcampaign','SlackWebhook','','fr','URL Webhook de Slack','',NULL)");
+        b.append(",('testcampaign','SlackChannel','','en','Slack Channel','',NULL)");
+        b.append(",('testcampaign','SlackChannel','','fr','Chaine Slack','',NULL)");
         b.append(",('testcase','activePROD','','en','Active PROD','Define whether the <code class=\\'doc-crbvvoca\\'>test case</code> can be executed in PROD environments.<br>If the environment gp1 (attached to the invariant) is PROD and Active PROD is No, the <code class=\\'doc-crbvvoca\\'>test case</code> will never be executed.','_testcase')");
         b.append(",('testcase','activePROD','','fr','Actif PROD','','_cas_de_test')");
         b.append(",('testcase','activeQA','','en','Active QA','Define whether the <code class=\\'doc-crbvvoca\\'>test case</code> can be executed in QA environments.<br>If the environment gp1 (attached to the invariant) is QA and Active QA is No, the <code class=\\'doc-crbvvoca\\'>test case</code> will never be executed.','_testcase')");
@@ -529,6 +578,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcasecountryproperties','Type','getFromCookie','en','Get a value from Cookie.','<code class=\\'doc-fixed\\'>getFromCookie</code> will allow you to get information on cookie.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>Cookie Name.<br>In case the cookie is not found, empty string will be returned.</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>Information on cookie.<br>It could be name, value, expiry, domain, path, isHttpOnly, isSecure.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>COOKIE_NAME</td><td class=\\'ex\\'>value</td><td class=\\'ex\\'>COOKIE_VALUE</td></tr><tr><td class=\\'ex\\'>COOKIE_NAME2</td><td class=\\'ex\\'>Expiry</td><td class=\\'ex\\'>01-01-2015</td></tr><tr><td class=\\'ex\\'>COOKIE_NAME3</td><td class=\\'ex\\'>host</td><td class=\\'ex\\'>www.cerberus-testing.org</td></tr></table></doc>',NULL)");
         b.append(",('testcasecountryproperties','Type','getFromDataLib','en','Get an object from the Data Library.','<code class=\\'doc-fixed\\'>getFromDataLib</code> will allow you to calculate a full object that include a list of string.</br>The return of the object can be used with either of the following syntax : %PROPERTY.subdata% or %PROPERTY(subdata)%.<br>Multiples rows can be retreived and you can access it using the following syntax : %PROPERTY.3.subdata% or %PROPERTY(3)(subdata)%<br>Use the Data library screen in order to configure the data library.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>Data Library Name.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Number of rows the object will retreive. Use %PROPERTY.n.subdata% in order to get the corresponding row.<br>In case not enougth data can be retreive, the property will report a NA status.</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Max number of rows that will be fetch from the data source. If 0 the parameter cerberus_testdatalib_fetchmax is used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Nature to be used for unicity constrain. STATIC, RANDOM, RANDOMNEW and NOTINUSE can be used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Length</th><th class=\\'ex\\'>rowLimit</th><th class=\\'ex\\'>Nature</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>toto</td><td class=\\'ex\\'>0</td><td class=\\'ex\\'>0</td><td class=\\'ex\\'>STATIC</td><td class=\\'ex\\'>1 row from \\'toto\\' Library.</td></tr><tr><td class=\\'ex\\'>toto%SYS_COUNTRY%titi</td><td class=\\'ex\\'>10</td><td class=\\'ex\\'>0</td><td class=\\'ex\\'>STATIC</td><td class=\\'ex\\'>10 rows of data from \\'totoPTtiti\\' Library.</td></tr><tr><td class=\\'ex\\'>toto</td><td class=\\'ex\\'>5</td><td class=\\'ex\\'>50</td><td class=\\'ex\\'>RANDOM</td><td class=\\'ex\\'>5 different rows picked by random in the 50 rows retreived from \\'toto\\' Library.</td></tr></table></doc>',NULL)");
         b.append(",('testcasecountryproperties','Type','getFromGroovy','en','Get a value from a Groovy expression.','<code class=\\'doc-fixed\\'>getFromGroovy</code> will allow you to calculate a string from a Groovy execution.\n<br/>\nUsing this feature, you can use the full power of Groovy without the need to be related to a web context as the <a href=\"/Cerberus/Documentation.jsp?DocTable=testcasecountryproperties&DocField=type&DocValue=getFromJS&Lang=en\"><code>getFromJS</code></a> property type.\n<br/>\n<br/>\nUsage:\n<br/>\n<doc class=\\'usage\\'>\n  <table cellspacing=\\'0\\' cellpadding=\\'2\\'>\n    <tr>\n      <th class=\\'ex\\'>Field</th>\n      <th class=\\'ex\\'>Usage</th>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'>DTB</td>\n      <td class=\\'ex\\'>Not used.</td>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'>Value</td>\n      <td class=\\'ex\\'>Groovy expression to execute.</td>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'>Length</td>\n      <td class=\\'ex\\'>Not used.</td>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'>RowLimit</td>\n      <td class=\\'ex\\'>Not used.</td>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'>Nature</td>\n      <td class=\\'ex\\'>Not used.</td>\n    </tr>\n  </table>\n</doc>\n<br/>\n<br/>\nFor examples:\n<br/>\n<doc class=\\'examples\\'>\n  <table cellspacing=\\'0\\' cellpadding=\\'2\\'>\n    <tr>\n      <th class=\\'ex\\'>Value</th>\n      <th class=\\'ex\\'>Result</th>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>1+1</code></td>\n      <td class=\\'ex\\'>2</td>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>\"foobar\".replace(\"foo\", \"oof\")</code></td>\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>oofbar</code></td>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>\"foo\".toUpperCase().equals(\"FOO\")</code></td>\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>true</code></td>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>123 == 123<code></td>\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>true<code></td>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'>\n        <code class=\\'doc-fixed\\'>\n        def square = { number -> number * number };\n        square(2)\n      </code>\n      </td>\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>4</code></td>\n    </tr>\n  </table>\n</doc>\n<br/>\n<br/>\nFor more information, you can access to the fully documentation from the <a href=\"http://groovy-lang.org/documentation.html\">official Groovy website</a>.\n',NULL)");
+        b.append(",('testcasecountryproperties','Type','getElementPosition','en','Get an element pixel position (use id=/xpath=/etc syntax - return \"px;py\")','<code class=\\'doc-fixed\\'>getElementPosition</code> Get an element pixel position. <br> Return position on format \"posx;posy\" ',NULL)");
         b.append(",('testcasecountryproperties','Type','getFromHtml','en','Get a value from the current web page.','<code class=\\'doc-fixed\\'>getFromHtml</code> will allow you to take a value from an html field on the current webpage.</br>Cerberus will automatically wait for the field to start to appear before getting the value.<br>Different attributes identifier can be used in order to find the field : id, name, class, css, xpath, link, and data-cerberus.<br>Syntax is as follow :<br><code class=\\'doc-sql\\'>identifier=html-value</code><br><br>NB : getFromHtml will get the value of the field even if it does not appear on the web page (this is not the standard behaviour of Selenium).<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>IDENTIFIER=HTML-VALUE</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>HTML</th><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><div class=\"Main\"><span id=\"Name\">FRONT1</span><span id=\"env\">PRODUCTION</span></div></textarea></td><td class=\\'ex\\'>id=Name</td><td class=\\'ex\\'>FRONT1</td></tr><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><input name=\"crb-name\" type=\"hidden\" value=\"CERBERUS\"/></textarea></td><td class=\\'ex\\'>name=crb-name</td><td class=\\'ex\\'>CERBERUS</td></tr><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><input data-cerberus=\"ctl00\">toto</input></textarea></td><td class=\\'ex\\'>data-cerberus=ctl00</td><td class=\\'ex\\'>toto</td></tr></table></doc>',NULL)");
         b.append(",('testcasecountryproperties','Type','getFromHtmlVisible','en','Get a visible value from the current web page.','<code class=\\'doc-fixed\\'>getFromHtmlVisible</code> will allow you to take a visible value from an html field on the current webpage.</br>Cerberus will automatically wait for the field to start to appear before getting the value.<br>Different attributes identifier can be used in order to find the field : id, name, class, css, xpath, link, and data-cerberus.<br>Syntax is as follow :<br><code class=\\'doc-sql\\'>identifier=html-value</code><br><br>NB : getFromHtmlVisible will return an empty value if the field does not appear on the web page (this is the standard behaviour of Selenium).<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>IDENTIFIER=HTML-VALUE</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>HTML</th><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><div class=\"Main\"><span id=\"Name\">FRONT1</span><span id=\"env\">PRODUCTION</span></div></textarea></td><td class=\\'ex\\'>id=Name</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><input name=\"crb-name\" type=\"hidden\" value=\"CERBERUS\"/></textarea></td><td class=\\'ex\\'>name=crb-name</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><input data-cerberus=\"ctl00\">toto</input></textarea></td><td class=\\'ex\\'>data-cerberus=ctl00</td><td class=\\'ex\\'>toto</td></tr></table></doc>',NULL)");
         b.append(",('testcasecountryproperties','Type','getFromJS','en','Get a value from the output of a javascript execution.','<code class=\\'doc-fixed\\'>getFromJS</code> will allow you to calculate a string from a javascript execution.</br>Using this feature, you can use the full power of javascript in order to calculate values in the context of the current page.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>Javascript to execute.<br>In case the javascript return no value, empty string will be returned.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>return s.products == undefined || s.products.toLowerCase().split(\\'event16=\\').length == 1 ? \\'\\' : \\'fail_case\\';</td><td class=\\'ex\\'>fail_case</td></tr><tr><td class=\\'ex\\'>return GetCookie(\\'UserIdentificationId\\') == undefined ? \\'\\' : GetCookie(\\'UserIdentificationId\\');</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>return s.eVar5 == undefined ? \\'\\' : s.eVar5;</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>return new Date().getTime().toString() + \"@cerberus-testing.org\";</td><td class=\\'ex\\'>1391154967143@cerberus-testing.org</td></tr></table></doc>',NULL)");
@@ -581,6 +631,18 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcaseexecutionqueue','debugFlag','','fr','Activation du mode debug',NULL,NULL)");
         b.append(",('testcaseexecutionqueue','priority','','en','Priority',NULL,NULL)");
         b.append(",('testcaseexecutionqueue','priority','','fr','Priorité',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','type','','en','Dependency Type',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','type','','fr','Type de dépendance',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','status','','en','Status',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','status','','fr','Status',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','releaseDate','','en','Release Date',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','releaseDate','','fr','Date de liberation',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','comment','','en','Comment',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','comment','','fr','Commentaire',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','exeId','','en','Execution Id',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','exeId','','fr','Id d\\'execution',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','exeQueueId','','en','Queue Id',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','exeQueueId','','fr','Id de la file d\\'attente',NULL,NULL)");
         b.append(",('testcaseexecutionwwwsum','css_nb','','en','Css_nb','Number of css downloaded for all the scenario',NULL)");
         b.append(",('testcaseexecutionwwwsum','css_nb','','fr','Css_nb',NULL,NULL)");
         b.append(",('testcaseexecutionwwwsum','css_size_max','','en','Css_size_max','Size of the biggest css dowloaded during the scenario',NULL)");
@@ -626,6 +688,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcasestepaction','Action','calculateProperty','en','Calculate a Cerberus property.','<code class=\\'doc-fixed\\'>calculateProperty</code> will allow you to calculate a property defined in the property section of the test case.\n\n<br/><br/>\n\nUsage :<br/>\n\n<doc class=\"usage\">\n <table>\n  <tr>\n   <th class=\\'ex\\'>Field</th>\n   <th class=\\'ex\\'>Usage</th>\n  </tr>\n  <tr>\n   <td class=\\'ex\\'>Value1</td>\n   <td class=\\'ex\\'>Property name to be calculated.</td>\n  </tr>\n  <tr>\n   <td class=\\'ex\\'>Value2</td>\n   <td class=\\'ex\\'>[Optional] Property name from which get value to affect property from Value1. Useful to override the one defined from the property section.</td>\n  </tr>\n </table>\n</doc>\n\n<br/><br/>\n\nExamples :<br/>\n\n<doc class=\"examples\">\n <table>\n  <tr>\n   <th class=\\'ex\\'>Value1</th>\n   <th class=\\'ex\\'>Value2</th>\n   <th class=\\'ex\\'>Result</th>\n  </tr>\n  <tr>\n   <td class=\\'ex\\'>PROPERTY_NAME</td>\n   <td class=\\'ex\\'></td>\n   <td class=\\'ex\\'>PROPERTY_NAME will be calculated</td>\n  </tr>\n  <tr>\n   <td class=\\'ex\\'>PROPERTY_NAME</td>\n   <td class=\\'ex\\'>OTHER_PROPERTY_NAME</td>\n   <td class=\\'ex\\'>PROPERTY_NAME will be affected by the calculated value of OTHER_PROPERTY_NAME</td>\n  </tr>\n </table>\n</doc>',NULL)");
         b.append(",('testcasestepaction','Action','callSoap','en','Call Soap.','TBD',NULL)");
         b.append(",('testcasestepaction','Action','callSoapWithBase','en','Call Soap with Base','<code class=\\'doc-fixed\\'>callSoapWithBase</code> will allow you to make a SOAP call (Stored on the <a href=\"./SoapLibrary.jsp\">SoapLibrary</a>) using the servicePath stored at the countryenvrionmentparameters level. That allow to call the soap on the environment of the execution.<br><br> The result will be stored in the memory. On this result, you can make some control (verify the presence or the content of the elements for exemple) or get some information using property getFromXML<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>Name of the SOAP from the SOAPLibrary.</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>WEATHER</td><td class=\\'ex\\'></td><td class=\\'ex\\'>WEATHER soapCall will be made.</td></tr></table></doc>',NULL)");
+        b.append(",('testcasestepaction','Action','clearField','en','Clear Field.','Clear the field defined in Value1.',NULL)");
         b.append(",('testcasestepaction','Action','click','en','Clicking on a button.','<code class=\\'doc-fixed\\'>click</code> will allow you to click on an element inside the current page.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>Identifier and name of the element to click in the form of : identifier=html_reference.</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>id=html_reference</td><td class=\\'ex\\'></td><td class=\\'ex\\'>element that has id equal to html_reference will be clicked</td></tr></table></doc>',NULL)");
         b.append(",('testcasestepaction','Action','doNothing','en','Just perform no action.','<code class=\\'doc-fixed\\'>doNothing</code> will just perfom no action. Can be used in case of control that must be done without action before.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'></td><td class=\\'ex\\'></td><td class=\\'ex\\'>No action will be executed and engine will go to the next action or control</td></tr></table></doc>',NULL)");
         b.append(",('testcasestepaction','Action','doubleClick','en','Double clicking on a button.','<code class=\\'doc-fixed\\'>doubleClick</code> will allow you to double click on an element inside the current page.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>Identifier and name of the element to double click in the form of : identifier=html_reference.</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>id=html_reference</td><td class=\\'ex\\'></td><td class=\\'ex\\'>element that has id equal to html_reference will be double clicked.</td></tr></table></doc>',NULL)");
@@ -636,7 +699,9 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcasestepaction','Action','getPageSource','en','[DEPRECATED] getPageSource','<code class=\\'doc-fixed\\'>getPageSource</code> will allow you to record the source of the page opened.<br>Action is DEPRECATED. Please use the getPageSource control in stead.<br><br> The result will be stored in a file which will be available in the execution detail<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'></td><td class=\\'ex\\'> </td><td class=\\'ex\\'>Source will be recorded</td></tr></table></doc>',NULL)");
         b.append(",('testcasestepaction','Action','hideKeyboard','en','Hide keyboard.','Hide the currently visible keyboard.',NULL)");
         b.append(",('testcasestepaction','Action','keypress','en','Press a specific key.','<code class=\\'doc-fixed\\'>keypress</code> will allow you to press any key in the current web page.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>Keycode of the key to press.</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>ENTER</td><td class=\\'ex\\'></td><td class=\\'ex\\'>ENTER key will be pressed.</td></tr><tr><td class=\\'ex\\'>SEARCH</td><td class=\\'ex\\'></td><td class=\\'ex\\'>SEARCH key will be pressed.</td></tr></table></doc>',NULL)");
+        b.append(",('testcasestepaction','Action','longPress','en','LongPress on an element.','<code class=\\'doc-fixed\\'>click</code> will allow you to keep an element of current screen pressed a couple of seconds.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>Identifier and name of the element to press in the form of : identifier=html_reference.</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>Optional : The number of milliseconds</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>id=html_reference</td><td class=\\'ex\\'>2000</td><td class=\\'ex\\'>element that has id equal to html_reference will be pressed during 2 seconds</td></tr></table></doc>',NULL)");
         b.append(",('testcasestepaction','Action','manageDialog','en','Manage javascript dialog opened by application, specified ok to accept it or cancel to dismiss','<b>manageDialog</b><br><br>Let possibility to testcase to handle javascript dialog <br>Specify <b>ok</b> value to accept it or <b>cancel</b> to dismiss.',NULL)");
+        b.append(",('testcasestepaction','Action','manageDialogKeypress','en','Perform a Keypress inside a dialog popup window.','<b>manageDialogKeypress</b><br><br>Perform a Keypress inside a dialog popup window.',NULL)");
         b.append(",('testcasestepaction','Action','mouseLeftButtonPress','en','Click mouse button and hold it clicked. ','TBD',NULL)");
         b.append(",('testcasestepaction','Action','mouseLeftButtonRelease','en','Release clicked mouse button. ','TBD',NULL)");
         b.append(",('testcasestepaction','Action','mouseOver','en','Mouse cursor over an object.','TBD',NULL)");
@@ -748,6 +813,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalib','method','','fr','Operation','<p>Operation à appeler pour la Requête SOAP.</p>','_librairie_de_données')");
         b.append(",('testdatalib','name','','en','Name','<p>Name of the entry. It is a <b>mandatory</b> attribute.</p><p><b><u>Note</u></b>: The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> can be duplicated when the type is STATIC in order to allow a list of data to be available.</p>','_data_library')");
         b.append(",('testdatalib','name','','fr','Nom','<p>Nom de la donnée</p>','_librairie_de_données')");
+        b.append(",('testdatalib','privateData','','en','Private','<p>Determine if the data is private or not.</p><p><b><u>Note</u></b>: If the data is private, only the Creator will be able to modify it.</p>','_data_library')");
+        b.append(",('testdatalib','privateData','','fr','Privé','<p>Défini si la donnée est privée ou non</p><p><b><u>Note</u></b>: Une donnée privée ne peut être modifiée que par le créateur.</p>','_librairie_de_données')");
         b.append(",('testdatalib','script','','en','Script','<p>SQL commands that should be executed to retrieve test data.</p><p>Examples:</p><table><tr><td>select * from table;</td></tr><tr><td>select * from table where column = %COLUMN%;</td></tr></table>','_data_library')");
         b.append(",('testdatalib','script','','fr','Scenario',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','separator','','en','Separator','<p>Separator used parsing a CSV.</p>','_data_library')");
@@ -760,7 +827,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalib','system','','fr','Système',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','testdatalibid','','en','ID','<p>Unique identifier of the test data library entry</p>','_data_library')");
         b.append(",('testdatalib','testdatalibid','','fr','Identifiant','<p>Identifiant unique de librairie de donnée</p>','_librairie_de_données')");
-        b.append(",('testdatalib','type','','en','Type','<p>Entry Type - Cerberus allows the definition of 4 types: INTERNAL, SQL, CSV and SERVICE.</p><table border=\\'1\\'> <tr><th class=\\'ex\\'>Type</th><th class=\\'ex\\'>Description</th></tr> <tr><td>INTERNAL</td><td>Static test data - in each execution the values used by the test cases are statically definied directly in Cerberus.</td></tr> <tr><td>SQL</td><td> Test data obtained from a SQL execution – values depend on what the SQL return on the corresponding environment.</td></tr><tr><td>SERVICE</td><td>Test data obtained from a SERVICE call – values depend on the result of the service call. Service needs to be configured on Service screen inside application menu.</td></tr><tr><td>CSV</td><td>Test data obtained from a CSV file structure privided by a URL. Values depend on the result of the service call to CSV file.</td></tr></table>','_data_library')");
+        b.append(",('testdatalib','type','','en','Type','<p>Entry Type - Cerberus allows the definition of 4 types: INTERNAL, SQL, CSV and SERVICE.</p>','_data_library')");
         b.append(",('testdatalib','type','','fr','Type',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','currentname','','en','Current name','This corresponds to the Datalib name that needs to be updated',NULL)");
         b.append(",('testdatalib','currentname','','fr','Nom actuel','Correspond au nom des Datalib qui seront modifiees massivement',NULL)");
@@ -772,6 +839,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalibdata','columnPosition','','fr','Position','<p>Position [1,2,3…] de la valeur à obtenir lors du décryptage du CSV.</p>','_librairie_de_données')");
         b.append(",('testdatalibdata','description','','en','Description','<p>Textual description for the sub-data entry.</p>','_data_library')");
         b.append(",('testdatalibdata','description','','fr','Description',NULL,'_librairie_de_données')");
+        b.append(",('testdatalibdata','encrypt','','en','Encrypt','<p>Encrypt STATIC value and value calculated during the execution.</p>','_data_library')");
+        b.append(",('testdatalibdata','encrypt','','fr','Crypter','<p>Crypte la valeur STATIC, ainsi que la valeur calculée lors de l\\'execution.</p>','_librairie_de_données')");
         b.append(",('testdatalibdata','parsingAnswer','','en','Parsing Answer','<p>XPath or JsonPath expression that allows the user to parse data from the SERVICE response.</p>','_data_library')");
         b.append(",('testdatalibdata','parsingAnswer','','fr','Analyse de la réponse',NULL,'_librairie_de_données')");
         b.append(",('testdatalibdata','subData','','en','Sub-data ','<p>Unique name for a sub-data entry. For a test data library entry, this value should be unique.</p>','_data_library')");
@@ -1047,6 +1116,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','conditionVal2','','fr','Condition Value2','',NULL)");
         b.append(",('page_executiondetail','conditionVal2Init','','en','Condition Value2 Initial','',NULL)");
         b.append(",('page_executiondetail','conditionVal2Init','','fr','Condition Value2 Initiale','',NULL)");
+        b.append(",('page_executiondetail','conditionVal3','','en','Condition Value3','',NULL)");
+        b.append(",('page_executiondetail','conditionVal3','','fr','Condition Value3','',NULL)");
+        b.append(",('page_executiondetail','conditionVal3Init','','en','Condition Value3 Initial','',NULL)");
+        b.append(",('page_executiondetail','conditionVal3Init','','fr','Condition Value3 Initiale','',NULL)");
         b.append(",('page_executiondetail','controlmessage','','en','Control Message','',NULL)");
         b.append(",('page_executiondetail','controlmessage','','fr','Message du control','',NULL)");
         b.append(",('page_executiondetail','controlstatus','','en','Control Status','',NULL)");
@@ -1146,6 +1219,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','value2','','fr','Valeur 2','',NULL)");
         b.append(",('page_executiondetail','value2init','','en','Value 2 Initial','',NULL)");
         b.append(",('page_executiondetail','value2init','','fr','Valeur 2 Initiale','',NULL)");
+        b.append(",('page_executiondetail','value3','','en','Value 3','',NULL)");
+        b.append(",('page_executiondetail','value3','','fr','Valeur 3','',NULL)");
+        b.append(",('page_executiondetail','value3init','','en','Value 3 Initial','',NULL)");
+        b.append(",('page_executiondetail','value3init','','fr','Valeur 3 Initiale','',NULL)");
         b.append(",('page_executiondetail','verbose','','en','Verbose','',NULL)");
         b.append(",('page_executiondetail','verbose','','fr','Loquacité','',NULL)");
         b.append(",('page_executiondetail','version','','en','Version','',NULL)");
@@ -1196,6 +1273,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','btn_showHideColumns','','fr','Afficher/Cacher','',NULL)");
         b.append(",('page_global','buttonAdd','','en','Create','',NULL)");
         b.append(",('page_global','buttonAdd','','fr','Créer','',NULL)");
+        b.append(",('page_global','buttonEdit','','en','Save','',NULL)");
+        b.append(",('page_global','buttonEdit','','fr','Sauvegarder','',NULL)");
         b.append(",('page_global','buttonClose','','en','Close','',NULL)");
         b.append(",('page_global','buttonClose','','fr','Fermer','',NULL)");
         b.append(",('page_global','buttonConfirm','','en','Yes','',NULL)");
@@ -1260,8 +1339,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','tab_definition','','fr','Définition','',NULL)");
         b.append(",('page_global','tab_advanced','','en','Advanced','',NULL)");
         b.append(",('page_global','tab_advanced','','fr','Avancé','',NULL)");
-        b.append(",('page_header','logout','','en','Logout','',NULL)");
-        b.append(",('page_header','logout','','fr','Déconnexion','',NULL)");
+        b.append(",('page_header','menuLogout','','en','Logout','',NULL)");
+        b.append(",('page_header','menuLogout','','fr','Déconnexion','',NULL)");
+        b.append(",('page_header','menuAccount','','en','Account','',NULL)");
+        b.append(",('page_header','menuAccount','','fr','Compte','',NULL)");
         b.append(",('page_header','menuAdmin','','en','Administration','',NULL)");
         b.append(",('page_header','menuAdmin','','fr','Administration','',NULL)");
         b.append(",('page_header','menuApplicationObjects','','en','Application Object','',NULL)");
@@ -1284,8 +1365,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_header','menuDeployType','','fr','Type de Déploiement','',NULL)");
         b.append(",('page_header','menuDocumentation','','en','Documentation',NULL,NULL)");
         b.append(",('page_header','menuDocumentation','','fr','Documentation',NULL,NULL)");
-        b.append(",('page_header','menuEditTest','','en','Test','',NULL)");
-        b.append(",('page_header','menuEditTest','','fr','Test','',NULL)");
+        b.append(",('page_header','menuEditTest','','en','Test Folder','',NULL)");
+        b.append(",('page_header','menuEditTest','','fr','Dossier de Test','',NULL)");
         b.append(",('page_header','menuEditTestCase','','en','Edit TestCase','',NULL)");
         b.append(",('page_header','menuEditTestCase','','fr','Editer un Cas de Test','',NULL)");
         b.append(",('page_header','menuEnvironmentManagement','','en','Environment Management','',NULL)");
@@ -1407,7 +1488,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_invariant','value','','en','Value','',NULL)");
         b.append(",('page_invariant','value','','fr','Valeur','',NULL)");
         b.append(",('page_invariant','veryShortDesc','','en','Very Short Description','',NULL)");
-        b.append(",('page_invariant','veryShortDesc','','fr','Petite Description','',NULL)");
+        b.append(",('page_invariant','veryShortDesc','','fr','Description Courte','',NULL)");
         b.append(",('page_label','btn_create','','en','Create Label','',NULL)");
         b.append(",('page_label','btn_create','','fr','Créer un Label','',NULL)");
         b.append(",('page_label','btn_delete','','en','Delete Label','',NULL)");
@@ -1625,14 +1706,14 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_runtest','targetrev','','fr','Révision Cible','',NULL)");
         b.append(",('page_runtest','targetsprint','','en','Target Sprint','',NULL)");
         b.append(",('page_runtest','targetsprint','','fr','Sprint Cible','',NULL)");
-        b.append(",('page_runtest','test','','en','Test','',NULL)");
-        b.append(",('page_runtest','test','','fr','Test','',NULL)");
+        b.append(",('page_runtest','test','','en','Test Folder','',NULL)");
+        b.append(",('page_runtest','test','','fr','Dossier de Test','',NULL)");
         b.append(",('page_runtest','testbattery','','en','Test Battery','',NULL)");
         b.append(",('page_runtest','testbattery','','fr','Batterie de test','',NULL)");
         b.append(",('page_runtest','testcaseList','','en','Test Case :',NULL,NULL)");
         b.append(",('page_runtest','testcaseList','','fr','Cas de Test : ',NULL,NULL)");
         b.append(",('page_runtest','timeout','','en','Timeout','',NULL)");
-        b.append(",('page_runtest','timeout','','fr','Temporisation','',NULL)");
+        b.append(",('page_runtest','timeout','','fr','Timeout','',NULL)");
         b.append(",('page_runtest','title','','en','Run Test','',NULL)");
         b.append(",('page_runtest','title','','fr','Executer un test','',NULL)");
         b.append(",('page_runtest','valid','','en','Executions in queue','',NULL)");
@@ -1724,19 +1805,19 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_tag','reliability','','fr','% de fiabilité','Pourcentage entre le nombre utile d\\execution et le nombre total d\\execution. Le plus faible est ce pourcentage et le moins efficace est l\\'execution de la campagne.',NULL)");
         b.append(",('page_tag','duration','','en','Duration','Duration of the Campaign execution in minutes.',NULL)");
         b.append(",('page_tag','duration','','fr','Durée','Durée d\\execution de la campagne en minute.',NULL)");
-        b.append(",('page_test','btn_create','','en','Create Test','',NULL)");
-        b.append(",('page_test','btn_create','','fr','Créer un Test','',NULL)");
-        b.append(",('page_test','btn_edit','','en','Edit Test','',NULL)");
-        b.append(",('page_test','btn_edit','','fr','Modifier le Test','',NULL)");
+        b.append(",('page_test','btn_create','','en','Create Test Folder','',NULL)");
+        b.append(",('page_test','btn_create','','fr','Créer un Dossier de Test','',NULL)");
+        b.append(",('page_test','btn_edit','','en','Edit Test Folder','',NULL)");
+        b.append(",('page_test','btn_edit','','fr','Modifier le dossier de Test','',NULL)");
         b.append(",('page_test','btn_tclist','','en','Go To TestCase List','',NULL)");
         b.append(",('page_test','btn_tclist','','fr','Aller à la page des Cas de Test','',NULL)");
-        b.append(",('page_test','button_delete','','en','Delete Test','',NULL)");
-        b.append(",('page_test','button_delete','','fr','Supprimer le Test','',NULL)");
+        b.append(",('page_test','button_delete','','en','Delete Test Folder','',NULL)");
+        b.append(",('page_test','button_delete','','fr','Supprimer le Dossier de Test','',NULL)");
         b.append(",('page_test','delete','','en','Dlt','Select this checkbox and then save changes in order to delete the row.',NULL)");
-        b.append(",('page_test','message_delete','','en','Do you want to delete Test <b>\\'%ENTRY%\\'</b> ?<br>WARNING : All corresponding Test Cases will be removed as well !!!','',NULL)");
-        b.append(",('page_test','message_delete','','fr','Confirmez vous la suppression du Test <b>\\'%ENTRY%\\'</b> ?<br> ATTENTION : Tous les Cas de Test associés seront également supprimés !!!','',NULL)");
-        b.append(",('page_test','table_testlist','','en','Test List',NULL,NULL)");
-        b.append(",('page_test','table_testlist','','fr','Liste de Tests',NULL,NULL)");
+        b.append(",('page_test','message_delete','','en','Do you want to delete Test Folder <b>\\'%ENTRY%\\'</b> ?<br>WARNING : All corresponding Test Cases will be removed as well !!!','',NULL)");
+        b.append(",('page_test','message_delete','','fr','Confirmez vous la suppression du Dossier de Test <b>\\'%ENTRY%\\'</b> ?<br> ATTENTION : Tous les Cas de Test associés seront également supprimés !!!','',NULL)");
+        b.append(",('page_test','table_testlist','','en','Folder Test List',NULL,NULL)");
+        b.append(",('page_test','table_testlist','','fr','Liste des Dossiers de Test',NULL,NULL)");
         b.append(",('page_testbattery','addtestbattery_field','','en','Add Battery','',NULL)");
         b.append(",('page_testbattery','addtestbattery_field','','fr','Ajouter la Batterie','',NULL)");
         b.append(",('page_testbattery','addtestcase_tab','','en','Add Test Case','',NULL)");
@@ -1957,8 +2038,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaseexecutionqueue','tag_col','','fr','Tag','',NULL)");
         b.append(",('page_testcaseexecutionqueue','testcase_col','','en','Test Case','',NULL)");
         b.append(",('page_testcaseexecutionqueue','testcase_col','','fr','Cas de Test','',NULL)");
-        b.append(",('page_testcaseexecutionqueue','test_col','','en','Test','',NULL)");
-        b.append(",('page_testcaseexecutionqueue','test_col','','fr','Test','',NULL)");
+        b.append(",('page_testcaseexecutionqueue','test_col','','en','Test Folder','',NULL)");
+        b.append(",('page_testcaseexecutionqueue','test_col','','fr','Dossier de Test','',NULL)");
         b.append(",('page_testcaseexecutionqueue','timeout_col','','en','Timeout','',NULL)");
         b.append(",('page_testcaseexecutionqueue','timeout_col','','fr','Dépassement de temps','',NULL)");
         b.append(",('page_testcaseexecutionqueue','tooltip_dupentry','','en','Duplicate Queue entry','',NULL)");
@@ -1975,8 +2056,14 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaselist','activationCriteria','','fr','Critères d\\'activation','',NULL)");
         b.append(",('page_testcaselist','btn_create','','en','Create Test Case',NULL,NULL)");
         b.append(",('page_testcaselist','btn_create','','fr','Créer un Cas de Test',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import','','en','Import Test Case',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import','','fr','Importer un Cas de Test',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_export','','en','Export Test Case',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_export','','fr','Exporter un Cas de Test',NULL,NULL)");
         b.append(",('page_testcaselist','btn_delete','','en','Delete Test Case','',NULL)");
         b.append(",('page_testcaselist','btn_delete','','fr','Supprimer le Cas de Test','',NULL)");
+        b.append(",('page_testcaselist','btn_delete_all','','en','Delete all these Test Case : ','',NULL)");
+        b.append(",('page_testcaselist','btn_delete_all','','fr','Supprimer ces Cas de Test : ','',NULL)");
         b.append(",('page_testcaselist','btn_duplicate','','en','Duplicate Test Case','',NULL)");
         b.append(",('page_testcaselist','btn_duplicate','','fr','Dupliquer le Cas de Test','',NULL)");
         b.append(",('page_testcaselist','btn_edit','','en','Edit Test Case Header','',NULL)");
@@ -1991,6 +2078,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaselist','btn_view','','fr','Voir Cas de Test','',NULL)");
         b.append(",('page_testcaselist','filters','','en','Filters','Test filter',NULL)");
         b.append(",('page_testcaselist','filters','','fr','Filtres','Filtre des tests',NULL)");
+        b.append(",('page_testcaselist','import_testcase_msg','','en','Select testcase files to import','',NULL)");
+        b.append(",('page_testcaselist','import_testcase_msg','','fr','Selectionner des fichiers de cas de test à importer','',NULL)");
         b.append(",('page_testcaselist','link','','en','Bug Link','',NULL)");
         b.append(",('page_testcaselist','link','','fr','Lien vers le Bug','',NULL)");
         b.append(",('page_testcaselist','massAction','','en','Massively update the selected test cases','',NULL)");
@@ -2123,6 +2212,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcasescript','value2init_field','','fr','Valeur 2 Initiale','',NULL)");
         b.append(",('page_testcasescript','value2_field','','en','Value 2','',NULL)");
         b.append(",('page_testcasescript','value2_field','','fr','Value 2','',NULL)");
+        b.append(",('page_testcasescript','value3init_field','','en','Value 3 Initial','',NULL)");
+        b.append(",('page_testcasescript','value3init_field','','fr','Valeur 3 Initiale','',NULL)");
+        b.append(",('page_testcasescript','value3_field','','en','Value 3','',NULL)");
+        b.append(",('page_testcasescript','value3_field','','fr','Value 3','',NULL)");
         b.append(",('page_testcasescript','value_field','','en','Value','',NULL)");
         b.append(",('page_testcasescript','value_field','','fr','Valeur','',NULL)");
         b.append(",('page_testcasescript','warning_nocountry','','en','That Testcase has no country selected, please add at east one country (in \\'Activation Criteria\\' Tab of the testcase) in order to be able to add and define properties.','',NULL)");
@@ -2224,6 +2317,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_user','allUsers','','fr','Utilisateurs','',NULL)");
         b.append(",('page_user','button_col','','en','Actions','',NULL)");
         b.append(",('page_user','button_col','','fr','Actions','',NULL)");
+        b.append(",('page_user','manage_user','','en','Manage User','',NULL)");
+        b.append(",('page_user','manage_user','','fr','Gerer les Utilisateurs','',NULL)");
         b.append(",('page_user','button_create','','en','Create User','',NULL)");
         b.append(",('page_user','button_create','','fr','Créer un Utilisateur','',NULL)");
         b.append(",('page_user','button_edit','','en','Edit User','',NULL)");
@@ -2283,6 +2378,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         /**
          * Cerberus Transversal GUI Pages Documentation.
          */
+        b.append(",('scheduler','cronexp','','en','Cron Expression','Scheduler use cron expression in quartz format to plan campaign execution. Example : 0 0 12 1/1 * ? * <br> everyday at noon',NULL)");
+        b.append(",('scheduler','cronexp','','fr','Cron Expression','Le plannificateur utilise les expressions CRON au format Quartz pour ordonnancer les campagnes. Exemple : 0 0 12 1/1 * ? * <br> Tout les jours à midi',NULL)");
         b.append(",('dataTable','colVis','','en','Show/Hide columns','',NULL)");
         b.append(",('dataTable','colVis','','fr','Afficher/Cacher les colonnes','',NULL)");
         b.append(",('dataTable','sEmptyTable','','en','No data available in table','',NULL)");
@@ -2342,11 +2439,11 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('modal_upload','title','','en','Upload File','',NULL)");
         b.append(",('modal_upload','title','','fr','Uploader Fichier','',NULL)");
         b.append(",('multiselect','all_selected','','en','All selected','',NULL)");
-        b.append(",('multiselect','all_selected','','fr','Tous selectionner','',NULL)");
+        b.append(",('multiselect','all_selected','','fr','Tous selectionnés','',NULL)");
         b.append(",('multiselect','none_selected','','en','None selected','',NULL)");
-        b.append(",('multiselect','none_selected','','fr','Selectionner aucun','',NULL)");
+        b.append(",('multiselect','none_selected','','fr','aucun selectionné','',NULL)");
         b.append(",('multiselect','nselected','','en','selected','',NULL)");
-        b.append(",('multiselect','nselected','','fr','Selectionné','',NULL)");
+        b.append(",('multiselect','nselected','','fr','Selectionné(s)','',NULL)");
         b.append(",('multiselect','search','','en','Search','',NULL)");
         b.append(",('multiselect','search','','fr','Chercher','',NULL)");
         b.append(",('multiselect','select_all','','en','Select all','',NULL)");

@@ -42,7 +42,7 @@ public interface IApplicationObjectService {
      * @param id
      * @return
      */
-    AnswerItem readByKeyTech(int id);
+    AnswerItem<ApplicationObject> readByKeyTech(int id);
 
     /**
      *
@@ -50,14 +50,14 @@ public interface IApplicationObjectService {
      * @param object
      * @return
      */
-    AnswerItem readByKey(String application, String object);
+    AnswerItem<ApplicationObject> readByKey(String application, String object);
 
     /**
      *
      * @param Application
      * @return
      */
-    AnswerList readByApplication(String Application);
+    AnswerList<ApplicationObject> readByApplication(String Application);
 
     /**
      *
@@ -77,7 +77,7 @@ public interface IApplicationObjectService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<ApplicationObject> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -90,7 +90,7 @@ public interface IApplicationObjectService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByApplicationByCriteria(String application, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<ApplicationObject> readByApplicationByCriteria(String application, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems);
 
     /**
      *
@@ -134,6 +134,7 @@ public interface IApplicationObjectService {
 
     /**
      *
+     * @param application
      * @param searchParameter
      * @param individualSearch
      * @param columnName

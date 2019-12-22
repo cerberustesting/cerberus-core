@@ -22,35 +22,37 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <%@ include file="include/global/dependenciesInclusions.html" %>
-    <title>Testcampaign</title>
-    <script type="text/javascript" src="js/pages/CampaignList.js"></script>
-    <script type="text/javascript" src="js/transversalobject/Campaign.js"></script>
-</head>
-<body>
-<%@ include file="include/global/header.html" %>
-<div class="container-fluid center" id="page-layout">
-    <%@ include file="include/global/messagesArea.html"%>
-    <%@ include file="include/utils/modal-confirmation.html"%>
-    <%@ include file="include/pages/testcampaign/viewTestcampaign.html"%>
-    <%@ include file="include/transversalobject/Campaign.html"%>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <%@ include file="include/global/dependenciesInclusions.html" %>
+        <title>Testcampaign</title>
+        <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
+        <script type="text/javascript" src="js/pages/CampaignList.js"></script>
+        <script type="text/javascript" src="js/transversalobject/Campaign.js"></script>
+    </head>
+    <body>
+        <%@ include file="include/global/header.html" %>
+        <div class="container-fluid center" id="page-layout">
+            <%@ include file="include/global/messagesArea.html"%>
+            <%@ include file="include/utils/modal-confirmation.html"%>
+            <%@ include file="include/pages/testcampaign/viewTestcampaign.html"%>
+            <%@ include file="include/pages/testcampaign/viewStatcampaign.html"%>
+            <%@ include file="include/transversalobject/Campaign.html"%>
 
-    <h1 class="page-title-line" id="title">Test Campaigns</h1>
-    <div class="panel panel-default">
-        <div class="panel-heading" id="testcampaignListLabel">
-            <span class="glyphicon glyphicon-list"></span>
-            Test Campaigns
+            <h1 class="page-title-line" id="title">Test Campaigns</h1>
+            <div class="panel panel-default">
+                <div class="panel-heading" id="testcampaignListLabel">
+                    <span class="glyphicon glyphicon-list"></span>
+                    Test Campaigns
+                </div>
+                <div class="panel-body" id="testcampaignList">
+                    <table id="testcampaignsTable" class="table table-bordered table-hover display" name="testcampaignsTable"></table>
+                    <div class="marginBottom20"></div>
+                </div>
+            </div>
+            <footer class="footer">
+                <div class="container-fluid" id="footer"></div>
+            </footer>
         </div>
-        <div class="panel-body" id="testcampaignList">
-            <table id="testcampaignsTable" class="table table-bordered table-hover display" name="testcampaignsTable"></table>
-            <div class="marginBottom20"></div>
-        </div>
-    </div>
-    <footer class="footer">
-        <div class="container-fluid" id="footer"></div>
-    </footer>
-</div>
-</body>
+    </body>
 </html>

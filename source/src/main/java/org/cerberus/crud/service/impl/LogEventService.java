@@ -49,12 +49,12 @@ public class LogEventService implements ILogEventService {
     private IParameterService parameterService;
 
     @Override
-    public AnswerItem readByKey(long logEventID) {
+    public AnswerItem<LogEvent> readByKey(long logEventID) {
         return logEventDAO.readByKey(logEventID);
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<LogEvent> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return logEventDAO.readByCriteria(start, amount, colName, dir, searchTerm, individualSearch);
     }
 
@@ -102,7 +102,7 @@ public class LogEventService implements ILogEventService {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return logEventDAO.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
     }
 

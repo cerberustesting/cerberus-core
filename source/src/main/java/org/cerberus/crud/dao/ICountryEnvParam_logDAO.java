@@ -40,7 +40,7 @@ public interface ICountryEnvParam_logDAO {
      * @param id
      * @return
      */
-    AnswerItem readByKey(long id);
+    AnswerItem<CountryEnvParam_log> readByKey(long id);
 
     /**
      *
@@ -54,10 +54,10 @@ public interface ICountryEnvParam_logDAO {
      * @param columnName
      * @param sort
      * @param searchParameter
-     * @param string
+     * @param individualSearch
      * @return
      */
-    AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<CountryEnvParam_log> readByVariousByCriteria(String system, String country, String environment, String build, String revision, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -67,7 +67,7 @@ public interface ICountryEnvParam_logDAO {
      * @param envGp
      * @return
      */
-    AnswerList readLastChanges(String system, String country, Integer nbdays, String envGp);
+    AnswerList<CountryEnvParam_log> readLastChanges(String system, String country, Integer nbdays, String envGp);
     
     /**
      *
@@ -106,5 +106,5 @@ public interface ICountryEnvParam_logDAO {
      * @param columnName
      * @return 
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

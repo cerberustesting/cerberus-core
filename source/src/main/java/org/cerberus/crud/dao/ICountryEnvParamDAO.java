@@ -60,7 +60,26 @@ public interface ICountryEnvParamDAO {
      * @param string
      * @return
      */
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    public AnswerList<CountryEnvParam> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
+    /**
+     *
+     * @param systems
+     * @param country
+     * @param environment
+     * @param build
+     * @param revision
+     * @param active
+     * @param envGp
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param string
+     * @return
+     */
+    public AnswerList<CountryEnvParam> readByVariousByCriteria(List<String> systems, String country, String environment, String build, String revision, String active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> string);
 
     /**
      *
@@ -79,26 +98,7 @@ public interface ICountryEnvParamDAO {
      * @param string
      * @return
      */
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> string);
-
-    /**
-     *
-     * @param system
-     * @param country
-     * @param environment
-     * @param build
-     * @param revision
-     * @param active
-     * @param envGp
-     * @param startPosition
-     * @param length
-     * @param columnName
-     * @param sort
-     * @param searchParameter
-     * @param string
-     * @return
-     */
-    public AnswerList readDistinctEnvironmentByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    public AnswerList<CountryEnvParam> readDistinctEnvironmentByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *
@@ -129,6 +129,6 @@ public interface ICountryEnvParamDAO {
      * @param columnName
      * @return 
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

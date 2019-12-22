@@ -1,0 +1,22 @@
+*Bug fixes*
+[square]
+* Adding some missing columns descriptions. #1954 
+* Enlarge login column on logevent table in order to avoid missing log entries when username is too big.
+* Fixed issue on chrome when forcing specific resolution. #Thanks to @fhameau #1964
+
+*Improvements / New features*
+[square]
+* Tomcat 8 and Keycloack Support is now active. You can start your migration.
+* Testcase dependency feature is activated. You can now define dependencies between 2 testcases inside the same campaign and Cerberus will secure that testcases will be executed in the right order. Properties are inherited from parent testcases. #1827 #1883
+* CI Score Threshold can now be defined at campaign level #1849
+* Renamed 'Test' to 'Test Folder' in order to make it easier to understand. #1522
+* Add a new system variable : system.ROBOTHOST
+* Add loop icon and library icon on step list in test case script
+* New parameter 'executor' on AddToExecutionQueueV003 in order to allow to keep track of user who triggered the campaign #1934
+* Allow to swipe into apk/ipa notification thanks to new property 'getLocation' #1905 and #1965
+* Improved email notification for end of tag optimising the layout but also displaying the testcase priority (in order to better isolate the ones that are prio 0 that do not impact CI pipe).
+* Chrome and Firefox are executed in headless mode (Means that browser windows will no longuer will be displayed) for verbose level 0. 
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* none

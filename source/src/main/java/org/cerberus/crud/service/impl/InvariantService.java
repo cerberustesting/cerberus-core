@@ -35,9 +35,7 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
-import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,23 +51,38 @@ public class InvariantService implements IInvariantService {
     private static final Logger LOG = LogManager.getLogger(InvariantService.class);
 
     @Override
-    public AnswerItem readByKey(String id, String value) {
-        return invariantDao.readByKey(id, value);
+    public AnswerItem<Invariant> readByKey(String id, String value) {
+        return AnswerUtil.convertToAnswerItem(() -> invariantDao.readByKey(id, value));
+    }
+
+    /**
+     * Use readByIdName instead to avoid Answer
+     *
+     * @param idName
+     * @return
+     */
+    @Override
+    @Deprecated
+    public AnswerList<Invariant> readByIdname(String idName) {
+        return AnswerUtil.convertToAnswerList(() -> invariantDao.readByIdname(idName));
     }
 
     @Override
-    public AnswerList readByIdname(String idName) {
+    public List<Invariant> readByIdName(String idName) throws CerberusException {
         return invariantDao.readByIdname(idName);
     }
 
     @Override
     public HashMap<String, Integer> readToHashMapGp1IntegerByIdname(String idName, Integer defaultValue) {
-        HashMap<String, Integer> result = new HashMap<String, Integer>();
+        HashMap<String, Integer> result = new HashMap<>();
 
-        AnswerList answer = readByIdname(idName); //TODO: handle if the response does not turn ok
-        for (Invariant inv : (List<Invariant>) answer.getDataList()) {
-            int gp1ToInt = ParameterParserUtil.parseIntegerParam(inv.getGp1(), defaultValue);
-            result.put(inv.getValue(), gp1ToInt);
+        try {
+            for (Invariant inv : readByIdName(idName)) {
+                int gp1ToInt = ParameterParserUtil.parseIntegerParam(inv.getGp1(), defaultValue);
+                result.put(inv.getValue(), gp1ToInt);
+            }
+        } catch (CerberusException ex) {
+            LOG.error("Exception catched when getting invariant list.", ex);
         }
         return result;
     }
@@ -78,26 +91,29 @@ public class InvariantService implements IInvariantService {
     public HashMap<String, String> readToHashMapGp1StringByIdname(String idName, String defaultValue) {
         HashMap<String, String> result = new HashMap<>();
 
-        AnswerList answer = readByIdname(idName); //TODO: handle if the response does not turn ok
-        for (Invariant inv : (List<Invariant>) answer.getDataList()) {
-            String gp1 = ParameterParserUtil.parseStringParam(inv.getGp1(), defaultValue);
-            result.put(inv.getValue(), gp1);
+        try {
+            for (Invariant inv : readByIdName(idName)) {
+                String gp1 = ParameterParserUtil.parseStringParam(inv.getGp1(), defaultValue);
+                result.put(inv.getValue(), gp1);
+            }
+        } catch (CerberusException ex) {
+            LOG.error("Exception catched when getting invariant list.", ex);
         }
         return result;
     }
 
     @Override
-    public AnswerList readByIdnameGp1(String idName, String gp) {
+    public AnswerList<Invariant> readByIdnameGp1(String idName, String gp) {
         return invariantDao.readByIdnameByGp1(idName, gp);
     }
 
     @Override
-    public AnswerList readByIdnameNotGp1(String idName, String gp) {
+    public AnswerList<Invariant> readByIdnameNotGp1(String idName, String gp) {
         return invariantDao.readByIdnameByNotGp1(idName, gp);
     }
 
     @Override
-    public AnswerList readCountryListEnvironmentLastChanges(String system, Integer nbDays) {
+    public AnswerList<Invariant> readCountryListEnvironmentLastChanges(String system, Integer nbDays) {
         return invariantDao.readCountryListEnvironmentLastChanges(system, nbDays);
     }
 
@@ -108,7 +124,7 @@ public class InvariantService implements IInvariantService {
         // Then, we build the list of invariant entry based on the filter.
 
         //TODO this method should return a AnswerList, after complete refactoring this method should be changed
-        AnswerList answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+        AnswerList<Invariant> answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
 
         return answer;
     }
@@ -120,19 +136,19 @@ public class InvariantService implements IInvariantService {
         // Then, we build the list of invariant entry based on the filter.
 
         //TODO this method should return a AnswerList, after complete refactoring this method should be changed
-        AnswerList answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+        AnswerList<Invariant> answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
 
         return answer;
     }
 
     @Override
-    public AnswerList readDistinctValuesByPublicByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByPublicByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         // We first get the list of all Public invariant from the invariant table.
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPUBLIC");
         // Then, we build the list of invariant entry based on the filter.
 
         //TODO this method should return a AnswerList, after complete refactoring this method should be changed
-        AnswerList answer = invariantDao.readDistinctValuesByCriteria(column, dir, searchTerm, individualSearch, searchSQL, columnName);
+        AnswerList<String> answer = invariantDao.readDistinctValuesByCriteria(column, dir, searchTerm, individualSearch, searchSQL, columnName);
 
         return answer;
     }
@@ -143,7 +159,7 @@ public class InvariantService implements IInvariantService {
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPRIVATE");
         // Then, we build the list of invariant entry based on the filter.
         //TODO this method should return a AnswerList, after complete refactoring this method should be changed
-        AnswerList answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+        AnswerList<Invariant> answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
 
         return answer;
     }
@@ -154,25 +170,25 @@ public class InvariantService implements IInvariantService {
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPRIVATE");
         // Then, we build the list of invariant entry based on the filter.
         //TODO this method should return a AnswerList, after complete refactoring this method should be changed
-        AnswerList answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+        AnswerList<Invariant> answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
 
         return answer;
     }
 
     @Override
-    public AnswerList readDistinctValuesByPrivateByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByPrivateByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         // We first get the list of all Public invariant from the invariant table.
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPRIVATE");
         // Then, we build the list of invariant entry based on the filter.
 
         //TODO this method should return a AnswerList, after complete refactoring this method should be changed
-        AnswerList answer = invariantDao.readDistinctValuesByCriteria(column, dir, searchTerm, individualSearch, searchSQL, columnName);
+        AnswerList<String> answer = invariantDao.readDistinctValuesByCriteria(column, dir, searchTerm, individualSearch, searchSQL, columnName);
 
         return answer;
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList<Invariant> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         //gets all invariants
         return invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, "");//no filter public or private is sent        
     }
@@ -208,15 +224,19 @@ public class InvariantService implements IInvariantService {
     public String getPublicPrivateFilter(String filter) {
         String searchSQL = " 1=0 ";
 
-        AnswerList answer = this.readByIdname(filter);
-        List<Invariant> invPrivate = answer.getDataList();
+        List<Invariant> invPrivate;
+        try {
+            invPrivate = this.readByIdName(filter);
 
-        List<String> idnameList = null;
-        idnameList = new ArrayList<String>();
-        for (Invariant toto : invPrivate) {
-            idnameList.add(toto.getValue());
+            List<String> idnameList = null;
+            idnameList = new ArrayList<>();
+            for (Invariant toto : invPrivate) {
+                idnameList.add(toto.getValue());
+            }
+            searchSQL = SqlUtil.createWhereInClause("idname", idnameList, true);
+        } catch (CerberusException ex) {
+            LOG.warn("JSON exception when getting Country List.", ex);
         }
-        searchSQL = SqlUtil.createWhereInClause("idname", idnameList, true);
 
         return searchSQL;
     }

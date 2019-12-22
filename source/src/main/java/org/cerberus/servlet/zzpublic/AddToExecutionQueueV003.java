@@ -21,6 +21,7 @@ package org.cerberus.servlet.zzpublic;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -32,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.*;
+import org.cerberus.crud.factory.IFactoryRobot;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.ILogEventService;
@@ -42,6 +44,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.servlet.ServletUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -49,6 +52,7 @@ import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseCountryService;
@@ -97,9 +101,10 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     private static final String PARAMETER_MANUAL_EXECUTION = "manualexecution";
     private static final String PARAMETER_EXEPRIORITY = "priority";
     private static final String PARAMETER_OUTPUTFORMAT = "outputformat";
+    private static final String PARAMETER_EXECUTOR = "executor";
 
     private static final String DEFAULT_VALUE_TAG = "";
-    private static final int DEFAULT_VALUE_SCREENSHOT = 0;
+    private static final int DEFAULT_VALUE_SCREENSHOT = 1;
     private static final int DEFAULT_VALUE_MANUAL_URL = 0;
     private static final int DEFAULT_VALUE_VERBOSE = 1;
     private static final long DEFAULT_VALUE_TIMEOUT = 300;
@@ -126,6 +131,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     private ICampaignService campaignService;
     private ICountryEnvParamService countryEnvParamService;
     private IRobotService robotService;
+    private IFactoryRobot robotFactory;
+    private IParameterService parameterService;
 
     /**
      * Process request for both GET and POST method.
@@ -161,6 +168,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         campaignService = appContext.getBean(ICampaignService.class);
         countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
         robotService = appContext.getBean(IRobotService.class);
+        robotFactory = appContext.getBean(IFactoryRobot.class);
+        parameterService = appContext.getBean(IParameterService.class);
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
@@ -169,7 +178,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
-        AnswerItem<List<TestCase>> testcases = null;
+        AnswerList<TestCase> testcases = null;
 
         /**
          * Adding Log entry.
@@ -189,11 +198,22 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_COUNTRY), null, charset);
         List<String> environments;
         environments = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
+
+        JSONArray countryJSONArray = new JSONArray(countries);
+        JSONArray envJSONArray = new JSONArray(environments);
+
         List<String> robots = new ArrayList<>();
         robots = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_ROBOT), robots, charset);
 
         // Execution parameters.
         String tag = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_TAG), DEFAULT_VALUE_TAG);
+        try {
+            tag = URLDecoder.decode(tag, "UTF-8");
+        } catch (Exception ex) {
+            // In case exception is raized, we keep the original string.
+            LOG.debug(ex, ex);
+        }
+
         String robotIP = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_ROBOT_IP), null, charset);
         String robotPort = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_ROBOT_PORT), null, charset);
         String browser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_BROWSER), null, charset);
@@ -206,6 +226,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         String manualLoginRelativeURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_LOGIN_RELATIVE_URL), null, charset);
         String manualEnvData = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_ENV_DATA), null, charset);
         String outputFormat = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_OUTPUTFORMAT), DEFAULT_VALUE_OUTPUTFORMAT, charset);
+        String executor = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_EXECUTOR), null, charset);
+
         int screenshot = DEFAULT_VALUE_SCREENSHOT;
         int verbose = DEFAULT_VALUE_VERBOSE;
         String timeout = request.getParameter(PARAMETER_TIMEOUT);
@@ -223,7 +245,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             mCampaign = (Campaign) vCampaign.getItem();
         }
         if (mCampaign == null) {
-            // Campaign not defined or does not exist so we parse parameter from servlet query string or defeult values
+            // Campaign not defined or does not exist so we parse parameter from servlet query string or defaut values
             screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SCREENSHOT), DEFAULT_VALUE_SCREENSHOT, charset);
             verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_VERBOSE), DEFAULT_VALUE_VERBOSE, charset);
             pageSource = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_PAGE_SOURCE), DEFAULT_VALUE_PAGE_SOURCE, charset);
@@ -270,7 +292,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 + "- " + PARAMETER_PLATFORM + " : Platform that will be used for every execution triggered. [" + platform + "]\n"
                 + "- " + PARAMETER_SCREENSIZE + " : Size of the screen that will be used for every execution triggered. [" + screenSize + "]\n"
                 + "- " + PARAMETER_MANUAL_URL + " : Activate (1) or not (0) or Override (2) the Manual URL of the application to execute. If Activated (1) the 4 parameters after are necessary. If Override (2) at least 1 parameters after are necessary (other parameters will use cerberus values) [" + manualURL + "]\n"
-                + "- " + PARAMETER_MANUAL_HOST + " : Host of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated or override). [" + manualHost + "]\n"
+                + "- " + PARAMETER_MANUAL_HOST + " : Host of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated or override). [" + manualHost + "].   Manual host can be  `applicationname1:manualhost1;applicationname2:manualhost2;...` or just 'manualHost1'\n"
                 + "- " + PARAMETER_MANUAL_CONTEXT_ROOT + " : Context root of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated or override). [" + manualContextRoot + "]\n"
                 + "- " + PARAMETER_MANUAL_LOGIN_RELATIVE_URL + " : Relative login URL of the application (only used when " + PARAMETER_MANUAL_URL + " is activated or override). [" + manualLoginRelativeURL + "]\n"
                 + "- " + PARAMETER_MANUAL_ENV_DATA + " : Environment where to get the test data when a " + PARAMETER_MANUAL_URL + " is defined. (only used when manualURL is active or override). [" + manualEnvData + "]\n"
@@ -283,7 +305,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 + "- " + PARAMETER_MANUAL_EXECUTION + " : Execute testcase in manual mode for every execution triggered. [" + manualExecution + "]\n"
                 + "- " + PARAMETER_RETRIES + " : Number of tries if the result is not OK for every execution triggered. [" + retries + "]\n"
                 + "- " + PARAMETER_EXEPRIORITY + " : Priority that will be used in the queue for every execution triggered. [" + priority + "]\n"
-                + "- " + PARAMETER_OUTPUTFORMAT + " : Format of the servlet output. can be compact, json [" + outputFormat + "]\n";
+                + "- " + PARAMETER_OUTPUTFORMAT + " : Format of the servlet output. can be compact, json [" + outputFormat + "]\n"
+                + "- " + PARAMETER_EXECUTOR + " : Name of the user who trigger the execution. Value only used if servlet call is not authenticated [" + executor + "]\n";
 
 //        try {
         // Checking the parameter validity.
@@ -291,25 +314,13 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         boolean error = false;
 
         if ((tag == null || tag.isEmpty()) && mCampaign != null && !StringUtil.isNullOrEmpty(mCampaign.getTag())) {
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            String mytimestamp = sdf.format(timestamp);
-            String myuser = request.getRemoteUser();
-            if (myuser == null) {
-                myuser = "";
-            }
-            tag = mCampaign.getTag().replace("%TIMESTAMP%", mytimestamp).replace("%USER%", myuser);
+            tag = mCampaign.getTag();
         } else if (tag == null || tag.isEmpty()) {
             if (request.getRemoteUser() != null) {
-                tag = request.getRemoteUser();
-            }
-            if (tag.length() > 0) {
-                tag += ".";
+                tag = request.getRemoteUser() + ".";
             }
             if (campaign != null) {
-                tag += campaign;
-            }
-            if (tag.length() > 0) {
-                tag += ".";
+                tag += campaign + ".";
             }
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             String mytimestamp = sdf.format(timestamp);
@@ -320,6 +331,20 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             errorMessage.append("Error - Parameter ").append(PARAMETER_TAG).append(" is too big. Maximum size if 255. Current size is : ").append(tag.length()).append("\n");
             error = true;
         }
+
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String mytimestamp = sdf.format(timestamp);
+        String myuser = request.getRemoteUser();
+        if (myuser == null) {
+            myuser = "";
+        }
+        String reqEnvironments = StringUtil.convertToString(environments, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
+        String reqCountries = StringUtil.convertToString(countries, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
+        tag = tag
+                .replace("%TIMESTAMP%", mytimestamp)
+                .replace("%USER%", myuser)
+                .replace("%REQCOUNTRYLIST%", reqCountries)
+                .replace("%REQENVIRONMENTLIST%", reqEnvironments);
 
         if (campaign != null && !campaign.isEmpty()) {
             final AnswerItem<Map<String, List<String>>> parsedCampaignParameters = campaignParameterService.parseParametersByCampaign(campaign);
@@ -343,8 +368,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 testcases = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()]));
 
                 if (testcases != null) {
-                    if (testcases.getItem() != null) {
-                        for (TestCase campaignTestCase : testcases.getItem()) {
+                    if (testcases.getDataList() != null) {
+                        for (TestCase campaignTestCase : testcases.getDataList()) {
                             selectTest.add(campaignTestCase.getTest());
                             selectTestCase.add(campaignTestCase.getTestCase());
                         }
@@ -381,6 +406,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         int nbExe = 0;
         JSONArray jsonArray = new JSONArray();
         String user = request.getRemoteUser() == null ? "" : request.getRemoteUser();
+        user = StringUtil.isNullOrEmpty(user) && !StringUtil.isNullOrEmpty(executor) ? executor : user;
 
         int nbtestcasenotactive = 0;
         int nbtestcaseenvgroupnotallowed = 0;
@@ -388,18 +414,37 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         int nbrobotmissing = 0;
         boolean tagAlreadyAdded = false;
 
+        Map<String, String> myHostMap = new HashMap<>();
+        myHostMap = getManualHostMap(manualHost);
+
         int nbrobot = 0;
+        Map<String, Robot> robotsMap = new HashMap<>();
         if (StringUtil.isNullOrEmpty(robotIP)) {
             if (robots == null || robots.isEmpty()) {
+                // RobotIP is not defined and no robot are provided so the content is probably testcases that does not require robot definition.
+                if (manualExecution.equalsIgnoreCase("Y") || manualExecution.equalsIgnoreCase("A")) {
+                    robotIP = "manual";
+                    robotsMap.put("", robotFactory.create(0, "", platform, browser, "", "Y", "", "", "", screenSize, browser, ""));
+                }
                 nbrobot = 1;
             } else {
+                // Not RobotIP defined but at least 1 robot has been found from servlet call or campaign definition.
                 nbrobot = robots.size();
+                try {
+                    // Load the map of robot from input.
+                    robotsMap = robotService.readToHashMapByRobotList(robots); // load Robots available for the campaign
+                    nbrobot = robotsMap.size();
+                } catch (CerberusException ex) {
+                    LOG.warn(ex.toString(), ex);
+                }
             }
         } else {
-            // Whene RobotIP is feeded, we do not consider the robot definition.
+            // When RobotIP is feeded, we do not consider the robot definition.
+            LOG.debug("Adding fake Robot.");
             nbrobot = 1;
             robots = new ArrayList<>();
             robots.add("");
+            robotsMap.put("", robotFactory.create(0, "", platform, browser, "", "Y", "", "", "", screenSize, browser, ""));
         }
 
         // Starting the request only if previous parameters exist.
@@ -420,7 +465,6 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             // Part 1: Getting all possible Execution from test cases + countries + environments + browsers which have been sent to this servlet.
             List<TestCaseExecutionQueue> toInserts = new ArrayList<TestCaseExecutionQueue>();
             try {
-                Map<String, Robot> robotsMap = robotService.readToHashMapByRobotList(robots); // load Robots available for the campaign
 
                 HashMap<String, CountryEnvParam> envMap = new HashMap<>();
                 LOG.debug("Loading all environments.");
@@ -457,48 +501,54 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                             if (!StringUtil.isNullOrEmpty(tag) && !tagAlreadyAdded) {
                                                 // We create or update it.
                                                 ITagService tagService = appContext.getBean(ITagService.class);
-                                                tagService.createAuto(tag, campaign, user);
+                                                tagService.createAuto(tag, campaign, user, envJSONArray, countryJSONArray);
                                                 tagAlreadyAdded = true;
                                             }
+
+                                            // manage manual host for this execution
+                                            String manualHostforThisApplication = getManualHostForThisApplication(myHostMap, app.getApplication());
 
                                             if ((app != null)
                                                     && (app.getType() != null)
                                                     && (app.getType().equalsIgnoreCase(Application.TYPE_GUI) || app.getType().equalsIgnoreCase(Application.TYPE_APK)
                                                     || app.getType().equalsIgnoreCase(Application.TYPE_IPA) || app.getType().equalsIgnoreCase(Application.TYPE_FAT))) {
-                                                if (robots == null || robots.isEmpty()) {
-                                                    robots = new ArrayList<>();
-                                                    robots.add("");
-                                                }
+                                                
+                                                for (Map.Entry<String, Robot> entry : robotsMap.entrySet()) {
+                                                    String key = entry.getKey();
+                                                    Robot robot = entry.getValue();
 
-                                                Collection<Robot> robotsDetails = robotService.getRobotsUsableForType(robotsMap.values(), app.getType());
-
-                                                for (Robot robot : robotsDetails) {
                                                     try {
-                                                        LOG.debug("Insert Queue Entry.");
-                                                        // We get here the corresponding robotDecli value from robot.
-                                                        String robotDecli = robot.getRobotDecli();
-                                                        if (StringUtil.isNullOrEmpty(robotDecli)) {
-                                                            robotDecli = robot.getRobot();
-                                                        }
-                                                        if ("".equals(robot.getRobot()) && StringUtil.isNullOrEmpty(robotIP)) {
-                                                            // We don't insert the execution for robot application that have no robot and robotIP defined.
-                                                            nbrobotmissing++;
+                                                        if ("".equals(robot.getType()) || app.getType().equals(robot.getType())) {
+                                                            // Robot type is not feeded (not attached to any techno) or robot type match the one of the application.
+                                                            LOG.debug("Insert Queue Entry.");
+                                                            // We get here the corresponding robotDecli value from robot.
+                                                            String robotDecli = robot.getRobotDecli();
+                                                            if (StringUtil.isNullOrEmpty(robotDecli)) {
+                                                                robotDecli = robot.getRobot();
+                                                            }
+                                                            if ("".equals(robot.getRobot()) && StringUtil.isNullOrEmpty(robotIP)) {
+                                                                // We don't insert the execution for robot application that have no robot and robotIP defined.
+                                                                nbrobotmissing++;
+                                                            } else {
+                                                                toInserts.add(inQueueFactoryService.create(app.getSystem(),
+                                                                        test, testCase, country.getCountry(), environment,
+                                                                        robot.getRobot(), robotDecli, robotIP, robotPort, browser,
+                                                                        browserVersion, platform, screenSize, manualURL,
+                                                                        manualHostforThisApplication, manualContextRoot,
+                                                                        manualLoginRelativeURL, manualEnvData, tag,
+                                                                        screenshot, verbose, timeout, pageSource,
+                                                                        seleniumLog, 0, retries, manualExecution, priority,
+                                                                        user, null, null, null));
+                                                            }
                                                         } else {
-                                                            toInserts.add(inQueueFactoryService.create(app.getSystem(),
-                                                                    test, testCase, country.getCountry(), environment,
-                                                                    robot.getRobot(), robotDecli, robotIP, robotPort, browser,
-                                                                    browserVersion, platform, screenSize, manualURL,
-                                                                    manualHost, manualContextRoot,
-                                                                    manualLoginRelativeURL, manualEnvData, tag,
-                                                                    screenshot, verbose, timeout, pageSource,
-                                                                    seleniumLog, 0, retries, manualExecution, priority,
-                                                                    user, null, null, null));
+                                                            LOG.debug("Not inserted because app type '" + app.getType() + "' does not match robot type '" + robot.getType() + "'.");
                                                         }
                                                     } catch (FactoryCreationException e) {
                                                         LOG.error("Unable to insert record due to: " + e, e);
                                                         LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robots);
                                                     }
                                                 }
+
                                             } else {
                                                 // Application does not support robot so we force an empty value.
                                                 LOG.debug("Forcing Robot to empty value. Application type=" + app.getType());
@@ -506,7 +556,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                     LOG.debug("Insert Queue Entry.");
                                                     toInserts.add(inQueueFactoryService.create(app.getSystem(), test,
                                                             testCase, country.getCountry(), environment, "", "", "", "",
-                                                            "", "", "", "", manualURL, manualHost, manualContextRoot,
+                                                            "", "", "", "", manualURL, manualHostforThisApplication, manualContextRoot,
                                                             manualLoginRelativeURL, manualEnvData, tag, screenshot,
                                                             verbose, timeout, pageSource, seleniumLog, 0, retries,
                                                             manualExecution, priority, user, null, null, null));
@@ -538,11 +588,11 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 LOG.warn(ex);
             }
 
-            // Part 2: Try to insert all these test cases to the execution queue.
+            // Part 2a: Try to insert all these test cases to the execution queue.
             List<String> errorMessages = new ArrayList<String>();
             for (TestCaseExecutionQueue toInsert : toInserts) {
                 try {
-                    inQueueService.convert(inQueueService.create(toInsert, true));
+                    inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUTEMP));
                     nbExe++;
                     JSONObject value = new JSONObject();
                     value.put("queueId", toInsert.getId());
@@ -561,6 +611,9 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     LOG.error(ex, ex);
                 }
             }
+
+            // Part 2b: move all the execution queue from tag to QUEUE state.
+            inQueueService.updateAllTagToQueuedFromQuTemp(tag);
 
             // Part 3 : Trigger JobQueue
             try {
@@ -590,9 +643,6 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             // Message that everything went fine.
             msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
 
-        } else {
-            // In case of errors, we display the help message.
-//            errorMessage.append(helpMessage);
         }
 
         // Init Answer with potencial error from Parsing parameter.
@@ -604,7 +654,10 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     JSONObject jsonResponse = new JSONObject();
                     jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
                     jsonResponse.put("message", errorMessage.toString());
-                    jsonResponse.put("helpMessage", helpMessage);
+                    if (error) {
+                        // Only display help message if error.
+                        jsonResponse.put("helpMessage", helpMessage);
+                    }
                     jsonResponse.put("tag", tag);
                     jsonResponse.put("nbExe", nbExe);
                     jsonResponse.put("nbErrorTCNotActive", nbtestcasenotactive);
@@ -634,11 +687,75 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 response.getWriter().print(errorMessage.toString());
         }
 
-//        } catch (Exception e) {
-//            LOG.error(e);
-//            out.println(helpMessage);
-//            out.println(e.toString());
-//        }
+    }
+
+    /**
+     * @param manualHost
+     * @param application
+     * @return
+     */
+    private String getManualHostForThisApplication(Map<String, String> manualHost, String application) {
+
+        if (manualHost.containsKey("")) {
+            return manualHost.get("");
+        }
+        if (manualHost.containsKey(application)) {
+            return manualHost.get(application);
+        }
+        return "";
+    }
+
+    /**
+     * Convert manualhost parameter to MAP. manual host can be just
+     * 'manualHost1' (case 1) or
+     * `applicationname1:manualhost1;applicationname2:manualhost2;...` (cases 2)
+     * or a json string in format : { "applicationname1" : "manualhost1",
+     * "applicationname2" : "manualhost2" } (case 3)
+     *
+     * @param manualHost
+     * @return a Map of application : url
+     */
+    private Map<String, String> getManualHostMap(String manualHost) {
+        Map<String, String> myHostMap = new HashMap<>();
+        if (StringUtil.isNullOrEmpty(manualHost)) {
+            LOG.debug("Converting from empty.");
+            myHostMap.put("", "");
+            return myHostMap;
+        }
+        try {
+            JSONObject myJSONObj = new JSONObject(manualHost);
+            Iterator<?> nameItr = myJSONObj.keys();
+            LOG.debug("Converting from JSON.");
+            while (nameItr.hasNext()) {
+                String name = (String) nameItr.next();
+                myHostMap.put(name, myJSONObj.getString(name));
+            }
+            return myHostMap;
+        } catch (JSONException ex) {
+            // parameter could not be converted to JSON Array so we try with the : and ; separators.
+            String newManualHost = "";
+            // Remove the http:// and https:// in order to avoid conflict with : split that will be done
+            if (!StringUtil.isNullOrEmpty(manualHost)) {
+                newManualHost = manualHost.replace("http://", "|ZZZHTTPZZZ|");
+                newManualHost = newManualHost.replace("https://", "|ZZZHTTPSZZZ|");
+            }
+            if (!StringUtil.isNullOrEmpty(manualHost) && !newManualHost.contains(":")) {
+                LOG.debug("Converting from string.");
+                myHostMap.put("", manualHost);
+                return myHostMap; // if no :, just return manual host (case 1)
+            }
+            // (case 2)
+            if (!StringUtil.isNullOrEmpty(manualHost)) {
+                LOG.debug("Converting from separator.");
+                String[] manualHostByApp = newManualHost.split(";");
+                for (String appManualHost : manualHostByApp) {
+                    String[] appAndHost = appManualHost.split(":");
+                    myHostMap.put(appAndHost[0], appAndHost[1].replace("|ZZZHTTPZZZ|", "http://").replace("|ZZZHTTPSZZZ|", "https://"));
+                }
+                return myHostMap;
+            }
+        }
+        return myHostMap;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

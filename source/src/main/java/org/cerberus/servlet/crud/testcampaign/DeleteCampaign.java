@@ -20,6 +20,8 @@
 package org.cerberus.servlet.crud.testcampaign;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -28,8 +30,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Campaign;
+import org.cerberus.crud.entity.ScheduleEntry;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IMyVersionService;
+import org.cerberus.crud.service.IScheduleEntryService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -65,6 +70,7 @@ public class DeleteCampaign extends HttpServlet {
         JSONObject jsonResponse = new JSONObject();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         Answer ans = new Answer();
+        Answer schedAns = new Answer();
         Answer finalAnswer = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -106,6 +112,26 @@ public class DeleteCampaign extends HttpServlet {
                 finalAnswer = campaignService.delete(camp);
 
                 if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Deteting scheduler entry as there are no integrity
+                     * referential Updating scheduler version if there were some
+                     * schedule entries.
+                     */
+                    // Checking if campaign has some scheduler entry before deleting it. This is to potentialy refresh the scheduler version. 
+                    IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Scheduler").replace("%OPERATION%", "No Insert"));
+                    schedAns.setResultMessage(msg);
+                    List<ScheduleEntry> schList = scheduleentryservice.readByName(key).getDataList();
+                    if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        if (!schList.isEmpty()) {
+                            finalAnswer = scheduleentryservice.deleteByCampaignName(camp.getCampaign());
+                            IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
+                            myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
+                        }
+                    } else {
+                        finalAnswer = schedAns;
+                    }
                     /**
                      * Adding Log entry.
                      */

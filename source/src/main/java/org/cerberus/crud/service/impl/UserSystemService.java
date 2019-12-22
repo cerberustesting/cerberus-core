@@ -24,6 +24,11 @@ import org.cerberus.crud.dao.IUserSystemDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
+import org.cerberus.crud.factory.IFactoryInvariant;
+import org.cerberus.crud.factory.IFactoryUserSystem;
+import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.IUserService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IUserSystemService;
@@ -41,6 +46,16 @@ public class UserSystemService implements IUserSystemService {
 
     @Autowired
     private IUserSystemDAO userSystemDAO;
+    @Autowired
+    private IParameterService parameterService;
+    @Autowired
+    private IInvariantService invariantService;
+    @Autowired
+    private IFactoryInvariant invariantFactory;
+    @Autowired
+    private IFactoryUserSystem factoryUserSystem;
+    @Autowired
+    private IUserService userService;
 
     private final String OBJECT_NAME = "UserSystem";
 
@@ -98,6 +113,33 @@ public class UserSystemService implements IUserSystemService {
     }
 
     @Override
+    public void createSystemAutomatic(String user) throws CerberusException {
+        // Automatically create a User Space system depending on parameters.
+        if (parameterService.getParameterBooleanByKey("cerberus_accountcreation_ownsystemcreation", "", true)) {
+            String newSystem = "US-" + user;
+            // Create invariant.
+            invariantService.create(invariantFactory.create("SYSTEM", newSystem, 9999, "System for user " + user, "User System", "", "", "", "", "", "", "", "", ""));
+            // Create User/System.
+            UserSystem us = factoryUserSystem.create(user, newSystem);
+            userSystemDAO.create(us);
+            // Update User to System.
+            User myuser = userService.convert(userService.readByKey(user));
+            myuser.setDefaultSystem(newSystem);
+            userService.update(myuser);
+        }
+        // Automatically all systems depending on parameters.
+        String param = parameterService.getParameterStringByKey("cerberus_accountcreation_systemlist", "", "ALL");
+        if (param.equals("ALL")) {
+            userSystemDAO.createAllSystemList(user);
+        } else if (!param.equals("NONE")) {
+            if (param.contains(",")) {
+                String[] systemList = param.split(",");
+                userSystemDAO.createSystemList(user, systemList);
+            }
+        }
+    }
+
+    @Override
     public Answer create(UserSystem sys) {
         return userSystemDAO.create(sys);
     }
@@ -112,7 +154,7 @@ public class UserSystemService implements IUserSystemService {
         Answer a = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                 .resolveDescription("OPERATION", "UPDATE"));
 
-        AnswerList an = this.readByUser(user.getLogin());
+        AnswerList<UserSystem> an = this.readByUser(user.getLogin());
         if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             List<UserSystem> oldGroups = an.getDataList();
             //delete if don't exist in new

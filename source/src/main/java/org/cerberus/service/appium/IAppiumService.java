@@ -31,20 +31,72 @@ import org.cerberus.engine.entity.SwipeAction.Direction;
  */
 public interface IAppiumService {
     
+    /**
+     *
+     * @param session
+     * @param identifier
+     * @return
+     */
     MessageEvent switchToContext(Session session, Identifier identifier);
     
+    /**
+     *
+     * @param session
+     * @param identifier
+     * @param property
+     * @param propertyName
+     * @return
+     */
     MessageEvent type(Session session, Identifier identifier, String property, String propertyName);
 
+    /**
+     *
+     * @param session
+     * @param identifier
+     * @return
+     */
     MessageEvent click(Session session, Identifier identifier);
 
+    /**
+     *
+     * @param session
+     * @param keyName
+     * @return
+     */
     MessageEvent keyPress(Session session, String keyName);
 
+    /**
+     *
+     * @param session
+     * @return
+     */
     MessageEvent hideKeyboard(Session session);
 
+    /**
+     *
+     * @param session
+     * @param swipeAction
+     * @return
+     */
     MessageEvent swipe(Session session, SwipeAction swipeAction);
     
+    /**
+     *
+     * @param session
+     * @param action
+     * @return
+     * @throws IllegalArgumentException
+     */
     Direction getDirectionForSwipe(Session session, SwipeAction action) throws IllegalArgumentException;
 
+    /**
+     *
+     * @param session
+     * @param cmd
+     * @param args
+     * @return
+     * @throws IllegalArgumentException
+     */
     MessageEvent executeCommand(Session session, String cmd, String args) throws IllegalArgumentException;
 
     /**
@@ -84,4 +136,21 @@ public interface IAppiumService {
      * @return
      */
     MessageEvent openApp(Session session, String appPackage, String appActivity);
+
+    /**
+     *
+     * @param session
+     * @param identifier
+     * @param pressDuration
+     * @return
+     */
+    MessageEvent longPress(Session session, Identifier identifier, Integer pressDuration);
+
+    /**
+     *
+     * @param session
+     * @param identifier
+     * @return
+     */
+    MessageEvent clearField(Session session, Identifier identifier);
 }

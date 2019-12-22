@@ -64,7 +64,7 @@
                 // this is used in order to execute only 1 instruction at a time as it make take a lot of time to process.
                 boolean SQLExecuted = false;
                 // SQL that has version equal to SQLLimit will not be executed automatically.
-                Integer SQLLimit = 1389; // 3.9 Version LEVEL.
+                Integer SQLLimit = 1463; // 4.4 Version LEVEL.
                 IFactoryMyversion factoryMyversion;
 
                 try {
@@ -142,7 +142,7 @@
                                         if ((i >= 3) && (MySQLRC.equalsIgnoreCase("OK"))) { // The myversion table is only available after the Version 3
                                             // Update the myversion table to comit the execution of the SQL Instruction.
                                             DtbVersion.setValue(i);
-                                            myVersionService.UpdateMyVersionTable(DtbVersion);
+                                            myVersionService.update(DtbVersion);
                                         }
                                         if (i >= 4) { // The log table is only available after the Version 4
                                             // Log the SQL execution here

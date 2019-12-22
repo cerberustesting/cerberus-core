@@ -130,23 +130,50 @@ image:testlooptep.png[TestCaseLoopStep]
 |=== 
 
 | *Action* | *Description* | *Example* 
-| Unknown | Unknown action. Default Action when creating a new action. Warning: make the execution fail. | 
-| click | will allow you to click on an element inside the current page. 
-*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. | id=html_reference, xpath=//*[@id='html_reference'], (Sikuli) picture=%object.NameOfYourObject.pictureurl% 
-| mouseLeftButtonPress | allow to press and keep the button pressed until the next ButtonRelease action | 
-| mouseLeftButtonRelease | release the mouse button. Usefull with ButtonPress to perform drag & drop | 
-| doubleClick |  will allow you to double click on an element inside the current page. 
-*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference | 
-| rightClick |  will allow you to right click on an element inside the current page. 
-*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference | 
+| Unknown 
+| Unknown action. Should be used when the action is not yet known. 
+Warning: make the execution fail. 
+| 
+| click 
+| Click on the left mouse button on an element inside the current page.
+*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. 
+| `id=html_reference`
+`xpath=//*[@id='html_reference']`
+`picture=%object.NameOfYourObject.pictureurl%` (for Sikuli)
+| mouseLeftButtonPress 
+| Press and keep the left mouse button pressed until the action 'mouseLeftButtonRelease' is executed. 
+| 
+| mouseLeftButtonRelease 
+| release the mouse button. Usefull with ButtonPress to perform drag & drop 
+| 
+| doubleClick 
+|  Double click on an element inside the current page.
+*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference 
+| 
+| rightClick 
+|  Right click on an element inside the current page. 
+*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference 
+| 
 | mouseOver | mouse cursor over an object *[red]#Element path#* : the id of the element | 
 | focustoIframe | TBD | 
 | focustoDefaultIframe | TBD | 
-| switchToWindow | when the Test case need to switch to another window (like popup dialog) this action is used. Just specify the title or the URL of the other window to switch to this window. | title=titleOfThisNewWindow or url=http://url_of_this_new_window
-| manageDialog | TBD | 
-| OpenUrlWithBase | OpenUrl action using the based defined in the environment section | /cerberustesting
-| OpenUrlLogin | OpenUrl action using credential | 
-| OpenUrl | Open a specified url | https://github.com
+| switchToWindow | Switch to another window (like popup dialog). Just specify the title or the URL of the other window to switch to this window. 
+| `title=titleOfThisNewWindow`
+ `url=http://url_of_this_new_window`
+| manageDialog 
+| Close the browser popup alert windows either by accepting it with `ok` either by cancelling it with `cancel` 
+| `ok`
+`cancel`
+
+| manageDialogKeypress 
+| Keypress inside the browser popup alert windows. You can use special keys with [TAB] 
+Supported keys are : [BACK_SPACE], [TAB], [RETURN], [ENTER], [SHIFT], [LEFT_SHIFT], [CONTROL], [LEFT_CONTROL], [ALT], [LEFT_ALT], [ESCAPE], [SPACE], [PAGE_UP], [PAGE_DOWN], [LEFT], [ARROW_LEFT], [UP], [ARROW_UP], [RIGHT], [ARROW_RIGHT], [DOWN], [ARROW_DOWN], [DELETE], [SEMICOLON], [EQUALS], [NUMPAD0], [NUMPAD1], [NUMPAD2], [NUMPAD3], [NUMPAD4], [NUMPAD5], [NUMPAD6], [NUMPAD7], [NUMPAD8], [NUMPAD9], [MULTIPLY], [ADD], [SEPARATOR], [SUBTRACT], [DECIMAL], [DIVIDE], [F1], [F2], [F3], [F4], [F5], [F6], [F7], [F8], [F9], [F10], [F11], [F12]
+| `texttoenter`
+`user[TAB]password`
+
+| OpenUrlWithBase | OpenUrl action using the base defined in the application / environment section | `/cerberustesting`
+| OpenUrlLogin | OpenUrl action using the login page defined at application / environment level. | 
+| OpenUrl | Open a specified url | `https://github.com`
 | executeJS | execute a JS script (no output can be retrieved) | 
 | openApp | TBD | 
 | closeApp | TBD | 
@@ -173,12 +200,19 @@ In order to perform any action/control (e.g. 'click', 'verifyElementPresent'), A
 Keep in mind that for click action, it will be performed in the center of the picture:
 image:sikuliclick1.png[SikuliClick1]
 
-The keycodes (see. keypress action) also changes from GUI to FAT type. The syntaxes are:
+The keycodes (see. keypress action) also changes depending on the application type (GUI, IPA, APK or FAT). The syntaxes are:
 
 - `KEYNAME` for GUI, ex : `ENTER`
 
+Following Selenium Keys can be used : NULL, CANCEL, HELP, BACK_SPACE, TAB, CLEAR, RETURN, ENTER, SHIFT, LEFT_SHIFT, CONTROL, LEFT_CONTROL, ALT, LEFT_ALT, PAUSE, ESCAPE, SPACE, PAGE_UP, PAGE_DOWN, END, HOME, LEFT, ARROW_LEFT, UP, ARROW_UP, RIGHT, ARROW_RIGHT, DOWN, ARROW_DOWN, INSERT, DELETE, SEMICOLON, EQUALS, NUMPAD0, NUMPAD1, NUMPAD2, NUMPAD3, NUMPAD4, NUMPAD5, NUMPAD6, NUMPAD7, NUMPAD8, NUMPAD9, MULTIPLY, ADD, SEPARATOR, SUBTRACT, DECIMAL, DIVIDE, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, META, COMMAND, ZENKAKU_HANKAKU
+
+Following Appium Android Keys can be used : UNKNOWN, SOFT_LEFT, SOFT_RIGHT, HOME, BACK, CALL, ENDCALL, DIGIT_0, DIGIT_1, DIGIT_2, DIGIT_3, DIGIT_4, DIGIT_5, DIGIT_6, DIGIT_7, DIGIT_8, DIGIT_9, STAR, POUND, DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAD_RIGHT, DPAD_CENTER, VOLUME_UP, VOLUME_DOWN, POWER, CAMERA, CLEAR, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, COMMA, PERIOD, ALT_LEFT, ALT_RIGHT, SHIFT_LEFT, SHIFT_RIGHT, TAB, SPACE, SYM, EXPLORER, ENVELOPE, ENTER, DEL, GRAVE, MINUS, EQUALS, LEFT_BRACKET, RIGHT_BRACKET, BACKSLASH, SEMICOLON, APOSTROPHE, SLASH, AT, NUM, HEADSETHOOK, FOCUS, PLUS, MENU, NOTIFICATION, SEARCH, MEDIA_PLAY_PAUSE, MEDIA_STOP, MEDIA_NEXT, MEDIA_PREVIOUS, MEDIA_REWIND, MEDIA_FAST_FORWARD, MUTE, PAGE_UP, PAGE_DOWN, PICTSYMBOLS, SWITCH_CHARSET, BUTTON_A, BUTTON_B, BUTTON_C, BUTTON_X, BUTTON_Y, BUTTON_Z, BUTTON_L1, BUTTON_R1, BUTTON_L2, BUTTON_R2, BUTTON_THUMBL, BUTTON_THUMBR, BUTTON_START, BUTTON_SELECT, BUTTON_MODE, ESCAPE, FORWARD_DEL, CTRL_LEFT, CTRL_RIGHT, CAPS_LOCK, SCROLL_LOCK, META_LEFT, META_RIGHT, FUNCTION, SYSRQ, BREAK, MOVE_HOME, MOVE_END, INSERT, FORWARD, MEDIA_PLAY, MEDIA_PAUSE, MEDIA_CLOSE, MEDIA_EJECT, MEDIA_RECORD, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, NUM_LOCK, NUMPAD_0, NUMPAD_1, NUMPAD_2, NUMPAD_3, NUMPAD_4, NUMPAD_5, NUMPAD_6, NUMPAD_7, NUMPAD_8, NUMPAD_9, NUMPAD_DIVIDE, NUMPAD_MULTIPLY, NUMPAD_SUBTRACT, NUMPAD_ADD, NUMPAD_DOT, NUMPAD_COMMA, NUMPAD_ENTER, NUMPAD_EQUALS, NUMPAD_LEFT_PAREN, NUMPAD_RIGHT_PAREN, VOLUME_MUTE, INFO, CHANNEL_UP, CHANNEL_DOWN, KEYCODE_ZOOM_IN, KEYCODE_ZOOM_OUT, TV, WINDOW, GUIDE, DVR, BOOKMARK, CAPTIONS, SETTINGS, TV_POWER, TV_INPUT, STB_POWER, STB_INPUT, AVR_POWER, AVR_INPUT, PROG_RED, PROG_GREEN, PROG_YELLOW, PROG_BLUE, APP_SWITCH, BUTTON_1, BUTTON_2, BUTTON_3, BUTTON_4, BUTTON_5, BUTTON_6, BUTTON_7, BUTTON_8, BUTTON_9, BUTTON_10, BUTTON_11, BUTTON_12, BUTTON_13, BUTTON_14, BUTTON_15, BUTTON_16, LANGUAGE_SWITCH, MANNER_MODE, MODE_3D, CONTACTS, CALENDAR, MUSIC, CALCULATOR, ZENKAKU_HANKAKU, EISU, MUHENKAN, HENKAN, KATAKANA_HIRAGANA, YEN, RO, KANA, ASSIST, BRIGHTNESS_DOWN, BRIGHTNESS_UP, MEDIA_AUDIO_TRACK, SLEEP, WAKEUP, PAIRING, _MEDIA_TOP_MENU, KEY_11, KEY_12, LAST_CHANNEL, TV_DATA_SERVICE, VOICE_ASSIST, TV_RADIO_SERVICE, TV_TELETEXT, TV_NUMBER_ENTRY, TV_TERRESTRIAL_ANALOG, TV_TERRESTRIAL_DIGITAL, TV_SATELLITE, TV_SATELLITE_BS, TV_SATELLITE_CS, TV_SATELLITE_SERVICE, TV_NETWORK, TV_ANTENNA_CABLE, TV_INPUT_HDMI_1, TV_INPUT_HDMI_2, TV_INPUT_HDMI_3, TV_INPUT_HDMI_4, TV_INPUT_COMPOSITE_1, TV_INPUT_COMPOSITE_2, TV_INPUT_COMPONENT_1, TV_INPUT_COMPONENT_2, TV_INPUT_VGA_1, TV_AUDIO_DESCRIPTION, TV_AUDIO_DESCRIPTION_MIX_UP, TV_AUDIO_DESCRIPTION_MIX_DOWN, TV_ZOOM_MODE, TV_CONTENTS_MENU, _TV_MEDIA_CONTEXT_MENU, TV_TIMER_PROGRAMMING, HELP, NAVIGATE_PREVIOUS, NAVIGATE_NEXT, NAVIGATE_IN, NAVIGATE_OUT, STEM_PRIMARY, STEM_1, STEM_2, STEM_3, DPAD_UP_LEFT, DPAD_DOWN_LEFT, DPAD_UP_RIGHT, DPAD_DOWN_RIGHT, MEDIA_SKIP_FORWARD, MEDIA_SKIP_BACKWARD, MEDIA_STEP_FORWARD, MEDIA_STEP_BACKWARD, SOFT_SLEEP, CUT, COPY, PASTE
+
+Following Appium IOS Keys can be used : RETURN, ENTER, SEARCH, BACKSPACE
+
 - `Key.KEYNAME` for FAT, ex `Key.ENTER`
 
+Following KEYNAME values can be used : ENTER, TAB, ESC, BACKSPACE, DELETE, INSERT, SPACE, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14, F15, HOME, END, LEFT, RIGHT, DOWN, UP, PAGE_DOWN, PAGE_UP, PRINTSCREEN, PAUSE, CAPS_LOCK, SCROLL_LOCK, NUM_LOCK, NUM0, NUM1, NUM2, NUM3, NUM4, NUM5, NUM6, NUM7, NUM8, NUM9, SEPARATOR, ADD, MINUS, MULTIPLY, DIVIDE, ALT, CMD, CTRL, META, SHIFT, WIN
 
 === TestCase Control
 
@@ -202,6 +236,7 @@ The keycodes (see. keypress action) also changes from GUI to FAT type. The synta
 | verifyIntegerMinor | *[green]#OK#* if the *[red]#Integer1#* is lower than the *[red]#Integer2#*. | 
 | verifyRegexInElement | TBD | 
 | verifyStringContains | *[green]#OK#* if Property *[red]#String1#* contains the *[red]#String2#*. | 
+| verifyStringNotContains | *[green]#OK#* if Property *[red]#String1#* do not contains the *[red]#String2#*. | 
 | verifyStringEqual | *[green]#OK#* if the *[red]#String1#* is equal to the *[red]#String2#*. | 
 | verifyStringGreater | *[green]#OK#* if the *[red]#String1#* is greater than to the *[red]#String2#* (After in a dictonnary) | *[red]#String1#* : ZZZ  *[red]#String2#* : AAA
 | verifyStringMinor |  *[green]#OK#* if the *[red]#String1#* is minor than to the *[red]#String2#* (before in a dictonnary) | *[red]#String1#* : AAA  *[red]#String2#* : ZZZ 
@@ -373,6 +408,7 @@ Below you will find useful properties :
 | %system.BROWSER% |	Browser name of the current execution.
 | %system.ROBOT% |	Robot name of the current execution.
 | %system.ROBOTDECLI% |	Robot declination name of the current execution.
+| %system.ROBOTHOST% |	current robot host.
 | %system.SCREENSIZE% |	Robot screensize of the current execution.
 | %system.APP_DOMAIN% |	Domain of the Application (defined at application level)
 | %system.APP_HOST% |	Host of the tested Application

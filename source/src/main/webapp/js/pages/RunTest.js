@@ -198,14 +198,15 @@ function displayPageLabel() {
     $("#RobotPanel label[for='browser']").text(doc.getDocLabel("page_runtest", "browser"));
     $("#saveRobotPreferences").text(doc.getDocLabel("page_runtest", "saverobotpref"));
     $("#executionPanel .panel-heading").text(doc.getDocLabel("page_runtest", "execution_settings"));
-    $("#executionPanel label[for='tag']").text(doc.getDocLabel("page_runtest", "tag"));
-    $("#executionPanel label[for='verbose']").text(doc.getDocLabel("page_runtest", "verbose"));
-    $("#executionPanel label[for='screenshot']").text(doc.getDocLabel("page_runtest", "screenshot"));
-    $("#executionPanel label[for='pageSource']").text(doc.getDocLabel("page_runtest", "pagesource"));
-    $("#executionPanel label[for='seleniumLog']").text(doc.getDocLabel("page_runtest", "seleniumlog"));
-    $("#executionPanel label[for='timeout']").text(doc.getDocLabel("page_runtest", "timeout"));
-    $("#executionPanel label[for='retries']").text(doc.getDocLabel("page_runtest", "retries"));
-    $("#executionPanel label[for='manualExecution']").text(doc.getDocLabel("page_runtest", "manual_execution"));
+    $("#executionPanel label[for='tag']").text(doc.getDocOnline("page_runtest", "tag"));
+    $("#executionPanel label[for='verbose']").text(doc.getDocOnline("page_runtest", "verbose"));
+    $("#executionPanel label[for='screenshot']").text(doc.getDocOnline("page_runtest", "screenshot"));
+    $("#executionPanel label[for='pageSource']").text(doc.getDocOnline("page_runtest", "pagesource"));
+    $("#executionPanel label[for='seleniumLog']").text(doc.getDocOnline("page_runtest", "seleniumlog"));
+    $("#executionPanel label[for='timeout']").text(doc.getDocOnline("page_runtest", "timeout"));
+    $("#executionPanel label[for='retries']").text(doc.getDocOnline("page_runtest", "retries"));
+    $("#executionPanel label[for='manualExecution']").text(doc.getDocOnline("page_runtest", "manual_execution"));
+    $("#executionPanel label[for='priority']").text(doc.getDocOnline("page_runtest", "priority"));
     $("#saveExecutionParams").text(doc.getDocLabel("page_runtest", "save_execution_params"));
 }
 
@@ -289,7 +290,6 @@ function selectionManual(test, testcase, environment, country) {
 
 function loadTestCaseFromFilter(defTest, defTestcase) {
 
-//    console.debug("loadTestCaseFromFilter Called" + defTest + defTestcase);
     showLoader("#chooseTest");
     var testURL = "";
     var testCaseURL = "";
@@ -302,16 +302,19 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
     }
     // Get the requested result size value
     var lengthURL = '&length=' + $("#lengthFilter").find(':selected').val();
+    var serialize = "";
+    if ($("#filters").serialize() != "") {
+        serialize = "&" + $("#filters").serialize();
+    }
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
-        data: "filter=true&" + $("#filters").serialize() + testURL + testCaseURL + lengthURL,
+        data: "filter=true" + getUser().defaultSystemsQuery + serialize + testURL + testCaseURL + lengthURL,
         datatype: "json",
         async: true,
         success: function (data) {
 
             var testCaseList = $("#testCaseList");
-
             testCaseList.empty();
 
             if (data.contentTable === undefined) {
@@ -462,53 +465,53 @@ function loadCampaignParameter(campaign) {
                 loadRobotInfo(robot);
             }
         });
-        
+
         $.ajax({
-            url: "ReadCampaign?campaign="+campaign,
+            url: "ReadCampaign?campaign=" + campaign,
             method: "GET",
             data: {campaign: campaign},
             datatype: "json",
             async: true,
             success: function (data) {
-            	if (data.contentTable != null) {       
-            		if (data.contentTable.Screenshot != null && data.contentTable.Screenshot != "") {
-            			$('#screenshot option[value="'+data.contentTable.Screenshot+'"]').prop('selected', true);
-            		}
-            		
-            		if (data.contentTable.Verbose != null && data.contentTable.Verbose != "") {
-            			$('#verbose option[value="'+data.contentTable.Verbose+'"]').prop('selected', true);
-            		}
-            		
-            		if (data.contentTable.Tag != null && data.contentTable.Tag != "") {
-            			$("#tag").val(data.contentTable.Tag);
-            		}
-            		
-            		if (data.contentTable.Priority != null && data.contentTable.Priority != "") {
-            			$("#priority").val(data.contentTable.Priority);
-            		}
-	                  
-            		if (data.contentTable.PageSource != null && data.contentTable.PageSource != "") {
-            			$('#pageSource option[value="'+data.contentTable.PageSource+'"]').prop('selected', true);
-            		}
-	                
-            		if (data.contentTable.RobotLog != null && data.contentTable.RobotLog != "") {
-            			$('#seleniumLog option[value="'+data.contentTable.RobotLog+'"]').prop('selected', true);
-            		}
-            		
-            		if (data.contentTable.Timeout != null && data.contentTable.Timeout != "") {
-            			$("#timeout").val(data.contentTable.Timeout);
-            		}
-            		
-            		if (data.contentTable.Retries != null && data.contentTable.Retries != "") {
-            			$('#retries option[value="'+data.contentTable.Retries+'"]').prop('selected', true);
-            		}
-            		
-            		if (data.contentTable.ManualExecution != null && data.contentTable.ManualExecution != "") {
-            			$('#manualExecution option[value="'+data.contentTable.ManualExecution+'"]').prop('selected', true);
-            		}
-            	}
+                if (data.contentTable != null) {
+                    if (data.contentTable.Screenshot != null && data.contentTable.Screenshot != "") {
+                        $('#screenshot option[value="' + data.contentTable.Screenshot + '"]').prop('selected', true);
+                    }
+
+                    if (data.contentTable.Verbose != null && data.contentTable.Verbose != "") {
+                        $('#verbose option[value="' + data.contentTable.Verbose + '"]').prop('selected', true);
+                    }
+
+                    if (data.contentTable.Tag != null && data.contentTable.Tag != "") {
+                        $("#tag").val(data.contentTable.Tag);
+                    }
+
+                    if (data.contentTable.Priority != null && data.contentTable.Priority != "") {
+                        $("#priority").val(data.contentTable.Priority);
+                    }
+
+                    if (data.contentTable.PageSource != null && data.contentTable.PageSource != "") {
+                        $('#pageSource option[value="' + data.contentTable.PageSource + '"]').prop('selected', true);
+                    }
+
+                    if (data.contentTable.RobotLog != null && data.contentTable.RobotLog != "") {
+                        $('#seleniumLog option[value="' + data.contentTable.RobotLog + '"]').prop('selected', true);
+                    }
+
+                    if (data.contentTable.Timeout != null && data.contentTable.Timeout != "") {
+                        $("#timeout").val(data.contentTable.Timeout);
+                    }
+
+                    if (data.contentTable.Retries != null && data.contentTable.Retries != "") {
+                        $('#retries option[value="' + data.contentTable.Retries + '"]').prop('selected', true);
+                    }
+
+                    if (data.contentTable.ManualExecution != null && data.contentTable.ManualExecution != "") {
+                        $('#manualExecution option[value="' + data.contentTable.ManualExecution + '"]').prop('selected', true);
+                    }
+                }
             }
-        
+
         });
     }
 }
@@ -526,11 +529,11 @@ function runTestCase(doRedirect) {
 
     clearResponseMessageMainPage();
 
-    var paramSerialized = "";
+    var paramSerialized = "e=1";
     if (fromCampaign) {
-        paramSerialized += "campaign=" + $("#campaignSelect").val() + "&";
+        paramSerialized += "&campaign=" + $("#campaignSelect").val();
     }
-    paramSerialized += "tag=" + $("#executionSettingsForm #tag").val();
+    paramSerialized += "&tag=" + encodeURIComponent($("#executionSettingsForm #tag").val());
     paramSerialized += "&screenshot=" + $("#executionSettingsForm #screenshot").val();
     paramSerialized += "&verbose=" + $("#executionSettingsForm #verbose").val();
     paramSerialized += "&timeout=" + $("#executionSettingsForm #timeout").val();
@@ -577,7 +580,7 @@ function runTestCase(doRedirect) {
 
     var robotsstring = "";
     var robotSettings = $("#robotSettingsForm #robot").serialize();
-    if (robotSettings !== "robot=") {
+    if (robotSettings !== "robot=CustomConfiguration") {
         robotsstring += "&" + robotSettings;
     } else {
         paramSerialized += "&ss_ip=" + $("#robotSettingsForm #seleniumIP").val();
@@ -660,7 +663,7 @@ function appendCampaignList() {
 }
 
 function multiSelectConf(name) {
-    this.maxHeight = 150;
+    this.maxHeight = 450;
     this.checkboxName = name;
     this.buttonWidth = "100%";
     this.enableFiltering = true;
@@ -749,7 +752,6 @@ function loadHardDefinedSingleSelect(selectName, values, initialSelectionIndex) 
 
 function loadSelect(idName, selectName, forceReload, defaultValue) {
 
-//    console.debug("display Invariant " + idName + " " + forceReload);
     if (forceReload === undefined) {
         forceReload = false;
     }
@@ -820,7 +822,7 @@ function appendRobotList() {
     $.when(jqXHR).then(function (data) {
         var robotList = $("#robotSettings #robot");
 
-        robotList.append($('<option></option>').text(doc.getDocLabel("page_runtest", "custom_config")).val(""));
+        robotList.append($('<option></option>').text(doc.getDocLabel("page_runtest", "custom_config")).val("CustomConfiguration"));
         for (var index = 0; index < data.contentTable.length; index++) {
             robotList.append($('<option></option>').text(data.contentTable[index].robot).val(data.contentTable[index].robot));
         }
@@ -835,7 +837,7 @@ function loadRobotInfo(robot) {
         robot = [robot]
     }
 
-    if (robot[0] !== "") {
+    if (robot[0] !== "" && robot[0] !== "CustomConfiguration") {
         // We can edit Robot.
         $("#robotEdit").removeClass("disabled");
         $('#robotEdit').unbind("click");
@@ -882,7 +884,7 @@ function loadRobotInfo(robot) {
         $('#robotEdit').unbind("click");
         $("#saveRobotPreferences").removeClass("disabled");
 
-        if (pref !== undefined && pref.robot === "") {
+        if (pref !== undefined && (pref.robot === "" || pref.robot === "CustomConfiguration")) {
             $("#robotSettings #robot").val(pref.robot);
             $("#robotSettings #seleniumIP").val(pref.ss_ip);
             $("#robotSettings #seleniumPort").val(pref.ss_p);
@@ -967,7 +969,6 @@ function applyRobotPref(browser) {
             $("#robotSettings #robot").val(pref.robot);
             $("#robotSettingsForm #seleniumIP").val(pref.ss_ip);
             $("#robotSettingsForm #seleniumPort").val(pref.ss_p);
-//            console.debug(browser);
             if (browser !== null) { // if browser defined from URL we take that value.
                 $("#robotSettingsForm #browser").val(browser);
             } else {
@@ -1007,13 +1008,13 @@ function loadTestCaseFilterData(system) {
     $.when(
             loadMultiSelect("ReadTest", "", "test", ["test", "description"], "test"),
             loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
-            loadMultiSelect("ReadApplication", "", "application", ["application"], "application"),
+            loadMultiSelect("ReadApplication", "e=1" + getUser().defaultSystemsQuery, "application", ["application"], "application"),
             loadMultiSelect("ReadUserPublic", "", "creator", ["login"], "login"),
             loadMultiSelect("ReadUserPublic", "", "implementer", ["login"], "login"),
             loadMultiSelect("ReadCampaign", "", "campaign", ["campaign"], "campaign"),
-            loadMultiSelect("ReadBuildRevisionInvariant", "level=1&system=" + system, "targetSprint", ["versionName"], "versionName"),
-            loadMultiSelect("ReadBuildRevisionInvariant", "level=2&system=" + system, "targetRev", ["versionName"], "versionName"),
-            loadMultiSelect("ReadLabel", "system=" + system, "labelid", ["label"], "id"),
+            loadMultiSelect("ReadBuildRevisionInvariant", "level=1" + getUser().defaultSystemsQuery, "targetSprint", ["versionName"], "versionName"),
+            loadMultiSelect("ReadBuildRevisionInvariant", "level=2" + getUser().defaultSystemsQuery, "targetRev", ["versionName"], "versionName"),
+            loadMultiSelect("ReadLabel", "e=1" + getUser().defaultSystemsQuery, "labelid", ["label"], "id"),
             loadInvariantMultiSelect("system", "SYSTEM"),
             loadInvariantMultiSelect("priority", "PRIORITY"),
             loadInvariantMultiSelect("group", "GROUP"),

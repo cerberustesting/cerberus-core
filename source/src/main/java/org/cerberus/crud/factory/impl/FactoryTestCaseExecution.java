@@ -41,23 +41,88 @@ import org.springframework.stereotype.Service;
 @Service
 public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
 
+    /**
+     *
+     * @param id
+     * @param test
+     * @param testCase
+     * @param description
+     * @param build
+     * @param revision
+     * @param environment
+     * @param country
+     * @param robot
+     * @param robotExecutor
+     * @param browser
+     * @param version
+     * @param platform
+     * @param start
+     * @param end
+     * @param controlStatus
+     * @param controlMessage
+     * @param application
+     * @param applicationObj
+     * @param ip
+     * @param url
+     * @param port
+     * @param tag
+     * @param verbose
+     * @param screenshot
+     * @param pageSource
+     * @param seleniumLog
+     * @param synchroneous
+     * @param timeout
+     * @param outputFormat
+     * @param status
+     * @param crbVersion
+     * @param tCase
+     * @param countryEnvParam
+     * @param countryEnvironmentParameters
+     * @param manualURL
+     * @param myHost
+     * @param myContextRoot
+     * @param myLoginRelativeURL
+     * @param myEnvData
+     * @param seleniumIP
+     * @param seleniumPort
+     * @param testCaseStepExecution
+     * @param resultMessage
+     * @param executor
+     * @param numberOfRetries
+     * @param screenSize
+     * @param robotObj
+     * @param robotProvider
+     * @param robotSessionId
+     * @param conditionOper
+     * @param conditionVal1Init
+     * @param conditionVal2Init
+     * @param conditionVal1
+     * @param conditionVal2
+     * @param manualExecution
+     * @param userAgent
+     * @param testCaseVersion
+     * @param testCasePriority
+     * @param system
+     * @param robotDecli
+     * @return
+     */
     @Override
-    public TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment, String country, 
+    public TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment, String country,
             String robot, String robotExecutor, String robotHost, String robotPort, String robotDecli,
-            String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
+            String browser, String version, String platform, long start, long end, String controlStatus, String controlMessage,
             String application, Application applicationObj, String url, String tag, int verbose, int screenshot, int pageSource, int seleniumLog,
             boolean synchroneous, String timeout, String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor,
-            int numberOfRetries, String screenSize, Robot robotObj,
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String manualExecution, String userAgent, int testCaseVersion, String system) {
+            int numberOfRetries, String screenSize, Robot robotObj, String robotProvider, String robotSessionId,
+            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3,
+            String manualExecution, String userAgent, int testCaseVersion, int testCasePriority, String system) {
         TestCaseExecution newTce = new TestCaseExecution();
         newTce.setApplicationObj(applicationObj);
         newTce.setApplication(application);
         newTce.setBrowser(browser);
         newTce.setVersion(version);
         newTce.setPlatform(platform);
-        newTce.setBrowserFullVersion(browserFullVersion);
         newTce.setBuild(build);
         newTce.setControlMessage(controlMessage);
         newTce.setControlStatus(controlStatus);
@@ -72,6 +137,8 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setRobotHost(robotHost);
         newTce.setRobotPort(robotPort);
         newTce.setRobotDecli(robotDecli);
+        newTce.setRobotProvider(robotProvider);
+        newTce.setRobotSessionID(robotSessionId);
         newTce.setRevision(revision);
         newTce.setStart(start);
         newTce.setStatus(status);
@@ -110,6 +177,8 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setConditionVal1Init(conditionVal1Init);
         newTce.setConditionVal2(conditionVal2);
         newTce.setConditionVal2Init(conditionVal2Init);
+        newTce.setConditionVal3(conditionVal3);
+        newTce.setConditionVal3Init(conditionVal3Init);
         newTce.setManualExecution(manualExecution);
         newTce.setUserAgent(userAgent);
         newTce.setDescription(description);
@@ -121,6 +190,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setTestCaseExecutionDataMap(hashTemp1);
         newTce.setNbExecutions(1);
         newTce.setTestCaseVersion(testCaseVersion);
+        newTce.setTestCasePriority(testCasePriority);
         return newTce;
     }
 

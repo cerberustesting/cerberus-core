@@ -31,29 +31,106 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ICampaignParameterDAO {
 
+    /**
+     *
+     * @return
+     * @throws CerberusException
+     */
     List<CampaignParameter> findAll() throws CerberusException;
 
+    /**
+     *
+     * @param campaignparameterID
+     * @return
+     * @throws CerberusException
+     */
     CampaignParameter findCampaignParameterByKey(Integer campaignparameterID) throws CerberusException;
 
+    /**
+     *
+     * @param campaign
+     * @return
+     * @throws CerberusException
+     */
     List<CampaignParameter> findCampaignParametersByCampaign(String campaign) throws CerberusException;
 
+    /**
+     *
+     * @param campaignParameter
+     * @return
+     */
     boolean updateCampaignParameter(CampaignParameter campaignParameter);
 
+    /**
+     *
+     * @param campaignParameter
+     * @return
+     */
     boolean createCampaignParameter(CampaignParameter campaignParameter);
 
+    /**
+     *
+     * @param campaignParameter
+     * @return
+     */
     boolean deleteCampaignParameter(CampaignParameter campaignParameter);
 
+    /**
+     *
+     * @param campaignparameterID
+     * @param campaign
+     * @param parameter
+     * @param value
+     * @return
+     * @throws CerberusException
+     */
     List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException;
 
-    AnswerList readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    /**
+     *
+     * @param campaign
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param string
+     * @return
+     */
+    AnswerList<CampaignParameter> readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
-    AnswerList readByCampaign(String campaign);
+    /**
+     *
+     * @param campaign
+     * @return
+     */
+    AnswerList<CampaignParameter> readByCampaign(String campaign);
 
+    /**
+     *
+     * @param key
+     * @return
+     */
     Answer deleteByCampaign(String key);
 
+    /**
+     *
+     * @param object
+     * @return
+     */
     Answer delete(CampaignParameter object);
 
+    /**
+     *
+     * @param object
+     * @return
+     */
     Answer update(CampaignParameter object);
 
+    /**
+     *
+     * @param object
+     * @return
+     */
     Answer create(CampaignParameter object);
 }

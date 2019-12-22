@@ -21,6 +21,7 @@ package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 public class TestCaseExecutionQueue {
 
@@ -67,10 +68,13 @@ public class TestCaseExecutionQueue {
      */
     private Application applicationObj;
     private TestCase testCaseObj;
+    private List<TestCaseExecutionQueueDep> testcaseExecutionQueueDepList;
 
     public static final int PRIORITY_DEFAULT = 1000;
+    public static final int PRIORITY_WHENDEPENDENCY = 100;
 
     public enum State {
+        QUTEMP,
         QUWITHDEP,
         QUEUED,
         WAITING,
@@ -79,6 +83,14 @@ public class TestCaseExecutionQueue {
         CANCELLED,
         ERROR,
         DONE
+    }
+
+    public List<TestCaseExecutionQueueDep> getTestcaseExecutionQueueDepList() {
+        return testcaseExecutionQueueDepList;
+    }
+
+    public void setTestcaseExecutionQueueDepList(List<TestCaseExecutionQueueDep> testcaseExecutionQueueDepList) {
+        this.testcaseExecutionQueueDepList = testcaseExecutionQueueDepList;
     }
 
     public String getSystem() {

@@ -20,6 +20,8 @@
 package org.cerberus.servlet.crud.usermanagement;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -28,15 +30,17 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.config.Property;
+import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
+import org.cerberus.crud.factory.IFactoryUser;
+import org.cerberus.crud.service.*;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.IUserGroupService;
-import org.cerberus.crud.service.IUserService;
-import org.cerberus.crud.service.IUserSystemService;
 import org.cerberus.crud.service.impl.UserGroupService;
 import org.cerberus.crud.service.impl.UserService;
+import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,7 +54,14 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "ReadMyUser", urlPatterns = {"/ReadMyUser"})
 public class ReadMyUser extends HttpServlet {
 
+    private IInvariantService invariantService;
+    private IUserService userService;
+    private IFactoryUser userFactory;
+    private IUserSystemService userSystemService;
+    private IUserGroupService userGroupService;
+
     private static final Logger LOG = LogManager.getLogger(ReadMyUser.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -63,9 +74,11 @@ public class ReadMyUser extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IUserService userService = appContext.getBean(UserService.class);
-        IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
-        IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
+        userService = appContext.getBean(UserService.class);
+        userFactory = appContext.getBean(IFactoryUser.class);
+        invariantService = appContext.getBean(IInvariantService.class);
+        userSystemService = appContext.getBean(IUserSystemService.class);
+        userGroupService = appContext.getBean(UserGroupService.class);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
@@ -75,7 +88,22 @@ public class ReadMyUser extends HttpServlet {
         try {
 
             String user = request.getUserPrincipal().getName();
+            LOG.debug("Getting user data for (request.getUserPrincipal().getName()) : " + user);
 
+            // In case we activated KeyCloak, we create the user on the fly in order to allow to administer the system list. 
+            String authMode = "";
+            if (System.getProperty(Property.AUTHENTIFICATION) != null) {
+                authMode = System.getProperty(Property.AUTHENTIFICATION);
+                LOG.debug("Authentification JAVA parameter " + Property.AUTHENTIFICATION + " for keycloak value : '" + authMode + "'");
+                if (authMode.equals(Property.AUTHENTIFICATION_VALUE_KEYCLOAK)) {
+                    if (!userService.isUserExist(user)) {
+                        User myUser = userFactory.create(0, user, "NOAUTH", "N", "", "", "", "en", "", "", "", "", "", "", "", "", "", "");
+                        LOG.debug("Create User.");
+                        userService.insertUserNoAuth(myUser);
+                        userSystemService.createSystemAutomatic(user);
+                    }
+                }
+            }
             User myUser = userService.findUserByKey(user);
             data.put("login", myUser.getLogin());
             data.put("name", myUser.getName());
@@ -92,27 +120,81 @@ public class ReadMyUser extends HttpServlet {
             data.put("robot", myUser.getRobot());
             data.put("reportingFavorite", myUser.getReportingFavorite());
             data.put("userPreferences", myUser.getUserPreferences());
+            data.put("isKeycloak", Property.isKeycloak());
+
+            // Define submenu entries
+            JSONObject menu = new JSONObject();
+            if (Property.isKeycloak()) {
+                // Name displayed in menu
+                menu.put("nameDisplay", user);
+
+                String keyCloakUrl = StringUtil.addSuffixIfNotAlready(System.getProperty(Property.KEYCLOAKURL), "/");
+
+                menu.put("accountLink", keyCloakUrl + "realms/" + System.getProperty(Property.KEYCLOAKREALM) + "/account/");
+                menu.put("logoutLink", keyCloakUrl + "realms/" + System.getProperty(Property.KEYCLOAKREALM) + "/protocol/openid-connect/logout?redirect_uri=%LOGOUTURL%");
+            } else {
+                // Name displayed in menu
+                menu.put("nameDisplay", myUser.getLogin());
+                menu.put("accountLink", "");
+                menu.put("logoutLink", "./Logout.jsp");
+            }
+            data.put("menu", menu);
 
             JSONArray groups = new JSONArray();
-            for (UserGroup group : userGroupService.findGroupByKey(myUser.getLogin())) {
-                groups.put(group.getGroup());
+            if (Property.isKeycloak()) {
+                List<String> groupList = new ArrayList<>();
+                groupList.add("Label");
+                groupList.add("RunTest");
+                groupList.add("Test");
+                groupList.add("TestAdmin");
+                groupList.add("TestDataManager");
+                groupList.add("TestRO");
+                groupList.add("TestStepLibrary");
+                groupList.add("IntegratorNewChain");
+                groupList.add("Integrator");
+                groupList.add("IntegratorDeploy");
+                groupList.add("IntegratorRO");
+                groupList.add("Administrator");
+                for (String myGroup : groupList) {
+                    if (request.isUserInRole(myGroup)) {
+                        groups.put(myGroup);
+                    }
+                }
+            } else {
+                for (UserGroup group : userGroupService.findGroupByKey(myUser.getLogin())) {
+                    groups.put(group.getGroup());
+                }
             }
             data.put("group", groups);
 
             JSONArray systems = new JSONArray();
-            for (UserSystem sys : userSystemService.findUserSystemByUser(myUser.getLogin())) {
-                systems.put(sys.getSystem());
+            List<UserSystem> userSysList = userSystemService.findUserSystemByUser(myUser.getLogin());
+            if (request.isUserInRole("Administrator")) {
+                // If user is Administrator, he has access to all groups.
+                List<Invariant> invList = invariantService.readByIdName("SYSTEM");
+                for (Invariant invariant : invList) {
+                    systems.put(invariant.getValue());
+                }
+            } else {
+                for (UserSystem sys : userSysList) {
+                    systems.put(sys.getSystem());
+                }
             }
             data.put("system", systems);
+
             HttpSession session = request.getSession();
             session.setAttribute("MySystem", myUser.getDefaultSystem());
+            session.setAttribute("MySystemsAllow", userSysList);
+            session.setAttribute("MySystemsIsAdministrator", (request.isUserInRole("Administrator")));
             session.setAttribute("MyLang", myUser.getLanguage());
 
         } catch (CerberusException ex) {
+            LOG.error(ex.toString(), ex);
             response.getWriter().print(ex.getMessageError().getDescription());
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.error(ex.toString(), ex);
         } catch (NullPointerException ex) {
+            LOG.error(ex.toString(), ex);
             response.sendRedirect("./Login.jsp");
         }
         response.getWriter().print(data.toString());

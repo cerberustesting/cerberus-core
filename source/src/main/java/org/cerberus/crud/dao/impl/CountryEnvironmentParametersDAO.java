@@ -72,7 +72,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
 
     @Override
     public AnswerItem<CountryEnvironmentParameters> readByKey(String system, String country, String environment, String application) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<CountryEnvironmentParameters> ans = new AnswerItem<>();
         CountryEnvironmentParameters result = null;
         final String query = "SELECT * FROM countryenvironmentparameters cea WHERE cea.`system` = ? AND cea.country = ? AND cea.environment = ? AND cea.application = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -262,11 +262,11 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<CountryEnvironmentParameters> readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        AnswerList<CountryEnvironmentParameters> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<CountryEnvironmentParameters> objectList = new ArrayList<CountryEnvironmentParameters>();
+        List<CountryEnvironmentParameters> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();

@@ -1,0 +1,47 @@
+# Cerberus Copyright (C) 2016 Cerberus Testing
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+#
+# This file is part of Cerberus.
+#
+# Cerberus is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Cerberus is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Cerberus. If not, see <http://www.gnu.org/licenses/>.
+# Cerberus Glassfish MySQL composition.
+
+version: '3'
+services:
+  database:
+    image: cerberustesting/cerberus-db-mysql:latest
+    expose:
+      - "3306"
+    ports:
+      - "13306:3306"
+    volumes:
+      - ./localdata/mysql-db:/var/lib/mysql
+#      - /etc/localtime:/etc/localtime:ro
+    restart: always
+  cerberus:
+    image: cerberustesting/cerberus-as-tomcat:latest
+    environment:
+      - DATABASE_HOST=database
+      - DATABASE_PORT=3306
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./localdata/cerberusmedia:/opt/CerberusMedias/
+#      - /etc/localtime:/etc/localtime:ro
+    restart: always
+    depends_on:
+      - database
+    links:
+      - database
+

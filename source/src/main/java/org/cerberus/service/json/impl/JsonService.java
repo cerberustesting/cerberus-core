@@ -30,6 +30,7 @@ import java.util.List;
 import net.minidev.json.JSONArray;
 import org.cerberus.service.json.IJsonService;
 import org.cerberus.util.StringUtil;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 /**
@@ -255,6 +256,16 @@ public class JsonService implements IJsonService {
             }
         }
 
+    }
+
+    @Override
+    public String getStringFromJson(String jsonMessage, String filterPath) throws Exception {
+        List<String> resultList = getFromJson(jsonMessage, filterPath);
+        StringBuilder result = new StringBuilder();
+        for (String string : resultList) {
+            result.append(string).append(" ");
+        }
+        return result.toString().trim();
     }
 
 }

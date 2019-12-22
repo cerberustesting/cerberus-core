@@ -60,10 +60,10 @@ public class ReadSqlLibrary extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -123,9 +123,9 @@ public class ReadSqlLibrary extends HttpServlet {
         }
     }
 
-    private AnswerItem findSqlLibraryList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findSqlLibraryList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         sqlLibraryService = appContext.getBean(SqlLibraryService.class);
 
@@ -145,19 +145,19 @@ public class ReadSqlLibrary extends HttpServlet {
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
-                }            
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
+                }
             }
         }
 
-        AnswerList resp = sqlLibraryService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<SqlLibrary> resp = sqlLibraryService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (SqlLibrary param : (List<SqlLibrary>) resp.getDataList()) {
+            for (SqlLibrary param : resp.getDataList()) {
                 jsonArray.put(convertSqlLibraryToJSONObject(param));
             }
         }
@@ -172,24 +172,25 @@ public class ReadSqlLibrary extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findSqlLibraryBySystemByKey(String key, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem<JSONObject> findSqlLibraryBySystemByKey(String key, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
 
         sqlLibraryService = appContext.getBean(SqlLibraryService.class);
 
-        AnswerItem resp = sqlLibraryService.readByKey(key);
+        AnswerItem<SqlLibrary> resp = sqlLibraryService.readByKey(key);
         SqlLibrary p = null;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             p = (SqlLibrary) resp.getItem();
         }
         JSONObject item = convertSqlLibraryToJSONObject(p);
         item.put("hasPermissions", userHasPermissions);
-        resp.setItem(item);
+        answer.setItem(item);
 
-        return resp;
+        return answer;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         sqlLibraryService = appContext.getBean(ISqlLibraryService.class);
@@ -203,12 +204,12 @@ public class ReadSqlLibrary extends HttpServlet {
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-            	List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-            	if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
-                } 
+                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
+                }
             }
         }
 
@@ -229,14 +230,13 @@ public class ReadSqlLibrary extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -247,10 +247,10 @@ public class ReadSqlLibrary extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

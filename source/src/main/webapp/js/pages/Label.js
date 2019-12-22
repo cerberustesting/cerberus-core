@@ -107,7 +107,7 @@ function initPage() {
     });
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("labelsTable", "ReadLabel?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("labelsTable"), [2, 'asc']);
+    var configurations = new TableConfigurationsServerSide("labelsTable", "ReadLabel?q=1" + getUser().defaultSystemsQuery, "contentTable", aoColumnsFunc("labelsTable"), [2, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForLabel, "#labelList", undefined, true);
 }
 
@@ -121,6 +121,7 @@ function displayPageLabel() {
     $("[name='confirmationField']").html(doc.getDocLabel("page_label", "btn_delete"));
     $("[name='editLabelField']").html(doc.getDocLabel("page_label", "btn_edit"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "buttonAdd"));
+    $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
     $("[name='buttonDismiss']").html(doc.getDocLabel("page_global", "buttonDismiss"));
@@ -154,7 +155,7 @@ function displayPageLabel() {
 }
 
 function generateLabelTree() {
-    $.when($.ajax("ReadLabel?system=" + getUser().defaultSystem + "&withHierarchy=true")).then(function (data) {
+    $.when($.ajax("ReadLabel?q=1" + getUser().defaultSystemsQuery + "&withHierarchy=true&hasButtons=Y")).then(function (data) {
 
         $('#mainTreeS').treeview({data: data.labelHierarchy.stickers, enableLinks: false, showTags: true});
         $('#mainTreeB').treeview({data: data.labelHierarchy.batteries, enableLinks: false, showTags: true});
@@ -527,6 +528,7 @@ function aoColumnsFunc(tableId) {
             "sName": "label",
             "title": doc.getDocOnline("label", "label")},
         {"data": "longDesc",
+            "visible": false,
             "like": true,
             "sWidth": "100px",
             "sName": "longDesc",
@@ -541,6 +543,7 @@ function aoColumnsFunc(tableId) {
             "sName": "type",
             "title": doc.getDocOnline("label", "type")},
         {"data": "color",
+            "visible": false,
             "sWidth": "30px",
             "like": true,
             "sName": "color",
@@ -556,6 +559,7 @@ function aoColumnsFunc(tableId) {
             }
         },
         {"sName": "parentLabelid",
+            "visible": false,
             "sWidth": "80px",
             "title": doc.getDocOnline("label", "parentid"),
             "data": function (data, type, full, meta) {
@@ -568,32 +572,39 @@ function aoColumnsFunc(tableId) {
                 }
             }},
         {"data": "reqType",
+            "visible": false,
             "sWidth": "30px",
             "sName": "reqType",
             "title": doc.getDocOnline("label", "reqtype")},
         {"data": "reqStatus",
+            "visible": false,
             "sWidth": "30px",
             "sName": "reqStatus",
             "title": doc.getDocOnline("label", "reqstatus")},
         {"data": "reqCriticity",
+            "visible": false,
             "sWidth": "30px",
             "sName": "reqCriticity",
             "title": doc.getDocOnline("label", "reqcriticity")},
         {"data": "usrCreated",
+            "visible": false,
             "sWidth": "30px",
             "sName": "usrCreated",
             "title": doc.getDocOnline("transversal", "UsrCreated")},
         {"data": "dateCreated",
+            "visible": false,
             "like": true,
             "sWidth": "80px",
             "sName": "dateCreated",
             "title": doc.getDocOnline("transversal", "DateCreated")},
         {"data": "usrModif",
+            "visible": false,
             "sWidth": "30px",
             "sName": "usrModif",
             "title": doc.getDocOnline("transversal", "UsrModif")
         },
         {"data": "dateModif",
+            "visible": false,
             "like": true,
             "sWidth": "80px",
             "sName": "dateModif",

@@ -26,11 +26,14 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
-        <script type="text/javascript" src="js/pages/Label.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
+        <script type="text/javascript" src="js/pages/Label.js"></script>
         <title id="pageTitle">Label</title>
     </head>
     <body>
+
+    <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>
+
         <%@ include file="include/global/header.html" %>
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/global/messagesArea.html"%>

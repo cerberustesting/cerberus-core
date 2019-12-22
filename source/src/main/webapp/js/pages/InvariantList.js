@@ -120,6 +120,7 @@ function deleteEntryHandlerClick() {
             var oTable = $("#invariantsTable").dataTable();
             oTable.fnDraw(false);
             var info = oTable.fnGetData().length;
+            cleanCacheInvariant(param);
 
             if (info === 1) {//page has only one row, then returns to the previous page
                 oTable.fnPageChange('previous');
@@ -170,39 +171,41 @@ function aoColumnsFuncPublic(tableId) {
         },
         {
             "data": "value",
-            "like":true,
+            "like": true,
             "sName": "value",
             "sWidth": "60px",
             "title": doc.getDocLabel("page_invariant", "value")
         },
         {
             "data": "sort",
+            "visible": false,
             "sName": "sort",
             "sWidth": "60px",
             "title": doc.getDocLabel("page_invariant", "sort")
         },
         {
             "data": "description",
-            "like":true,
+            "like": true,
             "sName": "description",
             "sWidth": "100px",
             "title": doc.getDocLabel("page_invariant", "description")
         },
         {
             "data": "veryShortDesc",
+            "visible": false,
             "sName": "VeryShortDesc",
             "sWidth": "60px",
             "title": doc.getDocLabel("page_invariant", "veryShortDesc")
         },
         {"data": "gp1", "sName": "gp1", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp1")},
         {"data": "gp2", "sName": "gp2", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp2")},
-        {"data": "gp3", "sName": "gp3", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp3")},
-        {"data": "gp4", "sName": "gp4", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp4")},
-        {"data": "gp5", "sName": "gp5", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp5")},
-        {"data": "gp6", "sName": "gp6", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp6")},
-        {"data": "gp7", "sName": "gp7", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp7")},
-        {"data": "gp8", "sName": "gp8", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp8")},
-        {"data": "gp9", "sName": "gp9", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp9")}
+        {"data": "gp3", "visible": false, "sName": "gp3", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp3")},
+        {"data": "gp4", "visible": false, "sName": "gp4", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp4")},
+        {"data": "gp5", "visible": false, "sName": "gp5", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp5")},
+        {"data": "gp6", "visible": false, "sName": "gp6", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp6")},
+        {"data": "gp7", "visible": false, "sName": "gp7", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp7")},
+        {"data": "gp8", "visible": false, "sName": "gp8", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp8")},
+        {"data": "gp9", "visible": false, "sName": "gp9", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp9")}
     ];
     return aoColumns;
 }
@@ -227,44 +230,46 @@ function aoColumnsFuncPrivate(tableId) {
             }
         },
         {
-            "data": "idName", 
-            "sName": "idname", 
+            "data": "idName",
+            "sName": "idname",
             "sWidth": "60px",
             "title": doc.getDocLabel("page_invariant", "idname")
         },
         {
-            "data": "value", 
-            "sName": "value", 
+            "data": "value",
+            "sName": "value",
             "sWidth": "60px",
             "title": doc.getDocLabel("page_invariant", "value")
         },
         {
-            "data": "sort", 
-            "sName": "sort", 
+            "data": "sort",
+            "visible": false,
+            "sName": "sort",
             "sWidth": "60px",
             "title": doc.getDocLabel("page_invariant", "sort")
         },
         {
-            "data": "description", 
-            "sName": "description", 
+            "data": "description",
+            "sName": "description",
             "sWidth": "100px",
             "title": doc.getDocLabel("page_invariant", "description")
         },
         {
-            "data": "veryShortDesc", 
-            "sName": "VeryShortDesc", 
+            "data": "veryShortDesc",
+            "visible": false,
+            "sName": "VeryShortDesc",
             "sWidth": "60px",
             "title": doc.getDocLabel("page_invariant", "veryShortDesc")
         },
         {"data": "gp1", "sName": "gp1", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp1")},
         {"data": "gp2", "sName": "gp2", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp2")},
-        {"data": "gp3", "sName": "gp3", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp3")},
-        {"data": "gp4", "sName": "gp4", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp4")},
-        {"data": "gp5", "sName": "gp5", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp5")},
-        {"data": "gp6", "sName": "gp6", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp6")},
-        {"data": "gp7", "sName": "gp7", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp7")},
-        {"data": "gp8", "sName": "gp8", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp8")},
-        {"data": "gp9", "sName": "gp9", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp9")}
+        {"data": "gp3", "visible": false, "sName": "gp3", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp3")},
+        {"data": "gp4", "visible": false, "sName": "gp4", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp4")},
+        {"data": "gp5", "visible": false, "sName": "gp5", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp5")},
+        {"data": "gp6", "visible": false, "sName": "gp6", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp6")},
+        {"data": "gp7", "visible": false, "sName": "gp7", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp7")},
+        {"data": "gp8", "visible": false, "sName": "gp8", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp8")},
+        {"data": "gp9", "visible": false, "sName": "gp9", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp9")}
     ];
     return aoColumns;
 }

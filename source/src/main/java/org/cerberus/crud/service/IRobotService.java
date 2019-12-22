@@ -19,7 +19,6 @@
  */
 package org.cerberus.crud.service;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -179,13 +178,6 @@ public interface IRobotService {
      * @param columnName
      * @return
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
-    /**
-     * Return the robots list who can be used by the type of application
-     * @param robotsMap
-     * @param type
-     * @return
-     */
-    Collection<Robot> getRobotsUsableForType(Collection<Robot> robotsLst, String type);
 }

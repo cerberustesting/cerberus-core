@@ -71,7 +71,7 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
 
     @Override
     public AnswerItem<TestCaseExecutionFile> readByKey(long id) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<TestCaseExecutionFile> ans = new AnswerItem<>();
         TestCaseExecutionFile result = null;
         final String query = "SELECT * FROM `testcaseexecutionfile` exf WHERE `id` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -114,7 +114,7 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
 
     @Override
     public AnswerItem<TestCaseExecutionFile> readByKey(long exeId, String level, String fileDesc) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<TestCaseExecutionFile> ans = new AnswerItem<>();
         TestCaseExecutionFile result = null;
         StringBuilder query = new StringBuilder("SELECT * FROM `testcaseexecutionfile` exf WHERE `exeid` = ? and `level` = ? ");
         if(fileDesc != null) {
@@ -183,12 +183,12 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
 
     @Override
     public AnswerList<TestCaseExecutionFile> readByVariousByCriteria(long exeId, String level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+        AnswerList<TestCaseExecutionFile> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCaseExecutionFile> objectList = new ArrayList<TestCaseExecutionFile>();
+        List<TestCaseExecutionFile> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 

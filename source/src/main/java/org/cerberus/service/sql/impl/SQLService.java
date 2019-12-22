@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.config.Property;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -158,7 +159,7 @@ public class SQLService implements ISQLService {
         return null;
     }
 
-    private String calculateNatureRandomNew(List<String> list, String propName, TestCaseExecution tCExecution) {
+    private String calculateNatureRandomNew(List<String> list, String propName, TestCaseExecution tCExecution) throws CerberusException{
         //TODO clean code
         List<String> pastValues = this.testCaseExecutionDataService.getPastValuesOfProperty(tCExecution.getId(), propName, tCExecution.getTest(),
                 tCExecution.getTestCase(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(),
@@ -205,7 +206,7 @@ public class SQLService implements ISQLService {
              }
              */
             try {
-                LOG.info("Sending to external Database (queryDatabase) : '" + connectionName + "' SQL '" + sql + "'");
+                LOG.info("Sending to external Database (queryDatabase) : '" + connectionName + "' SQL '" + sql.replaceAll("(\\r|\\n)", " ") + "'");
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<String>();
                 try {
@@ -269,7 +270,7 @@ public class SQLService implements ISQLService {
                 msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
                 if (!(StringUtil.isNullOrEmpty(connectionName))) {
-                    if (connectionName.equals("cerberus" + System.getProperty("org.cerberus.environment"))) {
+                    if (connectionName.equals("cerberus" + System.getProperty(Property.ENVIRONMENT))) {
                         return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
                     } else {
                         try(Connection connection = this.databaseSpring.connect(connectionName);
@@ -403,8 +404,8 @@ public class SQLService implements ISQLService {
     }
 
     @Override
-    public AnswerList queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet) {
-        AnswerList listResult = new AnswerList<>();
+    public AnswerList<HashMap<String, String>> queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet) {
+        AnswerList<HashMap<String, String>> listResult = new AnswerList<>();
         List<HashMap<String, String>> list;
         int maxSecurityFetch = parameterService.getParameterIntegerByKey("cerberus_testdatalib_fetchmax", system, 100);
         int maxFetch;
@@ -425,7 +426,7 @@ public class SQLService implements ISQLService {
         		PreparedStatement preStat = connection.prepareStatement(sql);) {
             preStat.setQueryTimeout(defaultTimeOut);
             try {
-                LOG.info("Sending to external Database (queryDatabaseNColumns) : '" + connectionName + "' SQL '" + sql + "'");
+                LOG.info("Sending to external Database (queryDatabaseNColumns) : '" + connectionName + "' SQL '" + sql.replaceAll("(\\r|\\n)", " ") + "'");
                 ResultSet resultSet = preStat.executeQuery();
 
                 int nrColumns = resultSet.getMetaData().getColumnCount();

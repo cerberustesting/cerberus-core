@@ -19,6 +19,7 @@
  */
 package org.cerberus.util;
 
+import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,6 +28,8 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.web.util.HtmlUtils;
@@ -53,6 +56,26 @@ public final class StringUtil {
      * To avoid instanciation of utility class
      */
     private StringUtil() {
+    }
+
+    /**
+     *
+     * @param ex
+     * @return
+     */
+    public static String getExceptionCause(Exception ex) {
+        StringBuilder result = new StringBuilder();
+        StackTraceElement[] ste = ex.getStackTrace();
+        String[] exString = ex.getMessage().split("\n");
+//        LOG.debug(exString.length);
+//        LOG.debug("toto " + ex.getMessage());
+        for (StackTraceElement string : ste) {
+//            LOG.debug("toto : " + string.toString());
+            if (string.toString().contains("Caused by")) {
+                result.append(string.toString());
+            }
+        }
+        return result.toString();
     }
 
     /**
@@ -164,7 +187,7 @@ public final class StringUtil {
     }
 
     /**
-     * Generate a random string using current time and charset
+     * Return left part of the String.
      *
      * @param string1 String to treat.
      * @param length nb of characters to keep.
@@ -177,6 +200,24 @@ public final class StringUtil {
             return string1;
         } else {
             return string1.substring(0, length);
+        }
+    }
+
+    /**
+     * Return left part of the string adding ... at the end.
+     *
+     * @param string1 String to treat.
+     * @param length nb of characters to keep.
+     * @return the {length} first caracter of the string1.
+     */
+    public static String getLeftStringPretty(String string1, int length) {
+        int lengthminus3 = length - 3;
+        if (string1 == null) {
+            return "";
+        } else if (length >= string1.length()) {
+            return string1;
+        } else {
+            return string1.substring(0, lengthminus3) + "...";
         }
     }
 
@@ -398,7 +439,7 @@ public final class StringUtil {
         return result;
     }
 
-    public static String formatURLCredential(String user, String pass) {
+    public static String formatURLCredential(String user, String pass, String url) {
         String credential = "";
         if (!StringUtil.isNullOrEmpty(user)) {
             if (!StringUtil.isNullOrEmpty(pass)) {
@@ -407,7 +448,19 @@ public final class StringUtil {
                 credential = user + "@";
             }
         }
-        return credential;
+
+        String firstPart = "";
+        String seccondPart = url;
+
+        if (url.contains("http://")) {
+            firstPart = "http://";
+            seccondPart = url.split("http://")[1];
+        } else if (url.contains("https://")) {
+            firstPart = "https://";
+            seccondPart = url.split("https://")[1];
+        }
+
+        return firstPart + credential + seccondPart;
     }
 
     /**
@@ -436,6 +489,60 @@ public final class StringUtil {
         } else {
             return prefix + text;
         }
+    }
+
+    /**
+     *
+     * @param jsonResult
+     * @param separator
+     * @return
+     */
+    public static String convertToString(JSONArray jsonResult, String separator) {
+        String result = "";
+        if (separator == null) {
+            separator = ",";
+        }
+        try {
+            if (jsonResult.length() >= 1) {
+                for (int i = 0; i < jsonResult.length(); i++) {
+                    if (i == 0) {
+                        result = jsonResult.getString(i);
+                    } else {
+                        result += separator + jsonResult.getString(i);
+                    }
+                }
+            }
+        } catch (JSONException ex) {
+            LOG.error("JSONException in convertToString.", ex);
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @param listString
+     * @param separator
+     * @return
+     */
+    public static String convertToString(List<String> listString, String separator) {
+        String result = "";
+        if (separator == null) {
+            separator = ",";
+        }
+        boolean first = true;
+        if (listString == null) {
+            return "";
+        }
+        for (String string : listString) {
+            if (first == true) {
+                first = false;
+                result = string;
+            } else {
+                result += separator + string;
+            }
+
+        }
+        return result;
     }
 
 }

@@ -147,11 +147,10 @@ public class NewEnvironmentEventV000 extends HttpServlet {
             MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
             Answer finalAnswer = new Answer(msg);
 
-            AnswerList answerList = new AnswerList<>();
             if (country.equalsIgnoreCase(PARAMETERALL)) {
                 country = null;
             }
-            answerList = countryEnvParamService.readByVarious(system, country, environment, null, null, "Y");
+            AnswerList<CountryEnvParam> answerList = countryEnvParamService.readByVarious(system, country, environment, null, null, "Y");
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) answerList);
 
             for (CountryEnvParam cepData : (List<CountryEnvParam>) answerList.getDataList()) {

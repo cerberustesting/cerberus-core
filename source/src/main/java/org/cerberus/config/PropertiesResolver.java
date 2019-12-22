@@ -33,7 +33,7 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
  * @since 2.0.0
  */
 public class PropertiesResolver extends PropertyPlaceholderConfigurer {
-    
+
     private static final Logger LOG = LogManager.getLogger(PropertiesResolver.class);
 
     public PropertiesResolver() {
@@ -42,12 +42,12 @@ public class PropertiesResolver extends PropertyPlaceholderConfigurer {
 
     @Override
     protected void loadProperties(Properties props) throws IOException {
-        String env = System.getProperty("org.cerberus.environment");
+        String env = System.getProperty(Property.ENVIRONMENT);
 
         if (env == null) {
-            LOG.warn("Environment Property (org.cerberus.environment) not defined. Please, refer to the README file to configure it");
+            LOG.warn("Environment Property (" + Property.ENVIRONMENT + ") not defined. Please, refer to the README file to configure it");
         }
 
-        props.setProperty("org.cerberus.environment", env);
+        props.setProperty(Property.ENVIRONMENT, env);
     }
 }

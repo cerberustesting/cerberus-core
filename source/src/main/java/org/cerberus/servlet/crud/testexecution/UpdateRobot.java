@@ -106,8 +106,13 @@ public class UpdateRobot extends HttpServlet {
         String lbexemethod = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("lbexemethod"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
 
-        List<RobotCapability> capabilities = (List<RobotCapability>) (request.getParameter("capabilities") == null ? Collections.emptyList() : gson.fromJson(request.getParameter("capabilities"), new TypeToken<List<RobotCapability>>() {
-        }.getType()));
+        List<RobotCapability> capabilities;
+        if (request.getParameter("capabilities") == null) {
+            capabilities = Collections.emptyList();
+        } else {
+            capabilities = gson.fromJson(request.getParameter("capabilities"), new TypeToken<List<RobotCapability>>() {
+            }.getType());
+        }
 
         JSONArray objExecutorArray = new JSONArray(request.getParameter("executors"));
         List<RobotExecutor> executors = new ArrayList<>();
@@ -115,13 +120,13 @@ public class UpdateRobot extends HttpServlet {
 
         // Securing capabilities by setting them the associated robot name
         // Check also if there is no duplicated capability
-        Map<String, Object> capabilityMap = new HashMap<String, Object>();
+        Map<String, Object> capabilityMap = new HashMap<>();
         for (RobotCapability capability : capabilities) {
             capabilityMap.put(capability.getCapability(), null);
             capability.setRobot(robot);
         }
 
-        Map<String, Object> executorMap = new HashMap<String, Object>();
+        Map<String, Object> executorMap = new HashMap<>();
         for (RobotExecutor executor : executors) {
             executorMap.put(executor.getExecutor(), null);
             executor.setRobot(robot);
@@ -170,7 +175,7 @@ public class UpdateRobot extends HttpServlet {
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "There is at least one duplicated executor. Please edit or remove it to continue."));
             ans.setResultMessage(msg);
-        }  else if (executorMap.size() <1) {
+        } else if (executorMap.size() < 1) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
                     .replace("%OPERATION%", "Create")
@@ -255,9 +260,23 @@ public class UpdateRobot extends HttpServlet {
             String host_user = reJson.getString("hostUser");
             String deviceName = reJson.getString("deviceName");
             String deviceUdid = reJson.getString("deviceUdid");
+            String deviceLockUnlock = reJson.getBoolean("deviceLockUnlock") ? "Y" : "N";
+            String executorProxyHost = "";
+            if (reJson.has("executorProxyHost") && !StringUtil.isNullOrEmpty(reJson.getString("executorProxyHost"))) {
+                executorProxyHost = reJson.getString("executorProxyHost");
+            }
+            Integer executorProxyPort = null;
+            if (reJson.has("executorProxyPort") && !StringUtil.isNullOrEmpty(reJson.getString("executorProxyPort"))) {
+                executorProxyPort = reJson.getInt("executorProxyPort");
+            }
+            String executorProxyActive = reJson.getBoolean("executorProxyActive") ? "Y" : "N";
+            Integer executorExtensionPort = null;
+            if (reJson.has("executorExtensionPort") && !StringUtil.isNullOrEmpty(reJson.getString("executorExtensionPort"))) {
+                executorExtensionPort = reJson.getInt("executorExtensionPort");
+            }
 
             Integer devicePort = null;
-            if(reJson.has("devicePort") && !StringUtil.isNullOrEmpty(reJson.getString("devicePort"))) {
+            if (reJson.has("devicePort") && !StringUtil.isNullOrEmpty(reJson.getString("devicePort"))) {
                 devicePort = reJson.getInt("devicePort");
             }
 
@@ -275,7 +294,7 @@ public class UpdateRobot extends HttpServlet {
             }
 
             if (!delete) {
-                RobotExecutor reo = reFactory.create(i, robot, executor, active, rank, host, port, host_user, host_password, deviceUdid, deviceName, devicePort, description, "", null, "", null);
+                RobotExecutor reo = reFactory.create(i, robot, executor, active, rank, host, port, host_user, host_password, deviceUdid, deviceName, devicePort, deviceLockUnlock, executorExtensionPort, executorProxyHost, executorProxyPort, executorProxyActive, description, "", null, "", null);
                 reList.add(reo);
             }
         }

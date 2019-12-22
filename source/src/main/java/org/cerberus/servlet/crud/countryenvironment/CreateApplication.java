@@ -94,6 +94,7 @@ public class CreateApplication extends HttpServlet {
         String mavenGpID = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavengroupid"), "", charset);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
+        int poolSize = ParameterParserUtil.parseIntegerParam(request.getParameter("poolSize"), 0);
         String svnURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("svnurl"), "", charset);
         String bugTrackerURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerurl"), "", charset);
         String newBugURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackernewurl"), "", charset);
@@ -137,7 +138,7 @@ public class CreateApplication extends HttpServlet {
             IFactoryApplication factoryApplication = appContext.getBean(IFactoryApplication.class);
 
             Application applicationData = factoryApplication.create(application, description, sort, type, system, 
-                    subSystem, svnURL, deployType, mavenGpID, bugTrackerURL, newBugURL, request.getRemoteUser(), null, null, null);
+                    subSystem, svnURL, poolSize, deployType, mavenGpID, bugTrackerURL, newBugURL, request.getRemoteUser(), null, null, null);
             ans = applicationService.create(applicationData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

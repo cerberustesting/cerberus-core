@@ -19,26 +19,18 @@
  */
 package org.cerberus.servlet.crud.test.testcase;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
-import org.cerberus.crud.dao.impl.TestCaseCountryPropertiesDAO;
 import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.entity.TestCaseCountry;
-import org.cerberus.crud.entity.TestCaseCountryProperties;
-import org.cerberus.crud.entity.TestCaseStep;
-import org.cerberus.crud.entity.TestCaseStepAction;
-import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.ILoadTestCaseService;
 import org.cerberus.crud.service.ITestCaseService;
-import org.json.JSONArray;
+import org.cerberus.version.Infos;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -69,142 +61,23 @@ public class ExportTestCase extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestCaseService testService = appContext.getBean(ITestCaseService.class);
 
-            //TODO pass DAO to Service
-            ITestCaseCountryPropertiesDAO testCaseDAO = appContext.getBean(TestCaseCountryPropertiesDAO.class);
-
-            ILoadTestCaseService loadTestCaseService = appContext.getBean(ILoadTestCaseService.class);
-
             PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
             String test = policy.sanitize(httpServletRequest.getParameter("test"));
             String testcase = policy.sanitize(httpServletRequest.getParameter("testcase"));
 
             TestCase tcInfo = testService.findTestCaseByKeyWithDependency(test, testcase);
-
-            JSONObject jsonObject = new JSONObject();
-            try {
-
-                jsonObject.put("origin", tcInfo.getOrigine());
-                jsonObject.put("refOrigin", tcInfo.getRefOrigine());
-                jsonObject.put("creator", tcInfo.getUsrCreated());
-                jsonObject.put("implementer", tcInfo.getImplementer());
-                jsonObject.put("lastModifier", tcInfo.getUsrModif());
-                jsonObject.put("project", tcInfo.getProject());
-                jsonObject.put("ticket", tcInfo.getTicket());
-                jsonObject.put("application", tcInfo.getApplication());
-                jsonObject.put("runQA", tcInfo.getActiveQA());
-                jsonObject.put("runUAT", tcInfo.getActiveUAT());
-                jsonObject.put("runPROD", tcInfo.getActivePROD());
-                jsonObject.put("priority", tcInfo.getPriority());
-                jsonObject.put("group", tcInfo.getGroup());
-                jsonObject.put("status", tcInfo.getStatus());
-                JSONArray countryList = new JSONArray();
-                for(TestCaseCountry tcc : tcInfo.getTestCaseCountry()){
-                    countryList.put(tcc.getCountry());
-                }
-                jsonObject.put("countriesList", countryList);
-                jsonObject.put("shortDescription", tcInfo.getDescription());
-                jsonObject.put("description", tcInfo.getBehaviorOrValueExpected());
-                jsonObject.put("howTo", tcInfo.getHowTo());
-                jsonObject.put("active", tcInfo.getTcActive());
-                jsonObject.put("fromSprint", tcInfo.getFromBuild());
-                jsonObject.put("fromRevision", tcInfo.getFromRev());
-                jsonObject.put("toSprint", tcInfo.getToBuild());
-                jsonObject.put("toRevision", tcInfo.getToRev());
-                jsonObject.put("lastExecutionStatus", tcInfo.getLastExecutionStatus());
-                jsonObject.put("bugID", tcInfo.getBugID());
-                jsonObject.put("targetSprint", tcInfo.getTargetBuild());
-                jsonObject.put("targetRevision", tcInfo.getTargetRev());
-                jsonObject.put("comment", tcInfo.getComment());
-                jsonObject.put("test", tcInfo.getTest());
-                jsonObject.put("testcase", tcInfo.getTestCase());
-
-                JSONArray propertyList = new JSONArray();
-                List<TestCaseCountryProperties> properties = testCaseDAO.findDistinctPropertiesOfTestCase(test, testcase);
-
-                for (TestCaseCountryProperties prop : properties) {
-                    JSONObject property = new JSONObject();
-
-                    property.put("property", prop.getProperty());
-                    property.put("description", prop.getDescription());
-                    property.put("type", prop.getType());
-                    property.put("database", prop.getDatabase());
-                    property.put("value1", prop.getValue1());
-                    property.put("value2", prop.getValue2());
-                    property.put("length", prop.getLength());
-                    property.put("rowLimit", prop.getRowLimit());
-                    property.put("nature", prop.getNature());
-                    List<String> countriesSelected = testCaseDAO.findCountryByProperty(prop);
-                    for (TestCaseCountry tcc : tcInfo.getTestCaseCountry()) {
-                        if (countriesSelected.contains(tcc.getCountry())) {
-                            property.put(tcc.getCountry(), true);
-                        } else {
-                            property.put(tcc.getCountry(), false);
-                        }
-                    }
-                    propertyList.put(property);
-                }
-                jsonObject.put("properties", propertyList);
-
-                List<TestCaseStep> tcs = loadTestCaseService.loadTestCaseStep(tcInfo);
-                JSONArray list = new JSONArray();
-
-                for (TestCaseStep step : tcs) {
-                    JSONObject stepObject = new JSONObject();
-                    stepObject.put("number", step.getStep());
-                    stepObject.put("name", step.getDescription());
-                    int i = 1;
-                    JSONArray actionList = new JSONArray();
-                    JSONArray controlList = new JSONArray();
-                    JSONArray sequenceList = new JSONArray();
-
-                    for (TestCaseStepAction action : step.getTestCaseStepAction()) {
-                        JSONObject actionObject = new JSONObject();
-                        actionObject.put("sequence", i);
-                        actionObject.put("action", action.getAction());
-                        actionObject.put("object", action.getValue1());
-                        actionObject.put("property", action.getValue2());
-                        actionObject.put("fatal", "");
-                        actionList.put(actionObject);
-                        sequenceList.put(actionObject);
-
-                        for (TestCaseStepActionControl control : action.getTestCaseStepActionControl()){
-                            JSONObject controlObject = new JSONObject();
-                            controlObject.put("step", control.getStep());
-                            controlObject.put("sequence", control.getSequence());
-                            controlObject.put("order", control.getControlSequence());
-                            controlObject.put("action", control.getControl());
-                            controlObject.put("object", control.getValue2());
-                            controlObject.put("property", control.getValue1());
-                            controlObject.put("fatal", control.getFatal());
-                            controlList.put(controlObject);
-                            //test
-                            controlObject = new JSONObject();
-                            controlObject.put("sequence", i);
-                            controlObject.put("action", control.getControl());
-                            controlObject.put("object", control.getValue2());
-                            controlObject.put("property", control.getValue1());
-                            controlObject.put("fatal", control.getFatal());
-                            sequenceList.put(controlObject);
-                        }
-                        i++;
-                    }
-                    stepObject.put("actions", actionList);
-                    stepObject.put("controls", controlList);
-                    stepObject.put("sequences", sequenceList);
-                    list.put(stepObject);
-                }
-//                jsonObject.put("actions", actionList);
-//                jsonObject.put("controls", controlList);
-                jsonObject.put("list", list);
-
-                httpServletResponse.setContentType("application/json");
+            
+            // Java object to JSON string
+            ObjectMapper mapper = new ObjectMapper();
+            JSONObject jo = new JSONObject(mapper.writeValueAsString(tcInfo));
+            jo.put("cerberus_version", Infos.getInstance().getProjectVersion());
+            jo.put("user", httpServletRequest.getUserPrincipal());
+            
+        httpServletResponse.setContentType("application/json");
         httpServletResponse.setHeader("Content-Disposition", "attachment; filename="+test+testcase+".json");
-        httpServletResponse.getOutputStream().print(jsonObject.toString());
+        httpServletResponse.getOutputStream().print(jo.toString());
         
-        } catch (JSONException exception) {
-                LOG.warn(exception.toString());
-            }
-        } catch (CerberusException ex) {
+        } catch (CerberusException | JSONException ex) {
             LOG.warn(ex);
         }
     }

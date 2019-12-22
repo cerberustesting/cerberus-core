@@ -26,18 +26,23 @@ import java.util.List;
 import java.util.TreeMap;
 
 import com.google.gson.Gson;
+import java.util.Map;
+import org.cerberus.crud.entity.Campaign;
+import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.dto.SummaryStatisticsDTO;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ciresult.ICIService;
+import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 /**
  *
@@ -52,28 +57,33 @@ public class CIService implements ICIService {
     private ITestCaseExecutionService testExecutionService;
     @Autowired
     private IParameterService parameterService;
+    @Autowired
+    private ICampaignService campaignService;
+    @Autowired
+    private ITagService tagService;
 
     @Override
-    public JSONObject getCIResult(String tag) {
+    public JSONObject getCIResult(String tag, String campaign) {
         try {
-            List<TestCaseExecution> myList = testExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
-            return getCIResult(tag, myList);
-        } catch (CerberusException | ParseException ex) {
-            LOG.error(ex, ex);
-        }
-        return null;
-    }
 
-    @Override
-    public JSONObject getCIResultV004(String tag) {
-        try {
+            // If campaign is not defined here, we try to get it from tag. At the same time, we check that tag exist.
+            if (StringUtil.isNullOrEmpty(campaign)) {
+                Tag myTag = tagService.convert(tagService.readByKey(tag));
+                campaign = myTag.getCampaign();
+            }
+
             List<TestCaseExecution> myList = testExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
-            JSONObject jsonResponse = getCIResult(tag, myList);
+            JSONObject jsonResponse = CIService.this.getCIResult(tag, campaign, myList);
 
             jsonResponse.put("detail_by_declinaison", generateStats(myList));
 
-            jsonResponse.put("nb_of_retry", myList.stream().mapToInt(it -> it.getNbExecutions()-1).sum());
+            jsonResponse.put("environment_List", generateEnvList(myList));
+            jsonResponse.put("country_list", generateCountryList(myList));
+            jsonResponse.put("robotdecli_list", generateRobotDecliList(myList));
+            jsonResponse.put("system_list", generateSystemList(myList));
+            jsonResponse.put("application_list", generateApplicationList(myList));
 
+            jsonResponse.put("nb_of_retry", myList.stream().mapToInt(it -> it.getNbExecutions() - 1).sum());
 
             return jsonResponse;
         } catch (CerberusException | ParseException | JSONException ex) {
@@ -82,7 +92,7 @@ public class CIService implements ICIService {
         return null;
     }
 
-    private JSONObject getCIResult(String tag, List<TestCaseExecution> myList) {
+    private JSONObject getCIResult(String tag, String campaign, List<TestCaseExecution> myList) {
         try {
             JSONObject jsonResponse = new JSONObject();
 
@@ -186,18 +196,34 @@ public class CIService implements ICIService {
             int pond4 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio4", "", 0);
             int pond5 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio5", "", 0);
             String result;
+
+            // Getting threshold from parameter.
             int resultCalThreshold = parameterService.getParameterIntegerByKey("cerberus_ci_threshold", "", 100);
+
+            // If tag is linked to campaign, we get the threshold from the campaign definition (if exist and can be converted to integer).
+            if (!StringUtil.isNullOrEmpty(campaign)) {
+                try {
+                    LOG.debug("Trying to get CIScoreThreshold from campaign : '" + campaign + "'");
+                    // Check campaign score here.
+                    Campaign mycampaign = campaignService.convert(campaignService.readByKey(campaign));
+                    if (!StringUtil.isNullOrEmpty(mycampaign.getCIScoreThreshold())) {
+                        try {
+                            resultCalThreshold = Integer.valueOf(mycampaign.getCIScoreThreshold());
+                        } catch (NumberFormatException ex) {
+                            LOG.error("Could not convert campaign CIScoreThreshold '" + mycampaign.getCIScoreThreshold() + "' to integer.", ex);
+                        }
+                    }
+                } catch (CerberusException ex) {
+                    LOG.error("Could not find campaign when calculating CIScore.", ex);
+                }
+            }
+
             int resultCal = (nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4) + (nbkop5 * pond5);
             if ((nbtotal > 0) && nbqu + nbpe > 0) {
                 result = "PE";
             } else {
                 result = getFinalResult(resultCal, resultCalThreshold, nbtotal, nbok);
             }
-//                if ((resultCal < resultCalThreshold) && (nbtotal > 0) && nbok > 0) {
-//                result = "OK";
-//            } else {
-//                result = "KO";
-//            }
 
             jsonResponse.put("messageType", "OK");
             jsonResponse.put("message", "CI result calculated with success.");
@@ -244,6 +270,96 @@ public class CIService implements ICIService {
         } else {
             return "KO";
         }
+    }
+
+    private JSONArray generateEnvList(List<TestCaseExecution> testCaseExecutions) throws JSONException {
+
+        JSONArray jsonResult = new JSONArray();
+
+        HashMap<String, String> statMap = new HashMap<String, String>();
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+            if (!StringUtil.isNullOrEmpty(testCaseExecution.getEnvironment())) {
+                statMap.put(testCaseExecution.getEnvironment(), null);
+            }
+        }
+        for (Map.Entry<String, String> entry : statMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            jsonResult.put(key);
+        }
+        return jsonResult;
+    }
+
+    private JSONArray generateCountryList(List<TestCaseExecution> testCaseExecutions) throws JSONException {
+
+        JSONArray jsonResult = new JSONArray();
+
+        HashMap<String, String> statMap = new HashMap<String, String>();
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+            if (!StringUtil.isNullOrEmpty(testCaseExecution.getCountry())) {
+                statMap.put(testCaseExecution.getCountry(), null);
+            }
+        }
+        for (Map.Entry<String, String> entry : statMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            jsonResult.put(key);
+        }
+        return jsonResult;
+    }
+
+    private JSONArray generateRobotDecliList(List<TestCaseExecution> testCaseExecutions) throws JSONException {
+
+        JSONArray jsonResult = new JSONArray();
+
+        HashMap<String, String> statMap = new HashMap<String, String>();
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+            if (!StringUtil.isNullOrEmpty(testCaseExecution.getRobotDecli())) {
+                statMap.put(testCaseExecution.getRobotDecli(), null);
+            }
+        }
+        for (Map.Entry<String, String> entry : statMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            jsonResult.put(key);
+        }
+        return jsonResult;
+    }
+
+    private JSONArray generateSystemList(List<TestCaseExecution> testCaseExecutions) throws JSONException {
+
+        JSONArray jsonResult = new JSONArray();
+
+        HashMap<String, String> statMap = new HashMap<String, String>();
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+            if (!StringUtil.isNullOrEmpty(testCaseExecution.getSystem())) {
+                statMap.put(testCaseExecution.getSystem(), null);
+            }
+        }
+        for (Map.Entry<String, String> entry : statMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            jsonResult.put(key);
+        }
+        return jsonResult;
+    }
+
+    private JSONArray generateApplicationList(List<TestCaseExecution> testCaseExecutions) throws JSONException {
+
+        JSONArray jsonResult = new JSONArray();
+
+        HashMap<String, String> statMap = new HashMap<String, String>();
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+            if (!StringUtil.isNullOrEmpty(testCaseExecution.getApplication())) {
+                statMap.put(testCaseExecution.getApplication(), null);
+            }
+        }
+        for (Map.Entry<String, String> entry : statMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            jsonResult.put(key);
+        }
+        return jsonResult;
     }
 
     private JSONArray generateStats(List<TestCaseExecution> testCaseExecutions) throws JSONException {

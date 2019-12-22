@@ -38,10 +38,10 @@ Use bin/ script to configure your glassfish server. Just replace your mysql info
 If you use eclipse glassfish plugin, change the admin glassfish password because it doesn't work with an empty password.
 
 ```
-asadmin change-admin-password #(Default pawword is empty.)
+asadmin change-admin-password #(Default password is empty.)
 ```  
 
-On eclipse, Check `Use jar archives for deployment` on `server propoerties page > Glassfish`
+On eclipse, Check `Use jar archives for deployment` on `server properties page > Glassfish`
 
 ##### stop server
 ```

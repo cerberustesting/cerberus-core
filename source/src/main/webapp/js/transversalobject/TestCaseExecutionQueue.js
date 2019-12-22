@@ -328,6 +328,22 @@ function feedTestCase(test, selectElement, defaultTestCase) {
  * @returns {null}
  */
 function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) {
+
+    // Message on entry to go.
+    console.info(exeQ.nbEntryInQueueToGo);
+    var target = $("#messageArea2");
+    if (exeQ.nbEntryInQueueToGo > 0) {
+        target.empty();
+        var releaseDateInput1 = $("<h3>").text("Queue entries to be processed before that entry (Dependencies excluded) : " + exeQ.nbEntryInQueueToGo);
+        var relDate1 = $("<div class='form-group info col-lg-12'></div>").append(releaseDateInput1);
+        var drow011 = $("<div class='row'></div>").append(relDate1);
+        target.show();
+        target.append(drow011);
+    } else {
+        target.empty();
+        target.hide();
+    }
+
     var formEdit = $('#' + modalId);
     var doc = new Doc();
     var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT") && ((exeQ.state === "WAITING") || (exeQ.state === "QUEUED") || (exeQ.state === "ERROR") || (exeQ.state === "CANCELLED")))
@@ -526,6 +542,8 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#retries").prop("disabled", "disabled");
         formEdit.find("#manualExecution").prop("disabled", "disabled");
     }
+    drawDependencies(exeQ.testcaseExecutionQueueDepList, "depQueueTableBody", "tab4QText");
+
 }
 
 function robot_change() {
@@ -548,7 +566,80 @@ function robot_change() {
 }
 
 function enableDisableJob() {
-    openModalParameter('cerberus_queueexecution_enable', getSys());
+    var newValue = "N";
+    var curValue = $('#jobActive').val();
+    if (curValue === "true") {
+        newValue = "N";
+    } else {
+        newValue = "Y";
+    }
+    var jqxhr = $.getJSON("UpdateParameter", "id=cerberus_queueexecution_enable&value=" + newValue + "&system1=" + getUser().defaultSystem);
+    $.when(jqxhr).then(function (data) {
+        displayAndRefresh_jobStatus();
+    });
+
+
+//    openModalParameter('cerberus_queueexecution_enable', getSys());
     // Trap closure of modal in order to trigger that refresh.
-    displayAndRefresh_jobStatus();
 }
+
+
+function drawDependencies(depList, targetTableBody, targetTab) {
+    $("#" + targetTableBody).empty();
+    if (depList.length <= 0) {
+        $("#" + targetTab).hide();
+    } else {
+        $("#" + targetTab).show();
+        for (var i = 0; i < depList.length; i++) {
+            appendDepRow(depList[i], targetTableBody);
+        }
+
+    }
+}
+
+
+function appendDepRow(dep, targetTableBody) {
+    var doc = new Doc();
+    var typeInput = $("<input readonly>").addClass("form-control input-sm").val(dep.type);
+    var depTestInput = $("<input readonly>").addClass("form-control input-sm").val(dep.depTest);
+    var depTestcaseInput = $("<input readonly>").addClass("form-control input-sm").val(dep.depTestCase);
+    var depEventInput = $("<input readonly>").addClass("form-control input-sm").val(dep.depEvent);
+    var statusInput = $("<input readonly>").addClass("form-control input-sm").val(dep.status);
+    var releaseDateInput = $("<input readonly>").addClass("form-control input-sm").val(getDateShort(dep.releaseDate));
+    var commentInput = $("<input readonly>").addClass("form-control input-sm").val(dep.comment);
+    var exeIdInput = $("<input readonly>").addClass("form-control input-sm").val(dep.exeId);
+    var queueIdInput = $("<input readonly>").addClass("form-control input-sm").val(dep.queueId);
+    var table = $("#" + targetTableBody);
+
+    var row = $("<tr></tr>");
+
+    var type = $("<div class='form-group col-lg-3 col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "type") + "</label>").append(typeInput);
+    var drow01 = $("<div class='row'></div>").append(type);
+    if (dep.type === "TCEXEEND") {
+        var det1 = $("<div class='form-group col-lg-6 col-sm-7'></div>").append("<label for='name'>" + doc.getDocOnline("test", "Test") + "</label>").append(depTestInput);
+        var det2 = $("<div class='form-group col-lg-3 col-sm-5'></div>").append("<label for='name'>" + doc.getDocOnline("testcase", "TestCase") + "</label>").append(depTestcaseInput);
+        drow01.append(det1).append(det2);
+    } else if (dep.type === "EVENT") {
+        var det1 = $("<div class='form-group col-lg-10'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "executor") + "</label>").append(depEventInput);
+        drow01.append(det1);
+    }
+    var td1 = $("<td></td>").append(drow01);
+
+    var status = $("<div class='form-group col-lg-3 col-md-6 col-sm-6'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "status") + "</label>").append(statusInput);
+    var relDate = $("<div class='form-group col-lg-3 col-md-6 col-sm-6'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "releaseDate") + "</label>").append(releaseDateInput);
+    var comDate = $("<div class='form-group col-lg-6 col-md-12 col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "comment") + "</label>").append(commentInput);
+    var drow01 = $("<div class='row'></div>").append(status).append(relDate).append(comDate);
+    if (dep.type === "TCEXEEND") {
+        var det1 = $("<div class='form-group col-lg-3 col-md-3 col-sm-3'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "exeId") + "</label>").append(exeIdInput);
+        var det2 = $("<div class='form-group col-lg-3 col-md-3 col-sm-3'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "exeQueueId") + "</label>").append(queueIdInput);
+        drow01.append(det1).append(det2);
+    }
+    var td2 = $("<td></td>").append(drow01);
+
+    row.append(td1).append(td2);
+
+//    row.data("executor", dep);
+    table.append(row);
+}
+
+

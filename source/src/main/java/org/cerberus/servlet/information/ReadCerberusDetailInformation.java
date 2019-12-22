@@ -21,7 +21,15 @@ package org.cerberus.servlet.information;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -29,17 +37,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.config.Property;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.database.dao.ICerberusInformationDAO;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.session.SessionCounter;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.IMyVersionService;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITagSystemService;
 import org.cerberus.database.IDatabaseVersioningService;
+import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
+import org.cerberus.engine.scheduler.SchedulerInit;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.quartz.Trigger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -51,10 +66,13 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadCerberusDetailInformation extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ReadCerberusDetailInformation.class);
-    
+
     private ICerberusInformationDAO cerberusDatabaseInformation;
     private IDatabaseVersioningService databaseVersionService;
     private IMyVersionService myVersionService;
+    private IParameterService parameterService;
+    private ITagSystemService tagSystemService;
+    private IExecutionThreadPoolService executionThreadPoolService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -71,6 +89,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ExecutionUUID euuid = appContext.getBean(ExecutionUUID.class);
         SessionCounter sc = appContext.getBean(SessionCounter.class);
+        SchedulerInit scInit = appContext.getBean(SchedulerInit.class);
         Infos infos = new Infos();
 
         try {
@@ -95,29 +114,50 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             jsonResponse.put("simultaneous_session", sc.getTotalActiveSession());
             jsonResponse.put("active_users", sc.getActiveUsers());
 
+            JSONObject object = new JSONObject();
+            if (scInit != null) {
+                object.put("schedulerInstanceVersion", scInit.getInstanceSchedulerVersion());
+                object.put("schedulerReloadIsRunning", scInit.isIsRunning());
+                // We get here the list of triggers of Quartz scheduler.
+                List<JSONObject> triggerList = new ArrayList<>();
+                for (Trigger triggerSet : scInit.getMyTriggersSet()) {
+                    JSONObject objectTrig = new JSONObject();
+                    objectTrig.put("triggerId", triggerSet.getJobDataMap().getLong("schedulerId"));
+                    objectTrig.put("triggerName", triggerSet.getJobDataMap().getString("name"));
+                    objectTrig.put("triggerType", triggerSet.getJobDataMap().getString("type"));
+                    objectTrig.put("triggerUserCreated", triggerSet.getJobDataMap().getString("user"));
+                    objectTrig.put("triggerNextFiretime", triggerSet.getNextFireTime());
+                    triggerList.add(objectTrig);
+                }
+                Collections.sort(triggerList, new SortTriggers());
+                JSONArray object1 = new JSONArray(triggerList);
+                object.put("schedulerTriggers", object1);
+            }
+            jsonResponse.put("scheduler", object);
+
             cerberusDatabaseInformation = appContext.getBean(ICerberusInformationDAO.class);
 
             AnswerItem<HashMap<String, String>> ans = cerberusDatabaseInformation.getDatabaseInformation();
             HashMap<String, String> cerberusInformation = (HashMap<String, String>) ans.getItem();
 
             // Database Informations.
-            jsonResponse.put("DatabaseProductName", cerberusInformation.get("DatabaseProductName"));
-            jsonResponse.put("DatabaseProductVersion", cerberusInformation.get("DatabaseProductVersion"));
-            jsonResponse.put("DatabaseMajorVersion", cerberusInformation.get("DatabaseMajorVersion"));
-            jsonResponse.put("DatabaseMinorVersion", cerberusInformation.get("DatabaseMinorVersion"));
+            jsonResponse.put("databaseProductName", cerberusInformation.get("DatabaseProductName"));
+            jsonResponse.put("databaseProductVersion", cerberusInformation.get("DatabaseProductVersion"));
+            jsonResponse.put("databaseMajorVersion", cerberusInformation.get("DatabaseMajorVersion"));
+            jsonResponse.put("databaseMinorVersion", cerberusInformation.get("DatabaseMinorVersion"));
 
-            jsonResponse.put("DriverName", cerberusInformation.get("DriverName"));
-            jsonResponse.put("DriverVersion", cerberusInformation.get("DriverVersion"));
-            jsonResponse.put("DriverMajorVersion", cerberusInformation.get("DriverMajorVersion"));
-            jsonResponse.put("DriverMinorVersion", cerberusInformation.get("DriverMinorVersion"));
+            jsonResponse.put("driverName", cerberusInformation.get("DriverName"));
+            jsonResponse.put("driverVersion", cerberusInformation.get("DriverVersion"));
+            jsonResponse.put("driverMajorVersion", cerberusInformation.get("DriverMajorVersion"));
+            jsonResponse.put("driverMinorVersion", cerberusInformation.get("DriverMinorVersion"));
 
-            jsonResponse.put("JDBCMajorVersion", cerberusInformation.get("JDBCMajorVersion"));
-            jsonResponse.put("JDBCMinorVersion", cerberusInformation.get("JDBCMinorVersion"));
+            jsonResponse.put("jDBCMajorVersion", cerberusInformation.get("JDBCMajorVersion"));
+            jsonResponse.put("jDBCMinorVersion", cerberusInformation.get("JDBCMinorVersion"));
 
             // Cerberus Informations.
             jsonResponse.put("projectName", infos.getProjectName());
             jsonResponse.put("projectVersion", infos.getProjectVersion());
-            jsonResponse.put("environment", System.getProperty("org.cerberus.environment"));
+            jsonResponse.put("environment", System.getProperty(Property.ENVIRONMENT));
 
             databaseVersionService = appContext.getBean(IDatabaseVersioningService.class);
             jsonResponse.put("databaseCerberusTargetVersion", databaseVersionService.getSQLScript().size());
@@ -129,7 +169,20 @@ public class ReadCerberusDetailInformation extends HttpServlet {
                 jsonResponse.put("databaseCerberusCurrentVersion", "0");
             }
 
-            // JAVA Informations.
+            // Cerberus Parameters
+            jsonResponse.put("authentification", System.getProperty(Property.AUTHENTIFICATION));
+            jsonResponse.put("isKeycloak", Property.isKeycloak());
+            jsonResponse.put("keycloakRealm", System.getProperty(Property.KEYCLOAKREALM));
+            jsonResponse.put("keycloakClient", System.getProperty(Property.KEYCLOAKCLIENT));
+            jsonResponse.put("keycloakUrl", System.getProperty(Property.KEYCLOAKURL));
+
+            parameterService = appContext.getBean(IParameterService.class);
+            jsonResponse.put("saaS", System.getProperty(Property.SAAS));
+            jsonResponse.put("isSaaS", Property.isSaaS());
+            jsonResponse.put("saasInstance", System.getProperty(Property.SAASINSTANCE));
+//            jsonResponse.put("saasParallelrun", System.getProperty(Property.SAASPARALLELRUN));
+            jsonResponse.put("saasParallelrun", parameterService.getParameterIntegerByKey("cerberus_queueexecution_global_threadpoolsize", "", 12));
+
             jsonResponse.put("javaVersion", System.getProperty("java.version"));
             Runtime instance = Runtime.getRuntime();
             int mb = 1024 * 1024;
@@ -141,12 +194,101 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             String str1 = getServletContext().getServerInfo();
             jsonResponse.put("applicationServerInfo", str1);
 
+            // Cache parameter data and status
+            JSONObject objCache = new JSONObject();
+            HashMap<String, Parameter> cacheParam = parameterService.getCacheEntry();
+            JSONArray cacheValuesArray = new JSONArray();
+
+            for (Map.Entry<String, Parameter> entry : cacheParam.entrySet()) {
+                String key = entry.getKey();
+                Parameter value = entry.getValue();
+                JSONObject objParam = new JSONObject();
+                objParam.put("key", key);
+                if (value.getCacheEntryCreation() != null) {
+                    objParam.put("created", value.getCacheEntryCreation().toString());
+                    Duration d = Duration.between(value.getCacheEntryCreation(), LocalDateTime.now());
+                    objParam.put("durationFromCreatedInS", d.getSeconds());
+                }
+                cacheValuesArray.put(objParam);
+            }
+            objCache.put("cacheParameterEntry", cacheValuesArray);
+            objCache.put("cacheParameterDurationInS", Parameter.CACHE_DURATION);
+
+            // Cache Tag System data and status
+            cacheValuesArray = new JSONArray();
+            tagSystemService = appContext.getBean(ITagSystemService.class);
+            cacheValuesArray.put(tagSystemService.getTagSystemCache());
+            objCache.put("cacheTagSystemEntry", cacheValuesArray);
+
+            jsonResponse.put("cache", objCache);
+            
+            executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
+            jsonResponse.put("executionThreadPoolInstanceActive", executionThreadPoolService.isInstanceActive());
+            
+
         } catch (JSONException ex) {
             LOG.warn(ex);
+        } catch (Exception ex) {
+            LOG.error("Exception in ReadCerberusDetailInformation Servlet", ex);
         }
 
         response.setContentType("application/json");
         response.getWriter().print(jsonResponse.toString());
+    }
+
+    class SortTriggers implements Comparator<JSONObject> {
+
+        // Used for sorting Triggers 
+        @Override
+        public int compare(JSONObject a, JSONObject b) {
+
+            if (a != null && b != null) {
+                String typeA;
+                String typeB;
+                try {
+                    typeA = a.getString("triggerType");
+                    typeB = b.getString("triggerType");
+                    if (typeA.equals(typeB)) {
+                        String nameA;
+                        String nameB;
+                        try {
+                            nameA = a.getString("triggerName");
+                            nameB = b.getString("triggerName");
+                            if (nameA.equals(nameB)) {
+                                Date dateA;
+                                Date dateB;
+                                try {
+                                    dateA = (Date) a.get("triggerNextFiretime");
+                                    dateB = (Date) b.get("triggerNextFiretime");
+                                    if (dateA.equals(dateB)) {
+
+                                    } else {
+                                        return (dateA.compareTo(dateB));
+                                    }
+                                } catch (JSONException ex) {
+                                    LOG.error("Exception on JSON Parse.", ex);
+                                }
+
+                            } else {
+                                return nameA.compareToIgnoreCase(nameB);
+                            }
+                        } catch (JSONException ex) {
+                            LOG.error("Exception on JSON Parse.", ex);
+                        }
+
+                    } else {
+                        return typeA.compareToIgnoreCase(typeB);
+                    }
+                } catch (JSONException ex) {
+                    LOG.error("Exception on JSON Parse.", ex);
+                }
+
+            } else {
+                return 1;
+            }
+
+            return 1;
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

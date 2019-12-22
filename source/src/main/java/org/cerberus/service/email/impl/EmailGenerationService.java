@@ -19,15 +19,15 @@
  */
 package org.cerberus.service.email.impl;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.service.email.entity.Email;
 import org.cerberus.crud.entity.BatchInvariant;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.Tag;
@@ -40,10 +40,12 @@ import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.service.email.IEmailBodyGeneration;
 import org.cerberus.service.email.IEmailFactory;
+import org.cerberus.service.email.IEmailGenerationService;
+import org.cerberus.service.email.entity.Email;
 import org.cerberus.util.StringUtil;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.cerberus.service.email.IEmailGenerationService;
 
 /**
  *
@@ -86,6 +88,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         String cc = parameterService.findParameterByKey("cerberus_notification_newbuildrevision_cc", system).getValue();
         String subject = parameterService.findParameterByKey("cerberus_notification_newbuildrevision_subject", system).getValue();
         String body = parameterService.findParameterByKey("cerberus_notification_newbuildrevision_body", system).getValue();
+        boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
         if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.geteMailBodyRevision())) {
             body = myCountryEnvParam.geteMailBodyRevision();
@@ -126,7 +129,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         body = body.replace("%TESTRECAPALL%", content);
         //End
 
-        email = emailFactory.create(host, port, userName, password, true, subject, body, from, to, cc);
+        email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, cc);
 
         return email;
 
@@ -149,6 +152,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         String cc = parameterService.findParameterByKey("cerberus_notification_disableenvironment_cc", system).getValue();
         String subject = parameterService.findParameterByKey("cerberus_notification_disableenvironment_subject", system).getValue();
         String body = parameterService.findParameterByKey("cerberus_notification_disableenvironment_body", system).getValue();
+        boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
         if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.geteMailBodyDisableEnvironment())) {
             body = myCountryEnvParam.geteMailBodyDisableEnvironment();
@@ -170,7 +174,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         body = body.replace("%BUILD%", myCountryEnvParam.getBuild());
         body = body.replace("%REVISION%", myCountryEnvParam.getRevision());
 
-        email = emailFactory.create(host, port, userName, password, true, subject, body, from, to, cc);
+        email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, cc);
 
         return email;
     }
@@ -198,6 +202,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         String cc = parameterService.findParameterByKey("cerberus_notification_newchain_cc", system).getValue();
         String subject = parameterService.findParameterByKey("cerberus_notification_newchain_subject", system).getValue();
         String body = parameterService.findParameterByKey("cerberus_notification_newchain_body", system).getValue();
+        boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
         if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.geteMailBodyChain())) {
             body = myCountryEnvParam.geteMailBodyChain();
@@ -220,7 +225,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         body = body.replace("%REVISION%", myCountryEnvParam.getRevision());
         body = body.replace("%CHAIN%", lastchain);
 
-        email = emailFactory.create(host, port, userName, password, true, subject, body, from, to, cc);
+        email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, cc);
 
         return email;
 
@@ -241,12 +246,13 @@ public class EmailGenerationService implements IEmailGenerationService {
         String cc = cc = parameterService.findParameterByKey("cerberus_notification_accountcreation_cc", system).getValue();
         String subject = parameterService.findParameterByKey("cerberus_notification_accountcreation_subject", system).getValue();
         String body = parameterService.findParameterByKey("cerberus_notification_accountcreation_body", system).getValue();
+        boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
         body = body.replace("%NAME%", user.getName());
         body = body.replace("%LOGIN%", user.getLogin());
         body = body.replace("%DEFAULT_PASSWORD%", parameterService.findParameterByKey("cerberus_accountcreation_defaultpassword", system).getValue());
 
-        email = emailFactory.create(host, port, userName, password, true, subject, body, from, to, cc);
+        email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, cc);
 
         return email;
     }
@@ -265,6 +271,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         String cc = parameterService.findParameterByKey("cerberus_notification_accountcreation_cc", system).getValue();
         String subject = parameterService.findParameterByKey("cerberus_notification_forgotpassword_subject", system).getValue();
         String body = parameterService.findParameterByKey("cerberus_notification_forgotpassword_body", system).getValue();
+        boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
         body = body.replace("%NAME%", user.getName());
         body = body.replace("%LOGIN%", user.getLogin());
 
@@ -283,7 +290,7 @@ public class EmailGenerationService implements IEmailGenerationService {
 
         body = body.replace("%LINK%", sb.toString());
 
-        email = emailFactory.create(host, port, userName, password, true, subject, body, from, to, cc);
+        email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, cc);
 
         return email;
 
@@ -301,11 +308,16 @@ public class EmailGenerationService implements IEmailGenerationService {
         String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
         String subject = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_tagexecutionstart_subject'.");
         String body = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_body", system, "Empty Body. Please define parameter 'cerberus_notification_tagexecutionstart_body'.");
-
+        boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
+        
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
         if (StringUtil.isNullOrEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
         }
+
+        Tag mytag = tagService.convert(tagService.readByKey(tag));
+        String myEnvironmentList = StringUtil.convertToString(new JSONArray(mytag.getReqEnvironmentList()), ",");
+        String myCountryList = StringUtil.convertToString(new JSONArray(mytag.getReqCountryList()), ",");
 
         StringBuilder urlreporttag = new StringBuilder();
         urlreporttag.append(cerberusUrl);
@@ -314,11 +326,15 @@ public class EmailGenerationService implements IEmailGenerationService {
         body = body.replace("%TAG%", tag);
         body = body.replace("%URLTAGREPORT%", urlreporttag.toString());
         body = body.replace("%CAMPAIGN%", campaign);
+        body = body.replace("%REQENVIRONMENTLIST%", myEnvironmentList);
+        body = body.replace("%REQCOUNTRYLIST%", myCountryList);
 
         subject = subject.replace("%TAG%", tag);
         subject = subject.replace("%CAMPAIGN%", campaign);
+        subject = subject.replace("%REQENVIRONMENTLIST%", myEnvironmentList);
+        subject = subject.replace("%REQCOUNTRYLIST%", myCountryList);
 
-        email = emailFactory.create(host, port, userName, password, true, subject, body, from, to, null);
+        email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, null);
 
         return email;
 
@@ -338,7 +354,8 @@ public class EmailGenerationService implements IEmailGenerationService {
             String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
             String subject = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_tagexecutionend_subject'.");
             String body = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_body", system, "Empty Body. Please define parameter 'cerberus_notification_tagexecutionend_body'.");
-
+            boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
+            
             String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
             if (StringUtil.isNullOrEmpty(cerberusUrl)) {
                 cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
@@ -363,6 +380,24 @@ public class EmailGenerationService implements IEmailGenerationService {
             body = body.replace("%CIRESULTCOLOR%", ciColor);
             body = body.replace("%CISCORE%", String.valueOf(mytag.getCiScore()));
             body = body.replace("%CISCORETHRESHOLD%", String.valueOf(mytag.getCiScoreThreshold()));
+
+            String myEnvironmentList = StringUtil.convertToString(new JSONArray(mytag.getEnvironmentList()), ",");
+            String myCountryList = StringUtil.convertToString(new JSONArray(mytag.getCountryList()), ",");
+            String myApplicationList = StringUtil.convertToString(new JSONArray(mytag.getApplicationList()), ",");
+            String mySystemList = StringUtil.convertToString(new JSONArray(mytag.getSystemList()), ",");
+            String myRobotList = StringUtil.convertToString(new JSONArray(mytag.getRobotDecliList()), ",");
+
+            body = body.replace("%ENVIRONMENTLIST%", myEnvironmentList);
+            body = body.replace("%COUNTRYLIST%", myCountryList);
+            body = body.replace("%APPLICATIONLIST%", myApplicationList);
+            body = body.replace("%SYSTEMLIST%", mySystemList);
+            body = body.replace("%ROBOTDECLILIST%", myRobotList);
+
+            String myReqEnvironmentList = StringUtil.convertToString(new JSONArray(mytag.getReqEnvironmentList()), ",");
+            String myReqCountryList = StringUtil.convertToString(new JSONArray(mytag.getReqCountryList()), ",");
+
+            body = body.replace("%REQENVIRONMENTLIST%", myReqEnvironmentList);
+            body = body.replace("%REQCOUNTRYLIST%", myReqCountryList);
 
             long tagDur = (mytag.getDateEndQueue().getTime() - mytag.getDateCreated().getTime()) / 60000;
             body = body.replace("%TAGDURATION%", String.valueOf(tagDur));
@@ -402,16 +437,16 @@ public class EmailGenerationService implements IEmailGenerationService {
             for (String string : statList) {
                 if (statNbMap.get(string) > 0) {
                     globalStatus.append("<tr>");
-                    globalStatus.append("<td style=\"background-color:").append(statColorMap.get(string)).append(";\">").append(string).append("</td>");
-                    globalStatus.append("<td>").append(statNbMap.get(string)).append("</td>");
+                    globalStatus.append("<td style=\"background-color:").append(statColorMap.get(string)).append(";text-align: center;\">").append(string).append("</td>");
+                    globalStatus.append("<td style=\"text-align: right;\">").append(statNbMap.get(string)).append("</td>");
                     per = (float) statNbMap.get(string) / (float) mytag.getNbExeUsefull();
                     per = per * 100;
-                    globalStatus.append("<td>").append(String.format("%.2f", per)).append("</td>");
+                    globalStatus.append("<td style=\"text-align: right;\">").append(String.format("%.2f", per)).append("</td>");
                     globalStatus.append("</tr>");
                 }
             }
-            globalStatus.append("<tr style=\"background-color:#cad3f1; font-style:bold\"><td>TOTAL</td>");
-            globalStatus.append("<td>").append(mytag.getNbExeUsefull()).append("</td>");
+            globalStatus.append("<tr style=\"background-color:#cad3f1; font-style:bold; text-align: center;\"><td>TOTAL</td>");
+            globalStatus.append("<td style=\"text-align: right;\">").append(mytag.getNbExeUsefull()).append("</td>");
             globalStatus.append("<td></td></tr>");
             globalStatus.append("</tbody></table>");
             body = body.replace("%TAGGLOBALSTATUS%", globalStatus.toString());
@@ -419,26 +454,32 @@ public class EmailGenerationService implements IEmailGenerationService {
             // Get TestcaseExecutionDetail in order to replace %TAGTCDETAIL%.
             StringBuilder detailStatus = new StringBuilder();
             List<TestCaseExecution> testCaseExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
+            Collections.sort(testCaseExecutions, new SortExecution());
             Integer totalTC = 0;
             Integer maxLines = parameterService.getParameterIntegerByKey("cerberus_notification_tagexecutionend_tclistmax", system, 100);
             boolean odd = true;
-            detailStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Test</td><td>Test Case</td><td>Description</td><td>Environment</td><td>Country</td><td>Robot Decli</td><td>Status</td></tr></thead><tbody>");
+            detailStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Prio</td><td>Test Folder</td><td>Test Case</td><td>Environment</td><td>Country</td><td>Robot Decli</td><td>Status</td></tr></thead><tbody>");
             for (TestCaseExecution execution : testCaseExecutions) {
                 if (!TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus())) {
                     if (totalTC < maxLines) {
+                        String tr = "";
                         if (odd) {
-                            detailStatus.append("<tr style=\"background-color:#E3E3E3\">");
+                            tr = "<tr style=\"background-color:#E3E3E3\">";
                         } else {
-                            detailStatus.append("<tr>");
+                            tr = "<tr>";
                         }
                         odd = !odd;
-                        detailStatus.append("<td>").append(execution.getTest()).append("</td>");
-                        detailStatus.append("<td>").append(execution.getTestCase()).append("</td>");
-                        detailStatus.append("<td>").append(execution.getDescription()).append("</td>");
+                        detailStatus.append(tr);
+                        detailStatus.append("<td rowspan=\"2\" style=\"text-align: center;\">").append(execution.getTestCasePriority()).append("</td>");
+                        detailStatus.append("<td><b>").append(execution.getTest()).append("</b></td>");
+                        detailStatus.append("<td><b>").append(execution.getTestCase()).append("</b></td>");
                         detailStatus.append("<td>").append(execution.getEnvironment()).append("</td>");
                         detailStatus.append("<td>").append(execution.getCountry()).append("</td>");
                         detailStatus.append("<td>").append(execution.getRobotDecli()).append("</td>");
-                        detailStatus.append("<td style=\"background-color:").append(statColorMap.get(execution.getControlStatus())).append(";\">").append(execution.getControlStatus()).append("</td>");
+                        detailStatus.append("<td rowspan=\"2\" style=\"text-align: center; background-color:").append(statColorMap.get(execution.getControlStatus())).append(";\">").append(execution.getControlStatus()).append("</td>");
+                        detailStatus.append("</tr>");
+                        detailStatus.append(tr);
+                        detailStatus.append("<td colspan=\"5\" style=\"font-size: xx-small;margin-left: 10px;\">").append(execution.getDescription()).append("</td>");
                         detailStatus.append("</tr>");
                     } else if (totalTC == maxLines) {
                         detailStatus.append("<tr style=\"background-color:#ffcaba; font-style:bold\">");
@@ -460,8 +501,15 @@ public class EmailGenerationService implements IEmailGenerationService {
             // Subject replace.
             subject = subject.replace("%TAG%", tag);
             subject = subject.replace("%CAMPAIGN%", campaign);
+            subject = subject.replace("%ENVIRONMENTLIST%", myEnvironmentList);
+            subject = subject.replace("%COUNTRYLIST%", myCountryList);
+            subject = subject.replace("%APPLICATIONLIST%", myApplicationList);
+            subject = subject.replace("%SYSTEMLIST%", mySystemList);
+            subject = subject.replace("%ROBOTDECLILIST%", myRobotList);
+            subject = subject.replace("%REQENVIRONMENTLIST%", myReqEnvironmentList);
+            subject = subject.replace("%REQCOUNTRYLIST%", myReqCountryList);
 
-            email = emailFactory.create(host, port, userName, password, true, subject, body, from, to, null);
+            email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, null);
 
             return email;
 
@@ -470,6 +518,49 @@ public class EmailGenerationService implements IEmailGenerationService {
         }
         return null;
 
+    }
+
+    class SortExecution implements Comparator<TestCaseExecution> {
+        // Used for sorting in ascending order of 
+        // Label name. 
+
+        @Override
+        public int compare(TestCaseExecution a, TestCaseExecution b) {
+            if (a != null && b != null) {
+                int aPrio = a.getTestCasePriority();
+                if (a.getTestCasePriority() < 1 || a.getTestCasePriority() > 5) {
+                    aPrio = 999 + a.getTestCasePriority();
+                }
+                int bPrio = b.getTestCasePriority();
+                if (b.getTestCasePriority() < 1 || b.getTestCasePriority() > 5) {
+                    bPrio = 999 + b.getTestCasePriority();
+                }
+
+                if (aPrio == bPrio) {
+                    if (a.getTest().equals(b.getTest())) {
+                        if (a.getTestCase().equals(b.getTestCase())) {
+                            if (a.getEnvironment().equals(b.getEnvironment())) {
+                                if (a.getCountry().equals(b.getCountry())) {
+                                    return a.getRobotDecli().compareToIgnoreCase(b.getRobotDecli());
+                                } else {
+                                    return a.getCountry().compareToIgnoreCase(b.getCountry());
+                                }
+                            } else {
+                                return a.getEnvironment().compareToIgnoreCase(b.getEnvironment());
+                            }
+                        } else {
+                            return a.getTestCase().compareToIgnoreCase(b.getTestCase());
+                        }
+                    } else {
+                        return a.getTest().compareToIgnoreCase(b.getTest());
+                    }
+                } else {
+                    return aPrio - bPrio;
+                }
+            } else {
+                return 1;
+            }
+        }
     }
 
 }

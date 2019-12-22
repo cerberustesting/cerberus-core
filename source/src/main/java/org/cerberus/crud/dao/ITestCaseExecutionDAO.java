@@ -45,8 +45,20 @@ public interface ITestCaseExecutionDAO {
      */
     long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
+    /**
+     *
+     * @param tCExecution
+     * @throws CerberusException
+     */
     void updateTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param country
+     * @return
+     */
     List<String> getIDListOfLastExecutions(String test, String testcase, String country);
 
     /**
@@ -55,7 +67,7 @@ public interface ITestCaseExecutionDAO {
      * @param application
      * @return
      */
-    AnswerItem readLastByCriteria(String application);
+    AnswerItem<TestCaseExecution> readLastByCriteria(String application);
 
     /**
      *
@@ -67,10 +79,26 @@ public interface ITestCaseExecutionDAO {
      * @param revision
      * @return TestCaseExecution Object created only with attributes from
      * database
+     * @throws org.cerberus.exception.CerberusException
      */
     TestCaseExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
             String build, String revision) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param environment
+     * @param country
+     * @param build
+     * @param revision
+     * @param browser
+     * @param browserVersion
+     * @param ip
+     * @param port
+     * @param tag
+     * @return
+     */
     TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
             String build, String revision, String browser, String browserVersion,
             String ip, String port, String tag);
@@ -100,7 +128,6 @@ public interface ITestCaseExecutionDAO {
      */
     TestCaseExecution findTCExecutionByKey(long id) throws CerberusException;
 
-
     /**
      * @param withUUIDTag determine of we must retreive UUID tag or not
      * @return a list of String tag
@@ -108,6 +135,13 @@ public interface ITestCaseExecutionDAO {
      */
     List<String> findDistinctTag(boolean withUUIDTag) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @return
+     * @throws CerberusException
+     */
     TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase) throws CerberusException;
 
     /**
@@ -134,10 +168,9 @@ public interface ITestCaseExecutionDAO {
      *
      * @param id : ID of the execution
      * @param tag : Tag to set to the execution
+     * @throws org.cerberus.exception.CerberusException
      */
     public void setTagToExecution(long id, String tag) throws CerberusException;
-
-    AnswerList findTagList(int tagnumber) throws CerberusException;
 
     /**
      *
@@ -150,20 +183,24 @@ public interface ITestCaseExecutionDAO {
      * @return
      * @throws CerberusException
      */
-    public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+    public List<TestCaseExecution> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
     /**
      * Read TestCaseExecution By Tag
+     *
      * @param tag Tag used to filter execution
-     * @return AnswerList that contains a list of TestCaseExecution object enriched with TestCase and Application objects
+     * @return AnswerList that contains a list of TestCaseExecution object
+     * enriched with TestCase and Application objects
      * @throws CerberusException
      */
-    public AnswerList readByTag(String tag) throws CerberusException;
+    public AnswerList<TestCaseExecution> readByTag(String tag) throws CerberusException;
 
     /**
      * Read TestCaseExecution By Tag
+     *
      * @param tag Tag used to filter execution
-     * @return AnswerList that contains a list of TestCaseExecution object enriched with TestCase and Application objects
+     * @return AnswerList that contains a list of TestCaseExecution object
+     * enriched with TestCase and Application objects
      * @throws CerberusException
      */
     public Integer readNbByTag(String tag) throws CerberusException;
@@ -175,17 +212,19 @@ public interface ITestCaseExecutionDAO {
      * @param sort
      * @param searchTerm
      * @param individualSearch
+     * @param individualLike
+     * @param system
      * @return
      * @throws CerberusException
      */
-    public AnswerList readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike) throws CerberusException;
+    AnswerList<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException;
 
     /**
      *
      * @param tag
      * @return
      */
-    public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
+    public AnswerList<TestCaseExecution> readDistinctEnvCoutnryBrowserByTag(String tag);
 
     /**
      *
@@ -196,50 +235,20 @@ public interface ITestCaseExecutionDAO {
      * @param app
      * @return
      */
-    public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
-
-    /**
-     *
-     * @param system
-     * @param testList
-     * @param applicationList
-     * @param projectList
-     * @param tcstatusList
-     * @param groupList
-     * @param tcactiveList
-     * @param priorityList
-     * @param targetsprintList
-     * @param targetrevisionList
-     * @param creatorList
-     * @param implementerList
-     * @param buildList
-     * @param revisionList
-     * @param environmentList
-     * @param countryList
-     * @param browserList
-     * @param tcestatusList
-     * @param ip
-     * @param port
-     * @param tag
-     * @param browserversion
-     * @param comment
-     * @param bugid
-     * @param ticket
-     * @return
-     */
-    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket);
+    public AnswerList<TestCaseExecution> readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
 
     /**
      *
      * @param executionId
      * @return
      */
-    public AnswerItem readByKey(long executionId);
+    public AnswerItem<TestCaseExecution> readByKey(long executionId);
 
     /**
      * Uses data of ResultSet to create object {@link TestCaseExecution}
      *
-     * @param resultSet ResultSet relative to select from table TestCaseExecution
+     * @param resultSet ResultSet relative to select from table
+     * TestCaseExecution
      * @return object {@link TestCaseExecution}
      * @throws SQLException when trying to get value from
      * {@link java.sql.ResultSet#getString(String)}
@@ -249,6 +258,7 @@ public interface ITestCaseExecutionDAO {
 
     /**
      * Get the distinct value of the specified colum
+     *
      * @param system
      * @param test
      * @param searchParameter
@@ -256,6 +266,6 @@ public interface ITestCaseExecutionDAO {
      * @param columnName Name of the column
      * @return object {@link TestCaseExecution}
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

@@ -30,8 +30,8 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepActionControl implements IFactoryTestCaseStepActionControl {
 
     @Override
-    public TestCaseStepActionControl create(String test, String testCase, int step, int sequence, int controlSequence, int sort, String conditionOper, String conditionVal1, String conditionVal2, String control, String value1,
-            String value2, String fatal, String description, String screenshotFilename) {
+    public TestCaseStepActionControl create(String test, String testCase, int step, int sequence, int controlSequence, int sort, String conditionOper, String conditionVal1, String conditionVal2, String conditionVal3, String control, String value1,
+            String value2, String value3, String fatal, String description, String screenshotFilename) {
         TestCaseStepActionControl testCaseStepActionControl = new TestCaseStepActionControl();
         testCaseStepActionControl.setTest(test);
         testCaseStepActionControl.setTestCase(testCase);
@@ -42,14 +42,15 @@ public class FactoryTestCaseStepActionControl implements IFactoryTestCaseStepAct
         testCaseStepActionControl.setConditionOper(conditionOper);
         testCaseStepActionControl.setConditionVal1(conditionVal1);
         testCaseStepActionControl.setConditionVal2(conditionVal2);
+        testCaseStepActionControl.setConditionVal3(conditionVal3);
         testCaseStepActionControl.setControl(control);
         testCaseStepActionControl.setValue1(value1);
         testCaseStepActionControl.setValue2(value2);
+        testCaseStepActionControl.setValue3(value3);
         testCaseStepActionControl.setFatal(fatal);
         testCaseStepActionControl.setDescription(description);
         testCaseStepActionControl.setScreenshotFilename(screenshotFilename);
         return testCaseStepActionControl;
     }
-    
 
 }

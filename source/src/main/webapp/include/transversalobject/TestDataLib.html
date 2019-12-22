@@ -19,19 +19,19 @@
                     </div>
                     <!-- type and system-->
                     <div class="row">
-                        <div class="form-group col-xs-2">
+                        <div class="form-group col-sm-2">
                             <label name="lbl_id" for="testdatalibid">ID</label>
                             <div>
                                 <input id="testdatalibid" name="testdatalibid" class="form-control" readonly="readonly"/>     
                             </div>
                         </div> 
-                        <div class="form-group col-xs-6">
+                        <div class="form-group col-sm-6">
                             <label name="lbl_name" for="name">Name</label>
                             <div>
                                 <input id="name" name="name" class="form-control" readonly="readonly" />     
                             </div>
                         </div> 
-                        <div class="form-group col-xs-4">
+                        <div class="form-group col-sm-4">
                             <label name="lbl_type" for="type">Type</label>
                             <div>
                                 <select class="form-control" id="types" name="types">
@@ -41,22 +41,22 @@
                     </div>    
                     <!--environment + country-->
                     <div class="row">
-                        <div class="form-group col-xs-4">
+                        <div class="form-group col-sm-4">
                             <label name="lbl_system" for="system">System</label>
                             <select class="form-control" id="system" name="system">
                             </select>      
                         </div>         
-                        <div class="form-group col-xs-4">
+                        <div class="form-group col-sm-4">
                             <label name="lbl_environment"  for="environment">Environment</label>
                             <select class="form-control" id="environment" name="environment">
                             </select>  
                         </div> 
-                        <div class="form-group col-xs-4">
+                        <div class="form-group col-sm-4">
                             <label name="lbl_country" for="country">Country</label>
                             <select class="form-control"  id="country" name="country">
                             </select>  
                         </div>            
-                    </div>    
+                    </div> 
                     <!-- tabs definition-->
                     <ul id="edittabs" class="nav nav-tabs" data-tabs="tabs">
                         <li class="active"><a data-toggle="tab" id="tab1Text" name="tab1Text" href="#tabsedit-1">Definition</a></li>
@@ -75,23 +75,23 @@
                                         </div>
                                         <div id="panelSERVICEEdit" class="panel-body collapse">
                                             <div class="row">
-                                                <div class="form-group  col-xs-4"> 
+                                                <div class="form-group  col-sm-4"> 
                                                     <label name="lbl_databaseUrl" for="databaseUrl">Database URL</label> 
                                                     <select class="form-control" id="databaseUrl" name="databaseUrl">
                                                     </select> 
                                                 </div>
-                                                <div class="input-group col-xs-7"> 
+                                                <div class="input-group col-sm-7"> 
                                                     <label name="lbl_service" for="service">Service</label> 
                                                     <select type="text" class="form-control" id="service" name="service" aria-describedby="basic-addon1" maxlength="100">
                                                     </select> 
                                                 </div>
                                             </div>    
                                             <div class="row">
-                                                <div class="form-group col-xs-8" >
+                                                <div class="form-group col-sm-8" >
                                                     <label name="lbl_service_path" for="servicepath">Service Path</label>
                                                     <input id="servicepaths" name="servicepaths"  class="form-control" maxlength="255"  />  
                                                 </div>
-                                                <div class="form-group col-xs-4">
+                                                <div class="form-group col-sm-4">
                                                     <label name="lbl_method" for="method">Method</label>
                                                     <input id="methods" name="methods" class="form-control" maxlength="255"  />
                                                 </div>
@@ -117,7 +117,7 @@
                                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                         </div>
                                         <div id="panelSQLEdit" class="panel-body collapse">
-                                            <div class="row form-group  col-xs-6"> 
+                                            <div class="row form-group  col-sm-6 col-xs-12"> 
                                                 <label name="lbl_database" for="database">Database</label> 
                                                 <select class="form-control" id="database" name="database">
                                                 </select> 
@@ -145,32 +145,30 @@
                                         </div>
                                         <div id="panelCSVEdit" class="panel-body collapse">
                                             <div class="row">
-                                                <div class="form-group  col-xs-3"> 
+                                                <div class="form-group  col-sm-3"> 
                                                     <label name="lbl_databaseCsv" for="databaseCsv">Database URL</label> 
                                                     <select class="form-control" id="databaseCsv" name="databaseCsv">
                                                     </select> 
                                                 </div>    
-                                                <div class="form-group col-xs-6"> 
+                                                <div class="form-group col-sm-6"> 
                                                     <label name="lbl_csvUrl" for="csvUrl">CSVUrl</label> 
-                                                    <input id="csvUrl" name="csvUrl" 
-                                                           class="form-control">     
+                                                    <input id="csvUrl" name="csvUrl" class="form-control">     
                                                 </div>
-                                                <div class="form-group col-xs-3"> 
+                                                <div class="form-group col-sm-3"> 
                                                     <label name="lbl_separator" for="separator">Separator</label> 
-                                                    <input id="separator" name="separator" 
-                                                           class="form-control">   
+                                                    <input id="separator" name="separator" class="form-control">   
                                                 </div>
                                             </div>
 
                                             <div class="row">
-                                                <div class="form-group col-xs-9 col-xs-offset-3">
+                                                <div class="form-group col-sm-9 col-sm-offset-3 col-xs-12">
                                                     <label name="lbl_csvFile" for="csvFile">CSV File</label> 
                                                     <input type="file" class="form-control" id="inputFile" aria-describedby="fileHelp">
                                                 </div>
                                             </div>
 
                                             <div class="row">
-                                                <div class="form-group col-xs-9 col-xs-offset-3">
+                                                <div class="form-group col-sm-9 col-sm-offset-3 col-xs-12">
                                                     <div class="form-check">
                                                         <label class="form-check-label">
                                                             <input class="form-check-input" id="subdataCheck" name="subdataCheck" type="checkbox" value="1">
@@ -186,10 +184,15 @@
                             </div>
                             <!--group infomation -->
                             <div class="row">
-                                <div class="form-group col-xs-6">
+                                <div class="form-group col-sm-6">
                                     <label name="lbl_group"  for="groupedit">or enter new group</label>
                                     <input id="group" name="group" class="form-control" />     
                                 </div>                  
+                                <div class="form-group col-sm-6">
+                                    <label name="lbl_privateData" for="privateData">Private</label><br>
+                                    <input class="col-xs-2" type="checkbox" id="privateData" name="privateData"/>
+                                    <p class="text-warning col-xs-10" ><strong id="messagePrivate"></strong></p>
+                                </div>
                             </div>
 
                             <!--description-->
@@ -209,6 +212,7 @@
                                                 <tr>
                                                     <th style="width: 5%;"></th>
                                                     <th class="text-center" id="subdataHeader" name="subdataHeader">Sub Data</th>
+                                                    <th class="text-center" id="encryptHeader" name="encryptHeader">Encrypt</th>
                                                     <th class="text-center" id="valueHeader" name="valueHeader">Value</th>
                                                     <th class="text-center" id="columnHeader" name="columnHeader">Column</th>
                                                     <th class="text-center" id="parsingAnswerHeader" name="parsingAnswerHeader">Parsing Answer</th>
@@ -219,7 +223,7 @@
                                             <tbody id="subdataTableBody_edit">
                                             </tbody>
                                         </table>
-                                        <button type="button" class="btn btn-default" id="addSubData_edit">Add Subdata</button>
+                                        <button type="button" class="btn btn-default marginTop20" id="addSubData_edit">Add Subdata</button>
                                     </div>
                                 </div>  
                             </div>   
@@ -229,13 +233,13 @@
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <div class="row">
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label name="lbl_created" for="created">Created</label>
                                                 <div>
                                                     <input id="created" name="created" class="form-control" readonly="readonly" />     
                                                 </div>
                                             </div> 
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label name="lbl_creator" for="creator">Creator</label>
                                                 <div>
                                                     <input id="creator" name="creator" class="form-control" readonly="readonly" />     
@@ -243,13 +247,13 @@
                                             </div> 
                                         </div> 
                                         <div class="row">
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label name="lbl_lastModified" for="lastModified">Last Modified</label>
                                                 <div>
                                                     <input id="lastModified" name="lastModified" class="form-control" readonly="readonly" />     
                                                 </div>
                                             </div> 
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label name="lbl_lastModifier" for="lastModifier">Last Modifier</label>
                                                 <div>
                                                     <input id="lastModifier" name="lastModifier" class="form-control" readonly="readonly" />     

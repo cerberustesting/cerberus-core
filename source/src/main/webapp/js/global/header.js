@@ -19,7 +19,7 @@
  */
 
 $(document).ready(function () {
-    
+
     //collaspe if the navbar was collaspe in the previous page
     collaspeHandler(localStorage.getItem("navbar-toggle"));
 
@@ -63,7 +63,7 @@ $(document).ready(function () {
  */
 function currentPageLinkHighlight() {
     for (var i in document.getElementsByClassName("nav nav-second-level collapse in")) {
-        
+
         if (document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement !== undefined) {
             if (!$("#page-layout").hasClass("extended")) {
                 document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement.className += " active";
@@ -80,11 +80,11 @@ function currentPageLinkHighlight() {
  * @returns {undefined}
  */
 function closeEveryNavbarMenu() {
-    
-    $('.sidebar-nav .navbar-side-choice').each(function(i, obj) {
+
+    $('.sidebar-nav .navbar-side-choice').each(function (i, obj) {
         $(obj).removeClass("active");
     });
-    $('.sidebar-nav .nav-second-level').each(function(i, obj) {
+    $('.sidebar-nav .nav-second-level').each(function (i, obj) {
         $(obj).removeClass("in");
     });
 }
@@ -94,15 +94,15 @@ function closeEveryNavbarMenu() {
  * @param {type} classSelector
  * @returns {undefined}
  */
-function openNavbarMenu(idNavMenu){
+function openNavbarMenu(idNavMenu) {
     //close all other navbar menu
     closeEveryNavbarMenu();
     //open the menu selected if the navbar is active
-    if ( !$("#page-layout").hasClass("extended") ){
-        $('.sidebar-nav .navbar-side-choice').each(function(i, obj) {
-            if ($(obj).attr('id') === idNavMenu){
+    if (!$("#page-layout").hasClass("extended")) {
+        $('.sidebar-nav .navbar-side-choice').each(function (i, obj) {
+            if ($(obj).attr('id') === idNavMenu) {
                 $(obj).addClass("active")
-                var subMenuList = $(obj).find( $(".nav-second-level") );
+                var subMenuList = $(obj).find($(".nav-second-level"));
                 subMenuList.removeClass("collaspe");
                 subMenuList.addClass("in");
             }
@@ -263,15 +263,73 @@ function collaspeSubMenu() {
 
 function displayHeaderLabel(doc) {
     var user = getUser();
+
     if (user !== null) {
+        // Display Menu
         displayMenuItem(doc);
-        $("#headerUserName").html(user.login);
-        var systems = getSystem();
-        $("#MySystem option").remove();
-        for (var s in systems) {
-            $("#MySystem").append($('<option></option>').text(systems[s].value).val(systems[s].value));
+
+        // Header User Menu
+        $("#headerUserName").html(user.menu.nameDisplay);
+
+        if (user.menu.accountLink === "") {
+            $("#menuAccount").attr("href", user.menu.accountLink);
+            $("#menuAccount").attr("target", "_blank");
+            $("#menuAccount").attr("style", "display: none;");
+        } else {
+            $("#menuAccount").attr("href", user.menu.accountLink);
+            $("#menuAccount").attr("target", "_blank");
+            $("#menuAccount").attr("style", "display: block;");
         }
 
+        if (user.menu.logoutLink === "") {
+            $("#menuLogout").attr("style", "display: none;");
+        } else {
+            // Get the current URL
+            var aL = "";
+            var aLA = window.location.href.split("/");
+            var i = 1;
+            for (var s in aLA) {
+                if ((i < aLA.length)) {
+                    aL = aL + aLA[s] + "/";
+                } else {
+                    if ((aLA[s].indexOf(".jsp") === -1) && (aLA[s].length > 0)) {
+                        aL = aL + aLA[s] + "/";
+                    }
+                }
+                i++;
+            }
+            aL = aL + "Logout.jsp"
+            $("#menuLogout").attr("href", user.menu.logoutLink.replace('%LOGOUTURL%', encodeURIComponent(aL)));
+            $("#menuLogout").attr("style", "display: block;");
+
+        }
+
+
+        // System menu
+//        var systems = getSystem();
+        $("#MySystem option").remove();
+        for (var s in user.system) {
+            $("#MySystem").append($('<option></option>').text(user.system[s]).val(user.system[s]));
+        }
+        for (var s in user.defaultSystems) {
+            $("#MySystem option[value='" + user.defaultSystems[s] + "']").attr("selected", "selected");
+        }
+
+
+        var select = $("#MySystem");
+        select.multiselect(new multiSelectConfSystem("MySystem"));
+
+        $("#MySystem").on("onChange", function () {
+            console.info("onChange");
+        });
+        $("#MySystem").on("onDropdownHidden", function () {
+            console.info("onDropdownHidden");
+        });
+        $("#MySystem").change(function () {
+            console.info("onDropdownHidden");
+        });
+
+        // Language menu
         var languages = getLanguageFromSessionStorage();
         $("#MyLang option").remove();
         for (var l in languages) {
@@ -283,8 +341,18 @@ function displayHeaderLabel(doc) {
             }
         }
         $("#MyLang option[value=" + user.language + "]").attr("selected", "selected");
-        $("#MySystem option[value='" + user.defaultSystem + "']").attr("selected", "selected");
+
     }
+}
+
+function multiSelectConfSystem(name) {
+    this.maxHeight = 450;
+    this.checkboxName = name;
+    this.buttonWidth = "100%";
+    this.enableFiltering = true;
+    this.enableCaseInsensitiveFiltering = true;
+    this.includeSelectAllOption = true;
+    this.includeSelectAllIfMoreThan = 2;
 }
 
 function ChangeLanguage() {
@@ -303,12 +371,11 @@ function ChangeLanguage() {
 }
 
 function ChangeSystem() {
-    var select = document.getElementById("MySystem");
-    var selectValue = select.options[select.selectedIndex].value;
+
     var user = getUser();
 
     $.ajax({url: "UpdateMyUserSystem",
-        data: {id: user.login, value: selectValue},
+        data: "id=" + user.login + "&" + $("#SysFilter").serialize(),
         async: false,
         success: function () {
             sessionStorage.removeItem("user");
@@ -378,7 +445,7 @@ function displayMenuItem(doc) {
     var user = getUser();
     if (user !== null) {
         for (var group in user.group) {
-            $( '.' + user.group[group] + '.navlist').removeAttr('style');
+            $('.' + user.group[group] + '.navlist').removeAttr('style');
         }
     }
 
@@ -403,7 +470,7 @@ function readSystem() {
 function getSystem() {
     var sys;
 
-    if (sessionStorage.getItem("sys") === null) {
+    if (sessionStorage.getItem("systems") === null) {
         readSystem();
     }
     sys = sessionStorage.getItem("systems");

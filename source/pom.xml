@@ -25,7 +25,7 @@
 
     <groupId>org.cerberus</groupId>
     <artifactId>cerberus</artifactId>
-    <version>3.10-SNAPSHOT</version>
+    <version>4.5-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>Cerberus</name>
@@ -43,15 +43,16 @@
         <!-- JSON Lib Version -->
         <json.version>20080701</json.version>
         <gson.version>2.8.0</gson.version>
-        <jackson.version>2.9.5</jackson.version>
+        <jackson-databind.version>2.9.10.1</jackson-databind.version>
         <jackson-core-asl.version>1.7.1</jackson-core-asl.version>
         <jackson-mapper-asl.version>1.7.1</jackson-mapper-asl.version>
         <!-- Groovy Version -->
         <groovy.version>2.4.7</groovy.version>
         <groovy-sandbox.version>1.10</groovy-sandbox.version>
         <!-- Appium/Selenium scope Version -->
-        <appium.version>5.0.4</appium.version>
-        <selenium.version>3.6.0</selenium.version>
+        <appium.version>7.2.0</appium.version>
+        <selenium.version>3.141.59</selenium.version>
+        <jna.version>4.1.0</jna.version>
         <!-- Log4J Version -->
         <log4j.version>2.9.1</log4j.version>
         <!-- jsonpath -->
@@ -62,7 +63,6 @@
         <javax.websocket-api>1.1</javax.websocket-api>
         <guava.version>23.0</guava.version>
         <xmlunit.version>1.5</xmlunit.version>
-        <mysql-connector-java.version>5.1.20</mysql-connector-java.version>
         <owasp-java-html-sanitizer.version>r239</owasp-java-html-sanitizer.version>
         <jcommon.version>1.0.16</jcommon.version>
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
@@ -72,8 +72,8 @@
         <commons-email.version>1.5</commons-email.version>
         <commons-text.version>1.3</commons-text.version>
         <poi.version>3.13</poi.version>
-        <asciidoctor.version>1.5.6</asciidoctor.version>
-        <apache.tika>1.19.1</apache.tika>
+        <asciidoctor.version>2.1.0</asciidoctor.version>
+        <apache.tika>1.22</apache.tika>
         <fluent-hc.version>4.5.3</fluent-hc.version>
         
         <!-- Test scope -->
@@ -93,14 +93,19 @@
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <javaee-endorsed-api.version>7.0</javaee-endorsed-api.version>
         <ant-jsch.version>1.10.1</ant-jsch.version>
-        <asciidoctor-maven-plugin.version>1.5.6</asciidoctor-maven-plugin.version>
-        <license-maven-plugin.version>3.0</license-maven-plugin.version>
+        <asciidoctor-maven-plugin.version>1.6.0</asciidoctor-maven-plugin.version>
+        <license-maven-plugin.version>2.0</license-maven-plugin.version>
         
+        <!-- Quartz version -->
+        <quartz.version>2.3.0</quartz.version>
+        <quartzSecond.version>2.1.7</quartzSecond.version>
+        <c3p0.version>0.9.1.2</c3p0.version>
         <!-- Sonar Exclusion -->
         <sonar.exclusions>src/main/webapp/dependencies/Ace-1.2.6/worker-xquery.js</sonar.exclusions>
     </properties>
 
     <dependencies>
+        
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -133,6 +138,7 @@
             <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
+        
         <!-- JSON Lib -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -147,7 +153,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
+            <version>${jackson-databind.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
@@ -159,6 +165,7 @@
             <artifactId>jackson-mapper-asl</artifactId>
             <version>${jackson-mapper-asl.version}</version>
         </dependency>
+        
         <!-- Groovy -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
@@ -170,31 +177,35 @@
             <artifactId>groovy-sandbox</artifactId>
             <version>${groovy-sandbox.version}</version>
         </dependency>
+        
         <!-- Appium/Selenium scope -->
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
             <version>${appium.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>asm</groupId>
-                    <artifactId>asm</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>asm</groupId>
-                    <artifactId>asm-attrs</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>cglib</groupId>
-                    <artifactId>cglib</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>${selenium.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-remote-driver</artifactId>
+            <version>${selenium.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>${jna.version}</version>
+            <classifier />
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna-platform</artifactId>
+            <version>${jna.version}</version>
+        </dependency>
+        
         <!-- Log4J -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -211,13 +222,63 @@
             <artifactId>log4j-api</artifactId>
             <version>${log4j.version}</version>
         </dependency>
+        
         <!-- jsonpath -->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>${jsonxpath.version}</version>
         </dependency>
+        
+        <!-- Kafka -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        
         <!-- Compile scope -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.26</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.26</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.soap</groupId>
+            <artifactId>javax.xml.soap-api</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.messaging.saaj</groupId>
+            <artifactId>saaj-impl</artifactId>
+            <version>1.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.ws</groupId>
+            <artifactId>jaxws-api</artifactId>
+            <version>2.2.6</version>
+        </dependency>
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
@@ -244,11 +305,6 @@
             <groupId>xmlunit</groupId>
             <artifactId>xmlunit</artifactId>
             <version>${xmlunit.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql-connector-java.version}</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
@@ -304,12 +360,12 @@
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj</artifactId>
             <version>${asciidoctor.version}</version>
-            <exclusions>
+            <!--            <exclusions>
                 <exclusion>
                     <groupId>org.jruby</groupId>
                     <artifactId>jruby-complete</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
@@ -321,9 +377,57 @@
             <artifactId>fluent-hc</artifactId>
             <version>${fluent-hc.version}</version>
         </dependency>
-
-        <!-- Test scope -->
+        
+        <!-- Quartz -->
         <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>${quartz.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-jobs</artifactId>
+            <version>${quartz.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-parent</artifactId>
+            <version>2.3.0</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-backward-compat</artifactId>
+            <version>${quartzSecond.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-commonj</artifactId>
+            <version>${quartzSecond.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-weblogic</artifactId>
+            <version>${quartzSecond.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-oracle</artifactId>
+            <version>${quartzSecond.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-jboss</artifactId>
+            <version>${quartzSecond.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>c3p0</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>${c3p0.version}</version>
+        </dependency>
+        
+        <!-- Test scope -->
+        <!--        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
@@ -346,7 +450,35 @@
             <artifactId>powermock-api-mockito</artifactId>
             <version>${powermock.version}</version>
             <scope>test</scope>
+        </dependency>-->
+        
+        <!-- Comment temporary the dependency --> 
+        <!-- Jax-RS Scope-->
+        <!-- 
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet</artifactId>
+            <version>2.28</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>2.28</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>2.28</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-jaxb</artifactId>
+            <version>2.28</version>
+        </dependency>
+            --> 
     </dependencies>
 
     <build>
@@ -393,26 +525,31 @@
                     <compilerArguments>
                         <endorseddirs>${endorsed.dir}</endorseddirs>
                     </compilerArguments>
-<!--                    <compilerArguments>
-                        <Xlint:unchecked />
-                    </compilerArguments>-->
+                    <compilerArgs>
+                        <arg>-Xmaxerrs</arg>
+                        <arg>1000</arg>
+                        <arg>-Xlint:unchecked</arg>
+                        <arg>-Xlint:deprecation</arg>
+                        <arg>-Xmaxwarns</arg>
+                        <arg>9999</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             
             <!-- Fix jenkins build issue  -->
             
             <plugin>
-  				<groupId>org.apache.maven.plugins</groupId>
-  				<artifactId>maven-site-plugin</artifactId>
-  				<version>3.3</version>
-				</plugin>
-			<plugin>
-  				<groupId>org.apache.maven.plugins</groupId>
-  				<artifactId>maven-project-info-reports-plugin</artifactId>
-  				<version>2.7</version>
-			</plugin>
-			
-			<!-- end -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.3</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.7</version>
+            </plugin>
+
+            <!-- end -->
           
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
@@ -553,7 +690,7 @@
         
         
         <!--
-            Additional configuration for deployment process on the qualification demonstration server
+            Additional configuration for deployment process on the qualification server
 
             /!\ Prerequisites: Beware to correctly declared the following properties into your Maven settings:
                 - cerberus.demo.qa.username, which is the Cerberus demonstration server's user
@@ -565,10 +702,10 @@
                 <env>qa-demo</env>
                 <cerberus.demo.host>vm.cerberus-testing.org</cerberus.demo.host>
                 <cerberus.demo.upload.path>/opt/delivery</cerberus.demo.upload.path>
-                <cerberus.demo.glassfish.asadmin-path>/opt/glassfish4/glassfish/bin/asadmin</cerberus.demo.glassfish.asadmin-path>
-                <cerberus.demo.glassfish.application>CerberusQA</cerberus.demo.glassfish.application>
-                <cerberus.demo.glassfish.cluster>cerberusinstanceqa</cerberus.demo.glassfish.cluster>
-                <cerberus.demo.glassfish.context-root>CerberusQA</cerberus.demo.glassfish.context-root>
+                <cerberus.demo.tomcat.startup>/opt/bin/startQA.sh</cerberus.demo.tomcat.startup>
+                <cerberus.demo.tomcat.shutdown>/opt/bin/stopQA.sh</cerberus.demo.tomcat.shutdown>
+                <cerberus.demo.tomcat.deploy>/opt/bin/deployQA.sh</cerberus.demo.tomcat.deploy>
+                <cerberus.demo.tomcat.undeploy>/opt/bin/undeployQA.sh</cerberus.demo.tomcat.undeploy>
             </properties>
             <build>
                 <plugins>
@@ -595,7 +732,7 @@
                                                 3. Restarting current cluster.
                                         -->
                                         <echo message="Deploying..." />
-                                        <sshexec host="${cerberus.demo.host}" username="${cerberus.demo.qa.username}" password="${cerberus.demo.qa.password}" trust="yes" command=" unzip -o ${cerberus.demo.upload.path}/${project.build.finalName}.zip -d ${cerberus.demo.upload.path} &amp;&amp; ( ${cerberus.demo.glassfish.asadmin-path} undeploy --target ${cerberus.demo.glassfish.cluster} --cascade=true ${cerberus.demo.glassfish.application} ; ${cerberus.demo.glassfish.asadmin-path} deploy --target ${cerberus.demo.glassfish.cluster} --name ${cerberus.demo.glassfish.application} --contextroot ${cerberus.demo.glassfish.context-root} --enabled=true ${cerberus.demo.upload.path}/${project.build.finalName}/${project.build.finalName}.war ) &amp;&amp; ( ${cerberus.demo.glassfish.asadmin-path} stop-instance ${cerberus.demo.glassfish.cluster} ; ${cerberus.demo.glassfish.asadmin-path} start-instance ${cerberus.demo.glassfish.cluster} ) " />
+                                        <sshexec host="${cerberus.demo.host}" username="${cerberus.demo.qa.username}" password="${cerberus.demo.qa.password}" trust="yes" command=" unzip -o ${cerberus.demo.upload.path}/${project.build.finalName}.zip -d ${cerberus.demo.upload.path} &amp;&amp; ( ${cerberus.demo.tomcat.undeploy} ; ${cerberus.demo.tomcat.deploy} ${cerberus.demo.upload.path}/${project.build.finalName}/${project.build.finalName}.war ) &amp;&amp; ( ${cerberus.demo.tomcat.shutdown} ; ${cerberus.demo.tomcat.startup} ) " />
                                     </target>
                                 </configuration>
                             </execution>

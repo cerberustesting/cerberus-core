@@ -27,31 +27,29 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
+import java.util.*;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
+import org.cerberus.crud.entity.*;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.utils.RequestDbUtils;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -78,9 +76,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         boolean throwEx = false;
         final String query = "INSERT INTO testcaseexecution(test, testcase, description, build, revision, environment, environmentData, country, browser, application, robothost, "
-                + "url, robotport, tag, status, start, controlstatus, controlMessage, crbversion, browserFullVersion, executor, screensize,"
-                + "conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, UserAgent, queueId, testCaseVersion, system, robotdecli, robot, robotexecutor) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "url, robotport, tag, status, start, controlstatus, controlMessage, crbversion, executor, screensize, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, "
+                + "manualExecution, UserAgent, queueId, testCaseVersion, TestCasePriority, system, robotdecli, robot, robotexecutor, RobotProvider, RobotSessionId) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -113,44 +111,48 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getControlStatus());
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getControlMessage(), 65000));
                 preStat.setString(i++, tCExecution.getCrbVersion());
-                preStat.setString(i++, tCExecution.getBrowserFullVersion());
                 preStat.setString(i++, tCExecution.getExecutor());
                 preStat.setString(i++, tCExecution.getScreenSize());
                 preStat.setString(i++, tCExecution.getConditionOper());
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal1Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal2Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal3Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal1(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal2(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal3(), 65000));
                 preStat.setString(i++, tCExecution.getManualExecution());
                 preStat.setString(i++, tCExecution.getUserAgent());
                 preStat.setLong(i++, tCExecution.getQueueID());
                 preStat.setInt(i++, tCExecution.getTestCaseVersion());
+                preStat.setInt(i++, tCExecution.getTestCasePriority());
                 preStat.setString(i++, tCExecution.getSystem());
                 preStat.setString(i++, tCExecution.getRobotDecli());
                 preStat.setString(i++, tCExecution.getRobot());
                 preStat.setString(i++, tCExecution.getRobotExecutor());
+                preStat.setString(i++, tCExecution.getRobotProvider());
+                preStat.setString(i++, tCExecution.getRobotSessionID());
 
                 preStat.executeUpdate();
                 ResultSet resultSet = preStat.getGeneratedKeys();
                 try {
                     if (resultSet.first()) {
-                        return resultSet.getInt(1);
+                        return resultSet.getLong(1);
                     }
                 } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
+                    LOG.error("Unable to execute query : " + exception.toString(), exception);
                     throwEx = true;
                 } finally {
                     resultSet.close();
                 }
 
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString(), exception);
                 throwEx = true;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString(), exception);
             throwEx = true;
         } finally {
             try {
@@ -173,9 +175,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         final String query = "UPDATE testcaseexecution SET test = ?, testcase = ?, description = ?, build = ?, revision = ?, environment = ?, environmentData = ?, country = ?"
                 + ", browser = ?, application = ?, robothost = ?, url = ?, robotport = ?, tag = ?, status = ?"
                 + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ? "
-                + ", browserFullVersion = ?, version = ?, platform = ?, executor = ?, screensize = ? "
-                + ", ConditionOper = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ManualExecution = ?, UserAgent = ?, queueId = ?, testCaseVersion = ?, system = ? "
-                + ", robotdecli = ?, robot = ?, robotexecutor = ? WHERE id = ?";
+                + ", version = ?, platform = ?, executor = ?, screensize = ? "
+                + ", ConditionOper = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal3Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ConditionVal3 = ?, ManualExecution = ?, UserAgent = ?, queueId = ?, testCaseVersion = ?, testCasePriority = ?, system = ? "
+                + ", robotdecli = ?, robot = ?, robotexecutor = ?, RobotProvider = ?, RobotSessionId = ? WHERE id = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -212,7 +214,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getControlStatus());
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getControlMessage(), 65000));
                 preStat.setString(i++, tCExecution.getCrbVersion());
-                preStat.setString(i++, tCExecution.getBrowserFullVersion());
                 preStat.setString(i++, tCExecution.getVersion());
                 preStat.setString(i++, tCExecution.getPlatform());
                 preStat.setString(i++, tCExecution.getExecutor());
@@ -220,16 +221,21 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getConditionOper());
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal1Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal2Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal3Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal1(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal2(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal3(), 65000));
                 preStat.setString(i++, tCExecution.getManualExecution());
                 preStat.setString(i++, tCExecution.getUserAgent());
                 preStat.setLong(i++, tCExecution.getQueueID());
                 preStat.setInt(i++, tCExecution.getTestCaseVersion());
+                preStat.setInt(i++, tCExecution.getTestCasePriority());
                 preStat.setString(i++, tCExecution.getSystem());
                 preStat.setString(i++, tCExecution.getRobotDecli());
                 preStat.setString(i++, tCExecution.getRobot());
                 preStat.setString(i++, tCExecution.getRobotExecutor());
+                preStat.setString(i++, tCExecution.getRobotProvider());
+                preStat.setString(i++, tCExecution.getRobotSessionID());
                 preStat.setLong(i++, tCExecution.getId());
 
                 preStat.executeUpdate();
@@ -301,8 +307,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerItem readLastByCriteria(String application) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<TestCaseExecution> readLastByCriteria(String application) {
+        AnswerItem<TestCaseExecution> ans = new AnswerItem<>();
         TestCaseExecution result = null;
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -310,7 +316,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
-        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
         query.append("select * from testcaseexecution exe ");
 
@@ -670,65 +676,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         return list;
     }
 
-    @Override
-    public AnswerList findTagList(int tagnumber) {
-        AnswerList response = new AnswerList<>();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        List<String> list = null;
-        StringBuilder query = new StringBuilder();
-
-        query.append("SELECT DISTINCT exe.tag FROM testcaseexecution exe WHERE tag != ''");
-
-        if (tagnumber != 0) {
-            query.append("ORDER BY id desc LIMIT ");
-            query.append(tagnumber);
-        }
-
-        query.append(";");
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<String>();
-
-                    while (resultSet.next()) {
-                        list.add(resultSet.getString("exe.tag"));
-                    }
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TagList").replace("%OPERATION%", "SELECT"));
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-
-        response.setResultMessage(msg);
-        response.setDataList(list);
-        return response;
-    }
 
     @Override
     public void setTagToExecution(long id, String tag) throws CerberusException {
@@ -766,10 +713,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
+    public List<TestCaseExecution> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList<>();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         final StringBuffer query = new StringBuffer();
 
@@ -818,77 +764,35 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             LOG.debug("SQL : " + query.toString());
             LOG.debug("SQL.param.tag : " + tag);
         }
-        List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            int i = 1;
-            if (!StringUtil.isNullOrEmpty(tag)) {
-                preStat.setString(i++, tag);
-            }
-            if (!Strings.isNullOrEmpty(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-            }
-            for (String individualColumnSearchValue : individalColumnSearchValues) {
-                preStat.setString(i++, individualColumnSearchValue);
-            }
 
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    while (resultSet.next()) {
-                        testCaseExecutionList.add(this.loadWithDependenciesFromResultSet(resultSet));
+        return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
+                preStat -> {
+                    int i = 1;
+                    if (!StringUtil.isNullOrEmpty(tag)) {
+                        preStat.setString(i++, tag);
                     }
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
-//                    answer = new AnswerList<>(testCaseExecutionList, testCaseExecutionList.size());
-                    answer.setTotalRows(testCaseExecutionList.size());
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                    testCaseExecutionList = null;
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                testCaseExecutionList = null;
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            testCaseExecutionList = null;
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            }
-        }
 
-        answer.setResultMessage(msg);
-        answer.setDataList(testCaseExecutionList);
-        return answer;
+                    if (!Strings.isNullOrEmpty(searchTerm)) {
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                    }
+                    for (String individualColumnSearchValue : individalColumnSearchValues) {
+                        preStat.setString(i++, individualColumnSearchValue);
+                    }
+                },
+                rs -> loadWithDependenciesFromResultSet(rs)
+        );
+
     }
 
     @Override
-    public AnswerList readByTag(String tag) throws CerberusException {
+    public AnswerList<TestCaseExecution> readByTag(String tag) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList<>();
+        AnswerList<TestCaseExecution> answer = new AnswerList<>();
 
         final StringBuffer query = new StringBuffer();
 
@@ -902,7 +806,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             LOG.debug("SQL : " + query.toString());
             LOG.debug("SQL.param.tag : " + tag);
         }
-        List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
+        List<TestCaseExecution> testCaseExecutionList = new ArrayList<>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1014,17 +918,17 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         return result;
     }
 
-
     @Override
-    public AnswerList readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike) throws CerberusException {
+    public AnswerList<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList<>();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        AnswerList<TestCaseExecution> response = new AnswerList<>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
+        List<TestCaseExecution> objectList = new ArrayList<>();
 
         final StringBuffer query = new StringBuffer();
 
-        query.append("SELECT * FROM testcaseexecution exe ");
-        query.append("where exe.`start`> '").append(DateUtil.getMySQLTimestampTodayDeltaMinutes(-360000)).append("' ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcaseexecution exe ");
+        query.append("where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             query.append("and (exe.`id` like ? ");
@@ -1066,6 +970,12 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" ) ");
         }
 
+        if (system != null && !system.isEmpty()) {
+            query.append(" and " + SqlUtil.generateInClause("exe.system", system) + " ");
+        }
+
+        query.append(" AND " + UserSecurity.getSystemAllowForSQL("exe.system"));
+
         if (!StringUtil.isNullOrEmpty(sort)) {
             query.append(" order by ").append(sort);
         }
@@ -1080,95 +990,127 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
-            int i = 1;
-            if (!Strings.isNullOrEmpty(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-            }
-            for (String individualColumnSearchValue : individalColumnSearchValues) {
-                preStat.setString(i++, individualColumnSearchValue);
-            }
-
             try {
+                int i = 1;
+                if (!Strings.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+
+                }
+                for (String individualColumnSearchValue : individalColumnSearchValues) {
+                    preStat.setString(i++, individualColumnSearchValue);
+                }
+
+                if (system != null && !system.isEmpty()) {
+                    for (String sys : system) {
+                        preStat.setString(i++, sys);
+                    }
+                }
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
+                    //gets the data
                     while (resultSet.next()) {
-                        testCaseExecutionList.add(this.loadFromResultSet(resultSet));
+                        objectList.add(this.loadFromResultSet(resultSet));
                     }
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
-//                    answer = new AnswerList<>(testCaseExecutionList, testCaseExecutionList.size());
-                    answer.setTotalRows(testCaseExecutionList.size());
+
+                    //get the total number of rows
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                    int nrTotalRows = 0;
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
+                    }
+
+                    if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                        LOG.error("Partial Result in the query.");
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList<>(objectList, nrTotalRows);
+                    } else if (objectList.size() <= 0) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                        response = new AnswerList<>(objectList, nrTotalRows);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        response = new AnswerList<>(objectList, nrTotalRows);
+                    }
+
                 } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
+                    LOG.error("Unable to execute query : " + exception.toString(), exception);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                    testCaseExecutionList = null;
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
                 } finally {
-                    resultSet.close();
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                 }
+
             } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString(), exception);
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                testCaseExecutionList = null;
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
-                preStat.close();
+                if (preStat != null) {
+                    preStat.close();
+                }
             }
+
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString(), exception);
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            testCaseExecutionList = null;
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {
-                if (connection != null) {
-                    connection.close();
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
                 }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
 
-        answer.setResultMessage(msg);
-        answer.setDataList(testCaseExecutionList);
-        return answer;
+        response.setResultMessage(msg);
+        response.setDataList(objectList);
+        return response;
     }
 
     @Override
-    public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<TestCaseExecution> readDistinctEnvCoutnryBrowserByTag(String tag) {
+        AnswerList<TestCaseExecution> answer = new AnswerList<>();
         StringBuilder query = new StringBuilder();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
 
@@ -1228,8 +1170,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<TestCaseExecution> readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
+        AnswerList<TestCaseExecution> answer = new AnswerList<>();
         StringBuilder query = new StringBuilder();
         StringBuilder distinct = new StringBuilder();
         int prev = 0;
@@ -1349,326 +1291,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList,
-            List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList,
-            List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList,
-            List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion,
-            String comment, String bugid, String ticket) {
-
-        AnswerList answer = new AnswerList<>();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        List<TestCaseExecution> tceList = new ArrayList<TestCaseExecution>();
-        List<String> whereClauses = new LinkedList<String>();
-
-        StringBuilder query = new StringBuilder();
-
-        int paramNumber = 0;
-
-        query.append(" select t.ID as statusExecutionID, t.* from ( ");
-        query.append(" select exe.*, tec.*, app.* ");
-        query.append(" from testcaseexecution exe ");
-        query.append(" inner join testcase tec on exe.test = tec.test and exe.testcase = tec.testcase ");
-        query.append(" inner join application app on exe.application = app.application ");
-
-        String testClause = SqlUtil.generateInClause("exe.test", testList);
-        if (!StringUtil.isNullOrEmpty(testClause)) {
-            whereClauses.add(testClause);
-        }
-
-        String applicationClause = SqlUtil.generateInClause("exe.application", applicationList);
-        if (!StringUtil.isNullOrEmpty(applicationClause)) {
-            whereClauses.add(applicationClause);
-        }
-
-        String projectClause = SqlUtil.generateInClause("tec.project", projectList);
-        if (!StringUtil.isNullOrEmpty(projectClause)) {
-            whereClauses.add(projectClause);
-        }
-        //test case status: working, fully_implemented, ...
-        String tcsClause = SqlUtil.generateInClause("exe.status", tcstatusList);
-        if (!StringUtil.isNullOrEmpty(tcsClause)) {
-            whereClauses.add(tcsClause);
-        }
-
-        //group 
-        String groupClause = SqlUtil.generateInClause("tec.group", groupList);
-        if (!StringUtil.isNullOrEmpty(groupClause)) {
-            whereClauses.add(groupClause);
-        }
-        //test case active
-        String tcactiveClause = SqlUtil.generateInClause("tec.tcactive", tcactiveList);
-        if (!StringUtil.isNullOrEmpty(tcactiveClause)) {
-            whereClauses.add(tcactiveClause);
-        }
-
-        //test case active
-        String priorityClause = SqlUtil.generateInClause("tec.Priority", priorityList);
-        if (!StringUtil.isNullOrEmpty(priorityClause)) {
-            whereClauses.add(priorityClause);
-        }
-
-        //target sprint
-        String targetsprintClause = SqlUtil.generateInClause("tec.TargetBuild", targetsprintList);
-        if (!StringUtil.isNullOrEmpty(targetsprintClause)) {
-            whereClauses.add(targetsprintClause);
-        }
-
-        //target revision
-        String targetrevisionClause = SqlUtil.generateInClause("tec.TargetRev", targetrevisionList);
-        if (!StringUtil.isNullOrEmpty(targetrevisionClause)) {
-            whereClauses.add(targetrevisionClause);
-        }
-
-        //creator
-        String creatorClause = SqlUtil.generateInClause("tec.UsrCreated", creatorList);
-        if (!StringUtil.isNullOrEmpty(creatorClause)) {
-            whereClauses.add(creatorClause);
-        }
-
-        //implementer
-        String implementerClause = SqlUtil.generateInClause("tec.Implementer", implementerList);
-        if (!StringUtil.isNullOrEmpty(implementerClause)) {
-            whereClauses.add(implementerClause);
-        }
-
-        //build
-        String buildClause = SqlUtil.generateInClause("exe.Build", buildList);
-        if (!StringUtil.isNullOrEmpty(buildClause)) {
-            whereClauses.add(buildClause);
-        }
-        //revision
-        String revisionClause = SqlUtil.generateInClause("exe.Revision", revisionList);
-        if (!StringUtil.isNullOrEmpty(revisionClause)) {
-            whereClauses.add(revisionClause);
-        }
-        //environment
-        String environmentClause = SqlUtil.generateInClause("exe.Environment", environmentList);
-        if (!StringUtil.isNullOrEmpty(environmentClause)) {
-            whereClauses.add(environmentClause);
-        }
-        //country
-        String countryClause = SqlUtil.generateInClause("exe.Country", countryList);
-        if (!StringUtil.isNullOrEmpty(countryClause)) {
-            whereClauses.add(countryClause);
-        }
-        //browser
-        String browserClause = SqlUtil.generateInClause("exe.Browser", browserList);
-        if (!StringUtil.isNullOrEmpty(browserClause)) {
-            whereClauses.add(browserClause);
-        }
-        //test case execution
-        String tcestatusClause = SqlUtil.generateInClause("exe.ControlStatus", tcestatusList);
-        if (!StringUtil.isNullOrEmpty(tcestatusClause)) {
-            whereClauses.add(tcestatusClause);
-        }
-
-        if (!StringUtil.isNullOrEmpty(system)) {
-            whereClauses.add(" app.system like ? ");
-        }
-        if (!StringUtil.isNullOrEmpty(ip)) {
-            whereClauses.add(" exe.IP like ? ");
-        }
-        if (!StringUtil.isNullOrEmpty(port)) {
-            whereClauses.add(" exe.port like ? ");
-        }
-        if (!StringUtil.isNullOrEmpty(tag)) {
-            whereClauses.add(" exe.tag like ? ");
-        }
-        if (!StringUtil.isNullOrEmpty(browserversion)) {
-            whereClauses.add(" exe.browserfullversion like ? ");
-        }
-        if (!StringUtil.isNullOrEmpty(comment)) {
-            whereClauses.add(" exe.comment like ? ");
-        }
-        if (!StringUtil.isNullOrEmpty(bugid)) {
-            whereClauses.add(" tec.BugID like ? ");
-        }
-        if (!StringUtil.isNullOrEmpty(ticket)) {
-            whereClauses.add(" tec.Ticket like ? ");
-        }
-
-        if (whereClauses.size() > 0) {
-            query.append("where ");
-            String joined = StringUtils.join(whereClauses, " and ");
-            query.append(joined);
-        }
-
-        query.append(" order by exe.ID desc ");
-        query.append(" ) as t group by t.test, t.testcase, t.environment, t.browser, t.country");
-        Connection connection = this.databaseSpring.connect();
-
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            if (testList != null) {
-                for (String param : testList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (applicationList != null) {
-                for (String param : applicationList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (projectList != null) {
-                for (String param : projectList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (tcstatusList != null) {
-                for (String param : tcstatusList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (groupList != null) {
-                for (String param : groupList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-
-            if (tcactiveList != null) {
-                for (String param : tcactiveList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (priorityList != null) {
-                for (String param : priorityList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (targetsprintList != null) {
-                for (String param : targetsprintList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (targetrevisionList != null) {
-                for (String param : targetrevisionList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (creatorList != null) {
-                for (String param : creatorList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (implementerList != null) {
-                for (String param : implementerList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (buildList != null) {
-                for (String param : buildList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (revisionList != null) {
-                for (String param : revisionList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            //environment
-            if (environmentList != null) {
-                for (String param : environmentList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            //country
-            if (countryList != null) {
-                for (String param : countryList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            //browser            
-            if (browserList != null) {
-                for (String param : browserList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            //controlstatus
-            if (tcestatusList != null) {
-                for (String param : tcestatusList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-
-            if (!StringUtil.isNullOrEmpty(system)) {
-                preStat.setString(++paramNumber, system);
-            }
-
-            if (!StringUtil.isNullOrEmpty(ip)) {
-                preStat.setString(++paramNumber, "%" + ip + "%");
-            }
-            if (!StringUtil.isNullOrEmpty(port)) {
-                preStat.setString(++paramNumber, "%" + port + "%");
-            }
-            if (!StringUtil.isNullOrEmpty(tag)) {
-                preStat.setString(++paramNumber, "%" + tag + "%");
-            }
-            if (!StringUtil.isNullOrEmpty(browserversion)) {
-                preStat.setString(++paramNumber, "%" + browserversion + "%");
-            }
-            if (!StringUtil.isNullOrEmpty(comment)) {
-                preStat.setString(++paramNumber, "%" + comment + "%");
-            }
-            if (!StringUtil.isNullOrEmpty(bugid)) {
-                preStat.setString(++paramNumber, "%" + bugid + "%");
-            }
-            if (!StringUtil.isNullOrEmpty(ticket)) {
-                preStat.setString(++paramNumber, "%" + ticket + "%");
-            }
-
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    while (resultSet.next()) {
-                        tceList.add(loadWithDependenciesFromResultSet(resultSet));
-                    }
-                    if (tceList.isEmpty()) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    } else {
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                    tceList.clear();
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                }
-            } catch (SQLException ex) {
-                LOG.warn("Unable to execute query : " + ex.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
-            }
-        } catch (SQLException ex) {
-            LOG.warn(ex.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException ex) {
-                LOG.warn("Unable to execute query : " + ex.toString());
-            }
-        }
-        answer.setTotalRows(tceList.size());
-        answer.setDataList(tceList);
-        answer.setResultMessage(msg);
-        return answer;
-    }
-
-    @Override
-    public AnswerItem readByKey(long executionId) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<TestCaseExecution> readByKey(long executionId) {
+        AnswerItem<TestCaseExecution> ans = new AnswerItem<>();
         TestCaseExecution result = null;
         final String query = "SELECT * FROM `testcaseexecution` exe WHERE exe.`id` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -1741,7 +1365,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String browser = ParameterParserUtil.parseStringParam(resultSet.getString("exe.browser"), "");
         String version = ParameterParserUtil.parseStringParam(resultSet.getString("exe.version"), "");
         String platform = ParameterParserUtil.parseStringParam(resultSet.getString("exe.platform"), "");
-        String browserFullVersion = ParameterParserUtil.parseStringParam(resultSet.getString("exe.browserFullVersion"), "");
         long start = ParameterParserUtil.parseLongParam(String.valueOf(resultSet.getTimestamp("exe.start").getTime()), 0);
         long end = ParameterParserUtil.parseLongParam(String.valueOf(resultSet.getTimestamp("exe.end").getTime()), 0);
         String controlStatus = ParameterParserUtil.parseStringParam(resultSet.getString("exe.controlStatus"), "");
@@ -1758,16 +1381,21 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String conditionVal1Init = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal1Init"), "");
         String conditionVal2 = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal2"), "");
         String conditionVal2Init = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal2Init"), "");
+        String conditionVal3 = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal3"), "");
+        String conditionVal3Init = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal3Init"), "");
         String manualExecution = ParameterParserUtil.parseStringParam(resultSet.getString("exe.manualExecution"), "N");
         String userAgent = ParameterParserUtil.parseStringParam(resultSet.getString("exe.userAgent"), "");
         String system = ParameterParserUtil.parseStringParam(resultSet.getString("exe.system"), "");
         long queueId = ParameterParserUtil.parseLongParam(resultSet.getString("exe.queueId"), 0);
         int testCaseVersion = ParameterParserUtil.parseIntegerParam(resultSet.getInt("exe.testCaseVersion"), 0);
+        int testCasePriority = ParameterParserUtil.parseIntegerParam(resultSet.getInt("exe.testCasePriority"), 0);
+        String robotProvider = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robotProvider"), "");
+        String robotSessionId = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robotSessionId"), "");
         TestCaseExecution result = factoryTCExecution.create(id, test, testcase, description, build, revision, environment,
-                country, robot, robotExecutor, robotHost, robotPort, robotDecli, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, application, null, url,
+                country, robot, robotExecutor, robotHost, robotPort, robotDecli, browser, version, platform, start, end, controlStatus, controlMessage, application, null, url,
                 tag, 0, 0, 0, 0, true, "", "", status, crbVersion, null, null, null,
-                false, null, null, null, environmentData, null, null, null, null, executor, 0, screenSize, null,
-                conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, userAgent, testCaseVersion, system);
+                false, null, null, null, environmentData, null, null, null, null, executor, 0, screenSize, null, robotProvider, robotSessionId,
+                conditionOper, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, manualExecution, userAgent, testCaseVersion, testCasePriority, system);
         result.setQueueID(queueId);
         return result;
     }
@@ -1795,19 +1423,19 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         final StringBuffer query = new StringBuffer();
 
         query.append("SELECT distinct ");
         query.append(columnName);
         query.append(" as distinctValues FROM testcaseexecution exe ");
-        query.append("where exe.`start`> '").append(DateUtil.getMySQLTimestampTodayDeltaMinutes(-360000)).append("' ");
+        query.append("where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchParameter)) {
             query.append("and (exe.`id` like ? ");

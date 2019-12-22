@@ -48,23 +48,37 @@
                             <label id="filters" name="filtersField">Filters</label>
                         </div>
                         <div class="panel-body">
-                            <div class="form-inline">
-                                <div class="marginBottom10">
-                                    <label for="selectApplication" name="applicationField">Application :</label>
-                                    <select class="form-control" id="selectApplication" name="application" style="width: 25%"></select>
-                                    <label for="selectBuild" name="buildField">Build :</label>
-                                    <select class="form-control" id="selectBuild" name="buildf" style="width: 10%"></select>
-                                    <label for="selectRevision" name="revisionField">Revision :</label>
-                                    <select class="form-control" id="selectRevision" name="revisionf" style="width: 10%"></select>
-                                    <button type="button" class="btn btn-default" id="btnLoad" onclick="loadBCTable()" name="btnLoad">Load</button>
-                                    <button type="button" class="btn btn-default" id="btnViewInstall" onclick="displayInstallInstructions()" name="btnViewInstall">Preview Install instructions</button>
+                            <div class="row">
+                                <div class="col-md-3 ">
+                                    <label for="selectSystem" name="systemField">System :</label>
+                                    <select class="form-control" id="selectSystem" name="system" ></select>
                                 </div>
-                                <div class="marginLeft5">
+                                <div class="col-md-3 ">
+                                    <label for="selectApplication" name="applicationField">Application :</label>
+                                    <select class="form-control" id="selectApplication" name="application" ></select>
+                                </div>
+                                <div class="col-md-3 ">
+                                    <label for="selectBuild" name="buildField">Build :</label>
+                                    <select class="form-control" id="selectBuild" name="buildf" ></select>
+                                </div>
+                                <div class="col-md-3 ">
+                                    <label for="selectRevision" name="revisionField">Revision :</label>
+                                    <select class="form-control" id="selectRevision" name="revisionf" ></select>
+                                </div>
+                            </div>
+                            <div class="marginTop20">
+<!--                                <div class=" ">-->
+                                    <button type="button" class="btn btn-default" id="btnLoad" onclick="loadBCTable()" name="btnLoad">Load</button>
                                     <button type="button" class="btn btn-default" id="btnLoadAll" onclick="setAll()" name="btnLoadAll">Load All Build</button>
                                     <button type="button" class="btn btn-default" id="btnLoadPending" onclick="setPending()" name="btnLoadPending">Load Pending Build</button>
                                     <button type="button" class="btn btn-default" id="btnLoadLatest" onclick="setLatest()" name="btnLoadLatest">Load Latest Build</button>
-                                </div>
+                                    <button type="button" class="btn btn-default" id="btnViewInstall" onclick="displayInstallInstructions()" name="btnViewInstall">Preview Install instructions</button>
+<!--                                </div>-->
                             </div>
+                            <!--                                <div class="row">
+                                                                <div class="marginLeft5">
+                                                                </div>
+                                                            </div>-->
                         </div>
                     </div>
                 </div>

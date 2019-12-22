@@ -65,11 +65,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Get version from the database
         MyVersion MVersion;
         MVersion = MyversionService.findMyVersionByKey("database");
-        // compare both to see if version is uptodate.
-        if (SQLList.size() == MVersion.getValue()) {
-            return true;
+        if (MVersion != null) {
+            // compare both to see if version is uptodate.
+            if (SQLList.size() == MVersion.getValue()) {
+                return true;
+            }
+            LOG.info("Database needs an upgrade - Script : " + SQLList.size() + " Database : " + MVersion.getValue());
         }
-        LOG.info("Database needs an upgrade - Script : " + SQLList.size() + " Database : " + MVersion.getValue());
         return false;
     }
 
@@ -1669,7 +1671,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //-- New parameter used by netexport.
 //
         b = new StringBuilder();
-        b.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_url', 'http://localhost:8080/Cerberus', 'URL to Cerberus used in order to call back cerberus from NetExport plugin. This parameter is mandatory for saving the firebug detail information back to cerberus. ex : http://host:port/contextroot');");
+        b.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_url', 'http://localhost:8080/', 'URL to Cerberus used in order to call back cerberus from NetExport plugin. This parameter is mandatory for saving the firebug detail information back to cerberus. ex : http://host:port/contextroot');");
         a.add(b.toString());
 
 //-- Making controls standard.
@@ -6044,8 +6046,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("select 1 from DUAL;");
         a.add(b.toString());
         b = new StringBuilder();
-        b.append("ALTER TABLE `countryenvironmentparameters` ");
-        b.append("ADD COLUMN `poolSize` INT NULL AFTER `Var4`;");
+        b.append("ALTER TABLE `countryenvironmentparameters` ADD COLUMN `poolSize` INT NULL AFTER `Var4`;");
         a.add(b.toString());
 
         // Parameter in order to limit the frequency of the websocket push
@@ -7897,7 +7898,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(",('STEPCONDITIONOPER', 'ifTextNotInElement', 280, 'Only execute if text is not present in element.')");
         a.add(b.toString());
 
-        //Missing invariant on manual URL.
+        // Missing invariant on manual URL.
         // 1384
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ('MANUALURL', '2', 300, 'Activate Application URL Manual definition only on defined parameters.')");
 
@@ -7953,7 +7954,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + ",('', 'cerberus_automaticqueuecancellationjob_active', 'Y', 'Y in order to activate the job that will cancel old queue entries that are still running.')"
                 + ",('', 'cerberus_automaticqueuecancellationjob_timeout', '3600', 'Nb of Second after which a queue entry will be moved to CANCELLED state automaticly (3600 default).');");
 
-        //Insert the invariant IfTextInElement and IfTextNotInElement for Condition-Control
+        // Insert the invariant IfTextInElement and IfTextNotInElement for Condition-Control
         // 1391
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
@@ -8016,6 +8017,351 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("DROP INDEX `IX_testcaseexecutiondep_03` , ADD INDEX `IX_testcaseexecutiondep_03` (`Status` ASC, `Type` ASC, `DepEvent` ASC, `Tag` ASC, `Environment` ASC, `Country` ASC),");
         b.append("ADD INDEX `IX_testcaseexecutiondep_04` (`ExeID` ASC);");
         a.add(b.toString());
+
+        // New parameters.
+        // 1395
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + "('', 'cerberus_accountcreation_systemlist', 'ALL', 'Either ALL, NONE or a coma separated list of system to create by default when a new user is created.')"
+                + ",('', 'cerberus_accountcreation_ownsystemcreation', 'Y', 'Y in order to automatically create a personal system for the user. That system will be named US-login')"
+                + ",('', 'cerberus_automaticqueueprocessingjob_period', '30', 'Period of time in minutes between each job that will process queue entries that are still in the queue (that job should automatically be submitted after the end of each execution).')"
+                + ",('', 'cerberus_automaticqueueprocessingjob_active', 'Y', 'Y in order to activate the job that will process the queue entries that are still in the sueue.');");
+
+        a.add(" ALTER TABLE `robotexecutor` "
+                + " MODIFY COLUMN `devicePort` int(8) AFTER `deviceName`, "
+                + " ADD COLUMN `deviceLockUnlock` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `devicePort` ;");
+
+        // New parameter autoscroll for testcase
+        // 1397
+        a.add("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ('','cerberus_selenium_autoscroll', 'N', 'Boolean (Y/N) that define if Cerberus automatically scroll the current page on any element it interact with.'); ");
+
+        // New parameter autoscroll for testcase
+        // 1398
+        a.add("ALTER TABLE `logevent` CHANGE COLUMN `Login` `Login` VARCHAR(255) NOT NULL DEFAULT '' ;");
+
+        // 1399
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('PROPERTYTYPE', 'getElementPosition', '36', 'Get an element position (format posx;posy)', '');");
+
+        // 1400
+        a.add("ALTER TABLE `testcaseexecution` ADD COLUMN `TestCasePriority` INT(1) UNSIGNED NOT NULL DEFAULT '0' AFTER `TestCaseVersion`;");
+
+        // 1401
+        a.add("ALTER TABLE `tag`  ADD COLUMN `CountryList` TEXT NULL AFTER `CIResult`, ADD COLUMN `EnvironmentList` TEXT NULL AFTER `CountryList`"
+                + ", ADD COLUMN `RobotDecliList` TEXT NULL AFTER `EnvironmentList`, ADD COLUMN `SystemList` TEXT NULL AFTER `RobotDecliList`"
+                + ", ADD COLUMN `ApplicationList` TEXT NULL AFTER `SystemList`, ADD COLUMN `ReqCountryList` TEXT NULL AFTER `ApplicationList`, ADD COLUMN `ReqEnvironmentList` TEXT NULL AFTER `ReqCountryList`;");
+
+        // New design Login page
+        // 1402-1403
+        a.add("UPDATE `parameter` SET description=\"Cerberus End of tag execution notification email body. %TAG%, %ENVIRONMENTLIST%, %COUNTRYLIST%, %APPLICATIONLIST%, %SYSTEMLIST%, %ROBOTDECLILIST%, %URLTAGREPORT%, %CAMPAIGN%, %TAGDURATION%, %TAGSTART%, %TAGEND%, %CIRESULT%, %CISCORE%, %CISCORETHRESHOLD%, %TAGGLOBALSTATUS% and %TAGTCDETAIL% can be used as variables.\" "
+                + ", value=replace(replace(value,'%CISCORETHRESHOLD%</td>','%CISCORETHRESHOLD%</td><td>%ENVIRONMENTLIST%</td><td>%COUNTRYLIST%</td>'),'Threshold</td>','Threshold</td><td>Environments</td><td>Countries</td>') where param='cerberus_notification_tagexecutionend_body';");
+        a.add("UPDATE `parameter` SET description=\"Cerberus start of tag execution notification email body. %TAG%, %REQENVIRONMENTLIST%, %REQCOUNTRYLIST%, %URLTAGREPORT% and %CAMPAIGN% can be used as variables.\" "
+                + ", value=replace(value,'The Cerberus Tag Execution %TAG% from campaign %CAMPAIGN% has just started.','Tag <b>%TAG%</b> from campaign <b>%CAMPAIGN%</b> has just started for %REQENVIRONMENTLIST% on %REQCOUNTRYLIST%.') where param='cerberus_notification_tagexecutionstart_body';");
+
+        // New parameters.
+        // 1404
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + "('', 'cerberus_tagvariable_separator', '-', 'Text or character that will be used as separator on the list of environment and countries on variable %REQENVIRONMENTLIST% and %REQCOUNTRYLIST% at tag level.');");
+
+        // New table for scheduler
+        // 1405
+        b = new StringBuilder();
+        b.append("CREATE TABLE `scheduleentry` (");
+        b.append("  `ID` int(10) NOT NULL AUTO_INCREMENT,");
+        b.append("  `type` varchar(15) NOT NULL DEFAULT 'CAMPAIGN',");
+        b.append("  `name` varchar(100) NOT NULL,");
+        b.append("  `cronDefinition` varchar(45) NOT NULL,");
+        b.append("  `lastExecution` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        b.append("  `active` varchar(1) NOT NULL DEFAULT 'Y',");
+        b.append("  `UsrCreated` varchar(45) NOT NULL DEFAULT '',");
+        b.append("  `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+        b.append("  `UsrModif` varchar(45) NOT NULL DEFAULT '',");
+        b.append("  `DateModif` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        b.append("  PRIMARY KEY (`ID`)");
+        b.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        a.add(b.toString());
+
+        // New table for Execution scheduled
+        // 1406
+        b = new StringBuilder();
+        b.append("CREATE TABLE `scheduledexecution` (");
+        b.append("  `ID` bigint(20) NOT NULL AUTO_INCREMENT,");
+        b.append("  `schedulerID` int(10) NOT NULL,");
+        b.append("  `scheduleName` varchar(100) DEFAULT NULL,");
+        b.append("  `scheduledDate` timestamp NOT NULL,");
+        b.append("  `scheduleFireTime` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        b.append("  `status` varchar(15) DEFAULT NULL,");
+        b.append("  `comment` varchar(250) DEFAULT NULL,");
+        b.append("  `UsrCreated` varchar(45) NOT NULL DEFAULT '',");
+        b.append("  `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+        b.append("  `UsrModif` varchar(45) NOT NULL DEFAULT '',");
+        b.append("  `DateModif` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        b.append("  PRIMARY KEY (`ID`),");
+        b.append("  UNIQUE KEY `IX_scheduledexecution_01` (`scheduledDate`,`schedulerId`),");
+        b.append("  CONSTRAINT `FK_scheduledexecution_01` FOREIGN KEY (`schedulerID`) REFERENCES `scheduleentry` (`ID`)");
+        b.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        a.add(b.toString());
+
+        // Post campaign scheduler in myversion
+        // 1407
+        a.add("INSERT into myversion values('scheduler_version',0,'INIT');");
+
+        // 1408 New constrain at application level.
+        a.add("ALTER TABLE `application` ADD COLUMN `poolSize` INT NULL AFTER `BugTrackerNewUrl`;");
+
+        // Add new Action to keypress inside a popup
+        // 1409
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'manageDialogKeypress', '5600', 'Keypress on a popup dialog.', 'Popup Keypress')");
+
+        // Adding columns for proxy management.
+        // 1410
+        b = new StringBuilder();
+        b.append("ALTER TABLE `robotexecutor` ");
+        b.append("ADD COLUMN `executorExtensionPort` INT(8) NULL DEFAULT NULL AFTER `deviceLockUnlock`,");
+        b.append("ADD COLUMN `executorProxyHost` VARCHAR(255) NULL DEFAULT NULL AFTER `executorExtensionPort`,");
+        b.append("ADD COLUMN `executorProxyPort` INT(8) NULL DEFAULT NULL AFTER `executorProxyHost`,");
+        b.append("ADD COLUMN `executorProxyActive` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `executorProxyPort`;");
+        a.add(b.toString());
+
+        // 1411-1412
+        a.add("ALTER TABLE `scheduledexecution` DROP FOREIGN KEY FK_scheduledexecution_01;");
+        a.add("ALTER TABLE `scheduledexecution` ADD CONSTRAINT `FK_scheduledexecution_01` FOREIGN KEY (`schedulerID`) REFERENCES `scheduleentry` (`ID`) ON UPDATE CASCADE ON DELETE CASCADE");
+
+        // 1413
+        b = new StringBuilder();
+        b.append("ALTER TABLE `testcaseexecutionqueuedep` ");
+        b.append("ADD COLUMN `QueueID` BIGINT(20) UNSIGNED NULL DEFAULT NULL AFTER `ExeID`, ");
+        b.append("ADD INDEX `IX_testcaseexecutiondep_05` (`QueueID` ASC);");
+        a.add(b.toString());
+
+        // Add the "longPress" and "clearField" Action
+        // 1414
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        b.append("('ACTION', 'longPress', '3100', 'Long tap on element', 'longPress'),");
+        b.append("('ACTION', 'clearField', '11500', 'Clear a Field', 'clearField')");
+        a.add(b.toString());
+
+        // Insert the invariant verifyStringNotContains and ifPropertyNotExist
+        // 1415
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        b.append("('CONTROL', 'verifyStringNotContains', 1420, 'verifyStringNotContains.')");
+        b.append(",('ACTIONCONDITIONOPER', 'ifStringNotContains', 445, 'Only execute if value1 does not contains value2.')");
+        b.append(",('CONTROLCONDITIONOPER', 'ifStringNotContains', 445, 'Only execute if value1 does not contains value2.')");
+        b.append(",('STEPCONDITIONOPER', 'ifStringNotContains', 445, 'Only execute if value1 does not contains value2.')");
+        b.append(",('TESTCASECONDITIONOPER', 'ifStringNotContains', 445, 'Only execute if value1 does not contains value2.')");
+        b.append(",('ACTIONCONDITIONOPER', 'ifPropertyNotExist', 210, 'Only execute if property does not exist for the execution.')");
+        b.append(",('CONTROLCONDITIONOPER', 'ifPropertyNotExist', 210, 'Only execute if property does not exist for the execution.')");
+        b.append(",('STEPCONDITIONOPER', 'ifPropertyNotExist', 210, 'Only execute if property does not exist for the execution.')");
+        b.append(",('TESTCASECONDITIONOPER', 'ifPropertyNotExist', 210, 'Only execute if property does not exist for the execution.')");
+        a.add(b.toString());
+
+        // 1416
+        a.add("ALTER TABLE `user` CHANGE COLUMN `DefaultSystem` `DefaultSystem` MEDIUMTEXT NULL DEFAULT NULL ;");
+
+        // Add the "longPress" and "clearField" Action
+        // 1417
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_smtp_isSetTls', 'true', 'Boolean defining if the TLS is set or not for the email!<br>true / false');");
+
+        // Add the "longPress" and "clearField" Action
+        // 1418
+        a.add("ALTER TABLE `testdatalib` ADD COLUMN `PrivateData` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `Country`;");
+
+        // Add the "longPress" and "clearField" Action
+        // 1419
+        a.add("ALTER TABLE `testdatalibdata` ADD COLUMN `Encrypt` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `SubData`;");
+
+        // Add the "longPress" and "clearField" Action
+        // 1420
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_appium_action_longpress_wait', '8000', 'Integer value that correspond to the nb of ms of the longpress Appium action.');");
+
+        // Remove integrity on schedulerexecution table.
+        // 1421
+        a.add("ALTER TABLE `scheduledexecution` DROP FOREIGN KEY `FK_scheduledexecution_01`;");
+
+        // Removed not necessary BrowserFullVersion information and added Robot provider and session.
+        // 1422
+        a.add("ALTER TABLE `testcaseexecution` DROP COLUMN `BrowserFullVersion`, ADD COLUMN `RobotProvider` VARCHAR(20) NOT NULL DEFAULT '' AFTER `RobotDecli`, ADD COLUMN `RobotSessionId` VARCHAR(100) NOT NULL DEFAULT '' AFTER `RobotProvider`;");
+
+        // New parameters.
+        // 1423
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + "('', 'cerberus_browserstack_defaultexename', 'Exe : %EXEID%', 'Define the default value for the name of the execution to be sent to Browserstack when a test is executed. Variable %EXEID% can be used.'),"
+                + "('', 'cerberus_kobiton_defaultsessionname', '%EXEID% : %TEST% - %TESTCASE%', 'Define the default value for the SessionName to be sent to Kobiton when a test is executed. Variables %EXEID%, %APPLI%, %TAG%, %TEST%, %TESTCASE%, %TESTCASEDESC% can be used.'),"
+                + "('', 'cerberus_kobiton_defaultsessiondescription', '%TESTCASEDESC%', 'Define the default value for the SessionDescription to be sent to Kobiton when a test is executed. Variables %EXEID%, %APPLI%, %TAG%, %TEST%, %TESTCASE%, %TESTCASEDESC% can be used.');");
+
+        // Adding browserstack Build column.
+        // 1424
+        a.add("ALTER TABLE `tag` ADD COLUMN `browserstackBuildHash` VARCHAR(100) NOT NULL DEFAULT '' AFTER `ReqEnvironmentList`;");
+
+        // Adding description on scheduler definition.
+        // 1425
+        a.add("ALTER TABLE `scheduleentry` ADD COLUMN `description` VARCHAR(200) NOT NULL DEFAULT '' AFTER `active`;");
+
+        // Adding constrain in order to secure that same campaign schedule is not triggered at the same time.
+        // 1426-1427
+        a.add("TRUNCATE `scheduledexecution`;");
+        a.add("ALTER TABLE `scheduledexecution` ADD UNIQUE INDEX `IX_scheduledexecution_02` (`scheduleName` ASC, `scheduleFireTime` ASC);");
+
+        // add the refreshPageAction private invariant
+        // 1428
+        a.add("INSERT INTO invariant(idname, value, sort, description, VeryShortDesc) VALUES('ACTION', 'refreshCurrentPage', 6520, 'refresh current page', 'refresh current page');");
+
+        // add Value3 column in testcasestepactioncontrol and testcasestepactioncontrolexecution tables
+        // 1429-1430
+        a.add("ALTER TABLE testcasestepactioncontrol ADD Value3 TEXT after Value2;");
+        a.add("ALTER TABLE testcasestepactioncontrolexecution ADD Value3 TEXT AFTER Value2, ADD Value3Init TEXT AFTER Value2Init;");
+
+        // add columns for Value3 and ConditionValue3 fields
+        // 1431-1438
+        a.add("ALTER TABLE testcase ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcasestep ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcasestepaction ADD Value3 TEXT AFTER Value2, ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcasestepactioncontrol ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcaseexecution ADD ConditionVal3Init TEXT AFTER ConditionVal2Init, ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcasestepexecution ADD ConditionVal3Init TEXT AFTER ConditionVal2Init, ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcasestepactionexecution ADD Value3 TEXT AFTER Value2, ADD Value3Init TEXT AFTER Value2Init, ADD ConditionVal3 TEXT AFTER ConditionVal2, ADD ConditionVal3Init TEXT AFTER ConditionVal2Init;");
+        a.add("ALTER TABLE testcasestepactioncontrolexecution ADD ConditionVal3 TEXT AFTER ConditionVal2, ADD ConditionVal3Init TEXT AFTER ConditionVal2Init;");
+
+        // add groups columns for Campaign fields
+        // 1439
+        a.add("ALTER TABLE campaign ADD Group1 VARCHAR(100) NOT NULL DEFAULT '' AFTER LongDescription, ADD Group2 VARCHAR(100) NOT NULL DEFAULT '' AFTER Group1, ADD Group3 VARCHAR(100) NOT NULL DEFAULT '' AFTER Group2;");
+
+        // add new action executeCerberusCommand
+        // 1440
+        a.add("INSERT INTO invariant(idname, value, sort, description, VeryShortDesc) VALUES('ACTION', 'executeCerberusCommand', 6552, 'execute Cerberus command', 'execute Cerberus command');");
+
+        // Add the cerberus-stop
+        // 1441
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + "('', 'cerberus_stopinstance_timeout', '300', 'Integer value that correspond to the nb of s until the stopinstance servlet will stop waiting.');");
+
+        // Add the manage servlet parameters
+        // 1442-1443
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + "('', 'cerberus_manage_token', LEFT(MD5(RAND()), 32), 'Token in order to secure public access to manage api.');");
+        a.add("UPDATE `parameter` SET `param` = 'cerberus_manage_timeout', `description` = 'Integer value that correspond to the nb of s until the manage servlet will stop waiting a clean stop of a global or instance stop.' WHERE (`param` = 'cerberus_stopinstance_timeout');");
+
+        // add columns for Kafka support
+        // 1444
+        a.add("ALTER TABLE `appservice` "
+                + "ADD COLUMN `KafkaTopic` VARCHAR(1000) NULL DEFAULT '' AFTER `ServiceRequest`,"
+                + "ADD COLUMN `KafkaKey` VARCHAR(1000) NULL DEFAULT '' AFTER `KafkaTopic`,"
+                + "ADD COLUMN `KafkaFilterPath` VARCHAR(1000) NULL DEFAULT '' AFTER `KafkaKey`,"
+                + "ADD COLUMN `KafkaFilterValue` VARCHAR(1000) NULL DEFAULT '' AFTER `KafkaFilterPath`;");
+
+        // ADD Kafka Method and type in invariants
+        // 1445
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES "
+                + "  ('SRVMETHOD', 'PRODUCE', 600 , 'Produce a Kafka event'),"
+                + "  ('SRVMETHOD', 'SEARCH', 700 , 'Search in a Kafka stream'),"
+                + "  ('SRVTYPE', 'KAFKA', 400 , 'KAFKA Service')");
+
+        // ADD parameters to perform execute Cerberus command action
+        // 1446
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_executeCerberusCommand_path', '/opt/CerberusMedias/scripts/', 'Path to the Cerberus script folder'),"
+                + " ('', 'cerberus_executeCerberusCommand_user', 'cerberus', 'User used to execute a script with Cerberus'),"
+                + " ('', 'cerberus_executeCerberusCommand_password', LEFT(MD5(RAND()), 32), 'Password used to execute a script with Cerberus')");
+
+        // create table dashboardTypeReportItem, store type of report-item for front dashboard
+        // 1447
+        a.add("CREATE TABLE `dashboardTypeReportItem` ("
+                + "`idTypeRepItem` int(11) NOT NULL AUTO_INCREMENT,"
+                + "`codeTypeRepItem` varchar(50) NOT NULL ,"
+                + "`descTypeRepItem` varchar(255) NOT NULL,"
+                + "PRIMARY KEY (`idTypeRepItem`)"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // ADD type in dashboardTypeReportItem
+        // 1448
+        a.add("INSERT INTO `dashboardTypeReportItem` (`codeTypeRepItem`,`descTypeRepItem`) VALUES "
+                + "('CAMPAIGN','Report-Item associés aux campagnes'),"
+                + "('CAMPAIGN_GROUP','Report-Item associés aux groupes de campagnes'),"
+                + " ('APPLICATION','Report-Item associés aux applications'),"
+                + "('GENERIC','Report-Item génériques sur l\\'instance de Cerberus'),"
+                + "('ENVIRONMENT','Report-Item associés aux environnements');");
+
+        // create table dashboardReportItem, store existing report-item for dashboard
+        // 1449
+        a.add("CREATE TABLE `dashboardReportItem` ("
+                + "`reportItemCode` varchar(50) NOT NULL,"
+                + "`reportItemTitre` varchar(50) NOT NULL,"
+                + "`isConfigurable` BOOL,"
+                + "`reportItemType` int(11) NOT NULL,"
+                + "PRIMARY KEY (`reportItemCode`),"
+                + "CONSTRAINT `FK_typeReportItem_01` FOREIGN KEY (`reportItemType`) REFERENCES `dashboardTypeReportItem` (`idTypeRepItem`)"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // ADD first report item : campaign evolution
+        // 1450
+        a.add("INSERT INTO `dashboardReportItem` (`reportItemCode`,`reportItemTitre`,`isConfigurable`,`reportItemType`) VALUES"
+                + "('CAMPAIGN_EVOLUTION','Campaign evolution',true,'1');");
+
+        // create table dashboardGroupEntries, store Group entries report-item for dashboard
+        // 1451
+        a.add("CREATE TABLE `dashboardGroupEntries` ("
+                + "`idGroupEntries` int(11) NOT NULL AUTO_INCREMENT,"
+                + "`codeGroupeEntries` varchar(50) NOT NULL,"
+                + "`sort` int(11) DEFAULT 10,"
+                + "`dashboardUserId` int(10) UNSIGNED NOT NULL,"
+                + "`reportItemType` int(11) NOT NULL,"
+                + "PRIMARY KEY (`idGroupEntries`),"
+                + "CONSTRAINT `FK_dashboardGroup_01` FOREIGN KEY (`dashboardUserId`) REFERENCES `user` (`UserID`) ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "CONSTRAINT `FK_dashboardGroup_02` FOREIGN KEY (`reportItemType`) REFERENCES `dashboardTypeReportItem` (`idTypeRepItem`)"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // create table dashboardGroupEntriesCampaign, store Group entries campaign link for dashboard
+        //1452
+        a.add("CREATE TABLE `dashboardGroupEntriesCampaign` ("
+                + "`idGroupEntries` int(11) NOT NULL,"
+                + "`idCampaign` int(10) UNSIGNED NOT NULL,"
+                + "PRIMARY KEY (`idGroupEntries`,`idCampaign`),"
+                + "CONSTRAINT `FK_dashboardGroupCampaign_01` FOREIGN KEY (`idGroupEntries`) REFERENCES `dashboardGroupEntries` (`idGroupEntries`) ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "CONSTRAINT `FK_dashboardGroupCampaign_02` FOREIGN KEY (`idCampaign`) REFERENCES `campaign` (`campaignId`) ON DELETE CASCADE ON UPDATE CASCADE"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // create table dashboardGroupEntriesApplication, store Group entries application link for dashboard
+        //1453
+        a.add("CREATE TABLE `dashboardGroupEntriesApplication` ("
+                + "`idGroupEntries` int(11) NOT NULL,"
+                + "`application` varchar(200) NOT NULL,"
+                + "PRIMARY KEY (`idGroupEntries`,`application`),"
+                + "CONSTRAINT `FK_dashboardGroupApplication_01` FOREIGN KEY (`idGroupEntries`) REFERENCES `dashboardGroupEntries` (`idGroupEntries`) ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "CONSTRAINT `FK_dashboardGroupApplication_02` FOREIGN KEY (`application`) REFERENCES `application` (`Application`) ON DELETE CASCADE ON UPDATE CASCADE"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // create table dashboardEntry, store entries report item for dashboard
+        //1454
+        a.add("CREATE TABLE `dashboardEntry` ("
+                + "`idGroupEntries` int(11) NOT NULL,"
+                + "`reportItemCode` varchar(50) NOT NULL,"
+                + "`paramId1` varchar(255) DEFAULT NULL,"
+                + "`paramId2` varchar(255) DEFAULT NULL,"
+                + "`UsrCreated` varchar(45) DEFAULT NULL,"
+                + "`DateCreated` timestamp NULL DEFAULT NULL,"
+                + "`UsrModif` varchar(45) DEFAULT NULL,"
+                + "`DateModif` timestamp NULL DEFAULT NULL,"
+                + "PRIMARY KEY (`idGroupEntries`),"
+                + "CONSTRAINT `FK_dashboardEntry_01` FOREIGN KEY (`idGroupEntries`) REFERENCES `dashboardGroupEntries` (`idGroupEntries`) ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "CONSTRAINT `FK_dashboardEntry_02` FOREIGN KEY (`reportItemCode`) REFERENCES `dashboardReportItem` (`reportItemCode`)"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // Alter ReportItem, replace boolean by String to match with Cerberus standard
+        // 1455
+        a.add("ALTER TABLE `dashboardReportItem` MODIFY `isConfigurable` varchar(1);");
+
+        // Replace ReportItem value from boolean to string value
+        // 1456
+        a.add("UPDATE dashboardReportItem SET `isConfigurable`='Y' WHERE 1=1;");
+
+        // Update value3 and conditionValue3 to avoid null value that will fail tc saving
+        // 1457-1462
+        a.add("UPDATE testcase SET ConditionVal3 = '' WHERE ConditionVal3 IS NULL");
+        a.add("UPDATE testcasestep SET ConditionVal3 = '' WHERE ConditionVal3 IS NULL");
+        a.add("UPDATE testcasestepaction SET ConditionVal3 = '' WHERE ConditionVal3 IS NULL");
+        a.add("UPDATE testcasestepaction SET Value3 = '' WHERE Value3 IS NULL");
+        a.add("UPDATE testcasestepactioncontrol SET ConditionVal3 = '' WHERE ConditionVal3 IS NULL");
+        a.add("UPDATE testcasestepactioncontrol SET Value3 = '' WHERE Value3 IS NULL");
 
         return a;
     }

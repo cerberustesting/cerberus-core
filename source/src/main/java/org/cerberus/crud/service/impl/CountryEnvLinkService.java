@@ -52,12 +52,12 @@ public class CountryEnvLinkService implements ICountryEnvLinkService {
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(CountryEnvLinkService.class);
 
     @Override
-    public AnswerList readByVarious(String system, String country, String environment) {
+    public AnswerList<CountryEnvLink> readByVarious(String system, String country, String environment) {
         return countryEnvLinkDao.readByVariousByCriteria(system, country, environment, 0, 0, null, null, null, null);
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList<CountryEnvLink> readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         return countryEnvLinkDao.readByVariousByCriteria(system, country, environment, start, amount, column, dir, searchTerm, individualSearch);
     }
 
@@ -96,7 +96,7 @@ public class CountryEnvLinkService implements ICountryEnvLinkService {
 
     @Override
     public Answer compareListAndUpdateInsertDeleteElements(String system, String country, String environement, List<CountryEnvLink> newList) {
-        Answer ans = new Answer(null);
+        Answer ans = new Answer();
 
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);

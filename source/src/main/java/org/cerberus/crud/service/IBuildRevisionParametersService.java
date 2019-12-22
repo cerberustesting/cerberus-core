@@ -70,7 +70,7 @@ public interface IBuildRevisionParametersService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<BuildRevisionParameters> readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -81,7 +81,7 @@ public interface IBuildRevisionParametersService {
      * @param lastRevision
      * @return
      */
-    AnswerList readMaxSVNReleasePerApplication(String system, String build, String revision, String lastBuild, String lastRevision);
+    AnswerList<BuildRevisionParameters> readMaxSVNReleasePerApplication(String system, String build, String revision, String lastBuild, String lastRevision);
 
     /**
      *
@@ -92,7 +92,7 @@ public interface IBuildRevisionParametersService {
      * @param lastRevision
      * @return
      */
-    AnswerList readNonSVNRelease(String system, String build, String revision, String lastBuild, String lastRevision);
+    AnswerList<BuildRevisionParameters> readNonSVNRelease(String system, String build, String revision, String lastBuild, String lastRevision);
 
     /**
      *
@@ -153,11 +153,12 @@ public interface IBuildRevisionParametersService {
 
     /**
      * 
+     * @param system
      * @param searchParameter
      * @param individualSearch
      * @param columnName
      * @return 
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

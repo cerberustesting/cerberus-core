@@ -39,12 +39,11 @@ import org.cerberus.crud.factory.IFactoryTestCase;
 public class FactoryTestCase implements IFactoryTestCase {
 
     private static final Logger LOG = LogManager.getLogger(FactoryTestCase.class);
-    
-//    private TestCase newTestCase;
 
+//    private TestCase newTestCase;
     @Override
     public TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, String implementer, String usrModif, String project, String ticket, String function, String application,
-            String activeQA, String activeUAT, String activePROD, int priority, String group, String status, String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String fromBuild, String fromRev,
+            String activeQA, String activeUAT, String activePROD, int priority, String group, String status, String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String conditionVal3, String fromBuild, String fromRev,
             String toBuild, String toRev, String lastExecutionStatus, String bugID, String targetBuild, String targetRev, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry,
             List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep, List<TestCaseStepBatch> testCaseStepBatch) {
         TestCase newTestCase = new TestCase();
@@ -52,6 +51,7 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setConditionOper(conditionOper);
         newTestCase.setConditionVal1(conditionVal1);
         newTestCase.setConditionVal2(conditionVal2);
+        newTestCase.setConditionVal3(conditionVal3);
         newTestCase.setApplication(application);
         newTestCase.setBugID(bugID);
         newTestCase.setComment(comment);
@@ -93,13 +93,14 @@ public class FactoryTestCase implements IFactoryTestCase {
 
     @Override
     public TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, String implementer, String usrModif, String project, String ticket, String function, String application,
-            String activeQA, String activeUAT, String activePROD, int priority, String group, String status, String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String fromBuild, String fromRev,
+            String activeQA, String activeUAT, String activePROD, int priority, String group, String status, String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String conditionVal3, String fromBuild, String fromRev,
             String toBuild, String toRev, String lastExecutionStatus, String bugID, String targetBuild, String targetRev, String comment, String dateCreated, String userAgent, String screenSize, Timestamp dateModif, int testCaseVersion) {
         TestCase newTestCase = new TestCase();
         newTestCase.setTcActive(tcActive);
         newTestCase.setConditionOper(conditionOper);
         newTestCase.setConditionVal1(conditionVal1);
         newTestCase.setConditionVal2(conditionVal2);
+        newTestCase.setConditionVal3(conditionVal3);
         newTestCase.setApplication(application);
         newTestCase.setBugID(bugID);
         newTestCase.setComment(comment);

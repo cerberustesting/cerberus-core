@@ -8,7 +8,7 @@
                 <a href="Homepage.jsp" class ="titleCase">
                     <img id="logo" alt="Cerberus" src="images/Logo-cerberus_menu.png"/>
                     <span class="nav-text">Cerberus</span>
-                    
+
                 </a>
                 <button type="button" class="btn btn-primary" id="burger"><img id="burger-item" alt="burger" src="images/menu-alt-512.png" /></button>
                 <button type="button" class="btn" id="burger-setting" style="display:none"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
@@ -24,7 +24,7 @@
                 <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
                     <li><a name="menu" id="menuTestCaseList" href="TestCaseList.jsp">TestCase</a></li>
                     <li><a name="menu" id="menuEditTestCase" href="TestCaseScript.jsp">Edit TestCase</a></li>
-                    <li><a name="menu" id="menuLabel" href="Label.jsp" >Label</a></li>
+                    <li class="Label navlist" style="display: none"><a name="menu" id="menuLabel" href="Label.jsp" >Label</a></li>
                     <li><a name="menu" id="menuEditTest" href="Test.jsp">Test</a></li>
                 </ul>
             </li>
@@ -92,7 +92,6 @@
                     <li><a name="menu" id="menuEnvironments" href="Environment.jsp">Environments</a></li>
                     <li><a name="menu" id="menuBuildRevision" href="BuildRevDefinition.jsp">Build/Rev Definition</a></li>
                     <li><a name="menu" id="menuBuildContent" href="BuildContent.jsp">Build Content</a></li>
-                    <li><a name="menu" id="menuProject" href="Project.jsp">Project</a></li>
                     <li><a name="menu" id="menuBatchInvariant" href="BatchInvariant.jsp">Batch</a></li>
                 </ul>
             </li>
@@ -141,10 +140,11 @@
     <ul class="nav navbar-top-links navbar-right">
         <li class="userConnected" id="formSystem">
             <span class=" glyphicon glyphicon-folder-open marginRight3px"></span>
-            <form action="" method="post" name="SysFilter" id="SysFilter" class="form-group marginRight3px">
-                <select class="form-control" id="MySystem" name="MySystem" onchange="ChangeSystem()">
+            <form id="SysFilter" class="form-group marginRight3px">
+                <select class="multiselectelement form-control" multiple="multiple" id="MySystem">
                 </select>
             </form>
+            <button type="button" class="btn btn-primary btn-xs" id="applySystem" onclick="ChangeSystem()">Apply</button>
         </li>
         <li class="userLanguage" >
             <span class="glyphicon glyphicon-globe language-icon"></span>
@@ -160,7 +160,11 @@
                 <i class="fa fa-caret-down"></i>
             </a>
             <ul class="dropdown-menu">
-                <li><a name="menu" id="logout" href="Logout.jsp"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                <li>
+                    <a name="menuitem" id="menuAccount" href="#"><i class="fa fa-user fa-fw"></i><span id="headerUserAccount">  User Account</span></a>
+                </li>
+                <li>
+                    <a name="menuitem" id="menuLogout" href="#"><i class="fa fa-sign-out fa-fw "></i><span id="headerLogout">  Logout</span></a>
                 </li>
             </ul>
         </li>

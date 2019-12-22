@@ -58,7 +58,7 @@ public class BuildRevisionBatchService implements IBuildRevisionBatchService {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
+    public AnswerList<BuildRevisionBatch> readByVariousByCriteria(String system, String country, String environment, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
         return buildRevisionBatchDao.readByVariousByCriteria(system, country, environment, startPosition, length, columnName, sort, searchParameter, string);
     }
 
@@ -116,7 +116,7 @@ public class BuildRevisionBatchService implements IBuildRevisionBatchService {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return buildRevisionBatchDao.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
 

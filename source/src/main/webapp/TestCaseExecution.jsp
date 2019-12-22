@@ -25,8 +25,9 @@
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <title id="pageTitle">Execution Detail</title>        
+        <title id="pageTitle">Execution Detail</title>
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
+        <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseExecution.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
@@ -92,6 +93,7 @@
                                                 <a><button class="btn btn-default pull-left" id="ExecutionByTag" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-tasks"></span> See Execution By Tag</button></a>
                                                 <a><button class="btn btn-default pull-left" id="ExecutionQueue" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-eye-open"></span> See Queue Parameters</button></a>
                                                 <a><button class="btn btn-default pull-left" id="ExecutionQueueByTag" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> See Queue By Tag</button></a>
+                                                <a><button class="btn btn-default pull-left" id="sessionLinkHeader" style="margin-left: 5px; margin-right: 5px;">Link External Provider</button></a>
                                             </div>
                                         </div>
 
@@ -146,6 +148,7 @@
                                 <li><a data-toggle="tab" href="#tabDetail" id="editTabDetail" name="tabDetail">Execution Details</a></li>
                                 <li><a data-toggle="tab" href="#tabEnv" id="editTabEnv" name="tabEnv">Environment</a></li>
                                 <li><a data-toggle="tab" href="#tabRobot" id="editTabRobot" name="tabRobot">Robot</a></li>
+                                <li><a data-toggle="tab" href="#tabDep" id="editTabDep" name="tabDep">Dependencies</a></li>
                             </ul>
                         </div>
                     </div>
@@ -199,15 +202,19 @@
                                                         </div>
                                                     </div>
                                                     <div class="row">
-                                                        <div class="col-lg-2 form-group">
+                                                        <div class="col-lg-2">                                                          
                                                         </div>
-                                                        <div class="col-lg-5 form-group">
+                                                        <div class="col-lg-4 form-group">
                                                             <label>Param1 Init</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionVal1Init">
                                                         </div>
-                                                        <div class="col-lg-5 form-group">
+                                                        <div class="col-lg-4 form-group">
                                                             <label>Param2 Init</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionVal2Init">
+                                                        </div>
+                                                        <div class="col-lg-2 form-group">
+                                                            <label>Param3 Init</label>
+                                                            <input class="form-control input-sm" readonly id="stepConditionVal3Init">
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -215,13 +222,17 @@
                                                             <label>Condition Operation</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionOper">
                                                         </div>
-                                                        <div class="col-lg-5 form-group">
+                                                        <div class="col-lg-4 form-group">
                                                             <label>Param1</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionVal1">
                                                         </div>
-                                                        <div class="col-lg-5 form-group">
+                                                        <div class="col-lg-4 form-group">
                                                             <label>Param2</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionVal2">
+                                                        </div>
+                                                        <div class="col-lg-2 form-group">
+                                                            <label>Param3</label>
+                                                            <input class="form-control input-sm" readonly id="stepConditionVal3">
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -244,16 +255,16 @@
                                     <div class="" id="propPanelWrapper">
                                         <div class="panel-body collapse in" id="propertiesPanel">
                                             <div id="propTable" class="list-group">
-                                            </div>                                           
+                                            </div>
                                             <div class="row" id="secondaryPropTableHeader" class="list-group" style="display:none;">
-                                				<div class="col-sm-6">
-                                        			<button id="showSecondaryProp" type="button" class="btn btn-default center-block"><span class="glyphicon glyphicon-collapse-down"></span> Show <span id="secondaryPropCount"></span> Secondary Properties</button>                  
-                                    			</div>
-                                    			<div class="col-sm-6">
-                                        			<button id="hideSecondaryProp" type="button" class="btn btn-default center-block"><span class="glyphicon glyphicon-collapse-up"></span> Hide Secondary Properties</button>             
-                                    			</div>                               			
-                                			</div>
-                                			<div id="secondaryPropTable" style="margin-top:20px;">
+                                                <div class="col-sm-6">
+                                                    <button id="showSecondaryProp" type="button" class="btn btn-default center-block"><span class="glyphicon glyphicon-collapse-down"></span> Show <span id="secondaryPropCount"></span> Secondary Properties</button>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <button id="hideSecondaryProp" type="button" class="btn btn-default center-block"><span class="glyphicon glyphicon-collapse-up"></span> Hide Secondary Properties</button>
+                                                </div>
+                                            </div>
+                                            <div id="secondaryPropTable" style="margin-top:20px;">
                                             </div>
                                         </div>
                                     </div>
@@ -277,7 +288,7 @@
                                 <div class="col-sm-8">
                                     <div class="form-group">
                                         <label for="controlmessage">Control Message</label>
-                                        <textarea class="form-control" id="controlmessage" readonly></textarea> 
+                                        <textarea class="form-control" id="controlmessage" readonly></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -300,7 +311,8 @@
                                             </span>
                                         </div>
                                     </div>
-                                </div>                            </div>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-sm-4">
                                     <div class="form-group">
@@ -334,70 +346,86 @@
                                         <label for="exetest">Test</label>
                                         <input type="text" class="form-control" id="exetest"  readonly>
                                     </div>
-                                </div> 
+                                </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="exetestcase">TestCase</label>
                                         <input type="text" class="form-control" id="exetestcase" readonly>
                                     </div>
-                                </div> 
+                                </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="testcaseversion">Version</label>
                                         <input type="text" class="form-control" id="testcaseversion" readonly>
                                     </div>
-                                </div> 
+                                </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="status">Status</label>
                                         <input type="text" class="form-control" id="status" readonly>
                                     </div>
-                                </div> 
+                                </div>
                             </div>
 
                             <div class="row">
                             </div>
 
-                            <div class="row">
+                            <div class="row">                        
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                     </div>
                                 </div>
-                                <div class="col-sm-5">
+                                <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="conditionVal1InitTC">conditionVal1InitTC</label>
                                         <input type="text" class="form-control" id="conditionVal1InitTC" readonly>
                                     </div>
                                 </div>
-                                <div class="col-sm-5">
+                                <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="conditionVal2InitTC">conditionVal2InitTC</label>
                                         <input type="text" class="form-control" id="conditionVal2InitTC" readonly>
                                     </div>
                                 </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="conditionVal3InitTC">conditionVal3InitTC</label>
+                                        <input type="text" class="form-control" id="conditionVal3InitTC" readonly>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="row">
+                            <div class="row">                            
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="conditionOperTC">conditionOperTC</label>
                                         <input type="text" class="form-control" id="conditionOperTC" readonly>
                                     </div>
                                 </div>
-                                <div class="col-sm-5">
+                                <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="conditionVal1TC">conditionVal1TC</label>
                                         <input type="text" class="form-control" id="conditionVal1TC" readonly>
                                     </div>
                                 </div>
-                                <div class="col-sm-5">
+                                <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="conditionVal2TC">conditionVal2TC</label>
                                         <input type="text" class="form-control" id="conditionVal1TC" readonly>
                                     </div>
                                 </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="conditionVal3TC">conditionVal3TC</label>
+                                        <input type="text" class="form-control" id="conditionVal3TC" readonly>
+                                    </div>
+                                </div>
                             </div>
-
-
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="center marginTop25 tab-pane fade" id="tabRobot">
                             <div class="row">
@@ -427,10 +455,22 @@
                                         <input type="text" class="form-control" id="robothost" placeholder="Robot Host" readonly>
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="robotport">Robot Port</label>
                                         <input type="text" class="form-control" id="robotport" placeholder="Robot Port" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="robotsessionid">Robot Session</label>
+                                        <input type="text" class="form-control" id="robotsessionid" placeholder="Robot Session Id" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <div class="form-group">
+                                        <label for="sessionLink"></label>
+                                        <a><button class="btn btn-default pull-left" id="sessionLink" style="margin-left: 5px; margin-right: 5px;">Link External Provider</button></a>
                                     </div>
                                 </div>
                             </div>
@@ -473,6 +513,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="center marginTop25 tab-pane fade" id="tabEnv">
                             <div class="row">
                                 <div class="col-sm-2">
@@ -523,6 +564,19 @@
                                     <div class="form-group">
                                         <label for="url">URL</label>
                                         <input type="text" class="form-control" id="url" placeholder="URL" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="center marginTop25 tab-pane fade" id="tabDep">
+                            <div id="listPanelDep">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <table class="table table-bordered table-hover nomarginbottom" id="depTable">
+                                            <tbody id="depTableBody">
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>

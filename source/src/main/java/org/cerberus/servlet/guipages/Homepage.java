@@ -20,6 +20,7 @@
 package org.cerberus.servlet.guipages;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -36,6 +37,7 @@ import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.impl.ApplicationService;
 import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
@@ -52,7 +54,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class Homepage extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(Homepage.class);
-    
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -61,8 +63,8 @@ public class Homepage extends HttpServlet {
 
     /**
      * Handles the HTTP <code>POST</code> method.
-     *     
-* @param request servlet request
+     *
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
@@ -83,7 +85,7 @@ public class Homepage extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
 
             if (request.getParameter("system") != null) {
-                String system = request.getParameter("system");
+                List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
                 answer = readApplicationList(system, appContext);
                 jsonResponse = (JSONObject) answer.getItem();
             }
@@ -101,17 +103,17 @@ public class Homepage extends HttpServlet {
         }
     }
 
-    private AnswerItem readApplicationList(String system, ApplicationContext appContext) throws JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> readApplicationList(List<String> system, ApplicationContext appContext) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         IApplicationService applicationService = appContext.getBean(ApplicationService.class);
 
-        AnswerItem resp = applicationService.readTestCaseCountersBySystemByStatus(system);
+        AnswerItem<HashMap<String, HashMap<String, Integer>>> resp = applicationService.readTestCaseCountersBySystemByStatus(system);
 
         JSONArray jsonArray = new JSONArray();
         HashMap<String, HashMap<String, Integer>> totalMap = (HashMap<String, HashMap<String, Integer>>) resp.getItem();
 
-        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null) {
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null) {
             IInvariantService invariantService = appContext.getBean(InvariantService.class);
             AnswerList<Invariant> answerList = invariantService.readByIdnameNotGp1("TCSTATUS", "N");
             List<Invariant> myInvariants = answerList.getDataList();

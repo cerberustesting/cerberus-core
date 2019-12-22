@@ -39,9 +39,10 @@ public interface ITestCaseExecutionQueueService {
     /**
      *
      * @param queueId
+     * @param withDep
      * @return
      */
-    AnswerItem<TestCaseExecutionQueue> readByKey(long queueId);
+    AnswerItem<TestCaseExecutionQueue> readByKey(long queueId, boolean withDep);
 
     /**
      * Find a list of TestCaseWithExecution object from testcaseexecutionqueue
@@ -64,7 +65,7 @@ public interface ITestCaseExecutionQueueService {
      * @return
      * @throws CerberusException
      */
-    AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+    AnswerList<TestCaseExecutionQueue> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
     /**
      *
@@ -74,27 +75,33 @@ public interface ITestCaseExecutionQueueService {
      * @return
      * @throws CerberusException
      */
-    AnswerList readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException;
+    AnswerList<TestCaseExecutionQueue> readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException;
 
     /**
+     * All entries that are taken by the queue engine for processing.
      *
      * @return @throws CerberusException
      */
     AnswerList<TestCaseExecutionQueueToTreat> readQueueToTreat() throws CerberusException;
 
     /**
+     * All entries that are considered as running and consuming ressource for
+     * constrain management.
      *
      * @return @throws CerberusException
      */
     AnswerList<TestCaseExecutionQueueToTreat> readQueueRunning() throws CerberusException;
 
     /**
+     * Entries that are either executing or still to execute from the queue.
      *
      * @return @throws CerberusException
      */
     AnswerList<TestCaseExecutionQueueToTreat> readQueueToTreatOrRunning() throws CerberusException;
 
     /**
+     * Tag is considered as still running until there still entries on those
+     * status.
      *
      * @param tag
      * @return
@@ -112,7 +119,7 @@ public interface ITestCaseExecutionQueueService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<TestCaseExecutionQueue> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -127,7 +134,7 @@ public interface ITestCaseExecutionQueueService {
      * @param tag
      * @return
      */
-    AnswerList readDistinctEnvCountryBrowserByTag(String tag);
+    AnswerList<TestCaseExecutionQueue> readDistinctEnvCountryBrowserByTag(String tag);
 
     /**
      *
@@ -138,7 +145,7 @@ public interface ITestCaseExecutionQueueService {
      * @param app
      * @return
      */
-    public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
+    public AnswerList<TestCaseExecutionQueue> readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
 
     /**
      *
@@ -149,7 +156,7 @@ public interface ITestCaseExecutionQueueService {
      * @param column
      * @return
      */
-    public AnswerList readDistinctValuesByCriteria(String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, String column);
+    public AnswerList<String> readDistinctValuesByCriteria(String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, String column);
 
     /**
      *
@@ -193,18 +200,26 @@ public interface ITestCaseExecutionQueueService {
             String comment, String bugid, String ticket);
 
     /**
-     * @param object the {@link AppService} to Create
-     * @param withDependency
+     * Create a new Queue entry on database from existing object. if withNewDep
+     * true, we create new not RELEASED dependencies. if false, we duplicate
+     * existing dependencies from queue entry exeQueue.
+     *
+     * @param object the {@link queue entry} to Create
+     * @param withNewDep
+     * @param exeQueue original queue entry id from which the duplication is
+     * done.
+     * @param targetState
      * @return {@link AnswerItem}
      */
-    AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, boolean withDependency);
+    AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, boolean withNewDep, long exeQueue, TestCaseExecutionQueue.State targetState);
 
     /**
      *
-     * @param id
+     * @param exeQueueId
+     * @param tag
      */
-    void checkAndReleaseQueuedEntry(long id);    
-    
+    void checkAndReleaseQueuedEntry(long exeQueueId, String tag);
+
     /**
      * @param object the {@link AppService} to Update
      * @return {@link AnswerItem}
@@ -214,10 +229,27 @@ public interface ITestCaseExecutionQueueService {
     /**
      *
      * @param id
+     * @param priority
+     * @return
+     */
+    Answer updatePriority(long id, int priority);
+
+    /**
+     *
+     * @param id
      * @param comment
      * @return
      */
     Answer updateComment(long id, String comment);
+
+    /**
+     *
+     * @param id
+     * @param comment
+     * @param targetState
+     * @return
+     */
+    Answer updateToState(long id, String comment, TestCaseExecutionQueue.State targetState);
 
     /**
      *
@@ -233,7 +265,14 @@ public interface ITestCaseExecutionQueueService {
      * @param comment
      * @return
      */
-    Answer updateToQueuedFromQuWithDep(long id, String comment);    
+    Answer updateToQueuedFromQuWithDep(long id, String comment);
+
+    /**
+     *
+     * @param tag
+     * @return
+     */
+    Answer updateAllTagToQueuedFromQuTemp(String tag);
     
     /**
      *
@@ -267,6 +306,14 @@ public interface ITestCaseExecutionQueueService {
      * @throws CerberusException
      */
     void updateToError(long id, String comment) throws CerberusException;
+
+    /**
+     *
+     * @param id
+     * @param comment
+     * @throws CerberusException
+     */
+    void updateToErrorFromQuWithDep(long id, String comment) throws CerberusException;
 
     /**
      *
@@ -317,7 +364,7 @@ public interface ITestCaseExecutionQueueService {
      *
      */
     void cancelRunningOldQueueEntries();
-    
+
     /**
      *
      * @param answerItem

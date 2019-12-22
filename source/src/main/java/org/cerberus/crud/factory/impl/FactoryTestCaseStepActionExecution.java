@@ -37,9 +37,10 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepActionExecution implements IFactoryTestCaseStepActionExecution {
 
     @Override
-    public TestCaseStepActionExecution create(long id, String test, String testCase, int step, int index, int sequence, int sort, String returnCode, String returnMessage, 
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String action, String value1Init, String value2Init, String value1, String value2, 
-            String forceExeStatus, long start, long end, long startLong, long endLong, MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction, 
+    public TestCaseStepActionExecution create(long id, String test, String testCase, int step, int index, int sequence, int sort, String returnCode, String returnMessage,
+            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3,
+            String action, String value1Init, String value2Init, String value3Init, String value1, String value2, String value3,
+            String forceExeStatus, long start, long end, long startLong, long endLong, MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction,
             TestCaseStepExecution testCaseStepExecution) {
         TestCaseStepActionExecution testCaseStepActionExecution = new TestCaseStepActionExecution();
         testCaseStepActionExecution.setAction(action);
@@ -49,12 +50,16 @@ public class FactoryTestCaseStepActionExecution implements IFactoryTestCaseStepA
         testCaseStepActionExecution.setConditionOper(conditionOper);
         testCaseStepActionExecution.setConditionVal1Init(conditionVal1Init);
         testCaseStepActionExecution.setConditionVal2Init(conditionVal2Init);
+        testCaseStepActionExecution.setConditionVal3Init(conditionVal3Init);
         testCaseStepActionExecution.setConditionVal1(conditionVal1);
         testCaseStepActionExecution.setConditionVal2(conditionVal2);
+        testCaseStepActionExecution.setConditionVal3(conditionVal3);
         testCaseStepActionExecution.setValue1(value1);
         testCaseStepActionExecution.setValue2(value2);
+        testCaseStepActionExecution.setValue3(value3);
         testCaseStepActionExecution.setValue1Init(value1Init);
         testCaseStepActionExecution.setValue2Init(value2Init);
+        testCaseStepActionExecution.setValue3Init(value3Init);
         testCaseStepActionExecution.setForceExeStatus(forceExeStatus);
         testCaseStepActionExecution.setReturnCode(returnCode);
         testCaseStepActionExecution.setReturnMessage(returnMessage);

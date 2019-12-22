@@ -436,18 +436,21 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdl.Environment",
+            "visible": false,
             "data": "environment",
             "sWidth": "70px",
             "title": doc.getDocOnline("testdatalib", "environment")
         },
         {
             "sName": "tdl.Country",
+            "visible": false,
             "data": "country",
             "sWidth": "70px",
             "title": doc.getDocOnline("testdatalib", "country")
         },
         {
             "sName": "tdl.Group",
+            "visible": false,
             "like": true,
             "data": "group",
             "sWidth": "100px",
@@ -476,28 +479,38 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdl.Database",
+            "visible": false,
             "data": "database",
             "sWidth": "70px",
             "title": doc.getDocOnline("testdatalib", "database")
         },
-        {"data": "script", "sName": "tdl.Script", "sWidth": "450px", "title": doc.getDocLabel("testdatalib", "script"),
+        {
+            "data": "script", 
+            "sName": "tdl.Script", 
+            "visible": false,
+            "sWidth": "450px", 
+            "title": doc.getDocLabel("testdatalib", "script"),
             "mRender": function (data, type, obj) {
                 return $("<div></div>").append($("<pre name='scriptField' style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").text(obj['script'])).html();
-            }},
+            }
+        },
         {
             "sName": "tdl.DatabaseUrl",
+            "visible": false,
             "data": "databaseUrl",
             "sWidth": "70px",
             "title": doc.getDocOnline("testdatalib", "databaseUrl")
         },
         {
             "sName": "tdl.Service",
+            "visible": false,
             "data": "service",
             "sWidth": "150px",
             "title": doc.getDocOnline("testdatalib", "service")
         },
         {
             "sName": "tdl.ServicePath",
+            "visible": false,
             "like": true,
             "data": "servicePath",
             "sWidth": "150px",
@@ -505,25 +518,33 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdl.method",
+            "visible": false,
             "like": true,
             "data": "method",
             "sWidth": "150px",
             "title": doc.getDocOnline("testdatalib", "method")
         },
         {
-            "data": "envelope", "sName": "tdl.envelope", "like": true, "title": doc.getDocLabel("testdatalib", "envelope"), "sWidth": "350px",
+            "data": "envelope", 
+            "sName": "tdl.envelope", 
+            "visible": false,
+            "like": true, 
+            "title": doc.getDocLabel("testdatalib", "envelope"), 
+            "sWidth": "350px",
             "mRender": function (data, type, obj) {
                 return $("<div></div>").append($("<pre name='envelopeField' style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").text(obj['envelope'])).html();
             }
         },
         {
             "sName": "tdl.DatabaseCsv",
+            "visible": false,
             "data": "databaseCsv",
             "sWidth": "150px",
             "title": doc.getDocOnline("testdatalib", "databaseCsv")
         },
         {
             "sName": "tdl.csvUrl",
+            "visible": false,
             "like": true,
             "data": "csvUrl",
             "sWidth": "150px",
@@ -531,12 +552,14 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdl.separator",
+            "visible": false,
             "data": "separator",
             "sWidth": "150px",
             "title": doc.getDocOnline("testdatalib", "separator")
         },
         {
             "sName": "tdl.Created",
+            "visible": false,
             "like": true,
             "data": "created",
             "sWidth": "150px",
@@ -544,12 +567,14 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdl.Creator",
+            "visible": false,
             "data": "creator",
             "sWidth": "70px",
             "title": doc.getDocOnline("testdatalib", "creator")
         },
         {
             "sName": "tdl.LastModified",
+            "visible": false,
             "like": true,
             "data": "lastModified",
             "sWidth": "150px",
@@ -560,12 +585,14 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdl.LastModifier",
+            "visible": false,
             "data": "lastModifier",
             "sWidth": "70px",
             "title": doc.getDocOnline("testdatalib", "lastmodifier")
         },
         {
             "sName": "tdd.column",
+            "visible": false,
             "like": true,
             "data": "subDataColumn",
             "bSortable": false,
@@ -574,6 +601,7 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdd.ParsingAnswer",
+            "visible": false,
             "like": true,
             "data": "subDataParsingAnswer",
             "bSortable": false,
@@ -582,6 +610,7 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdd.ColumnPosition",
+            "visible": false,
             "data": "subDataColumnPosition",
             "bSortable": false,
             "sWidth": "70px",

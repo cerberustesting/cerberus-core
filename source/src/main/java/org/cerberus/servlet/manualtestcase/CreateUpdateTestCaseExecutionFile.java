@@ -20,10 +20,7 @@
 package org.cerberus.servlet.manualtestcase;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,19 +38,12 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.crud.entity.Robot;
-import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
-import org.cerberus.crud.entity.TestDataLibData;
-import org.cerberus.crud.factory.IFactoryRobot;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.IRobotService;
 import org.cerberus.engine.execution.IRecorderService;
-import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
-import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -77,7 +67,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateUpdateTestCaseExecutionFile.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -101,7 +91,7 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
 
         response.setContentType("application/json");
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
-        
+
         Map<String, String> fileData = new HashMap<String, String>();
         FileItem file = null;
         FileItemFactory factory = new DiskFileItemFactory();
@@ -116,7 +106,7 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
                 FileItem fileItem = it.next();
                 boolean isFormField = fileItem.isFormField();
                 if (isFormField) {
-                    fileData.put(fileItem.getFieldName(),fileItem.getString("UTF-8"));
+                    fileData.put(fileItem.getFieldName(), fileItem.getString("UTF-8"));
                 } else {
                     file = fileItem;
                 }
@@ -127,41 +117,39 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
 
         /**
          * Parsing and securing all required parameters
-         * */
-         
+         *
+         */
         // Parameter that needs to be secured --> We SECURE+DECODE them
-
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("desc"), null, charset);
         String extension = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("type"), "", charset);
         String fileName = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("fileName"), null, charset);
         Integer fileID = ParameterParserUtil.parseIntegerParam(fileData.get("fileID"), 0);
         Integer idex = ParameterParserUtil.parseIntegerParam(fileData.get("idex"), 0);
         boolean action = fileData.get("action") != null ? true : false;
-        
-    	ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-    	IRecorderService recorderService = appContext.getBean(IRecorderService.class);
-    	TestCaseStepActionExecution testCaseStepActionExecution = null;
-    	TestCaseStepActionControlExecution testCaseStepActionControlExecution = null;
-    	JSONArray obj = null;
-    	if (action) {
+
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        IRecorderService recorderService = appContext.getBean(IRecorderService.class);
+        TestCaseStepActionExecution testCaseStepActionExecution = null;
+        TestCaseStepActionControlExecution testCaseStepActionControlExecution = null;
+        JSONArray obj = null;
+        if (action) {
             obj = new JSONArray(fileData.get("action"));
             testCaseStepActionExecution = updateTestCaseStepActionExecutionFromJsonArray(obj, appContext);
-        }else {
+        } else {
             obj = new JSONArray(fileData.get("control"));
             testCaseStepActionControlExecution = updateTestCaseStepActionControlExecutionFromJsonArray(obj, appContext);
         }
-    	
-    	if(description.isEmpty()) {
-        	msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+
+        if (description.isEmpty()) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "manual testcase execution file")
                     .replace("%OPERATION%", "Create/Update")
                     .replace("%REASON%", "desc is missing!"));
             ans.setResultMessage(msg);
-        }else {
-        	ans = recorderService.recordManuallyFile(testCaseStepActionExecution, testCaseStepActionControlExecution, extension, description, file, idex, fileName,fileID);
+        } else {
+            ans = recorderService.recordManuallyFile(testCaseStepActionExecution, testCaseStepActionControlExecution, extension, description, file, idex, fileName, fileID);
         }
-    	
-    	
+
         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             /**
              * Object created. Adding Log entry.
@@ -169,7 +157,6 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             logEventService.createForPrivateCalls("/CreateUpdateTestCaseExecutionFile", "CREATE", "Create execution file", request);
         }
-        
 
         /**
          * Formating and returning the json result.
@@ -232,15 +219,16 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-    
+
     /**
      * update control execution with testCaseStepActionControlJson
+     *
      * @param JSONObject testCaseJson
      * @param ApplicationContext appContext
-     * @throws JSONException 
+     * @throws JSONException
      * @throws IOException
      */
-    TestCaseStepActionControlExecution updateTestCaseStepActionControlExecutionFromJsonArray( JSONArray controlArray, ApplicationContext appContext) throws JSONException, IOException {
+    TestCaseStepActionControlExecution updateTestCaseStepActionControlExecutionFromJsonArray(JSONArray controlArray, ApplicationContext appContext) throws JSONException, IOException {
 
         JSONObject currentControl = controlArray.getJSONObject(0);
 
@@ -255,42 +243,50 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
         String conditionOper = currentControl.getString("conditionOper");
         String conditionVal1Init = currentControl.getString("conditionVal1Init");
         String conditionVal2Init = currentControl.getString("conditionVal2Init");
+        String conditionVal3Init = currentControl.getString("conditionVal3Init");
         String conditionVal1 = currentControl.getString("conditionVal1");
         String conditionVal2 = currentControl.getString("conditionVal2");
-        String control  = currentControl.getString("controlType");
+        String conditionVal3 = currentControl.getString("conditionVal3");
+        String control = currentControl.getString("controlType");
         String value1Init = currentControl.getString("value1init");
         String value2Init = currentControl.getString("value2init");
+        String value3Init = currentControl.getString("value3init");
         String value1 = currentControl.getString("value1");
         String value2 = currentControl.getString("value2");
+        String value3 = currentControl.getString("value3");
         String fatal = currentControl.getString("fatal");
         String description = currentControl.getString("description");
         String returnCode = currentControl.getString("returnCode");
         //String wrote by the user
-        String returnMessage = StringUtil.sanitize( currentControl.getString("returnMessage") );
-        if ( returnMessage.equals("Control executed manually") )//default message unchanged
+        String returnMessage = StringUtil.sanitize(currentControl.getString("returnMessage"));
+        if (returnMessage.equals("Control executed manually"))//default message unchanged
+        {
             returnMessage = "Control executed manually";
-        
+        }
+
         long start = currentControl.getLong("start");
         long end = currentControl.getLong("end");
         long fullStart = 0;//currentAction.getLong("fullStart");
         long fullEnd = 0;//currentAction.getLong("fullEnd");
 
         //create this TestCaseStepActionControlExecution and update the bdd with it
-        TestCaseStepActionControlExecution currentTestCaseStepActionControlExecution = createTestCaseStepActionControlExecution(id, test, testCase, step, index,sequence, controlSequence, sort, returnCode, returnMessage, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, control, value1Init, value2Init, value1, value2, fatal, start, end, fullStart, fullEnd, description, null, null);
+        TestCaseStepActionControlExecution currentTestCaseStepActionControlExecution = createTestCaseStepActionControlExecution(id, test, testCase, step, index, sequence, controlSequence, sort, returnCode, returnMessage, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, control, value1Init, value2Init, value3Init, value1, value2, value3, fatal, start, end, fullStart, fullEnd, description, null, null);
         return currentTestCaseStepActionControlExecution;
     }
-    
+
     /**
-     * update action execution with testCaseStepActionJson and all the parameter belonging to it (control)
+     * update action execution with testCaseStepActionJson and all the parameter
+     * belonging to it (control)
+     *
      * @param JSONObject testCaseJson
      * @param ApplicationContext appContext
-     * @throws JSONException 
+     * @throws JSONException
      * @throws IOException
      */
     TestCaseStepActionExecution updateTestCaseStepActionExecutionFromJsonArray(JSONArray testCaseStepActionJson, ApplicationContext appContext) throws JSONException, IOException {
 
         JSONObject currentAction = testCaseStepActionJson.getJSONObject(0);
-        
+
         long id = currentAction.getLong("id");
         String test = currentAction.getString("test");
         String testCase = currentAction.getString("testcase");
@@ -301,41 +297,46 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
         String conditionOper = currentAction.getString("conditionOper");
         String conditionVal1Init = currentAction.getString("conditionVal1Init");
         String conditionVal2Init = currentAction.getString("conditionVal2Init");
+        String conditionVal3Init = currentAction.getString("conditionVal3Init");
         String conditionVal1 = currentAction.getString("conditionVal1");
         String conditionVal2 = currentAction.getString("conditionVal2");
+        String conditionVal3 = currentAction.getString("conditionVal3");
         String action = currentAction.getString("action");
         String value1Init = currentAction.getString("value1init");
         String value2Init = currentAction.getString("value2init");
+        String value3Init = currentAction.getString("value3init");
         String value1 = currentAction.getString("value1");
         String value2 = currentAction.getString("value2");
+        String value3 = currentAction.getString("value3");
         String forceExeStatus = currentAction.getString("forceExeStatus");
         String description = currentAction.getString("description");
         String returnCode = currentAction.getString("returnCode");
-        
+
         //String wrote by the user
-        String returnMessage = StringUtil.sanitize( currentAction.getString("returnMessage") );
+        String returnMessage = StringUtil.sanitize(currentAction.getString("returnMessage"));
         //default message unchanged
-        if ( returnMessage.equals("Action not executed") )
+        if (returnMessage.equals("Action not executed")) {
             returnMessage = "Action executed manually";
-        
+        }
+
         long start = currentAction.getLong("start");
         long end = currentAction.getLong("end");
         long fullStart = 0;//currentAction.getLong("fullStart");
         long fullEnd = 0;//currentAction.getLong("fullEnd");
 
         //create this testCaseStepActionExecution and update the bdd with it
-        TestCaseStepActionExecution currentTestCaseStepActionExecution = createTestCaseStepActionExecution(id, test, testCase, step, index, sequence, sort, returnCode, returnMessage, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, action, value1Init, value2Init, value1, value2, forceExeStatus, start, end, fullStart, fullEnd, null, description, null, null);
+        TestCaseStepActionExecution currentTestCaseStepActionExecution = createTestCaseStepActionExecution(id, test, testCase, step, index, sequence, sort, returnCode, returnMessage, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, action, value1Init, value2Init, value3Init, value1, value2, value3, forceExeStatus, start, end, fullStart, fullEnd, null, description, null, null);
         return currentTestCaseStepActionExecution;
     }
-    
-  //create a TestCaseStepActionControlExecution with the parameters
+
+    //create a TestCaseStepActionControlExecution with the parameters
     private TestCaseStepActionControlExecution createTestCaseStepActionControlExecution(long id, String test, String testCase, int step, int index, int sequence, int controlSequence, int sort,
             String returnCode, String returnMessage,
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2,
-            String control, String value1Init, String value2Init, String value1, String value2,
+            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3,
+            String control, String value1Init, String value2Init, String value3Init, String value1, String value2, String value3,
             String fatal, long start, long end, long startLong, long endLong,
             String description, TestCaseStepActionExecution testCaseStepActionExecution, MessageEvent resultMessage) {
-        
+
         TestCaseStepActionControlExecution testCaseStepActionControlExecution = new TestCaseStepActionControlExecution();
         testCaseStepActionControlExecution.setId(id);
         testCaseStepActionControlExecution.setTest(test);
@@ -350,13 +351,17 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
         testCaseStepActionControlExecution.setConditionOper(conditionOper);
         testCaseStepActionControlExecution.setConditionVal1Init(conditionVal1Init);
         testCaseStepActionControlExecution.setConditionVal2Init(conditionVal2Init);
+        testCaseStepActionControlExecution.setConditionVal3Init(conditionVal3Init);
         testCaseStepActionControlExecution.setConditionVal1(conditionVal1);
         testCaseStepActionControlExecution.setConditionVal2(conditionVal2);
+        testCaseStepActionControlExecution.setConditionVal3(conditionVal3);
         testCaseStepActionControlExecution.setControl(control);
         testCaseStepActionControlExecution.setValue1(value1);
         testCaseStepActionControlExecution.setValue2(value2);
+        testCaseStepActionControlExecution.setValue3(value3);
         testCaseStepActionControlExecution.setValue1Init(value1Init);
         testCaseStepActionControlExecution.setValue2Init(value2Init);
+        testCaseStepActionControlExecution.setValue3Init(value3Init);
         testCaseStepActionControlExecution.setFatal(fatal);
         testCaseStepActionControlExecution.setStart(start);
         testCaseStepActionControlExecution.setEnd(end);
@@ -365,16 +370,16 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
         testCaseStepActionControlExecution.setTestCaseStepActionExecution(testCaseStepActionExecution);
         testCaseStepActionControlExecution.setControlResultMessage(resultMessage);
         testCaseStepActionControlExecution.setDescription(description);
-        
+
         return testCaseStepActionControlExecution;
-    }  
-    
-  //create a TestCaseStepActionExecution with the parameters
-    private TestCaseStepActionExecution createTestCaseStepActionExecution(long id, String test, String testCase, int step, int index, int sequence, int sort, String returnCode, String returnMessage, 
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String action, String value1Init, String value2Init, String value1, String value2, 
-            String forceExeStatus, long start, long end, long startLong, long endLong, MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction, 
+    }
+
+    //create a TestCaseStepActionExecution with the parameters
+    private TestCaseStepActionExecution createTestCaseStepActionExecution(long id, String test, String testCase, int step, int index, int sequence, int sort, String returnCode, String returnMessage,
+            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3, String action, String value1Init, String value2Init, String value3Init, String value1, String value2, String value3,
+            String forceExeStatus, long start, long end, long startLong, long endLong, MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction,
             TestCaseStepExecution testCaseStepExecution) {
-        
+
         TestCaseStepActionExecution testCaseStepActionExecution = new TestCaseStepActionExecution();
         testCaseStepActionExecution.setAction(action);
         testCaseStepActionExecution.setEnd(end);
@@ -383,12 +388,16 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
         testCaseStepActionExecution.setConditionOper(conditionOper);
         testCaseStepActionExecution.setConditionVal1Init(conditionVal1Init);
         testCaseStepActionExecution.setConditionVal2Init(conditionVal2Init);
+        testCaseStepActionExecution.setConditionVal3Init(conditionVal3Init);
         testCaseStepActionExecution.setConditionVal1(conditionVal1);
         testCaseStepActionExecution.setConditionVal2(conditionVal2);
+        testCaseStepActionExecution.setConditionVal3(conditionVal3);
         testCaseStepActionExecution.setValue1(value1);
         testCaseStepActionExecution.setValue2(value2);
+        testCaseStepActionExecution.setValue3(value3);
         testCaseStepActionExecution.setValue1Init(value1Init);
         testCaseStepActionExecution.setValue2Init(value2Init);
+        testCaseStepActionExecution.setValue3Init(value3Init);
         testCaseStepActionExecution.setForceExeStatus(forceExeStatus);
         testCaseStepActionExecution.setReturnCode(returnCode);
         testCaseStepActionExecution.setReturnMessage(returnMessage);

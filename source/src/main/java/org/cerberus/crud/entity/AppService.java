@@ -19,8 +19,6 @@
  */
 package org.cerberus.crud.entity;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -52,6 +50,11 @@ public class AppService {
     private String UsrModif;
     private Timestamp DateModif;
     private String fileName;
+    private String kafkaTopic;
+    private String kafkaKey;
+    private String kafkaFilterPath;
+    private String kafkaFilterValue;
+
     /**
      * From here are data outside database model.
      */
@@ -70,6 +73,10 @@ public class AppService {
     private List<AppServiceHeader> responseHeaderList;
     private int timeoutms; // Timeout used during service request
     private byte[] file;
+    private long kafkaResponseOffset;
+    private int kafkaResponsePartition;
+    private int kafkaWaitNbEvent;
+    private int kafkaWaitSecond;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -77,22 +84,25 @@ public class AppService {
     public static final String TYPE_SOAP = "SOAP";
     public static final String TYPE_REST = "REST";
     public static final String TYPE_FTP = "FTP";
+    public static final String TYPE_KAFKA = "KAFKA";
     public static final String METHOD_HTTPPOST = "POST";
     public static final String METHOD_HTTPGET = "GET";
     public static final String METHOD_HTTPDELETE = "DELETE";
     public static final String METHOD_HTTPPUT = "PUT";
     public static final String METHOD_HTTPPATCH = "PATCH";
+    public static final String METHOD_KAFKAPRODUCE = "PRODUCE";
+    public static final String METHOD_KAFKASEARCH = "SEARCH";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_XML = "XML";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_JSON = "JSON";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_TXT = "TXT";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN = "UNKNOWN";
-    
+
     public byte[] getFile() {
-    	return this.file;
+        return this.file;
     }
-    
+
     public void setFile(byte[] file) {
-    	this.file = file;
+        this.file = file;
     }
 
     public int getTimeoutms() {
@@ -314,13 +324,77 @@ public class AppService {
     public void setApplication(String application) {
         this.application = application;
     }
-    
+
     public String getFileName() {
-    	return fileName;
+        return fileName;
     }
-    
+
     public void setFileName(String fileName) {
-    	this.fileName = fileName;
+        this.fileName = fileName;
+    }
+
+    public String getKafkaTopic() {
+        return kafkaTopic;
+    }
+
+    public void setKafkaTopic(String kafkaTopic) {
+        this.kafkaTopic = kafkaTopic;
+    }
+
+    public String getKafkaKey() {
+        return kafkaKey;
+    }
+
+    public void setKafkaKey(String kafkaKey) {
+        this.kafkaKey = kafkaKey;
+    }
+
+    public long getKafkaResponseOffset() {
+        return kafkaResponseOffset;
+    }
+
+    public void setKafkaResponseOffset(long kafkaResponseOffset) {
+        this.kafkaResponseOffset = kafkaResponseOffset;
+    }
+
+    public int getKafkaResponsePartition() {
+        return kafkaResponsePartition;
+    }
+
+    public void setKafkaResponsePartition(int kafkaResponsePartition) {
+        this.kafkaResponsePartition = kafkaResponsePartition;
+    }
+
+    public String getKafkaFilterPath() {
+        return kafkaFilterPath;
+    }
+
+    public void setKafkaFilterPath(String kafkaFilter) {
+        this.kafkaFilterPath = kafkaFilter;
+    }
+
+    public int getKafkaWaitNbEvent() {
+        return kafkaWaitNbEvent;
+    }
+
+    public void setKafkaWaitNbEvent(int kafkaWaitNbEvent) {
+        this.kafkaWaitNbEvent = kafkaWaitNbEvent;
+    }
+
+    public int getKafkaWaitSecond() {
+        return kafkaWaitSecond;
+    }
+
+    public void setKafkaWaitSecond(int kafkaWaitSecond) {
+        this.kafkaWaitSecond = kafkaWaitSecond;
+    }
+
+    public String getKafkaFilterValue() {
+        return kafkaFilterValue;
+    }
+
+    public void setKafkaFilterValue(String kafkaFilterValue) {
+        this.kafkaFilterValue = kafkaFilterValue;
     }
 
     public JSONObject toJSONOnExecution() {
@@ -389,7 +463,64 @@ public class AppService {
         }
         return jsonMain;
     }
-    
+
+    public JSONObject toKAFKAOnExecution() {
+        JSONObject jsonMain = new JSONObject();
+        JSONObject jsonMyRequest = new JSONObject();
+        JSONObject jsonMyResponse = new JSONObject();
+        try {
+            // Request Information.
+            if (!(this.getTimeoutms() == 0)) {
+                jsonMyRequest.put("TimeOutMs", this.getTimeoutms());
+            }
+            jsonMyRequest.put("Servers", this.getServicePath());
+            if (!StringUtil.isNullOrEmpty(this.getMethod())) {
+                jsonMyRequest.put("KAFKA-Method", this.getMethod());
+            }
+            jsonMyRequest.put("ServiceType", this.getType());
+            if (!(this.getHeaderList().isEmpty())) {
+                JSONObject jsonHeaders = new JSONObject();
+                for (AppServiceHeader header : this.getHeaderList()) {
+                    if (header.getKey().contains("passw")) {
+                        jsonHeaders.put(header.getKey(), "XXXXXXXX");
+                    } else {
+                        jsonHeaders.put(header.getKey(), header.getValue());
+                    }
+                }
+                jsonMyRequest.put("KAFKA-PropsHeader", jsonHeaders);
+            }
+            jsonMyRequest.put("KAFKA-Request", this.getServiceRequest());
+            jsonMyRequest.put("KAFKA-Key", this.getKafkaKey());
+            if (!(this.getKafkaWaitNbEvent() == 0)) {
+                jsonMyRequest.put("WaitNbEvents", this.getKafkaWaitNbEvent());
+            }
+            if (!(this.getKafkaWaitSecond() == 0)) {
+                jsonMyRequest.put("WaitSeconds", this.getKafkaWaitSecond());
+            }
+            jsonMyRequest.put("KAFKA-FilterPath", this.getKafkaFilterPath());
+            jsonMyRequest.put("KAFKA-FilterValue", this.getKafkaFilterValue());
+
+            jsonMain.put("Request", jsonMyRequest);
+
+            // Response Information.
+            if (this.getKafkaResponseOffset() >= 0) {
+                jsonMyResponse.put("Offset", this.getKafkaResponseOffset());
+            }
+            if (this.getKafkaResponsePartition() >= 0) {
+                jsonMyResponse.put("Partition", this.getKafkaResponsePartition());
+            }
+            if (!StringUtil.isNullOrEmpty(this.getResponseHTTPBody())) {
+                jsonMyResponse.put("Messages", this.getResponseHTTPBody());
+            }
+            jsonMain.put("Response", jsonMyResponse);
+
+        } catch (JSONException ex) {
+            Logger LOG = LogManager.getLogger(RecorderService.class);
+            LOG.warn(ex);
+        }
+        return jsonMain;
+    }
+
     public JSONObject toFTPJSONOnExecution() {
         JSONObject jsonMain = new JSONObject();
         JSONObject jsonMyRequest = new JSONObject();

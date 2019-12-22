@@ -67,7 +67,7 @@ public interface ITestCaseLabelService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<TestCaseLabel> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -76,7 +76,7 @@ public interface ITestCaseLabelService {
      * @param testCaseList
      * @return
      */
-    AnswerList readByTestTestCase(String test, String testCase, List<TestCase> testCaseList);
+    AnswerList<TestCaseLabel> readByTestTestCase(String test, String testCase, List<TestCase> testCaseList);
 
     /**
      *
@@ -84,7 +84,7 @@ public interface ITestCaseLabelService {
      * @param system
      * @return
      */
-    AnswerList readByTypeSystem(String type, String system);
+    AnswerList<TestCaseLabel> readByTypeSystem(String type, String system);
 
     /**
      *

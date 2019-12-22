@@ -27,6 +27,8 @@ import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.Robot;
+import org.cerberus.crud.entity.RobotExecutor;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestCase;
@@ -40,14 +42,17 @@ import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestService;
 import org.cerberus.engine.execution.IExecutionCheckService;
 import org.cerberus.engine.execution.IExecutionStartService;
-import org.cerberus.engine.execution.ISeleniumServerService;
 import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.cerberus.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.crud.factory.IFactoryCountryEnvironmentParameters;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.IRobotExecutorService;
+import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.engine.execution.IRobotServerService;
 
 /**
  *
@@ -77,11 +82,15 @@ public class ExecutionStartService implements IExecutionStartService {
     @Autowired
     ExecutionUUID executionUUIDObject;
     @Autowired
-    private ISeleniumServerService serverService;
+    private IRobotServerService serverService;
     @Autowired
     private IParameterService parameterService;
     @Autowired
     private ITestCaseExecutionQueueService inQueueService;
+    @Autowired
+    private IRobotService robotService;
+    @Autowired
+    private IRobotExecutorService robotExecutorService;
 
     private static final Logger LOG = LogManager.getLogger(ExecutionStartService.class);
 
@@ -143,7 +152,10 @@ public class ExecutionStartService implements IExecutionStartService {
                 tCExecution.setConditionVal1Init(tCase.getConditionVal1());
                 tCExecution.setConditionVal2(tCase.getConditionVal2());
                 tCExecution.setConditionVal2Init(tCase.getConditionVal2());
+                tCExecution.setConditionVal3(tCase.getConditionVal3());
+                tCExecution.setConditionVal3Init(tCase.getConditionVal3());
                 tCExecution.setTestCaseVersion(tCase.getTestCaseVersion());
+                tCExecution.setTestCasePriority(tCase.getPriority());
             } else {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
             }
@@ -268,14 +280,12 @@ public class ExecutionStartService implements IExecutionStartService {
                         tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication()));
                 if (cea != null) {
                     tCExecution.setCountryEnvironmentParameters(cea);
-//                    tCExecution.setUrl(cea.getIp()+ cea.getUrl());
                     tCExecution.setUrl(StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", ""));
 
-                    // add possiblity to override URL with MyHost if MyHost is available
+                    // add possibility to override URL with MyHost if MyHost is available
                     if (!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
                         String contextRoot = !StringUtil.isNullOrEmpty(tCExecution.getMyContextRoot()) ? tCExecution.getMyContextRoot() : "";
                         tCExecution.setUrl(StringUtil.getURLFromString(tCExecution.getMyHost(), contextRoot, "", ""));
-
                     }
                     if (!StringUtil.isNullOrEmpty(tCExecution.getMyLoginRelativeURL())) {
                         cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
@@ -352,6 +362,93 @@ public class ExecutionStartService implements IExecutionStartService {
             throw new CerberusException(mes);
         }
         LOG.debug("Country/Environment Information Loaded. " + tCExecution.getCountry() + " - " + tCExecution.getEnvironmentData());
+
+        // If Robot is feeded, we check it exist. If it exist, we overwrite the associated parameters.
+        Robot robObj = null;
+        RobotExecutor robExeObj = null;
+        String robotHost = "";
+        String robotPort = "";
+        String browser = tCExecution.getBrowser();
+        String robotDecli = "";
+        String version = "";
+        String platform = "";
+        if (!StringUtil.isNullOrEmpty(tCExecution.getRobot())) {
+            robObj = robotService.readByKey(tCExecution.getRobot());
+
+            if (robObj == null) {
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTNOTEXIST)
+                        .resolveDescription("ROBOT", tCExecution.getRobot()));
+            }
+
+            // If Robot parameter is defined and we can find the robot, we overwrite the corresponding parameters.
+            browser = ParameterParserUtil.parseStringParam(robObj.getBrowser(), browser);
+            robotDecli = ParameterParserUtil.parseStringParam(robObj.getRobotDecli(), "");
+            if (StringUtil.isNullOrEmpty(robotDecli)) {
+                robotDecli = robObj.getRobot();
+            }
+            version = ParameterParserUtil.parseStringParam(robObj.getVersion(), version);
+            platform = ParameterParserUtil.parseStringParam(robObj.getPlatform(), platform);
+            tCExecution.setUserAgent(robObj.getUserAgent());
+            tCExecution.setScreenSize(robObj.getScreenSize());
+            tCExecution.setBrowser(browser);
+            tCExecution.setRobotDecli(robotDecli);
+            tCExecution.setVersion(version);
+            tCExecution.setPlatform(platform);
+            tCExecution.setRobotObj(robObj);
+
+            // We cannot execute a testcase on a desactivated Robot.
+            if ("N".equalsIgnoreCase(robObj.getActive())) {
+                LOG.debug("Robot " + tCExecution.getRobot() + " is not active.");
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTNOTACTIVE)
+                        .resolveDescription("ROBOT", tCExecution.getRobot()));
+            }
+
+            // If executor is not set, we get the best one from the list.
+            if (StringUtil.isNullOrEmpty(tCExecution.getRobotExecutor())) {
+                LOG.debug("Getting the best Executor on Robot : " + tCExecution.getRobot());
+                robExeObj = robotExecutorService.readBestByKey(tCExecution.getRobot());
+                if (robExeObj != null) {
+                    tCExecution.setRobotExecutor(robExeObj.getExecutor());
+                    tCExecution.setRobotExecutorObj(robExeObj);
+                    robotExecutorService.updateLastExe(robExeObj.getRobot(), robExeObj.getExecutor());
+                } else {
+                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTBESTEXECUTORNOTEXIST)
+                            .resolveDescription("ROBOT", tCExecution.getRobot())
+                            .resolveDescription("EXECUTOR", tCExecution.getRobotExecutor()));
+                }
+                LOG.debug(" Executor retreived : " + robExeObj.getExecutor());
+            } else {
+                LOG.debug(" Getting Requested Robot / Executor : " + tCExecution.getRobot() + " / " + tCExecution.getRobotExecutor());
+                robExeObj = robotExecutorService.convert(robotExecutorService.readByKey(tCExecution.getRobot(), tCExecution.getRobotExecutor()));
+                tCExecution.setRobotExecutorObj(robExeObj);
+                if (robExeObj == null) {
+                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTEXECUTORNOTEXIST)
+                            .resolveDescription("ROBOT", tCExecution.getRobot())
+                            .resolveDescription("EXECUTOR", tCExecution.getRobotExecutor()));
+                } else {
+                    // We cannot execute a testcase on a desactivated Robot.
+                    if ("N".equalsIgnoreCase(robExeObj.getActive())) {
+                        LOG.debug("Robot Executor " + tCExecution.getRobot() + " / " + tCExecution.getRobotExecutor() + " is not active.");
+                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTEXECUTORNOTACTIVE)
+                                .resolveDescription("ROBOT", tCExecution.getRobot())
+                                .resolveDescription("EXECUTOR", tCExecution.getRobotExecutor()));
+                    }
+
+                }
+            }
+
+            robotHost = ParameterParserUtil.parseStringParam(robExeObj.getHost(), tCExecution.getRobotHost());
+            robotPort = ParameterParserUtil.parseStringParam(String.valueOf(robExeObj.getPort()), tCExecution.getRobotPort());
+            tCExecution.setRobotHost(robotHost);
+            tCExecution.setRobotPort(robotPort);
+            tCExecution.setSeleniumIP(robotHost);
+            tCExecution.setSeleniumPort(robotPort);
+            tCExecution.setSeleniumIPUser(robExeObj.getHostUser());
+            tCExecution.setSeleniumIPPassword(robExeObj.getHostPassword());
+
+        } else {
+            tCExecution.setRobotDecli(browser);
+        }
 
         /**
          * If Timeout is defined at the execution level, set action wait default
@@ -455,11 +552,18 @@ public class ExecutionStartService implements IExecutionStartService {
                     LOG.debug("Starting to Stop the Selenium Server.");
                     this.serverService.stopServer(tCExecution);
                     LOG.debug("Selenium Server stopped.");
+                    this.serverService.stopRemoteProxy(tCExecution);
+
                 }
             } catch (Exception ex) {
                 LOG.warn(ex.toString(), ex);
             }
         }
+
+        /**
+         * Stop the Cerberus Executor Proxy
+         */
+        this.serverService.stopRemoteProxy(tCExecution);
 
         /**
          * Feature Flipping. Should be removed when websocket push is fully

@@ -19,6 +19,8 @@
  */
 /* global modalFormCleaner */
 
+var testAutomaticModal = "";
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
@@ -26,7 +28,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
 });
 
 function initPage() {
-
     displayPageLabel();
     var table = loadTable();
 
@@ -34,6 +35,8 @@ function initPage() {
     $("#massActionTestCaseButtonAddLabel").click(massActionModalSaveHandler_addLabel);
     $("#massActionTestCaseButtonRemoveLabel").click(massActionModalSaveHandler_removeLabel);
     $("#massActionTestCaseButtonUpdate").click(massActionModalSaveHandler_update);
+    $("#massActionTestCaseButtonExport").click(massActionModalSaveHandler_export);
+    $("#massActionTestCaseButtonDelete").click(massActionModalSaveHandler_delete);
 
     // MASS ACTION
     $('#massActionTestCaseModal').on('hidden.bs.modal', massActionModalCloseHandler);
@@ -117,6 +120,7 @@ function loadTable(selectTest, sortColumn) {
 
         var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList, "#testCaseList", undefined, true);
 
+
         var app = GetURLParameter('application');
         if (app !== "" && app !== null) {
             filterOnColumn("testCaseTable", "application", app);
@@ -147,6 +151,7 @@ function renderOptionsForTestCaseList(data) {
         if ($("#createTestCaseButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'>";
             contentToAdd += "<button id='createTestCaseButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_testcaselist", "btn_create") + "</button>";
+            contentToAdd += "<button id='importTestCaseButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-import'></span> " + doc.getDocLabel("page_testcaselist", "btn_import") + "</button>";
             contentToAdd += "<button id='createBrpMassButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-th-list'></span> " + doc.getDocLabel("page_global", "button_massAction") + "</button>";
             contentToAdd += "</div>";
 
@@ -155,7 +160,7 @@ function renderOptionsForTestCaseList(data) {
             $('#testCaseList #createTestCaseButton').click(data, function () {
                 // Getting the Test from the 1st row of the testcase table.
                 if ($("#testCaseTable td.sorting_1")[0] !== undefined) {
-                    var firstRowTest = $("#testCaseTable td.sorting_1")[0].textContent;
+                    var firstRowTest = testAutomaticModal;
 //                    addTestCaseClick(firstRowTest);
                     openModalTestCase(firstRowTest, undefined, "ADD");
                 } else {
@@ -164,6 +169,7 @@ function renderOptionsForTestCaseList(data) {
                     openModalTestCase(testQueryString, undefined, "ADD");
                 }
             });
+            $('#testCaseList #importTestCaseButton').click(importTestCaseClick);
             $('#testCaseList #createBrpMassButton').click(massActionClick);
         }
     }
@@ -212,6 +218,7 @@ function deleteEntryHandlerClick() {
         showMessageMainPage(messageType, data.message, false);
         //close confirmation window
         $('#confirmationModal').modal('hide');
+
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
@@ -228,6 +235,19 @@ function massActionModalSaveHandler_addLabel() {
     var formNewValues = $('#massActionTestCaseModal #massActionTestCaseModalFormAddLabel');
     var formList = $('#massActionForm');
     var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
+
+    var table2 = $('#selectLabelAddS').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
+    var table2 = $('#selectLabelAddR').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
+    var table2 = $('#selectLabelAddB').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
 
     showLoaderInModal('#massActionTestCaseModal');
 
@@ -252,6 +272,19 @@ function massActionModalSaveHandler_removeLabel() {
     var formNewValues = $('#massActionTestCaseModal #massActionTestCaseModalFormAddLabel');
     var formList = $('#massActionForm');
     var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
+
+    var table2 = $('#selectLabelAddS').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
+    var table2 = $('#selectLabelAddR').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
+    var table2 = $('#selectLabelAddB').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
 
     showLoaderInModal('#massActionTestCaseModal');
 
@@ -294,9 +327,88 @@ function massActionModalSaveHandler_update() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
+function massActionModalSaveHandler_export() {
+    clearResponseMessage($('#massActionTestCaseModal'));
+
+    $("input[data-line=select]:checked").each(function (index, file) {
+        var t = $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
+        var test = t.split("test=")[1].split("&testcase=")[0];
+        var testcase = t.split("test=")[1].split("&testcase=")[1];
+
+        var url = "./ExportTestCase?" + $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
+        let iframe = document.createElement('iframe');
+        iframe.style.visibility = 'collapse';
+        document.body.append(iframe);
+
+        iframe.contentDocument.write(
+                "<form action='" + url + "' method='GET'><input name='test' value='" + test + "'/><input name='testcase' value='" + testcase + "'/></form>"
+                );
+        iframe.contentDocument.forms[0].submit();
+
+        setTimeout(() => iframe.remove(), 2000);
+    });
+    var data = '{"messageType":"OK","message":"Export OK"}';
+    showMessage(JSON.parse(data));
+    $('#testCaseTable').DataTable().draw();
+    $("#selectAll").prop("checked", false);
+    $('#massActionTestCaseModal').modal('hide');
+}
+
+
+function massActionModalSaveHandler_delete() {
+    clearResponseMessage($('#massActionTestCaseModal'));
+
+    var doc = new Doc();
+    var messageComplete = doc.getDocLabel("page_testcase", "message_delete_all");
+    messageComplete += "</br></br>";
+
+    $("input[data-line=select]:checked").each(function (index, file) {
+        var t = $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
+        var test = t.split("test=")[1].split("&testcase=")[0];
+        var testcase = t.split("test=")[1].split("&testcase=")[1];
+        messageComplete += (index + 1) + ': ' + test + " - " + testcase;
+        messageComplete += "</br>";
+    });
+    showModalConfirmation(deleteMassTestCase, undefined, "Delete", messageComplete);
+
+}
+
+function deleteMassTestCase() {
+    var returnMessage = '{"messageType":"OK","message":"Delete OK"}';
+
+    //Loop on TestCase Selected to delete them 
+    $("input[data-line=select]:checked").each(function (index, file) {
+        var t = $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testCase=');
+        var url = "DeleteTestCase?" + t;
+
+        $.ajax({
+            url: url,
+            async: true,
+            method: "GET",
+            success: function (data) {
+                data = JSON.parse(data);
+                if (getAlertType(data.messageType) !== "success") {
+                    returnMessage = data;
+                }
+            },
+            error: function () {
+                returnMessage = '{"messageType":"KO","message":"Delete KO"}';
+            }
+        });
+
+    });
+    showMessage(JSON.parse(returnMessage));
+
+    $('#testCaseTable').DataTable().draw();
+    $("#selectAll").prop("checked", false);
+    $('#confirmationModal').modal('hide');
+    $('#massActionTestCaseModal').modal('hide');
+
+}
+
 function massActionModalCloseHandler() {
     // reset form values
-    $('#massActionTestCaseModal #massActionTestCaseModalForm')[0].reset();
+    $('#massActionTestCaseModal #massActionTestCaseModalFormUpdate')[0].reset();
     // remove all errors on the form fields
     $(this).find('div.has-error').removeClass("has-error");
     // clear the response messages of the modal
@@ -352,42 +464,101 @@ function massActionClick() {
     }
 }
 
-function loadTestFilters(selectTest) {
-    var jqxhr = $.get("ReadTest", "system=" + getUser().defaultSystem);
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-        var option = $('<option></option>').attr("value", "ALL").text("-- ALL --");
-        $('#selectTest').append(option);
-        if (messageType === "success") {
-            var index;
-            for (index = 0; index < data.contentTable.length; index++) {
-                //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
-                var encodedString = data.contentTable[index].test.replace(/\"/g, "%22");
-                var text = data.contentTable[index].test + ' - ' + data.contentTable[index].description;
-                var option = $('<option></option>').attr("value", encodedString).text(text);
-                $('#selectTest').append(option);
-            }
-            $('#selectTest').select2();
+function importTestCaseClick() {
+    $("#importTestCaseButton").off("click");
 
-            //if the test is passed as a url parameter, then we load the testcase list from that test. If not we load the list with testcases from all tests.
-            if (!isEmptyorALL(selectTest)) {
-//                $('#selectTest').val(selectTest);
-                $('#selectTest').val(selectTest).trigger("change");
-
-                var selectTestNew = $("#selectTest option:selected").attr("value");
-                if (selectTestNew !== selectTest) { // If the url test value does not exist in the combobox --> we display a warning message.
-                    showMessageMainPage("warning", "The test \"" + selectTest + "\" contains no testcase on application that belong to " + getUser().defaultSystem + " system.", false);
-                    option = $('<option></option>').attr("value", selectTest).text(selectTest);
-                    $('#selectTest').append(option);
-//                    $('#selectTest').val(selectTest);
-                    $('#selectTest').val(selectTest).trigger("change");
-                }
-            }
-        } else {
-            showMessageMainPage(messageType, data.message, false);
+    var fileInput = document.getElementById('files');
+    fileInput.addEventListener('change', function (evnt) {
+        fileList = [];
+        for (var i = 0; i < fileInput.files.length; i++) {
+            fileList.push(fileInput.files[i]);
         }
-    }).fail(handleErrorAjaxAfterTimeout);
+        renderFileList(fileList);
+    });
+
+    $("#importTestCaseButton").click(function () {
+        confirmImportTestCaseModalHandler();
+    });
+
+    var doc = new Doc();
+    var text = doc.getDocLabel("page_testcaselist", "import_testcase_msg");
+    $('#importTestCaseModalText').text(text);
+
+    $('#importTestCaseModal').modal('show');
 }
+
+function buttonCloseImportHandler(event) {
+    var modalID = event.data.extra;
+    // reset form values
+    $(modalID)[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($(modalID));
+
+}
+
+function confirmImportTestCaseModalHandler() {
+    clearResponseMessage($('#importTestCaseModal'));
+
+    var formEdit = $('#importTestCaseModal #importTestCaseModalForm');
+
+    var sa = formEdit.serializeArray();
+    var formData = new FormData();
+
+    for (var i in sa) {
+        formData.append(sa[i].name, sa[i].value);
+    }
+
+    var file = $("#importTestCaseModal input[type=file]");
+    for (var i = 0; i < $($(file).get(0)).prop("files").length; i++) {
+        formData.append("file", file.prop("files")[i]);
+    }
+
+    // Calculate servlet name to call.
+    var myServlet = "ImportTestCase";
+
+    // Get the header data from the form.
+    showLoaderInModal('#importTestCaseModal');
+
+    $.ajax({
+        url: myServlet,
+        async: true,
+        method: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (data) {
+            data = JSON.parse(data);
+            if (getAlertType(data.messageType) === "success") {
+                var oTable = $("#testCaseTable").dataTable();
+                oTable.fnDraw(false);
+                $('#importTestCaseModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#importTestCaseModal'));
+            }
+            hideLoaderInModal('#importTestCaseModal');
+        },
+        error: showUnexpectedError
+    });
+}
+
+/**
+ * Render the list of file to import
+ * @param {type} fileList
+ * @return nothing
+ */
+function renderFileList(fileList) {
+    var fileListDisplay = document.getElementById('file-list-display');
+    fileListDisplay.innerHTML = '';
+    fileList.forEach(function (file, index) {
+        var fileDisplayEl = document.createElement('p');
+        fileDisplayEl.innerHTML = (index + 1) + ': ' + file.name;
+        fileListDisplay.appendChild(fileDisplayEl);
+    });
+}
+
 
 function setActive(checkbox) {
     var test = checkbox.dataset.test;
@@ -493,7 +664,7 @@ function aoColumnsFunc(countries, tableId) {
             "bSearchable": false,
             "title": doc.getDocOnline("page_global", "columnAction"),
             "sDefaultContent": "",
-            "sWidth": "160px",
+            "sWidth": "175px",
             "mRender": function (data, type, obj) {
                 var buttons = "";
 
@@ -509,6 +680,10 @@ function aoColumnsFunc(countries, tableId) {
                                         class="deleteEntry btn btn-default btn-xs margin-right25" \n\
                                         name="deleteEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_delete") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
+                var exportEntry = '<a id="exportEntry" href="./ExportTestCase?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testCase"]) + '"\n\
+                                        class="editEntry btn btn-default btn-xs margin-right5" \n\
+                                        name="exportEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_export") + '" type="button">\n\
+                                        <span class="glyphicon glyphicon-export"></span></a>';
                 var duplicateEntry = '<button id="duplicateEntry" onclick="openModalTestCase(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\',\'DUPLICATE\');"\n\
                                         class="duplicateEntry btn btn-default btn-xs margin-right5" \n\
                                         name="duplicateEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_duplicate") + '" type="button">\n\
@@ -533,6 +708,9 @@ function aoColumnsFunc(countries, tableId) {
                         buttons += duplicateEntry;
                     }
                 }
+                if (data.hasPermissionsUpdate) {
+                    buttons += exportEntry;
+                }
                 if (data.hasPermissionsDelete) {
                     buttons += deleteEntry;
                 }
@@ -546,7 +724,14 @@ function aoColumnsFunc(countries, tableId) {
             "sName": "tec.test",
             "title": doc.getDocOnline("test", "Test"),
             "sWidth": "120px",
-            "sDefaultContent": ""
+            "sDefaultContent": "",
+            "mRender": function (data, type, oObj, full) {
+                if (full.row == 0) {
+                    testAutomaticModal = oObj.test;
+                }
+                return oObj.test;
+            }
+
         },
         {
             "data": "testCase",
@@ -566,8 +751,10 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "labels",
+            "visible": false,
             "sName": "lab.label",
             "title": doc.getDocOnline("label", "label"),
+            "bSortable": false,
             "sWidth": "170px",
             "sDefaultContent": "",
             "render": function (data, type, full, meta) {
@@ -582,6 +769,7 @@ function aoColumnsFunc(countries, tableId) {
             "data": "labelsSTICKER",
             "sName": "lab.labelsSTICKER",
             "title": doc.getDocOnline("label", "labelsSTICKER"),
+            "bSortable": false,
             "sWidth": "170px",
             "sDefaultContent": "",
             "render": function (data, type, full, meta) {
@@ -594,8 +782,10 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "labelsREQUIREMENT",
+            "visible": false,
             "sName": "lab.labelsREQUIREMENT",
             "title": doc.getDocOnline("label", "labelsREQUIREMENT"),
+            "bSortable": false,
             "sWidth": "170px",
             "sDefaultContent": "",
             "render": function (data, type, full, meta) {
@@ -608,8 +798,10 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "labelsBATTERY",
+            "visible": false,
             "sName": "lab.labelsBATTERY",
             "title": doc.getDocOnline("label", "labelsBATTERY"),
+            "bSortable": false,
             "sWidth": "170px",
             "sDefaultContent": "",
             "render": function (data, type, full, meta) {
@@ -643,6 +835,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "tcActive",
+            "visible": false,
             "sName": "tec.tcactive",
             "title": doc.getDocOnline("testcase", "TcActive"),
             "sDefaultContent": "",
@@ -668,6 +861,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "priority",
+            "visible": false,
             "sName": "tec.priority",
             "title": doc.getDocOnline("invariant", "PRIORITY"),
             "sWidth": "70px",
@@ -675,6 +869,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "function",
+            "visible": false,
             "like": true,
             "sName": "tec.function",
             "title": doc.getDocOnline("testcase", "Function"),
@@ -682,14 +877,8 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
-            "data": "project",
-            "sName": "tec.project",
-            "title": doc.getDocOnline("project", "idproject"),
-            "sWidth": "100px",
-            "sDefaultContent": ""
-        },
-        {
             "data": "origine",
+            "visible": false,
             "sName": "tec.origine",
             "title": doc.getDocOnline("testcase", "Origine"),
             "sWidth": "70px",
@@ -697,6 +886,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "refOrigine",
+            "visible": false,
             "sName": "tec.refOrigine",
             "like": true,
             "title": doc.getDocOnline("testcase", "RefOrigine"),
@@ -705,13 +895,15 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "group",
+            "visible": false,
             "sName": "tec.group",
-            "title": doc.getDocOnline("invariant", "GROUP"),
+            "title": doc.getDocOnline("invariant", "Type"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "dateCreated",
+            "visible": false,
             "sName": "tec.dateCreated",
             "like": true,
             "title": doc.getDocOnline("transversal", "DateCreated"),
@@ -720,6 +912,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "usrCreated",
+            "visible": false,
             "sName": "tec.usrCreated",
             "title": doc.getDocOnline("transversal", "UsrCreated"),
             "sWidth": "100px",
@@ -727,6 +920,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "testCaseVersion",
+            "visible": false,
             "sName": "tec.testCaseVersion",
             "title": doc.getDocOnline("testcase", "TestCaseVersion"),
             "sWidth": "50px",
@@ -734,6 +928,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "dateModif",
+            "visible": false,
             "like": true,
             "sName": "tec.dateModif",
             "title": doc.getDocOnline("transversal", "DateModif"),
@@ -746,6 +941,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "usrModif",
+            "visible": false,
             "sName": "tec.usrModif",
             "title": doc.getDocOnline("transversal", "UsrModif"),
             "sWidth": "100px",
@@ -775,6 +971,7 @@ function aoColumnsFunc(countries, tableId) {
                 }
             },
             "bSortable": false,
+            "visible": false,
             "bSearchable": false,
             "sClass": "center",
             "title": country,
@@ -784,7 +981,6 @@ function aoColumnsFunc(countries, tableId) {
 
         aoColumns.push(column);
     }
-
     return aoColumns;
 }
 

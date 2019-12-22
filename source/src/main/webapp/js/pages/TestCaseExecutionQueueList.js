@@ -124,13 +124,24 @@ function displayAndRefresh_jobStatus() {
     showLoader('#QueueJobStatus');
     showLoader('#QueueJobActive');
 
-    var jqxhr = $.getJSON("ExecuteNextInQueue");
+    var jqxhr = $.getJSON("GetExecutionsInQueue");
     $.when(jqxhr).then(function (data) {
         var obj = data;
 
         $("#jobRunning").val(data["jobRunning"]);
         $("#jobStart").val(data["jobStart"]);
-        $("#jobActive").val(data["jobActive"]);
+        $("#jobActive").val(data["jobActive"].toString());
+        $("#instanceJobActive").val(data["executionThreadPoolInstanceActive"].toString());
+        if (data["jobActive"]) {
+            $("#jobActiveStatus").removeClass("glyphicon-pause blink");
+            $("#jobActiveStatus").addClass("glyphicon-refresh spin");
+            $("#modifyParambutton").html("<span class='glyphicon glyphicon-pause'></span> Stop Queue Job");
+        } else {
+            $("#jobActiveStatus").removeClass("glyphicon-refresh spin");
+            $("#jobActiveStatus").addClass("glyphicon-pause blink");
+            $("#modifyParambutton").html("<span class='glyphicon glyphicon-play'></span> Start Queue Job");
+            
+        }
 
         if (data["jobActiveHasPermissionsUpdate"]) {
             $("#modifyParambutton").attr("disabled", false);
@@ -146,13 +157,9 @@ function displayAndRefresh_jobStatus() {
 
 function forceExecution() {
 
-    var jqxhr = $.getJSON("ExecuteNextInQueue?forceExecution=Y");
+    var jqxhr = $.getJSON("GetExecutionsInQueue?forceExecution=Y");
     $.when(jqxhr).then(function (data) {
         var obj = data;
-
-        $("#jobRunning").val(data["jobRunning"]);
-        $("#jobStart").val(data["jobStart"]);
-        $("#jobActive").val(data["jobActive"]);
 
         displayAndRefresh_jobStatus();
 
@@ -477,10 +484,36 @@ function aoColumnsFunc(tableId) {
             }
         },
         {
-            "data": "priority",
-            "sName": "priority",
-            "title": doc.getDocLabel("testcaseexecutionqueue", "priority"),
-            "sWidth": "40px"
+            "data": "test",
+            "sName": "test",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "test_col"),
+            "sWidth": "70px"
+        },
+        {
+            "data": "testCase",
+            "like": true,
+            "sName": "testcase",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "testcase_col"),
+            "sWidth": "70px"
+        },
+        {
+            "data": "country",
+            "sName": "country",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "country_col"),
+            "sWidth": "70px"
+        },
+        {
+            "data": "environment",
+            "sName": "environment",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "environment_col"),
+            "sWidth": "70px"
+        },
+        {
+            "data": "robot",
+            "sName": "robot",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "robot_col"),
+            "sWidth": "70px",
+            "defaultContent": ""
         },
         {
             "data": "tag",
@@ -518,6 +551,13 @@ function aoColumnsFunc(tableId) {
             "defaultContent": ""
         },
         {
+            "data": "priority",
+            "visible": false,
+            "sName": "priority",
+            "title": doc.getDocLabel("testcaseexecutionqueue", "priority"),
+            "sWidth": "40px"
+        },
+        {
             "data": "exeId",
             "like": true,
             "sName": "exeId",
@@ -534,6 +574,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "UsrCreated",
+            "visible": false,
             "sName": "UsrCreated",
             "sWidth": "70px",
             "defaultContent": "",
@@ -541,44 +582,12 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "DateCreated",
+            "visible": false,
             "like": true,
             "sName": "DateCreated",
             "sWidth": "110px",
             "defaultContent": "",
             "title": doc.getDocOnline("transversal", "DateCreated")
-        },
-        {
-            "data": "test",
-            "sName": "test",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "test_col"),
-            "sWidth": "70px"
-        },
-        {
-            "data": "testCase",
-            "like": true,
-            "sName": "testcase",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "testcase_col"),
-            "sWidth": "70px"
-        },
-        {
-            "data": "country",
-            "sName": "country",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "country_col"),
-            "sWidth": "70px"
-        },
-        {
-            "data": "environment",
-            "sName": "environment",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "environment_col"),
-            "sWidth": "70px"
-        },
-        {
-            "data": "robot",
-            "sName": "robot",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "robot_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
         },
         {
             "data": "robotIP",
@@ -718,6 +727,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "debugFlag",
+            "visible": false,
             "sName": "debugFlag",
             "title": doc.getDocLabel("testcaseexecutionqueue", "debugFlag"),
             "sWidth": "70px",
@@ -725,6 +735,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "UsrModif",
+            "visible": false,
             "sName": "UsrModif",
             "sWidth": "70px",
             "defaultContent": "",
@@ -732,6 +743,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "DateModif",
+            "visible": false,
             "sName": "DateModif",
             "sWidth": "110px",
             "defaultContent": "",
@@ -776,7 +788,7 @@ function aoColumnsFunc_followUp() {
                     // Constrain is global and hasPermitionUpdate is true.
                     buttons += editGlobalParam;
                 }
-                if ((data[0] === "constrain3_robot") && (data[9])) {
+                if ((data[0] === "constrain4_robot") && (data[9])) {
                     // Constrain is global and hasPermitionUpdate is true.
                     if (data[10]) {
                         // Invariant exist. We can edit it.

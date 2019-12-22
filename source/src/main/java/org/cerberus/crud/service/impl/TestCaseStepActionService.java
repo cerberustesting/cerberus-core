@@ -159,7 +159,7 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     }
 
     @Override
-    public AnswerList readByTestTestCase(String test, String testcase) {
+    public AnswerList<TestCaseStepAction> readByTestTestCase(String test, String testcase) {
         return testCaseStepActionDAO.readByTestTestCase(test, testcase);
     }
 

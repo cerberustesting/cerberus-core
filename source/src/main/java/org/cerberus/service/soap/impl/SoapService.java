@@ -203,11 +203,11 @@ public class SoapService implements ISoapService {
 
     @Override
     public AnswerItem<AppService> callSOAP(String envelope, String servicePath, String soapOperation, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs, String system) {
-        AnswerItem result = new AnswerItem<>();
+        AnswerItem<AppService> result = new AnswerItem<>();
         String unescapedEnvelope = StringEscapeUtils.unescapeXml(envelope);
         boolean is12SoapVersion = SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches();
 
-        AppService serviceSOAP = factoryAppService.create("", AppService.TYPE_SOAP, null, "", "", envelope, "", servicePath, "", soapOperation, "", null, "", null, null);
+        AppService serviceSOAP = factoryAppService.create("", AppService.TYPE_SOAP, null, "", "", envelope, "", "", "", "", "", servicePath, "", soapOperation, "", null, "", null, null);
         serviceSOAP.setTimeoutms(timeOutMs);
         ByteArrayOutputStream out = null;
         MessageEvent message = null;
@@ -293,7 +293,7 @@ public class SoapService implements ISoapService {
 
                 // Create the Proxy.
                 SocketAddress sockaddr = new InetSocketAddress(proxyHost, proxyPort);
-                try (Socket socket = new Socket();) {
+                try ( Socket socket = new Socket();) {
                     socket.connect(sockaddr, 10000);
                     Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(socket.getInetAddress(), proxyPort));
 
@@ -349,7 +349,7 @@ public class SoapService implements ISoapService {
             result.setItem(serviceSOAP);
 
         } catch (SOAPException | UnsupportedOperationException | IOException | SAXException | ParserConfigurationException | CerberusException e) {
-            LOG.error(e.toString(), e);
+            LOG.error("Exception when trying to callSOAP on URL : '" + servicePath + "' for operation : '" + soapOperation + "'", e);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription()
                     .replace("%SERVICEPATH%", servicePath)

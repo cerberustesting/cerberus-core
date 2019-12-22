@@ -60,7 +60,7 @@ public class MyVersionService implements IMyVersionService {
     }
 
     @Override
-    public boolean UpdateMyVersionString(String key, String value) {
+    public boolean updateMyVersionString(String key, String value) {
         MyVersion DtbVersion = new MyVersion();
         DtbVersion.setKey(key);
         DtbVersion.setValueString(value);
@@ -68,7 +68,12 @@ public class MyVersionService implements IMyVersionService {
     }
 
     @Override
-    public boolean UpdateMyVersionTable(MyVersion myversion) {
-        return this.myVersionDAO.updateMyVersion(myversion);
+    public boolean flagMyVersionString(String key) {
+        return this.myVersionDAO.flagMyVersionString(key);
+    }
+
+    @Override
+    public boolean update(MyVersion myversion) {
+        return this.myVersionDAO.update(myversion);
     }
 }

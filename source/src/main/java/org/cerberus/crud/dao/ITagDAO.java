@@ -61,9 +61,10 @@ public interface ITagDAO {
      * @param sort
      * @param searchParameter
      * @param individualSearch
+     * @param system
      * @return
      */
-    AnswerList<Tag> readByVariousByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Tag> readByVariousByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> system);
 
     /**
      *
@@ -86,6 +87,14 @@ public interface ITagDAO {
      * @return
      */
     Answer update(String tag, Tag object);
+
+    /**
+     *
+     * @param tag
+     * @param object
+     * @return
+     */
+    Answer updateBrowserStackBuild(String tag, Tag object);
 
     /**
      *

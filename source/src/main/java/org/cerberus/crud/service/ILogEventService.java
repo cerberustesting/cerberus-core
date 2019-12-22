@@ -39,7 +39,7 @@ public interface ILogEventService {
      * @param logEventID
      * @return
      */
-    AnswerItem readByKey(long logEventID);
+    AnswerItem<LogEvent> readByKey(long logEventID);
 
     /**
      *
@@ -51,7 +51,7 @@ public interface ILogEventService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<LogEvent> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -100,5 +100,5 @@ public interface ILogEventService {
      * @param columnName
      * @return 
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

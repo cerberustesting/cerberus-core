@@ -64,8 +64,8 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public AnswerItem readByKey(long id) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<CountryEnvParam_log> readByKey(long id) {
+        AnswerItem<CountryEnvParam_log> ans = new AnswerItem<>();
         CountryEnvParam_log result = null;
         final String query = "SELECT * FROM countryenvparam_log WHERE id = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -124,13 +124,13 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<CountryEnvParam_log> readByVariousByCriteria(String system, String country, String environment, String build, String revision, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        AnswerList<CountryEnvParam_log> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<CountryEnvParam_log> countryEnvParamLogList = new ArrayList<CountryEnvParam_log>();
+        List<CountryEnvParam_log> countryEnvParamLogList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
@@ -297,11 +297,11 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
     }
 
     @Override
-    public AnswerList readLastChanges(String system, String country, Integer nbdays, String envGp) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<CountryEnvParam_log> readLastChanges(String system, String country, Integer nbdays, String envGp) {
+        AnswerList<CountryEnvParam_log> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<CountryEnvParam_log> objectList = new ArrayList<CountryEnvParam_log>();
+        List<CountryEnvParam_log> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
@@ -572,13 +572,13 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 

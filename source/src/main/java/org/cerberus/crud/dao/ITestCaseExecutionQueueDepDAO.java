@@ -19,10 +19,12 @@
  */
 package org.cerberus.crud.dao;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueueDep;
-import org.cerberus.util.answer.Answer;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
@@ -55,7 +57,14 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @param exeQueueId
      * @return
      */
-    AnswerItem<Integer> readNbWaitingByExeQueue(long exeQueueId);
+    AnswerItem<Integer> readNbWaitingByExeQueueId(long exeQueueId);
+
+    /**
+     *
+     * @param exeQueueId
+     * @return
+     */
+    AnswerItem<Integer> readNbReleasedWithNOKByExeQueueId(long exeQueueId);
 
     /**
      *
@@ -63,6 +72,20 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @return
      */
     AnswerList<Long> readExeQueueIdByExeId(long exeId);
+
+    /**
+     *
+     * @param queueId
+     * @return
+     */
+    AnswerList<Long> readExeQueueIdByQueueId(long queueId);
+
+    /**
+     *
+     * @param exeQueueId
+     * @return
+     */
+    AnswerList<TestCaseExecutionQueueDep> readByExeQueueId(long exeQueueId);
 
     /**
      *
@@ -86,7 +109,15 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @param testcase
      * @return
      */
-    AnswerItem<Integer> insertFromTCDep(long queueId, String env, String country, String tag, String test, String testcase);
+    AnswerItem<Integer> insertFromTestCaseDep(long queueId, String env, String country, String tag, String test, String testcase);
+
+    /**
+     *
+     * @param queueId
+     * @param fromQueueId
+     * @return
+     */
+    AnswerItem<Integer> insertFromExeQueueIdDep(long queueId, long fromQueueId);
 
     /**
      *
@@ -98,9 +129,10 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @param testCase
      * @param comment
      * @param exeId
+     * @param queueId
      * @return
      */
-    AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId);
+    AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId, long queueId);
 
     /**
      *
@@ -111,4 +143,11 @@ public interface ITestCaseExecutionQueueDepDAO {
      */
     AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
+    /**
+     *
+     * @param testCaseExecutions
+     * @return
+     * @throws CerberusException
+     */
+    HashMap<TestCaseExecution, List<TestCaseExecutionQueueDep>> readDependenciesByTestCaseExecution(List<TestCaseExecution> testCaseExecutions) throws CerberusException;
 }

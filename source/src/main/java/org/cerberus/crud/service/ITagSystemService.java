@@ -34,6 +34,8 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITagSystemService {
 
+    List<String> getTagSystemCache();
+
     /**
      *
      * @param tag
@@ -91,6 +93,15 @@ public interface ITagSystemService {
 
     /**
      *
+     * @param tag
+     * @param system
+     * @param user
+     * @return
+     */
+    Answer createIfNotExist(String tag, String system, String user);
+
+    /**
+     *
      * @param object
      * @return
      */
@@ -137,7 +148,6 @@ public interface ITagSystemService {
 
     /**
      *
-     * @param campaign
      * @param searchParameter
      * @param individualSearch
      * @param columnName

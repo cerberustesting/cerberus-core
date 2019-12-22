@@ -20,6 +20,23 @@ The other sub data values are retreived as %PROP1.SUBDATA1%.
 
 If you do not select an environment, a system and a country, your data will be available for all environments, systems and countries.
 
+Cerberus allows the definition of 4 types : INTERNAL, SQL, CSV and SERVICE
+
+|=== 
+
+| *TYPE* | *Description*  
+
+| Database | Static test data - in each execution the values used by the test cases are statically definied directly in Cerberus.
+
+| SQL | Test data obtained from a SQL execution – values depend on what the SQL return on the corresponding environment.
+
+| CSV | Test data obtained from a CSV file structure privided by a URL. Values depend on the result of the service call to CSV file.
+
+| SERVICE | Test data obtained from a SERVICE call – values depend on the result of the service call. Service needs to be configured on Service screen inside application menu.
+
+|===
+
+
 === Data configurations
 
 ==== INTERNAL configuration

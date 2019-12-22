@@ -200,6 +200,19 @@ public class Label {
         return result;
     }
 
+    public JSONObject toJsonGUI() {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("description", this.getDescription());
+            result.put("label", this.getLabel());
+            result.put("type", this.getType());
+            result.put("color", this.getColor());
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return result;
+    }
+
     @Override
     public String toString() {
         return id + ":" + system + "-" + label;

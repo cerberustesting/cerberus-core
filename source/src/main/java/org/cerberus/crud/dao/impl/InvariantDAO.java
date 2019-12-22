@@ -32,14 +32,16 @@ import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IInvariantDAO;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.factory.IFactoryInvariant;
+import org.cerberus.crud.utils.RequestDbUtils;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -68,76 +70,37 @@ public class InvariantDAO implements IInvariantDAO {
     private final int MAX_ROW_SELECTED = 1000;
 
     @Override
-    public AnswerItem readByKey(String id, String value) {
-        AnswerItem ans = new AnswerItem<>();
-        Invariant result = null;
+    public Invariant readByKey(String id, String value) throws CerberusException {
         final String query = "SELECT * FROM `invariant` WHERE `idname` = ? AND `value` = ?";
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
             LOG.debug("SQL.param.id : " + id);
             LOG.debug("SQL.param.value : " + value);
         }
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, id);
-                preStat.setString(2, value);
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = loadFromResultSet(resultSet);
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        ans.setItem(result);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                } finally {
-                    resultSet.close();
+        return RequestDbUtils.executeQuery(databaseSpring, query,
+                ps -> {
+                    ps.setString(1, id);
+                    ps.setString(2, value);
+                },
+                resultSet -> {
+                    return loadFromResultSet(resultSet);
                 }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
-        }
-
-        //sets the message
-        ans.setResultMessage(msg);
-        return ans;
+            );
     }
 
     @Override
-    public AnswerList readByIdname(String idName) {
-        AnswerList answer = new AnswerList<>();
-        MessageEvent msg;
-        List<Invariant> result = new ArrayList<>();
+    public List<Invariant> readByIdname(String idName) throws CerberusException {
 
-        final String query = "SELECT * FROM invariant i  WHERE i.idname = ? ORDER BY sort";
+        // secure invariant with allow System user
+        String systemClause = "";
+
+        if ( "SYSTEM".equals(idName) ) {
+            systemClause = " AND " + UserSecurity.getSystemAllowForSQL("value");
+        }
+
+        final String query = "SELECT * FROM invariant i  WHERE i.idname = ? " + systemClause + " ORDER BY sort";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -145,38 +108,19 @@ public class InvariantDAO implements IInvariantDAO {
             LOG.debug("SQL.param.idName : " + idName);
         }
 
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query);) {
-        	preStat.setString(1, idName);
-            try(ResultSet resultSet = preStat.executeQuery();) {
-                while (resultSet.next()) {
-                    result.add(this.loadFromResultSet(resultSet));
-                }
-                if (result.isEmpty()) {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                } else {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                }
-
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } 
-        } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } 
-        answer.setTotalRows(result.size());
-        answer.setDataList(result);
-        answer.setResultMessage(msg);
-        return answer;
+        return RequestDbUtils.executeQueryList(databaseSpring, query,
+               ps -> {
+                   ps.setString(1, idName);
+               },
+               resultSet -> {
+                   return this.loadFromResultSet(resultSet);
+               }
+        );
     }
 
     @Override
-    public AnswerList readByIdnameByGp1(String idName, String gp) {
-        AnswerList ansList = new AnswerList<>();
+    public AnswerList<Invariant> readByIdnameByGp1(String idName, String gp) {
+        AnswerList<Invariant> ansList = new AnswerList<>();
         MessageEvent msg;
 
         List<Invariant> invariantList = new ArrayList<Invariant>();
@@ -246,11 +190,11 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readByIdnameByNotGp1(String idName, String gp) {
-        AnswerList ansList = new AnswerList<>();
+    public AnswerList<Invariant> readByIdnameByNotGp1(String idName, String gp) {
+        AnswerList<Invariant> ansList = new AnswerList<>();
         MessageEvent msg;
 
-        List<Invariant> invariantList = new ArrayList<Invariant>();
+        List<Invariant> invariantList = new ArrayList<>();
         final String query = "SELECT * FROM invariant i  WHERE i.idname = ? AND i.gp1 <> ? ORDER BY sort";
 
         // Debug message on SQL.
@@ -317,9 +261,9 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter) {
+    public AnswerList<Invariant> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter) {
         List<Invariant> invariantList = new ArrayList<>();
-        AnswerList answer = new AnswerList<>();
+        AnswerList<Invariant> answer = new AnswerList<>();
         MessageEvent msg;
 
         StringBuilder searchSQL = new StringBuilder();
@@ -431,9 +375,9 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter) {
+    public AnswerList<Invariant> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter) {
         List<Invariant> invariantList = new ArrayList<>();
-        AnswerList answer = new AnswerList<>();
+        AnswerList<Invariant> answer = new AnswerList<>();
         List<String> individalColumnSearchValues = new ArrayList<>();
         MessageEvent msg;
 
@@ -562,10 +506,10 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readDistinctValuesByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter, String columnName) {
         List<String> invariantList = new ArrayList<>();
-        AnswerList answer = new AnswerList<>();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        AnswerList<String> answer = new AnswerList<>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
         MessageEvent msg;
 
         StringBuilder searchSQL = new StringBuilder();
@@ -677,11 +621,11 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readCountryListEnvironmentLastChanges(String system, Integer nbdays) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<Invariant> readCountryListEnvironmentLastChanges(String system, Integer nbdays) {
+        AnswerList<Invariant> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<Invariant> objectList = new ArrayList<Invariant>();
+        List<Invariant> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();

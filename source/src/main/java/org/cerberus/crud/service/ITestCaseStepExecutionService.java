@@ -56,7 +56,7 @@ public interface ITestCaseStepExecutionService {
      * @param testcase
      * @return
      */
-    AnswerList readByVarious1(long executionId, String test, String testcase);
+    AnswerList<TestCaseStepExecution> readByVarious1(long executionId, String test, String testcase);
     
     /**
      *
@@ -65,5 +65,5 @@ public interface ITestCaseStepExecutionService {
      * @param testcase
      * @return
      */
-    AnswerList readByVarious1WithDependency(long executionId, String test, String testcase);
+    AnswerList<TestCaseStepExecution> readByVarious1WithDependency(long executionId, String test, String testcase);
 }

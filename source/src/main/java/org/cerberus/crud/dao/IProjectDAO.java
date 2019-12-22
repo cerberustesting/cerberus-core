@@ -40,7 +40,7 @@ public interface IProjectDAO {
      * @param project
      * @return
      */
-    AnswerItem readByKey(String project);
+    AnswerItem<Project> readByKey(String project);
 
     /**
      *
@@ -52,7 +52,7 @@ public interface IProjectDAO {
      * @param string
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> string);
+    AnswerList<Project> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> string);
 
     /**
      *
@@ -90,5 +90,5 @@ public interface IProjectDAO {
      * @param columnName
      * @return 
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

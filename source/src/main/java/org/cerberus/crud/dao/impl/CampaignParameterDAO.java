@@ -281,8 +281,8 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     }
 
     @Override
-    public AnswerList readByCampaignByCriteria(String campaign, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<CampaignParameter> readByCampaignByCriteria(String campaign, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        AnswerList<CampaignParameter> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<CampaignParameter> campaignParameterList = new ArrayList<CampaignParameter>();
@@ -384,8 +384,8 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     }
 
     @Override
-    public AnswerList readByCampaign(String campaign) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<CampaignParameter> readByCampaign(String campaign) {
+        AnswerList<CampaignParameter> answer = new AnswerList<>();
         MessageEvent msg;
         List<CampaignParameter> result = new ArrayList<CampaignParameter>();
 

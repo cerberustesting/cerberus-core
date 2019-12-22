@@ -19,6 +19,7 @@
  */
 package org.cerberus.statistics;
 
+import java.util.List;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -27,6 +28,11 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IEnvironmentStatisticsService {
 
-    AnswerList<BuildRevisionStatisticsEnv> getEnvironmentStatistics(String MySystem);
+    /**
+     *
+     * @param MySystem
+     * @return
+     */
+    AnswerList<BuildRevisionStatisticsEnv> getEnvironmentStatistics(List<String> MySystem);
 
 }

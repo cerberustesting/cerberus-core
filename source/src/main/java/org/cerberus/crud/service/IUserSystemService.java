@@ -87,6 +87,13 @@ public interface IUserSystemService {
     Answer updateSystemsByUser(User user, List<UserSystem> newGroups);
 
     /**
+     *
+     * @param user
+     * @throws CerberusException
+     */
+    void createSystemAutomatic(String user) throws CerberusException;
+    
+    /**
      * Adding the usersystem
      *
      * @param sys

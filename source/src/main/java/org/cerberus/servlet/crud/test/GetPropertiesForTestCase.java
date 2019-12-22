@@ -36,6 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.util.servlet.ServletUtil;
 
 /**
  *
@@ -59,6 +60,8 @@ public class GetPropertiesForTestCase extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
+        
+
         try {
 
             String test = request.getParameter("test");

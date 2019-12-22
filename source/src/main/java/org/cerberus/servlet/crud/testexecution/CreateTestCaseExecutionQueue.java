@@ -34,6 +34,7 @@ import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
 import org.cerberus.crud.service.ITagService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
@@ -51,6 +52,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -62,6 +64,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class CreateTestCaseExecutionQueue extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateTestCaseExecutionQueue.class);
+    private ITestCaseExecutionQueueDepService tceQueueDep;
+    private IExecutionThreadPoolService executionThreadPoolService;
+    private ITagService tagService;
+    private ITestCaseExecutionQueueService executionQueueService;
+    private IFactoryTestCaseExecutionQueue executionQueueFactory;
+    private ILogEventService logEventService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -145,22 +153,25 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
 
         boolean id_error = false;
 
-        IExecutionThreadPoolService executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
+        executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
 
         // Create Tag when exist.
         if (!StringUtil.isNullOrEmpty(tag)) {
             // We create or update it.
-            ITagService tagService = appContext.getBean(ITagService.class);
-            tagService.createAuto(tag, "", request.getRemoteUser());
+            tagService = appContext.getBean(ITagService.class);
+            List<String> envList = new ArrayList<>();
+            envList.add(environment);
+            List<String> countryList = new ArrayList<>();
+            countryList.add(country);
+
+            tagService.createAuto(tag, "", request.getRemoteUser(), new JSONArray(envList), new JSONArray(countryList));
         }
 
-        // Prepare the final answer.
-        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
-        Answer finalAnswer = new Answer(msg1);
-        List<TestCaseExecutionQueue> insertedList = new ArrayList<>();
-
+        // If action is toQUEUEDwithDEP, that means that we also need to trigger the dependency executions.
+        // So we enrish the input list with dependencies.
+        boolean withNewDep = false;
+        List<Long> idList = new ArrayList<>();
         for (String myId : myIds) {
-
             id_error = false;
             id = 0;
             try {
@@ -168,6 +179,22 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
             } catch (NumberFormatException ex) {
                 id_error = true;
             }
+            idList.add(id);
+        }
+        if (actionState.equals("toQUEUEDwithDep")) {
+            withNewDep = true;
+            tceQueueDep = appContext.getBean(ITestCaseExecutionQueueDepService.class);
+            idList = tceQueueDep.enrichWithDependencies(idList);
+        }
+
+        // Prepare the final answer.
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
+        List<TestCaseExecutionQueue> insertedList = new ArrayList<>();
+
+        for (Long myId : idList) {
+
+            id = myId;
             /**
              * Checking all constrains before calling the services.
              */
@@ -190,8 +217,8 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                     /**
                      * All data seems cleans so we can call the services.
                      */
-                    ITestCaseExecutionQueueService executionQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
-                    IFactoryTestCaseExecutionQueue executionQueueFactory = appContext.getBean(IFactoryTestCaseExecutionQueue.class);
+                    executionQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
+                    executionQueueFactory = appContext.getBean(IFactoryTestCaseExecutionQueue.class);
 
                     if (actionSave.equals("save")) {
                         /**
@@ -205,19 +232,25 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                                     platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose, timeout,
                                     pageSource, seleniumLog, 0, retries, manualExecution, priority, request.getRemoteUser(), null, null, null);
                             executionQueueData.setDebugFlag(debugFlag);
+                            ansItem.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
                         } else {
                             // If id is defined, we get the execution queue from database.
-                            executionQueueData = executionQueueService.convert(executionQueueService.readByKey(id));
-                            executionQueueData.setState(TestCaseExecutionQueue.State.QUEUED);
-                            executionQueueData.setComment("");
-                            executionQueueData.setDebugFlag("N");
-                            executionQueueData.setPriority(TestCaseExecutionQueue.PRIORITY_DEFAULT);
-                            executionQueueData.setUsrCreated(request.getRemoteUser());
+                            executionQueueData = executionQueueService.convert(executionQueueService.readByKey(id, false));
+                            if (executionQueueData != null) {
+                                executionQueueData.setState(TestCaseExecutionQueue.State.QUEUED);
+                                executionQueueData.setComment("");
+                                executionQueueData.setDebugFlag("N");
+                                executionQueueData.setPriority(TestCaseExecutionQueue.PRIORITY_DEFAULT);
+                                executionQueueData.setUsrCreated(request.getRemoteUser());
+                                ansItem.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+                            } else {
+                                ansItem.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED).resolveDescription("ITEM", "Execution Queue").resolveDescription("OPERATION", "Read").resolveDescription("REASON", "Could not find previous queue entry " + id + ". Maybe it was purged."));
+                            }
                         }
-                        ansItem = executionQueueService.create(executionQueueData, false);
 
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ansItem);
                         if (ansItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                            ansItem = executionQueueService.create(executionQueueData, withNewDep, id, TestCaseExecutionQueue.State.QUEUED);
                             TestCaseExecutionQueue addedExecution = (TestCaseExecutionQueue) ansItem.getItem();
                             insertedList.add(addedExecution);
                         }
@@ -227,22 +260,22 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                                 /**
                                  * Update was successful. Adding Log entry.
                                  */
-                                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                                logEventService = appContext.getBean(LogEventService.class);
                                 logEventService.createForPrivateCalls("/CreateTestCaseExecutionQueue", "CREATE", "Created ExecutionQueue : ['" + id + "']", request);
                             }
                         }
 
                     }
 
-                } catch (FactoryCreationException ex) {
-                    LOG.warn(ex);
+                } catch (FactoryCreationException | CerberusException | BeansException ex) {
+                    LOG.error(ex, ex);
                 }
 
             }
         }
 
         // Update is done, we now check what action needs to be performed.
-        if (actionState.equals("toQUEUED")) {
+        if (actionState.equals("toQUEUED") || actionState.equals("toQUEUEDwithDep")) {
             executionThreadPoolService.executeNextInQueueAsynchroneously(false);
         }
 

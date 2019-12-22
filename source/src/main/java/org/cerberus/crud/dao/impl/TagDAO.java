@@ -69,7 +69,7 @@ public class TagDAO implements ITagDAO {
 
     @Override
     public AnswerItem<Tag> readByKey(String tag) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Tag> ans = new AnswerItem<>();
         Tag result = null;
         final String query = "SELECT * FROM `tag` tag WHERE `tag` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -131,7 +131,7 @@ public class TagDAO implements ITagDAO {
 
     @Override
     public AnswerItem<Tag> readByKeyTech(long id) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Tag> ans = new AnswerItem<>();
         Tag result = null;
         final String query = "SELECT * FROM `tag` tag WHERE `id` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -192,8 +192,8 @@ public class TagDAO implements ITagDAO {
     }
 
     @Override
-    public AnswerList<Tag> readByVariousByCriteria(String campaign, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<Tag> readByVariousByCriteria(String campaign, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, List<String> systems) {
+        AnswerList<Tag> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Tag> objectList = new ArrayList<Tag>();
@@ -203,9 +203,13 @@ public class TagDAO implements ITagDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM tag tag ");
-
-        searchSQL.append(" where 1=1 ");
+        if (systems != null && !systems.isEmpty()) {
+            query.append("SELECT SQL_CALC_FOUND_ROWS tag.* FROM tag tag JOIN tagsystem tas ON tas.tag=tag.tag WHERE ");
+            searchSQL.append(SqlUtil.generateInClause("tas.system", systems));
+        } else {
+            query.append("SELECT SQL_CALC_FOUND_ROWS * FROM tag tag ");
+            searchSQL.append(" where 1=1 ");
+        }
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (tag.`id` like ?");
@@ -247,6 +251,12 @@ public class TagDAO implements ITagDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
+                if (systems != null && !systems.isEmpty()) {
+                    for (String system : systems) {
+                        preStat.setString(i++, system);
+                    }
+                }
+
                 if (!StringUtil.isNullOrEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -345,6 +355,14 @@ public class TagDAO implements ITagDAO {
             query.append(", `usrcreated`");
             queryV.append(",?");
         }
+        if (!StringUtil.isNullOrEmpty(object.getReqCountryList())) {
+            query.append(", `ReqCountryList`");
+            queryV.append(",?");
+        }
+        if (!StringUtil.isNullOrEmpty(object.getReqEnvironmentList())) {
+            query.append(", `ReqEnvironmentList`");
+            queryV.append(",?");
+        }
         query.append(") ");
         queryV.append(");");
         query.append(queryV);
@@ -365,6 +383,12 @@ public class TagDAO implements ITagDAO {
                 }
                 if (!StringUtil.isNullOrEmpty(object.getUsrCreated())) {
                     preStat.setString(i++, object.getUsrCreated());
+                }
+                if (!StringUtil.isNullOrEmpty(object.getReqCountryList())) {
+                    preStat.setString(i++, object.getReqCountryList());
+                }
+                if (!StringUtil.isNullOrEmpty(object.getReqEnvironmentList())) {
+                    preStat.setString(i++, object.getReqEnvironmentList());
                 }
 
                 preStat.executeUpdate();
@@ -495,9 +519,56 @@ public class TagDAO implements ITagDAO {
     }
 
     @Override
+    public Answer updateBrowserStackBuild(String tag, Tag object) {
+        MessageEvent msg = null;
+        String query = "UPDATE tag SET browserstackBuildHash = ?, dateModif = NOW(), usrModif= ?";
+        query += "  WHERE Tag = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.tag : " + object.getTag());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setString(i++, object.getBrowserstackBuildHash());
+                preStat.setString(i++, object.getUsrModif());
+                preStat.setString(i++, tag);
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
     public Answer updateDateEndQueue(Tag tag) {
         MessageEvent msg = null;
-        String query = "UPDATE tag SET DateEndQueue = ?, nbExe = ?, nbExeUsefull = ?, nbOK = ?, nbKO = ?, nbFA = ?, nbNA = ?, nbNE = ?, nbWE = ?, nbPE = ?, nbQU = ?, nbQE = ?, nbCA = ?, CIScore = ?, CIScoreThreshold = ?, CIResult = ?  WHERE Tag = ?";
+        String query = "UPDATE tag SET DateEndQueue = ?, nbExe = ?, nbExeUsefull = ?, nbOK = ?, nbKO = ?, nbFA = ?, nbNA = ?, nbNE = ?, nbWE = ?, nbPE = ?, nbQU = ?, nbQE = ?, nbCA = ?"
+                + ", CIScore = ?, CIScoreThreshold = ?, CIResult = ?, EnvironmentList = ?, CountryList = ?, RobotDecliList = ?, SystemList = ?, ApplicationList = ?  WHERE Tag = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -525,6 +596,11 @@ public class TagDAO implements ITagDAO {
                 preStat.setInt(i++, tag.getCiScore());
                 preStat.setInt(i++, tag.getCiScoreThreshold());
                 preStat.setString(i++, tag.getCiResult());
+                preStat.setString(i++, tag.getEnvironmentList());
+                preStat.setString(i++, tag.getCountryList());
+                preStat.setString(i++, tag.getRobotDecliList());
+                preStat.setString(i++, tag.getSystemList());
+                preStat.setString(i++, tag.getApplicationList());
                 preStat.setString(i++, tag.getTag());
 
                 preStat.executeUpdate();
@@ -580,17 +656,25 @@ public class TagDAO implements ITagDAO {
         int ciScore = rs.getInt("tag.ciScore");
         int ciScoreThreshold = rs.getInt("tag.ciScoreThreshold");
         String ciResult = rs.getString("tag.ciResult");
+        String envList = rs.getString("tag.EnvironmentList");
+        String countryList = rs.getString("tag.CountryList");
+        String robotDecliList = rs.getString("tag.RobotDecliList");
+        String systemList = rs.getString("tag.SystemList");
+        String applicationList = rs.getString("tag.ApplicationList");
+        String reqEnvList = rs.getString("tag.ReqEnvironmentList");
+        String reqCountryList = rs.getString("tag.ReqCountryList");
+        String browserstackBuildHash = rs.getString("tag.BrowserstackBuildHash");
 
         //TODO remove when working in test with mockito and autowired
         factoryTag = new FactoryTag();
-        Tag newTag = factoryTag.create(id, tag, description, campaign, dateEndQueue, nbExe, nbExeUsefull, nbOK, nbKO, nbFA, nbNA, nbNE, nbWE, nbPE, nbQU, nbQE, nbCA, ciScore, ciScoreThreshold, ciResult, usrCreated, dateCreated, usrModif, dateModif);
+        Tag newTag = factoryTag.create(id, tag, description, campaign, dateEndQueue, nbExe, nbExeUsefull, nbOK, nbKO, nbFA, nbNA, nbNE, nbWE, nbPE, nbQU, nbQE, nbCA, ciScore, ciScoreThreshold, ciResult, envList, countryList, robotDecliList, systemList, applicationList, reqEnvList, reqCountryList, browserstackBuildHash, usrCreated, dateCreated, usrModif, dateModif);
 
         return newTag;
     }
 
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String campaign, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();

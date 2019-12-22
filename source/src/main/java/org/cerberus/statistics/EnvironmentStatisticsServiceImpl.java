@@ -19,6 +19,7 @@
  */
 package org.cerberus.statistics;
 
+import java.util.List;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class EnvironmentStatisticsServiceImpl implements IEnvironmentStatisticsS
     IEnvironmentStatisticsDAO environmentStatisticsDAO;
 
     @Override
-    public AnswerList<BuildRevisionStatisticsEnv> getEnvironmentStatistics(String system) {
+    public AnswerList<BuildRevisionStatisticsEnv> getEnvironmentStatistics(List<String> system) {
         return environmentStatisticsDAO.getEnvironmentStatistics(system);
     }
 

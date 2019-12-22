@@ -1,7 +1,7 @@
 # Cerberus 
 
 [![Build Status](https://travis-ci.org/cerberustesting/cerberus-source.svg?branch=master)](//travis-ci.org/cerberustesting/cerberus-source)
-[![Test Status](http://vm.cerberus-testing.org:28082/CerberusPROD/ResultCIV003?campaign=Cerberus_campaign&outputformat=svg&t=180131)](http://vm.cerberus-testing.org:28082/CerberusPROD/)
+[![Test Status](https://prod.cerberus-testing.org/ResultCIV003?campaign=Cerberus_campaign&outputformat=svg&t=180131)](https://prod.cerberus-testing.org/)
 
 User-friendly automated testing framework.
 
@@ -15,7 +15,7 @@ A demo site is available [here](http://demo.cerberus-testing.org)
 
 A Jenkins Plugin is also available directly from Jenkins. Corresponding repo is [here](https://github.com/jenkinsci/cerberus-testing-plugin)
 
-Docker images are available for [mysql](https://hub.docker.com/r/cerberustesting/cerberus-db-mysql/) and [glassfish](https://hub.docker.com/r/cerberustesting/cerberus-as-glassfish/) 
+Docker images are available for [MySQL](https://hub.docker.com/r/cerberustesting/cerberus-db-mysql/), [Tomcat](https://hub.docker.com/r/cerberustesting/cerberus-as-tomcat/) and [Tomcat with Keycloak Adapter](https://hub.docker.com/r/cerberustesting/cerberus-as-tomcat-keycloak/) 
 
 **For Developpers :**
 
@@ -26,7 +26,7 @@ Cerberus Production is available [here](http://prod.cerberus-testing.org)
 
 # License
 
-Cerberus Copyright (C) 2013 - 2017 cerberustesting
+Cerberus Copyright (C) 2013 - 2019 cerberustesting
 
 This file is part of Cerberus.
 

@@ -20,8 +20,8 @@
 package org.cerberus.crud.utils;
 
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.engine.entity.*;
+import org.cerberus.enums.*;
 import org.cerberus.exception.CerberusException;
 
 import java.sql.Connection;
@@ -30,24 +30,37 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RequestDbUtils {
 
+    private static final Logger LOG = LogManager.getLogger(RequestDbUtils.class);
+
+    private final static String SQL_DUPLICATED_CODE = "23000";
+
     @FunctionalInterface
     public interface SqlFunction<T, R> {
+
         R apply(T t) throws SQLException;
     }
 
     @FunctionalInterface
     public interface VoidSqlFunction<T> {
+
         void apply(T t) throws SQLException;
     }
 
     public static <T> T executeQuery(DatabaseSpring databaseSpring, String query, VoidSqlFunction<PreparedStatement> functionPrepareStatement,
-                                     SqlFunction<ResultSet, T> functionResultSet) throws CerberusException {
+            SqlFunction<ResultSet, T> functionResultSet) throws CerberusException {
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);
-        ) {
+                PreparedStatement preStat = connection.prepareStatement(query);) {
             functionPrepareStatement.apply(preStat);
 
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -62,27 +75,42 @@ public class RequestDbUtils {
         return null;
     }
 
-
     public static <T> T executeUpdate(DatabaseSpring databaseSpring, String query, VoidSqlFunction<PreparedStatement> functionPrepareStatement) throws CerberusException {
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);
-        ) {
+                PreparedStatement preStat = connection.prepareStatement(query);) {
             functionPrepareStatement.apply(preStat);
             preStat.executeUpdate();
         } catch (SQLException exception) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR), exception);
+            if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                MessageGeneral message = new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR);
+                message.setDescription(message.getDescription().replace("%ITEM%", query).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR_DUPLICATE),  exception); // TODO pass SQL DUPLICATE CODE
+            } else {
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR_WITH_REQUEST).resolveDescription("REQUEST", query), exception);
+            }
         }
 
         return null;
     }
 
     public static <T> List<T> executeQueryList(DatabaseSpring databaseSpring, String query, VoidSqlFunction<PreparedStatement> functionPrepareStatement,
-                                               SqlFunction<ResultSet, T> functionResultSet) throws CerberusException {
+            SqlFunction<ResultSet, T> functionResultSet) throws CerberusException {
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         List<T> res = new LinkedList<>();
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);
-        ) {
+                PreparedStatement preStat = connection.prepareStatement(query);) {
             functionPrepareStatement.apply(preStat);
 
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -91,7 +119,7 @@ public class RequestDbUtils {
                 }
             }
         } catch (SQLException exception) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR), exception);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR_WITH_REQUEST).resolveDescription("REQUEST", query), exception);
         }
 
         return res;

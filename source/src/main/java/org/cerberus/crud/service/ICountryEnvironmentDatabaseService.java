@@ -40,7 +40,7 @@ public interface ICountryEnvironmentDatabaseService {
      * @param database
      * @return
      */
-    public AnswerItem readByKey(String system, String country, String environment, String database);
+    public AnswerItem<CountryEnvironmentDatabase> readByKey(String system, String country, String environment, String database);
 
     /**
      *
@@ -49,7 +49,7 @@ public interface ICountryEnvironmentDatabaseService {
      * @param environment
      * @return
      */
-    public AnswerList readByVarious(String system, String country, String environment);
+    public AnswerList<CountryEnvironmentDatabase> readByVarious(String system, String country, String environment);
 
     /**
      *
@@ -64,7 +64,7 @@ public interface ICountryEnvironmentDatabaseService {
      * @param individualSearch
      * @return
      */
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    public AnswerList<CountryEnvironmentDatabase> readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      *

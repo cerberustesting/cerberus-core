@@ -115,17 +115,20 @@ public interface ISqlLibraryService {
      * @param startPosition         the start index to look for
      * @param length                the number of {@link SqlLibrary} to get
      * @param columnName            the Column name to sort
+     * @param sort
      * @param searchParameter       the string to search in the {@link SqlLibrary}
      * @param individualSearch      the string to search for each column
+     * @return 
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<SqlLibrary> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *  Get the {@link SqlLibrary} of the given key
      *
      * @param key                the key of the {@link SqlLibrary} to get
+     * @return 
      */
-    AnswerItem readByKey(String key);
+    AnswerItem<SqlLibrary> readByKey(String key);
 
     /**
      *  Get the distinctValue of the column
@@ -133,6 +136,7 @@ public interface ISqlLibraryService {
      * @param columnName            the Column name to get
      * @param searchParameter       the string to search in the {@link SqlLibrary}
      * @param individualSearch      the string to search for each column
+     * @return 
      */
     AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 

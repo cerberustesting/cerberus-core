@@ -104,6 +104,10 @@ public class ParameterDAO implements IParameterDAO {
         final String query = "SELECT * FROM parameter p WHERE p.`system` = ? and p.param = ? ";
 
         Connection connection = this.databaseSpring.connect();
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
@@ -156,6 +160,10 @@ public class ParameterDAO implements IParameterDAO {
         final String query = "SELECT * FROM parameter p ";
 
         Connection connection = this.databaseSpring.connect();
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
 
@@ -202,73 +210,6 @@ public class ParameterDAO implements IParameterDAO {
     }
 
     @Override
-    public void updateParameter(Parameter parameter) throws CerberusException {
-
-        final String query = "UPDATE parameter SET Value = ? WHERE system = ? and param = ? ;";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, parameter.getValue());
-                preStat.setString(2, parameter.getSystem());
-                preStat.setString(3, parameter.getParam());
-
-                preStat.executeUpdate();
-
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-    }
-
-    @Override
-    public void insertParameter(Parameter parameter) throws CerberusException {
-
-        final String query = "INSERT INTO parameter (`system`, `param`, `value`, `description`) VALUES (?, ?, ?, ?) ;";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, parameter.getSystem());
-                preStat.setString(2, parameter.getParam());
-                preStat.setString(3, parameter.getValue());
-                preStat.setString(4, parameter.getDescription());
-
-                preStat.executeUpdate();
-
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-    }
-
-    @Override
     public List<Parameter> findAllParameterWithSystem1(String mySystem, String mySystem1) throws CerberusException {
         boolean throwExep = true;
         List<Parameter> result = null;
@@ -280,6 +221,12 @@ public class ParameterDAO implements IParameterDAO {
         final String query = mySQL.toString();
 
         Connection connection = this.databaseSpring.connect();
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             preStat.setString(1, mySystem1);
@@ -328,14 +275,14 @@ public class ParameterDAO implements IParameterDAO {
     }
 
     @Override
-    public AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<Parameter> readWithSystem1BySystemByCriteria(String system, String system1, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
 
-        AnswerList response = new AnswerList<>();
+        AnswerList<Parameter> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<Parameter> objectList = new ArrayList<Parameter>();
+        List<Parameter> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
@@ -381,6 +328,12 @@ public class ParameterDAO implements IParameterDAO {
             LOG.debug("SQL : " + query.toString());
         }
         Connection connection = this.databaseSpring.connect();
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
@@ -472,8 +425,8 @@ public class ParameterDAO implements IParameterDAO {
     }
 
     @Override
-    public AnswerItem readWithSystem1ByKey(String system, String key, String system1) {
-        AnswerItem a = new AnswerItem<>();
+    public AnswerItem<Parameter> readWithSystem1ByKey(String system, String key, String system1) {
+        AnswerItem<Parameter> a = new AnswerItem<>();
         StringBuilder query = new StringBuilder();
         Parameter p = new Parameter();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -489,8 +442,7 @@ public class ParameterDAO implements IParameterDAO {
             LOG.debug("SQL.param.key : " + key);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             preStat.setString(1, system1);
             preStat.setString(2, system1);
@@ -548,12 +500,12 @@ public class ParameterDAO implements IParameterDAO {
 
     @Override
     public AnswerList<String> readDistinctValuesWithSystem1ByCriteria(String system, String system1, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 
@@ -593,9 +545,7 @@ public class ParameterDAO implements IParameterDAO {
             LOG.debug("SQL : " + query.toString());
         }
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(system1)) {
@@ -612,8 +562,7 @@ public class ParameterDAO implements IParameterDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
@@ -657,12 +606,19 @@ public class ParameterDAO implements IParameterDAO {
     }
 
     @Override
-    public AnswerItem readByKey(String system, String param) {
+    public AnswerItem<Parameter> readByKey(String system, String param) {
         AnswerItem<Parameter> ans = new AnswerItem<>();
         MessageEvent msg = null;
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY)) {
+
+            // Debug message on SQL.
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("SQL : " + Query.READ_BY_KEY);
+                LOG.debug("SQL.param.system : " + system);
+                LOG.debug("SQL.param.param : " + param);
+            }
+
             // Prepare and execute query
             preStat.setString(1, system);
             preStat.setString(2, param);
@@ -686,34 +642,7 @@ public class ParameterDAO implements IParameterDAO {
             // We always set the result message
             ans.setResultMessage(msg);
         }
-        return ans;
-    }
-
-    @Override
-    public Answer create(Parameter object) {
-        Answer ans = new Answer();
-        MessageEvent msg = null;
-
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
-            // Prepare and execute query
-            preStat.setString(1, object.getSystem());
-            preStat.setString(2, object.getParam());
-            preStat.setString(3, object.getValue());
-            preStat.setString(4, object.getDescription());
-            preStat.executeUpdate();
-
-            // Set the final message
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
-                    .resolveDescription("OPERATION", "CREATE");
-        } catch (Exception e) {
-            LOG.warn("Unable to create robot capability: " + e.getMessage());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                    e.toString());
-        } finally {
-            ans.setResultMessage(msg);
-        }
-
+        ans.setResultMessage(msg);
         return ans;
     }
 
@@ -722,8 +651,14 @@ public class ParameterDAO implements IParameterDAO {
         Answer ans = new Answer();
         MessageEvent msg = null;
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
+
+            // Debug message on SQL.
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("SQL : " + Query.UPDATE);
+                LOG.debug("SQL.param.system : " + object.getSystem());
+                LOG.debug("SQL.param.param : " + object.getParam());
+            }
             // Prepare and execute query
             preStat.setString(1, object.getValue());
             preStat.setString(2, object.getSystem());
@@ -745,22 +680,29 @@ public class ParameterDAO implements IParameterDAO {
     }
 
     @Override
-    public Answer delete(Parameter object) {
+    public Answer setParameter(String parameterKey, String system, String value) {
         Answer ans = new Answer();
         MessageEvent msg = null;
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
+
+            // Debug message on SQL.
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("SQL : " + Query.UPDATE);
+                LOG.debug("SQL.param.system : " + system);
+                LOG.debug("SQL.param.param : " + parameterKey);
+            }
             // Prepare and execute query
-            preStat.setString(1, object.getSystem());
-            preStat.setString(2, object.getParam());
+            preStat.setString(1, value);
+            preStat.setString(2, system);
+            preStat.setString(3, parameterKey);
             preStat.executeUpdate();
 
             // Set the final message
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
-                    .resolveDescription("OPERATION", "DELETE");
+                    .resolveDescription("OPERATION", "UPDATE");
         } catch (Exception e) {
-            LOG.warn("Unable to delete parameter: " + e.getMessage());
+            LOG.warn("Unable to update parameter: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
         } finally {
@@ -769,4 +711,37 @@ public class ParameterDAO implements IParameterDAO {
 
         return ans;
     }
+
+    @Override
+    public Answer create(Parameter object) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+
+            // Debug message on SQL.
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("SQL : " + Query.CREATE);
+            }
+            // Prepare and execute query
+            preStat.setString(1, object.getSystem());
+            preStat.setString(2, object.getParam());
+            preStat.setString(3, object.getValue());
+            preStat.setString(4, object.getDescription());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "CREATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to create parameter: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
 }

@@ -20,9 +20,12 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ILabelDAO;
@@ -50,38 +53,45 @@ public class LabelService implements ILabelService {
 
     @Autowired
     private ILabelDAO labelDAO;
+    @Autowired
+    private ILabelService labelService;
 
     private static final Logger LOG = LogManager.getLogger("LabelService");
 
     private final String OBJECT_NAME = "Label";
 
     @Override
-    public AnswerItem readByKey(Integer id) {
+    public AnswerItem<Label> readByKey(Integer id) {
         return labelDAO.readByKey(id);
     }
 
     @Override
-    public AnswerList readAll() {
+    public AnswerList<Label> readAll() {
         return readByVariousByCriteria(new ArrayList<>(), false, new ArrayList<>(), 0, 0, "Label", "asc", null, null);
     }
 
     @Override
-    public AnswerList readBySystem(List<String> system) {
+    public AnswerList<Label> readAllLinks() {
+        return labelDAO.readAllLinks();
+    }
+
+    @Override
+    public AnswerList<Label> readBySystem(List<String> system) {
         return labelDAO.readBySystemByCriteria(system, false, new ArrayList<>(), 0, 0, "Label", "asc", null, null);
     }
 
     @Override
-    public AnswerList readByVarious(List<String> system, List<String> type) {
+    public AnswerList<Label> readByVarious(List<String> system, List<String> type) {
         return labelDAO.readBySystemByCriteria(system, false, type, 0, 0, "Label", "asc", null, null);
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<Label> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return labelDAO.readBySystemByCriteria(new ArrayList<>(), false, new ArrayList<>(), startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(List<String> system, boolean strictSystemFilter, List<String> type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<Label> readByVariousByCriteria(List<String> system, boolean strictSystemFilter, List<String> type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return labelDAO.readBySystemByCriteria(system, strictSystemFilter, type, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
@@ -175,6 +185,58 @@ public class LabelService implements ILabelService {
     }
 
     @Override
+    public List<Integer> enrichWithChild(List<Integer> labelIdList) {
+
+        try {
+            // Loading list of labelId into a map in order to dedup it.
+            HashMap<Integer, Integer> finalMap = new HashMap<>();
+            HashMap<Integer, Integer> initMap = new HashMap<>();
+            // Dedup list on a MAP
+            for (Integer labelId : labelIdList) {
+                finalMap.put(labelId, 0);
+                initMap.put(labelId, 0);
+            }
+
+            // Loading from database the list of links from parent to childs.
+            List<Label> labelLinkList = labelService.convert(labelService.readAllLinks());
+
+            // Looping of each campaign label and add the childs.
+            Integer initSize = initMap.size();
+            Integer finalSize = initSize;
+            Integer i = 0;
+            do {
+                for (Map.Entry<Integer, Integer> entry : finalMap.entrySet()) {
+                    Integer key = entry.getKey();
+                    initMap.put(key, 0);
+                }
+                initSize = initMap.size();
+                for (Map.Entry<Integer, Integer> entry : initMap.entrySet()) {
+                    Integer key = entry.getKey();
+                    Integer value = entry.getValue();
+                    for (Label label : labelLinkList) {
+                        if (Objects.equals(key, label.getParentLabelID())) {
+                            finalMap.put(label.getId(), 0);
+                        }
+                    }
+                }
+                finalSize = finalMap.size();
+                i++;
+            } while (!Objects.equals(finalSize, initSize) && i < 50);
+
+            List<Integer> finalList = new ArrayList<>();
+            for (Map.Entry<Integer, Integer> entry : finalMap.entrySet()) {
+                Integer key = entry.getKey();
+                finalList.add(key);
+            }
+
+            return finalList;
+        } catch (CerberusException ex) {
+            LOG.error("Exception when enriching Labels with Child.", ex);
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
     public Label convert(AnswerItem<Label> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
@@ -202,13 +264,16 @@ public class LabelService implements ILabelService {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return labelDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
 
     @Override
     public List<TreeNode> hierarchyConstructor(HashMap<Integer, TreeNode> inputList) {
+
         // Preparing data structure.
+        // Looping against inputList to build nodeList.
+        // Also saving all entry that have a parent in treeParent.
         Map<Integer, TreeNode> nodeList = new HashMap<>();
         List<TreeNode> treeParent = new ArrayList<>();
         for (Map.Entry<Integer, TreeNode> entry : inputList.entrySet()) {
@@ -223,76 +288,112 @@ public class LabelService implements ILabelService {
         // Building final list
         List<TreeNode> finalList = new ArrayList<>();
 
-        // Loop on maximum hierarchy levels.
-        int i = 0;
-        while (i < 50 && !nodeList.isEmpty()) {
+        try {
+            // Loop on maximum hierarchy levels.
+            int i = 0;
+            while (i < 50 && !nodeList.isEmpty()) {
 //                LOG.debug(i + ".start : " + nodeList);
-            List<TreeNode> listToRemove = new ArrayList<>();
+                List<TreeNode> listToRemove = new ArrayList<>();
 
-            for (Map.Entry<Integer, TreeNode> entry : nodeList.entrySet()) {
-                Integer key = entry.getKey();
-                TreeNode value = entry.getValue();
+                // Looping against nodeList.
+                for (Map.Entry<Integer, TreeNode> entry : nodeList.entrySet()) {
+                    Integer key = entry.getKey();
+                    TreeNode value = entry.getValue();
 //                    LOG.debug(value.getId() + " " + value.getParentId() + " " + value.getNodes().size());
 
-                boolean hasChild = false;
-                for (TreeNode treeNode : treeParent) {
-                    if (treeNode.getParentId() == value.getId()) {
-                        hasChild = true;
+                    // Does current entry has at least a child ?
+                    boolean hasChild = false;
+                    for (TreeNode treeNode : treeParent) {
+                        if (treeNode.getParentId() == value.getId()) {
+                            hasChild = true;
+                        }
                     }
-                }
 
-                if (!hasChild) {
-                    if ((i == 0) && (value.getNodes().isEmpty())) {
-                        value.setNodes(null);
-                    }
+                    if (!hasChild) {
+                        // If entry has no more child, we can add it to finalList.
+                        if ((i == 0) && (value.getNodes().isEmpty())) {
+                            value.setNodes(null);
+                        }
 //                        LOG.debug("Pas de fils.");
-                    if (value.getParentId() <= 0) {
+                        if (value.getParentId() <= 0) {
 //                            LOG.debug("Adding to final result and remove from list." + i);
-                        finalList.add(value);
-                        listToRemove.add(value);
-                    } else {
-//                        LOG.debug("Moving to parent and remove from list." + i + " Parent " + value.getParentId());
-                        // Mettre sur le fils sur son pere.
-                        TreeNode father = nodeList.get(value.getParentId());
-                        if (father != null) {
-                            List<TreeNode> sons = father.getNodes();
-                            if (sons == null) {
-                                sons = new ArrayList<>();
+                            if (value.getNodes() != null && !value.getNodes().isEmpty()) {
+                                Collections.sort(value.getNodes(), new SortbyLabel());
                             }
-                            sons.add(value);
-                            father.setNodes(sons);
-                            father.setCounter1WithChild(father.getCounter1WithChild() + value.getCounter1WithChild());
-                            father.setNbNodesWithChild(father.getNbNodesWithChild() + 1);
-                            father.setNbOK(father.getNbOK() + value.getNbOK());
-                            father.setNbKO(father.getNbKO() + value.getNbKO());
-                            father.setNbFA(father.getNbFA() + value.getNbFA());
-                            father.setNbNA(father.getNbNA() + value.getNbNA());
-                            father.setNbNE(father.getNbNE() + value.getNbNE());
-                            father.setNbWE(father.getNbWE() + value.getNbWE());
-                            father.setNbPE(father.getNbPE() + value.getNbPE());
-                            father.setNbQE(father.getNbQE() + value.getNbQE());
-                            father.setNbQU(father.getNbQU() + value.getNbQU());
-                            father.setNbCA(father.getNbCA() + value.getNbCA());
-                            nodeList.put(father.getId(), father);
-                        } else {
-                            // Father does not exist so we attach it to root.
+
                             finalList.add(value);
                             listToRemove.add(value);
+                        } else {
+//                        LOG.debug("Moving to parent and remove from list." + i + " Parent " + value.getParentId());
+                            // Mettre sur le fils sur son pere.
+                            TreeNode father = nodeList.get(value.getParentId());
+                            if (father != null) {
+                                List<TreeNode> sons = father.getNodes();
+                                if (sons == null) {
+                                    sons = new ArrayList<>();
+                                }
+                                if (value.getNodes() != null && !value.getNodes().isEmpty()) {
+                                    Collections.sort(value.getNodes(), new SortbyLabel());
+                                }
+                                sons.add(value);
+                                father.setNodes(sons);
+                                father.setCounter1WithChild(father.getCounter1WithChild() + value.getCounter1WithChild());
+                                father.setNbNodesWithChild(father.getNbNodesWithChild() + 1);
+                                father.setNbOK(father.getNbOK() + value.getNbOK());
+                                father.setNbKO(father.getNbKO() + value.getNbKO());
+                                father.setNbFA(father.getNbFA() + value.getNbFA());
+                                father.setNbNA(father.getNbNA() + value.getNbNA());
+                                father.setNbNE(father.getNbNE() + value.getNbNE());
+                                father.setNbWE(father.getNbWE() + value.getNbWE());
+                                father.setNbPE(father.getNbPE() + value.getNbPE());
+                                father.setNbQE(father.getNbQE() + value.getNbQE());
+                                father.setNbQU(father.getNbQU() + value.getNbQU());
+                                father.setNbCA(father.getNbCA() + value.getNbCA());
+                                nodeList.put(father.getId(), father);
+                            } else {
+                                if (value.getNodes() != null && !value.getNodes().isEmpty()) {
+//                            List<TreeNode> newTree = next.getNodes();
+                                    Collections.sort(value.getNodes(), new SortbyLabel());
+//                            next.setNodes(newTree);
+                                }
+                                // Father does not exist so we attach it to root.
+                                finalList.add(value);
+                                listToRemove.add(value);
+                            }
+                            listToRemove.add(value);
+                            treeParent.remove(value);
                         }
-                        listToRemove.add(value);
-                        treeParent.remove(value);
                     }
                 }
-            }
-            // Removing all entries that has been clasified to finalList.
+                // Removing all entries that has been clasified to finalList.
 //                LOG.debug("To remove : " + listToRemove);
-            for (TreeNode label : listToRemove) {
-                nodeList.remove(label.getId());
+                for (TreeNode label : listToRemove) {
+                    nodeList.remove(label.getId());
+                }
+                i++;
             }
-            i++;
-        }
 
+            // We now sort the root level (other levels were already sorted).
+            Collections.sort(finalList, new SortbyLabel());
+
+        } catch (Exception e) {
+            LOG.error("Exception in hierarchyConstructor.", e);
+        }
         return finalList;
+    }
+
+    class SortbyLabel implements Comparator<TreeNode> {
+        // Used for sorting in ascending order of 
+        // Label name. 
+
+        @Override
+        public int compare(TreeNode a, TreeNode b) {
+            if (a != null && b != null & a.getLabel() != null) {
+                return a.getLabel().compareToIgnoreCase(b.getLabel());
+            } else {
+                return 1;
+            }
+        }
     }
 
 }

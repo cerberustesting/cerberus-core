@@ -20,8 +20,8 @@
 var paramActivatewebsocketpush = "N";
 var paramWebsocketpushperiod = 5000;
 
-$.when($.getScript("js/global/global.js")).then(function () {
-    $(document).ready(function () {
+$.when($.getScript("js/global/global.js")).then(function() {
+    $(document).ready(function() {
         var stepList = [];
         var doc = new Doc();
         displayHeaderLabel(doc);
@@ -37,10 +37,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
             // executionId parameter is not feed so we probably want to see the queue status.
             $("#TestCaseButton").hide();
             $("#RefreshQueueButton").show();
-            $("#refreshQueue").click(function () {
+            $("#refreshQueue").click(function() {
                 loadExecutionQueue(executionQueueId, false);
             });
-            $("#editQueue").click(function () {
+            $("#editQueue").click(function() {
                 openModalTestCaseExecutionQueue(executionQueueId, "EDIT");
             });
 
@@ -82,7 +82,7 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
         data: "queueid=" + executionQueueId,
         datatype: "json",
         async: true,
-        success: function (data) {
+        success: function(data) {
             if (data.messageType === "OK") {
                 var tceq = data.contentTable;
 
@@ -93,7 +93,7 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
                 configPanel.find("#idlabel").text("0");
                 $("[name='Separator']").text(" - ");
                 configPanel.find("#country").text(tceq.country);
-                configPanel.find("#environment").text(tceq.environment);
+                configPanel.find("#environ-ment").text(tceq.environment);
                 configPanel.find("#test").text(tceq.test);
                 configPanel.find("#testcase").text(tceq.testCase);
                 configPanel.find("#exReturnMessage").text(tceq.comment);
@@ -106,7 +106,7 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
                     var curDate = new Date();
                     configPanel.find("#tcDescription").html("Still <span style='color:red;'>" + tceq.nbEntryInQueueToGo + "</span> execution(s) in the Queue before execution start. <br><span class='glyphicon glyphicon-refresh spin text-info'></span> Last refresh : " + curDate);
                     if (bTriggerAgain) {
-                        setTimeout(function () {
+                        setTimeout(function() {
                             loadExecutionQueue(executionQueueId, true);
                         }, 5000);
                     }
@@ -115,7 +115,7 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
                     var curDate = new Date();
                     configPanel.find("#tcDescription").html("<span class='glyphicon glyphicon-refresh spin text-info'></span> Last refresh : " + curDate);
                     if (bTriggerAgain) {
-                        setTimeout(function () {
+                        setTimeout(function() {
                             loadExecutionQueue(executionQueueId, true);
                         }, 5000);
                     }
@@ -144,7 +144,7 @@ function loadExecutionInformation(executionId, stepList, sockets) {
         data: "executionId=" + executionId,
         datatype: "json",
         async: true,
-        success: function (data) {
+        success: function(data) {
             var tce = data.testCaseExecution;
 
             var tc = tce.testcase;
@@ -169,16 +169,16 @@ function loadExecutionInformation(executionId, stepList, sockets) {
 
                     var socket = new WebSocket(new_uri);
 
-                    socket.onopen = function (e) {
+                    socket.onopen = function(e) {
                     } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
-                    socket.onmessage = function (e) {
+                    socket.onmessage = function(e) {
                         var data = JSON.parse(e.data);
-                            updatePage(data, stepList);
+                        updatePage(data, stepList);
                     } //on récupère les messages provenant du serveur websocket
-                    socket.onclose = function (e) {
+                    socket.onclose = function(e) {
                     } //on est informé lors de la fermeture de la connexion vers le serveur
-                    socket.onerror = function (e) {
-                        setTimeout(function () {
+                    socket.onerror = function(e) {
+                        setTimeout(function() {
                             loadExecutionInformation(executionId, stepList);
                         }, 5000);
                     } //on traite les cas d'erreur*/
@@ -188,18 +188,18 @@ function loadExecutionInformation(executionId, stepList, sockets) {
 
                 } else {
 
-                    setTimeout(function () {
+                    setTimeout(function() {
                         loadExecutionInformation(executionId, stepList);
                     }, paramWebsocketpushperiod);
 
                 }
 
             }
-            $("#seeProperties").click(function () {
+            $("#seeProperties").click(function() {
                 $("#propertiesModal").modal('show');
             });
             //disable list-group expansion in case of clicking on link
-            $('.linkified').on('click', function (e) {
+            $('.linkified').on('click', function(e) {
                 e.stopPropagation();
             });
         }
@@ -212,7 +212,7 @@ function initPage(id) {
 
     var wrap = $(window);
 
-    wrap.on("scroll", function (e) {
+    wrap.on("scroll", function(e) {
         $(".affix").width($("#page-layout").width() - 3);
     });
 
@@ -221,23 +221,23 @@ function initPage(id) {
     $("#rerunTestCase").attr("disabled", true);
     $("#lastExecution").attr("disabled", true);
 
-    $("#runOld").click(function () {
+    $("#runOld").click(function() {
         window.location = "TestCaseExecution.jsp?executionId=" + id;
     });
 
-    $("#editTags").click(function () {
+    $("#editTags").click(function() {
         $(this).hide();
         $("#saveTag").show();
         $("#testCaseDetails #tag").attr("readonly", false);
     });
 
-    $("#saveTag").click(function () {
+    $("#saveTag").click(function() {
         $("#testCaseDetails #tag").attr("readonly", true);
         $(this).attr("disabled", true);
         $.ajax({
             url: "SetTagToExecution",
             data: {"executionId": id, newTag: $("#testCaseDetails #tag").val()},
-            success: function (data) {
+            success: function(data) {
                 $("#saveTag").attr("disabled", false);
                 $("#saveTag").hide();
                 $("#editTags").show();
@@ -252,10 +252,10 @@ function initPage(id) {
 
     var secondaryPropertiesTable = $("#secondaryPropTable");
     secondaryPropertiesTable.hide();
-    $("#showSecondaryProp").click(function () {
+    $("#showSecondaryProp").click(function() {
         secondaryPropertiesTable.show();
     });
-    $("#hideSecondaryProp").click(function () {
+    $("#hideSecondaryProp").click(function() {
         secondaryPropertiesTable.hide();
     });
 
@@ -340,7 +340,7 @@ function updatePage(data, stepList) {
         $("#editTcInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
         $("#editTcStepInfo").attr("disabled", false);
         $("#editTcStepInfo").parent().attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
-        $("#btnGroupDrop4").click(function () {
+        $("#btnGroupDrop4").click(function() {
             setLinkOnEditTCStepInfoButton();
         });
 
@@ -372,17 +372,17 @@ function updatePage(data, stepList) {
     } else {
         $("#ExecutionQueue").attr("disabled", false);
         $("#ExecutionQueue").unbind("click");
-        $("#ExecutionQueue").click(function () {
+        $("#ExecutionQueue").click(function() {
             openModalTestCaseExecutionQueue(data.queueId, 'EDIT');
         });
         $("#rerunFromQueue").attr("disabled", false);
         $("#rerunFromQueue").unbind("click");
-        $("#rerunFromQueue").click(function () {
+        $("#rerunFromQueue").click(function() {
             openModalTestCaseExecutionQueue(data.queueId, 'DUPLICATE');
         });
         $("#rerunFromQueueandSee").attr("disabled", false);
         $("#rerunFromQueueandSee").unbind("click");
-        $("#rerunFromQueueandSee").click(function () {
+        $("#rerunFromQueueandSee").click(function() {
             triggerTestCaseExecutionQueueandSee(data.queueId);
         });
     }
@@ -398,23 +398,23 @@ function updatePage(data, stepList) {
             url: "ReadApplication",
             data: {application: data.application},
             async: true,
-            success: function (dataApp) {
+            success: function(dataApp) {
                 var link;
                 var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
                 if (data.testCaseObj !== undefined) {
                     if ((data.testCaseObj.bugId === undefined || data.testCaseObj.bugId === "") && newBugURL !== undefined) {
                         if (!isEmpty(newBugURL)) {
-                            newBugURL = newBugURL.replace("%EXEID%", data.id);
-                            newBugURL = newBugURL.replace("%EXEDATE%", new Date(data.start).toLocaleString());
-                            newBugURL = newBugURL.replace("%TEST%", data.test);
-                            newBugURL = newBugURL.replace("%TESTCASE%", data.testcase);
-                            newBugURL = newBugURL.replace("%TESTCASEDESC%", data.testCaseObj.description);
-                            newBugURL = newBugURL.replace("%COUNTRY%", data.country);
-                            newBugURL = newBugURL.replace("%ENV%", data.environment);
-                            newBugURL = newBugURL.replace("%BUILD%", data.build);
-                            newBugURL = newBugURL.replace("%REV%", data.revision);
-                            newBugURL = newBugURL.replace("%BROWSER%", data.browser);
-                            newBugURL = newBugURL.replace("%BROWSERFULLVERSION%", data.browserFullVersion);
+                            newBugURL = newBugURL.replace(/%EXEID%/g, data.id);
+                            newBugURL = newBugURL.replace(/%EXEDATE%/g, new Date(data.start).toLocaleString());
+                            newBugURL = newBugURL.replace(/%TEST%/g, data.test);
+                            newBugURL = newBugURL.replace(/%TESTCASE%/g, data.testcase);
+                            newBugURL = newBugURL.replace(/%TESTCASEDESC%/g, data.testCaseObj.description);
+                            newBugURL = newBugURL.replace(/%COUNTRY%/g, data.country);
+                            newBugURL = newBugURL.replace(/%ENV%/g, data.environment);
+                            newBugURL = newBugURL.replace(/%BUILD%/g, data.build);
+                            newBugURL = newBugURL.replace(/%REV%/g, data.revision);
+                            newBugURL = newBugURL.replace(/%BROWSER%/g, data.browser);
+                            newBugURL = newBugURL.replace(/%BROWSERFULLVERSION%/g, data.browser + ' ' + data.version + ' ' + data.platform);
                             link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text("Open a new bug"));
                         } else {
                             link = $('<a id="bugID">').attr("href", "#").append($("<button class='btn btn-default btn-block'>").text("No 'New Bug' URL Specified.").attr("title", "Please specify 'New Bug' URL at application level."));
@@ -440,6 +440,7 @@ function updatePage(data, stepList) {
     createProperties(data.testCaseExecutionDataList);
     createVideo(data.videos);
     setUpClickFunctionToSaveTestCaseExecutionButton(data);
+    drawDependencies(data.testCaseExecutionQueueDepList, "depTableBody", "editTabDep");
 }
 
 
@@ -456,7 +457,7 @@ function createVideo(videos) {
 
     var videoIndex = 0;
 
-    videos.forEach(function (video) {
+    videos.forEach(function(video) {
         menuEntry += "            <a href=\"javascript:void(0);\" id=\"anchorToVideo" + videoIndex + "\" name=\"anchorToVideo\" index=\"" + videoIndex + "\" class=\"list-group-item row " + (videoIndex == 0 ? "active" : "") + " \" style=\"margin-left: 0px; margin-right: 0px;\">Part " + (videoIndex + 1) + "/" + videos.length + " </a>\n";
 
         videoEntry +=
@@ -486,7 +487,7 @@ function createVideo(videos) {
     var myvid = $('#videoTest').get(0);
 
 
-    $("[name='anchorToVideo']").click(function () {
+    $("[name='anchorToVideo']").click(function() {
         $("[name='anchorToVideo']").removeClass("active");
         $(this).addClass("active");
 
@@ -498,7 +499,7 @@ function createVideo(videos) {
     })
 
     // automaticaly stream  the next part
-    myvid.addEventListener('ended', function (e) {
+    myvid.addEventListener('ended', function(e) {
         // get the active source and the next video source.
         // I set it so if there's no next, it loops to the first one
         var activesource = $("#videoTest source.active");
@@ -519,7 +520,7 @@ function createVideo(videos) {
         myvid.play();
     });
 
-    $("#editTabVideo").click(function () { // automaticaly play video when you arrive on the video page
+    $("#editTabVideo").click(function() { // automaticaly play video when you arrive on the video page
         myvid.play();
     });
 
@@ -536,7 +537,7 @@ function triggerTestCaseExecutionQueueandSee(queueId) {
             actionState: "toQUEUED",
             actionSave: "save"
         },
-        success: function (data) {
+        success: function(data) {
             if (getAlertType(data.messageType) === "success") {
                 showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
                 var url = "./TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id;
@@ -561,7 +562,7 @@ function setConfigPanel(data) {
     configPanel.find("#exReturnMessage").text(data.controlMessage);
     configPanel.find("#controlstatus").text(data.controlStatus);
 
-    $("#editTcHeader").unbind("click").click(function () {
+    $("#editTcHeader").unbind("click").click(function() {
         openModalTestCase(data.test, data.testcase, "EDIT")
     })
 
@@ -570,7 +571,6 @@ function setConfigPanel(data) {
     configPanel.find("#tcDescription").text(data.description);
     configPanel.find("input#application").val(data.application);
     configPanel.find("input#browser").val(data.browser);
-    configPanel.find("input#browserfull").val(data.browserFullVersion);
     configPanel.find("input#build").val(data.build);
     configPanel.find("input#country").val(data.country);
     configPanel.find("input#environment").val(data.environment);
@@ -600,13 +600,38 @@ function setConfigPanel(data) {
     configPanel.find("input#testcaseversion").val(data.testCaseVersion);
     configPanel.find("input#system").val(data.system);
     configPanel.find("input#robotdecli").val(data.robotDecli);
+    configPanel.find("input#robotsessionid").val(data.robotSessionId);
+    if (data.robotProvider === "BROWSERSTACK") {
+        if (data.tagObj !== undefined) {
+            let targetUrl = "https://automate.browserstack.com/builds/" + data.tagObj.browserstackBuildHash + "/sessions/" + data.robotSessionId;
+            let provImg = $('<img src="./images/browserstack.png" width="20">');
+            $("#sessionLinkHeader").empty().append(provImg).show();
+            $("#sessionLinkHeader").parent().attr("href", targetUrl).attr("target", "_blank");
+            provImg = $('<img src="./images/browserstack.png" width="20">');
+            $("#sessionLink").empty().append(provImg).show();
+            $("#sessionLink").parent().attr("href", targetUrl).attr("target", "_blank");
+        }
+    } else if (data.robotProvider === "KOBITON") {
+        let targetUrl = "https://portal.kobiton.com/sessions/" + data.robotSessionId;
+        let provImg = $('<img src="./images/kobiton.png" width="20">');
+        $("#sessionLinkHeader").empty().append(provImg).show();
+        $("#sessionLinkHeader").parent().attr("href", targetUrl).attr("target", "_blank");
+        provImg = $('<img src="./images/kobiton.png" width="20">');
+        $("#sessionLink").empty().append(provImg).show();
+        $("#sessionLink").parent().attr("href", targetUrl).attr("target", "_blank");
+    } else {
+        $("#sessionLink").hide();
+        $("#sessionLinkHeader").hide();
+    }
     configPanel.find("input#version").val(data.version);
 
     configPanel.find("input#conditionOperTC").val(data.conditionOper);
     configPanel.find("input#conditionVal1InitTC").val(data.conditionVal1Init);
     configPanel.find("input#conditionVal2InitTC").val(data.conditionVal2Init);
+    configPanel.find("input#conditionVal3InitTC").val(data.conditionVal3Init);
     configPanel.find("input#conditionVal1TC").val(data.conditionVal1);
     configPanel.find("input#conditionVal2TC").val(data.conditionVal2);
+    configPanel.find("input#conditionVal3TC").val(data.conditionVal3);
 
     //setTestCaseControlStatue(data.controlStatus);
     setLoadBar(data);
@@ -631,13 +656,13 @@ function showSaveTestCaseExecutionButton() {
 }
 
 /*
- * 
+ *
  * set up click function if the button is visible ( visible if alt least one action or step or control have a controlStatus NE )
  * @param {type} data
  * @returns {undefined}
  */
 function setUpClickFunctionToSaveTestCaseExecutionButton(data) {
-    $("#saveTestCaseExecution").click(function () {
+    $("#saveTestCaseExecution").click(function() {
         saveExecution(data);
     });
 }
@@ -690,7 +715,7 @@ function setLoadBar(data) {
 
 function updateDataBarVisual(controlStatus, progress = 100) {
 
-    $("#progress-bar").removeClass(function (index, className) {
+    $("#progress-bar").removeClass(function(index, className) {
         return (className.match(/(^|\s)progress-bar-\S+/g) || []).join(' ');
     });
 
@@ -718,12 +743,12 @@ function sortStep(step) {
     for (var j = 0; j < step.testCaseStepActionExecutionList.length; j++) {
         var action = step.testCaseStepActionExecutionList[j];
 
-        action.testCaseStepActionControlExecutionList.sort(function (a, b) {
+        action.testCaseStepActionControlExecutionList.sort(function(a, b) {
             return a.sort - b.sort;
         });
     }
 
-    step.testCaseStepActionExecutionList.sort(function (a, b) {
+    step.testCaseStepActionExecutionList.sort(function(a, b) {
         return a.sort - b.sort;
     });
 }
@@ -735,7 +760,7 @@ function sortData(agreg) {
         sortStep(step);
     }
 
-    agreg.sort(function (a, b) {
+    agreg.sort(function(a, b) {
         return a.sort - b.sort;
     });
 }
@@ -743,7 +768,7 @@ function sortData(agreg) {
 function sortProperties(identifier) {
     var container = $(identifier);
     var list = container.children(".property");
-    list.sort(function (a, b) {
+    list.sort(function(a, b) {
 
         var aProp = $(a).find("[name='masterProp']").data("property").property.toLowerCase(),
                 bProp = $(b).find("[name='masterProp']").data("property").property.toLowerCase();
@@ -848,7 +873,7 @@ function drawProperty(property, table, isSecondary) {
     }
 
     // Starting to reduce the size of the row by the length of elements.
-    $(row).find("#contentField").removeClass("col-sm-10").addClass("col-sm-" + (9 - property.fileList.length));
+    $(row).find("#contentField").removeClass("col-sm-10").addClass("col-sm-" + (9 - property.fileList.length)).addClass("col-sm-" + (9 - property.fileList.length));
     // Adding all media attached to action execution.
     addFileLink(property.fileList, $(row).find("#contentRow"), isTheExecutionManual);
 
@@ -861,7 +886,7 @@ function drawProperty(property, table, isSecondary) {
 
     var container1 = $("#PROPERTY-" + property.property);
     var container2 = $("#content-container-" + property.property);
-    container1.click(function () {
+    container1.click(function() {
         if (container1.find(".glyphicon-chevron-down").length > 0) {
             container1.find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
         } else {
@@ -912,10 +937,10 @@ function getPropertyContent(property) {
     var retryPeriodField = $("<input type='text' class='form-control' id='retryPeriod'>").prop("readonly", true);
 
     var typeGroup = $("<div class='form-group'></div>").append($("<label for='type'>" + doc.getDocLabel("testcaseexecutiondata", "type") + "</label>")).append(typeField);
-    
+
     // add rank
     var rankGroup = $("<div class='form-group'></div>").append($("<label for='rank'>" + doc.getDocLabel("testcasecountryproperties", "Rank") + "</label>")).append(rankField);
-    
+
     var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
     var value1Group = $("<div class='form-group'></div>").append($("<label for='value1'>" + doc.getDocLabel("page_executiondetail", "value1") + "</label>")).append(value1Field);
     var value1InitGroup = $("<div class='form-group'></div>").append($("<label for='value1init'>" + doc.getDocLabel("page_executiondetail", "value1init") + "</label>")).append(value1InitField);
@@ -1106,7 +1131,7 @@ function createPropertiesOld(propList) {
         header.append(rcDiv).append(propertyDiv).append(typeDiv).append(messageDiv);
         var htmlElement = headerDiv.append(header).append(right).append($("<div>").addClass("clearfix"));
 
-        htmlElement.click(function () {
+        htmlElement.click(function() {
             if ($(this).find(".glyphicon-chevron-down").length > 0) {
                 $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
             } else {
@@ -1204,8 +1229,10 @@ function Step(json, stepList, id) {
     this.conditionOper = json.conditionOper;
     this.conditionVal1 = json.conditionVal1;
     this.conditionVal2 = json.conditionVal2;
+    this.conditionVal3 = json.conditionVal3;
     this.conditionVal1Init = json.conditionVal1Init;
     this.conditionVal2Init = json.conditionVal2Init;
+    this.conditionVal3Init = json.conditionVal3Init;
     this.useStep = json.useStep;
     this.useStepTest = json.useStepTest;
     this.useStepTestCase = json.useStepTestCase;
@@ -1231,7 +1258,7 @@ function Step(json, stepList, id) {
 
 }
 
-Step.prototype.addElements = function () {
+Step.prototype.addElements = function() {
     var htmlElement = this.html;
 
     htmlElement.data("item", this);
@@ -1243,7 +1270,7 @@ Step.prototype.addElements = function () {
 
 };
 
-Step.prototype.draw = function () {
+Step.prototype.draw = function() {
 
     var htmlElement = this.html;
     var object = htmlElement.data("item");
@@ -1277,7 +1304,7 @@ Step.prototype.draw = function () {
 
 
 //update display of the step
-Step.prototype.update = function (idStep) {
+Step.prototype.update = function(idStep) {
 
 
     var glyphiconColor = "text-black";
@@ -1298,15 +1325,15 @@ Step.prototype.update = function (idStep) {
         glyphiconColor = "text-success";
     }
 
-    $($("#steps").find("a")[idStep]).removeClass(function (index, className) {
+    $($("#steps").find("a")[idStep]).removeClass(function(index, className) {
         return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
     }).addClass(className);
 
-    $($("#steps").find("a")[idStep]).find("span").removeClass(function (index, className) {
+    $($("#steps").find("a")[idStep]).find("span").removeClass(function(index, className) {
         return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
     }).addClass(glyphiconName);
 
-    var glyphIcon = $($("#stepInfo h2")[0]).removeClass(function (index, className) {
+    var glyphIcon = $($("#stepInfo h2")[0]).removeClass(function(index, className) {
         return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
     });
     //
@@ -1319,7 +1346,7 @@ Step.prototype.update = function (idStep) {
 
 
 
-Step.prototype.show = function () {
+Step.prototype.show = function() {
     var doc = new Doc();
     var object = $(this).data("item");
     var stepDesc = $("<div>").addClass("col-xs-10");
@@ -1365,12 +1392,14 @@ Step.prototype.show = function () {
     $("#stepConditionOper").val(object.conditionOper);
     $("#stepConditionVal1").val(object.conditionVal1);
     $("#stepConditionVal2").val(object.conditionVal2);
+    $("#stepConditionVal3").val(object.conditionVal3);
     $("#stepConditionVal1Init").val(object.conditionVal1Init);
     $("#stepConditionVal2Init").val(object.conditionVal2Init);
+    $("#stepConditionVal3Init").val(object.conditionVal3Init);
 
     returnMessageWritableForStep(object, $("#stepMessage"));
 
-    $("#stepInfo").unbind("click").click(function () {
+    $("#stepInfo").unbind("click").click(function() {
         $("#stepHiddenRow").toggle();
         if ($(this).find("span").hasClass("glyphicon-chevron-down")) {
             $(this).find("span").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
@@ -1382,13 +1411,13 @@ Step.prototype.show = function () {
     return false;
 };
 
-Step.prototype.setActionList = function (actionList, idMotherStep) {
+Step.prototype.setActionList = function(actionList, idMotherStep) {
     for (var i = 0; i < actionList.length; i++) {
         this.setAction(actionList[i], idMotherStep, i);
     }
 };
 
-Step.prototype.setAction = function (action, idMotherStep, idAction) {
+Step.prototype.setAction = function(action, idMotherStep, idAction) {
     var actionObj;
     if (action instanceof Action) {
         actionObj = action;
@@ -1403,17 +1432,17 @@ Step.prototype.setAction = function (action, idMotherStep, idAction) {
     actionObj.setControlList(actionObj.controlListJson, idMotherStep, idAction);
 };
 
-Step.prototype.setDescription = function (description) {
+Step.prototype.setDescription = function(description) {
     this.description = description;
     this.textArea.text(description);
     $("#stepHeaderDescription").text(description);
 };
 
-Step.prototype.setStep = function (step) {
+Step.prototype.setStep = function(step) {
     this.step = step;
 };
 
-Step.prototype.setReturnMessage = function (returnMessage) {
+Step.prototype.setReturnMessage = function(returnMessage) {
     this.returnMessage = returnMessage;
 };
 
@@ -1431,7 +1460,7 @@ function returnMessageWritableForStep(object, field) {
     field.prop("readonly", true);
     if (object.returnCode === "WE" && isTheExecutionManual) {
         field.prop("readonly", false);
-        field.change(function () {
+        field.change(function() {
             var currentObject = field.data("currentStep");
             currentObject.setReturnMessage(field.val());
         });
@@ -1442,13 +1471,15 @@ function returnMessageWritableForStep(object, field) {
 
 
 //Get the json data from the input of the field
-Step.prototype.getJsonData = function () {
+Step.prototype.getJsonData = function() {
     var json = {};
     json.conditionOper = this.conditionOper;
     json.conditionVal1 = this.conditionVal1;
     json.conditionVal1Init = this.conditionVal1Init;
     json.conditionVal2 = this.conditionVal2;
     json.conditionVal2Init = this.conditionVal2Init;
+    json.conditionVal3 = this.conditionVal3;
+    json.conditionVal3Init = this.conditionVal3Init;
     json.description = this.description;
     json.end = this.end;
     json.fullEnd = this.fullEnd;
@@ -1499,8 +1530,10 @@ function Action(json, parentStep) {
         this.testcase = json.testcase;
         this.value1 = json.value1;
         this.value2 = json.value2;
+        this.value3 = json.value3;
         this.value1init = json.value1init;
         this.value2init = json.value2init;
+        this.value3init = json.value3init;
         this.screenshotFileName = json.screenshotFileName;
         this.controlListJson = json.testCaseStepActionControlExecutionList;
         this.controlList = [];
@@ -1508,8 +1541,10 @@ function Action(json, parentStep) {
         this.conditionOper = json.conditionOper;
         this.conditionVal1Init = json.conditionVal1Init;
         this.conditionVal2Init = json.conditionVal2Init;
+        this.conditionVal3Init = json.conditionVal3Init;
         this.conditionVal1 = json.conditionVal1;
         this.conditionVal2 = json.conditionVal2;
+        this.conditionVal3 = json.conditionVal3;
     } else {
         this.action = "Unknown";
         this.description = "";
@@ -1529,8 +1564,10 @@ function Action(json, parentStep) {
         this.testcase = "";
         this.value1 = "";
         this.value2 = "";
+        this.value3 = "";
         this.value1init = "";
         this.value2init = "";
+        this.value3init = "";
         this.screenshotFileName = "";
         this.controlListJson = "";
         this.controlList = [];
@@ -1538,15 +1575,17 @@ function Action(json, parentStep) {
         this.conditionOper = "always";
         this.conditionVal1Init = "";
         this.conditionVal2Init = "";
+        this.conditionVal3Init = "";
         this.conditionVal1 = "";
         this.conditionVal2 = "";
+        this.conditionVal3 = "";
     }
 
     this.toDelete = false;
     $(this.html).data("index", this.sort - 1)
 }
 
-Action.prototype.draw = function (idMotherStep, id) {
+Action.prototype.draw = function(idMotherStep, id) {
 
     var fullActionElement = $("<div name='fullActionDiv'></div>");
     var htmlElement = this.html;
@@ -1604,7 +1643,7 @@ Action.prototype.draw = function (idMotherStep, id) {
     $(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length));
     // Adding all media attached to action execution.
 
-    htmlElement.click(function () {
+    htmlElement.click(function() {
         if ($(this).find(".glyphicon-chevron-down").length > 0) {
             $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
         } else {
@@ -1620,13 +1659,13 @@ Action.prototype.draw = function (idMotherStep, id) {
     addFileLink(this.fileList, $(header).find(".row"), isTheExecutionManual, idMotherStep);
 };
 
-Action.prototype.setControlList = function (controlList, idMotherStep, idMotherAction) {
+Action.prototype.setControlList = function(controlList, idMotherStep, idMotherAction) {
     for (var i = 0; i < controlList.length; i++) {
         this.setControl(controlList[i], idMotherStep, idMotherAction, i);
     }
 };
 
-Action.prototype.setControl = function (control, idMotherStep, idMotherAction, id) {
+Action.prototype.setControl = function(control, idMotherStep, idMotherAction, id) {
     if (control instanceof Control) {
         control.draw(idMotherStep, idMotherAction, id);
         this.controlList.push(control);
@@ -1638,15 +1677,15 @@ Action.prototype.setControl = function (control, idMotherStep, idMotherAction, i
     }
 };
 
-Action.prototype.setStep = function (step) {
+Action.prototype.setStep = function(step) {
     this.step = step;
 };
 
-Action.prototype.setSequence = function (sequence) {
+Action.prototype.setSequence = function(sequence) {
     this.sequence = sequence;
 };
 
-Action.prototype.setReturnMessage = function (returnMessage) {
+Action.prototype.setReturnMessage = function(returnMessage) {
     this.returnMessage = returnMessage;
 };
 /*
@@ -1661,13 +1700,13 @@ function returnMessageWritable(object, field) {
     field.prop("readonly", true);
     if (object.returnCode === "WE" && isTheExecutionManual) {
         field.prop("readonly", false);
-        field.change(function () {
+        field.change(function() {
             object.setReturnMessage(field.val());
         });
     }
 }
 
-Action.prototype.generateHeader = function (id) {
+Action.prototype.generateHeader = function(id) {
     var scope = this;
     var content = $("<div></div>").addClass("content");
     var firstRow = $("<div></div>").addClass("row ");
@@ -1693,7 +1732,7 @@ Action.prototype.generateHeader = function (id) {
         var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
         var buttonUpload = $($("<button>").addClass("btn btn-upload btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
 
-        buttonOK.click(function (event) {
+        buttonOK.click(function(event) {
             event.preventDefault();
             event.stopPropagation();
             triggerActionExecution(this, id, "OK");
@@ -1703,7 +1742,7 @@ Action.prototype.generateHeader = function (id) {
             if ($(this).parent().parent().find(".btn-upload").length == 0) {
                 $(this).parent().parent().append(buttonUpload)
             }
-            buttonUpload.click(function (event) {
+            buttonUpload.click(function(event) {
                 var indexStep = $("#nav-execution").find(".active").data("index");
                 var indexAction = $(this).parents("a").data('index')
                 var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
@@ -1714,7 +1753,7 @@ Action.prototype.generateHeader = function (id) {
             })
             $(buttonUpload).css("float", "right")
         });
-        buttonFA.click(function (event) {
+        buttonFA.click(function(event) {
             event.preventDefault();
             event.stopPropagation();
             triggerActionExecution(this, id, "FA");
@@ -1723,7 +1762,7 @@ Action.prototype.generateHeader = function (id) {
             if ($(this).parent().parent().find(".btn-upload").length == 0) {
                 $(this).parent().parent().append(buttonUpload)
             }
-            buttonUpload.click(function (event) {
+            buttonUpload.click(function(event) {
                 var indexStep = $("#nav-execution").find(".active").data("index");
                 var indexAction = $(this).parents("a").data('index')
                 var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
@@ -1757,19 +1796,19 @@ function triggerActionExecution(element, id, status) {
     var currentElement = $($(element).closest(".action")[0]);
     var newReturnCode = "WE";
     if (status === "OK") {
-        currentElement.removeClass(function (index, className) {
+        currentElement.removeClass(function(index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
         }).addClass("row list-group-item list-group-item-success");
-        $(currentElement.find("span")[0]).removeClass(function (index, className) {
+        $(currentElement.find("span")[0]).removeClass(function(index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-ok");
         $(currentElement).next("div").find("input[id='returncode']").val("OK").change();
         newReturnCode = "OK";
     } else {
-        currentElement.removeClass(function (index, className) {
+        currentElement.removeClass(function(index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
         }).addClass("row list-group-item list-group-item-warning");
-        $(currentElement.find("span")[0]).removeClass(function (index, className) {
+        $(currentElement.find("span")[0]).removeClass(function(index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-alert");
         $(currentElement).next("div").find("input[id='returncode']").val("FA").change();
@@ -1780,11 +1819,11 @@ function triggerActionExecution(element, id, status) {
 
     //Modify style of all previous action and control of the current step that have not been modified yet
     var prevElementCurrentStep = $($($(element).closest(".action")[0]).parent().prevAll().find(".list-group-item-black"));
-    prevElementCurrentStep.removeClass(function (index, className) {
+    prevElementCurrentStep.removeClass(function(index, className) {
         return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
     }).addClass("row list-group-item list-group-item-success");
     //Modify glyphicon of all previous action and control of the current step that have not been modified yet
-    $($($($(element).closest(".action")[0]).parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
+    $($($($(element).closest(".action")[0]).parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function(index, className) {
         return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
     }).addClass("glyphicon-ok");
     //Modify Status of all previous action and control of the current step that have not been modified yet
@@ -1793,11 +1832,11 @@ function triggerActionExecution(element, id, status) {
 
     //Modify style of all previous action and control of the previous steps that have not been modified yet
     var prevElementPreviousStep = $($($(element).closest(".action")[0]).parent().parent().prevAll().find(".list-group-item-black"));
-    prevElementPreviousStep.removeClass(function (index, className) {
+    prevElementPreviousStep.removeClass(function(index, className) {
         return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
     }).addClass("row list-group-item list-group-item-success");
     //Modify glyphicon of all previous action and control of the previous steps that have not been modified yet
-    $($($($(element).closest(".action")[0]).parent().parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
+    $($($($(element).closest(".action")[0]).parent().parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function(index, className) {
         return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
     }).addClass("glyphicon-ok");
 
@@ -1817,7 +1856,7 @@ function triggerActionExecution(element, id, status) {
 function updateActionControlReturnCode(idElementTriggers, returnCodeElementTrigger) {
 
     //go though every action or control to update them
-    $(".itemContainer").each(function () {
+    $(".itemContainer").each(function() {
 
         var idCurrentElement = $(this).data("id");
         var isBeforeTheElementTrigger = false;
@@ -1899,7 +1938,7 @@ function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, i
             var everyActionAndControlOK = true;
             var returnMessageCanBeReset = true;
 
-            $(".itemContainer").each(function () {
+            $(".itemContainer").each(function() {
                 var idCurrentActionControl = $(this).data("id");
                 var actionControBelongToCurrentStep = (stepId == idCurrentActionControl.stepId);
                 if (actionControBelongToCurrentStep) {
@@ -1949,17 +1988,17 @@ function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, i
                 glyphiconColor = "text-success";
             }
 
-            $($("#steps").find("a")[stepId]).removeClass(function (index, className) {
+            $($("#steps").find("a")[stepId]).removeClass(function(index, className) {
                 return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
             }).addClass(className);
 
-            $($("#steps").find("a")[stepId]).find("span").removeClass(function (index, className) {
+            $($("#steps").find("a")[stepId]).find("span").removeClass(function(index, className) {
                 return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
             }).addClass(glyphiconName);
 
             //if the current step is the one displayed at the center of the screen
             if (isStepDisplayed) {
-                var glyphIcon = $($("#stepInfo h2")[0]).removeClass(function (index, className) {
+                var glyphIcon = $($("#stepInfo h2")[0]).removeClass(function(index, className) {
                     return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
                 });
 
@@ -2031,7 +2070,7 @@ function updateTestCaseReturnCode() {
     }
 }
 
-Action.prototype.generateContent = function () {
+Action.prototype.generateContent = function() {
     var obj = this;
     var doc = new Doc();
 
@@ -2049,6 +2088,8 @@ Action.prototype.generateContent = function () {
     var value1InitField = $("<textarea type='text' rows='1' class='form-control' id='value1init'>").prop("readonly", true);
     var value2Field = $("<textarea type='text' rows='1' class='form-control' id='value2'>").prop("readonly", true);
     var value2InitField = $("<textarea type='text' rows='1' class='form-control' id='value2init'>").prop("readonly", true);
+    var value3Field = $("<textarea type='text' rows='1' class='form-control' id='value3'>").prop("readonly", true);
+    var value3InitField = $("<textarea type='text' rows='1' class='form-control' id='value3init'>").prop("readonly", true);
     var timeField = $("<input type='text' class='form-control' id='time'>").prop("readonly", true);
     var forceexecField = $("<input type='text' class='form-control' id='forceexec'>").prop("readonly", true);
     var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly", true);
@@ -2060,8 +2101,10 @@ Action.prototype.generateContent = function () {
     var conditionOperField = $("<textarea type='text' rows='1' class='form-control' id='conditionOper'>").prop("readonly", true);
     var conditionVal1InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal1Init'>").prop("readonly", true);
     var conditionVal2InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal2Init'>").prop("readonly", true);
+    var conditionVal3InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal3Init'>").prop("readonly", true);
     var conditionVal1Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal1'>").prop("readonly", true);
     var conditionVal2Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal2'>").prop("readonly", true);
+    var conditionVal3Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal3'>").prop("readonly", true);
 
     var actionGroup = $("<div class='form-group'></div>").append($("<label for='action'>" + doc.getDocLabel("page_executiondetail", "action") + "</label>")).append(actionList);
     var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
@@ -2077,9 +2120,10 @@ Action.prototype.generateContent = function () {
     var conditionOperGroup = $("<div class='form-group'></div>").append($("<label for='conditionOper'>" + doc.getDocLabel("page_executiondetail", "conditionOper") + "</label>")).append(conditionOperField);
     var conditionVal1InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal1Init") + "</label>")).append(conditionVal1InitField);
     var conditionVal2InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal2Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal2Init") + "</label>")).append(conditionVal2InitField);
+    var conditionVal3InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal3Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal3Init") + "</label>")).append(conditionVal3InitField);
     var conditionVal1Group = $("<div class='form-group'></div>").append($("<label for='conditionVal1'>" + doc.getDocLabel("page_executiondetail", "conditionVal1") + "</label>")).append(conditionVal1Field);
     var conditionVal2Group = $("<div class='form-group'></div>").append($("<label for='conditionVal2'>" + doc.getDocLabel("page_executiondetail", "conditionVal2") + "</label>")).append(conditionVal2Field);
-
+    var conditionVal3Group = $("<div class='form-group'></div>").append($("<label for='conditionVal3'>" + doc.getDocLabel("page_executiondetail", "conditionVal3") + "</label>")).append(conditionVal3Field);
 
     descField.val(this.description);
     actionList.val(this.action);
@@ -2087,6 +2131,8 @@ Action.prototype.generateContent = function () {
     value1InitField.val(this.value1init);
     value2Field.val(this.value2);
     value2InitField.val(this.value2init);
+    value3Field.val(this.value3);
+    value3InitField.val(this.value3init);
     if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
         timeField.val((convToDate(this.endlong) - convToDate(this.startlong)) + " ms");
     } else {
@@ -2099,8 +2145,10 @@ Action.prototype.generateContent = function () {
     conditionOperField.val(this.conditionOper);
     conditionVal1InitField.val(this.conditionVal1Init);
     conditionVal2InitField.val(this.conditionVal2Init);
+    conditionVal3InitField.val(this.conditionVal3Init);
     conditionVal1Field.val(this.conditionVal1);
     conditionVal2Field.val(this.conditionVal2);
+    conditionVal3Field.val(this.conditionVal3);
 
     row1.append($("<div></div>").addClass("col-sm-2").append(returncodeGroup));
     row1.append($("<div></div>").addClass("col-sm-10").append(descGroup));
@@ -2115,11 +2163,13 @@ Action.prototype.generateContent = function () {
     row4.append($("<div></div>").addClass("col-sm-5").append(timeGroup));
     row5.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
     row6.append($("<div></div>").addClass("col-sm-2"));
-    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal1InitGroup));
-    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal2InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal1InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal2InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-2").append(conditionVal3InitGroup));
     row7.append($("<div></div>").addClass("col-sm-2").append(conditionOperGroup));
-    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal1Group));
-    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal2Group));
+    row7.append($("<div></div>").addClass("col-sm-4").append(conditionVal1Group));
+    row7.append($("<div></div>").addClass("col-sm-4").append(conditionVal2Group));
+    row7.append($("<div></div>").addClass("col-sm-2").append(conditionVal3Group));
 
     container.append(row1);
     container.append(row2);
@@ -2133,7 +2183,7 @@ Action.prototype.generateContent = function () {
 };
 
 
-Action.prototype.getJsonData = function () {
+Action.prototype.getJsonData = function() {
     var json = {};
 
     json.action = this.action;
@@ -2142,6 +2192,8 @@ Action.prototype.getJsonData = function () {
     json.conditionVal1Init = this.conditionVal1Init;
     json.conditionVal2 = this.conditionVal2;
     json.conditionVal2Init = this.conditionVal2Init;
+    json.conditionVal3 = this.conditionVal3;
+    json.conditionVal3Init = this.conditionVal3Init;
     json.description = this.description;
     json.end = this.end;
     json.endlong = this.endlong;
@@ -2162,6 +2214,8 @@ Action.prototype.getJsonData = function () {
     json.value1init = this.value1init;
     json.value2 = this.value2;
     json.value2init = this.value2init;
+    json.value3 = this.value3;
+    json.value3init = this.value3init;
     //Value the user is able to modified
     return json;
 };
@@ -2173,8 +2227,10 @@ function Control(json, parentAction) {
         this.controlSequence = json.controlSequence;
         this.value1 = json.controlProperty;
         this.value2 = json.controlValue;
+        this.value3 = json.controlValue3;
         this.value1init = json.controlPropertyInit;
         this.value2init = json.controlValueInit;
+        this.value3init = json.controlValue3Init;
         this.description = json.description;
         this.end = json.end;
         this.endlong = json.endlong;
@@ -2195,16 +2251,20 @@ function Control(json, parentAction) {
         this.conditionOper = json.conditionOper;
         this.conditionVal1Init = json.conditionVal1Init;
         this.conditionVal2Init = json.conditionVal2Init;
+        this.conditionVal3Init = json.conditionVal3Init;
         this.conditionVal1 = json.conditionVal1;
         this.conditionVal2 = json.conditionVal2;
+        this.conditionVal3 = json.conditionVal3;
     } else {
         this.control = "";
         this.controlType = "Unknown";
         this.controlSequence = 1;
         this.value1 = "";
         this.value2 = "";
+        this.value3 = "";
         this.value1init = "";
         this.value2init = "";
+        this.value3init = "";
         this.description = "";
         this.end = 0;
         this.endlong = 0;
@@ -2225,8 +2285,10 @@ function Control(json, parentAction) {
         this.conditionOper = "always";
         this.conditionVal1Init = "";
         this.conditionVal2Init = "";
+        this.conditionVal3Init = "";
         this.conditionVal1 = "";
         this.conditionVal2 = "";
+        this.conditionVal3 = "";
     }
 
     this.parentStep = parentAction.parentStep;
@@ -2238,7 +2300,7 @@ function Control(json, parentAction) {
     $(this.html).data("index", this.sort - 1)
 }
 
-Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
+Control.prototype.draw = function(idMotherStep, idMotherAction, idControl) {
     var htmlElement = this.html;
     var row = $("<div class='itemContainer'></div>").addClass("col-xs-10");
     var type = $("<div></div>").addClass("type");
@@ -2285,13 +2347,13 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
         content.hide();
     }
     // Starting to reduce the size of the row by the length of elements.
-    $(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length));
+    $(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length * 2)).addClass("col-sm-" + (12 - this.fileList.length * 2));
     // Adding all media attached to control execution.
     addFileLink(this.fileList, $(header).find(".row"), isTheExecutionManual, idMotherStep);
 
     $(this.parentAction.html).parent().append(htmlElement);
     $(this.parentAction.html).parent().append(content);
-    htmlElement.click(function () {
+    htmlElement.click(function() {
         if ($(this).find(".glyphicon-chevron-down").length > 0) {
             $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
         } else {
@@ -2303,23 +2365,23 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
 
 };
 
-Control.prototype.setStep = function (step) {
+Control.prototype.setStep = function(step) {
     this.step = step;
 };
 
-Control.prototype.setSequence = function (sequence) {
+Control.prototype.setSequence = function(sequence) {
     this.sequence = sequence;
 };
 
-Control.prototype.setControl = function (control) {
+Control.prototype.setControl = function(control) {
     this.control = control;
 };
 
-Control.prototype.setReturnMessage = function (returnMessage) {
+Control.prototype.setReturnMessage = function(returnMessage) {
     this.returnMessage = returnMessage;
 };
 
-Control.prototype.generateHeader = function (id) {
+Control.prototype.generateHeader = function(id) {
     var scope = this;
     var content = $("<div></div>").addClass("content");
     var firstRow = $("<div></div>").addClass("row ");
@@ -2342,7 +2404,7 @@ Control.prototype.generateHeader = function (id) {
         var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
         var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
         $(buttonUpload).css("float", "right")
-        buttonOK.click(function (event) {
+        buttonOK.click(function(event) {
             event.preventDefault();
             event.stopPropagation();
             triggerControlExecution(this, id, "OK");
@@ -2351,7 +2413,7 @@ Control.prototype.generateHeader = function (id) {
             if ($(this).parent().parent().find(".btn-upload").length == 0) {
                 $(this).parent().parent().append(buttonUpload)
             }
-            $(buttonUpload).click(function (event) {
+            $(buttonUpload).click(function(event) {
                 var indexStep = $("#nav-execution").find(".active").data("index");
                 var indexAction = $(this).parents("a").parent().find(".action").data('index')
                 var indexControl = $(this).parents("a").data('index')
@@ -2363,7 +2425,7 @@ Control.prototype.generateHeader = function (id) {
             })
             $(buttonUpload).css("float", "right")
         });
-        buttonFA.click(function (event) {
+        buttonFA.click(function(event) {
             event.preventDefault();
             event.stopPropagation();
             triggerControlExecution(this, id, "KO");
@@ -2372,7 +2434,7 @@ Control.prototype.generateHeader = function (id) {
             if ($(this).parent().parent().find(".btn-upload").length == 0) {
                 $(this).parent().parent().append(buttonUpload)
             }
-            $(buttonUpload).click(function (event) {
+            $(buttonUpload).click(function(event) {
                 var indexStep = $("#nav-execution").find(".active").data("index");
                 var indexAction = $(this).parents("a").parent().find(".action").data('index')
                 var indexControl = $(this).parents("a").data('index')
@@ -2404,25 +2466,25 @@ function triggerControlExecution(element, id, status) {
     var currentElement = $($(element).closest(".control")[0]);
     var newReturnCode = "NE";
     if (status === "OK") {
-        currentElement.removeClass(function (index, className) {
+        currentElement.removeClass(function(index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
         }).addClass("row list-group-item list-group-item-success");
-        $(currentElement.find("span")[0]).removeClass(function (index, className) {
+        $(currentElement.find("span")[0]).removeClass(function(index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-ok");
-        //Modify Status of current action 
+        //Modify Status of current action
         $(currentElement).next("div").find("input[id='returncode']").val("OK").change();
         $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
         $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
         newReturnCode = "OK";
     } else {
-        currentElement.removeClass(function (index, className) {
+        currentElement.removeClass(function(index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
         }).addClass("row list-group-item list-group-item-danger");
-        $(currentElement.find("span")[0]).removeClass(function (index, className) {
+        $(currentElement.find("span")[0]).removeClass(function(index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-remove");
-        //Modify Status of current action 
+        //Modify Status of current action
         $(currentElement).next("div").find("input[id='returncode']").val("KO").change();
         $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
         $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
@@ -2431,11 +2493,11 @@ function triggerControlExecution(element, id, status) {
 
     //Modify style of action of the current actiongroup that have not been modified yet
     var prevElementCurrentActionGroup = $($($(element).closest(".control")[0]).prevAll(".list-group-item-black"));
-    prevElementCurrentActionGroup.removeClass(function (index, className) {
+    prevElementCurrentActionGroup.removeClass(function(index, className) {
         return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
     }).addClass("row list-group-item list-group-item-success");
     //Modify glyphicon of action of the current actiongroup that have not been modified yet
-    $($($($(element).closest(".control")[0]).prevAll(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
+    $($($($(element).closest(".control")[0]).prevAll(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function(index, className) {
         return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
     }).addClass("glyphicon-ok");
     //Modify Status of action of the current actiongroup that have not been modified yet
@@ -2444,11 +2506,11 @@ function triggerControlExecution(element, id, status) {
 
     //Modify style of all previous action and control of the current step that have not been modified yet
     var prevElementCurrentStep = $($($(element).closest(".control")[0]).parent().prevAll().find(".list-group-item-black"));
-    prevElementCurrentStep.removeClass(function (index, className) {
+    prevElementCurrentStep.removeClass(function(index, className) {
         return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
     }).addClass("row list-group-item list-group-item-success");
     //Modify glyphicon of all previous action and control of the current step that have not been modified yet
-    $($($($(element).closest(".control")[0]).parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
+    $($($($(element).closest(".control")[0]).parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function(index, className) {
         return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
     }).addClass("glyphicon-ok");
     //Modify Status of all previous action and control of the current step that have not been modified yet
@@ -2458,11 +2520,11 @@ function triggerControlExecution(element, id, status) {
 
     //Modify style of all previous action and control of the previous steps that have not been modified yet
     var prevElementPreviousStep = $($($(element).closest(".control")[0]).parent().parent().prevAll().find(".list-group-item-black"));
-    prevElementPreviousStep.removeClass(function (index, className) {
+    prevElementPreviousStep.removeClass(function(index, className) {
         return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
     }).addClass("row list-group-item list-group-item-success");
     //Modify glyphicon of all previous action and control of the previous steps that have not been modified yet
-    $($($($(element).closest(".control")[0]).parent().parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
+    $($($($(element).closest(".control")[0]).parent().parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function(index, className) {
         return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
     }).addClass("glyphicon-ok");
     //Modify Status of all previous action and control of the previous step that have not been modified yet
@@ -2473,7 +2535,7 @@ function triggerControlExecution(element, id, status) {
 
 }
 
-Control.prototype.generateContent = function () {
+Control.prototype.generateContent = function() {
     var doc = new Doc();
     var obj = this;
 
@@ -2493,6 +2555,8 @@ Control.prototype.generateContent = function () {
     var value1InitField = $("<textarea type='text' rows='1' class='form-control' id='value1init'>").prop("readonly", true);
     var value2Field = $("<textarea type='text' rows='1' class='form-control' id='value2'>").prop("readonly", true);
     var value2InitField = $("<textarea type='text' rows='1' class='form-control' id='value2init'>").prop("readonly", true);
+    var value3Field = $("<textarea type='text' rows='1' class='form-control' id='value3'>").prop("readonly", true);
+    var value3InitField = $("<textarea type='text' rows='1' class='form-control' id='value3init'>").prop("readonly", true);
     var timeField = $("<input type='text' class='form-control' id='time'>").prop("readonly", true);
 
     var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnmessage'>");
@@ -2503,8 +2567,10 @@ Control.prototype.generateContent = function () {
     var conditionOperField = $("<textarea type='text' rows='1' class='form-control' id='conditionOper'>").prop("readonly", true);
     var conditionVal1InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal1Init'>").prop("readonly", true);
     var conditionVal2InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal2Init'>").prop("readonly", true);
+    var conditionVal3InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal3Init'>").prop("readonly", true);
     var conditionVal1Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal1'>").prop("readonly", true);
     var conditionVal2Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal2'>").prop("readonly", true);
+    var conditionVal3Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal3'>").prop("readonly", true);
 
     var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
     var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>" + doc.getDocLabel("page_executiondetail", "return_code") + "</label>")).append(returnCodeField);
@@ -2515,14 +2581,17 @@ Control.prototype.generateContent = function () {
     var timeGroup = $("<div class='form-group'></div>").append($("<label for='time'>" + doc.getDocLabel("page_executiondetail", "time") + "</label>")).append(timeField);
     var controlValue2Group = $("<div class='form-group'></div>").append($("<label for='controlproperty'>" + doc.getDocLabel("page_executiondetail", "value2") + "</label>")).append(value2Field);
     var controlValue2InitGroup = $("<div class='form-group'></div>").append($("<label for='controlpropertyinit'>" + doc.getDocLabel("page_executiondetail", "value2init") + "</label>")).append(value2InitField);
+    var controlValue3Group = $("<div class='form-group'></div>").append($("<label for='controlvalue3'>" + doc.getDocLabel("page_executiondetail", "value3") + "</label>")).append(value3Field);
+    var controlValue3InitGroup = $("<div class='form-group'></div>").append($("<label for='controlvalue3init'>" + doc.getDocLabel("page_executiondetail", "value3init") + "</label>")).append(value3InitField);
     var fatalGroup = $("<div class='form-group'></div>").append($("<label for='fatal'>" + doc.getDocLabel("page_executiondetail", "fatal") + "</label>")).append(fatalField);
     var sortGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("page_executiondetail", "sort") + "</label>")).append(sortField);
     var conditionOperGroup = $("<div class='form-group'></div>").append($("<label for='conditionOper'>" + doc.getDocLabel("page_executiondetail", "conditionOper") + "</label>")).append(conditionOperField);
     var conditionVal1InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal1Init") + "</label>")).append(conditionVal1InitField);
     var conditionVal2InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal2Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal2Init") + "</label>")).append(conditionVal2InitField);
+    var conditionVal3InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal3Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal3Init") + "</label>")).append(conditionVal3InitField);
     var conditionVal1Group = $("<div class='form-group'></div>").append($("<label for='conditionVal1'>" + doc.getDocLabel("page_executiondetail", "conditionVal1") + "</label>")).append(conditionVal1Field);
     var conditionVal2Group = $("<div class='form-group'></div>").append($("<label for='conditionVal2'>" + doc.getDocLabel("page_executiondetail", "conditionVal2") + "</label>")).append(conditionVal2Field);
-
+    var conditionVal3Group = $("<div class='form-group'></div>").append($("<label for='conditionVal3'>" + doc.getDocLabel("page_executiondetail", "conditionVal3") + "</label>")).append(conditionVal3Field);
 
 
     descField.val(this.description);
@@ -2538,32 +2607,40 @@ Control.prototype.generateContent = function () {
     value1InitField.val(this.value1init);
     value2Field.val(this.value2);
     value2InitField.val(this.value2init);
+    value3Field.val(this.value3);
+    value3InitField.val(this.value3init);
     fatalField.val(this.fatal);
     sortField.val(this.sort);
     conditionOperField.val(this.conditionOper);
     conditionVal1InitField.val(this.conditionVal1Init);
     conditionVal2InitField.val(this.conditionVal2Init);
+    conditionVal3InitField.val(this.conditionVal3Init);
     conditionVal1Field.val(this.conditionVal1);
     conditionVal2Field.val(this.conditionVal2);
+    conditionVal3Field.val(this.conditionVal3);
 
     row1.append($("<div></div>").addClass("col-sm-2").append(returncodeGroup));
     row1.append($("<div></div>").addClass("col-sm-10").append(descGroup));
     row2.append($("<div></div>").addClass("col-sm-2"));
-    row2.append($("<div></div>").addClass("col-sm-5").append(controlValue1InitGroup));
-    row2.append($("<div></div>").addClass("col-sm-5").append(controlValue2InitGroup));
+    row2.append($("<div></div>").addClass("col-sm-4").append(controlValue1InitGroup));
+    row2.append($("<div></div>").addClass("col-sm-4").append(controlValue2InitGroup));
+    row2.append($("<div></div>").addClass("col-sm-2").append(controlValue3InitGroup));
     row3.append($("<div></div>").addClass("col-sm-2").append(controlTypeGroup));
-    row3.append($("<div></div>").addClass("col-sm-5").append(controlValue1Group));
-    row3.append($("<div></div>").addClass("col-sm-5").append(controlValue2Group));
+    row3.append($("<div></div>").addClass("col-sm-4").append(controlValue1Group));
+    row3.append($("<div></div>").addClass("col-sm-4").append(controlValue2Group));
+    row3.append($("<div></div>").addClass("col-sm-2").append(controlValue3Group));
     row4.append($("<div></div>").addClass("col-sm-2").append(sortGroup));
     row4.append($("<div></div>").addClass("col-sm-5").append(fatalGroup));
     row4.append($("<div></div>").addClass("col-sm-5").append(timeGroup));
     row5.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
     row6.append($("<div></div>").addClass("col-sm-2"));
-    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal1InitGroup));
-    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal2InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal1InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal2InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-2").append(conditionVal3InitGroup));
     row7.append($("<div></div>").addClass("col-sm-2").append(conditionOperGroup));
-    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal1Group));
-    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal2Group));
+    row7.append($("<div></div>").addClass("col-sm-4").append(conditionVal1Group));
+    row7.append($("<div></div>").addClass("col-sm-4").append(conditionVal2Group));
+    row7.append($("<div></div>").addClass("col-sm-2").append(conditionVal3Group));
 
     container.append(row1);
     container.append(row2);
@@ -2576,7 +2653,7 @@ Control.prototype.generateContent = function () {
     return container;
 };
 
-Control.prototype.getJsonData = function () {
+Control.prototype.getJsonData = function() {
     var json = {};
 
     json.conditionOper = this.conditionOper;
@@ -2584,6 +2661,8 @@ Control.prototype.getJsonData = function () {
     json.conditionVal1Init = this.conditionVal1Init;
     json.conditionVal2 = this.conditionVal2;
     json.conditionVal2Init = this.conditionVal2Init;
+    json.conditionVal3 = this.conditionVal3;
+    json.conditionVal3Init = this.conditionVal3Init;
     json.control = this.control;
     json.controlType = this.controlType;
     json.controlSequence = this.controlSequence;
@@ -2607,9 +2686,12 @@ Control.prototype.getJsonData = function () {
     json.value1init = this.value1init;
     json.value2 = this.value2;
     json.value2init = this.value2init;
+    json.value3 = this.value3;
+    json.value3init = this.value3init;
     json.type = this.type;
     json.controlProperty = this.value1;
     json.controlValue = this.value2;
+    json.controlValue3 = this.value3;
     //Value the user is able to modified
     json.returnMessage = this.returnMessage;
 
@@ -2646,9 +2728,9 @@ function addFileLink(fileList, container, manual, idStep) {
         if ((fileList[i].fileType === "JPG") || (fileList[i].fileType === "PNG")) {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
             var fileDesc = fileList[i].fileDesc;
-            var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+            var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                     .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
-                    .click(function (e) {
+                    .click(function(e) {
                         changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
                         return false;
                     }));
@@ -2664,30 +2746,30 @@ function addFileLink(fileList, container, manual, idStep) {
             var fileDesctxt = fileList[i].fileDesc;
             var filetypetxt = fileList[i].fileType.toLowerCase();
             if (i === 0) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .css("height", "30px").click(function (f) {
+                        .css("height", "30px").click(function(f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 1) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .css("height", "30px").click(function (f) {
+                        .css("height", "30px").click(function(f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 2) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .css("height", "30px").click(function (f) {
+                        .css("height", "30px").click(function(f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 3) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .css("height", "30px").click(function (f) {
+                        .css("height", "30px").click(function(f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
@@ -2698,12 +2780,12 @@ function addFileLink(fileList, container, manual, idStep) {
             var linkBoxtxt = null;
 
             if (fileList[i].fileType === "BIN") {
-                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function (f) {
+                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function(f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
             } else if (fileList[i].fileType === "PDF") {
-                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function (f) {
+                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function(f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
@@ -2718,7 +2800,7 @@ function addFileLink(fileList, container, manual, idStep) {
     if (isTheExecutionManual && fileList.length != 0) {
         var buttonUpload = $($("<button>").addClass("btn btn-info btn-upload btn-inverse").attr("type", "button").text("UPLOAD"));
         $(buttonUpload).css("float", "right")
-        buttonUpload.click(function (event) {
+        buttonUpload.click(function(event) {
             var idex = $("#idlabel").text()
             if ($(container).parent().parent().parent().hasClass("action")) {
                 var indexAction = $(this).parents("a").data('index')
@@ -2752,7 +2834,7 @@ function saveExecution(data) {
 
     var propertyWithoutCountry = false;
 
-    var saveProp = function () {
+    var saveProp = function() {
         showLoaderInModal('#propertiesModal');
         getScriptInformationOfStep()
         $.ajax({
@@ -2765,7 +2847,7 @@ function saveExecution(data) {
                 executionId: GetURLParameter("executionId"),
                 stepArray: getScriptInformationOfStep()
             }),
-            success: function () {
+            success: function() {
 
                 /*var stepHtml = $("#stepList li.active");
                  var stepData = stepHtml.data("item");
@@ -2783,7 +2865,7 @@ function saveExecution(data) {
     };
 
     if (propertyWithoutCountry) {
-        showModalConfirmation(function () {
+        showModalConfirmation(function() {
             $('#confirmationModal').modal('hide');
             saveProp();
         }, undefined, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcasescript", "warning_no_country"), "", "", "", "");
@@ -2794,7 +2876,7 @@ function saveExecution(data) {
 }
 
 /*
- * 
+ *
  * @param {type} stepListData
  * @returns {Array}
  */
@@ -2835,6 +2917,5 @@ function getScriptInformationOfStep() {
     }
     return stepArr;
 }
-
 
 

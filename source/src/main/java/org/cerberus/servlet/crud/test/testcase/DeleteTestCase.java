@@ -54,7 +54,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author cerberus
  */
 @WebServlet(name = "DeleteTestCase", urlPatterns = {"/DeleteTestCase"})
-public class DeleteTestCase extends HttpServlet {
+public class DeleteTestCase extends AbstractCrudTestCase {
 
     private static final Logger LOG = LogManager.getLogger(DeleteTestCase.class);
     
@@ -151,56 +151,5 @@ public class DeleteTestCase extends HttpServlet {
         response.getWriter().print(jsonResponse.toString());
         response.getWriter().flush();
     }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (JSONException ex) {
-            LOG.warn(ex);
-        } catch (CerberusException ex) {
-            LOG.warn(ex);
-        }
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (JSONException ex) {
-            LOG.warn(ex);
-        } catch (CerberusException ex) {
-            LOG.warn(ex);
-        }
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
 
 }

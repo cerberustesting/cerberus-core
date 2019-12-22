@@ -73,8 +73,8 @@ public class FindInvariantByID extends HttpServlet {
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
 
         JSONArray array = new JSONArray();
-        AnswerList answer = invariantService.readByIdname(idName); //TODO: handle if the response does not turn ok
-        for (Invariant myInvariant : (List<Invariant>) answer.getDataList()) {
+        List<Invariant> lstInvariant = invariantService.readByIdName(idName);
+        for (Invariant myInvariant : lstInvariant) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("value", myInvariant.getValue());
             jsonObject.put("description", myInvariant.getDescription());

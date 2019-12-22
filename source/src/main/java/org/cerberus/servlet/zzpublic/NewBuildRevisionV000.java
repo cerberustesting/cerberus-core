@@ -163,14 +163,14 @@ public class NewBuildRevisionV000 extends HttpServlet {
             MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
             Answer finalAnswer = new Answer(msg);
 
-            AnswerList answerList = new AnswerList<>();
+            AnswerList<CountryEnvParam> answerList = new AnswerList<>();
             if (country.equalsIgnoreCase(PARAMETERALL)) {
                 country = null;
             }
             answerList = countryEnvParamService.readByVarious(system, country, environment, null, null, null);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) answerList);
 
-            for (CountryEnvParam cepData : (List<CountryEnvParam>) answerList.getDataList()) {
+            for (CountryEnvParam cepData : answerList.getDataList()) {
 
                 // Email Calculation. Email must be calcuated before we update the Build and revision in order to have the old build revision still available in the mail.
                 String OutputMessage = "";

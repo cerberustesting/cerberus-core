@@ -33,7 +33,7 @@ public class FactoryApplication implements IFactoryApplication {
     @Override
     public Application create(String application, String description
             , int sort, String type, String system, String subsystem
-            , String svnurl, String deploytype, String mavengroupid
+            , String svnurl, int poolSize, String deploytype, String mavengroupid
             , String bugTrackerUrl, String bugTrackerNewUrl,
             String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         Application newObject = new Application();
@@ -44,6 +44,7 @@ public class FactoryApplication implements IFactoryApplication {
         newObject.setSort(sort);
         newObject.setSubsystem(subsystem);
         newObject.setSvnurl(svnurl);
+        newObject.setPoolSize(poolSize);
         newObject.setSystem(system);
         newObject.setType(type);
         newObject.setBugTrackerUrl(bugTrackerUrl);

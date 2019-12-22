@@ -64,7 +64,7 @@ public interface ICountryEnvParamService {
      * @param string
      * @return
      */
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    public AnswerList<CountryEnvParam> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *
@@ -83,7 +83,19 @@ public interface ICountryEnvParamService {
      * @param string
      * @return
      */
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String Active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> string);
+    public AnswerList<CountryEnvParam> readByVariousByCriteria(List<String> system, String country, String environment, String build, String revision, String Active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> string);
+
+    /**
+     *
+     * @param systems
+     * @param country
+     * @param environment
+     * @param build
+     * @param revision
+     * @param Active
+     * @return
+     */
+    public AnswerList<CountryEnvParam> readByVarious(String systems , String country, String environment, String build, String revision, String Active);
 
     /**
      *
@@ -95,19 +107,7 @@ public interface ICountryEnvParamService {
      * @param Active
      * @return
      */
-    public AnswerList readByVarious(String system, String country, String environment, String build, String revision, String Active);
-
-    /**
-     *
-     * @param system
-     * @param country
-     * @param environment
-     * @param build
-     * @param revision
-     * @param Active
-     * @return
-     */
-    public AnswerList readDistinctEnvironmentByVarious(String system, String country, String environment, String build, String revision, String Active);
+    public AnswerList<CountryEnvParam> readDistinctEnvironmentByVarious(String system, String country, String environment, String build, String revision, String Active);
 
     /**
      *
@@ -171,6 +171,6 @@ public interface ICountryEnvParamService {
      * @param columnName
      * @return 
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

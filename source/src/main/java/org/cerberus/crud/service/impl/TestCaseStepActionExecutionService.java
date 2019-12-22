@@ -57,7 +57,7 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
     ITestCaseExecutionFileService testCaseExecutionFileService;
 
     private static final Logger LOG = LogManager.getLogger(TestCaseStepActionExecutionService.class);
-    
+
     @Override
     public void insertTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
         this.testCaseStepActionExecutionDao.insertTestCaseStepActionExecution(testCaseStepActionExecution);
@@ -125,29 +125,29 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
     }
 
     @Override
-    public AnswerList readByVarious1(long executionId, String test, String testcase, int step, int index) {
+    public AnswerList<TestCaseStepActionExecution> readByVarious1(long executionId, String test, String testcase, int step, int index) {
         return testCaseStepActionExecutionDao.readByVarious1(executionId, test, testcase, step, index);
     }
 
     @Override
-    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int index, int sequence) {
+    public AnswerItem<TestCaseStepActionExecution> readByKey(long executionId, String test, String testcase, int step, int index, int sequence) {
         return testCaseStepActionExecutionDao.readByKey(executionId, test, testcase, step, index, sequence);
     }
 
     @Override
-    public AnswerList readByVarious1WithDependency(long executionId, String test, String testcase, int step, int index) {
-        AnswerList actions = this.readByVarious1(executionId, test, testcase, step, index);
-        AnswerList response = null;
+    public AnswerList<TestCaseStepActionExecution> readByVarious1WithDependency(long executionId, String test, String testcase, int step, int index) {
+        AnswerList<TestCaseStepActionExecution> actions = this.readByVarious1(executionId, test, testcase, step, index);
+        AnswerList<TestCaseStepActionExecution> response = null;
         List<TestCaseStepActionExecution> tcsaeList = new ArrayList<>();
         for (Object action : actions.getDataList()) {
 
             TestCaseStepActionExecution tcsae = (TestCaseStepActionExecution) action;
 
-            AnswerList controls = testCaseStepActionControlExecutionService.readByVarious1WithDependency(executionId, test, testcase, step, index, tcsae.getSequence());
-            tcsae.setTestCaseStepActionControlExecutionList((List<TestCaseStepActionControlExecution>) controls.getDataList());
+            AnswerList<TestCaseStepActionControlExecution> controls = testCaseStepActionControlExecutionService.readByVarious1WithDependency(executionId, test, testcase, step, index, tcsae.getSequence());
+            tcsae.setTestCaseStepActionControlExecutionList(controls.getDataList());
 
-            AnswerList files = testCaseExecutionFileService.readByVarious(executionId, tcsae.getTest() + "-" + tcsae.getTestCase() + "-" + tcsae.getStep() + "-" + tcsae.getIndex() + "-" + tcsae.getSequence());
-            tcsae.setFileList((List<TestCaseExecutionFile>) files.getDataList());
+            AnswerList<TestCaseExecutionFile> files = testCaseExecutionFileService.readByVarious(executionId, tcsae.getTest() + "-" + tcsae.getTestCase() + "-" + tcsae.getStep() + "-" + tcsae.getIndex() + "-" + tcsae.getSequence());
+            tcsae.setFileList(files.getDataList());
 
             tcsaeList.add(tcsae);
         }

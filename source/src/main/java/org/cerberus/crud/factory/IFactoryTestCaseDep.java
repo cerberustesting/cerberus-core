@@ -26,7 +26,7 @@ import java.sql.Timestamp;
 public interface IFactoryTestCaseDep {
 
 
-    TestCaseDep create(Integer id, String test, String testCase, String depTest, String depTestCase, String depEvent, String type, String active, String description
+    TestCaseDep create(Long id, String test, String testCase, String depTest, String depTestCase, String depEvent, String type, String active, String description
             , String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
 

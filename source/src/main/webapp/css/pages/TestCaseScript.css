@@ -486,3 +486,19 @@ fieldset[disabled] .btn-grey.active {
     border-color: #a3a3a3;
     color: white;
 }
+
+.library-Icon{
+	font-size:1.5em;
+	padding-left:7px;
+}
+
+.loop-Icon{
+	font-size:1.5em;
+      	padding-left:7px;
+
+}
+
+.textArea{
+	padding-right:1px;
+	padding-left:2px;
+}

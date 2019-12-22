@@ -40,7 +40,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         //open Run navbar Menu
         openNavbarMenu("navMenuIntegration");
-        
+
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
@@ -64,12 +64,12 @@ function initPage() {
 function displayPageLabel(doc) {
     $("#pageTitle").html(doc.getDocLabel("page_integrationstatus", "title"));
     $("#title").html(doc.getDocOnline("page_integrationstatus", "title"));
-    
+
     $("#reportChanges").html(doc.getDocOnline("page_integrationstatus", "lastChanges"));
     $("#selectEngGpLabel").html(doc.getDocOnline("invariant", "ENVGP"));
     $("#selectSinceLabel").html(doc.getDocOnline("invariant", "FILTERNBDAYS"));
     $("#loadLastModifbutton").html(doc.getDocLabel("page_global", "buttonLoad"));
-    
+
     $("#reportStatus").html(doc.getDocOnline("page_integrationstatus", "environmentStatus"));
     $("#buildHeader").html(doc.getDocOnline("buildrevisioninvariant", "versionname01"));
     $("#revisionHeader").html(doc.getDocOnline("buildrevisioninvariant", "versionname02"));
@@ -84,7 +84,7 @@ function loadHistoTable() {
     var nbDays = $("#selectSince").val();
     var envGp = $("#selectEngGp").val();
 
-    var urlParam = "system=" + getUser().defaultSystem;
+    var urlParam = "q=1" + getUser().defaultSystemsQuery;
     if (nbDays === null) {
         urlParam += "&nbdays=14";
     } else {
@@ -114,11 +114,11 @@ function loadHistoTable() {
             for (var option in obj.contentTable) {
                 dateold = obj.contentTable[option].datecre;
                 var date = new Date(dateold);
-                var formatted = date.getDate() + "/" + (date.getMonth()+1) ;
+                var formatted = date.getDate() + "/" + (date.getMonth() + 1);
 //                var formatted = $.format.date(new Date(dateold), 'yyyy-MM-dd HH:mm:ss');
                 countryCol
                         .append("<div style=\"text-align: right; bold;\">").append(formatted).append("</div><br>")
-                        .append("&nbsp;&nbsp;&nbsp;[").append(obj.contentTable[option].environment).append("]")
+                        .append("&nbsp;&nbsp;&nbsp;[").append(obj.contentTable[option].system).append(" ").append(obj.contentTable[option].environment).append("]")
                         .append("<br>")
                         .append("&nbsp;&nbsp;&nbsp;").append(obj.contentTable[option].build).append(" ")
                         .append(obj.contentTable[option].revision)
@@ -135,7 +135,7 @@ function loadHistoTable() {
 
 function loadBuildRevTable() {
     $('#envTableBody tr').remove();
-    var jqxhr = $.getJSON("GetEnvironmentsPerBuildRevision", "system=" + getUser().defaultSystem);
+    var jqxhr = $.getJSON("GetEnvironmentsPerBuildRevision", "q=1" + getUser().defaultSystemsQuery);
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
             appendBuildRevRow(obj);
@@ -143,11 +143,11 @@ function loadBuildRevTable() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function counterFormated(nb, build, revision, envGP) {
+function counterFormated(system, nb, build, revision, envGP) {
     if (nb === 0) {
         return "";
     } else {
-        return "<a href=\"Environment.jsp?&build=" + build + "&revision=" + revision + "&envgp=" + envGP + "&active=Y\">" + nb + "</a>"
+        return "<a href=\"Environment.jsp?" + "&system=" + system + "&build=" + build + "&revision=" + revision + "&envgp=" + envGP + "&active=Y\">" + nb + "</a>"
     }
 }
 
@@ -158,15 +158,17 @@ function appendBuildRevRow(dtb) {
     var toto = counterFormated(dtb.nbEnvDEV);
 
     var row = $("<tr></tr>");
-    var buildRow = $("<th></th>").append(dtb.build);
-    var revRow = $("<th></th>").append(dtb.revision);
-    var nbdev = $("<th style=\"text-align: right;\"></th>").append(counterFormated(dtb.nbEnvDEV, dtb.build, dtb.revision, "DEV"));
-    var nbqa = $("<th style=\"text-align: right;\"></th>").append(counterFormated(dtb.nbEnvQA, dtb.build, dtb.revision, "QA"));
-    var nbuat = $("<th style=\"text-align: right;\"></th>").append(counterFormated(dtb.nbEnvUAT, dtb.build, dtb.revision, "UAT"));
-    var nbprod = $("<th style=\"text-align: right;\"></th>").append(counterFormated(dtb.nbEnvPROD, dtb.build, dtb.revision, "PROD"));
+    var systemCell = $("<th></th>").append(dtb.system);
+    var buildCell = $("<th></th>").append(dtb.build);
+    var revCell = $("<th></th>").append(dtb.revision);
+    var nbdev = $("<th style=\"text-align: right;\"></th>").append(counterFormated(dtb.system, dtb.nbEnvDEV, dtb.build, dtb.revision, "DEV"));
+    var nbqa = $("<th style=\"text-align: right;\"></th>").append(counterFormated(dtb.system, dtb.nbEnvQA, dtb.build, dtb.revision, "QA"));
+    var nbuat = $("<th style=\"text-align: right;\"></th>").append(counterFormated(dtb.system, dtb.nbEnvUAT, dtb.build, dtb.revision, "UAT"));
+    var nbprod = $("<th style=\"text-align: right;\"></th>").append(counterFormated(dtb.system, dtb.nbEnvPROD, dtb.build, dtb.revision, "PROD"));
 
-    row.append(buildRow);
-    row.append(revRow);
+    row.append(systemCell);
+    row.append(buildCell);
+    row.append(revCell);
     row.append(nbdev);
     row.append(nbqa);
     row.append(nbuat);

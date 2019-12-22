@@ -20,8 +20,8 @@
 package org.cerberus.engine.entity;
 
 import io.appium.java_client.AppiumDriver;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
  *
@@ -41,8 +41,10 @@ public class Session {
     private Integer cerberus_selenium_wait_element;
     private Integer cerberus_appium_wait_element;
     private Integer cerberus_selenium_action_click_timeout;
+    private Integer cerberus_appium_action_longpress_wait;
     private boolean started;
-    private DesiredCapabilities desiredCapabilities;
+    private boolean cerberus_selenium_autoscroll;
+    private MutableCapabilities desiredCapabilities;
 
     public Integer getCerberus_selenium_pageLoadTimeout() {
         return cerberus_selenium_pageLoadTimeout;
@@ -92,11 +94,11 @@ public class Session {
         this.appiumDriver = appiumDriver;
     }
 
-    public DesiredCapabilities getDesiredCapabilities() {
+    public MutableCapabilities getDesiredCapabilities() {
         return desiredCapabilities;
     }
 
-    public void setDesiredCapabilities(DesiredCapabilities capabilities) {
+    public void setDesiredCapabilities(MutableCapabilities capabilities) {
         this.desiredCapabilities = capabilities;
     }
 
@@ -147,6 +149,14 @@ public class Session {
     public void setStarted(boolean started) {
         this.started = started;
     }
+    
+    public boolean isCerberus_selenium_autoscroll() {
+		return cerberus_selenium_autoscroll;
+	}
+
+	public void setCerberus_selenium_autoscroll(boolean cerberus_selenium_autoscroll) {
+		this.cerberus_selenium_autoscroll = cerberus_selenium_autoscroll;
+	}
 
     public void quit() {
         if (driver != null) {
@@ -163,6 +173,14 @@ public class Session {
 
     public void setCerberus_selenium_action_click_timeout(Integer cerberus_selenium_action_click_timeout) {
         this.cerberus_selenium_action_click_timeout = cerberus_selenium_action_click_timeout;
+    }
+
+    public Integer getCerberus_appium_action_longpress_wait() {
+        return cerberus_selenium_action_click_timeout;
+    }
+    
+    public void setCerberus_appium_action_longpress_wait(Integer cerberus_appium_action_longpress_wait) {
+        this.cerberus_appium_action_longpress_wait = cerberus_appium_action_longpress_wait;
     }
     
 }

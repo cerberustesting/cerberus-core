@@ -53,7 +53,7 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String deployType, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList<CountryEnvDeployType> readByVariousByCriteria(String system, String country, String environment, String deployType, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         return countryEnvDeployTypeDAO.readByVariousByCriteria(system, country, environment, deployType, start, amount, column, dir, searchTerm, individualSearch);
     }
 

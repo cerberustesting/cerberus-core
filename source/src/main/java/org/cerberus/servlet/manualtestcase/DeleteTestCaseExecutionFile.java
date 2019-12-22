@@ -19,9 +19,7 @@
  */
 package org.cerberus.servlet.manualtestcase;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -31,19 +29,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.execution.IRecorderService;
-import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
-import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionFileService;
-import org.cerberus.crud.service.ITestCaseService;
-import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.servlet.ServletUtil;
@@ -51,10 +44,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.servlet.manualtestcase.DeleteTestCaseExecutionFile;
 
 /**
  *

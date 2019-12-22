@@ -46,8 +46,13 @@ public class RobotExecutor {
     private String deviceUdid;
     private String deviceName;
     private Integer devicePort;
+    private String deviceLockUnlock;
     private String description;
     private long dateLastExeSubmitted;
+    private Integer executorExtensionPort;
+    private String executorProxyHost;
+    private Integer executorProxyPort;
+    private String executorProxyActive;       
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
@@ -193,11 +198,53 @@ public class RobotExecutor {
         this.devicePort = devicePort;
     }
 
+    public Integer getExecutorExtensionPort() {
+        return executorExtensionPort;
+    }
+
+    public void setExecutorExtensionPort(Integer executorExtensionPort) {
+        this.executorExtensionPort = executorExtensionPort;
+    }
+
+    public String getExecutorProxyHost() {
+        return executorProxyHost;
+    }
+
+    public void setExecutorProxyHost(String executorProxyHost) {
+        this.executorProxyHost = executorProxyHost;
+    }
+
+    public Integer getExecutorProxyPort() {
+        return executorProxyPort;
+    }
+
+    public void setExecutorProxyPort(Integer executorProxyPort) {
+        this.executorProxyPort = executorProxyPort;
+    }
+
+    public String getExecutorProxyActive() {
+        return executorProxyActive;
+    }
+
+    public void setExecutorProxyActive(String executorProxyActive) {
+        this.executorProxyActive = executorProxyActive;
+    }
+    
+    
+
     /**
      * From here are data outside database model.
      */
     public void setDateModif(Timestamp DateModif) {
         this.DateModif = DateModif;
+    }
+
+    public String getDeviceLockUnlock() {
+        return deviceLockUnlock;
+    }
+
+    public void setDeviceLockUnlock(String deviceLockUnlock) {
+        this.deviceLockUnlock = deviceLockUnlock;
     }
 
     public String getHostWithCredential() {
@@ -291,6 +338,21 @@ public class RobotExecutor {
         if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
             return false;
         }
+        if ((this.deviceLockUnlock == null) ? (other.deviceLockUnlock != null) : !this.deviceLockUnlock.equals(other.deviceLockUnlock)) {
+            return false;
+        }
+        if ((this.executorProxyActive == null) ? (other.executorProxyActive != null) : !this.executorProxyActive.equals(other.executorProxyActive)) {
+            return false;
+        }
+        if ((this.executorExtensionPort == null) ? (other.executorExtensionPort != null) : !this.executorExtensionPort.equals(other.executorExtensionPort)) {
+            return false;
+        }
+        if ((this.executorProxyHost == null) ? (other.executorProxyHost != null) : !this.executorProxyHost.equals(other.executorProxyHost)) {
+            return false;
+        }
+        if ((this.executorProxyPort == null) ? (other.executorProxyPort != null) : !this.executorProxyPort.equals(other.executorProxyPort)) {
+            return false;
+        }
         return true;
     }
 
@@ -312,6 +374,11 @@ public class RobotExecutor {
             result.put("deviceName", this.getDeviceName());
             result.put("deviceUdid", this.getDeviceUuid());
             result.put("devicePort", this.getDevicePort());
+            result.put("deviceLockUnlock", "Y".equals(this.getDeviceLockUnlock()) ? true : false);
+            result.put("executorExtensionPort", this.getExecutorExtensionPort());
+            result.put("executorProxyHost", this.getExecutorProxyHost());
+            result.put("executorProxyPort", this.getExecutorProxyPort());
+            result.put("executorProxyActive", "Y".equals(this.getExecutorProxyActive()) ? true : false);
             result.put("executor", this.getExecutor());
             result.put("host", this.getHost());
             if (secured) {

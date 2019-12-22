@@ -19,6 +19,12 @@
  */
 package org.cerberus.engine.execution.impl;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.ConnectException;
+import java.net.URL;
+import java.nio.charset.Charset;
 import org.cerberus.enums.MessageGeneralEnum;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,6 +43,7 @@ import org.cerberus.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.engine.execution.IExecutionCheckService;
 import org.cerberus.util.ParameterParserUtil;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -85,7 +92,8 @@ public class ExecutionCheckService implements IExecutionCheckService {
                 && this.checkTestCaseActive(tCExecution.getTestCaseObj())
                 && this.checkTestActive(tCExecution.getTestObj())
                 && this.checkCountry(tCExecution)
-                && this.checkMaintenanceTime(tCExecution)) {
+                && this.checkMaintenanceTime(tCExecution)
+                && this.checkExecutorProxy(tCExecution)) {
             LOG.debug("Execution is checked and can proceed.");
             return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
         }
@@ -395,4 +403,43 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return true;
     }
 
+    private boolean checkExecutorProxy(TestCaseExecution tce) {
+
+        //if executor proxy active, check cerberus-executor is available
+        if (tce.getRobotExecutorObj() != null && "Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())) {
+
+            String url = "http://" + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/check";
+            LOG.debug("Url to check Proxy Executor : " + url);
+
+            try ( InputStream is = new URL(url).openStream()) {
+                BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+                StringBuilder sb = new StringBuilder();
+                int cp;
+                while ((cp = rd.read()) != -1) {
+                    sb.append((char) cp);
+                }
+                String jsonText = sb.toString();
+
+                JSONObject json = new JSONObject(jsonText);
+
+                if ("OK".equals(json.getString("message"))) {
+                    return true;
+                }
+
+            } catch (ConnectException ex) {
+                LOG.warn("Exception Reaching Cerberus Extension " + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString());
+            } catch (Exception ex) {
+                LOG.error("Exception Reaching Cerberus Extension " + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString(), ex);
+            }
+
+            message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_CERBERUSEXECUTORNOTAVAILABLE);
+            message.resolveDescription("HOST", tce.getRobotExecutorObj().getHost())
+                    .resolveDescription("PORT", String.valueOf(tce.getRobotExecutorObj().getExecutorExtensionPort()))
+                    .resolveDescription("ROBOT", String.valueOf(tce.getRobotExecutorObj().getRobot()))
+                    .resolveDescription("ROBOTEXE", String.valueOf(tce.getRobotExecutorObj().getExecutor()));
+            return false;
+        }
+        return true;
+
+    }
 }

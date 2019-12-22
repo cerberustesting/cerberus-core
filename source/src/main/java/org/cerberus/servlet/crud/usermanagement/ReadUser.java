@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.config.Property;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserGroup;
@@ -61,7 +62,7 @@ public class ReadUser extends HttpServlet {
     private static final Logger LOG = LogManager.getLogger(ReadUser.class);
     private IUserService userService;
     private final String OBJECT_NAME = "Users";
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -110,7 +111,7 @@ public class ReadUser extends HttpServlet {
             if ((request.getParameter("id") != null) && !(brpid_error)) { // ID parameter is specified so we return the unique record of object.
                 //answer = readByKey(appContext, brpid); // TODO
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (request.getParameter("login") != null){
+            } else if (request.getParameter("login") != null) {
                 answer = readByKey(appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the simple list of objects.
@@ -169,9 +170,9 @@ public class ReadUser extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findUserList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    private AnswerItem<JSONObject> findUserList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         userService = appContext.getBean(UserService.class);
 
@@ -191,43 +192,44 @@ public class ReadUser extends HttpServlet {
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
-                }            
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
+                }
             }
         }
 
-        AnswerList resp = userService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<User> resp = userService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
-        boolean userHasPermissions = request.isUserInRole("IntegratorRO");
+        boolean userHasPermissions = request.isUserInRole("Administrator");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (User user : (List<User>) resp.getDataList()) {
+            for (User user : resp.getDataList()) {
                 JSONObject res = convertUserToJSONObject(user);
-                if(request.getParameter("systems") != null){
+                res.put("isKeycloakManaged", Property.isKeycloak());
+                if (request.getParameter("systems") != null) {
                     IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
-                    AnswerList a = userSystemService.readByUser(user.getLogin());
-                    if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null){
+                    AnswerList<UserSystem> a = userSystemService.readByUser(user.getLogin());
+                    if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null) {
                         JSONArray JSONsystems = new JSONArray();
                         List<UserSystem> systems = a.getDataList();
-                        for(UserSystem u : systems){
+                        for (UserSystem u : systems) {
                             JSONsystems.put(convertUserSystemToJSONObject(u));
                         }
-                        res.put("systems",JSONsystems);
+                        res.put("systems", JSONsystems);
                     }
                 }
-                if(request.getParameter("groups") != null) {
+                if (request.getParameter("groups") != null) {
                     IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
-                    AnswerList a = userGroupService.readByUser(user.getLogin());
-                    if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null){
+                    AnswerList<UserGroup> a = userGroupService.readByUser(user.getLogin());
+                    if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null) {
                         JSONArray JSONgroups = new JSONArray();
                         List<UserGroup> groups = a.getDataList();
-                        for(UserGroup u : groups){
+                        for (UserGroup u : groups) {
                             JSONgroups.put(convertUserGroupToJSONObject(u));
                         }
-                        res.put("groups",JSONgroups);
+                        res.put("groups", JSONgroups);
                     }
                 }
                 jsonArray.put(res);
@@ -235,6 +237,10 @@ public class ReadUser extends HttpServlet {
         }
 
         jsonResponse.put("hasPermissions", userHasPermissions);
+        jsonResponse.put("isKeycloakManaged", Property.isKeycloak());
+        jsonResponse.put("keycloakRealm", System.getProperty(Property.KEYCLOAKREALM));
+        jsonResponse.put("keycloakClient", System.getProperty(Property.KEYCLOAKCLIENT));
+        jsonResponse.put("keycloakUrl", System.getProperty(Property.KEYCLOAKURL));
         jsonResponse.put("contentTable", jsonArray);
         jsonResponse.put("iTotalRecords", resp.getTotalRows());
         jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
@@ -247,50 +253,51 @@ public class ReadUser extends HttpServlet {
     private AnswerItem readByKey(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
 
         String login = ParameterParserUtil.parseStringParam(request.getParameter("login"), "");
-        boolean userHasPermissions = request.isUserInRole("IntegratorRO");
+        boolean userHasPermissions = request.isUserInRole("Administrator");
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         userService = appContext.getBean(UserService.class);
 
         AnswerItem resp = userService.readByKey(login);
 
-        if(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null) {
-            User user = (User)resp.getItem();
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null) {
+            User user = (User) resp.getItem();
             JSONObject response = convertUserToJSONObject(user);
-            if(request.getParameter("systems") != null){
+            response.put("isKeycloakManaged", Property.isKeycloak());
+
+            if (request.getParameter("systems") != null) {
                 IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
-                AnswerList a = userSystemService.readByUser(login);
-                if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null){
+                AnswerList<UserSystem> a = userSystemService.readByUser(login);
+                if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null) {
                     JSONArray JSONsystems = new JSONArray();
                     List<UserSystem> systems = a.getDataList();
-                    for(UserSystem u : systems){
+                    for (UserSystem u : systems) {
                         JSONsystems.put(convertUserSystemToJSONObject(u));
                     }
-                    response.put("systems",JSONsystems);
+                    response.put("systems", JSONsystems);
                 }
             }
-            if(request.getParameter("groups") != null) {
+            if (request.getParameter("groups") != null) {
                 IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
-                AnswerList a = userGroupService.readByUser(login);
-                if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null){
+                AnswerList<UserGroup> a = userGroupService.readByUser(login);
+                if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null) {
                     JSONArray JSONgroups = new JSONArray();
                     List<UserGroup> groups = a.getDataList();
-                    for(UserGroup u : groups){
+                    for (UserGroup u : groups) {
                         JSONgroups.put(convertUserGroupToJSONObject(u));
                     }
-                    response.put("groups",JSONgroups);
+                    response.put("groups", JSONgroups);
                 }
             }
             jsonResponse.put("contentTable", response);
         }
         jsonResponse.put("hasPermissions", userHasPermissions);
+        jsonResponse.put("isKeycloakManaged", Property.isKeycloak());
         item.setItem(jsonResponse);
         item.setResultMessage(resp.getResultMessage());
         return item;
     }
-
-
 
     private JSONObject convertUserToJSONObject(User user) throws JSONException {
 

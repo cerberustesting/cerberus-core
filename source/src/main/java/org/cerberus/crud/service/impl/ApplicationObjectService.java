@@ -50,17 +50,17 @@ public class ApplicationObjectService implements IApplicationObjectService {
     private final String OBJECT_NAME = "ApplicationObject";
 
     @Override
-    public AnswerItem readByKeyTech(int id) {
+    public AnswerItem<ApplicationObject> readByKeyTech(int id) {
         return ApplicationObjectDAO.readByKeyTech(id);
     }
 
     @Override
-    public AnswerItem readByKey(String application, String object) {
+    public AnswerItem<ApplicationObject> readByKey(String application, String object) {
         return ApplicationObjectDAO.readByKey(application, object);
     }
 
     @Override
-    public AnswerList readByApplication(String Application) {
+    public AnswerList<ApplicationObject> readByApplication(String Application) {
         return ApplicationObjectDAO.readByApplication(Application);
     }
 
@@ -70,13 +70,13 @@ public class ApplicationObjectService implements IApplicationObjectService {
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<ApplicationObject> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return ApplicationObjectDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerList readByApplicationByCriteria(String application, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
-        return ApplicationObjectDAO.readByApplicationByCriteria(application, startPosition, length, columnName, sort, searchParameter, individualSearch);
+    public AnswerList<ApplicationObject> readByApplicationByCriteria(String application, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems) {
+        return ApplicationObjectDAO.readByApplicationByCriteria(application, startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
     }
 
     @Override

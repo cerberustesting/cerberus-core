@@ -22,15 +22,15 @@
                         </div>
                         <!-- Key definition-->
                         <div class="row">
-                            <div class="form-group col-xs-4">
+                            <div class="form-group col-sm-4">
                                 <label for="system" name="systemField">System</label>
                                 <input type="text" class="form-control" name="system" id="system" aria-describedby="basic-addon1" readonly="">
                             </div>
-                            <div class="form-group col-xs-4">
+                            <div class="form-group col-sm-4">
                                 <label for="country" name="countryField">Country</label>
                                 <input type="text" class="form-control" name="country" id="country" aria-describedby="basic-addon1" readonly="">
                             </div>
-                            <div class="form-group col-xs-4">
+                            <div class="form-group col-sm-4">
                                 <label for="environment" name="environmentField">Environment</label>
                                 <input type="text" class="form-control" name="environment" id="environment" aria-describedby="basic-addon1" readonly="">
                             </div>
@@ -49,27 +49,27 @@
                         <div class="tab-content">
                             <div class="center marginTop25 tab-pane fade in active" id="tabsEdit-1">
                                 <div class="row">
-                                    <div class="form-group col-xs-9">
+                                    <div class="form-group col-sm-9">
                                         <label for="description" name="descriptionField">Description</label>
                                         <input type="text" class="form-control" name="description" id="description" aria-describedby="basic-addon1" maxlength="200">
                                     </div>
-                                    <div class="form-group col-xs-3">
+                                    <div class="form-group col-sm-3">
                                         <label for="type" name="typeField">Type</label>
                                         <select class="form-control"  id="type" name="type">
                                         </select>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="form-group col-xs-4">
+                                    <div class="form-group col-sm-4">
                                         <label for="maintenanceAct" name="maintenanceActField">Activate Maintenance</label>
                                         <select class="form-control"  id="maintenanceAct" name="maintenanceAct">
                                         </select>
                                     </div>
-                                    <div class="form-group col-xs-4">
+                                    <div class="form-group col-sm-4">
                                         <label for="maintenanceStr" name="maintenanceStrField">Start</label>
                                         <input type="text" class="form-control" name="maintenanceStr" id="maintenanceStr" aria-describedby="basic-addon1" maxlength="8" placeholder="00:00:00">
                                     </div>
-                                    <div class="form-group col-xs-4">
+                                    <div class="form-group col-sm-4">
                                         <label for="maintenanceEnd" name="maintenanceEndField">End</label>
                                         <input type="text" class="form-control" name="maintenanceEnd" id="maintenanceEnd" aria-describedby="basic-addon1" maxlength="8" placeholder="00:00:00">
                                     </div>
@@ -107,15 +107,15 @@
                             </div>
                             <div class="center tab-pane fade marginTop25" id="tabsEdit-3">
                                 <div class="row">
-                                    <div class="form-group col-xs-2">
+                                    <div class="form-group col-sm-2">
                                         <label for="active" name="activeField">Active</label>
-                                        <br><input type="checkbox" checked="" id="activeNew" name="activeNew" class="activecb" disabled="" >
+                                        <br><input type="checkbox" checked="" id="activeNew" name="activeNew" class="form-control activecb" disabled="" >
                                     </div>
-                                    <div class="form-group col-xs-3">
+                                    <div class="form-group col-sm-5">
                                         <label for="build" name="buildField">Build</label>
                                         <input type="text" class="form-control" name="buildNew" id="buildNew" aria-describedby="basic-addon1" readonly>
                                     </div>
-                                    <div class="form-group col-xs-3">
+                                    <div class="form-group col-sm-5">
                                         <label for="revision" name="revisionField">Revision</label>
                                         <input type="text" class="form-control" name="revisionNew" id="revisionNew" aria-describedby="basic-addon1" readonly>
                                     </div>
@@ -132,7 +132,7 @@
                             </div>
                             <div class="center tab-pane fade marginTop25" id="tabsEdit-4">
                                 <div class="row">
-                                    <div class="form-group col-xs-2">
+                                    <div class="form-group col-sm-6">
                                         <label for="chain" name="chainField">Chain</label>
                                         <select class="form-control"  id="chain" name="chain">
                                         </select>
@@ -164,7 +164,7 @@
                                                 <tbody id="dependenciesTableBody">
                                                 </tbody>
                                             </table>
-                                            <button type="button" class="btn btn-default" id="addDependencies">Add Dependency</button>
+                                            <button type="button" class="btn btn-default marginTop20" id="addDependencies">Add Dependency</button>
                                         </div>
                                     </div>  
                                 </div>   
@@ -186,7 +186,7 @@
                                                 <tbody id="databaseTableBody">
                                                 </tbody>
                                             </table>
-                                            <button type="button" class="btn btn-default" id="addDatabase">Add Database</button>
+                                            <button type="button" class="btn btn-default marginTop20" id="addDatabase">Add Database</button>
                                         </div>
                                     </div>  
                                 </div>   
@@ -206,7 +206,7 @@
                                                 <tbody id="deployTypeTableBody">
                                                 </tbody>
                                             </table>
-                                            <button  type="button" class="btn btn-default" id="addDeployType">Add Deploy Type</button>
+                                            <button  type="button" class="btn btn-default marginTop20" id="addDeployType">Add Deploy Type</button>
                                         </div>
                                     </div>  
                                 </div>   
@@ -216,7 +216,7 @@
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <table class="table table-bordered table-hover nomarginbottom" id="ApplicationTable">
-                                                <thead>
+<!--                                                <thead>
                                                     <tr>
                                                         <th style="width: 5%;"></th>
                                                         <th class="text-center" id="applicationHeader" name="applicationHeader">Application</th>
@@ -226,11 +226,11 @@
                                                         <th class="text-center" id="var3Header">Var2</th>
                                                         <th class="text-center" id="poolSizeHeader">Pool size</th>
                                                     </tr>
-                                                </thead>
+                                                </thead>-->
                                                 <tbody id="applicationTableBody">
                                                 </tbody>
                                             </table>
-                                            <button type="button" class="btn btn-default" id="addApplication">Add Application</button>
+                                            <button type="button" class="btn btn-default marginTop20" id="addApplication">Add Application</button>
                                         </div>
                                     </div>  
                                 </div>   
@@ -241,7 +241,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="editEnvButton" class="btn btn-primary" name="buttonAdd">Save</button>
+                <button type="button" id="editEnvButton" class="btn btn-primary" name="buttonEdit">Save</button>
             </div>
         </div>
     </div>

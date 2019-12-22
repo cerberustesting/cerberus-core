@@ -4,7 +4,7 @@
 <div data-backdrop="static" class="modal fade center" id="editSoapLibraryModal" role="dialog"
      aria-labelledby="editSoapLibraryModalLabel" aria-hidden="true">
     <div class="modal-dialog nomargintop nomarginbottom modal-xl">
-        <div class="modal-content">
+        <div class="modal-content" id="editServiceModal">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
@@ -26,12 +26,16 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="service" name="serviceField">Service</label>
-                                <input type="text" class="form-control" name="service" id="service"
-                                       aria-describedby="basic-editon1">
-
-                                </input>
+                            <div class="form-group col-md-12">
+                                <div class="form-group col-md-6">
+                                    <label for="service" name="serviceField" class="col">Service</label>
+                                    <input type="text" class="form-control" name="service"
+                                           id="service" aria-describedby="basic-editon1"> </input>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="type" name="typeField">Type</label>
+                                    <select class="form-control" id="type" name="type"> </select>
+                                </div>
                             </div>
                         </div>
                         <!-- tabs definition-->
@@ -45,26 +49,20 @@
                         <div class="tab-content">
                             <div class="center marginTop25 tab-pane fade in active" id="tabsEdit-1">
                                 <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="application" name="applicationField">Application</label>
-                                        <select class="form-control"  id="application" name="application">
-                                        </select>
+                                    <div class="form-group form-group-sm col-sm-12">
+                                        <label class="control-label" for="application" name="applicationField">Application</label>
+                                        <div class="input-group col-xs-12">                               	
+                                            <select type="text" class="form-control input-sm" name="application" id="application" style="width:100%;"></select>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="form-group col-xs-6">
-                                        <label for="type" name="typeField">Type</label>
-                                        <select class="form-control"  id="type" name="type">
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-xs-6">
+                                    <div class="form-group col-md-3">
                                         <label for="method" name="methodField">Method</label>
                                         <select class="form-control"  id="method" name="method">
                                         </select>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
+                                    <div class="form-group col-md-9">
                                         <label for="servicepath" name="servicePathField">ServicePath</label>
                                         <input type="text" class="form-control" name="servicePath" id="servicePath"
                                                aria-describedby="basic-editon1">
@@ -72,13 +70,13 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-xs-12">
-										<label for="screenshotfilenameLabel" name="screenshotfilenameField">FTP File</label>	             
-	                                    <label  for="Filename" id="dropzone" class="upload-drop-zone" >
-		                                    <h3 id ="dropzoneText"> Drag and drop Files  <span class="glyphicon glyphicon-download-alt"></span></h3>
-		                                    <label for="Filename" class="btn btn-primary browseFile">Browse Files </label>
-                                		</label>
-                                		<input type="file" name="Filename" id="Filename" class="hidden"/> 
-										</form>
+                                        <label for="screenshotfilenameLabel" name="screenshotfilenameField">FTP File</label>	             
+                                        <label  for="Filename" id="dropzone" class="upload-drop-zone" >
+                                            <h3 id ="dropzoneText"> Drag and drop Files  <span class="glyphicon glyphicon-download-alt"></span></h3>
+                                            <label for="Filename" class="btn btn-primary browseFile">Browse Files </label>
+                                        </label>
+                                        <input type="file" name="Filename" id="Filename" class="hidden"/> 
+                                        </form>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -112,6 +110,34 @@
                                     </div>
                                 </div>
                                 <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="kafkaTopic" name="kafkaTopicField">Kafka Topic</label>
+                                        <input type="text" class="form-control" name="kafkaTopic" id="kafkaTopic"
+                                               aria-describedby="basic-editon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="kafkaKey" name="kafkaKeyField">Kafka Key</label>
+                                        <input type="text" class="form-control" name="kafkaKey" id="kafkaKey"
+                                               aria-describedby="basic-editon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="kafkaFilterPath" name="kafkaFilterPathField">Kafka Filter Path</label>
+                                        <input type="text" class="form-control" name="kafkaFilterPath" id="kafkaFilterPath"
+                                               aria-describedby="basic-editon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="kafkaFilterValue" name="kafkaFilterValueField">Kafka Filter Value</label>
+                                        <input type="text" class="form-control" name="kafkaFilterValue" id="kafkaFilterValue"
+                                               aria-describedby="basic-editon1">
+                                    </div>
+                                </div>
+                                <div class="row">
                                     <div class="col-xs-12">
                                         <label for="serviceRequest" name="serviceRequestField">Service Request</label>
                                         <div name="serviceRequest" id="serviceRequest" aria-describedby="basic-editon1">
@@ -120,7 +146,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="center marginTop25c tab-pane fade in" id="tabsEdit-3">
+                            <div class="center marginTop25 tab-pane fade in" id="tabsEdit-3">
                                 <div id="listPanelContent">
                                     <div class="row">
                                         <div class="col-xs-12">
@@ -138,7 +164,7 @@
                                                 <tbody id="contentTableBody">
                                                 </tbody>
                                             </table>
-                                            <button type="button" class="btn btn-default" id="addContent">Add Content</button>
+                                            <button type="button" class="btn btn-default marginTop20" id="addContent">Add Content</button>
                                         </div>
                                     </div>  
                                 </div>   
@@ -161,7 +187,7 @@
                                                 <tbody id="headerTableBody">
                                                 </tbody>
                                             </table>
-                                            <button type="button" class="btn btn-default" id="addHeader">Add Header</button>
+                                            <button type="button" class="btn btn-default marginTop20" id="addHeader">Add Header</button>
                                         </div>
                                     </div>  
                                 </div>   
@@ -170,13 +196,13 @@
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <div class="row">
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label name="lbl_created" for="created">Created</label>
                                                 <div>
                                                     <input id="datecreated" name="datecreated" class="form-control" readonly="readonly" />     
                                                 </div>
                                             </div> 
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label name="lbl_creator" for="creator">Creator</label>
                                                 <div>
                                                     <input id="usrcreated" name="usrcreated" class="form-control" readonly="readonly" />     
@@ -184,13 +210,13 @@
                                             </div> 
                                         </div> 
                                         <div class="row">
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label name="lbl_lastModified" for="lastModified">Last Modified</label>
                                                 <div>
                                                     <input id="datemodif" name="datemodif" class="form-control" readonly="readonly" />     
                                                 </div>
                                             </div> 
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label name="lbl_lastModifier" for="lastModifier">Last Modifier</label>
                                                 <div>
                                                     <input id="usrmodif" name="usrmodif" class="form-control" readonly="readonly" />     

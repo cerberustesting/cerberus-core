@@ -24,7 +24,9 @@ import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -57,6 +59,7 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
 import org.cerberus.version.Infos;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -245,7 +248,7 @@ public class RunTestCase extends HttpServlet {
         }
 
         // If Robot is feeded, we check it exist. If it exist, we overwrite the associated parameters.
-                Robot robObj = null;
+        Robot robObj = null;
         if (!StringUtil.isNullOrEmpty(robot)) {
             IRobotService robotService = appContext.getBean(IRobotService.class);
             try {
@@ -294,9 +297,15 @@ public class RunTestCase extends HttpServlet {
 
         // Create Tag when exist.
         if (!StringUtil.isNullOrEmpty(tag)) {
+
             // We create or update it.
             ITagService tagService = appContext.getBean(ITagService.class);
-            tagService.createAuto(tag, "", executor);
+            List<String> envList = new ArrayList<>();
+            envList.add(environment);
+            List<String> countryList = new ArrayList<>();
+            countryList.add(country);
+            tagService.createAuto(tag, "", executor, new JSONArray(envList), new JSONArray(countryList));
+
         }
 
         if (!error) {
@@ -312,11 +321,11 @@ public class RunTestCase extends HttpServlet {
             TestCase tCase = factoryTCase.create(test, testCase);
 
             // Building Execution Object.
-            TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, robot, "", robotHost, robotPort, robotDecli, browser, version, platform, "",
+            TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, robot, "", robotHost, robotPort, robotDecli, browser, version, platform,
                     0, 0, "", "", "", null, null, tag, verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                     Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort,
-                    null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, robObj,
-                    "", "", "", "", "", manualExecution, userAgent, 0, "");
+                    null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, robObj, "", "",
+                    "", "", "", "", "", "", "", manualExecution, userAgent, 0, 0, "");
             tCExecution.setSeleniumIPUser(ss_ip_user);
             tCExecution.setSeleniumIPPassword(ss_ip_pass);
 
