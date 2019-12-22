@@ -15,7 +15,7 @@ A demo site is available [here](http://demo.cerberus-testing.org)
 
 A Jenkins Plugin is also available directly from Jenkins. Corresponding repo is [here](https://github.com/jenkinsci/cerberus-testing-plugin)
 
-Docker images are available for [MySQL](https://hub.docker.com/r/cerberustesting/cerberus-db-mysql/), [Glassfish](https://hub.docker.com/r/cerberustesting/cerberus-as-glassfish/), [Tomcat](https://hub.docker.com/r/cerberustesting/cerberus-as-tomcat/) and [Tomcat with Keycloak Adapter](https://hub.docker.com/r/cerberustesting/cerberus-as-tomcat-keycloak/) 
+Docker images are available for [MySQL](https://hub.docker.com/r/cerberustesting/cerberus-db-mysql/), [Tomcat](https://hub.docker.com/r/cerberustesting/cerberus-as-tomcat/) and [Tomcat with Keycloak Adapter](https://hub.docker.com/r/cerberustesting/cerberus-as-tomcat-keycloak/) 
 
 **For Developpers :**
 
