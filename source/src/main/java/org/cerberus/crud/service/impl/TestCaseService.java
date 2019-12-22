@@ -281,7 +281,6 @@ public class TestCaseService implements ITestCaseService {
         return testCaseDao.deleteTestCase(testCase);
     }
 
-
     @Override
     public String getMaxNumberTestCase(String test) {
         return this.testCaseDao.getMaxNumberTestCase(test);
@@ -344,7 +343,15 @@ public class TestCaseService implements ITestCaseService {
         List<TestCaseStep> tcsList = testCaseStepService.getListOfSteps(test, testCase);
         for (TestCaseStep tcs : tcsList) {
             if (("Y").equals(tcs.getUseStep())) {
-                result.add(this.findTestCaseByKey(tcs.getUseStepTest(), tcs.getUseStepTestCase()));
+                /**
+                 * We prepend the TestCase in order to leave at the end of the
+                 * list the testcase with the higher prio (which correspond to
+                 * the 1st Use Step found) #1907. That way, if inside the same
+                 * testcase, you import 2 use Step that define a property that
+                 * has the same name, the 1st step imported will define the
+                 * property value.
+                 */
+                result.add(0, this.findTestCaseByKey(tcs.getUseStepTest(), tcs.getUseStepTestCase()));
             }
         }
         return result;

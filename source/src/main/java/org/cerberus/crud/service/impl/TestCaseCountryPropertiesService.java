@@ -165,11 +165,6 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         // find all properties of the used step
         LOG.debug("Getting properties definition from Used Step.");
         tcList.addAll(testCaseService.findUseTestCaseList(test, testcase));
-        // find all properties for potentiel dependencies used step
-//        List<TestCaseDep> dependencies = testCaseDepService.readByTestAndTestCase(mainTC.getTest(), mainTC.getTestCase());
-//        for (TestCaseDep tcd : dependencies) {
-//            tcList.addAll(testCaseService.findUseTestCaseList(tcd.getDepTest(), tcd.getDepTestCase()));
-//        }
         // add this TC
         tcList.add(mainTC);
 

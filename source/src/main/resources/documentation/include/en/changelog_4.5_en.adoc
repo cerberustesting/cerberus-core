@@ -4,7 +4,7 @@
 
 *Improvements / New features*
 [square]
-* none
+* In case 2 different use Step has some same property name, the Property will now be taken from the 1 Step and not the last one. #1907
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

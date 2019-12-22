@@ -546,7 +546,7 @@ public class ExecutionStartService implements IExecutionStartService {
          * Stop the browser if executionID is equal to zero (to prevent database
          * instabilities)
          */
-        if (!tCExecution.getManualExecution().equals("Y")) {
+        if (!tCExecution.getManualExecution().equals(TestCaseExecution.MANUAL_Y)) {
             try {
                 if (tCExecution.getId() == 0) {
                     LOG.debug("Starting to Stop the Selenium Server.");

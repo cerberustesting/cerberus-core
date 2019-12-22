@@ -65,6 +65,12 @@ public interface ITestCaseExecutionService {
      */
     List<TestCaseExecution> findTCExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException;
 
+    /**
+     *
+     * @param tCExecution
+     * @return
+     * @throws CerberusException
+     */
     long registerRunID(TestCaseExecution tCExecution) throws CerberusException;
 
     /**
@@ -74,7 +80,6 @@ public interface ITestCaseExecutionService {
      * @throws CerberusException
      */
     TestCaseExecution findTCExecutionByKey(long id) throws CerberusException;
-
 
     /**
      *
@@ -120,7 +125,6 @@ public interface ITestCaseExecutionService {
      */
     void setTagToExecution(long id, String tag) throws CerberusException;
 
-
     /**
      *
      * @param tag
@@ -146,7 +150,7 @@ public interface ITestCaseExecutionService {
      * @return
      * @throws CerberusException
      */
-    AnswerList<TestCaseExecution>  readByCriteria( int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException;
+    AnswerList<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException;
 
     /**
      *
@@ -249,5 +253,5 @@ public interface ITestCaseExecutionService {
      * @throws CerberusException
      */
     public List<TestCaseExecution> readLastExecutionAndExecutionInQueueByTag(String tag) throws ParseException, CerberusException;
-   
+
 }
