@@ -109,18 +109,11 @@ public class UpdateTestCaseExecution extends HttpServlet {
         JSONArray stepArray = testCaseJson.getJSONArray("stepArray");
         long executionId = testCaseJson.getLong("executionId");
         ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
-        String returnCodeOfTestCase = updateTestCaseStepExecutionFromJsonArray(stepArray, appContext);
+        updateTestCaseStepExecutionFromJsonArray(stepArray, appContext);
 
-        String returnMessage;
-        if (returnCodeOfTestCase.equals("OK")) {
-            returnMessage = "The test case finished successfully";
-        } else if (returnCodeOfTestCase.equals("FA")) {
-            returnMessage = "The test case failed to be executed because of an action.";
-        } else if (returnCodeOfTestCase.equals("KO")) {
-            returnMessage = "The test case finished, but failed on validations.";
-        } else {
-            returnMessage = "";
-        }
+        String returnMessage = testCaseJson.getString("returnMessage");
+        String returnCodeOfTestCase = testCaseJson.getString("controlstatus");
+
         //get testCaseExecution
         TestCaseExecution executionToUpdate = testCaseExecutionService.findTCExecutionByKey(executionId);
         executionToUpdate.setControlStatus(returnCodeOfTestCase);

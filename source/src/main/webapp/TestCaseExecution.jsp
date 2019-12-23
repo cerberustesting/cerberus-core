@@ -70,7 +70,7 @@
                                 <div class="text-wrap">
                                     <span id="tcDescription" style="font-size:.9em;margin:0px;line-height:1;height:.95em;"></span>
                                 </div>
-                                <div class="text-wrap">
+                                <div class="text-wrap" id="returnMessage">
                                     <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;font-weight: 900;word-wrap: break-word"></span>
                                 </div>
                             </div>
@@ -173,7 +173,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="fieldRow marginTop25" id="stepHiddenRow" style="display: none;">
-                                                    <div class="row">
+                                                    <div class="row" id="stepRow1" >
                                                         <div class="col-lg-2 form-group">
                                                             <label>Return Code</label>
                                                             <input class="form-control input-sm" readonly id="stepRC">
@@ -183,7 +183,7 @@
                                                             <input class="form-control input-sm" readonly id="stepDescription">
                                                         </div>
                                                     </div>
-                                                    <div class="row">
+                                                    <div class="row" id="stepRow2">
                                                         <div class="col-lg-1 form-group">
                                                             <label>Sort</label>
                                                             <input class="form-control input-sm" readonly id="stepSort">
@@ -201,7 +201,7 @@
                                                             <input class="form-control input-sm" readonly id="stepElapsed">
                                                         </div>
                                                     </div>
-                                                    <div class="row">
+                                                    <div class="row" id="stepRow3">
                                                         <div class="col-lg-2">                                                          
                                                         </div>
                                                         <div class="col-lg-4 form-group">
@@ -217,7 +217,7 @@
                                                             <input class="form-control input-sm" readonly id="stepConditionVal3Init">
                                                         </div>
                                                     </div>
-                                                    <div class="row">
+                                                    <div class="row" id="stepRow4">
                                                         <div class="col-lg-2 form-group">
                                                             <label>Condition Operation</label>
                                                             <input class="form-control input-sm" readonly id="stepConditionOper">
@@ -235,7 +235,7 @@
                                                             <input class="form-control input-sm" readonly id="stepConditionVal3">
                                                         </div>
                                                     </div>
-                                                    <div class="row">
+                                                    <div class="row" id="stepRow5">
                                                         <div class="col-lg-12 form-group">
                                                             <label>Return Message</label>
                                                             <input class="form-control input-sm" readonly id="stepMessage">
