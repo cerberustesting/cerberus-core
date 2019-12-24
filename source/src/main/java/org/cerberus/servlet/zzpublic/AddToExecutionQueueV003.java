@@ -447,6 +447,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             robotsMap.put("", robotFactory.create(0, "", platform, browser, "", "Y", "", "", "", screenSize, browser, ""));
         }
 
+        HashMap<String, Application> appMap = new HashMap<>();
+
         // Starting the request only if previous parameters exist.
         if (!error) {
 
@@ -493,7 +495,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                             || (envGp1.equals("DEV"))
                                             || (envGp1.equals(""))) {
                                         // Getting Application in order to check application type against browser.
-                                        Application app = applicationService.convert(applicationService.readByKey(tc.getApplication()));
+                                        appMap = updateMapWithApplication(tc.getApplication(), appMap);
+                                        Application app = appMap.get(tc.getApplication());
                                         if ((envMap.containsKey(app.getSystem() + LOCAL_SEPARATOR + country.getCountry() + LOCAL_SEPARATOR + environment))
                                                 || (environment.equals("MANUAL"))) {
 
@@ -512,7 +515,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                     && (app.getType() != null)
                                                     && (app.getType().equalsIgnoreCase(Application.TYPE_GUI) || app.getType().equalsIgnoreCase(Application.TYPE_APK)
                                                     || app.getType().equalsIgnoreCase(Application.TYPE_IPA) || app.getType().equalsIgnoreCase(Application.TYPE_FAT))) {
-                                                
+
                                                 for (Map.Entry<String, Robot> entry : robotsMap.entrySet()) {
                                                     String key = entry.getKey();
                                                     Robot robot = entry.getValue();
@@ -589,7 +592,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             }
 
             // Part 2a: Try to insert all these test cases to the execution queue.
-            List<String> errorMessages = new ArrayList<String>();
+            List<String> errorMessages = new ArrayList<>();
+            List<Long> queueInsertedIds = new ArrayList<>();
             for (TestCaseExecutionQueue toInsert : toInserts) {
                 try {
                     inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUTEMP));
@@ -600,6 +604,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     value.put("testcase", toInsert.getTestCase());
                     value.put("country", toInsert.getCountry());
                     value.put("environment", toInsert.getEnvironment());
+                    queueInsertedIds.add(toInsert.getId());
 
                     jsonArray.put(value);
                 } catch (CerberusException e) {
@@ -613,7 +618,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             }
 
             // Part 2b: move all the execution queue from tag to QUEUE state.
-            inQueueService.updateAllTagToQueuedFromQuTemp(tag);
+            inQueueService.updateAllTagToQueuedFromQuTemp(tag, queueInsertedIds);
 
             // Part 3 : Trigger JobQueue
             try {
@@ -686,7 +691,17 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 }
                 response.getWriter().print(errorMessage.toString());
         }
+        Date date1 = new Date();
+        LOG.debug("TOTAL Duration : " + (date1.getTime() - requestDate.getTime()));
 
+    }
+
+    private HashMap<String, Application> updateMapWithApplication(String application, HashMap<String, Application> appMap) throws CerberusException {
+        if (!appMap.containsKey(application)) {
+            Application app = applicationService.convert(applicationService.readByKey(application));
+            appMap.put(application, app);
+        }
+        return appMap;
     }
 
     /**

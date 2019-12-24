@@ -1405,6 +1405,11 @@ Step.prototype.show = function () {
         $("#stepRow4").hide();
     }
 
+    if (object.conditionOper === "always") {
+        $("#stepRow3").hide();
+        $("#stepRow4").hide();
+    }
+
     returnMessageWritableForStep(object, $("#stepMessage"));
 
     $("#stepInfo").unbind("click").click(function () {
@@ -2064,10 +2069,15 @@ Action.prototype.generateContent = function () {
 
     var hideOnManual = "";
     var hideOnDoNothing = "";
+    var hideCondition = "";
     if (isTheExecutionManual) {
         hideOnManual = " hide";
         if (this.action === "doNothing" || this.action === "Unknown") {
             hideOnDoNothing = " hide";
+        }
+    } else {
+        if (this.conditionOper === "always") {
+            hideCondition = " hide";
         }
     }
 
@@ -2076,8 +2086,8 @@ Action.prototype.generateContent = function () {
     var row3 = $("<div></div>").addClass("row" + hideOnDoNothing);
     var row4 = $("<div></div>").addClass("row" + hideOnManual);
     var row5 = $("<div></div>").addClass("row");
-    var row6 = $("<div></div>").addClass("row" + hideOnManual);
-    var row7 = $("<div></div>").addClass("row" + hideOnManual);
+    var row6 = $("<div></div>").addClass("row" + hideOnManual + hideCondition);
+    var row7 = $("<div></div>").addClass("row" + hideOnManual + hideCondition);
     var container = $("<div id='content-container'></div>").addClass("action-group row list-group-item");
     var actionList = $("<input type='text' class='form-control' id='action'>").prop("readonly", true);
     var descField = $("<textarea type='text' rows='1' class='form-control' id='description'>").prop("readonly", true);
@@ -2517,10 +2527,15 @@ Control.prototype.generateContent = function () {
 
     var hideOnManual = "";
     var hideOnDoNothing = "";
+    var hideCondition = "";
     if (isTheExecutionManual) {
         hideOnManual = " hide";
         if (this.controlType === "Unknown") {
             hideOnDoNothing = " hide";
+        }
+    } else {
+        if (this.conditionOper === "always") {
+            hideCondition = " hide";
         }
     }
 
@@ -2529,8 +2544,8 @@ Control.prototype.generateContent = function () {
     var row3 = $("<div></div>").addClass("row" + hideOnDoNothing);
     var row4 = $("<div></div>").addClass("row" + hideOnManual);
     var row5 = $("<div></div>").addClass("row");
-    var row6 = $("<div></div>").addClass("row" + hideOnManual);
-    var row7 = $("<div></div>").addClass("row" + hideOnManual);
+    var row6 = $("<div></div>").addClass("row" + hideOnManual + hideCondition);
+    var row7 = $("<div></div>").addClass("row" + hideOnManual + hideCondition);
     var container = $("<div id='content-container'></div>").addClass("action-group row list-group-item").css("margin-left", "25px");
 
     var descField = $("<textarea type='text' rows='1' class='form-control' id='description'>").prop("readonly", true);

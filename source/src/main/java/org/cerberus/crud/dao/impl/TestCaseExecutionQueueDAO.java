@@ -1833,13 +1833,15 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public Answer updateAllTagToQueuedFromQuTemp(String tag) {
+    public Answer updateAllTagToQueuedFromQuTemp(String tag, List<Long> queueIds) {
         MessageEvent msg = null;
+
         String query
                 = "UPDATE `" + TABLE + "` "
                 + "SET `" + COLUMN_STATE + "` = 'QUEUED', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
                 + "WHERE `" + COLUMN_TAG + "` = ? "
-                + "AND `" + COLUMN_STATE + "` IN ('QUTEMP')";
+                + "AND `" + COLUMN_STATE + "` IN ('QUTEMP')"
+                + SqlUtil.createWhereInClauseLong(COLUMN_ID, queueIds, " AND ", "");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {

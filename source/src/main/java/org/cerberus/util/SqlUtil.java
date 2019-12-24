@@ -168,6 +168,34 @@ public class SqlUtil {
         return stringBuilder.toString();
     }
 
+    public static String createWhereInClauseLong(String field, List<Long> values, String preString, String postString) {
+
+        if (field == null || field.isEmpty() || values == null || values.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder stringBuilder = new StringBuilder(preString).append(field).append(" IN (");
+        int index = 0;
+
+        String separator;
+
+        separator = ", ";
+
+        for (Long value : values) {
+            if (value != null) {
+                if (index > 0) {
+                    stringBuilder.append(separator);
+                }
+                stringBuilder.append(value);
+                index++;
+            }
+        }
+
+        stringBuilder.append(")").append(postString);
+
+        return stringBuilder.toString();
+    }
+
     /**
      * Generates an IN (?, ?) clause. The IN clause uses the ? wildcard to
      * represent each parameter included in the IN's set.

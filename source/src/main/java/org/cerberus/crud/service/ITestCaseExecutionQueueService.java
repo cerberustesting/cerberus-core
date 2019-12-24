@@ -270,9 +270,10 @@ public interface ITestCaseExecutionQueueService {
     /**
      *
      * @param tag
+     * @param queueIds
      * @return
      */
-    Answer updateAllTagToQueuedFromQuTemp(String tag);
+    Answer updateAllTagToQueuedFromQuTemp(String tag, List<Long> queueIds);
     
     /**
      *

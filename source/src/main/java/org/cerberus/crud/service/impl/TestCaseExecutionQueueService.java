@@ -282,8 +282,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public Answer updateAllTagToQueuedFromQuTemp(String tag) {
-        return testCaseExecutionInQueueDAO.updateAllTagToQueuedFromQuTemp(tag);
+    public Answer updateAllTagToQueuedFromQuTemp(String tag, List<Long> queueIds) {
+        return testCaseExecutionInQueueDAO.updateAllTagToQueuedFromQuTemp(tag, queueIds);
     }
 
     @Override

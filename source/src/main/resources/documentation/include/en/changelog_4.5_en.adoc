@@ -1,11 +1,12 @@
 *Bug fixes*
 [square]
-* none
+* Reduced risk of deadlock when inserting new records into queue.
 
 *Improvements / New features*
 [square]
 * In case 2 different use Step has some same property name, the Property will now be taken from the 1 Step and not the last one. #1907
 * Improved and simplify manual execution screen (status and messages can be change anytime) #2052
+* Hide conditions in GUI (at step, action and control level) when operator is 'always'
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
