@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.Map;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -159,8 +158,8 @@ public class TestCaseExecution {
     private String remoteProxyUUID;
     private String remoteProxyLastHarMD5;
     // Kafka Consumers
-    private HashMap<String, Map<TopicPartition, Long>>  kafkaLatestOffset;
-    
+    private HashMap<String, Map<TopicPartition, Long>> kafkaLatestOffset;
+
     /**
      * Invariant PROPERTY TYPE String.
      */

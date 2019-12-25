@@ -84,7 +84,7 @@ public class UpdateTestCaseExecution extends HttpServlet {
             //get all element from Json
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
-            updateTestCaseExecutionFromJsonArray(testCase, appContext);
+            updateTestCaseExecutionFromJsonArray(testCase, appContext, request.getUserPrincipal().getName());
             response.getWriter().print(new MessageEvent(MessageEventEnum.GENERIC_OK));
         } catch (JSONException e) {
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
@@ -105,7 +105,7 @@ public class UpdateTestCaseExecution extends HttpServlet {
      * @throws IOException
      * @throws CerberusException
      */
-    void updateTestCaseExecutionFromJsonArray(JSONObject testCaseJson, ApplicationContext appContext) throws JSONException, IOException, CerberusException {
+    void updateTestCaseExecutionFromJsonArray(JSONObject testCaseJson, ApplicationContext appContext, String user) throws JSONException, IOException, CerberusException {
         JSONArray stepArray = testCaseJson.getJSONArray("stepArray");
         long executionId = testCaseJson.getLong("executionId");
         ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
@@ -118,6 +118,7 @@ public class UpdateTestCaseExecution extends HttpServlet {
         TestCaseExecution executionToUpdate = testCaseExecutionService.findTCExecutionByKey(executionId);
         executionToUpdate.setControlStatus(returnCodeOfTestCase);
         executionToUpdate.setControlMessage(returnMessage);
+        executionToUpdate.setUsrModif(user);
         testCaseExecutionService.updateTCExecution(executionToUpdate);
     }
 

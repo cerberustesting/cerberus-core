@@ -177,7 +177,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ? "
                 + ", version = ?, platform = ?, executor = ?, screensize = ? "
                 + ", ConditionOper = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal3Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ConditionVal3 = ?, ManualExecution = ?, UserAgent = ?, queueId = ?, testCaseVersion = ?, testCasePriority = ?, system = ? "
-                + ", robotdecli = ?, robot = ?, robotexecutor = ?, RobotProvider = ?, RobotSessionId = ? WHERE id = ?";
+                + ", robotdecli = ?, robot = ?, robotexecutor = ?, RobotProvider = ?, RobotSessionId = ?, UsrModif = ?, DateModif = NOW() WHERE id = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -236,6 +236,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getRobotExecutor());
                 preStat.setString(i++, tCExecution.getRobotProvider());
                 preStat.setString(i++, tCExecution.getRobotSessionID());
+                preStat.setString(i++, tCExecution.getUsrModif());
                 preStat.setLong(i++, tCExecution.getId());
 
                 preStat.executeUpdate();
@@ -675,7 +676,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         return list;
     }
-
 
     @Override
     public void setTagToExecution(long id, String tag) throws CerberusException {

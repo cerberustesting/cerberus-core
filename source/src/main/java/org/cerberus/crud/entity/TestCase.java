@@ -61,6 +61,7 @@ public class TestCase {
     private String targetBuild;
     private String targetRev;
     private String implementer;
+//    private String executor;
     private String activeQA;
     private String activeUAT;
     private String activePROD;

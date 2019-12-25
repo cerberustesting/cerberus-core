@@ -35,15 +35,57 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestCaseExecutionService {
 
+    /**
+     *
+     * @param tCExecution
+     * @return
+     * @throws CerberusException
+     */
     long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
+    /**
+     *
+     * @param tCExecution
+     * @throws CerberusException
+     */
     void updateTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
+    /**
+     *
+     * @param application
+     * @return
+     */
     AnswerItem<TestCaseExecution> readLastByCriteria(String application);
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param environment
+     * @param country
+     * @param build
+     * @param revision
+     * @return
+     * @throws CerberusException
+     */
     TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
             String build, String revision) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param environment
+     * @param country
+     * @param build
+     * @param revision
+     * @param browser
+     * @param browserVersion
+     * @param ip
+     * @param port
+     * @param tag
+     * @return
+     */
     TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
             String build, String revision, String browser, String browserVersion,
             String ip, String port, String tag);

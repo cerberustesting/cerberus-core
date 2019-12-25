@@ -299,6 +299,7 @@ public class RunTestCaseV001 extends HttpServlet {
                         Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort,
                         null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, null, "", "",
                         "", "", "", "", "", "", "", manualExecution, "", 0, 0, "");
+                tCExecution.setUsrCreated(executor);
 
                 /**
                  * Set IdFromQueue

@@ -33,7 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -116,6 +115,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             // Data/Filter Parameters.
             String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
             List<String> outputReport = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("outputReport"), new ArrayList<>(), "UTF-8");
+            boolean fullList = ParameterParserUtil.parseBooleanParam(request.getParameter("fullList"), false);
 
             JSONObject jsonResponse = new JSONObject();
             JSONObject statusFilter = getStatusList(request);
@@ -145,7 +145,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
             // Table that contain the list of testcases and corresponding executions
             if (outputReport.isEmpty() || outputReport.contains("table")) {
-                jsonResponse.put("table", generateTestCaseExecutionTable(appContext, testCaseExecutions, statusFilter, countryFilter, testCaseLabelScopeList));
+                jsonResponse.put("table", generateTestCaseExecutionTable(appContext, testCaseExecutions, statusFilter, countryFilter, testCaseLabelScopeList, fullList));
             }
             // Executions per Function (or Test).
             if (outputReport.isEmpty() || outputReport.contains("functionChart")) {
@@ -309,10 +309,10 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         return countryList;
     }
 
-    private JSONObject generateTestCaseExecutionTable(ApplicationContext appContext, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter, List<TestCaseLabel> testCaseLabelList) {
+    private JSONObject generateTestCaseExecutionTable(ApplicationContext appContext, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter, List<TestCaseLabel> testCaseLabelList, boolean fullList) {
         JSONObject testCaseExecutionTable = new JSONObject();
-        LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
-        LinkedHashMap<String, JSONObject> columnMap = new LinkedHashMap<String, JSONObject>();
+        LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<>();
+        LinkedHashMap<String, JSONObject> columnMap = new LinkedHashMap<>();
 
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             try {
@@ -333,10 +333,20 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         execTab = ttcObject.getJSONObject("execTab");
                         execTab.put(execKey, executionJSON);
                         ttcObject.put("execTab", execTab);
+                        // Nb Total Executions
                         Integer nbExeTot = (Integer) ttcObject.get("NbExecutionsTotal");
                         nbExeTot += testCaseExecution.getNbExecutions() - 1;
                         ttcObject.put("NbExecutionsTotal", nbExeTot);
-
+                        // Nb Total Usefull Executions
+                        Integer nbExeUsefullTot = (Integer) ttcObject.get("NbExecutionsUsefullTotal");
+                        nbExeUsefullTot++;
+                        ttcObject.put("NbExecutionsUsefullTotal", nbExeUsefullTot);
+                        // Nb Total Usefull Executions in QU or OK status
+                        if (testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_QU) || testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_OK)) {
+                            Integer nbExeWithNothingToDoTot = (Integer) ttcObject.get("NbExecutionsUsefullUselessTotal");
+                            nbExeWithNothingToDoTot++;
+                            ttcObject.put("NbExecutionsUsefullUselessTotal", nbExeWithNothingToDoTot);
+                        }
                     } else {
                         // We add a new testcase entry (with The current execution).
                         ttcObject.put("test", testCaseExecution.getTest());
@@ -365,6 +375,16 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
                         // Adding nb of execution on retry.
                         ttcObject.put("NbExecutionsTotal", (testCaseExecution.getNbExecutions() - 1));
+
+                        // Nb Total Usefull Executions
+                        ttcObject.put("NbExecutionsUsefullTotal", 1);
+
+                        // Nb Total Usefull Executions in QU or OK status
+                        if (testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_QU) || testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_OK)) {
+                            ttcObject.put("NbExecutionsUsefullUselessTotal", 1);
+                        } else {
+                            ttcObject.put("NbExecutionsUsefullUselessTotal", 0);
+                        }
 
                         execTab.put(execKey, executionJSON);
                         ttcObject.put("execTab", execTab);
@@ -397,10 +417,28 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                     columnMap.put(testCaseExecution.getRobotDecli() + "_" + testCaseExecution.getCountry() + "_" + testCaseExecution.getEnvironment(), column);
 
                 }
-                Map<String, JSONObject> treeMap = new TreeMap<String, JSONObject>(columnMap);
-                testCaseExecutionTable.put("tableContent", ttc.values());
-                testCaseExecutionTable.put("iTotalRecords", ttc.size());
-                testCaseExecutionTable.put("iTotalDisplayRecords", ttc.size());
+
+                // Now loading only necessary records to final structure (filtering testcase that have all usefull executions OK of QU).
+                if (fullList) {
+                    testCaseExecutionTable.put("tableContent", ttc.values());
+                    testCaseExecutionTable.put("iTotalRecords", ttc.size());
+                    testCaseExecutionTable.put("iTotalDisplayRecords", ttc.size());
+                } else {
+                    LinkedHashMap<String, JSONObject> newttc = new LinkedHashMap<>();
+                    for (Map.Entry<String, JSONObject> entry : ttc.entrySet()) {
+                        String key = entry.getKey();
+                        JSONObject val = entry.getValue();
+                        if ((val.getInt("NbExecutionsUsefullUselessTotal") != val.getInt("NbExecutionsUsefullTotal"))
+                                || !val.getJSONObject("bugId").getString("bugId").equals("")) {
+                            newttc.put(key, val);
+                        }
+                    }
+                    testCaseExecutionTable.put("tableContent", newttc.values());
+                    testCaseExecutionTable.put("iTotalRecords", newttc.size());
+                    testCaseExecutionTable.put("iTotalDisplayRecords", newttc.size());
+                }
+
+                Map<String, JSONObject> treeMap = new TreeMap<>(columnMap);
                 testCaseExecutionTable.put("tableColumns", treeMap.values());
             } catch (JSONException ex) {
                 LOG.error("Error on generateTestCaseExecutionTable : " + ex, ex);

@@ -260,8 +260,21 @@ function loadReportingData(selectTag) {
     $("#durExe").val("");
     $("#TagUsrCreated").val("");
     $("#Tagcampaign").val("");
+
+    var fullL = "";
+    var fullListSelected = "";
+    if (document.getElementById("fullList") !== null) {
+        var fullL = "fullList=" + document.getElementById("fullList").checked;
+        if (document.getElementById("fullList").checked === true) {
+            fullListSelected = "checked";
+        } else {
+            fullListSelected = "";
+        }
+    }
+    var param = "?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + paramsLabel.serialize() + fullL;
+
     //Retrieve data for charts and draw them
-    var jqxhr = $.get("ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + paramsLabel.serialize(), null, "json");
+    var jqxhr = $.get("ReadTestCaseExecutionByTag" + param, null, "json");
     $.when(jqxhr).then(function (data) {
 
         if (data.hasOwnProperty('tagObject')) {
@@ -313,10 +326,10 @@ function loadReportingData(selectTag) {
             // Report By Label
             $("#progressLabel").empty();
             loadLabelReport(data.labelStat);
-//        }
 
             // Detailed Test Case List Report
-            loadReportList(data.table, selectTag);
+            loadReportList(data.table, selectTag, fullListSelected);
+
         } else {
 
             hideLoader($("#TagDetail"));
@@ -503,7 +516,7 @@ function loadLabelReport(data) {
 
 }
 
-function loadReportList(data2, selectTag) {
+function loadReportList(data2, selectTag, fullListSelected) {
     if (data2.tableColumns) {
         showLoader($("#listReport"));
 
@@ -522,7 +535,7 @@ function loadReportList(data2, selectTag) {
             var table = createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
             hideLoader($("#listReport"));
-            renderOptionsForExeList(selectTag);
+            renderOptionsForExeList(selectTag, fullListSelected);
         }
 
     } else {
@@ -1177,7 +1190,7 @@ function refreshNbChecked() {
     }
 }
 
-function renderOptionsForExeList(selectTag) {
+function renderOptionsForExeList(selectTag, fullListSelected) {
     if ($("#blankSpace").length === 0) {
         var doc = new Doc();
         var contentToAdd = "<div class='marginBottom10'>";
@@ -1194,6 +1207,7 @@ function renderOptionsForExeList(selectTag) {
         contentToAdd += "<div class='dropdown-menu'><button id='submitExewithDep' type='button' disabled='disabled' title='Submit again the selected executions with all dependencies.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again with Dep</button></div>";
         contentToAdd += "</div>";
         contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default marginLeft20'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
+        contentToAdd += "<label class='checkbox-inline'><input id='fullList' type='checkbox' " + fullListSelected + "></input>Full List</label>";
         contentToAdd += "<button id='refresh' type='button' title='Refresh.' class='btn btn-default marginLeft20' onclick='loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
         contentToAdd += "</div>";
 
