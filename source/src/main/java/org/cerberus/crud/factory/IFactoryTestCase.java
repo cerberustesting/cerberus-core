@@ -27,7 +27,7 @@ import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepBatch;
-import org.json.JSONObject;
+import org.json.JSONArray;
 
 /**
  * @author bcivel
@@ -42,9 +42,8 @@ public interface IFactoryTestCase {
      * @param refOrigine
      * @param usrCreated
      * @param implementer
+     * @param executor
      * @param usrModif
-     * @param project
-     * @param ticket
      * @param function
      * @param application
      * @param activeQA
@@ -79,10 +78,10 @@ public interface IFactoryTestCase {
      * @return
      */
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
-            String implementer, String usrModif, String project, String ticket, String function, String application,
+            String implementer, String executor, String usrModif, String function, String application,
             String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
             String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String conditionVal3, String fromBuild,
-            String fromRev, String toBuild, String toRev, String lastExecutionStatus, String bugID,
+            String fromRev, String toBuild, String toRev, String lastExecutionStatus, JSONArray bugID,
             String targetBuild, String targetRev, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry,
             List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep,
             List<TestCaseStepBatch> testCaseStepBatch);
@@ -95,9 +94,8 @@ public interface IFactoryTestCase {
      * @param refOrigine
      * @param usrCreated
      * @param implementer
+     * @param executor
      * @param usrModif
-     * @param project
-     * @param ticket
      * @param function
      * @param application
      * @param activeQA
@@ -119,7 +117,7 @@ public interface IFactoryTestCase {
      * @param toBuild
      * @param toRev
      * @param lastExecutionStatus
-     * @param bugID
+     * @param bigID
      * @param targetBuild
      * @param targetRev
      * @param comment
@@ -131,10 +129,10 @@ public interface IFactoryTestCase {
      * @return
      */
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
-            String implementer, String usrModif, String project, String ticket, String function, String application,
+            String implementer, String executor, String usrModif, String function, String application,
             String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
             String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String conditionVal3, String fromBuild,
-            String fromRev, String toBuild, String toRev, String lastExecutionStatus, String bugID,
+            String fromRev, String toBuild, String toRev, String lastExecutionStatus, JSONArray bigID,
             String targetBuild, String targetRev, String comment, String dateCreated, String userAgent, String screenSize, Timestamp dateModif, int testCaseVersion);
 
     /**

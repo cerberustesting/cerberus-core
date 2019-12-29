@@ -518,6 +518,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','HowTo','','fr','Comment Reproduire','','_cas_de_test')");
         b.append(",('testcase','Implementer','','en','Implementer','This is the name of the Cerberus user who implemented the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','Implementer','','fr','Réalisateur','Nom de l\\'utilisateur Cerberus qui a implementé le cas de test.','_testcase')");
+        b.append(",('testcase','Executor','','en','Manual Executor','This is the name of the Cerberus user who will execute that test case in manual mode.','_testcase')");
+        b.append(",('testcase','Executor','','fr','Executeur Manuel','Nom de l\\'utilisateur Cerberus qui executera le cas de test en mode manuel.','_testcase')");
         b.append(",('testcase','LastModifier','','en','LastModifier','This is the name of the Cerberus user who last modified the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','LastModifier','','fr','Dernier Modificateur','','_cas_de_test')");
         b.append(",('testcase','Origine','','en','Origin','This is the country or the team that identified the scenario of the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
@@ -2454,8 +2456,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('transversal','DateModif','','fr','Date de Modification','Date de dernière modification de l\\'objet.','_librairie_de_données')");
         b.append(",('transversal','UsrCreated','','en','Created by','User who created the object.','_data_library')");
         b.append(",('transversal','UsrCreated','','fr','Créé par','Utilisateur ayant créé l\\'objet.','_librairie_de_données')");
-        b.append(",('transversal','UsrModif','','en','Modified by','Last modification date of the object.','_data_library')");
-        b.append(",('transversal','UsrModif','','fr','Modifié par','Date de dernière modification de l\\'objet.','_librairie_de_données')");
+        b.append(",('transversal','UsrModif','','en','Modified by','User who last modified the object.','_data_library')");
+        b.append(",('transversal','UsrModif','','fr','Modifié par','Dernier utilisateur ayant modifié l\\'objet.','_librairie_de_données')");
         /**
          * Cerberus TUTO Documentation.
          */

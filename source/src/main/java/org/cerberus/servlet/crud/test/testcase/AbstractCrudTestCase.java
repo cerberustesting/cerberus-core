@@ -19,7 +19,6 @@
  */
 package org.cerberus.servlet.crud.test.testcase;
 
-import com.google.common.base.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCase;
@@ -38,6 +37,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.json.JSONArray;
 
 public abstract class AbstractCrudTestCase extends HttpServlet {
 
@@ -108,16 +108,9 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
 
             // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
             tc.setImplementer(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("implementer"), tc.getImplementer(), charset));
+            tc.setExecutor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("executor"), tc.getExecutor(), charset));
+            tc.setExecutor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("executor"), tc.getExecutor(), charset));
             tc.setUsrCreated(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getUserPrincipal().getName(), "", charset));
-
-            if (!Strings.isNullOrEmpty(request.getParameter("project"))) { // TODO voir pk ce cas particulier complexe :/
-                tc.setProject(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("project"), tc.getProject(), charset));
-            } else if (request.getParameter("project") != null && request.getParameter("project").isEmpty()) {
-                tc.setProject(null);
-            } else {
-                tc.setProject(tc.getProject());
-            }
-
             tc.setApplication(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), tc.getApplication(), charset));
             tc.setActiveQA(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeQA"), tc.getActiveQA(), charset));
             tc.setActiveUAT(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeUAT"), tc.getActiveUAT(), charset));
@@ -132,12 +125,19 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             tc.setPriority(ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("priority"), tc.getPriority(), charset));
             tc.setTest(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("test"), tc.getTest(), charset));
             tc.setTestCase(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), tc.getTestCase(), charset));
-            tc.setTicket(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticket"), tc.getTicket(), charset));
             tc.setOrigine(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("origin"), tc.getOrigine(), charset));
             tc.setGroup(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), tc.getGroup(), charset));
             tc.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), tc.getStatus(), charset));
             tc.setDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("shortDesc"), tc.getDescription(), charset));
-            tc.setBugID(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugId"), tc.getBugID(), charset));
+            String bugIDString = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugId"), tc.getBugID().toString(), charset);
+            JSONArray bugID = new JSONArray();
+            try {
+                LOG.debug(bugIDString);
+                bugID = new JSONArray(bugIDString);
+            } catch (JSONException ex) {
+                LOG.error("Could not convert '" + bugIDString + "' to JSONArray.", ex);
+            }
+            tc.setBugID(bugID);
             tc.setComment(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("comment"), tc.getComment(), charset));
             tc.setFunction(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("function"), tc.getFunction(), charset));
             tc.setUserAgent(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("userAgent"), tc.getUserAgent(), charset));

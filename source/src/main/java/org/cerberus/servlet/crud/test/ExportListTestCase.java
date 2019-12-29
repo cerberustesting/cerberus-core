@@ -21,21 +21,21 @@ package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
 import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.factory.impl.FactoryTestCase;
 import org.cerberus.crud.service.ITestCaseService;
-import org.cerberus.crud.service.impl.TestCaseService;
 import org.cerberus.util.StringUtil;
+import org.json.JSONArray;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.crud.factory.IFactoryTestCase;
 
 /**
  * Search for all test cases given by the filters and convert them to CSV file
@@ -47,6 +47,8 @@ import org.cerberus.crud.factory.IFactoryTestCase;
 @WebServlet(name = "ExportListTestCase", urlPatterns = {"/ExportListTestCase"})
 public class ExportListTestCase extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(ExportListTestCase.class);
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
@@ -55,7 +57,7 @@ public class ExportListTestCase extends HttpServlet {
         TestCase tCase = this.getTestCaseFromRequest(req);
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ITestCaseService testCaseService = appContext.getBean(TestCaseService.class);
+        ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
 
         List<TestCase> list = testCaseService.findTestCaseByAllCriteria(tCase, text, system);
 
@@ -79,8 +81,15 @@ public class ExportListTestCase extends HttpServlet {
         String project = this.getValue(req, "ScProject");
         String ticket = this.getValue(req, "ScTicket");
         String bug = this.getValue(req, "ScBugID");
+        JSONArray bugJSON = new JSONArray();
+        try {
+            bugJSON = new JSONArray(bug);
+        } catch (Exception e) {
+            LOG.error("Could not convert '" + bug + "' to JSONArray.", e);
+        }
         String origine = this.getValue(req, "ScOrigine");
         String creator = this.getValue(req, "ScCreator");
+        String executor = this.getValue(req, "ScExecutor");
         String application = this.getValue(req, "ScApplication");
         int priority = -1;
         if (req.getParameter("ScPriority") != null && !req.getParameter("ScPriority").equalsIgnoreCase("All") && StringUtil.isInteger(req.getParameter("ScPriority"))) {
@@ -105,8 +114,8 @@ public class ExportListTestCase extends HttpServlet {
         String function = this.getValue(req, "function");
 
         IFactoryTestCase factoryTCase = new FactoryTestCase();
-        return factoryTCase.create(test, testCase, origine, null, creator, null, null, project, ticket, function, application, qa, uat, prod, priority, group,
-                status, null, null, null, active, conditionOper, conditionVal1, conditionVal2, conditionVal3, fBuild, fRev, tBuild, tRev, null, bug, targetBuild, targetRev, null, "", "", null, null, null, null);
+        return factoryTCase.create(test, testCase, origine, null, creator, executor, null, null, function, application, qa, uat, prod, priority, group,
+                status, null, null, null, active, conditionOper, conditionVal1, conditionVal2, conditionVal3, fBuild, fRev, tBuild, tRev, null, bugJSON, targetBuild, targetRev, null, "", "", null, null, null, null);
     }
 
     private String getValue(HttpServletRequest req, String valueName) {
@@ -135,9 +144,7 @@ public class ExportListTestCase extends HttpServlet {
         sb.append("\",\"");
         sb.append(StringUtil.getCleanCSVTextField(tc.getUsrModif()));
         sb.append("\",\"");
-        sb.append(StringUtil.getCleanCSVTextField(tc.getProject()));
-        sb.append("\",\"");
-        sb.append(StringUtil.getCleanCSVTextField(tc.getTicket()));
+        sb.append(StringUtil.getCleanCSVTextField(tc.getExecutor()));
         sb.append("\",\"");
         sb.append(StringUtil.getCleanCSVTextField(tc.getApplication()));
         sb.append("\",\"");
@@ -171,7 +178,7 @@ public class ExportListTestCase extends HttpServlet {
         sb.append("\",\"");
         sb.append(StringUtil.getCleanCSVTextField(tc.getLastExecutionStatus()));
         sb.append("\",\"");
-        sb.append(StringUtil.getCleanCSVTextField(tc.getBugID()));
+        sb.append(StringUtil.getCleanCSVTextField(tc.getBugID().toString()));
         sb.append("\",\"");
         sb.append(StringUtil.getCleanCSVTextField(tc.getTargetBuild()));
         sb.append("\",\"");

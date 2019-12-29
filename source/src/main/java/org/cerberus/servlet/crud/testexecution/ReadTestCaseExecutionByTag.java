@@ -147,6 +147,10 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             if (outputReport.isEmpty() || outputReport.contains("table")) {
                 jsonResponse.put("table", generateTestCaseExecutionTable(appContext, testCaseExecutions, statusFilter, countryFilter, testCaseLabelScopeList, fullList));
             }
+            // Table that contain the list of testcases and corresponding executions
+            if (outputReport.isEmpty() || outputReport.contains("table")) {
+                jsonResponse.put("manualExecutionList", generateManualExecutionTable(appContext, testCaseExecutions, statusFilter, countryFilter));
+            }
             // Executions per Function (or Test).
             if (outputReport.isEmpty() || outputReport.contains("functionChart")) {
                 jsonResponse.put("functionChart", generateFunctionChart(testCaseExecutions, Tag, statusFilter, countryFilter));
@@ -224,41 +228,37 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             result.put("QueueState", JavaScriptUtils.javaScriptEscape(testCaseExecution.getQueueState()));
         }
 
-        String bugId;
-        String comment;
-        String function;
-        String shortDesc;
-        if ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getTest() != null)) {
-            if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
-                    && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugID() != null) {
-                bugId = testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID());
-                bugId = new StringBuffer("<a href='")
-                        .append(bugId)
-                        .append("' target='reportBugID'>")
-                        .append(testCaseExecution.getTestCaseObj().getBugID())
-                        .append("</a>")
-                        .toString();
-            } else {
-                bugId = testCaseExecution.getTestCaseObj().getBugID();
-            }
-            comment = JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getComment());
-            function = JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getFunction());
-            shortDesc = testCaseExecution.getTestCaseObj().getDescription();
-        } else {
-            bugId = "";
-            comment = "";
-            function = "";
-            shortDesc = "";
-        }
-        result.put("BugID", bugId);
-
-        result.put("Priority", JavaScriptUtils.javaScriptEscape(String.valueOf(testCaseExecution.getTestCaseObj().getPriority())));
-        result.put("Comment", comment);
-        result.put("Function", function);
-        result.put("ShortDescription", shortDesc);
-
-        result.put("Application", JavaScriptUtils.javaScriptEscape(testCaseExecution.getApplication()));
-
+//        if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
+//                && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugID() != null) {
+//            result.put("AppBugURL", testCaseExecution.getApplicationObj().getBugTrackerUrl());
+//                bugId = testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID());
+//                bugId = new StringBuffer("<a href='")
+//                        .append(bugId)
+//                        .append("' target='reportBugID'>")
+//                        .append(testCaseExecution.getTestCaseObj().getBugID())
+//                        .append("</a>")
+//                        .toString();
+//        }
+//        String comment;
+//        String function;
+//        String shortDesc;
+//        JSONArray bugId = new JSONArray();
+//        if ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getTest() != null)) {
+//            bugId = testCaseExecution.getTestCaseObj().getBugID();
+//            comment = JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getComment());
+//            function = JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getFunction());
+//            shortDesc = testCaseExecution.getTestCaseObj().getDescription();
+//        } else {
+//            comment = "";
+//            function = "";
+//            shortDesc = "";
+//        }
+//        result.put("BugID", bugId);
+//        result.put("Priority", JavaScriptUtils.javaScriptEscape(String.valueOf(testCaseExecution.getTestCaseObj().getPriority())));
+//        result.put("Comment", comment);
+//        result.put("Function", function);
+//        result.put("ShortDescription", shortDesc);
+//        result.put("Application", JavaScriptUtils.javaScriptEscape(testCaseExecution.getApplication()));
         List<JSONObject> testCaseDep = new ArrayList<>();
 
         if (testCaseExecution.getTestCaseExecutionQueueDepList() != null) {
@@ -356,20 +356,21 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         ttcObject.put("application", testCaseExecution.getApplication());
                         boolean testExist = ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getTest() != null));
                         if (testExist) {
+
                             ttcObject.put("function", testCaseExecution.getTestCaseObj().getFunction());
                             ttcObject.put("priority", testCaseExecution.getTestCaseObj().getPriority());
                             ttcObject.put("comment", testCaseExecution.getTestCaseObj().getComment());
-                            if ((testCaseExecution.getApplicationObj() != null) && (testCaseExecution.getApplicationObj().getBugTrackerUrl() != null) && (testCaseExecution.getTestCaseObj().getBugID() != null)) {
-                                ttcObject.put("bugId", new JSONObject("{\"bugId\":\"" + testCaseExecution.getTestCaseObj().getBugID() + "\",\"bugTrackerUrl\":\"" + testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID()) + "\"}"));
-                            } else {
-                                ttcObject.put("bugId", new JSONObject("{\"bugId\":\"\",\"bugTrackerUrl\":\"\"}"));
-                            }
+                            ttcObject.put("bugId", testCaseExecution.getTestCaseObj().getBugID());
+
                         } else {
+
                             ttcObject.put("function", "");
                             ttcObject.put("priority", 0);
                             ttcObject.put("comment", "");
-                            ttcObject.put("bugId", new JSONObject("{\"bugId\":\"\",\"bugTrackerUrl\":\"\"}"));
+                            ttcObject.put("bugId", new JSONArray());
+
                         }
+
                         // Flag that report if test case still exist.
                         ttcObject.put("testExist", testExist);
 
@@ -428,8 +429,9 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                     for (Map.Entry<String, JSONObject> entry : ttc.entrySet()) {
                         String key = entry.getKey();
                         JSONObject val = entry.getValue();
-                        if ((val.getInt("NbExecutionsUsefullUselessTotal") != val.getInt("NbExecutionsUsefullTotal"))
-                                || !val.getJSONObject("bugId").getString("bugId").equals("")) {
+                        if ((val.getInt("NbExecutionsUsefullUselessTotal") != val.getInt("NbExecutionsUsefullTotal")) // One of the execution of the test case has a status <> QU and OK
+                                || (val.getJSONArray("bugId").length() > 0) // At least 1 bug has been assigned to the testcase.
+                                ) {
                             newttc.put(key, val);
                         }
                     }
@@ -447,6 +449,75 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             }
         }
         return testCaseExecutionTable;
+    }
+
+    private JSONObject generateManualExecutionTable(ApplicationContext appContext, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter) {
+        JSONObject manualExecutionTable = new JSONObject();
+        HashMap<String, JSONObject> manualExecutions = new HashMap<>();
+        HashMap<String, JSONObject> manualExecutionsWE = new HashMap<>();
+        int totalManualExecution = 0;
+        int totalManualWEExecution = 0;
+
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+            try {
+                String controlStatus = testCaseExecution.getControlStatus();
+                boolean isManual = StringUtil.parseBoolean(testCaseExecution.getManualExecution());
+
+                // We check is Country and status is inside the fitered values.
+                if (countryFilter.get(testCaseExecution.getCountry()).equals("on")) {
+
+                    if (isManual) {
+                        totalManualExecution++;
+
+                        String executor = "NoExecutorDefined";
+                        if (!StringUtil.isNullOrEmpty(testCaseExecution.getExecutor())) {
+                            executor = testCaseExecution.getExecutor();
+                        }
+                        LOG.debug(executor + " - " + testCaseExecution.getId() + " - " + controlStatus);
+                        LOG.debug(manualExecutions.get(executor));
+
+                        if (manualExecutions.containsKey(executor)) {
+                            JSONObject executorObj = manualExecutions.get(executor);
+                            JSONArray array = (JSONArray) executorObj.get("executionList");
+                            array.put(testCaseExecution.getId());
+                            JSONArray arrayWE = (JSONArray) executorObj.get("executionWEList");
+                            if (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_WE)) {
+                                arrayWE.put(testCaseExecution.getId());
+                            }
+                            executorObj.put("executionList", array);
+                            executorObj.put("executionWEList", arrayWE);
+                            manualExecutions.put(executor, executorObj);
+                        } else {
+                            JSONObject executorObj = new JSONObject();
+                            JSONArray array = new JSONArray();
+                            array.put(testCaseExecution.getId());
+                            JSONArray arrayWE = new JSONArray();
+                            if (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_WE)) {
+                                arrayWE.put(testCaseExecution.getId());
+                            }
+                            executorObj.put("executionList", array);
+                            executorObj.put("executionWEList", arrayWE);
+                            manualExecutions.put(executor, executorObj);
+                        }
+
+                        if (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_WE)) {
+                            totalManualWEExecution++;
+                        }
+                    }
+
+                }
+
+                manualExecutionTable.put("perExecutor", manualExecutions);
+                manualExecutionTable.put("totalExecution", totalManualExecution);
+                manualExecutionTable.put("totalWEExecution", totalManualWEExecution);
+
+            } catch (JSONException ex) {
+                LOG.error("Error on generateManualExecutionTable : " + ex, ex);
+            } catch (Exception ex) {
+                LOG.error("Error on generateManualExecutionTable : " + ex, ex);
+            }
+        }
+        return manualExecutionTable;
     }
 
     private JSONObject generateFunctionChart(List<TestCaseExecution> testCaseExecutions, String tag, JSONObject statusFilter, JSONObject countryFilter) throws JSONException {
@@ -592,7 +663,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         int totalBugToReport = 0;
         int totalBugToReportReported = 0;
         int totalBugToClean = 0;
-        HashMap<String, SummaryStatisticsBugTrackerDTO> statMap = new HashMap<String, SummaryStatisticsBugTrackerDTO>();
+        HashMap<String, SummaryStatisticsBugTrackerDTO> statMap = new HashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             String controlStatus = testCaseExecution.getControlStatus();
             if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseExecution.getCountry()).equals("on")) {
@@ -602,36 +673,41 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 if (bugsToReport.contains(testCaseExecution.getControlStatus())) {
                     totalBugToReport++;
                 }
-                if ((testCaseExecution.getTestCaseObj() != null) && (!StringUtil.isNullOrEmpty(testCaseExecution.getTestCaseObj().getBugID()))) {
-                    key = testCaseExecution.getTestCaseObj().getBugID();
-                    stat = statMap.get(key);
-                    totalBugReported++;
-                    if (stat == null) {
-                        stat = new SummaryStatisticsBugTrackerDTO();
-                        stat.setNbExe(1);
-                        stat.setBugId(testCaseExecution.getTestCaseObj().getBugID());
-                        stat.setBugIdURL(testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID()));
-                        stat.setExeIdLastStatus(testCaseExecution.getControlStatus());
-                        stat.setExeIdFirst(testCaseExecution.getId());
-                        stat.setExeIdLast(testCaseExecution.getId());
-                        stat.setTestFirst(testCaseExecution.getTest());
-                        stat.setTestLast(testCaseExecution.getTest());
-                        stat.setTestCaseFirst(testCaseExecution.getTestCase());
-                        stat.setTestCaseLast(testCaseExecution.getTestCase());
-                    } else {
-                        stat.setNbExe(stat.getNbExe() + 1);
-                        stat.setExeIdLastStatus(testCaseExecution.getControlStatus());
-                        stat.setExeIdLast(testCaseExecution.getId());
-                        stat.setTestLast(testCaseExecution.getTest());
-                        stat.setTestCaseLast(testCaseExecution.getTestCase());
+                if ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getBugID().length() > 0)) {
+                    JSONArray arr = testCaseExecution.getTestCaseObj().getBugID();
+                    for (int i = 0; i < arr.length(); i++) {
+                        JSONObject bug = (JSONObject) arr.get(i);
+                        key = bug.getString("id");
+
+                        stat = statMap.get(key);
+                        totalBugReported++;
+                        if (stat == null) {
+                            stat = new SummaryStatisticsBugTrackerDTO();
+                            stat.setNbExe(1);
+                            stat.setBugId(key);
+                            stat.setBugIdURL(testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", key));
+                            stat.setExeIdLastStatus(testCaseExecution.getControlStatus());
+                            stat.setExeIdFirst(testCaseExecution.getId());
+                            stat.setExeIdLast(testCaseExecution.getId());
+                            stat.setTestFirst(testCaseExecution.getTest());
+                            stat.setTestLast(testCaseExecution.getTest());
+                            stat.setTestCaseFirst(testCaseExecution.getTestCase());
+                            stat.setTestCaseLast(testCaseExecution.getTestCase());
+                        } else {
+                            stat.setNbExe(stat.getNbExe() + 1);
+                            stat.setExeIdLastStatus(testCaseExecution.getControlStatus());
+                            stat.setExeIdLast(testCaseExecution.getId());
+                            stat.setTestLast(testCaseExecution.getTest());
+                            stat.setTestCaseLast(testCaseExecution.getTestCase());
+                        }
+                        if (!(bugsToReport.contains(testCaseExecution.getControlStatus()))) {
+                            totalBugToClean++;
+                            stat.setToClean(true);
+                        } else {
+                            totalBugToReportReported++;
+                        }
+                        statMap.put(key, stat);
                     }
-                    if (!(bugsToReport.contains(testCaseExecution.getControlStatus()))) {
-                        totalBugToClean++;
-                        stat.setToClean(true);
-                    } else {
-                        totalBugToReportReported++;
-                    }
-                    statMap.put(key, stat);
                 }
 
             }
@@ -891,6 +967,9 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
         }
 
+        if ((jsonArraySTICKER.length() <= 0) && (jsonArrayREQUIREMENT.length() <= 0)) {
+            return null;
+        }
         jsonResult.put("labelTreeSTICKER", jsonArraySTICKER);
         jsonResult.put("labelTreeREQUIREMENT", jsonArrayREQUIREMENT);
 

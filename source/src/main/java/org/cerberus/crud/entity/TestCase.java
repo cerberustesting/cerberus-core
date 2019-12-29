@@ -57,11 +57,11 @@ public class TestCase {
     private String fromRev;
     private String toBuild;
     private String toRev;
-    private String bugID;
+    private JSONArray bugID;
     private String targetBuild;
     private String targetRev;
     private String implementer;
-//    private String executor;
+    private String executor;
     private String activeQA;
     private String activeUAT;
     private String activePROD;
@@ -187,11 +187,19 @@ public class TestCase {
         this.application = application;
     }
 
-    public String getBugID() {
+    public String getExecutor() {
+        return executor;
+    }
+
+    public void setExecutor(String executor) {
+        this.executor = executor;
+    }
+
+    public JSONArray getBugID() {
         return bugID;
     }
 
-    public void setBugID(String bugID) {
+    public void setBugID(JSONArray bugID) {
         this.bugID = bugID;
     }
 
@@ -465,8 +473,6 @@ public class TestCase {
             result.put("test", this.getTest());
             result.put("testcase", this.getTestCase());
             result.put("application", this.getApplication());
-            result.put("project", this.getProject());
-            result.put("ticket", this.getTicket());
             result.put("description", this.getDescription());
             result.put("behaviourOrValueExpected", this.getBehaviorOrValueExpected());
             result.put("priority", this.getPriority());
@@ -489,6 +495,7 @@ public class TestCase {
             result.put("targetBuild", this.getTargetBuild());
             result.put("targetRev", this.getTargetRev());
             result.put("implementer", this.getImplementer());
+            result.put("executor", this.getExecutor());
             result.put("activeQA", this.getActiveQA());
             result.put("activeUAT", this.getActiveUAT());
             result.put("activePROD", this.getActivePROD());

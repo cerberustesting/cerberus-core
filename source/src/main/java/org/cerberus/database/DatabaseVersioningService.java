@@ -8363,6 +8363,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("UPDATE testcasestepactioncontrol SET ConditionVal3 = '' WHERE ConditionVal3 IS NULL");
         a.add("UPDATE testcasestepactioncontrol SET Value3 = '' WHERE Value3 IS NULL");
 
+        // Added executor and remove project and ticket columns
+        // 1463-1464
+        a.add("ALTER TABLE `testcase` DROP FOREIGN KEY `FK_testcase_03`, DROP COLUMN `Ticket`, DROP COLUMN `Project`, ADD COLUMN `Executor` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Implementer`, CHANGE COLUMN `BugID` `BugID` TEXT NOT NULL, DROP INDEX `IX_testcase_04`  ;");
+        a.add("UPDATE testcase SET bugID = CASE WHEN bugID = \"\" or bugID is null THEN \"[]\" ELSE concat('[{\"id\":\"',bugID,'\",\"desc\":\"\"}]') END;");
+
         return a;
     }
 

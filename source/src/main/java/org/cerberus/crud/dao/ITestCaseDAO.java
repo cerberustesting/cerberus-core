@@ -98,7 +98,23 @@ public interface ITestCaseDAO {
 
     public List<TestCase> findTestCaseByTestSystem(String test, String system);
 
-    List<TestCase> findTestCaseByCriteria(String[] test, String[] project, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign);
+    /**
+     *
+     * @param test
+     * @param app
+     * @param active
+     * @param priority
+     * @param status
+     * @param group
+     * @param targetBuild
+     * @param targetRev
+     * @param creator
+     * @param implementer
+     * @param function
+     * @param campaign
+     * @return
+     */
+    List<TestCase> findTestCaseByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign);
 
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException;
 
@@ -120,7 +136,6 @@ public interface ITestCaseDAO {
     /**
      *
      * @param test
-     * @param idProject
      * @param app
      * @param creator
      * @param implementer
@@ -133,7 +148,7 @@ public interface ITestCaseDAO {
      * @param length
      * @return
      */
-    public AnswerList<TestCase> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
+    public AnswerList<TestCase> readByVarious(String[] test, String[] app, String[] creator, String[] implementer, String[] system,
             String[] campaign, List<Integer> labelid, String[] priority, String[] group, String[] status, int length);
 
     /**

@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory;
 
+import java.sql.Timestamp;
 import java.util.List;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvParam;
@@ -99,6 +100,10 @@ public interface IFactoryTestCaseExecution {
      * @param testCasePriority
      * @param system
      * @param robotDecli
+     * @param usrCreated
+     * @param dateCreated
+     * @param usrModif
+     * @param dateModif
      * @return
      */
     TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment, String country,
@@ -109,5 +114,7 @@ public interface IFactoryTestCaseExecution {
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage,
             String executor, int numberOfRetries, String screenSize, Robot robotObj, String robotProvider, String robotSessionId,
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3, String manualExecution, String userAgent, int testCaseVersion, int testCasePriority, String system);
+            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3, 
+            String manualExecution, String userAgent, int testCaseVersion, int testCasePriority, String system,
+            String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 }

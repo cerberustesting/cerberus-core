@@ -172,8 +172,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
-        return testCaseExecutionInQueueDAO.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList, targetsprintList,
+    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
+        return testCaseExecutionInQueueDAO.readBySystemByVarious(system, testList, applicationList, tcstatusList, groupList, tcactiveList, priorityList, targetsprintList,
                 targetrevisionList, creatorList, implementerList, buildList, revisionList, environmentList, countryList, browserList, tcestatusList,
                 ip, port, tag, browserversion, comment, bugid, ticket);
 
@@ -443,7 +443,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                 browser, version, platform,
                 start, end, controlStatus, controlMessage, application, applicationObj, "", tag, verbose, screenshot, pageSource,
                 seleniumLog, synchroneous, timeout, outputFormat, "", "", tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
-                myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", "", "", "", "", manualExecution, "", 0, 0, "");
+                myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", "", "", "", "", manualExecution, "", 0, 0, "", null, null, null, null);
         result.setQueueID(testCaseExecutionInQueue.getId());
         result.setQueueState(testCaseExecutionInQueue.getState().name());
         result.setId(testCaseExecutionInQueue.getExeId());

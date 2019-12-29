@@ -318,6 +318,13 @@ function displayPageLabel(doc) {
     $("#editTcHeader").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_executiondetail", "edittch"));
     $("#editTcStepInfo").html("<span class='glyphicon glyphicon-new-window'></span> " + doc.getDocLabel("page_executiondetail", "edittcstep"));
     $("#saveTestCaseExecution").html("<span class='glyphicon glyphicon-save'></span> " + doc.getDocLabel("page_executiondetail", "save"));
+
+    // Tracability
+    $("[name='lbl_datecreated']").html(doc.getDocOnline("transversal", "DateCreated"));
+    $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
+    $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
+    $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
+
 }
 
 function updatePage(data, stepList) {
@@ -400,37 +407,42 @@ function updatePage(data, stepList) {
             async: true,
             success: function (dataApp) {
                 var link;
-                var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
+
                 if (data.testCaseObj !== undefined) {
-                    if ((data.testCaseObj.bugId === undefined || data.testCaseObj.bugId === "") && newBugURL !== undefined) {
-                        if (!isEmpty(newBugURL)) {
-                            newBugURL = newBugURL.replace(/%EXEID%/g, data.id);
-                            newBugURL = newBugURL.replace(/%EXEDATE%/g, new Date(data.start).toLocaleString());
-                            newBugURL = newBugURL.replace(/%TEST%/g, data.test);
-                            newBugURL = newBugURL.replace(/%TESTCASE%/g, data.testcase);
-                            newBugURL = newBugURL.replace(/%TESTCASEDESC%/g, data.testCaseObj.description);
-                            newBugURL = newBugURL.replace(/%COUNTRY%/g, data.country);
-                            newBugURL = newBugURL.replace(/%ENV%/g, data.environment);
-                            newBugURL = newBugURL.replace(/%BUILD%/g, data.build);
-                            newBugURL = newBugURL.replace(/%REV%/g, data.revision);
-                            newBugURL = newBugURL.replace(/%BROWSER%/g, data.browser);
-                            newBugURL = newBugURL.replace(/%BROWSERFULLVERSION%/g, data.browser + ' ' + data.version + ' ' + data.platform);
-                            link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text("Open a new bug"));
-                        } else {
-                            link = $('<a id="bugID">').attr("href", "#").append($("<button class='btn btn-default btn-block'>").text("No 'New Bug' URL Specified.").attr("title", "Please specify 'New Bug' URL at application level."));
-                        }
+
+                    // Display already existing bugs.
+                    link = getBugIdList(data.testCaseObj.bugId, dataApp.contentTable.bugTrackerUrl);
+                    $("#bugID").append(link);
+
+                    // Adding a button to create a new bug.
+                    var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
+                    if (!isEmpty(newBugURL)) {
+                        newBugURL = newBugURL.replace(/%EXEID%/g, data.id);
+                        newBugURL = newBugURL.replace(/%EXEDATE%/g, new Date(data.start).toLocaleString());
+                        newBugURL = newBugURL.replace(/%TEST%/g, data.test);
+                        newBugURL = newBugURL.replace(/%TESTCASE%/g, data.testcase);
+                        newBugURL = newBugURL.replace(/%TESTCASEDESC%/g, data.testCaseObj.description);
+                        newBugURL = newBugURL.replace(/%COUNTRY%/g, data.country);
+                        newBugURL = newBugURL.replace(/%ENV%/g, data.environment);
+                        newBugURL = newBugURL.replace(/%BUILD%/g, data.build);
+                        newBugURL = newBugURL.replace(/%REV%/g, data.revision);
+                        newBugURL = newBugURL.replace(/%BROWSER%/g, data.browser);
+                        newBugURL = newBugURL.replace(/%BROWSERFULLVERSION%/g, data.browser + ' ' + data.version + ' ' + data.platform);
+                        link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block marginTop5'>").text("Open a new bug"));
                     } else {
-                        newBugURL = dataApp.contentTable.bugTrackerUrl;
-                        if (newBugURL !== undefined && newBugURL !== "") {
-                            newBugURL = newBugURL.replace("%BUGID%", data.testCaseObj.bugId);
-                            link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text(data.testCaseObj.bugId));
-                        } else {
-                            link = $("<span>").text(data.testCaseObj.bugId);
-                        }
+                        link = $('<a id="bugID">').attr("href", "#").append($("<button class='btn btn-default btn-block'>").text("No 'New Bug' URL Specified.").attr("title", "Please specify 'New Bug' URL on application '" + data.application + "'."));
                     }
                     $("#bugID").append(link);
-                    $("#bugID").data("appBugURL", "true");
+                    link = $('<a id="bugID">').append($("<button class='btn btn-default btn-block marginTop5' id='editTcHeaderBug'>").text("Assign to Test Case"));
+                    $("#bugID").append(link);
+                    $("#editTcHeaderBug").unbind("click").click(function () {
+                        openModalTestCase(data.test, data.testcase, "EDIT", "tabTCBugReport")
+                    })
+
+
                 }
+                $("#bugID").data("appBugURL", "true");
+
             }
         });
     }
@@ -631,13 +643,24 @@ function setConfigPanel(data) {
     }
     configPanel.find("input#version").val(data.version);
 
-    configPanel.find("input#conditionOperTC").val(data.conditionOper);
-    configPanel.find("input#conditionVal1InitTC").val(data.conditionVal1Init);
-    configPanel.find("input#conditionVal2InitTC").val(data.conditionVal2Init);
-    configPanel.find("input#conditionVal3InitTC").val(data.conditionVal3Init);
-    configPanel.find("input#conditionVal1TC").val(data.conditionVal1);
-    configPanel.find("input#conditionVal2TC").val(data.conditionVal2);
-    configPanel.find("input#conditionVal3TC").val(data.conditionVal3);
+    if (data.conditionOper === "always" || data.conditionOper === "") {
+        configPanel.find("#condrow1").hide();
+        configPanel.find("#condrow2").hide();
+    } else {
+        configPanel.find("input#conditionOperTC").val(data.conditionOper);
+        configPanel.find("input#conditionVal1InitTC").val(data.conditionVal1Init);
+        configPanel.find("input#conditionVal2InitTC").val(data.conditionVal2Init);
+        configPanel.find("input#conditionVal3InitTC").val(data.conditionVal3Init);
+        configPanel.find("input#conditionVal1TC").val(data.conditionVal1);
+        configPanel.find("input#conditionVal2TC").val(data.conditionVal2);
+        configPanel.find("input#conditionVal3TC").val(data.conditionVal3);
+    }
+
+    configPanel.find("input#usrcreated").val(data.usrCreated);
+    configPanel.find("input#datecreated").val(data.dateCreated);
+    configPanel.find("input#usrmodif").val(data.usrModif);
+    configPanel.find("input#datemodif").val(data.dateModif);
+
 
     //setTestCaseControlStatue(data.controlStatus);
     setLoadBar(data);

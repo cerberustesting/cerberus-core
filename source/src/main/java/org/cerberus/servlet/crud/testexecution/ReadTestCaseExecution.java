@@ -382,7 +382,6 @@ public class ReadTestCaseExecution extends HttpServlet {
                         ttcObject.put("status", testCaseExecution.getStatus());
                         ttcObject.put("application", testCaseExecution.getApplication());
                         ttcObject.put("priority", testCaseExecution.getTestCaseObj().getPriority());
-                        ttcObject.put("bugId", new JSONObject("{\"bugId\":\"" + testCaseExecution.getTestCaseObj().getBugID() + "\",\"bugTrackerUrl\":\"" + testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID()) + "\"}"));
                         ttcObject.put("comment", testCaseExecution.getTestCaseObj().getComment());
                         execTab.put(execKey, execution);
                         ttcObject.put("execTab", execTab);
@@ -557,16 +556,16 @@ public class ReadTestCaseExecution extends HttpServlet {
         result.put("ControlMessage", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlMessage()));
         result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecution.getStatus()));
 
-        String bugId;
+        JSONArray bugId = new JSONArray();
         if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
                 && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugID() != null) {
-            bugId = testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID());
-            bugId = new StringBuffer("<a href='")
-                    .append(bugId)
-                    .append("' target='reportBugID'>")
-                    .append(testCaseExecution.getTestCaseObj().getBugID())
-                    .append("</a>")
-                    .toString();
+//            bugId = testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID());
+//            bugId = new StringBuffer("<a href='")
+//                    .append(bugId)
+//                    .append("' target='reportBugID'>")
+//                    .append(testCaseExecution.getTestCaseObj().getBugID())
+//                    .append("</a>")
+//                    .toString();
         } else {
             bugId = testCaseExecution.getTestCaseObj().getBugID();
         }

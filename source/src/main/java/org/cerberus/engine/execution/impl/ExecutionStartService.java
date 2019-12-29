@@ -546,25 +546,26 @@ public class ExecutionStartService implements IExecutionStartService {
          * Stop the browser if executionID is equal to zero (to prevent database
          * instabilities)
          */
-        if (!tCExecution.getManualExecution().equals(TestCaseExecution.MANUAL_Y)) {
-            try {
-                if (tCExecution.getId() == 0) {
-                    LOG.debug("Starting to Stop the Selenium Server.");
-                    this.serverService.stopServer(tCExecution);
-                    LOG.debug("Selenium Server stopped.");
-                    this.serverService.stopRemoteProxy(tCExecution);
-
-                }
-            } catch (Exception ex) {
-                LOG.warn(ex.toString(), ex);
-            }
+        if (tCExecution.getManualExecution().equals(TestCaseExecution.MANUAL_Y)) {
+            // Set execution executor from testcase executor (only for manual execution).
+            tCExecution.setExecutor(tCExecution.getTestCaseObj().getExecutor());
+//            try {
+//                if (tCExecution.getId() == 0) {
+//                    LOG.debug("Starting to Stop the Selenium Server.");
+//                    this.serverService.stopServer(tCExecution);
+//                    LOG.debug("Selenium Server stopped.");
+//                    this.serverService.stopRemoteProxy(tCExecution);
+//
+//                }
+//            } catch (Exception ex) {
+//                LOG.warn(ex.toString(), ex);
+//            }
         }
 
         /**
          * Stop the Cerberus Executor Proxy
          */
-        this.serverService.stopRemoteProxy(tCExecution);
-
+//        this.serverService.stopRemoteProxy(tCExecution);
         /**
          * Feature Flipping. Should be removed when websocket push is fully
          * working

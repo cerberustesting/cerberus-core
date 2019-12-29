@@ -334,10 +334,9 @@ public class AddToExecutionQueueV003 extends HttpServlet {
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String mytimestamp = sdf.format(timestamp);
-        String myuser = request.getRemoteUser();
-        if (myuser == null) {
-            myuser = "";
-        }
+        String myuser = ServletUtil.getUser(request);
+        LOG.debug("User : " + myuser);
+        LOG.debug("Executor : " + executor);
         String reqEnvironments = StringUtil.convertToString(environments, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
         String reqCountries = StringUtil.convertToString(countries, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
         tag = tag
@@ -405,7 +404,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
 
         int nbExe = 0;
         JSONArray jsonArray = new JSONArray();
-        String user = request.getRemoteUser() == null ? "" : request.getRemoteUser();
+        String user = myuser;
         user = StringUtil.isNullOrEmpty(user) && !StringUtil.isNullOrEmpty(executor) ? executor : user;
 
         int nbtestcasenotactive = 0;

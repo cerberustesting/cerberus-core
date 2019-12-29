@@ -118,6 +118,7 @@ function initPage() {
     $("#exportList").change(controlExportRadioButtons);
     loadSummaryTableOptions();
 }
+
 function loadSummaryTableOptions() {
     if (document.queryCommandSupported('Copy')) {
         $("#copyButton").html("Copy to Clipboard");
@@ -202,6 +203,7 @@ function displayExportDataLabel(doc) {
     //$("#exportDataLabel").html(doc.getDocOnline("page_global", "export_data")); //export panel //TODO:FN remove comments after development
     //$("#exportDataButton").html(doc.getDocOnline("page_global", "btn_export")); //button export //TODO:FN remove comments after development
 }
+
 function displayPageLabel(doc) {
     $("#pageTitle").html(doc.getDocLabel("page_reportbytag", "title"));
     $("#title").html(doc.getDocOnline("page_reportbytag", "title"));
@@ -217,7 +219,6 @@ function displayPageLabel(doc) {
     $("#statusLabel").html(doc.getDocLabel("testcase", "Status") + " :");
 }
 
-
 function loadTagFilters(urlTag) {
 
     $("#selectTag").select2(getComboConfigTag());
@@ -227,7 +228,6 @@ function loadTagFilters(urlTag) {
         $("#selectTag").append($option).trigger('change'); // append the option and update Select2
     }
 }
-
 
 function loadAllReports(urlTag) {
 
@@ -500,17 +500,13 @@ function loadLabelReport(data) {
     showLoader($("#reportLabel"));
     $("#progressLabel").empty();
 
-//    var len = data.labelStats.split.length;
-//    $("#reportByLabel").show();
-//    if (len > 0) {
-//        for (var index = 0; index < len; index++) {
-//            //draw a progress bar for each combo retrieved
-//            buildLabelBar(data.labelStats.split[index]);
-//        }
-//    }
-
-    $('#mainTreeExeS').treeview({data: data.labelTreeSTICKER, enableLinks: false, showTags: true, levels: 1});
-    $('#mainTreeExeR').treeview({data: data.labelTreeREQUIREMENT, enableLinks: false, showTags: true, levels: 1});
+    if (data !== undefined) {
+        $("#reportByLabel").show()();
+        $('#mainTreeExeS').treeview({data: data.labelTreeSTICKER, enableLinks: false, showTags: true, levels: 1});
+        $('#mainTreeExeR').treeview({data: data.labelTreeREQUIREMENT, enableLinks: false, showTags: true, levels: 1});
+    } else {
+        $("#reportByLabel").hide();
+    }
 
     hideLoader($("#reportLabel"));
 
@@ -1144,9 +1140,20 @@ function openModalTestCase_FromRepTag(element, test, testcase, mode) {
         if ((!(testcaseobj === undefined)) && ($('#editTestCaseModal').data("Saved"))) {
             // when modal is closed, we check that testcase object exist and has been saved in order to update the comment and bugid on reportbytag screen.
             var newComment = $('#editTestCaseModal').data("testcase").comment;
-            var newBugId = $('#editTestCaseModal').data("testcase").bugId;
             $(element).parent().parent().find('td.comment').text(decodeURI(newComment).replace(/\+/g, ' ').replace(/%2B/g, '+'));
-            $(element).parent().parent().find('td.bugid').text(newBugId);
+
+            var newBugId = $('#editTestCaseModal').data("bug");
+            var link = "";
+            var appurl = $('#editTestCaseModal').data("appURL");
+            $.each(newBugId, function (idx, obj) {
+                link = link + '<a target="_blank" href="' + appurl.replace(/%BUGID%/g, obj.id) + '">' + obj.id;
+                if (obj.desc !== "") {
+                    link = link + " - " + obj.desc;
+                }
+                link = link + "</a><br>";
+            });
+
+            $(element).parent().parent().find('td.bugid').html(link);
         }
     });
 }
@@ -1428,14 +1435,10 @@ function aoColumnsFunc(Columns) {
     aoColumns.push(col);
     var col =
             {
-                "data": "bugId.bugId",
+                "data": "bugId",
+                "bSearchable": false,
                 "mRender": function (data, type, obj) {
-                    if (obj.bugId.bugTrackerUrl !== "") {
-                        var link = '<a target="_blank" href="' + obj.bugId.bugTrackerUrl + '">' + obj.bugId.bugId + "</a>";
-                        return link;
-                    } else {
-                        return obj.bugId.bugId;
-                    }
+                    return getBugIdList(data, obj.AppBugURL);
                 },
                 "sName": "tec.bugId",
                 "sClass": "bugid",
@@ -1456,7 +1459,6 @@ function aoColumnsFunc(Columns) {
 
     return aoColumns;
 }
-
 
 function renderDependency(id, dependencyArray) {
     let text = ""

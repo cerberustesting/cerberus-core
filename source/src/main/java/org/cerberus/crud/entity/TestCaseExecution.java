@@ -1077,6 +1077,11 @@ public class TestCaseExecution {
             result.put("previousExeId", this.getPreviousExeId());
             result.put("previousExeStatus", this.getPreviousExeStatus());
 
+            result.put("usrCreated", this.getUsrCreated());
+            result.put("dateCreated", this.getDateCreated());
+            result.put("usrModif", this.getUsrModif());
+            result.put("dateModif", this.getDateModif());
+
             if (withChilds) {
                 // Looping on ** Step **
                 JSONArray array = new JSONArray();

@@ -188,6 +188,15 @@ td
     padding-top:30px;
 }
 /*margins*/
+.marginTop5{
+    margin-top: 5px;
+}
+.marginTop10{
+    margin-top: 10px;
+}
+.marginTop15{
+    margin-top: 15px;
+}
 .marginTop20{
     margin-top: 20px;
 }

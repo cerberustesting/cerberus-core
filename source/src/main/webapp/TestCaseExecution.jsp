@@ -149,6 +149,7 @@
                                 <li><a data-toggle="tab" href="#tabEnv" id="editTabEnv" name="tabEnv">Environment</a></li>
                                 <li><a data-toggle="tab" href="#tabRobot" id="editTabRobot" name="tabRobot">Robot</a></li>
                                 <li><a data-toggle="tab" href="#tabDep" id="editTabDep" name="tabDep">Dependencies</a></li>
+                                <li><a data-toggle="tab" href="#tabTraca" id="editTabTraca" name="tabTraca">Tracability</a></li>
                             </ul>
                         </div>
                     </div>
@@ -370,7 +371,7 @@
                             <div class="row">
                             </div>
 
-                            <div class="row">                        
+                            <div class="row" id="condrow1"> 
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                     </div>
@@ -394,7 +395,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">                            
+                            <div class="row" id="condrow2">
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="conditionOperTC">conditionOperTC</label>
@@ -577,6 +578,39 @@
                                             <tbody id="depTableBody">
                                             </tbody>
                                         </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="center marginTop25 tab-pane fade" id="tabTraca">
+                            <div id="listPanelTraca">
+                                <div class="row">
+                                    <div class="form-group col-sm-6">
+                                        <label name="lbl_datecreated" for="datecreated">datecreated</label>
+                                        <div>
+                                            <input id="datecreated" name="datecreated" class="form-control" readonly="readonly" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label name="lbl_usrcreated" for="usrcreated">usrcreated</label>
+                                        <div>
+                                            <input id="usrcreated" name="usrcreated" class="form-control" readonly="readonly" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-sm-6">
+                                        <label name="lbl_datemodif" for="datemodif">datemodif</label>
+                                        <div>
+                                            <input id="datemodif" name="datemodif" class="form-control" readonly="readonly" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label name="lbl_usrmodif" for="usrmodif">usrmodif</label>
+                                        <div>
+                                            <input id="usrmodif" name="usrmodif" class="form-control" readonly="readonly" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>

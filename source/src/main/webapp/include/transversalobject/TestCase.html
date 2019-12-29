@@ -209,7 +209,7 @@
                                 </div>
                             </div>
                             <div class="center tab-pane fade marginTop25" id="tabTCBugReport">
-                                <div class="row">
+<!--                                <div class="row">
                                     <div class="form-group form-group-sm col-sm-3">
                                         <label for="bugId" name="bugIdField">Bug ID</label>
                                         <input type="text" class="form-control input-sm" name="bugId" id="bugId"/>
@@ -218,7 +218,25 @@
                                         <label for="link" name="linkField">Link to The Bug</label>
                                         <br><a name="link" id="link" style="display: inline-block;"></a>
                                     </div>
+                                </div>-->
+                                <div class="row">
+                                    <div class="form-group form-group-sm col-sm-12">
+                                        <table class="table table-bordered table-hover nomarginbottom" id="bugTable">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 5%;"></th>
+                                                    <th class="text-center" id="bugidHeader" name="bugidHeader">BugID</th>
+                                                    <th class="text-center" id="descHeader" name="descHeader">Description</th>
+                                                    <th class="text-center" id="linkHeader" name="linkHeader">Link</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="bugTableBody">
+                                            </tbody>
+                                        </table>
+                                        <button type="button" class="btn btn-default marginTop10" id="addBug">Add Bug</button>
+                                    </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="form-group form-group-sm col-sm-12">
                                         <label for="comment" name="commentField">Comment</label>
@@ -231,11 +249,15 @@
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <div class="row">
-                                                <div class="form-group form-group-sm col-sm-6">
+                                                <div class="form-group form-group-sm col-sm-5">
                                                     <label for="implementer" name="implementerField">Implementer</label>
                                                     <input class="form-control input-sm"  id="implementer" name="implementer"/>
                                                 </div>
-                                                <div class="form-group form-group-sm col-sm-6">
+                                                <div class="form-group form-group-sm col-sm-5">
+                                                    <label for="executor" name="executorField">Executor</label>
+                                                    <input class="form-control input-sm"  id="executor" name="executor"/>
+                                                </div>
+                                                <div class="form-group form-group-sm col-sm-2">
                                                     <label for="testcaseversion" name="testcaseversionField">Version</label>
                                                     <input class="form-control input-sm"  id="testcaseversion" name="testcaseversion" readonly="readonly"/>
                                                 </div>

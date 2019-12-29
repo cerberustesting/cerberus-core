@@ -384,7 +384,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             LOG.debug("SQL.param.tag : " + tag);
         }
 
-        List<TestCaseExecutionQueue> testCaseExecutionInQueueList = new ArrayList<TestCaseExecutionQueue>();
+        List<TestCaseExecutionQueue> testCaseExecutionInQueueList = new ArrayList<>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1089,7 +1089,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList<TestCaseExecutionQueue> readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
+    public AnswerList<TestCaseExecutionQueue> readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
         AnswerList<TestCaseExecutionQueue> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<TestCaseExecutionQueue> tceqList = new ArrayList<>();
@@ -1115,10 +1115,6 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             whereClauses.add(applicationClause);
         }
 
-        String projectClause = SqlUtil.generateInClause("tec.project", projectList);
-        if (!StringUtil.isNullOrEmpty(projectClause)) {
-            whereClauses.add(projectClause);
-        }
         //test case status: working, fully_implemented, ...
         String tcsClause = SqlUtil.generateInClause("exq.status", tcstatusList);
         if (!StringUtil.isNullOrEmpty(tcsClause)) {
@@ -1241,11 +1237,6 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             }
             if (applicationList != null) {
                 for (String param : applicationList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (projectList != null) {
-                for (String param : projectList) {
                     preStat.setString(++paramNumber, param);
                 }
             }

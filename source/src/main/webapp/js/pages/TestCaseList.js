@@ -89,6 +89,15 @@ function initMassActionModal() {
             $("#massActionTestCaseModal #massPriority").prop("disabled", true);
         }
     });
+    $("#massActionTestCaseModal #massExecutor").prop("disabled", true);
+    $("#executorCheckbox").prop("checked", false);
+    $("#executorCheckbox").change(function () {
+        if ($(this).prop("checked")) {
+            $("#massActionTestCaseModal #massExecutor").prop("disabled", false);
+        } else {
+            $("#massActionTestCaseModal #massExecutor").prop("disabled", true);
+        }
+    });
 }
 
 function displayPageLabel() {
@@ -902,6 +911,30 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
+            "data": "testCaseVersion",
+            "visible": false,
+            "sName": "tec.testCaseVersion",
+            "title": doc.getDocOnline("testcase", "TestCaseVersion"),
+            "sWidth": "50px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "implementer",
+            "visible": false,
+            "sName": "tec.implementer",
+            "title": doc.getDocOnline("testcase", "Implementer"),
+            "sWidth": "50px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "executor",
+            "visible": false,
+            "sName": "tec.executor",
+            "title": doc.getDocOnline("testcase", "Executor"),
+            "sWidth": "50px",
+            "sDefaultContent": ""
+        },
+        {
             "data": "dateCreated",
             "visible": false,
             "sName": "tec.dateCreated",
@@ -916,14 +949,6 @@ function aoColumnsFunc(countries, tableId) {
             "sName": "tec.usrCreated",
             "title": doc.getDocOnline("transversal", "UsrCreated"),
             "sWidth": "100px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "testCaseVersion",
-            "visible": false,
-            "sName": "tec.testCaseVersion",
-            "title": doc.getDocOnline("testcase", "TestCaseVersion"),
-            "sWidth": "50px",
             "sDefaultContent": ""
         },
         {

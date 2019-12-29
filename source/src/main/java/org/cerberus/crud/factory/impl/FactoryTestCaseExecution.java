@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -41,73 +42,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
 
-    /**
-     *
-     * @param id
-     * @param test
-     * @param testCase
-     * @param description
-     * @param build
-     * @param revision
-     * @param environment
-     * @param country
-     * @param robot
-     * @param robotExecutor
-     * @param robotHost
-     * @param robotPort
-     * @param browser
-     * @param version
-     * @param platform
-     * @param start
-     * @param end
-     * @param controlStatus
-     * @param controlMessage
-     * @param application
-     * @param applicationObj
-     * @param ip
-     * @param url
-     * @param port
-     * @param tag
-     * @param verbose
-     * @param screenshot
-     * @param pageSource
-     * @param seleniumLog
-     * @param synchroneous
-     * @param timeout
-     * @param outputFormat
-     * @param status
-     * @param crbVersion
-     * @param tCase
-     * @param countryEnvParam
-     * @param countryEnvironmentParameters
-     * @param manualURL
-     * @param myHost
-     * @param myContextRoot
-     * @param myLoginRelativeURL
-     * @param myEnvData
-     * @param seleniumIP
-     * @param seleniumPort
-     * @param testCaseStepExecution
-     * @param resultMessage
-     * @param executor
-     * @param numberOfRetries
-     * @param screenSize
-     * @param robotObj
-     * @param robotProvider
-     * @param robotSessionId
-     * @param conditionOper
-     * @param conditionVal1Init
-     * @param conditionVal2Init
-     * @param conditionVal1
-     * @param conditionVal2
-     * @param manualExecution
-     * @param userAgent
-     * @param testCaseVersion
-     * @param testCasePriority
-     * @param system
-     * @param robotDecli
-     * @return
-     */
     @Override
     public TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment, String country,
             String robot, String robotExecutor, String robotHost, String robotPort, String robotDecli,
@@ -118,7 +52,8 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor,
             int numberOfRetries, String screenSize, Robot robotObj, String robotProvider, String robotSessionId,
             String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3,
-            String manualExecution, String userAgent, int testCaseVersion, int testCasePriority, String system) {
+            String manualExecution, String userAgent, int testCaseVersion, int testCasePriority, String system,
+            String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         TestCaseExecution newTce = new TestCaseExecution();
         newTce.setApplicationObj(applicationObj);
         newTce.setApplication(application);
@@ -193,6 +128,11 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setNbExecutions(1);
         newTce.setTestCaseVersion(testCaseVersion);
         newTce.setTestCasePriority(testCasePriority);
+        newTce.setUsrCreated(usrCreated);
+        newTce.setDateCreated(dateCreated);
+        newTce.setUsrModif(usrModif);
+        newTce.setDateModif(dateModif);
+
         return newTce;
     }
 

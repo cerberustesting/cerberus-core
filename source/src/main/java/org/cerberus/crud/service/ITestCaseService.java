@@ -192,7 +192,7 @@ public interface ITestCaseService {
      * @param battery
      * @return
      */
-    List<TestCase> findByCriteria(String[] test, String[] project, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery);
+    List<TestCase> findByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery);
 
     /**
      *
@@ -250,7 +250,6 @@ public interface ITestCaseService {
     /**
      *
      * @param test
-     * @param idProject
      * @param app
      * @param creator
      * @param implementer
@@ -263,7 +262,7 @@ public interface ITestCaseService {
      * @param length
      * @return
      */
-    public AnswerList<TestCase> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
+    public AnswerList<TestCase> readByVarious(String[] test, String[] app, String[] creator, String[] implementer, String[] system,
             String[] campaign, List<Integer> labelid, String[] priority, String[] group, String[] status, int length);
 
     /**

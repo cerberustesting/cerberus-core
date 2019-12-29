@@ -378,7 +378,9 @@ public class ReadTestCase extends AbstractCrudTestCase {
         if (answerTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerTestCase.getItem() != null) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             TestCase tc = (TestCase) answerTestCase.getItem();
+            LOG.debug(tc.getBugID().toString());
             JSONObject response = convertToJSONObject(tc);
+            response.put("bugID", tc.getBugID());
 
             // Country List feed.
             JSONArray countryArray = new JSONArray();
@@ -442,7 +444,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         }
         int length = ParameterParserUtil.parseIntegerParam(request.getParameter("length"), -1);
 
-        AnswerList<TestCase> answer = testCaseService.readByVarious(test, idProject, app, creator, implementer, system, campaign, labelList, priority, group, status, length);
+        AnswerList<TestCase> answer = testCaseService.readByVarious(test, app, creator, implementer, system, campaign, labelList, priority, group, status, length);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (TestCase tc : (List<TestCase>) answer.getDataList()) {
