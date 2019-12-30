@@ -77,7 +77,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     @Override
     public AnswerItem<TestCaseExecutionQueue> readByKey(long queueId, boolean withDep) {
         AnswerItem<TestCaseExecutionQueue> result = testCaseExecutionInQueueDAO.readByKey(queueId);
-        if (withDep && result.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && result.getItem() !=null) {
+        if (withDep && result.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && result.getItem() != null) {
             TestCaseExecutionQueue obj = (TestCaseExecutionQueue) result.getItem();
             AnswerList<TestCaseExecutionQueueDep> depAnsList = testCaseExecutionQueueDepService.readByExeQueueId(queueId);
             if (depAnsList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -443,7 +443,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                 browser, version, platform,
                 start, end, controlStatus, controlMessage, application, applicationObj, "", tag, verbose, screenshot, pageSource,
                 seleniumLog, synchroneous, timeout, outputFormat, "", "", tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
-                myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", "", "", "", "", manualExecution, "", 0, 0, "", null, null, null, null);
+                myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", "", "", "", "", manualExecution, "", 0, 0, "", "", null, "", null);
         result.setQueueID(testCaseExecutionInQueue.getId());
         result.setQueueState(testCaseExecutionInQueue.getState().name());
         result.setId(testCaseExecutionInQueue.getExeId());

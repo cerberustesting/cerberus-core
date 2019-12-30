@@ -177,7 +177,7 @@ public class RunTestCaseV001 extends HttpServlet {
 
             // hidden parameters.
             long idFromQueue = ParameterParserUtil.parseIntegerParam(request.getParameter("IdFromQueue"), 0);
-            String executor = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter(PARAMETER_EXECUTOR), ParameterParserUtil.parseStringParamAndSanitize(request.getRemoteUser(), null));
+            String executor = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter(PARAMETER_EXECUTOR), ParameterParserUtil.parseStringParamAndSanitize(request.getRemoteUser(), ""));
 
             String helpMessage = "\nThis servlet is used to start the execution of a test case.\n"
                     + "Parameter list :\n"

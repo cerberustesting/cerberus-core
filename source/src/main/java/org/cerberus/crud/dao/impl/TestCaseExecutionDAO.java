@@ -1392,8 +1392,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         int testCasePriority = ParameterParserUtil.parseIntegerParam(resultSet.getInt("exe.testCasePriority"), 0);
         String robotProvider = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robotProvider"), "");
         String robotSessionId = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robotSessionId"), "");
-        String usrModif = resultSet.getString("exe.UsrModif");
-        String usrCreated = resultSet.getString("exe.UsrCreated");
+        String usrModif = ParameterParserUtil.parseStringParam(resultSet.getString("exe.UsrModif"), "");
+        String usrCreated = ParameterParserUtil.parseStringParam(resultSet.getString("exe.UsrCreated"), "");
         Timestamp dateCreated = resultSet.getTimestamp("exe.DateCreated");
         Timestamp dateModif = resultSet.getTimestamp("exe.DateModif");
         TestCaseExecution result = factoryTCExecution.create(id, test, testcase, description, build, revision, environment,
