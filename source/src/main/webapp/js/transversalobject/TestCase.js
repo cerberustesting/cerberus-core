@@ -595,6 +595,11 @@ function feedNewTestCaseModal(modalId, defaultTest) {
 
     var formEdit = $('#' + modalId);
 
+    $("#addBug").off("click");
+    $("#addBug").click(function () {
+        addNewBugRow("bugTableBody", undefined);
+    });
+
     appendBuildRevListOnTestCase(getUser().defaultSystem, undefined);
 
     feedTestCaseData(undefined, modalId, "ADD", true, defaultTest);
@@ -954,15 +959,22 @@ function appendbugRow(obj, tablebody, bugTrackerUrl) {
     var table = $("#" + tablebody);
 
     var newbugTrackerUrl = "";
-    if (obj.id !== "" && bugTrackerUrl) {
-        newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", obj.id);
+    if (!isEmpty(bugTrackerUrl)) {
+        if (!isEmpty(obj.id)) {
+            newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", obj.id);
+        }
     }
 
     var row = $("<tr></tr>");
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var bugidInput = $("<input  maxlength=\"10\">").addClass("form-control input-sm").val(obj.id);
     var bugdescInput = $("<input  maxlength=\"50\">").addClass("form-control input-sm").val(obj.desc);
-    var buglinkText = $("<a></a>").prop("href", newbugTrackerUrl).text(obj.id).prop("target", "_blank");
+    if (newbugTrackerUrl !== "") {
+        var buglinkText = $("<a></a>").text(obj.id);
+        buglinkText.prop("href", newbugTrackerUrl).prop("target", "_blank");
+    } else {
+        var buglinkText = $("<div></div>").text(obj.id);
+    }
     var deleteData = $("<td></td>").append(deleteBtn);
     var bugidData = $("<td></td>").append(bugidInput);
     var bugdescData = $("<td></td>").append(bugdescInput);

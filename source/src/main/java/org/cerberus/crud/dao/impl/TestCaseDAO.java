@@ -1962,8 +1962,8 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append("`BugID`, `TargetBuild`, `TargetRev`, `UsrCreated`, ")
                 .append("`Implementer`, `Executor`, `function`, `activeQA`, `activeUAT`, `activePROD`, `useragent`, `screenSize`, ")
                 .append("`conditionOper`, `conditionVal1`, `conditionVal2`, `conditionVal3`, `testCaseVersion`) ")
-                .append("VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ")
-                .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ");
+                .append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ")
+                .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {

@@ -129,10 +129,10 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             tc.setGroup(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), tc.getGroup(), charset));
             tc.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), tc.getStatus(), charset));
             tc.setDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("shortDesc"), tc.getDescription(), charset));
-            String bugIDString = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugId"), tc.getBugID().toString(), charset);
+            String bug = tc.getBugID() == null ? "" : tc.getBugID().toString();
+            String bugIDString = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugId"), bug, charset);
             JSONArray bugID = new JSONArray();
             try {
-                LOG.debug(bugIDString);
                 bugID = new JSONArray(bugIDString);
             } catch (JSONException ex) {
                 LOG.error("Could not convert '" + bugIDString + "' to JSONArray.", ex);
