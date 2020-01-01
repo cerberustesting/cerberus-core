@@ -179,7 +179,6 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" and (tec.`testcase` like ?");
             searchSQL.append(" or tec.`test` like ?");
             searchSQL.append(" or tec.`application` like ?");
-            searchSQL.append(" or tec.`project` like ?");
             searchSQL.append(" or tec.`usrCreated` like ?");
             searchSQL.append(" or tec.`usrModif` like ?");
             searchSQL.append(" or tec.`tcactive` like ?");
@@ -238,7 +237,6 @@ public class TestCaseDAO implements ITestCaseDAO {
                     preStat.setString(i++, test);
                 }
                 if (!Strings.isNullOrEmpty(searchTerm)) {
-                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -1725,7 +1723,6 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" and (tec.`testcase` like ?");
             searchSQL.append(" or tec.`test` like ?");
             searchSQL.append(" or tec.`application` like ?");
-            searchSQL.append(" or tec.`project` like ?");
             searchSQL.append(" or tec.`usrCreated` like ?");
             searchSQL.append(" or tec.`usrModif` like ?");
             searchSQL.append(" or tec.`tcactive` like ?");
@@ -1771,7 +1768,6 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, test);
             }
             if (!Strings.isNullOrEmpty(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
