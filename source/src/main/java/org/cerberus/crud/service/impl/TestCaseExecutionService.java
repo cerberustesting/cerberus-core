@@ -391,7 +391,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
                 testCaseExecutionsList.put(key, testCaseExecution);
             }
         }
-        List<TestCaseExecution> result = new ArrayList<TestCaseExecution>(testCaseExecutionsList.values());
+        List<TestCaseExecution> result = new ArrayList<>(testCaseExecutionsList.values());
 
         return result;
     }

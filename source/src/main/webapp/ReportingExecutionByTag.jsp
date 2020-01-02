@@ -134,18 +134,43 @@
                             <div class="row">
                                 <div class="col-xs-8" id="BugReportDetailTable">
                                     <table id="bugTable" name="bugTable" class="table table-hover display">
-                                        <thead id="bugTableHeader">
+                                        <thead id="bugTableReportHeader">
                                             <tr>
                                                 <td style="text-align: center">Bug</td>
-                                                <td style="text-align: center">Last Exe</td>
+                                                <td style="text-align: center">Test Folder</td>
                                                 <td style="text-align: center">Test Case</td>
-                                                <td style="text-align: center">#Exe</td>
+                                                <td style="text-align: center">Status</td>
                                             </tr>                                    
                                         </thead>
-                                        <tbody id="bugTableBody"></tbody>
+                                        <tbody id="bugTableReportBody"></tbody>
                                     </table>
                                 </div>
                                 <div class="col-xs-4" id="BugReportTable"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default" id="ManualReportByExecutorPanel">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#ManualReportByExecutor">
+                            <span class="fa fa-pie-chart fa-fw"></span>
+                            <label id="bugStatus">Manual Executor Status</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        </div>
+                        <div class="panel-body collapse in" id="ManualReportByExecutor">
+                            <div class="row">
+                                <div class="col-xs-8" id="ManualReportDetailTable">
+                                    <table id="bugTable" name="bugTable" class="table table-hover display">
+                                        <thead id="bugTableHeader">
+                                            <tr>
+                                                <td style="text-align: center">Executor</td>
+                                                <td style="text-align: center">Total</td>
+                                                <td style="text-align: center">Progress %</td>
+                                                <td style="text-align: center">Still to do</td>
+                                            </tr>                                    
+                                        </thead>
+                                        <tbody id="manualTableBody"></tbody>
+                                    </table>
+                                </div>
+                                <div class="col-xs-4" id="ManualReportSum"></div>
                             </div>
                         </div>
                     </div>

@@ -216,6 +216,9 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         result.put("Country", JavaScriptUtils.javaScriptEscape(testCaseExecution.getCountry()));
         result.put("RobotDecli", JavaScriptUtils.javaScriptEscape(testCaseExecution.getRobotDecli()));
         result.put("ManualExecution", JavaScriptUtils.javaScriptEscape(testCaseExecution.getManualExecution()));
+        if (testCaseExecution.getExecutor() != null) {
+            result.put("Executor", JavaScriptUtils.javaScriptEscape(testCaseExecution.getExecutor()));
+        }
         result.put("ControlStatus", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlStatus()));
         result.put("ControlMessage", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlMessage()));
         result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecution.getStatus()));
@@ -334,18 +337,34 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         execTab.put(execKey, executionJSON);
                         ttcObject.put("execTab", execTab);
                         // Nb Total Executions
-                        Integer nbExeTot = (Integer) ttcObject.get("NbExecutionsTotal");
-                        nbExeTot += testCaseExecution.getNbExecutions() - 1;
-                        ttcObject.put("NbExecutionsTotal", nbExeTot);
+                        Integer nbExeTot = (Integer) ttcObject.get("NbExe");
+                        nbExeTot += testCaseExecution.getNbExecutions();
+                        ttcObject.put("NbExe", nbExeTot);
+                        // Nb Total Executions
+                        Integer nbRetryTot = (Integer) ttcObject.get("NbRetry");
+                        nbRetryTot += testCaseExecution.getNbExecutions() - 1;
+                        ttcObject.put("NbRetry", nbRetryTot);
                         // Nb Total Usefull Executions
-                        Integer nbExeUsefullTot = (Integer) ttcObject.get("NbExecutionsUsefullTotal");
+                        Integer nbExeUsefullTot = (Integer) ttcObject.get("NbExeUsefull");
                         nbExeUsefullTot++;
-                        ttcObject.put("NbExecutionsUsefullTotal", nbExeUsefullTot);
+                        ttcObject.put("NbExeUsefull", nbExeUsefullTot);
                         // Nb Total Usefull Executions in QU or OK status
-                        if (testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_QU) || testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_OK)) {
-                            Integer nbExeWithNothingToDoTot = (Integer) ttcObject.get("NbExecutionsUsefullUselessTotal");
-                            nbExeWithNothingToDoTot++;
-                            ttcObject.put("NbExecutionsUsefullUselessTotal", nbExeWithNothingToDoTot);
+                        Integer nbExeTmp;
+                        if (isToHide(controlStatus)) {
+                            nbExeTmp = (Integer) ttcObject.get("NbExeUsefullToHide");
+                            ttcObject.put("NbExeUsefullToHide", ++nbExeTmp);
+                        }
+                        if (isNotBug(controlStatus)) {
+                            nbExeTmp = (Integer) ttcObject.get("NbExeUsefullOK");
+                            ttcObject.put("NbExeUsefullOK", ++nbExeTmp);
+                        }
+                        if (isBug(controlStatus)) {
+                            nbExeTmp = (Integer) ttcObject.get("NbExeUsefullHasBug");
+                            ttcObject.put("NbExeUsefullHasBug", ++nbExeTmp);
+                        }
+                        if (isPending(controlStatus)) {
+                            nbExeTmp = (Integer) ttcObject.get("NbExeUsefullIsPending");
+                            ttcObject.put("NbExeUsefullIsPending", ++nbExeTmp);
                         }
                     } else {
                         // We add a new testcase entry (with The current execution).
@@ -375,16 +394,37 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         ttcObject.put("testExist", testExist);
 
                         // Adding nb of execution on retry.
-                        ttcObject.put("NbExecutionsTotal", (testCaseExecution.getNbExecutions() - 1));
+                        ttcObject.put("NbRetry", (testCaseExecution.getNbExecutions() - 1));
+
+                        // Adding nb of execution on retry.
+                        ttcObject.put("NbExe", (testCaseExecution.getNbExecutions()));
 
                         // Nb Total Usefull Executions
-                        ttcObject.put("NbExecutionsUsefullTotal", 1);
+                        ttcObject.put("NbExeUsefull", 1);
 
                         // Nb Total Usefull Executions in QU or OK status
-                        if (testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_QU) || testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_OK)) {
-                            ttcObject.put("NbExecutionsUsefullUselessTotal", 1);
+                        if (isToHide(controlStatus)) {
+                            ttcObject.put("NbExeUsefullToHide", 1);
                         } else {
-                            ttcObject.put("NbExecutionsUsefullUselessTotal", 0);
+                            ttcObject.put("NbExeUsefullToHide", 0);
+                        }
+                        // Nb Total Usefull Executions in QU or OK status
+                        if (isNotBug(controlStatus)) {
+                            ttcObject.put("NbExeUsefullOK", 1);
+                        } else {
+                            ttcObject.put("NbExeUsefullOK", 0);
+                        }
+                        // Nb Total Usefull Executions in QU or OK status
+                        if (isBug(controlStatus)) {
+                            ttcObject.put("NbExeUsefullHasBug", 1);
+                        } else {
+                            ttcObject.put("NbExeUsefullHasBug", 0);
+                        }
+                        // Nb Total Usefull Executions in QU or OK status
+                        if (isPending(controlStatus)) {
+                            ttcObject.put("NbExeUsefullIsPending", 1);
+                        } else {
+                            ttcObject.put("NbExeUsefullIsPending", 0);
                         }
 
                         execTab.put(execKey, executionJSON);
@@ -419,6 +459,71 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
                 }
 
+                TreeMap<String, JSONObject> bugMap = new TreeMap<>();
+                HashMap<String, Boolean> bugMapUniq = new HashMap<>();
+                int nbTOCLEAN = 0;
+                int nbPENDING = 0;
+                int nbTOREPORT = 0;
+                // building Bug Status.
+                for (Map.Entry<String, JSONObject> entry : ttc.entrySet()) {
+                    JSONObject val = entry.getValue();
+                    JSONArray bugA = new JSONArray(val.getString("bugId"));
+                    int nbBug = bugA.length();
+                    if (nbBug > 0) {
+                        for (int i = 0; i < nbBug; i++) {
+                            bugMapUniq.put(bugA.getJSONObject(i).getString("id"), true);
+                            String key = bugA.getJSONObject(i).getString("id") + "#" + val.getString("test") + "#" + val.getString("testCase");
+
+                            if (bugMap.containsKey(key)) {
+                                JSONObject bugO = bugMap.get(key);
+                            } else {
+                                JSONObject bugO = new JSONObject();
+                                bugO.put("test", val.getString("test"));
+                                bugO.put("testCase", val.getString("testCase"));
+                                bugO.put("bug", bugA.getJSONObject(i).getString("id"));
+                                bugO.put("NbExeUsefullHasBug", val.getInt("NbExeUsefullHasBug"));
+                                bugO.put("testExist", val.getBoolean("testExist"));
+                                bugO.put("NbExeUsefull", val.getInt("NbExeUsefull"));
+                                bugO.put("NbExeUsefullIsPending", val.getInt("NbExeUsefullIsPending"));
+                                if (val.getInt("NbExeUsefullIsPending") > 0) {
+                                    bugO.put("status", "STILL RUNNING...");
+                                    nbPENDING++;
+                                } else {
+                                    if (val.getInt("NbExeUsefull") == val.getInt("NbExeUsefullOK")) {
+                                        bugO.put("status", "TO CLEAN");
+                                        nbTOCLEAN++;
+                                    }
+
+                                }
+                                bugMap.put(key, bugO);
+                            }
+                        }
+                    } else {
+                        if (val.getInt("NbExeUsefullHasBug") > 0) {
+                            String key = val.getString("test") + "#" + val.getString("testCase");
+
+                            JSONObject bugO = new JSONObject();
+                            bugO.put("test", val.getString("test"));
+                            bugO.put("testCase", val.getString("testCase"));
+                            bugO.put("bug", "");
+                            bugO.put("NbExeUsefullHasBug", val.getInt("NbExeUsefullHasBug"));
+                            bugO.put("testExist", val.getBoolean("testExist"));
+                            bugO.put("NbExeUsefull", val.getInt("NbExeUsefull"));
+                            bugO.put("NbExeUsefullIsPending", val.getInt("NbExeUsefullIsPending"));
+                            bugO.put("status", "TO REPORT...");
+                            nbTOREPORT++;
+                            bugMap.put(key, bugO);
+                        }
+                    }
+                }
+                JSONObject bugRes = new JSONObject();
+                bugRes.put("bugSummary", bugMap.values());
+                bugRes.put("nbTOREPORT", nbTOREPORT);
+                bugRes.put("nbPENDING", nbPENDING);
+                bugRes.put("nbTOCLEAN", nbTOCLEAN);
+                bugRes.put("nbBugs", bugMapUniq.size());
+                testCaseExecutionTable.put("bugContent", bugRes);
+
                 // Now loading only necessary records to final structure (filtering testcase that have all usefull executions OK of QU).
                 if (fullList) {
                     testCaseExecutionTable.put("tableContent", ttc.values());
@@ -429,7 +534,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                     for (Map.Entry<String, JSONObject> entry : ttc.entrySet()) {
                         String key = entry.getKey();
                         JSONObject val = entry.getValue();
-                        if ((val.getInt("NbExecutionsUsefullUselessTotal") != val.getInt("NbExecutionsUsefullTotal")) // One of the execution of the test case has a status <> QU and OK
+                        if ((val.getInt("NbExeUsefullToHide") != val.getInt("NbExeUsefull")) // One of the execution of the test case has a status <> QU and OK
                                 || (val.getJSONArray("bugId").length() > 0) // At least 1 bug has been assigned to the testcase.
                                 ) {
                             newttc.put(key, val);
@@ -451,10 +556,25 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         return testCaseExecutionTable;
     }
 
+    private boolean isToHide(String controlStatus) {
+        return (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_QU) || controlStatus.equals(TestCaseExecution.CONTROLSTATUS_OK));
+    }
+
+    private boolean isPending(String controlStatus) {
+        return (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_QU) || controlStatus.equals(TestCaseExecution.CONTROLSTATUS_WE) || controlStatus.equals(TestCaseExecution.CONTROLSTATUS_PE));
+    }
+
+    private boolean isBug(String controlStatus) {
+        return (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_FA) || controlStatus.equals(TestCaseExecution.CONTROLSTATUS_KO));
+    }
+
+    private boolean isNotBug(String controlStatus) {
+        return (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_OK) || controlStatus.equals(TestCaseExecution.CONTROLSTATUS_QE));
+    }
+
     private JSONObject generateManualExecutionTable(ApplicationContext appContext, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter) {
         JSONObject manualExecutionTable = new JSONObject();
         HashMap<String, JSONObject> manualExecutions = new HashMap<>();
-        HashMap<String, JSONObject> manualExecutionsWE = new HashMap<>();
         int totalManualExecution = 0;
         int totalManualWEExecution = 0;
 
@@ -473,8 +593,6 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         if (!StringUtil.isNullOrEmpty(testCaseExecution.getExecutor())) {
                             executor = testCaseExecution.getExecutor();
                         }
-                        LOG.debug(executor + " - " + testCaseExecution.getId() + " - " + controlStatus);
-                        LOG.debug(manualExecutions.get(executor));
 
                         if (manualExecutions.containsKey(executor)) {
                             JSONObject executorObj = manualExecutions.get(executor);
@@ -486,6 +604,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                             }
                             executorObj.put("executionList", array);
                             executorObj.put("executionWEList", arrayWE);
+                            executorObj.put("executor", executor);
                             manualExecutions.put(executor, executorObj);
                         } else {
                             JSONObject executorObj = new JSONObject();
@@ -497,6 +616,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                             }
                             executorObj.put("executionList", array);
                             executorObj.put("executionWEList", arrayWE);
+                            executorObj.put("executor", executor);
                             manualExecutions.put(executor, executorObj);
                         }
 
@@ -507,7 +627,13 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
                 }
 
-                manualExecutionTable.put("perExecutor", manualExecutions);
+                JSONArray array = new JSONArray();
+                for (Map.Entry<String, JSONObject> entry : manualExecutions.entrySet()) {
+                    Object key = entry.getKey();
+                    JSONObject val = entry.getValue();
+                    array.put(val);
+                }
+                manualExecutionTable.put("perExecutor", array);
                 manualExecutionTable.put("totalExecution", totalManualExecution);
                 manualExecutionTable.put("totalWEExecution", totalManualWEExecution);
 
