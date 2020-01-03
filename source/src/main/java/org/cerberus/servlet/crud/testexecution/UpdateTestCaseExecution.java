@@ -113,11 +113,13 @@ public class UpdateTestCaseExecution extends HttpServlet {
 
         String returnMessage = testCaseJson.getString("returnMessage");
         String returnCodeOfTestCase = testCaseJson.getString("controlstatus");
+        String executor = testCaseJson.getString("executor");
 
         //get testCaseExecution
         TestCaseExecution executionToUpdate = testCaseExecutionService.findTCExecutionByKey(executionId);
         executionToUpdate.setControlStatus(returnCodeOfTestCase);
         executionToUpdate.setControlMessage(returnMessage);
+        executionToUpdate.setExecutor(executor);
         executionToUpdate.setUsrModif(user);
         testCaseExecutionService.updateTCExecution(executionToUpdate);
     }

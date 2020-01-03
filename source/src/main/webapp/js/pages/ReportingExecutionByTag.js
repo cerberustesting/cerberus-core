@@ -578,7 +578,7 @@ function loadBugReportByStatusTable(data, selectTag) {
 
 // add a panel for the total
 
-        $("#BugReportTable").append(data.nbBugs + " bugs<br>" + data.nbTOCLEAN + " TestCases / Bugs to Clean<br>"+ data.nbPENDING + " TestCases / Bugs Still Running<br>"+ data.nbTOREPORT + " TestCases / Bugs To report<br>");
+        $("#BugReportTable").append(data.nbBugs + " bugs<br>" + data.nbTOCLEAN + " TestCases / Bugs to Clean<br>" + data.nbPENDING + " TestCases / Bugs Still Running<br>" + data.nbTOREPORT + " TestCases / Bugs To report<br>");
 
 
 //        if (data.totalBugToReport > 0) {
@@ -643,7 +643,11 @@ function loadManualReportByExecutorTable(data, selectTag) {
         //calculate totaltest nb
         for (var index = 0; index < len; index++) {
             var tr = $('<tr>');
-            tr.append($('<td>').html(data.perExecutor[index].executor).css("text-align", "center"));
+            if (getUser().login === data.perExecutor[index].executor) {
+                tr.append($('<td>').html(data.perExecutor[index].executor).css("text-align", "center").css("background-color", "yellow"));
+            } else {
+                tr.append($('<td>').html(data.perExecutor[index].executor).css("text-align", "center"));
+            }
             tr.append($('<td>').text(data.perExecutor[index].executionList.length).css("text-align", "center"));
             var per = (data.perExecutor[index].executionList.length - data.perExecutor[index].executionWEList.length) / data.perExecutor[index].executionList.length;
             tr.append($('<td>').html(Math.round(((per) * 100) * 100) / 100 + '%').css("text-align", "center"));
@@ -660,7 +664,8 @@ function loadManualReportByExecutorTable(data, selectTag) {
 
     var per = (data.totalExecution - data.totalWEExecution) / data.totalExecution;
     var done = (data.totalExecution - data.totalWEExecution);
-    var buildBar = '<div class="progress-bar statusBLACK"  role="progressbar" style="width:' + Math.round(((per) * 100) * 100) / 100 + '%">' + Math.round(((per) * 100) * 100) / 100 + '% (' + done + ' / ' + data.totalExecution + ')';
+    var buildBar = '<div class="progress-bar statusBLACK"  role="progressbar" style="width:' + Math.round(((per) * 100) * 100) / 100 + '%">' + Math.round(((per) * 100) * 100) / 100 + '%</div>';
+    buildBar += '<br><div> ' + Math.round(((per) * 100) * 100) / 100 + '% (' + done + ' / ' + data.totalExecution + ')</div>';
     $("#ManualReportSum").html(buildBar);
 
     hideLoader($("#ManualReportByExecutor"));
@@ -1436,7 +1441,11 @@ function aoColumnsFunc(Columns) {
                         cell += ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + data.ID + '\')">';
                     }
                     cell += '<span class="' + glyphClass.glyph + ' marginRight5"></span>';
-                    cell += '<span name="tcResult">' + data.ControlStatus + '</span>';
+                    if (getUser().login === data.Executor) {
+                        cell += '<span style="color:yellow" name="tcResult">' + data.ControlStatus + '</span>';
+                    } else {
+                        cell += '<span name="tcResult">' + data.ControlStatus + '</span>';
+                    }
                     if (data.QueueState !== undefined) {
                         cell += '<br><span style="font-size: xx-small">' + data.QueueState + " " + '</span>';
                     }

@@ -5,9 +5,12 @@
 *Improvements / New features*
 [square]
 * In case 2 different use Step has some same property name, the Property will now be taken from the 1 Step and not the last one. #1907
-* Improved and simplify manual execution screen (status and messages can be change anytime) #2052
+* Improved and simplify manual execution screen (status, messages and executor can be change anytime) #2052
+* Added autocompletion on implementer and executor at testcase level and executor at execution level
+* Highlight my own manual execution that I am responsible for as executor on ReportByTag screen.
 * Hide conditions in GUI (at step, action and control level) when operator is 'always'
 * ReportByTag now only display Test Case that require some analysis to be done (ie : are not fully OK or QU or have a bugId defined at test case level). That avoid display lines where nothing needs to be analyzed. That can be changed with a flag near the refresh button.
+* More than 1 bug can be assigned to  testcase. #1926 #1946
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

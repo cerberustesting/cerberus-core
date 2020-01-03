@@ -95,6 +95,7 @@ function getSubDataLabel(type) {
  * @param {String} defaultValue [optional] value to be selected in combo.
  * @param {String} addValue1 [optional] Adds a value on top of the normal List.
  * @param {String} asyn [optional] Do a async ajax request. Default: true
+ * @param {String} funcAfterLoad [optional] Function to call after load.
  * @returns {void}
  */
 function displayInvariantList(selectName, idName, forceReload, defaultValue, addValue1, asyn, funcAfterLoad) {
@@ -154,7 +155,6 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
             $("[name='" + selectName + "']").val(defaultValue);
         }
         if (funcAfterLoad !== undefined) {
-            console.info("toto");
             funcAfterLoad();
         }
     }
@@ -511,6 +511,62 @@ function displayUserList(selectName) {
         }
     });
 }
+
+
+/**
+ * Method that return a list of value retrieved from the invariant list
+ * @param {String} forceReload true in order to force the reload of list from database.
+ * @param {String} addValue1 [optional] Adds a value on top of the normal List.
+ * @param {String} asyn [optional] Do a async ajax request. Default: true
+ * @returns {array}
+ */
+function getUserArray(forceReload, addValue1, asyn) {
+    var result = [];
+    // Adding the specific value when defined.
+    if (addValue1 !== undefined) {
+        result.add(addValue1);
+    }
+
+    if (forceReload === undefined) {
+        forceReload = true;
+    }
+
+    var async = true;
+    if (asyn !== undefined) {
+        async = asyn;
+    }
+
+    var cacheEntryName = "USERLIST";
+    if (forceReload) {
+        sessionStorage.removeItem(cacheEntryName);
+    }
+    var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
+
+    if (list === null) {
+        $.ajax({
+            url: "ReadUserPublic",
+            async: async,
+            success: function(data) {
+                list = data.contentTable;
+                sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
+                for (var index = 0; index < list.length; index++) {
+                    var item = list[index].login;
+                    result.push(item);
+                }
+            }
+        });
+    } else {
+        for (var index = 0; index < list.length; index++) {
+            var item = list[index].login;
+
+            result.push(item);
+        }
+    }
+
+    return result;
+}
+
+
 
 /**
  * Auxiliary method that retrieves a list containing the values that belong to the invariant that matches the provided idname.

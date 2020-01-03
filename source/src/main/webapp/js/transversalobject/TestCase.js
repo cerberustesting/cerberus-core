@@ -63,6 +63,14 @@ function initModalTestCase() {
         selector: ".wysiwyg"
     });
 
+    var availableUserAgent = getUserArray(true);
+    $("#editTestCaseModal input#executor").autocomplete({
+        source: availableUserAgent
+    });
+    $("#editTestCaseModal input#implementer").autocomplete({
+        source: availableUserAgent
+    });
+
     $("[name='testField']").html(doc.getDocOnline("test", "Test"));
     $("[name='testCaseField']").html(doc.getDocOnline("testcase", "TestCase"));
     $("[name='lastModifierField']").html(doc.getDocOnline("testcase", "LastModifier"));

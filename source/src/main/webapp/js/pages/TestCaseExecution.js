@@ -28,6 +28,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
         displayFooter(doc);
         displayPageLabel(doc);
 
+        var availableUserAgent = getUserArray(true);
+        $("#tabDetail input#executor").autocomplete({
+            source: availableUserAgent
+        });
+
         var executionId = GetURLParameter("executionId");
         var executionQueueId = GetURLParameter("executionQueueId");
         paramActivatewebsocketpush = getParameterString("cerberus_featureflipping_activatewebsocketpush", "", true);
@@ -607,6 +612,10 @@ function setConfigPanel(data) {
     configPanel.find("input#platform").val(data.platform);
     configPanel.find("input#revision").val(data.revision);
     configPanel.find("input#cerberusversion").val(data.crbVersion);
+    if (isTheExecutionManual) {
+        $("input#executor").prop("readonly", false);
+    }
+
     configPanel.find("input#executor").val(data.executor);
     configPanel.find("input#screenSize").val(data.screenSize);
     configPanel.find("input#userAgent").val(data.userAgent);
@@ -2859,6 +2868,7 @@ function saveExecution(data) {
 
     var rMessage = $("#returnMessageEx").val();
     var rCode = $("#controlstatus").html();
+    var executor = $("#tabDetail input#executor").val();
 
     var saveProp = function () {
         showLoaderInModal('#propertiesModal');
@@ -2872,6 +2882,7 @@ function saveExecution(data) {
             data: JSON.stringify({
                 executionId: GetURLParameter("executionId"),
                 controlstatus: rCode,
+                executor: executor,
                 returnMessage: rMessage,
                 stepArray: getScriptInformationOfStep()
             }),
