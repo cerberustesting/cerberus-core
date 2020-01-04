@@ -664,8 +664,8 @@ function loadManualReportByExecutorTable(data, selectTag) {
 
     var per = (data.totalExecution - data.totalWEExecution) / data.totalExecution;
     var done = (data.totalExecution - data.totalWEExecution);
-    var buildBar = '<div class="progress-bar statusBLACK"  role="progressbar" style="width:' + Math.round(((per) * 100) * 100) / 100 + '%">' + Math.round(((per) * 100) * 100) / 100 + '%</div>';
-    buildBar += '<br><div> ' + Math.round(((per) * 100) * 100) / 100 + '% (' + done + ' / ' + data.totalExecution + ')</div>';
+    var buildBar = '<div class="progress"><div class="progress-bar statusBLACK"  role="progressbar" style="width:' + Math.round(((per) * 100) * 100) / 100 + '%">' + Math.round(((per) * 100) * 100) / 100 + '%</div></div>';
+    buildBar += '<div style="text-align: center;"> ' + Math.round(((per) * 100) * 100) / 100 + '% (' + done + ' / ' + data.totalExecution + ')</div>';
     $("#ManualReportSum").html(buildBar);
 
     hideLoader($("#ManualReportByExecutor"));
