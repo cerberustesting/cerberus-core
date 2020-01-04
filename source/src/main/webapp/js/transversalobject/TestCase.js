@@ -63,12 +63,12 @@ function initModalTestCase() {
         selector: ".wysiwyg"
     });
 
-    var availableUserAgent = getUserArray(true);
+    var availableUsers = getUserArray(true);
     $("#editTestCaseModal input#executor").autocomplete({
-        source: availableUserAgent
+        source: availableUsers
     });
     $("#editTestCaseModal input#implementer").autocomplete({
-        source: availableUserAgent
+        source: availableUsers
     });
 
     $("[name='testField']").html(doc.getDocOnline("test", "Test"));
@@ -141,7 +141,7 @@ function initModalTestCase() {
 
     var availableUserAgent = getInvariantArray("USERAGENT", false);
     $('#editTestCaseModal').find("#userAgent").autocomplete({
-        source: availableUserAgent
+        source: availableUsers
     });
     var availableScreenSize = getInvariantArray("SCREENSIZE", false);
     $('#editTestCaseModal').find("#screenSize").autocomplete({

@@ -50,6 +50,12 @@ function initPage() {
         'placement': 'auto',
         'container': 'body'}
     );
+    
+    var availableUsers = getUserArray(true);
+    $("input#massExecutor").autocomplete({
+        source: availableUsers
+    });
+    
 }
 
 function initMassActionModal() {

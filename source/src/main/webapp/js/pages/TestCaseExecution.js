@@ -28,9 +28,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
         displayFooter(doc);
         displayPageLabel(doc);
 
-        var availableUserAgent = getUserArray(true);
+        var availableUsers = getUserArray(true);
         $("#tabDetail input#executor").autocomplete({
-            source: availableUserAgent
+            source: availableUsers
         });
 
         var executionId = GetURLParameter("executionId");
