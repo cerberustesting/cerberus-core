@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -52,7 +55,10 @@ import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -1431,22 +1437,47 @@ public class ControlService implements IControlService {
         if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
 
             MessageEvent mes;
+            String url = "";
+            // Control is made forcing the / at the beginning of URL. getCurrentUrl from Selenium
+            //  already have that control but value1 is specified by user and could miss it.
+            final String controlUrl = StringUtil.addPrefixIfNotAlready(value1, "/");
+            url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
+
             try {
-                String url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
-                // Control is made forcing the / at the beginning of URL. getCurrentUrl from Selenium
-                //  already have that control but value1 is specified by user and could miss it.
-                String controlUrl = StringUtil.addPrefixIfNotAlready(value1, "/");
-                if (url.equalsIgnoreCase(controlUrl)) {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_URL);
-                    mes.setDescription(mes.getDescription().replace("%STRING1%", url));
-                    mes.setDescription(mes.getDescription().replace("%STRING2%", controlUrl));
-                    return mes;
-                } else {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL);
-                    mes.setDescription(mes.getDescription().replace("%STRING1%", url));
-                    mes.setDescription(mes.getDescription().replace("%STRING2%", controlUrl));
-                    return mes;
-                }
+                LOG.debug("Before wait" + System.currentTimeMillis());
+                WebDriverWait wait = new WebDriverWait(tCExecution.getSession().getDriver(),
+                        TimeUnit.MILLISECONDS.toSeconds(tCExecution.getSession().getCerberus_selenium_wait_element()));
+
+                //Wait until the url is the expected one
+                wait.until(new Function<WebDriver, Boolean>() {
+
+                    String value;
+                    String expectedValue = controlUrl;
+
+                    public Boolean apply(WebDriver driver) {
+                        try {
+                            this.value = webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
+                            LOG.debug("Get new url : " + value + " >> Expected url : " + expectedValue);
+                        } catch (CerberusEventException ex) {
+                            java.util.logging.Logger.getLogger(ControlService.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        return value.equalsIgnoreCase(expectedValue);
+                    }
+                });
+
+                LOG.debug("After wait" + System.currentTimeMillis());
+                url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
+
+                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_URL);
+                mes.setDescription(mes.getDescription().replace("%STRING1%", url));
+                mes.setDescription(mes.getDescription().replace("%STRING2%", controlUrl));
+                return mes;
+
+            } catch (TimeoutException exception) {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL);
+                mes.setDescription(mes.getDescription().replace("%STRING1%", url));
+                mes.setDescription(mes.getDescription().replace("%STRING2%", controlUrl));
+                return mes;
             } catch (WebDriverException exception) {
                 return parseWebDriverException(exception);
             }
@@ -1466,21 +1497,41 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
 
+            String pageTitle = this.webdriverService.getTitle(tCExecution.getSession());
+
             try {
-                String pageTitle = this.webdriverService.getTitle(tCExecution.getSession());
-                if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? pageTitle.equals(title) : pageTitle.equalsIgnoreCase(title)) {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TITLE);
-                    mes.setDescription(mes.getDescription().replace("%STRING1%", pageTitle));
-                    mes.setDescription(mes.getDescription().replace("%STRING2%", title));
-                    mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
-                    return mes;
-                } else {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TITLE);
-                    mes.setDescription(mes.getDescription().replace("%STRING1%", pageTitle));
-                    mes.setDescription(mes.getDescription().replace("%STRING2%", title));
-                    mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
-                    return mes;
-                }
+                LOG.debug("Before wait" + System.currentTimeMillis());
+                WebDriverWait wait = new WebDriverWait(tCExecution.getSession().getDriver(),
+                        TimeUnit.MILLISECONDS.toSeconds(tCExecution.getSession().getCerberus_selenium_wait_element()));
+
+                //Wait until the title is the expected one
+                wait.until(new Function<WebDriver, Boolean>() {
+
+                    String value;
+                    String expectedValue = title;
+
+                    public Boolean apply(WebDriver driver) {
+                        this.value = webdriverService.getTitle(tCExecution.getSession());
+                        LOG.debug("Get new title : " + value + " >> Expected title : " + expectedValue);
+                        return ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? expectedValue.equals(value) : expectedValue.equalsIgnoreCase(value);
+                    }
+                });
+                LOG.debug("After wait" + System.currentTimeMillis());
+                
+                pageTitle = this.webdriverService.getTitle(tCExecution.getSession());
+
+                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TITLE);
+                mes.setDescription(mes.getDescription().replace("%STRING1%", pageTitle));
+                mes.setDescription(mes.getDescription().replace("%STRING2%", title));
+                mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
+                return mes;
+
+            } catch (TimeoutException exception) {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TITLE);
+                mes.setDescription(mes.getDescription().replace("%STRING1%", pageTitle));
+                mes.setDescription(mes.getDescription().replace("%STRING2%", title));
+                mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
+                return mes;
             } catch (WebDriverException exception) {
                 return parseWebDriverException(exception);
             }
