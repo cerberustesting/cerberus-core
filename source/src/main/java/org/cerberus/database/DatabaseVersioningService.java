@@ -8368,6 +8368,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("ALTER TABLE `testcase` DROP FOREIGN KEY `FK_testcase_03`, DROP COLUMN `Ticket`, DROP COLUMN `Project`, ADD COLUMN `Executor` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Implementer`, CHANGE COLUMN `BugID` `BugID` TEXT NOT NULL, DROP INDEX `IX_testcase_04`  ;");
         a.add("UPDATE testcase SET bugID = CASE WHEN bugID = \"\" or bugID is null THEN \"[]\" ELSE concat('[{\"id\":\"',bugID,'\",\"desc\":\"\"}]') END;");
 
+        // Added parent test in order to handle hierarchy.
+        // 1465
+        a.add("ALTER TABLE `test` ADD COLUMN `ParentTest` VARCHAR(45) NULL DEFAULT NULL AFTER `Active`;");
+
         return a;
     }
 

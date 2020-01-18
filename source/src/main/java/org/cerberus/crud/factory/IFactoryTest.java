@@ -33,11 +33,12 @@ public interface IFactoryTest {
      * @param test Name of the Test
      * @param description Description of the Test
      * @param active Boolean active : Y=Active / N=Inactive
+     * @param parentTest
      * @param usrCreated
      * @param dateCreated
      * @param usrModif
      * @param dateModif
      * @return Test Object Created
      */
-    Test create(String test, String description, String active, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
+    Test create(String test, String description, String active, String parentTest, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 }
