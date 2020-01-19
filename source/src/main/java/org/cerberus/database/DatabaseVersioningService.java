@@ -8371,6 +8371,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Added parent test in order to handle hierarchy.
         // 1465
         a.add("ALTER TABLE `test` ADD COLUMN `ParentTest` VARCHAR(45) NULL DEFAULT NULL AFTER `Active`;");
+        
+        // ADD parameters 
+        // 1466
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_testcasepage_controlemptybugdescription', 'N', 'Boolean that activate a blocking control when saving a testcase that have at least one empty bugid description.')");
 
         return a;
     }

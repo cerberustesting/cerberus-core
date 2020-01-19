@@ -26,8 +26,8 @@
 var showBurger = false;
 var showSettings = false;
 
-(function() {
-    $("#burger").unbind("click").click(function() {
+(function () {
+    $("#burger").unbind("click").click(function () {
         if (showBurger === false) {
             $("#side-menu li").show();
             showBurger = true;
@@ -38,7 +38,7 @@ var showSettings = false;
 
     })
 
-    $("#burger-setting").unbind("click").click(function() {
+    $("#burger-setting").unbind("click").click(function () {
         if (showSettings === false) {
             $(".nav.navbar-top-links.navbar-right").show();
             $(".navbar-header").show()
@@ -125,7 +125,7 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
             url: "FindInvariantByID",
             data: {idName: idName},
             async: async,
-            success: function(data) {
+            success: function (data) {
                 list = data;
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
                 for (var index = 0; index < list.length; index++) {
@@ -195,7 +195,7 @@ function getInvariantArray(idName, forceReload, addValue1, asyn) {
             url: "FindInvariantByID",
             data: {idName: idName},
             async: async,
-            success: function(data) {
+            success: function (data) {
                 list = data;
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
                 for (var index = 0; index < list.length; index++) {
@@ -225,7 +225,7 @@ function getInvariantArray(idName, forceReload, addValue1, asyn) {
  * @returns {void}
  */
 function displayInvariantListWithDesc(selectName, idName, defaultValue) {
-    $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function(data) {
+    $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function (data) {
         for (var option in data) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value + " - " + data[option].description).val(data[option].value));
         }
@@ -243,7 +243,7 @@ function displayInvariantListWithDesc(selectName, idName, defaultValue) {
  * @returns {void}
  */
 function displayDeployTypeList(selectName, defaultValue) {
-    $.when($.getJSON("ReadDeployType", "")).then(function(data) {
+    $.when($.getJSON("ReadDeployType", "")).then(function (data) {
         for (var option in data.contentTable) {
             $("select[id='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].deploytype + " - " + data.contentTable[option].description).val(data.contentTable[option].deploytype));
         }
@@ -261,7 +261,7 @@ function displayDeployTypeList(selectName, defaultValue) {
  * @returns {void}
  */
 function displayAppServiceList(selectName, defaultValue) {
-    $.when($.getJSON("ReadAppService", "")).then(function(data) {
+    $.when($.getJSON("ReadAppService", "")).then(function (data) {
         for (var option in data.contentTable) {
             $("select[id='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].service).val(data.contentTable[option].service));
         }
@@ -331,7 +331,7 @@ function displayApplicationList(selectName, system, defaultValue, extraValue) {
         myData = "system=" + system;
     }
 
-    $.when($.getJSON("ReadApplication", myData)).then(function(data) {
+    $.when($.getJSON("ReadApplication", myData)).then(function (data) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($("<option></option>").text(data.contentTable[option].application + " - " + data.contentTable[option].description).val(data.contentTable[option].application));
         }
@@ -349,7 +349,7 @@ function displayApplicationList(selectName, system, defaultValue, extraValue) {
  * @returns {void}
  */
 function displayProjectList(selectName, defaultValue) {
-    $.when($.getJSON("ReadProject", "")).then(function(data) {
+    $.when($.getJSON("ReadProject", "")).then(function (data) {
         $("[name='" + selectName + "']").append($('<option></option>').text("NONE").val(""));
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].idProject + " - " + data.contentTable[option].description).val(data.contentTable[option].idProject));
@@ -369,7 +369,7 @@ function displayProjectList(selectName, defaultValue) {
  * @returns {void}
  */
 function displayBatchInvariantList(selectName, system, defaultValue) {
-    $.when($.getJSON("ReadBatchInvariant", "system=" + system)).then(function(data) {
+    $.when($.getJSON("ReadBatchInvariant", "system=" + system)).then(function (data) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].batch + " - " + data.contentTable[option].description).val(data.contentTable[option].batch));
         }
@@ -411,7 +411,7 @@ function displayBuildList(selectName, system, level, defaultValue, withAll, with
             data: {iSortCol_0: "2", system: system, level: level},
             async: false,
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
 
                 if (withAll === "Y") {
                     select.append($('<option></option>').text("-- ALL --").val("ALL"));
@@ -460,7 +460,7 @@ function displayBuildList(selectName, system, level, defaultValue, withAll, with
  * @returns {void}
  */
 function displayEnvList(selectName, system, defaultValue) {
-    $.when($.getJSON("ReadCountryEnvParam", "system=" + system + "&active=Y")).then(function(data) {
+    $.when($.getJSON("ReadCountryEnvParam", "system=" + system + "&active=Y")).then(function (data) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].environment).val(data.contentTable[option].environment));
         }
@@ -479,7 +479,7 @@ function displayEnvList(selectName, system, defaultValue) {
  * @returns {void}
  */
 function displayUniqueEnvList(selectName, system, defaultValue) {
-    $.when($.getJSON("ReadCountryEnvParam", "unique=true&system=" + system)).then(function(data) {
+    $.when($.getJSON("ReadCountryEnvParam", "unique=true&system=" + system)).then(function (data) {
         $("[name='" + selectName + "']").empty();
         for (var option in data.contentTable) {
             var text = data.contentTable[option].environment;
@@ -505,7 +505,7 @@ function displayUniqueEnvList(selectName, system, defaultValue) {
 function displayUserList(selectName) {
     var myData = "iSortCol_0=1"; // We sort by login.
     $("[name='" + selectName + "']").append($('<option></option>').text("NONE").val(""));
-    $.when($.getJSON("ReadUserPublic", myData)).then(function(data) {
+    $.when($.getJSON("ReadUserPublic", myData)).then(function (data) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].login + " - " + data.contentTable[option].name).val(data.contentTable[option].login));
         }
@@ -546,7 +546,7 @@ function getUserArray(forceReload, addValue1, asyn) {
         $.ajax({
             url: "ReadUserPublic",
             async: async,
-            success: function(data) {
+            success: function (data) {
                 list = data.contentTable;
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
                 for (var index = 0; index < list.length; index++) {
@@ -574,7 +574,7 @@ function getUserArray(forceReload, addValue1, asyn) {
  * @param {handleData} handleData method that handles the data retrieved
  */
 function getInvariantList(idName, handleData) {
-    $.when($.getJSON("GetInvariantList", "idName=" + idName)).then(function(data) {
+    $.when($.getJSON("GetInvariantList", "idName=" + idName)).then(function (data) {
         handleData(data);
     });
 }
@@ -588,7 +588,7 @@ function getInvariantListN(list, handleData) {
     $.when($.post("GetInvariantList", {
         action: "getNInvariant",
         idName: JSON.stringify(list)
-    }, "json")).then(function(data) {
+    }, "json")).then(function (data) {
         handleData(data);
     });
 }
@@ -625,7 +625,7 @@ function getSelectInvariant(idName, forceReload, notAsync, addValue) {
             url: "FindInvariantByID",
             data: {idName: idName},
             async: async,
-            success: function(data) {
+            success: function (data) {
                 list = data;
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
                 for (var index = 0; index < list.length; index++) {
@@ -676,7 +676,7 @@ function getSelectRobot(forceReload, notAsync) {
         $.ajax({
             url: "ReadRobot",
             async: async,
-            success: function(data) {
+            success: function (data) {
                 list = data.contentTable;
 //                console.info(list);
 //                console.info(list.length);
@@ -731,7 +731,7 @@ function getSelectLabel(system, forceReload, notAsync) {
             url: "ReadLabel",
             async: async,
             data: {system: system},
-            success: function(data) {
+            success: function (data) {
                 list = data.contentTable;
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data.contentTable));
                 for (var index = 0; index < list.length; index++) {
@@ -765,7 +765,7 @@ function getSelectApplication(system, forceReload) {
             url: "ReadApplication",
             data: {system: system},
             async: true,
-            success: function(data) {
+            success: function (data) {
                 list = data.contentTable;
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(list));
                 for (var index = 0; index < list.length; index++) {
@@ -795,7 +795,7 @@ function getSelectApplicationWithoutSystem() {
     $.ajax({
         url: "ReadApplication",
         async: false,
-        success: function(data) {
+        success: function (data) {
             list = data.contentTable;
             for (var index = 0; index < list.length; index++) {
                 var item = list[index].application;
@@ -820,7 +820,7 @@ function getSelectDeployType(forceReload) {
             url: "ReadDeployType",
             data: {},
             async: true,
-            success: function(data) {
+            success: function (data) {
                 list = data.contentTable;
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(list));
                 for (var index = 0; index < list.length; index++) {
@@ -869,7 +869,7 @@ function getParameter(param, sys, forceReload) {
             url: "ReadParameter?param=" + param + systemQuery,
             data: {},
             async: false,
-            success: function(data) {
+            success: function (data) {
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data.contentTable))
                 result = data.contentTable;
             }
@@ -880,8 +880,31 @@ function getParameter(param, sys, forceReload) {
     return result;
 }
 
+/**
+ * Get and cache a parameter value.
+ * The forceReload boolean can force the refresh of the list from the server.
+ * @param {string} param value of the parameter to get ex : "cerberus_homepage_nbdisplayedtag"
+ * @param {string} sys system that will be used to get the parameter
+ * @param {boolean} forceReload true if we want to force the reload on cache from the server
+ *
+ */
 function getParameterString(param, sys, forceReload) {
     return getParameter(param, sys, forceReload).value;
+}
+
+/**
+ * Get and cache a parameter value.
+ * The forceReload boolean can force the refresh of the list from the server.
+ * @param {string} param value of the parameter to get ex : "cerberus_homepage_nbdisplayedtag"
+ * @param {string} sys system that will be used to get the parameter
+ * @param {boolean} forceReload true if we want to force the reload on cache from the server
+ *
+ */
+function getParameterBoolean(param, sys, forceReload) {
+    let val = getParameter(param, sys, forceReload).value;
+    if (val === 'Y' || val === 'y' || val === 'true' || val === 'yes')
+        return true;
+    return false;
 }
 
 /***********************************************Messages/ALERT***************************************/
@@ -1016,7 +1039,7 @@ function showMessageMainPage(type, message, silentMode, waitinMs) {
         $("#mainAlert").slideDown(10);
 
         // We slowly hide it after waitinMs ms delay.
-        $("#mainAlert").fadeTo(waitinMs, 1, function() {
+        $("#mainAlert").fadeTo(waitinMs, 1, function () {
             $("#mainAlert").slideUp(500);
         });
 
@@ -1025,14 +1048,14 @@ function showMessageMainPage(type, message, silentMode, waitinMs) {
 
 /*****************************************************************************/
 
-$(function() {
+$(function () {
 
 
     /**
      * Closes the alert message that is visible in the main page
      *
      /*****************************************************************************/
-    $("#buttonMainAlert").click(function() {
+    $("#buttonMainAlert").click(function () {
         var elementToClose = $(this).closest("." + $(this).attr("data-hide"));
         $(elementToClose).siblings("strong span[class='alert-description']").text("");
         $("#mainAlert").removeClass("alert-success");
@@ -1043,7 +1066,7 @@ $(function() {
     /**
      * Closes the alert page that is visible in the dialogs
      */
-    $("[data-hide]").on("click", function() {
+    $("[data-hide]").on("click", function () {
         var elementToClose = $(this).closest("." + $(this).attr("data-hide"));
         $(elementToClose).siblings("strong span[class='alert-description']").text("");
         $(elementToClose).parents("#mainAlert").removeClass("alert-success");
@@ -1056,11 +1079,11 @@ $(function() {
      * Clears all the information from the modal that allows the upload of files
      */
     //resets the modal that allows the upload of files
-    $('#modalUpload').on('hidden.bs.modal', function() {
+    $('#modalUpload').on('hidden.bs.modal', function () {
         resetModalUpload();
     });
     //resets the confirmation modal data
-    $('#confirmationModal').on('hidden.bs.modal', function() {
+    $('#confirmationModal').on('hidden.bs.modal', function () {
         resetConfirmationModal();
     });
 });
@@ -1200,7 +1223,7 @@ function showModalUpload(handlerClickOk, fileExtension, translations) {
     //if translations are defined, then the title and buttons will be modified
     if (Boolean(translations)) {
         //update translations if a specific page secifies it
-        $.each(translations, function(index) {
+        $.each(translations, function (index) {
             $("#" + index).text(translations[index]);
         });
     } else {
@@ -1214,7 +1237,7 @@ function showModalUpload(handlerClickOk, fileExtension, translations) {
 
     $('#modalUpload').modal('show');
     $('#modalUpload').find('#uploadOk').click(handlerClickOk);
-    $('#modalUpload').find("#fileInput").change(function() {
+    $('#modalUpload').find("#fileInput").change(function () {
         validatesFileExtension(this.value, fileExtension);
     });
 }
@@ -1260,7 +1283,7 @@ function resetModalUpload() {
  * @param {type} oSettings settings
  * @param {type} sNewSource new source
  */
-$.fn.dataTableExt.oApi.fnNewAjax = function(oSettings, sNewSource) {
+$.fn.dataTableExt.oApi.fnNewAjax = function (oSettings, sNewSource) {
     if (typeof sNewSource !== 'undefined' && sNewSource !== null) {
         oSettings.sAjaxSource = sNewSource;
     }
@@ -1453,7 +1476,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
 
-        configs["fnStateSaveCallback"] = function(settings, data) {
+        configs["fnStateSaveCallback"] = function (settings, data) {
             try {
                 localStorage.setItem(
                         'DataTables_' + settings.sInstance + '_' + location.pathname,
@@ -1463,10 +1486,10 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
                 console.error("access denied, " + e)
             }
         };
-        configs["fnStateLoadCallback"] = function(settings) {
+        configs["fnStateLoadCallback"] = function (settings) {
             //Get UserPreferences from user object
             var user = null;
-            $.when(getUser()).then(function(data) {
+            $.when(getUser()).then(function (data) {
                 user = data;
             });
             while (user === null) {
@@ -1481,12 +1504,12 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             }
         };
         configs["colReorder"] = tableConfigurations.colreorder ? {
-            fnReorderCallback: function() {
+            fnReorderCallback: function () {
                 $("#" + tableConfigurations.divId).DataTable().ajax.reload();
             }
         } : false;
         if (filtrableColumns !== undefined) {
-            configs["fnServerParams"] = function(aoData) {
+            configs["fnServerParams"] = function (aoData) {
 
                 var filters = generateFiltersOnMultipleColumns(tableConfigurations.divId, filtrableColumns);
                 for (var f = 0; f < filters.length; f++) {
@@ -1496,11 +1519,11 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
                 aoData.push({name: "sSortDir_0", value: configs["aaSorting"][0][1]});
             };
         }
-        configs["fnServerData"] = function(sSource, aoData, fnCallback, oSettings) {
+        configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
 
             var like = ""
 
-            $.each(oSettings.aoColumns, function(index, value) {
+            $.each(oSettings.aoColumns, function (index, value) {
                 if (oSettings.aoColumns[index].like) {
                     like += oSettings.aoColumns[index].sName + ","
                 }
@@ -1525,7 +1548,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
                 "type": "POST",
                 "url": sSource,
                 "data": aoData,
-                "success": function(json) {
+                "success": function (json) {
                     if (objectWaitingLayer !== undefined) {
                         hideLoader(objectWL);
                     }
@@ -1546,7 +1569,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
                 },
                 "error": showUnexpectedError
             });
-            $.when(oSettings.jqXHR).then(function(data) {
+            $.when(oSettings.jqXHR).then(function (data) {
                 //updates the table with basis on the permissions that the current user has
                 afterDatatableFeeds(tableConfigurations.divId, tableConfigurations.ajaxSource, oSettings);
 
@@ -1557,7 +1580,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
 
     } else {
 
-        configs["fnStateSaveCallback"] = function(oSettings, data) {
+        configs["fnStateSaveCallback"] = function (oSettings, data) {
             try {
                 localStorage.setItem(
                         'DataTables_' + oSettings.sInstance + '_' + location.pathname,
@@ -1571,11 +1594,11 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
 
         configs["data"] = tableConfigurations.aaData;
 
-        configs["fnStateLoadCallback"] = function(settings) {
+        configs["fnStateLoadCallback"] = function (settings) {
             //Get UserPreferences from user object
 
             var user = null;
-            $.when(getUser()).then(function(data) {
+            $.when(getUser()).then(function (data) {
                 user = data;
             });
             while (user === null) {
@@ -1613,18 +1636,18 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         $("#" + tableConfigurations.divId + "_wrapper #restoreFilterButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper")
                 .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
-                .addClass("btn btn-default pull-right").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function() {
+                .addClass("btn btn-default pull-right").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
             //$("#" + tableConfigurations.divId + " thead").empty();
         }).html("<span class='glyphicon glyphicon-cog'></span> " + showHideButtonLabel);
         $("#" + tableConfigurations.divId + "_wrapper #showHideColumnsButton").parent().before(
                 $("<button type='button' id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> " + saveTableConfigurationButtonLabel)
-                .attr("data-toggle", "tooltip").attr("title", saveTableConfigurationButtonTooltip).click(function() {
+                .attr("data-toggle", "tooltip").attr("title", saveTableConfigurationButtonTooltip).click(function () {
             updateUserPreferences(objectWaitingLayer);
         })
                 );
         $("#" + tableConfigurations.divId + "_wrapper #saveTableConfigurationButton").before(
                 $("<button type='button' id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> " + restoreFilterButtonLabel)
-                .attr("data-toggle", "tooltip").attr("title", restoreFilterButtonTooltip).click(function() {
+                .attr("data-toggle", "tooltip").attr("title", restoreFilterButtonTooltip).click(function () {
             location.reload();
         })
                 );
@@ -1690,7 +1713,7 @@ function showTitleWhenTextOverflow() {
     /**
      * for TH and TD, append title into div
      */
-    $('td, th, h4').each(function() {
+    $('td, th, h4').each(function () {
         var $ele = $(this);
         //Check if text to display is bigger than the width
         if (this.offsetWidth < this.scrollWidth && $ele.get(0).innerText.trim().length > 0) {
@@ -1745,7 +1768,7 @@ function createEntry(servletName, form, tableID) {
     var dataForm = convertSerialToJSONObject(form.serialize());
 
     var jqxhr = $.post(servletName, dataForm);
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         hideLoaderInModal("#addEntryModal");
         if (getAlertType(data.messageType) === 'success') {
             var oTable = $(tableID).dataTable();
@@ -1770,7 +1793,7 @@ function updateEntry(servletName, form, tableID) {
     var dataForm = convertSerialToJSONObject(form.serialize());
 
     var jqxhr = $.post(servletName, dataForm);
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         hideLoaderInModal("#editEntryModal");
         if (getAlertType(data.messageType) === 'success') {
             var oTable = $(tableID).dataTable();
@@ -1795,7 +1818,7 @@ function duplicateEntry(servletName, form, tableID) {
     var dataForm = convertSerialToJSONObject(form.serialize());
 
     var jqxhr = $.post(servletName, dataForm);
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         hideLoaderInModal("#duplicateEntryModal");
         if (getAlertType(data.messageType) === 'success') {
             var oTable = $(tableID).dataTable();
@@ -1828,14 +1851,14 @@ function stopPropagation(event) {
  * @param {type} iDelay time to delay
  * @returns {jQuery.fn.dataTableExt.oApi}
  */
-jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function(oSettings, iDelay) {
+jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
     var _that = this;
 
     if (iDelay === undefined) {
         iDelay = 250;
     }
 
-    this.each(function(i) {
+    this.each(function (i) {
         $.fn.dataTableExt.iApiIndex = i;
         var
                 $this = this,
@@ -1843,13 +1866,13 @@ jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function(oSettings, iDelay) {
                 sPreviousSearch = null,
                 anControl = $('input', _that.fnSettings().aanFeatures.f);
 
-        anControl.unbind('keyup search input').bind('keyup search input', function() {
+        anControl.unbind('keyup search input').bind('keyup search input', function () {
             var $$this = $this;
 
             if (sPreviousSearch === null || sPreviousSearch !== anControl.val()) {
                 window.clearTimeout(oTimerId);
                 sPreviousSearch = anControl.val();
-                oTimerId = window.setTimeout(function() {
+                oTimerId = window.setTimeout(function () {
                     $.fn.dataTableExt.iApiIndex = i;
                     _that.fnFilter(anControl.val());
                 }, iDelay);
@@ -1874,7 +1897,7 @@ function setAutoCompleteServerSide(selector, source) {
     //does not display the summary text
     configurations["messages"] = {
         noResults: '',
-        results: function() {
+        results: function () {
         }
     };
     //specifies a delay to avoid excessive requests to the server
@@ -2022,15 +2045,15 @@ function convertSerialToJSONObject(serial) {
  * @returns {void}
  */
 function bindToggleCollapse() {
-    $(".collapse").each(function() {
+    $(".collapse").each(function () {
         if (this.id !== "sidenavbar-subnavlist") {//disable interaction with the navbar
-            $(this).on('shown.bs.collapse', function() {
+            $(this).on('shown.bs.collapse', function () {
                 localStorage.setItem(this.id, true);
                 updateUserPreferences();
                 $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
             });
 
-            $(this).on('hidden.bs.collapse', function() {
+            $(this).on('hidden.bs.collapse', function () {
                 localStorage.setItem(this.id, false);
                 updateUserPreferences();
                 $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
@@ -2070,7 +2093,7 @@ function loadSelectElement(data, element, includeEmpty, includeEmptyText) {
     if (includeEmpty !== null && includeEmpty) {
         $(element).append("<option value=''>" + includeEmptyText + "</option>");
     }
-    $.each(data, function(idx, obj) {
+    $.each(data, function (idx, obj) {
         $(element).append("<option value='" + obj + "'>" + obj + "</option>");
     });
 
@@ -2221,7 +2244,7 @@ function autocompleteVariable(identifier, Tags) {
 
     $(identifier)
             // don't navigate away from the field on tab when selecting an item
-            .on("keydown", function(event) {
+            .on("keydown", function (event) {
                 if (event.keyCode === $.ui.keyCode.TAB &&
                         $(this).autocomplete("instance").menu.active) {
                     event.preventDefault();
@@ -2233,17 +2256,17 @@ function autocompleteVariable(identifier, Tags) {
                 minLength: 1,
                 messages: {
                     noResults: '',
-                    results: function() {
+                    results: function () {
                     }
                 },
-                open: function() {
+                open: function () {
                     //If autocomplete is in modal, needs to be upper the modal
                     if ($(this).closest($(".modal")).length > 0) {
                         $(this).autocomplete('widget').css('z-index', 1050);
                     }
                     return false;
                 },
-                source: function(request, response) {
+                source: function (request, response) {
                     //Get the part of the string we want (between the last % before our cursor and the cursor)
                     var selectionStart = this.element[0].selectionStart;
                     var stringToAnalyse = this.term.substring(0, selectionStart);
@@ -2259,7 +2282,7 @@ function autocompleteVariable(identifier, Tags) {
                                 var arrayLabels = [];
 
                                 if (Tags[tag].regex === "%object\\.") {
-                                    Tags[tag].array.forEach(function(data) {
+                                    Tags[tag].array.forEach(function (data) {
                                         arrayLabels.push(data.object);
                                     });
 
@@ -2279,8 +2302,8 @@ function autocompleteVariable(identifier, Tags) {
                         }
                     }
                 },
-                focus: function() {
-                    $('a[data-toggle="tooltip"]').each(function(idx, data) {
+                focus: function () {
+                    $('a[data-toggle="tooltip"]').each(function (idx, data) {
                         var direction = "top";
                         if (idx < 4)
                             direction = "bottom";
@@ -2299,7 +2322,7 @@ function autocompleteVariable(identifier, Tags) {
                     // prevent value inserted on focus
                     return false;
                 },
-                select: function(event, ui) {
+                select: function (event, ui) {
                     //Get the part of the string we want (between the last % before our cursor and the cursor)
                     var stringToAnalyse = this.value.substring(0, this.selectionStart);
                     var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
@@ -2327,7 +2350,7 @@ function autocompleteVariable(identifier, Tags) {
                     $(this).trigger("input").trigger("change");
                     return false;
                 },
-                close: function(event, ui) {
+                close: function (event, ui) {
                     val = $(this).val();
                     $(this).autocomplete("search", val); //keep autocomplete open by
                     //searching the same input again
@@ -2341,7 +2364,7 @@ function autocompleteVariable(identifier, Tags) {
  * @param {type} param
  */
 $.extend({
-    getUrlVars: function() {
+    getUrlVars: function () {
         var vars = [], hash;
         var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
         for (var i = 0; i < hashes.length; i++) {
@@ -2364,7 +2387,7 @@ $.extend({
 
         return vars;
     },
-    getUrlVar: function(name) {
+    getUrlVar: function (name) {
         return $.getUrlVars()[name];
     }
 });
@@ -2387,7 +2410,7 @@ function showPicture(title, pictureUrl) {
     if ($("#btnFullPicture").length > 0) {
         $("#btnFullPicture").remove();
     }
-    $('#modal-footer').prepend($('<button>').attr("id", "btnFullPicture").text("Full Picture").addClass("btn btn-default").click(function() {
+    $('#modal-footer').prepend($('<button>').attr("id", "btnFullPicture").text("Full Picture").addClass("btn btn-default").click(function () {
         window.open(pictureUrl + "&r=true", "_blank");
     }));
     $('#showGenericModal').modal('show');
@@ -2409,7 +2432,7 @@ function showTextArea(title, text, fileUrl) {
     //set the translations
 
     var jqxhr = $.get(fileUrl, "&autoContentType=N");
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         $('#modalContent').append($("<div>").addClass("form-group").append($("<pre id='previewContent'></pre>").addClass("form-control").attr("style", "min-height:15px").text(data)));
         //Highlight content on modal loading
         var editor = ace.edit($("#previewContent")[0]);
@@ -2434,7 +2457,7 @@ function showTextArea(title, text, fileUrl) {
     });
 
     $('#modal-footer #btnFullPicture').remove();
-    $('#modal-footer').prepend($('<button>').attr("id", "btnFullPicture").text("Full File").addClass("btn btn-default").click(function() {
+    $('#modal-footer').prepend($('<button>').attr("id", "btnFullPicture").text("Full File").addClass("btn btn-default").click(function () {
         window.open(fileUrl, "_blank");
     }));
 
@@ -2448,10 +2471,10 @@ function showTextArea(title, text, fileUrl) {
  */
 var DEFAULT_LINKIFY_OPTIONS = {
     validate: {
-        email: function(value) {
+        email: function (value) {
             return false;
         },
-        url: function(value) {
+        url: function (value) {
             return /^(http|ftp)s?:\/\//.test(value);
         }
     }
@@ -2490,7 +2513,7 @@ function isJson(str) {
  */
 function isHTMLorXML(str) {
     var doc = new DOMParser().parseFromString(str, "text/html");
-    return Array.from(doc.body.childNodes).some(function(node) {
+    return Array.from(doc.body.childNodes).some(function (node) {
         return node.nodeType === 1
     });// Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
 }
@@ -2575,16 +2598,16 @@ function getComboConfigTag() {
                     url: "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=30" + getUser().defaultSystemsQuery,
                     dataType: 'json',
                     delay: 250,
-                    data: function(params) {
+                    data: function (params) {
                         return {
                             sSearch: params.term, // search term
                             iDisplayStartPage: params.page
                         };
                     },
-                    processResults: function(data, params) {
+                    processResults: function (data, params) {
                         params.page = params.page || 1;
                         return {
-                            results: $.map(data.contentTable, function(obj) {
+                            results: $.map(data.contentTable, function (obj) {
                                 return {id: obj.tag, text: obj.tag, tag: obj.tag, description: obj.description, campaign: obj.campaign, DateCreated: obj.DateCreated, nbExeUsefull: obj.nbExeUsefull, ciResult: obj.ciResult};
                             }),
                             pagination: {
@@ -2594,7 +2617,7 @@ function getComboConfigTag() {
                     },
                     cache: true
                 },
-                escapeMarkup: function(markup) {
+                escapeMarkup: function (markup) {
                     return markup;
                 }, // let our custom formatter work
                 minimumInputLength: 0,
@@ -2615,17 +2638,17 @@ function getComboConfigService() {
                     url: "ReadAppService?iSortCol_0=0&sSortDir_0=asc&sColumns=service,type,method,description&iDisplayLength=30&sSearch_0=",
                     dataType: 'json',
                     delay: 250,
-                    data: function(params) {
+                    data: function (params) {
                         params.page = params.page || 1;
                         return {
                             sSearch: params.term, // search term
                             iDisplayStart: (params.page * 30) - 30
                         };
                     },
-                    processResults: function(data, params) {
+                    processResults: function (data, params) {
                         params.page = params.page || 1;
                         return {
-                            results: $.map(data.contentTable, function(obj) {
+                            results: $.map(data.contentTable, function (obj) {
                                 return {id: obj.service, text: obj.service};
                             }),
                             pagination: {
@@ -2650,17 +2673,17 @@ function getComboConfigTest() {
                     url: "ReadTest?iSortCol_0=0&sSortDir_0=asc&sColumns=test&iDisplayLength=30&sSearch_0=",
                     dataType: 'json',
                     delay: 250,
-                    data: function(params) {
+                    data: function (params) {
                         params.page = params.page || 1;
                         return {
                             sSearch: params.term, // search term
                             iDisplayStart: (params.page * 30) - 30
                         };
                     },
-                    processResults: function(data, params) {
+                    processResults: function (data, params) {
                         params.page = params.page || 1;
                         return {
-                            results: $.map(data.contentTable, function(obj) {
+                            results: $.map(data.contentTable, function (obj) {
                                 return {id: obj.test, text: obj.test};
                             }),
                             pagination: {
@@ -2686,17 +2709,17 @@ function getComboConfigApplication() {
                     url: "ReadApplication",
                     dataType: 'json',
                     delay: 250,
-                    data: function(params) {
+                    data: function (params) {
                         params.page = params.page || 1;
                         return {
                             sSearch: params.term, // search term
                             iDisplayStart: (params.page * 30) - 30
                         };
                     },
-                    processResults: function(data, params) {
+                    processResults: function (data, params) {
                         params.page = params.page || 1;
                         return {
-                            results: $.map(data.contentTable, function(obj) {
+                            results: $.map(data.contentTable, function (obj) {
                                 return {id: obj.application, text: obj.application};
                             }),
                             pagination: {
@@ -2714,7 +2737,7 @@ function getComboConfigApplication() {
 }
 
 function getBugIdList(data, appurl) {
-    var link="";
+    var link = "";
     if (isEmpty(appurl)) {
         $.each(data, function (idx, obj) {
             link = link + '' + obj.id;

@@ -19,6 +19,7 @@
  */
 var curMode = "";
 var bugTrackerUrl = "";
+var checkEmptyDescription = false;
 /***
  * Open the modal with testcase information.
  * @param {String} test - id of the test to open the modal
@@ -29,6 +30,8 @@ var bugTrackerUrl = "";
  */
 function openModalTestCase(test, testcase, mode, tab) {
     curMode = mode;
+
+    checkEmptyDescription = getParameterBoolean("cerberus_testcasepage_controlemptybugdescription", getUser().defaultSystem, true);
 
     // We only load the Labels and bind the events once for performance optimisations.
     if ($('#editTestCaseModal').data("initLabel") === undefined) {
@@ -409,34 +412,64 @@ function confirmTestCaseModalHandler(mode) {
     var testIdElementInvalid = testIdElement.prop("value").search("&");
     var testIdElementEmpty = testIdElement.prop("value") === '';
 
+    var bugIdElement = formEdit.find("#editTCBugReport");
+    var bugIdEmptyDesc = false;
+    var bugIdDuplicated = false;
+    var bugIdDuplicatedList = [];
+    var table1 = $("#bugTableBody tr");
+    var listBugId = "";
+    for (var i = 0; i < table1.length; i++) {
+        var bug = $(table1[i]).data("bug");
+        if (isEmpty(bug.desc)) {
+            bugIdEmptyDesc = true;
+        }
+        if (listBugId.indexOf(bug.id) >= 0) {
+            bugIdDuplicated = true;
+            bugIdDuplicatedList.push(bug.id);
+        }
+        listBugId += bug.id + "/";
+    }
+
+    var localMessage = new Message("danger", "Unexpected Error!");
     if (nameElementEmpty) {
-        var localMessage = new Message("danger", "Please specify the name of the application!");
+        localMessage = new Message("danger", "Please specify the name of the application!");
         nameElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
-    } else if (testElementInvalid != -1) {
-        var localMessage = new Message("danger", "The test name cannot contains the symbol : &");
+    } else if (testElementInvalid !== -1) {
+        localMessage = new Message("danger", "The test name cannot contains the symbol : &");
         // only the Test label will be put in red
         testElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
-    } else if (testIdElementInvalid != -1) {
-        var localMessage = new Message("danger", "The testcase id name cannot contains the symbol : &");
+    } else if (testIdElementInvalid !== -1) {
+        localMessage = new Message("danger", "The testcase id name cannot contains the symbol : &");
         // only the TestId label will be put in red
         testIdElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
     } else if (testElementEmpty) {
-        var localMessage = new Message("danger", "Please specify the name of the test!");
+        localMessage = new Message("danger", "Please specify the name of the test!");
         testElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
     } else if (testIdElementEmpty) {
-        var localMessage = new Message("danger", "Please specify the name of the Testcase Id!");
+        localMessage = new Message("danger", "Please specify the name of the Testcase Id!");
         testIdElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else if (bugIdDuplicated) {
+        localMessage = new Message("danger", "Duplicate BugID on Bug Report Tab! " + bugIdDuplicatedList.length + " duplicate entry(ies) : " + bugIdDuplicatedList.toString());
+        bugIdElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else if (bugIdEmptyDesc && checkEmptyDescription) {
+        localMessage = new Message("danger", "At least one BugID Description is empty on Bug Report Tab!");
+        bugIdElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
     } else {
         nameElement.parents("div.form-group").removeClass("has-error");
+        testIdElement.parents("div.form-group").removeClass("has-error");
+        testElement.parents("div.form-group").removeClass("has-error");
+        bugIdElement.parents("div.form-group").removeClass("has-error");
     }
 
     // verify if all mandatory fields are not empty and valid
-    if (nameElementEmpty || testElementInvalid != -1 || testIdElementInvalid != -1 || testElementEmpty || testIdElementEmpty)
+    if (nameElementEmpty || testElementInvalid !== -1 || testIdElementInvalid !== -1 || testElementEmpty || testIdElementEmpty || bugIdDuplicated || (bugIdEmptyDesc && checkEmptyDescription))
         return;
 
     tinyMCE.triggerSave();
@@ -524,12 +557,13 @@ function confirmTestCaseModalHandler(mode) {
             var DataObj1 = {};
             DataObj1.id = bug.id;
             DataObj1.desc = bug.desc;
+            DataObj1.act = bug.act;
+            DataObj1.dateCreated = bug.dateCreated;
+            DataObj1.dateClosed = bug.dateClosed;
             table_bug.push(DataObj1);
         }
     }
 
-//    console.info(data.bugId);
-//    console.info(table_bug);
     $.ajax({
         url: myServlet,
         async: true,
@@ -662,24 +696,7 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
             // Loading application combo from the system of the current application.
             appendApplicationList(testCase.application, t.system);
 
-//            var newbugTrackerUrl = "";
-//            if (testCase.bugID !== "" && bugTrackerUrl) {
-//                newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", testCase.bugID);
-//            }
-//            formEdit.find("#link").prop("href", newbugTrackerUrl).text(testCase.bugID);
-//            formEdit.find("#link").prop("target", "_blank");
-
-//            formEdit.find("#bugId").change(function () {
-//                var newbugid = formEdit.find("#bugId").val();
-//                var newbugTrackerUrl = "";
-//                if (newbugid !== "" && bugTrackerUrl) {
-//                    newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", newbugid);
-//                }
-//                formEdit.find("#link").prop("href", newbugTrackerUrl).text(newbugid);
-//                formEdit.find("#link").prop("target", "_blank");
-//            });
         });
-
 
         formEdit.modal('show');
     });
@@ -724,7 +741,7 @@ function fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases
                 for (var i = 0; i < data.contentTable.length; i++) {
                     $(selectorTestCaseSelect).append("<option value='" + data.contentTable[i].testCase + "'>" + data.contentTable[i].testCase + " - " + data.contentTable[i].description + "</option>")
                 }
-                if (testcase != null) {
+                if (testcase !== null) {
                     $(selectorTestCaseSelect + " option[value='" + testcase + "']").prop('selected', true);
                     window.document.title = "TestCase - " + testcase;
                 }
@@ -868,8 +885,38 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#active").prop("value", testCase.tcActive);
 
         $('#bugTableBody tr').remove();
+        // Sorting Bug list.
+        testCase.bugID.sort(function (a, b) {
+            if (a.act === b.act) {
+                if (a.id === b.id) {
+                    if (b.dateCreated < a.dateCreated)
+                        return 1;
+                    else
+                        return -1;
+                } else {
+                    if (a.id > b.id)
+                        return 1;
+                    else
+                        return -1;
+                }
+            }
+            if (a.act === false)
+                return 1;
+            else
+                return -1;
+        });
         $.each(testCase.bugID, function (idx, obj) {
             obj.toDelete = false;
+            if (isEmpty(obj.act)) {
+                obj.act = true;
+            }
+            if (isEmpty(obj.dateCreated)) {
+                obj.dateCreated = new Date('1970-01-01');
+            }
+            if (isEmpty(obj.dateClosed)) {
+                obj.dateClosed = new Date('1970-01-01');
+            }
+
             appendbugRow(obj, "bugTableBody", bugTrackerUrl);
         });
 
@@ -969,14 +1016,17 @@ function appendbugRow(obj, tablebody, bugTrackerUrl) {
     var newbugTrackerUrl = "";
     if (!isEmpty(bugTrackerUrl)) {
         if (!isEmpty(obj.id)) {
-            newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", obj.id);
+            newbugTrackerUrl = bugTrackerUrl.replace(/%BUGID%/g, obj.id);
         }
     }
 
     var row = $("<tr></tr>");
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var actInput = $("<input type='checkbox'>").addClass("form-control input-sm").prop("checked", obj.act);
     var bugidInput = $("<input  maxlength=\"10\">").addClass("form-control input-sm").val(obj.id);
     var bugdescInput = $("<input  maxlength=\"50\">").addClass("form-control input-sm").val(obj.desc);
+    var dateCreatedInput = $("<input readonly=\"true\">").addClass("form-control input-sm").val(getDate(obj.dateCreated).toLocaleString());
+    var dateClosedInput = $("<input readonly=\"true\">").addClass("form-control input-sm").val(getDate(obj.dateClosed).toLocaleString());
     if (newbugTrackerUrl !== "") {
         var buglinkText = $("<a></a>").text(obj.id);
         buglinkText.prop("href", newbugTrackerUrl).prop("target", "_blank");
@@ -984,9 +1034,12 @@ function appendbugRow(obj, tablebody, bugTrackerUrl) {
         var buglinkText = $("<div></div>").text(obj.id);
     }
     var deleteData = $("<td></td>").append(deleteBtn);
+    var actData = $("<td></td>").append(actInput);
     var bugidData = $("<td></td>").append(bugidInput);
     var bugdescData = $("<td></td>").append(bugdescInput);
     var buglinkData = $("<td></td>").append(buglinkText);
+    var dateCreatedData = $("<td></td>").append(dateCreatedInput);
+    var dateClosedData = $("<td></td>").append(dateClosedInput);
 
     deleteBtn.click(function () {
         obj.toDelete = (obj.toDelete) ? false : true;
@@ -997,6 +1050,16 @@ function appendbugRow(obj, tablebody, bugTrackerUrl) {
             row.removeClass("danger");
         }
     });
+
+    actInput.click(function () {
+        obj.act = (obj.act) ? false : true;
+
+        if ((obj.act) === false) {
+            obj.dateClosed = new Date();
+            dateClosedInput.val(obj.dateClosed.toLocaleString());
+        }
+    });
+
     bugidInput.change(function () {
         obj.id = $(this).val();
         var newbugTrackerUrl = "";
@@ -1009,19 +1072,22 @@ function appendbugRow(obj, tablebody, bugTrackerUrl) {
         obj.desc = $(this).val();
     });
 
-    row.append(deleteData).append(bugidData).append(bugdescData).append(buglinkData);
+    row.append(deleteData).append(actData).append(bugidData).append(bugdescData).append(buglinkData).append(dateClosedData).append(dateCreatedData);
     row.data("bug", obj);
     table.append(row);
 }
 
 function addNewBugRow(dataTableBody, bugTrackerUrl) {
     var nbRows = $("#" + dataTableBody + " tr").size() + 1;
-    var newSubData = {
+    var newBugData = {
         id: "BUGID" + nbRows,
         desc: "",
+        act: true,
+        dateCreated: new Date(),
+        dateClosed: new Date('1970-01-01'),
         toDelete: false
     };
-    appendbugRow(newSubData, dataTableBody, bugTrackerUrl);
+    appendbugRow(newBugData, dataTableBody, bugTrackerUrl);
 }
 
 
