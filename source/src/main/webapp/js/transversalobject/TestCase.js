@@ -423,7 +423,7 @@ function confirmTestCaseModalHandler(mode) {
         if (isEmpty(bug.desc)) {
             bugIdEmptyDesc = true;
         }
-        if (listBugId.indexOf(bug.id) >= 0) {
+        if (listBugId.indexOf(bug.id + "/") >= 0) {
             bugIdDuplicated = true;
             bugIdDuplicatedList.push(bug.id);
         }
