@@ -8377,6 +8377,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
                 + " ('', 'cerberus_testcasepage_controlemptybugdescription', 'N', 'Boolean that activate a blocking control when saving a testcase that have at least one empty bugid description.')");
 
+        
+        // ADD iOS Platform 
+        // 1467
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES "
+                + " ('PLATFORM', 'IOS', '20', 'iOS Platform', '');");
+
+        
         return a;
     }
 
