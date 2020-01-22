@@ -538,7 +538,7 @@ public class ConditionService implements IConditionService {
                     .replace("%COND%", conditionOper)
                     .replace("%STR1%", conditionValue1)
                     .replace("%STR2%", conditionValue2)
-                    .replace("%STRING3%", isCaseSensitive)
+                    .replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive))
             );
         } else {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STRINGEQUAL);
@@ -546,7 +546,7 @@ public class ConditionService implements IConditionService {
                     .replace("%COND%", conditionOper)
                     .replace("%STR1%", conditionValue1)
                     .replace("%STR2%", conditionValue2)
-                    .replace("%STRING3%", isCaseSensitive)
+                    .replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive))
             );
         }
         ans.setResultMessage(mes);
@@ -569,7 +569,7 @@ public class ConditionService implements IConditionService {
                     .replace("%COND%", conditionOper)
                     .replace("%STR1%", conditionValue1)
                     .replace("%STR2%", conditionValue2)
-                    .replace("%STRING3%", isCaseSensitive)
+                    .replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive))
             );
         } else {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STRINGDIFFERENT);
@@ -577,7 +577,7 @@ public class ConditionService implements IConditionService {
                     .replace("%COND%", conditionOper)
                     .replace("%STR1%", conditionValue1)
                     .replace("%STR2%", conditionValue2)
-                    .replace("%STRING3%", isCaseSensitive)
+                    .replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive))
             );
         }
         ans.setItem(execute_Action);
@@ -653,7 +653,7 @@ public class ConditionService implements IConditionService {
                     .replace("%COND%", conditionOper)
                     .replace("%STR1%", conditionValue1)
                     .replace("%STR2%", conditionValue2)
-                    .replace("%STRING3%", isCaseSensitive)
+                    .replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive))
             );
 //            execute_Action = true;
         } else {
@@ -662,7 +662,7 @@ public class ConditionService implements IConditionService {
                     .replace("%COND%", conditionOper)
                     .replace("%STR1%", conditionValue1)
                     .replace("%STR2%", conditionValue2)
-                    .replace("%STRING3%", isCaseSensitive)
+                    .replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive))
             );
 //            execute_Action = false;
         }
@@ -687,7 +687,7 @@ public class ConditionService implements IConditionService {
                     .replace("%COND%", conditionOper)
                     .replace("%STR1%", conditionValue1)
                     .replace("%STR2%", conditionValue2)
-                    .replace("%STRING3%", isCaseSensitive)
+                    .replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive))
             );
 //            execute_Action = true;
         } else {
@@ -696,7 +696,7 @@ public class ConditionService implements IConditionService {
                     .replace("%COND%", conditionOper)
                     .replace("%STR1%", conditionValue1)
                     .replace("%STR2%", conditionValue2)
-                    .replace("%STRING3%", isCaseSensitive)
+                    .replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive))
             );
 //            execute_Action = false;
         }
@@ -849,6 +849,15 @@ public class ConditionService implements IConditionService {
         ans.setItem(execute_Action);
         ans.setResultMessage(mes);
         return ans;
+    }
+
+    private String caseSensitiveMessageValue(String isCaseSensitive) {
+
+        if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false)) {
+            return "case sensitive";
+        } else {
+            return "case insensitive";
+        }
     }
 
     /**

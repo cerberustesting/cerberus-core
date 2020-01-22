@@ -351,32 +351,32 @@ public class ControlService implements IControlService {
     private MessageEvent verifyStringDifferent(String value1, String value2, String isCaseSensitive) {
         MessageEvent mes;
         if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? !value1.equals(value2) : !value1.equalsIgnoreCase(value2)) {
-            mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_DIFFERENT);
+            mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_STRINGDIFFERENT);
             mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
             mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-            mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
+            mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_DIFFERENT);
         mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
         mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-        mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
+        mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
         return mes;
     }
 
     private MessageEvent verifyStringEqual(String value1, String value2, String isCaseSensitive) {
         MessageEvent mes;
         if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? value1.equals(value2) : value1.equalsIgnoreCase(value2)) {
-            mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_EQUAL);
+            mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_STRINGEQUAL);
             mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
             mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-            mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
+            mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_EQUAL);
         mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
         mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-        mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
+        mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
         return mes;
 
     }
@@ -387,13 +387,13 @@ public class ControlService implements IControlService {
             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_CONTAINS);
             mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
             mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-            mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
+            mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_CONTAINS);
         mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
         mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-        mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
+        mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
         return mes;
 
     }
@@ -405,14 +405,14 @@ public class ControlService implements IControlService {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCONTAINS);
             mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
             mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-            mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
+            mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
 
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTCONTAINS);
         mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
         mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-        mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
+        mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
         return mes;
 
     }
@@ -982,7 +982,7 @@ public class ControlService implements IControlService {
                 mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                 mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                 mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
-                mes.setDescription(mes.getDescription().replace("%STRING4%", isCaseSensitive));
+                mes.setDescription(mes.getDescription().replace("%STRING4%", caseSensitiveMessageValue(isCaseSensitive)));
                 return mes;
 
             } else if (Application.TYPE_SRV.equalsIgnoreCase(applicationType)) {
@@ -1009,7 +1009,7 @@ public class ControlService implements IControlService {
                             mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                             mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                             mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
-                            mes.setDescription(mes.getDescription().replace("%STRING4%", isCaseSensitive));
+                            mes.setDescription(mes.getDescription().replace("%STRING4%", caseSensitiveMessageValue(isCaseSensitive)));
                             return mes;
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
@@ -1031,7 +1031,7 @@ public class ControlService implements IControlService {
                         mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                         mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                         mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
-                        mes.setDescription(mes.getDescription().replace("%STRING4%", isCaseSensitive));
+                        mes.setDescription(mes.getDescription().replace("%STRING4%", caseSensitiveMessageValue(isCaseSensitive)));
                         return mes;
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
@@ -1102,7 +1102,7 @@ public class ControlService implements IControlService {
                 mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                 mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                 mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
-                mes.setDescription(mes.getDescription().replace("%STRING4%", isCaseSensitive));
+                mes.setDescription(mes.getDescription().replace("%STRING4%", caseSensitiveMessageValue(isCaseSensitive)));
                 return mes;
 
             } else if (Application.TYPE_SRV.equalsIgnoreCase(applicationType)) {
@@ -1130,7 +1130,7 @@ public class ControlService implements IControlService {
                             mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                             mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                             mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
-                            mes.setDescription(mes.getDescription().replace("%STRING4%", isCaseSensitive));
+                            mes.setDescription(mes.getDescription().replace("%STRING4%", caseSensitiveMessageValue(isCaseSensitive)));
                             return mes;
 
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
@@ -1517,20 +1517,20 @@ public class ControlService implements IControlService {
                     }
                 });
                 LOG.debug("After wait" + System.currentTimeMillis());
-                
+
                 pageTitle = this.webdriverService.getTitle(tCExecution.getSession());
 
                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TITLE);
                 mes.setDescription(mes.getDescription().replace("%STRING1%", pageTitle));
                 mes.setDescription(mes.getDescription().replace("%STRING2%", title));
-                mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
+                mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
                 return mes;
 
             } catch (TimeoutException exception) {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TITLE);
                 mes.setDescription(mes.getDescription().replace("%STRING1%", pageTitle));
                 mes.setDescription(mes.getDescription().replace("%STRING2%", title));
-                mes.setDescription(mes.getDescription().replace("%STRING3%", isCaseSensitive));
+                mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
                 return mes;
             } catch (WebDriverException exception) {
                 return parseWebDriverException(exception);
@@ -1655,6 +1655,15 @@ public class ControlService implements IControlService {
             }
         } else {
             return new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCLICKABLE_NULL);
+        }
+    }
+
+    private String caseSensitiveMessageValue(String isCaseSensitive) {
+
+        if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false)) {
+            return "case sensitive";
+        } else {
+            return "case insensitive";
         }
     }
 
