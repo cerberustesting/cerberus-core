@@ -152,7 +152,9 @@ public class RobotServerService implements IRobotServerService {
              * level, set the selenium & appium wait element with this value,
              * else, take the one from parameter
              */
-            Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, cerberus_selenium_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout, cerberus_appium_action_longpress_wait;
+            Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, 
+                    cerberus_selenium_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout, 
+                    cerberus_appium_action_longpress_wait, cerberus_selenium_autoscroll_vertical_offset, cerberus_selenium_autoscroll_horizontal_offset;
             boolean cerberus_selenium_autoscroll;
 
             if (!tCExecution.getTimeout().isEmpty()) {
@@ -168,6 +170,8 @@ public class RobotServerService implements IRobotServerService {
             cerberus_selenium_setScriptTimeout = parameterService.getParameterIntegerByKey("cerberus_selenium_setScriptTimeout", system, 90000);
             cerberus_selenium_action_click_timeout = parameterService.getParameterIntegerByKey("cerberus_selenium_action_click_timeout", system, 90000);
             cerberus_selenium_autoscroll = parameterService.getParameterBooleanByKey("cerberus_selenium_autoscroll", system, false);
+            cerberus_selenium_autoscroll_vertical_offset = parameterService.getParameterIntegerByKey("cerberus_selenium_autoscroll_vertical_offset", system, 0);
+            cerberus_selenium_autoscroll_horizontal_offset = parameterService.getParameterIntegerByKey("cerberus_selenium_autoscroll_horizontal_offset", system, 0);
             cerberus_appium_action_longpress_wait = parameterService.getParameterIntegerByKey("cerberus_appium_action_longpress_wait", system, 8000);
             LOG.debug("TimeOut defined on session : " + cerberus_selenium_wait_element);
 
@@ -184,6 +188,8 @@ public class RobotServerService implements IRobotServerService {
             session.setHostPassword(tCExecution.getSeleniumIPPassword());
             session.setPort(tCExecution.getRobotPort());
             session.setCerberus_selenium_autoscroll(cerberus_selenium_autoscroll);
+            session.setCerberus_selenium_autoscroll_vertical_offset(cerberus_selenium_autoscroll_vertical_offset);
+            session.setCerberus_selenium_autoscroll_horizontal_offset(cerberus_selenium_autoscroll_horizontal_offset);
             tCExecution.setSession(session);
             tCExecution.setRobotProvider(guessRobotProvider(session.getHost()));
             LOG.debug("Session is set.");

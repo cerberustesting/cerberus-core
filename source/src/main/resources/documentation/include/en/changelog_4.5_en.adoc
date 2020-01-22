@@ -13,6 +13,7 @@
 * ReportByTag now only display Test Case that require some analysis to be done (ie : are not fully OK or QU or have a bugId defined at test case level). That avoid display lines where nothing needs to be analyzed. That can be changed with a flag near the refresh button.
 * Multiple bugs can now be assigned to testcase (adding description, activation and date of creation and closure). parameter cerberus_testcasepage_controlemptybugdescription allow to activate a control on empty description. #1926 #1946
 * Controls 'verifyUrl' and 'verifyTitle' are now retried until the timeout is reached when they return KO. The behavior before was to check only once #2071.
+* Offset parameters (Vertical and Horizontal) can now be set and will be applied after Autoscrolling to elements.#2079
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

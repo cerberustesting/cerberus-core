@@ -8384,6 +8384,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + " ('PLATFORM', 'IOS', '20', 'iOS Platform', '');");
 
         
+        // ADD autoscroll parameters
+        // 1468
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+         + " ('', 'cerberus_selenium_autoscroll_vertical_offset', '0', 'Integer that correspond to the hertical offset applied after autoscrolling to element. '), "
+         + " ('', 'cerberus_selenium_autoscroll_horizontal_offset', '0', 'Integer that correspond to the horizontal offset applied after autoscrolling to element');");
+
+        
         return a;
     }
 

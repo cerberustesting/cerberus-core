@@ -42,6 +42,7 @@ import java.util.regex.PatternSyntaxException;
 import javax.imageio.ImageIO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
@@ -74,6 +75,7 @@ import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -88,6 +90,9 @@ public class WebDriverService implements IWebDriverService {
     private static final int TIMEOUT_FOCUS = 1000;
 
     private static final Logger LOG = LogManager.getLogger("WebDriverService");
+
+    @Autowired
+    ParameterService parameterService;
 
     private By getBy(Identifier identifier) {
 
@@ -121,18 +126,36 @@ public class WebDriverService implements IWebDriverService {
 
     @Override
     public MessageEvent scrollTo(Session session, Identifier identifier, String text) {
-        WebDriver mWebdriver = session.getDriver();
-        MessageEvent message;
+        MessageEvent message = null;
+        WebElement webElement = null;
 
         try {
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO);
             if (StringUtil.isNullOrEmpty(text)) {
-                scrollElement(mWebdriver, identifier);
+                AnswerItem answer = this.getSeleniumElement(session, identifier, false, false);
+                if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
+                    webElement = (WebElement) answer.getItem();
+                }
             } else {
-                scrollText(mWebdriver, text);
+                webElement = session.getDriver().findElement(By.xpath("//*[contains(text()," + text + ")]"));
             }
+
+            if (webElement != null) {
+
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO);
+                if (StringUtil.isNullOrEmpty(text)) {
+                    scrollElement(session, webElement);
+                } else {
+                    scrollText(session, webElement);
+                }
+            }
+
             return message;
 
+        } catch (NoSuchElementException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SCROLL_NO_SUCH_ELEMENT);
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            LOG.debug(exception.toString());
+            return message;
         } catch (Exception e) {
             LOG.error("An error occured during scroll to (element:" + identifier, e);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
@@ -143,33 +166,22 @@ public class WebDriverService implements IWebDriverService {
 
     }
 
-    private void scrollText(WebDriver driver, String text) {
+    private void scrollText(Session session,  WebElement element) {
         // Create instance of Javascript executor
-        JavascriptExecutor je = (JavascriptExecutor) driver;
-
-        //Identify the WebElement which will appear after scrolling down
-        WebElement element = driver.findElement(By.xpath("//*[contains(text()," + text + ")]"));
+        JavascriptExecutor je = (JavascriptExecutor) session.getDriver();
 
         // now execute query which actually will scroll until that element is not appeared on page.
-        je.executeScript("arguments[0].scrollIntoView(true);", element);
+        je.executeScript("arguments[0].scrollIntoView(true);window.scrollBy(" + session.getCerberus_selenium_autoscroll_horizontal_offset() + "," + session.getCerberus_selenium_autoscroll_vertical_offset() + ");", element);
     }
 
-    private void scrollElement(WebDriver driver, Identifier identifier) {
+    private void scrollElement(Session session, WebElement element) {
         /**
          * WebElement element =
          * driver.findElement(By.id(identifier.getLocator())); Actions actions =
          * new Actions(driver); actions.moveToElement(element);
          * actions.perform();
          */
-        WebElement element;
-        String locator = identifier.getLocator().replaceAll("\"", "");
-        if (identifier.getIdentifier().contains("xpath")) {
-            element = driver.findElement(By.xpath(locator));
-        } else {
-            element = driver.findElement(By.xpath("//*[@" + identifier.getIdentifier() + "='" + locator + "']"));
-        }
-
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", element);
+        ((JavascriptExecutor) session.getDriver()).executeScript("arguments[0].scrollIntoView();window.scrollBy(" + session.getCerberus_selenium_autoscroll_horizontal_offset() + "," + session.getCerberus_selenium_autoscroll_vertical_offset() + ");", element);
 
     }
 
@@ -183,7 +195,8 @@ public class WebDriverService implements IWebDriverService {
             WebElement element;
             if (visible) {
                 if (session.isCerberus_selenium_autoscroll()) {
-                    scrollElement(session.getDriver(), identifier);
+                    element = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+                    scrollElement(session, element);
                 }
                 if (clickable) {
                     element = wait.until(ExpectedConditions.elementToBeClickable(locator));
