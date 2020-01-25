@@ -2036,6 +2036,8 @@
             <url-pattern>/ForgotPassword</url-pattern>
             <url-pattern>/ForgotPasswordEmailConfirmation</url-pattern>
             <url-pattern>/ChangeUserPassword</url-pattern>
+            <!--            Ressources used during TestExecution Servlets -->
+            <url-pattern>/ReadApplicationObjectImage</url-pattern>
             <!--            Dummy Servlets -->
             <url-pattern>/DummyRESTCall</url-pattern>
             <url-pattern>/DummyRESTCallEmpty</url-pattern>
@@ -2083,7 +2085,6 @@
             <url-pattern>/ReadParameter</url-pattern>
             <url-pattern>/GetExecutionsInQueue</url-pattern>
             <url-pattern>/ReadDocumentation</url-pattern>
-            <url-pattern>/ReadApplicationObjectImage</url-pattern>
             <url-pattern>/ReadLabel</url-pattern>
         </web-resource-collection>
         <auth-constraint>
