@@ -6,8 +6,8 @@ ENV KEYCLOACK_REALM Cerberus
 ENV KEYCLOACK_CLIENT cerberus
 ENV KEYCLOACK_URL http://192.168.1.1:8080/auth
 ENV CATALINA_OPTS="-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=keycloak -Xmx1024m"
-ENV KEYCLOACK_VERSION 4.8.0.Final
-ENV KEYCLOACK_TOMCAT8_ADAPTER_NAME keycloak-tomcat8-adapter-dist-${KEYCLOACK_VERSION}
+ENV KEYCLOACK_VERSION 8.0.1
+ENV KEYCLOACK_TOMCAT8_ADAPTER_NAME keycloak-tomcat-adapter-dist-${KEYCLOACK_VERSION}
 
 ENV DATABASE_HOST cerberus-db-mysql
 ENV DATABASE_PORT 3306
@@ -19,12 +19,12 @@ ARG CERBERUS_NAME=Cerberus
 ARG CERBERUS_VERSION=4.5
 ARG CERBERUS_PACKAGE_NAME=${CERBERUS_NAME}-${CERBERUS_VERSION}
 
-ARG MYSQL_JAVA_CONNECTOR_VERSION=5.1.20
+ARG MYSQL_JAVA_CONNECTOR_VERSION=5.1.47
 ARG MYSQL_JAVA_CONNECTOR_NAME=mysql-connector-java-${MYSQL_JAVA_CONNECTOR_VERSION}
 
 # Download and install MySQL JDBC Drivers
 RUN echo "Download & install MySQL JDBC Drivers" && \
-    wget -P /tmp/ https://downloads.mysql.com/archives/get/file/${MYSQL_JAVA_CONNECTOR_NAME}.zip && \
+    wget -P /tmp/ https://downloads.mysql.com/archives/get/p/3/file/${MYSQL_JAVA_CONNECTOR_NAME}.zip && \
     unzip -q -d /tmp/ /tmp/${MYSQL_JAVA_CONNECTOR_NAME}.zip && \
     mv /tmp/${MYSQL_JAVA_CONNECTOR_NAME}/${MYSQL_JAVA_CONNECTOR_NAME}-bin.jar  /usr/local/tomcat/lib/ && \
     echo "Clean temp directory" && \
