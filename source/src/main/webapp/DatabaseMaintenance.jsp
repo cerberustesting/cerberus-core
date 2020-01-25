@@ -64,7 +64,7 @@
                 // this is used in order to execute only 1 instruction at a time as it make take a lot of time to process.
                 boolean SQLExecuted = false;
                 // SQL that has version equal to SQLLimit will not be executed automatically.
-                Integer SQLLimit = 1463; // 4.4 Version LEVEL.
+                Integer SQLLimit = 1469; // 4.5 Version LEVEL.
                 IFactoryMyversion factoryMyversion;
 
                 try {
