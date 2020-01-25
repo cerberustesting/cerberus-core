@@ -14,12 +14,12 @@ ARG CERBERUS_NAME=Cerberus
 ARG CERBERUS_VERSION=4.5
 ARG CERBERUS_PACKAGE_NAME=${CERBERUS_NAME}-${CERBERUS_VERSION}
 
-ARG MYSQL_JAVA_CONNECTOR_VERSION=5.1.20
+ARG MYSQL_JAVA_CONNECTOR_VERSION=5.1.47
 ARG MYSQL_JAVA_CONNECTOR_NAME=mysql-connector-java-${MYSQL_JAVA_CONNECTOR_VERSION}
 
 # Download & install MySQL JDBC Drivers
 RUN echo "Download & install MySQL JDBC Drivers" && \
-    wget -P /tmp/ https://downloads.mysql.com/archives/get/file/${MYSQL_JAVA_CONNECTOR_NAME}.zip && \
+    wget -P /tmp/ https://downloads.mysql.com/archives/get/p/3/file/${MYSQL_JAVA_CONNECTOR_NAME}.zip && \
     unzip -q -d /tmp/ /tmp/${MYSQL_JAVA_CONNECTOR_NAME}.zip && \
     mv /tmp/${MYSQL_JAVA_CONNECTOR_NAME}/${MYSQL_JAVA_CONNECTOR_NAME}-bin.jar  /usr/local/tomcat/lib/ && \
     echo "Clean temp directory" && \
