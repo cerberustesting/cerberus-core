@@ -19,18 +19,33 @@
  */
 package org.cerberus.crud.service.impl;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestDAO;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.Test;
+import org.cerberus.crud.entity.TestCaseStep;
+import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * {Insert class description here}
@@ -44,10 +59,16 @@ public class TestService implements ITestService {
 
     @Autowired
     private ITestDAO testDao;
+    @Autowired
+    private ITestCaseStepService testCaseStepService;
+    @Autowired
+    private IParameterService parameterService;
+
+    private static final Logger LOG = LogManager.getLogger(TestService.class);
 
     @Override
     public AnswerItem<Test> readByKey(String test) {
-        return  AnswerUtil.convertToAnswerItem(() -> testDao.readByKey(test));
+        return AnswerUtil.convertToAnswerItem(() -> testDao.readByKey(test));
     }
 
     @Override
@@ -112,4 +133,135 @@ public class TestService implements ITestService {
     public AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         return testDao.readDistinctValuesByCriteria(searchTerm, individualSearch, columnName);
     }
+
+    @Override
+    public Answer deleteIfNotUsed(String test) {
+
+        Answer ans = new Answer();
+
+        AnswerItem resp = readByKey(test);
+
+        if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
+            // Object could not be found. We stop here and report the error.
+            ans.setResultMessage(
+                    new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED)
+                            .resolveDescription("ITEM", "Test")
+                            .resolveDescription("OPERATION", "Delete")
+                            .resolveDescription("REASON", "Test does not exist")
+            );
+        } else {
+            // The service was able to perform the query and confirm the object exist
+            Test testData = (Test) resp.getItem();
+
+            // Check if there is no associated Test Cases defining Step which is used OUTSIDE of the deleting Test
+            try {
+                final Collection<TestCaseStep> externallyUsedTestCaseSteps = externallyUsedTestCaseSteps(testData);
+                if (!externallyUsedTestCaseSteps.isEmpty()) {
+                    String cerberusUrlTemp = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
+                    if (StringUtil.isNullOrEmpty(cerberusUrlTemp)) {
+                        cerberusUrlTemp = parameterService.getParameterStringByKey("cerberus_url", "", "");
+                    }
+                    final String cerberusUrl = cerberusUrlTemp;
+
+                    ans.setResultMessage(
+                            new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED)
+                                    .resolveDescription("ITEM", "Test")
+                                    .resolveDescription("OPERATION", "Delete")
+                                    .resolveDescription(
+                                            "REASON", "You are trying to remove a Test which contains Test Case Steps which are currently used by other Test Case Steps outside of the removing Test. Please remove this link before to proceed: "
+                                            + Collections2.transform(externallyUsedTestCaseSteps, new Function<TestCaseStep, String>() {
+                                                @Override
+                                                @Nullable
+                                                public String apply(@Nullable final TestCaseStep input) {
+                                                    return String.format(
+                                                            "<a href='%s/TestCaseScript.jsp?test=%s&testcase=%s&step=%s'>%s/%s#%s</a>",
+                                                            cerberusUrl,
+                                                            input.getTest(),
+                                                            input.getTestCase(),
+                                                            input.getStep(),
+                                                            input.getTest(),
+                                                            input.getTestCase(),
+                                                            input.getStep()
+                                                    );
+                                                }
+                                            }
+                                            )
+                                    )
+                    );
+                } else {
+                    // Test seems clean, process to delete
+                    ans = delete(testData);
+                }
+            } catch (final CerberusException e) {
+                LOG.error(e.getMessage(), e);
+                ans.setResultMessage(new MessageEvent(
+                        MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED)
+                        .resolveDescription("DESCRIPTION", "Unexpected error: " + e.getMessage())
+                );
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * Get {@link TestCaseStep} which are using an other {@link TestCaseStep}
+     * from the given {@link Test} but which are NOT included into this
+     * {@link Test}
+     *
+     * @param test the {@link Test} from which getting externally used
+     * {@link TestCaseStep}s
+     * @return a {@link Collection} of {@link TestCaseStep} which are using an
+     * other {@link TestCaseStep} from the given {@link Test} but which are NOT
+     * included into this {@link Test}
+     * @throws CerberusException if an unexpected error occurred
+     */
+    private Collection<TestCaseStep> externallyUsedTestCaseSteps(final Test test) throws CerberusException {
+
+        final List<TestCaseStep> stepsInUse = testCaseStepService.getTestCaseStepsUsingTestInParameter(test.getTest());
+
+        // Filter the retrieved list to only retain those which are not included from the given Test
+        return Collections2.filter(stepsInUse, new Predicate<TestCaseStep>() {
+            @Override
+            public boolean apply(@Nullable final TestCaseStep input) {
+                return !input.getTest().equals(test.getTest());
+            }
+
+            @Override
+            public boolean test(TestCaseStep t) {
+                return Predicate.super.test(t); //To change body of generated methods, choose Tools | Templates.
+            }
+        });
+    }
+
+    
+    @Override
+    public Answer updateIfExists(String originalTest, Test test) {
+        Answer ans = new Answer();
+        AnswerItem resp = this.readByKey(originalTest);
+
+        if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
+            /**
+             * Object could not be found. We stop here and report the error.
+             */
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "Test does not exist."));
+            ans.setResultMessage(msg);
+
+        } else {
+            /**
+             * The service was able to perform the query and confirm the object
+             * exist, then we can update it.
+             */
+            Test testData = (Test) resp.getItem();
+            testData.setTest(test.getTest());
+            testData.setDescription(test.getDescription());
+            testData.setActive(test.getActive());
+            ans = this.update(originalTest, testData);
+
+        }
+        return ans;
+    }
+
 }

@@ -123,4 +123,19 @@ public interface ITestService {
      * @return
      */
     AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
+    
+    /**
+     * Delete test if no testCase attached to the test
+     * @param test
+     * @return Answer
+     */
+    public Answer deleteIfNotUsed(String test);
+    
+    /**
+     * Upfdate test if exists
+     * @param originalTest : The test name of the object to update
+     * @param test : The testObject to use for the update
+     * @return Answer
+     */
+    public Answer updateIfExists(String originalTest, Test test);
 }

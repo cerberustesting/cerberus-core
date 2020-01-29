@@ -43,6 +43,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.*;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -394,6 +395,32 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         List<TestCaseExecution> result = new ArrayList<>(testCaseExecutionsList.values());
 
         return result;
+    }
+
+    public JSONArray getLastByCriteria(String test, String testCase, String tag, String campaign, Integer numberOfExecution) throws CerberusException {
+
+        Map<String, List<String>> map = new HashMap();
+        AddElementToMap(map, "test", test);
+        AddElementToMap(map, "testCase", testCase);
+        
+        if (tag != null) {
+            AddElementToMap(map, "tag", tag);
+        }
+     
+        AnswerList<TestCaseExecution> list = readByCriteria(0, numberOfExecution, " exe.`id` desc ", null, map, null, null);
+
+        JSONArray ja = new JSONArray();
+        for (TestCaseExecution tce : list.getDataList()) {
+            TestCaseExecution tcex = this.readByKeyWithDependency(tce.getId()).getItem();
+            ja.put(tcex.toJson(true));
+        }
+        return ja;
+    }
+    
+    private void AddElementToMap(Map<String, List<String>> map, String key, String value){
+        List<String> element = new ArrayList();
+        element.add(value);
+        map.put(key, element);
     }
 
 }
