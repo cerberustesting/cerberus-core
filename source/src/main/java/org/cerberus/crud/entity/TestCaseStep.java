@@ -42,8 +42,9 @@ public class TestCaseStep {
     private String conditionOper;
     private String conditionVal1;
     private String conditionVal2;
+    private String conditionVal3;
     private String description;
-    private String useStep;  //  Y if the step use a step from another test 
+    private String useStep;  //  Y if the step use a step from another test
     private String useStepTest; //  The test of the used step
     private String useStepTestCase;  // The testcase of the used step
     private Integer useStepStep;   //  the step used
@@ -235,6 +236,14 @@ public class TestCaseStep {
         this.conditionVal2 = conditionVal2;
     }
 
+    public String getConditionVal3() {
+        return conditionVal3;
+    }
+
+    public void setConditionVal3(String conditionVal3) {
+        this.conditionVal3 = conditionVal3;
+    }
+
     public void setStep(int step) {
         this.step = step;
     }
@@ -286,6 +295,7 @@ public class TestCaseStep {
         hash = 29 * hash + (this.conditionOper != null ? this.conditionOper.hashCode() : 0);
         hash = 29 * hash + (this.conditionVal1 != null ? this.conditionVal1.hashCode() : 0);
         hash = 29 * hash + (this.conditionVal2 != null ? this.conditionVal2.hashCode() : 0);
+        hash = 29 * hash + (this.conditionVal3 != null ? this.conditionVal3.hashCode() : 0);
         hash = 29 * hash + (this.description != null ? this.description.hashCode() : 0);
         hash = 29 * hash + (this.useStep != null ? this.useStep.hashCode() : 0);
         hash = 29 * hash + (this.useStepTest != null ? this.useStepTest.hashCode() : 0);
@@ -328,6 +338,9 @@ public class TestCaseStep {
         if (this.conditionVal2 != other.conditionVal2 && (this.conditionVal2 == null || !this.conditionVal2.equals(other.conditionVal2))) {
             return false;
         }
+        if (this.conditionVal3 != other.conditionVal3 && (this.conditionVal3 == null || !this.conditionVal3.equals(other.conditionVal3))) {
+            return false;
+        }
         if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
             return false;
         }
@@ -367,6 +380,7 @@ public class TestCaseStep {
             result.put("conditionOper", this.getConditionOper());
             result.put("conditionVal1", this.getConditionVal1());
             result.put("conditionVal2", this.getConditionVal2());
+            result.put("conditionVal3", this.getConditionVal3());
             result.put("description", this.getDescription());
             result.put("useStep", this.getUseStep());
             result.put("useStepTest", this.getUseStepTest());

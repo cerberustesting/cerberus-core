@@ -76,4 +76,20 @@ public final class ServletUtil {
 
     }
 
+    public static String getUser(HttpServletRequest request) {
+        String user = request.getRemoteUser();
+        if (user != null) {
+            return user;
+        }
+        if (request.getUserPrincipal() != null) {
+            user = request.getUserPrincipal().getName();
+            if (user == null) {
+                return "";
+            } else {
+                return user;
+            }
+        }
+        return "";
+    }
+
 }

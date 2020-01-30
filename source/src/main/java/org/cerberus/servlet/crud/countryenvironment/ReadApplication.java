@@ -184,9 +184,9 @@ public class ReadApplication extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findApplicationList(List<String> system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findApplicationList(List<String> system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         applicationService = appContext.getBean(ApplicationService.class);
 
@@ -214,7 +214,7 @@ public class ReadApplication extends HttpServlet {
             }
         }
 
-        AnswerList resp = applicationService.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<Application> resp = applicationService.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -233,8 +233,8 @@ public class ReadApplication extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findApplicationByKey(String id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findApplicationByKey(String id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject response = new JSONObject();
 
         IApplicationService libService = appContext.getBean(IApplicationService.class);
@@ -263,8 +263,8 @@ public class ReadApplication extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(List<String> system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(List<String> system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         applicationService = appContext.getBean(IApplicationService.class);

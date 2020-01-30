@@ -395,10 +395,10 @@ function appendEnvironmentRow(env) {
     var drow02 = $("<div class='row'></div>").append(country);
     var td2 = $("<td></td>").append(drow01).append(drow02);
 
-    var ipName = $("<div class='form-group col-sm-6'></div>").append("<label for='ip'>" + doc.getDocOnline("countryenvironmentparameters", "IP") + "</label>").append(ipInput);
-    var urlName = $("<div class='form-group col-sm-4'></div>").append("<label for='url'>" + doc.getDocOnline("countryenvironmentparameters", "URL") + "</label>").append(urlInput);
-    var poolSizeName = $("<div class='form-group col-sm-1'></div>").append("<label for='poolSize'>" + doc.getDocOnline("countryenvironmentparameters", "poolSize") + "</label>").append(poolSizeInput);
-    var expandName = $("<div class='form-group col-sm-1'></div>").append("<button class='btn btn-primary' type='button' data-toggle='collapse' data-target='#col" + nbRow + "' aria-expanded='false' aria-controls='col" + nbRow + "'><span class='glyphicon glyphicon-chevron-down'></span></button>");
+    var ipName = $("<div class='form-group col-sm-5'></div>").append("<label for='ip'>" + doc.getDocOnline("countryenvironmentparameters", "IP") + "</label>").append(ipInput);
+    var urlName = $("<div class='form-group col-sm-3'></div>").append("<label for='url'>" + doc.getDocOnline("countryenvironmentparameters", "URL") + "</label>").append(urlInput);
+    var poolSizeName = $("<div class='form-group col-sm-2'></div>").append("<label for='poolSize'>" + doc.getDocOnline("countryenvironmentparameters", "poolSize") + "</label>").append(poolSizeInput);
+    var expandName = $("<div class='form-group col-sm-2'></div>").append("<button class='btn btn-primary' type='button' data-toggle='collapse' data-target='#col" + nbRow + "' aria-expanded='false' aria-controls='col" + nbRow + "'><span class='glyphicon glyphicon-chevron-down'></span></button>");
     var drow1 = $("<div class='row'></div>").append(ipName).append(urlName).append(poolSizeName).append(expandName);
 
     var loginName = $("<div class='form-group col-sm-6'></div>").append("<label for='login'>" + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN") + "</label>").append(urlLoginInput);
@@ -511,7 +511,8 @@ function displayWarningOnChangeApplicationKey() {
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": null,
+        {
+            "data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
@@ -537,40 +538,56 @@ function aoColumnsFunc(tableId) {
                 return '<div class="center btn-group width150">' + viewApplication + '</div>';
             }
         },
-        {"data": "application",
+        {
+            "data": "application",
             "sName": "application",
             "sWidth": "60px",
             "title": doc.getDocOnline("application", "Application")},
-        {"data": "description",
+        {
+            "data": "description",
             "like": true,
             "sName": "description",
             "sWidth": "80px",
             "title": doc.getDocOnline("application", "Description")},
-        {"data": "sort",
+        {
+            "data": "sort",
+            "visible": false,
             "sName": "sort",
             "sWidth": "60px",
             "title": doc.getDocOnline("application", "sort")},
-        {"data": "type",
+        {
+            "data": "type",
             "sName": "type",
             "sWidth": "60px",
             "title": doc.getDocOnline("application", "type")},
-        {"data": "system",
+        {
+            "data": "system",
             "sName": "system",
             "sWidth": "60px",
             "title": doc.getDocOnline("application", "system")},
-        {"data": "subsystem",
+        {
+            "data": "subsystem",
+            "visible": false,
             "sName": "subsystem",
             "sWidth": "60px",
-            "title": doc.getDocOnline("application", "subsystem")},
-        {"data": "svnurl",
-            "sName": "svnurl",
-            "sWidth": "80px",
-            "title": doc.getDocOnline("application", "svnurl"),
-            "mRender": function (data, type, oObj) {
-                return drawURL(data);
-            }
+            "title": doc.getDocOnline("application", "subsystem")
         },
-        {"data": "bugTrackerUrl",
+        {
+            "data": "subsystem",
+            "visible": false,
+            "sName": "subsystem",
+            "sWidth": "60px",
+            "title": doc.getDocOnline("application", "subsystem")
+        },
+        {
+            "data": "poolSize",
+            "sName": "poolSize",
+            "sWidth": "80px",
+            "title": doc.getDocOnline("application", "poolSize"),
+        },
+        {
+            "data": "bugTrackerUrl",
+            "visible": false,
             "like": true,
             "sName": "bugTrackerUrl",
             "sWidth": "80px",
@@ -579,7 +596,9 @@ function aoColumnsFunc(tableId) {
                 return drawURL(data);
             }
         },
-        {"data": "bugTrackerNewUrl",
+        {
+            "data": "bugTrackerNewUrl",
+            "visible": false,
             "like": true,
             "sName": "bugTrackerNewUrl",
             "sWidth": "80px",
@@ -588,14 +607,20 @@ function aoColumnsFunc(tableId) {
                 return drawURL(data);
             }
         },
-        {"data": "deploytype",
+        {
+            "data": "deploytype",
+            "visible": false,
             "sName": "deploytype",
             "sWidth": "60px",
-            "title": doc.getDocOnline("application", "deploytype")},
-        {"data": "mavengroupid",
+            "title": doc.getDocOnline("application", "deploytype")
+        },
+        {
+            "data": "mavengroupid",
+            "visible": false,
             "sName": "mavengroupid",
             "sWidth": "60px",
-            "title": doc.getDocOnline("application", "mavengroupid")}
+            "title": doc.getDocOnline("application", "mavengroupid")
+        }
     ];
     return aoColumns;
 }
@@ -603,31 +628,50 @@ function aoColumnsFunc(tableId) {
 function aoColumnsFunc_object(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": "application",
+        {
+            "data": "application",
             "sName": "application",
-            "title": doc.getDocOnline("application", "Application")},
-        {"data": "object",
+            "visible" : false,
+            "title": doc.getDocOnline("application", "Application")
+        },
+        {
+            "data": "object",
             "sName": "object",
-            "title": doc.getDocOnline("applicationObject", "Object")},
-        {"data": "value",
+            "title": doc.getDocOnline("applicationObject", "Object")
+        },
+        {
+            "data": "value",
             "sName": "value",
-            "title": doc.getDocOnline("applicationObject", "Value")},
-        {"data": "screenshotfilename",
+            "title": doc.getDocOnline("applicationObject", "Value")
+        },
+        {
+            "data": "screenshotfilename",
             "sName": "screenshotfilename",
-            "title": doc.getDocOnline("applicationObject", "ScreenshotFileName")},
-        {"data": "usrcreated",
+            "title": doc.getDocOnline("applicationObject", "ScreenshotFileName")
+        },
+        {
+            "data": "usrcreated",
             "sName": "usrcreated",
-            "title": doc.getDocOnline("transversal", "UsrCreated")},
-        {"data": "datecreated",
+            "visible" : false,
+            "title": doc.getDocOnline("transversal", "UsrCreated")
+        },
+        {
+            "data": "datecreated",
             "like": true,
+            "visible" : false,
             "sName": "datecreated",
-            "title": doc.getDocOnline("transversal", "DateCreated")},
-        {"data": "usrmodif",
+            "title": doc.getDocOnline("transversal", "DateCreated")
+        },
+        {
+            "data": "usrmodif",
+            "visible" : false,
             "sName": "usrmodif",
             "title": doc.getDocOnline("transversal", "UsrModif")
         },
-        {"data": "datemodif",
+        {
+            "data": "datemodif",
             "like": true,
+            "visible" : false,
             "sName": "datemodif",
             "title": doc.getDocOnline("transversal", "DateModif")
         }

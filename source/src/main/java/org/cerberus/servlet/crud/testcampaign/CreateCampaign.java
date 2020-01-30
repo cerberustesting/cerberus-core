@@ -106,6 +106,9 @@ public class CreateCampaign extends HttpServlet {
         String label = ParameterParserUtil.parseStringParam(request.getParameter("Labels"), null);
         String desc = ParameterParserUtil.parseStringParam(request.getParameter("Description"), null);
         String longDesc = ParameterParserUtil.parseStringParam(request.getParameter("LongDescription"), null);
+        String group1 = ParameterParserUtil.parseStringParam(request.getParameter("Group1"), "");
+        String group2 = ParameterParserUtil.parseStringParam(request.getParameter("Group2"), "");
+        String group3 = ParameterParserUtil.parseStringParam(request.getParameter("Group3"), "");
 
         String slackWebhook = ParameterParserUtil.parseStringParam(request.getParameter("SlackWebhook"), "");
         String slackChannel = ParameterParserUtil.parseStringParam(request.getParameter("SlackChannel"), "");
@@ -119,11 +122,6 @@ public class CreateCampaign extends HttpServlet {
         String retries = ParameterParserUtil.parseStringParam(request.getParameter("Retries"), "");
         String priority = ParameterParserUtil.parseStringParam(request.getParameter("Priority"), "");
         String manualExecution = ParameterParserUtil.parseStringParam(request.getParameter("ManualExecution"), "");
-
-        // Getting list of application from JSON Call
-        JSONArray objApplicationArray = new JSONArray(request.getParameter("SchedulerList"));
-        List<ScheduleEntry> schList = new ArrayList<>();
-        schList = getScheduleEntryListFromParameter(request, appContext, name, objApplicationArray);
 
         if (StringUtil.isNullOrEmpty(name)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
@@ -139,78 +137,88 @@ public class CreateCampaign extends HttpServlet {
                     slackNotifyStartTagExecution, slackNotifyEndTagExecution, slackWebhook, slackChannel,
                     cIScoreThreshold,
                     tag, verbose, screenshot, pageSource, robotLog, timeout, retries, priority, manualExecution,
-                    desc, longDesc,
+                    desc, longDesc, group1, group2, group3,
                     request.getRemoteUser(), null, null, null);
-            
+
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Scheduler").replace("%OPERATION%", "No Insert"));
             schedAns.setResultMessage(msg);
-            if(!schList.isEmpty()){
-            IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
-            schedAns = scheduleentryservice.createListSched(schList);
-                if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
-                    myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
-                }
-            }         
-            if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
 
-                finalAnswer = campaignService.create(camp);
-                if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    /**
-                     * Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign : " + camp.getCampaign(), request);
-                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    
-            
-                    if (parameter != null) {
-                        JSONArray parameters = new JSONArray(parameter);
-                        ICampaignParameterService campaignParameterService = appContext.getBean(ICampaignParameterService.class);
-                        IFactoryCampaignParameter factoryCampaignParameter = appContext.getBean(IFactoryCampaignParameter.class);
-                        ans = campaignParameterService.deleteByCampaign(name);
-                        int i = 0;
-                        while (i < parameters.length() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                            JSONArray bat = parameters.getJSONArray(i);
-                            CampaignParameter co = factoryCampaignParameter.create(0, bat.getString(0), bat.getString(2), bat.getString(3));
-                            ans = campaignParameterService.create(co);
-                            i++;
-                            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                                /**
-                                 * Adding Log entry.
-                                 */
-                                logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Update Campaign Parameter : " + co.getCampaign() + ", " + co.getValue(), request);
-                            }
+            finalAnswer = campaignService.create(camp);
+            if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                /**
+                 * Adding Log entry.
+                 */
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign : " + camp.getCampaign(), request);
+                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+
+                if (request.getParameter("SchedulerList") != null) {
+                    // Getting list of Schedule Entries from JSON Call
+                    JSONArray objApplicationArray = new JSONArray(request.getParameter("SchedulerList"));
+                    List<ScheduleEntry> schList = new ArrayList<>();
+                    schList = getScheduleEntryListFromParameter(request, appContext, name, objApplicationArray);
+
+                    if (!schList.isEmpty()) {
+                        IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
+                        schedAns = scheduleentryservice.createListSched(schList);
+                        if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                            /**
+                             * Updating Scheduler Version.
+                             */
+                            IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
+                            myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
                         }
                     }
+                    if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    } else {
+                        finalAnswer = schedAns;
+                    }
+                }
 
-                    if (label != null) {
-                        JSONArray labels = new JSONArray(label);
-                        ICampaignLabelService campaignLabelService = appContext.getBean(ICampaignLabelService.class);
-                        IFactoryCampaignLabel factoryCampaignLabel = appContext.getBean(IFactoryCampaignLabel.class);
-                        ArrayList<CampaignLabel> arr = new ArrayList<>();
-                        for (int i = 0; i < labels.length(); i++) {
-                            JSONArray bat = labels.getJSONArray(i);
-                            CampaignLabel co = factoryCampaignLabel.create(0, bat.getString(0), Integer.valueOf(bat.getString(2)), request.getRemoteUser(), null, request.getRemoteUser(), null);
-                            arr.add(co);
-                        }
-
-                        finalAnswer = campaignLabelService.compareListAndUpdateInsertDeleteElements(name, arr);
-                        if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                if (parameter != null) {
+                    JSONArray parameters = new JSONArray(parameter);
+                    ICampaignParameterService campaignParameterService = appContext.getBean(ICampaignParameterService.class);
+                    IFactoryCampaignParameter factoryCampaignParameter = appContext.getBean(IFactoryCampaignParameter.class);
+                    ans = campaignParameterService.deleteByCampaign(name);
+                    int i = 0;
+                    while (i < parameters.length() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        JSONArray bat = parameters.getJSONArray(i);
+                        CampaignParameter co = factoryCampaignParameter.create(0, bat.getString(0), bat.getString(2), bat.getString(3));
+                        ans = campaignParameterService.create(co);
+                        i++;
+                        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                             /**
                              * Adding Log entry.
                              */
-                            logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign Label : " + camp.getCampaign(), request);
+                            logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign Parameter : " + co.getCampaign() + ", " + co.getValue(), request);
                         }
                     }
+                }
 
-                    if (ans != null && !ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        finalAnswer = ans;
+                if (label != null) {
+                    JSONArray labels = new JSONArray(label);
+                    ICampaignLabelService campaignLabelService = appContext.getBean(ICampaignLabelService.class);
+                    IFactoryCampaignLabel factoryCampaignLabel = appContext.getBean(IFactoryCampaignLabel.class);
+                    ArrayList<CampaignLabel> arr = new ArrayList<>();
+                    for (int i = 0; i < labels.length(); i++) {
+                        JSONArray bat = labels.getJSONArray(i);
+                        CampaignLabel co = factoryCampaignLabel.create(0, bat.getString(0), Integer.valueOf(bat.getString(2)), request.getRemoteUser(), null, request.getRemoteUser(), null);
+                        arr.add(co);
+                    }
+
+                    finalAnswer = campaignLabelService.compareListAndUpdateInsertDeleteElements(name, arr);
+                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Adding Log entry.
+                         */
+                        logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign Label : " + camp.getCampaign(), request);
                     }
                 }
-            } else {
-                finalAnswer = schedAns;
+
+                if (ans != null && !ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    finalAnswer = ans;
+                }
             }
         }
 
@@ -225,7 +233,6 @@ public class CreateCampaign extends HttpServlet {
     }
 
     private List<ScheduleEntry> getScheduleEntryListFromParameter(HttpServletRequest request, ApplicationContext appContext, String campaign, JSONArray json) throws JSONException {
-        LOG.debug("getscheduleentrylistfromparameters -----------------------");
         List<ScheduleEntry> scheList = new ArrayList<>();
         IScheduleEntryService scheService = appContext.getBean(IScheduleEntryService.class);
         IFactoryScheduleEntry scheFactory = appContext.getBean(IFactoryScheduleEntry.class);
@@ -239,6 +246,7 @@ public class CreateCampaign extends HttpServlet {
             boolean delete = tcsaJson.getBoolean("toDelete");
             String cronExpression = policy.sanitize(tcsaJson.getString("cronDefinition"));
             String active = policy.sanitize(tcsaJson.getString("active"));
+            String desc = policy.sanitize(tcsaJson.getString("description"));
             String strId = tcsaJson.getString("ID");
             String lastExecutionStr = tcsaJson.getString("lastExecution");
             String type = "CAMPAIGN";
@@ -259,15 +267,14 @@ public class CreateCampaign extends HttpServlet {
             Timestamp timestampfactice = new Timestamp(System.currentTimeMillis());
 
             if (!delete) {
-                ScheduleEntry sch = scheFactory.create(id, type, name, cronExpression, timestampfactice, active, "", timestampfactice, "", timestampfactice);
+                ScheduleEntry sch = scheFactory.create(id, type, name, cronExpression, timestampfactice, active, desc, request.getRemoteUser(), timestampfactice, request.getRemoteUser(), timestampfactice);
                 scheList.add(sch);
             }
         }
-        LOG.debug("scheList" + scheList);
         return scheList;
     }
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

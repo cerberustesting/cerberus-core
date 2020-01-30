@@ -37,17 +37,17 @@ public class DeployTypeService implements IDeployTypeService {
     private IDeployTypeDAO deployTypeDAO;
 
     @Override
-    public AnswerItem readByKey(String deployType) {
+    public AnswerItem<DeployType> readByKey(String deployType) {
         return deployTypeDAO.readByKey(deployType);
     }
 
     @Override
-    public AnswerList readAll() {
+    public AnswerList<DeployType> readAll() {
         return deployTypeDAO.readAll();
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<DeployType> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return deployTypeDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 

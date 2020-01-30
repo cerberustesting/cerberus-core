@@ -108,12 +108,12 @@ public class SqlLibraryService implements ISqlLibraryService {
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<SqlLibrary> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return sqlLibraryDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerItem readByKey(String key) {
+    public AnswerItem<SqlLibrary> readByKey(String key) {
         return sqlLibraryDao.readByKey(key);
     }
 

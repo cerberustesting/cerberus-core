@@ -1,0 +1,21 @@
+*Bug fixes*
+[square]
+* Reduced risk of having queue execution stuck in QUTEMP status (deadlock when inserting new records into queue).
+* Fixed issue when accessing images during a Sikuli Test Execution.  #2078
+
+*Improvements / New features*
+[square]
+* In case 2 different use Step has some same property name, the Property will now be taken from the 1 Step and not the last one. #1907
+* Improved and simplify manual detailed execution screen (status, messages and executor can be change anytime). #2052
+* TestCase mass action can now update executor.
+* Added autocompletion on implementer and executor at testcase level and executor at execution level.
+* Highlight my own manual execution that I am responsible for as executor on ReportByTag screen.
+* Hide conditions in GUI (at step, action and control level) when operator is 'always'.
+* ReportByTag now only display Test Case that require some analysis to be done (ie : are not fully OK or QU or have a bugId defined at test case level). That avoid display lines where nothing needs to be analyzed. That can be changed with a flag near the refresh button.
+* Multiple bugs can now be assigned to testcase (adding description, activation and date of creation and closure). parameter cerberus_testcasepage_controlemptybugdescription allow to activate a control on empty description. #1926 #1946
+* Controls 'verifyUrl' and 'verifyTitle' are now retried until the timeout is reached when they return KO. The behavior before was to check only once. #2071.
+* Offset parameters (Vertical and Horizontal) can now be set and will be applied after Autoscrolling to elements. #2079
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* Fields 'project' and 'ticket' has been removed from testcase table. (don't forget to backup your database before the upgrade)

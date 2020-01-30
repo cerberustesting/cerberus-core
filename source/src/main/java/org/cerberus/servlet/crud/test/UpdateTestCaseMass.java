@@ -89,6 +89,7 @@ public class UpdateTestCaseMass extends HttpServlet {
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String function = request.getParameter("massFunction");
+        String executor = request.getParameter("massExecutor");
         String status = request.getParameter("massStatus");
         String application = request.getParameter("massApplication");
         String priority = request.getParameter("massPriority");
@@ -140,9 +141,10 @@ public class UpdateTestCaseMass extends HttpServlet {
                     massErrorCounter++;
                     output_message.append("<br>id : ").append(cur_test).append("|").append(cur_testcase).append(" - ").append(msg.getDescription());
                 } else // We test that at least a data to update has been defined.
-                if ((function != null) || (status != null) || (application != null) || (priority != null)) {
+                if ((function != null) || (status != null) || (application != null) || (priority != null)|| (executor != null)) {
                     tcData.setUsrModif(request.getRemoteUser());
                     tcData.setFunction(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(function, tcData.getFunction(), charset));
+                    tcData.setExecutor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(executor, tcData.getExecutor(), charset));
                     tcData.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(status, tcData.getStatus(), charset));
                     tcData.setApplication(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(application, tcData.getApplication(), charset));
                     tcData.setPriority(ParameterParserUtil.parseIntegerParam(priority, tcData.getPriority()));

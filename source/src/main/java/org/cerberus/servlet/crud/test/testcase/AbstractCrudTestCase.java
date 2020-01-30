@@ -19,7 +19,6 @@
  */
 package org.cerberus.servlet.crud.test.testcase;
 
-import com.google.common.base.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCase;
@@ -38,14 +37,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.json.JSONArray;
 
 public abstract class AbstractCrudTestCase extends HttpServlet {
 
     private WebApplicationContext springContext;
 
-
     private static final Logger LOG = LogManager.getLogger(AbstractCrudTestCase.class);
-
 
     protected abstract void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, CerberusException, JSONException;
 
@@ -95,8 +93,6 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
         return "Short description";
     }
 
-
-
     @Override
     public void init(final ServletConfig config) throws ServletException {
         super.init(config);
@@ -105,26 +101,16 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
         beanFactory.autowireBean(this);
     }
 
-
     protected TestCase getTestCaseFromRequest(HttpServletRequest request, TestCase tc) throws CerberusException {
         try {
 
             String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
-
             // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
             tc.setImplementer(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("implementer"), tc.getImplementer(), charset));
+            tc.setExecutor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("executor"), tc.getExecutor(), charset));
+            tc.setExecutor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("executor"), tc.getExecutor(), charset));
             tc.setUsrCreated(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getUserPrincipal().getName(), "", charset));
-
-            if (!Strings.isNullOrEmpty(request.getParameter("project"))) { // TODO voir pk ce cas particulier complexe :/
-                tc.setProject(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("project"), tc.getProject(), charset));
-            } else if (request.getParameter("project") != null && request.getParameter("project").isEmpty()) {
-                tc.setProject(null);
-            } else {
-                tc.setProject(tc.getProject());
-            }
-
-
             tc.setApplication(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), tc.getApplication(), charset));
             tc.setActiveQA(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeQA"), tc.getActiveQA(), charset));
             tc.setActiveUAT(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeUAT"), tc.getActiveUAT(), charset));
@@ -139,30 +125,37 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             tc.setPriority(ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("priority"), tc.getPriority(), charset));
             tc.setTest(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("test"), tc.getTest(), charset));
             tc.setTestCase(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), tc.getTestCase(), charset));
-            tc.setTicket(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticket"), tc.getTicket(), charset));
             tc.setOrigine(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("origin"), tc.getOrigine(), charset));
             tc.setGroup(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), tc.getGroup(), charset));
             tc.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), tc.getStatus(), charset));
             tc.setDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("shortDesc"), tc.getDescription(), charset));
-            tc.setBugID(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugId"), tc.getBugID(), charset));
+            String bug = tc.getBugID() == null ? "" : tc.getBugID().toString();
+            String bugIDString = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugId"), bug, charset);
+            JSONArray bugID = new JSONArray();
+            try {
+                bugID = new JSONArray(bugIDString);
+            } catch (JSONException ex) {
+                LOG.error("Could not convert '" + bugIDString + "' to JSONArray.", ex);
+            }
+            tc.setBugID(bugID);
             tc.setComment(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("comment"), tc.getComment(), charset));
             tc.setFunction(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("function"), tc.getFunction(), charset));
+            tc.setUserAgent(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("userAgent"), tc.getUserAgent(), charset));
             tc.setScreenSize(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("screenSize"), tc.getScreenSize(), charset));
             tc.setHowTo(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("howTo"), tc.getHowTo(), charset));
             tc.setBehaviorOrValueExpected(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("behaviorOrValueExpected"), tc.getBehaviorOrValueExpected(), charset));
-
 
             // TODO verify, this setteer was not call on "create test case"
             tc.setConditionOper(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("conditionOper"), tc.getConditionOper(), charset));
             // Parameter that we cannot secure as we need the html --> We DECODE them
             tc.setConditionVal1(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionVal1"), tc.getConditionVal1(), charset));
             tc.setConditionVal2(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionVal2"), tc.getConditionVal2(), charset));
+            tc.setConditionVal3(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionVal3"), tc.getConditionVal3(), charset));
 
             return tc;
         } catch (UnsupportedOperationException e) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR), e);
         }
     }
-
 
 }

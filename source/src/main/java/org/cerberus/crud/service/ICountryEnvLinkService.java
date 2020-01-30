@@ -40,7 +40,7 @@ public interface ICountryEnvLinkService {
      * @param environment
      * @return
      */
-    public AnswerList readByVarious(String system, String country, String environment);
+    public AnswerList<CountryEnvLink> readByVarious(String system, String country, String environment);
 
     /**
      *
@@ -55,7 +55,7 @@ public interface ICountryEnvLinkService {
      * @param individualSearch
      * @return
      */
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    public AnswerList<CountryEnvLink> readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      *

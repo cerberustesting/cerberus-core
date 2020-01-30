@@ -32,11 +32,30 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IDeployTypeService {
 
-    public AnswerItem readByKey(String deploytype);
+    /**
+     *
+     * @param deploytype
+     * @return
+     */
+    public AnswerItem<DeployType> readByKey(String deploytype);
 
-    public AnswerList readAll();
+    /**
+     *
+     * @return
+     */
+    public AnswerList<DeployType> readAll();
     
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    /**
+     *
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param individualSearch
+     * @return
+     */
+    public AnswerList<DeployType> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
     
     public Answer create(DeployType deployType);
 

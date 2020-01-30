@@ -47,6 +47,7 @@ public interface ILabelDAO {
     /**
      *
      * @param system
+     * @param strictSystemFilter
      * @param type
      * @param startPosition
      * @param length
@@ -56,7 +57,13 @@ public interface ILabelDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList<List<Label>> readBySystemByCriteria(List<String>  system, boolean strictSystemFilter, List<String>  type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Label> readBySystemByCriteria(List<String> system, boolean strictSystemFilter, List<String> type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+
+    /**
+     *
+     * @return
+     */
+    AnswerList<Label> readAllLinks();
 
     /**
      *
@@ -79,7 +86,6 @@ public interface ILabelDAO {
      */
     Answer update(Label object);
 
-   
     /**
      * Uses data of ResultSet to create object {@link Label}
      *
@@ -92,13 +98,13 @@ public interface ILabelDAO {
     Label loadFromResultSet(ResultSet rs) throws SQLException;
 
     /**
-     * 
+     *
      * @param system
      * @param searchParameter
      * @param individualSearch
      * @param columnName
-     * @return 
+     * @return
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

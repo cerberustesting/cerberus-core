@@ -25,22 +25,6 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
-/**
- *
- * @author memiks
- * @Entity
- * @Table(catalog = "cerberus", schema = "", uniqueConstraints = {
- * @UniqueConstraint(columnNames = {"campaign"})})
- * @XmlRootElement
- * @NamedQueries({
- * @NamedQuery(name = "Campaign.findAll", query = "SELECT c FROM campaign c"),
- * @NamedQuery(name = "Campaign.findByCampaignID", query = "SELECT c FROM
- * campaign c WHERE c.campaignID = :campaignID"),
- * @NamedQuery(name = "Campaign.findByCampaign", query = "SELECT c FROM campaign
- * c WHERE c.campaign = :campaign"),
- * @NamedQuery(name = "Campaign.findByDescription", query = "SELECT c FROM
- * campaign c WHERE c.description = :description")})
- */
 public class Campaign implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -66,6 +50,9 @@ public class Campaign implements Serializable {
     private String ManualExecution;
     private String description;
     private String longDescription;
+    private String group1;
+    private String group2;
+    private String group3;
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
@@ -91,6 +78,30 @@ public class Campaign implements Serializable {
         this.campaignID = campaignID;
         this.campaign = campaign;
         this.description = description;
+    }
+
+    public String getGroup1() {
+        return group1;
+    }
+
+    public void setGroup1(String group1) {
+        this.group1 = group1;
+    }
+
+    public String getGroup2() {
+        return group2;
+    }
+
+    public void setGroup2(String group2) {
+        this.group2 = group2;
+    }
+
+    public String getGroup3() {
+        return group3;
+    }
+
+    public void setGroup3(String group3) {
+        this.group3 = group3;
     }
 
     public String getSlackNotifyStartTagExecution() {

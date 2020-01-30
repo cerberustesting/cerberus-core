@@ -19,13 +19,11 @@
  */
 package org.cerberus.engine.gwt.impl;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -53,6 +51,7 @@ import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.appium.IAppiumService;
 import org.cerberus.service.appservice.IServiceService;
+import org.cerberus.service.cerberuscommand.ICerberusCommand;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.service.sikuli.impl.SikuliService;
@@ -99,6 +98,9 @@ public class ActionService implements IActionService {
     @Qualifier("IOSAppiumService")
     private IAppiumService iosAppiumService;
     @Autowired
+    @Qualifier("CerberusCommand")
+    private ICerberusCommand cerberusCommand;
+    @Autowired
     private ISQLService sqlService;
     @Autowired
     private ILogEventService logEventService;
@@ -121,6 +123,33 @@ public class ActionService implements IActionService {
         MessageEvent res;
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
         AnswerItem<String> answerDecode = new AnswerItem<>();
+
+        /**
+         * Decode the step action description
+         */
+        try {
+            // When starting a new action, we reset the property list that was already calculated.
+            tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+
+            answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getDescription(),
+                    tCExecution, testCaseStepActionExecution, false);
+            testCaseStepActionExecution.setDescription((String) answerDecode.getItem());
+
+            if (!(answerDecode.isCodeStringEquals("OK"))) {
+                // If anything wrong with the decode --> we stop here with decode message in the action result.
+                testCaseStepActionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Description"));
+                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                testCaseStepActionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                testCaseStepActionExecution.setEnd(new Date().getTime());
+                LOG.debug("Action interupted due to decode 'Description' Error.");
+                return testCaseStepActionExecution;
+            }
+        } catch (CerberusEventException cex) {
+            testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
+            testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            testCaseStepActionExecution.setEnd(new Date().getTime());
+            return testCaseStepActionExecution;
+        }
 
         /**
          * Decode the object field before doing the action.
@@ -183,8 +212,9 @@ public class ActionService implements IActionService {
 
         String value1 = testCaseStepActionExecution.getValue1();
         String value2 = testCaseStepActionExecution.getValue2();
+        String value3 = testCaseStepActionExecution.getValue3();
         String propertyName = testCaseStepActionExecution.getPropertyName();
-        LOG.debug("Doing Action : " + testCaseStepActionExecution.getAction() + " with value1 : " + value1 + " and value2 : " + value2);
+        LOG.debug("Doing Action : " + testCaseStepActionExecution.getAction() + " with value1 : " + value1 + " and value2 : " + value2 + " and value3 : " + value3);
 
         // When starting a new action, we reset the property list that was already calculated.
         tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
@@ -265,7 +295,7 @@ public class ActionService implements IActionService {
                     res = this.doActionWaitVanish(tCExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_CALLSERVICE:
-                    res = this.doActionCallService(testCaseStepActionExecution, value1);
+                    res = this.doActionCallService(testCaseStepActionExecution, value1, value2, value3);
                     break;
                 case TestCaseStepAction.ACTION_EXECUTESQLUPDATE:
                     res = this.doActionExecuteSQLUpdate(tCExecution, value1, value2);
@@ -281,6 +311,9 @@ public class ActionService implements IActionService {
                     break;
                 case TestCaseStepAction.ACTION_EXECUTECOMMAND:
                     res = this.doActionExecuteCommand(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_EXECUTECERBERUSCOMMAND:
+                    res = this.doActionExecuteCerberusCommand(tCExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_SCROLLTO:
                     res = this.doActionScrollTo(tCExecution, value1, value2);
@@ -299,6 +332,9 @@ public class ActionService implements IActionService {
                     break;
                 case TestCaseStepAction.ACTION_CLEARFIELD:
                     res = this.doActionClearField(tCExecution, value1);
+                    break;
+                case TestCaseStepAction.ACTION_REFRESHCURRENTPAGE:
+                    res = this.doActionRefreshCurrentPage(tCExecution);
                     break;
                 /**
                  * DEPRECATED ACTIONS FROM HERE.
@@ -440,26 +476,7 @@ public class ActionService implements IActionService {
         MessageEvent message;
 
         try {
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                return androidAppiumService.executeCommand(tCExecution.getSession(), command, args);
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_BAT)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
-                
-                // PENDING FEATURE
-                
-                message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-                message.setDescription(message.getDescription().replace("%ACTION%", "executeCommand"));
-                message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
-                return message;
-                
-                //return executeCommand(command, args);
-            } else {
-                message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-                message.setDescription(message.getDescription().replace("%ACTION%", "executeCommand"));
-                message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
-                return message;
-            }
+            return androidAppiumService.executeCommand(tCExecution.getSession(), command, args);
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
             String messageString = e.getMessage().split("\n")[0];
@@ -469,108 +486,15 @@ public class ActionService implements IActionService {
         }
     }
 
-    /**
-     * This method can be used in order to execute a script that is located on
-     * the application server.
-     *
-     * @param command script file name (with extention)
-     * @param args (optionnal) arguments
-     *
-     * @return
-     */
-    private MessageEvent executeCommand(String command, String args) {
+    private MessageEvent doActionExecuteCerberusCommand(TestCaseExecution tCExecution, String command) {
 
         MessageEvent message;
-        String inputCommand;
-
-        // command and args check
-        if (command.isEmpty()) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
-            message.setDescription(message.getDescription().replace("%EXCEPTION%", "no command defined"));
-            return message;
-        } else {
-            // if the first character isn't an antislash, add it
-            String firstChar = Character.toString(command.charAt(0));
-            if (firstChar != "/") {
-                command = "/" + command;
-            }
-            // store the script file name
-            inputCommand = command;
-
-        }
-
-        // hardcoded parameters : user & folder
-        // waiting for new parameters validation
-        String folderPath = "\"/CerberusScripts";
-        String scriptUser = "cerberus";
-
-        // cerberus parameters check
-        /*
-        if (parameterService.getParameterStringByKey("cerberus_script_user", "", "ALL").isEmpty() == true) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_MISSINGPARAMETER);
-            message.setDescription(message.getDescription().replace("%PARAM%", "cerberus_script_user"));
-            return message;
-        } else {
-            scriptUser = parameterService.getParameterStringByKey("cerberus_script_user", "", "ALL");
-        }
-
-        if (parameterService.getParameterStringByKey("cerberus_script_folderpath", "", "ALL").isEmpty() == true) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND_MISSINGPARAMETER);
-            message.setDescription(message.getDescription().replace("%PARAM%", "cerberus_script_folderpath"));
-            return message;
-        } else {
-            folderPath = parameterService.getParameterStringByKey("cerberus_script_folderpath", "", "ALL");
-        }
-         */
-        
-        String[] commandToRun;
-        
-        boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
-        if (isWindows) {
-            commandToRun = new String[]{"cmd.exe", "/c", "su - " + scriptUser, folderPath + inputCommand + "\""};
-        } else {
-            commandToRun = new String[]{"bash", "su - " + scriptUser, "-c", folderPath + inputCommand + "\""};
-        }
-
-        if (!args.isEmpty()) {
-            // TO DO
-        }
-
-        ProcessBuilder processBuilder = new ProcessBuilder(commandToRun);
-
-        StringBuilder sb = new StringBuilder();
-        for (String s : commandToRun) {
-            sb.append(s);
-            sb.append(" ");
-        }
-        String commandExecuted = sb.toString();
 
         try {
-            Process process = processBuilder.start();
-            StringBuilder output = new StringBuilder();
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                output.append(line + "\n");
-            }
-            int exitVal = process.waitFor();
-            if (exitVal == 0) {
-                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTECOMMAND);
-                message.setDescription(message.getDescription().replace("%LOG%", commandExecuted + " Output : " + output));
-                return message;
-            } else {
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
-                message.setDescription(message.getDescription().replace("%EXCEPTION%", commandExecuted));
-                return message;
-            }
-        } catch (IOException e) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
-            message.setDescription(message.getDescription().replace("%EXCEPTION%", e.toString()));
-            return message;
-        } catch (InterruptedException e) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
-            message.setDescription(message.getDescription().replace("%EXCEPTION%", e.toString()));
+            return cerberusCommand.executeCerberusCommand(command);
+        } catch (CerberusEventException e) {
+            message = e.getMessageError();
+            LOG.debug("Exception Running Shell :" + message.getMessage().getDescription());
             return message;
         }
     }
@@ -589,20 +513,19 @@ public class ActionService implements IActionService {
             Identifier identifier = identifierService.convertStringToIdentifier(element);
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-//                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.MAC.toString())
-//                        || tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.IOS.toString())) {
-//                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-//                    return iosAppiumService.click(tCExecution.getSession(), identifier);
-//                } else {
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
-                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
-                } else {
+                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
+                    return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, false, false);
+                } else {
+                    if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                        return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
+                    } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
+                        return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
+                    } else {
+                        identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                        return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
+                    }
                 }
-//                }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return androidAppiumService.click(tCExecution.getSession(), identifier);
@@ -672,7 +595,7 @@ public class ActionService implements IActionService {
             identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier);
+                return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier, true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "MouseDown"));
@@ -741,7 +664,7 @@ public class ActionService implements IActionService {
             identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                return webdriverService.doSeleniumActionMouseUp(tCExecution.getSession(), identifier);
+                return webdriverService.doSeleniumActionMouseUp(tCExecution.getSession(), identifier, true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "MouseUp"));
@@ -852,13 +775,18 @@ public class ActionService implements IActionService {
             Identifier identifier = identifierService.convertStringToIdentifier(element);
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), identifier.getLocator(), "");
-                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                    return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), "", identifier.getLocator());
-                } else {
+                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, true, true);
+                    return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, false, false);
+                } else {
+                    if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                        return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), identifier.getLocator(), "");
+                    } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
+                        return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), "", identifier.getLocator());
+                    } else {
+                        identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                        return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, true, true);
+                    }
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
@@ -909,11 +837,16 @@ public class ActionService implements IActionService {
             }
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionType(tCExecution.getSession(), identifier.getLocator(), property);
-                } else {
+                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, property, propertyName);
+                    return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, property, propertyName, false, false);
+                } else {
+                    if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                        return sikuliService.doSikuliActionType(tCExecution.getSession(), identifier.getLocator(), property);
+                    } else {
+                        identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                        return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, property, propertyName, true, true);
+                    }
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 return androidAppiumService.type(tCExecution.getSession(), identifier, property, propertyName);
@@ -952,15 +885,19 @@ public class ActionService implements IActionService {
             Identifier identifier = identifierService.convertStringToIdentifier(element);
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "");
-                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator());
-                } else {
+                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier);
+                    return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, false, false);
+                } else {
+                    if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                        return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "");
+                    } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
+                        return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator());
+                    } else {
+                        identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                        return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, true, true);
+                    }
                 }
-
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
@@ -1001,7 +938,7 @@ public class ActionService implements IActionService {
                 } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
                     message = sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator());
                 } else {
-                    message = webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier);
+                    message = webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, true, true);
                 }
                 if (message.getCodeString().equals("OK")) {
                     message = this.doActionWait(tCExecution, property, null);
@@ -1077,36 +1014,35 @@ public class ActionService implements IActionService {
         try {
             String appType = tCExecution.getApplicationObj().getType();
             /**
-             * Check object and property are not null For IPA and APK, only
-             * value2 (key to press) is mandatory For GUI and FAT, both
-             * parameters are mandatory
+             * Check value1 and value2 are not null For IPA and APK, only value2
+             * (key to press) is mandatory For GUI and FAT, both parameters are
+             * mandatory
              */
-//            if (appType.equalsIgnoreCase(Application.TYPE_APK) || appType.equalsIgnoreCase(Application.TYPE_IPA)) {
             if (StringUtil.isNullOrEmpty(value2)) {
                 return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_MISSINGKEY).resolveDescription("APPLICATIONTYPE", appType);
             }
-//            } else if (appType.equalsIgnoreCase(Application.TYPE_GUI) || appType.equalsIgnoreCase(Application.TYPE_FAT)) {
-//                if (StringUtil.isNullOrEmpty(value1) || StringUtil.isNullOrEmpty(value2)) {
-//                    return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS);
-//                }
-//            }
             /**
              * Get Identifier (identifier, locator)
              */
+            if (StringUtil.isNullOrEmpty(value1) && appType.equalsIgnoreCase(Application.TYPE_GUI)) {
+                value1 = "xpath=//body";
+            }
             Identifier objectIdentifier = identifierService.convertStringToIdentifier(value1);
 
             if (appType.equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.MAC.toString())
                         || tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.IOS.toString())) {
                     return iosAppiumService.keyPress(tCExecution.getSession(), value2);
+
                 } else if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
-                    return androidAppiumService.keyPress(tCExecution.getSession(), value2);
+                    return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), objectIdentifier, value2, false, false);
                 }
                 if (objectIdentifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                     return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), objectIdentifier.getLocator(), value2);
+
                 } else {
                     identifierService.checkWebElementIdentifier(objectIdentifier.getIdentifier());
-                    return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), objectIdentifier, value2);
+                    return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), objectIdentifier, value2, true, true);
                 }
 
             } else if (appType.equalsIgnoreCase(Application.TYPE_APK)) {
@@ -1124,8 +1060,13 @@ public class ActionService implements IActionService {
                         .resolveDescription("APPLICATIONTYPE", appType);
             }
         } catch (CerberusEventException ex) {
-            LOG.fatal("Error doing Action KeyPress :" + ex);
+            LOG.debug("Error doing Action KeyPress :" + ex);
             return ex.getMessageError();
+
+        } catch (Exception ex) {
+            LOG.debug("Error doing Action KeyPress :" + ex);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", ex.toString());
         }
     }
 
@@ -1265,7 +1206,10 @@ public class ActionService implements IActionService {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierObject, identifierValue);
+                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
+                    return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierObject, identifierValue, false, false);
+                }
+                return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierObject, identifierValue, true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "Select"));
@@ -1350,7 +1294,7 @@ public class ActionService implements IActionService {
             identifierService.checkWebElementIdentifier(identifierDrop.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                return webdriverService.doSeleniumActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop);
+                return webdriverService.doSeleniumActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop, true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "Select"));
@@ -1362,13 +1306,13 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionCallService(TestCaseStepActionExecution testCaseStepActionExecution, String value1) {
+    private MessageEvent doActionCallService(TestCaseStepActionExecution testCaseStepActionExecution, String value1, String value2, String value3) {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
         AnswerItem lastServiceCalledAnswer;
 
-        lastServiceCalledAnswer = serviceService.callService(value1, null, null, null, null, tCExecution);
+        lastServiceCalledAnswer = serviceService.callService(value1, value2, value3, null, null, null, null, tCExecution);
         message = lastServiceCalledAnswer.getResultMessage();
 
         if (lastServiceCalledAnswer.getItem() != null) {
@@ -1512,7 +1456,7 @@ public class ActionService implements IActionService {
                         // If value2 is fed we force the result to value1.
                         tcExeData.setProperty(value1);
                     }
-                    //saves the result 
+                    //saves the result
                     try {
                         testCaseExecutionDataService.save(tcExeData);
                         LOG.debug("Adding into Execution data list. Property : '" + tcExeData.getProperty() + "' Index : '" + tcExeData.getIndex() + "' Value : '" + tcExeData.getValue() + "'");
@@ -1714,6 +1658,27 @@ public class ActionService implements IActionService {
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action Type : " + ex);
             return ex.getMessageError();
+        }
+    }
+
+    private MessageEvent doActionRefreshCurrentPage(TestCaseExecution tCExecution) {
+        MessageEvent message;
+
+        try {
+            LOG.debug("REFRESH CURRENT PAGE");
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                return this.webdriverService.doSeleniumActionRefreshCurrentPage(tCExecution.getSession());
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", "refreshCurrentPage"));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (Exception e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_REFRESHCURRENTPAGE);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
+            LOG.debug("Exception doing action refreshCurrentPage  :" + messageString, e);
+            return message;
         }
     }
 

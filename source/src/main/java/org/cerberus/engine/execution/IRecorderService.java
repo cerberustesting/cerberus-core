@@ -51,9 +51,10 @@ public interface IRecorderService {
      * @param testCaseExecution
      * @param testCaseStepActionExecution
      * @param control
+     * @param cropValues
      * @return
      */
-    TestCaseExecutionFile recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control);
+    TestCaseExecutionFile recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String cropValues);
 
     /**
      *
@@ -95,8 +96,9 @@ public interface IRecorderService {
      */
     TestCaseExecutionFile recordProperty(Long runId, String property, int propertyIndex, String content);
 
-    
     /**
+     * records into a file in a JSON format the requested capability from the
+     * robot and the final ones set to the Selenium/Appium driver.
      *
      * @param testCaseExecution
      * @param capsInputList
@@ -105,7 +107,16 @@ public interface IRecorderService {
      */
     TestCaseExecutionFile recordCapabilities(TestCaseExecution testCaseExecution, List<RobotCapability> capsInputList, List<RobotCapability> capsFinalList);
 
-    
+    /**
+     * records into a file in a JSON format the capabilities reported from the
+     * server.
+     *
+     * @param testCaseExecution
+     * @param capsFinalList
+     * @return
+     */
+    TestCaseExecutionFile recordServerCapabilities(TestCaseExecution testCaseExecution, List<RobotCapability> capsFinalList);
+
     /**
      *
      * @param testCaseStepActionControlExecution
@@ -118,7 +129,7 @@ public interface IRecorderService {
      * @param fileID
      * @return
      */
-    AnswerItem recordManuallyFile(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution, String extension, String desc, FileItem file, Integer id, String fileName, Integer fileID);
+    AnswerItem<TestCaseExecutionFile> recordManuallyFile(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution, String extension, String desc, FileItem file, Integer id, String fileName, Integer fileID);
 
     /**
      *
@@ -126,7 +137,7 @@ public interface IRecorderService {
      * @return
      */
     TestCaseExecutionFile recordSeleniumLog(TestCaseExecution testCaseExecution);
-    
+
     /**
      *
      * @param testCaseExecution
@@ -161,10 +172,11 @@ public interface IRecorderService {
 
     /**
      * attach a physique file to the testcase execution and save it to database
-     * @param tce   the test case execution
+     *
+     * @param tce the test case execution
      * @param recorder the recorder that was created to save file on datastorage
-     * @param fileDesc  description of file : Exxemple : "Video"
-     * @param fileType  File type (PNG, MP4, etc.)
+     * @param fileDesc description of file : Exxemple : "Video"
+     * @param fileType File type (PNG, MP4, etc.)
      */
     void addFileToTestCaseExecution(TestCaseExecution tce, Recorder recorder, String fileDesc, String fileType);
 

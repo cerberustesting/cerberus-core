@@ -50,6 +50,9 @@ public interface IFactoryCampaign {
      * @param ManualExecution
      * @param UsrModif
      * @param Timeout
+     * @param group1
+     * @param group2
+     * @param group3
      * @param Priority
      * @param Retries
      * @param DateModif
@@ -57,10 +60,10 @@ public interface IFactoryCampaign {
      * @return Campaign Object
      */
     Campaign create(Integer campaignID, String campaign,
-             String distribList, String notifyStartTagExecution, String notifyEndTagExecution,
-             String SlackNotifyStartTagExecution, String SlackNotifyEndTagExecution, String SlackWebhook, String SlackChannel,
-             String CIScoreThreshold,
-             String Tag, String Verbose, String Screenshot, String PageSource, String RobotLog, String Timeout, String Retries, String Priority, String ManualExecution,
-             String description,String longDescription,
-             String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif);
+            String distribList, String notifyStartTagExecution, String notifyEndTagExecution,
+            String SlackNotifyStartTagExecution, String SlackNotifyEndTagExecution, String SlackWebhook, String SlackChannel,
+            String CIScoreThreshold,
+            String Tag, String Verbose, String Screenshot, String PageSource, String RobotLog, String Timeout, String Retries, String Priority, String ManualExecution,
+            String description, String longDescription, String group1, String group2, String group3,
+            String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif);
 }

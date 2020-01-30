@@ -703,7 +703,8 @@ function refreshTable() {
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": null,
+        {
+            "data": null,
             "title": '<input id="selectAll" title="' + doc.getDocLabel("page_global", "tooltip_massAction") + '" type="checkbox"></input>',
             "bSortable": false,
             "sWidth": "30px",
@@ -722,7 +723,8 @@ function aoColumnsFunc(tableId) {
 
             }
         },
-        {"data": null,
+        {
+            "data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "sWidth": "80px",
@@ -749,37 +751,56 @@ function aoColumnsFunc(tableId) {
 
             }
         },
-        {"data": "build",
+        {
+            "data": "build",
             "sName": "build",
             "sWidth": "70px",
-            "title": doc.getDocOnline("buildrevisionparameters", "Build")},
-        {"data": "revision",
+            "title": doc.getDocOnline("buildrevisionparameters", "Build")
+        },
+        {
+            "data": "revision",
             "sName": "revision",
             "sWidth": "70px",
-            "title": doc.getDocOnline("buildrevisionparameters", "Revision")},
-        {"data": "release",
+            "title": doc.getDocOnline("buildrevisionparameters", "Revision")
+        },
+        {
+            "data": "release",
             "sName": "release",
             "sWidth": "100px",
-            "title": doc.getDocOnline("buildrevisionparameters", "Release")},
-        {"data": "application",
+            "title": doc.getDocOnline("buildrevisionparameters", "Release")
+        },
+        {
+            "data": "application",
             "sName": "application",
             "sWidth": "130px",
-            "title": doc.getDocOnline("buildrevisionparameters", "application")},
-        {"data": "project",
+            "title": doc.getDocOnline("buildrevisionparameters", "application")
+        },
+        {
+            "data": "project",
+            "visible": false,
             "sName": "project",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "project")},
-        {"data": "ticketIdFixed",
+            "title": doc.getDocOnline("buildrevisionparameters", "project")
+        },
+        {
+            "data": "ticketIdFixed",
+            "visible": false,
             "like": true,
             "sName": "ticketIdFixed",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "TicketIDFixed")},
-        {"data": "bugIdFixed",
+            "title": doc.getDocOnline("buildrevisionparameters", "TicketIDFixed")
+        },
+        {
+            "data": "bugIdFixed",
+            "visible": false,
             "like": true,
             "sName": "bugIdFixed",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "BugIDFixed")},
-        {"data": "link",
+            "title": doc.getDocOnline("buildrevisionparameters", "BugIDFixed")
+        },
+        {
+            "data": "link",
+            "visible": false,
             "like": true,
             "sName": "link",
             "sWidth": "250px",
@@ -788,44 +809,66 @@ function aoColumnsFunc(tableId) {
                 return drawURL(data);
             }
         },
-        {"data": "releaseOwner",
+        {
+            "data": "releaseOwner",
             "sName": "releaseOwner",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "ReleaseOwner")},
-        {"data": "subject",
+            "title": doc.getDocOnline("buildrevisionparameters", "ReleaseOwner")
+        },
+        {
+            "data": "subject",
             "sName": "subject",
             "sWidth": "500px",
-            "title": doc.getDocOnline("buildrevisionparameters", "subject")},
-        {"data": "datecre",
+            "title": doc.getDocOnline("buildrevisionparameters", "subject")
+        },
+        {
+            "data": "datecre",
+            "visible": false,
             "sName": "datecre",
             "like": true,
             "sWidth": "150px",
-            "title": doc.getDocOnline("buildrevisionparameters", "datecre")},
-        {"data": "jenkinsBuildId",
+            "title": doc.getDocOnline("buildrevisionparameters", "datecre")
+        },
+        {
+            "data": "jenkinsBuildId",
+            "visible": false,
             "like": true,
             "sName": "jenkinsBuildId",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "jenkinsBuildId")},
-        {"data": "mavenGroupId",
+            "title": doc.getDocOnline("buildrevisionparameters", "jenkinsBuildId")
+        },
+        {
+            "data": "mavenGroupId",
+            "visible": false,
             "like": true,
             "sName": "mavenGroupId",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "mavenGroupId")},
-        {"data": "mavenArtifactId",
+            "title": doc.getDocOnline("buildrevisionparameters", "mavenGroupId")
+        },
+        {
+            "data": "mavenArtifactId",
+            "visible": false,
             "like": true,
             "sName": "mavenArtifactId",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "mavenArtifactId")},
-        {"data": "mavenVersion",
+            "title": doc.getDocOnline("buildrevisionparameters", "mavenArtifactId")
+        },
+        {
+            "data": "mavenVersion",
+            "visible": false,
             "like": true,
             "sName": "mavenVersion",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "mavenVersion")},
-        {"data": "repositoryUrl",
+            "title": doc.getDocOnline("buildrevisionparameters", "mavenVersion")
+        },
+        {
+            "data": "repositoryUrl",
+            "visible": false,
             "like": true,
             "sName": "repositoryUrl",
             "sWidth": "200px",
-            "title": doc.getDocOnline("buildrevisionparameters", "repositoryUrl")}
+            "title": doc.getDocOnline("buildrevisionparameters", "repositoryUrl")
+        }
     ];
     return aoColumns;
 }

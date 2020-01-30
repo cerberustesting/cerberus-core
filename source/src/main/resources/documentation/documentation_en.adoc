@@ -381,3 +381,19 @@ include::include/en/{file-to-include}[]
 === 4.2
 :file-to-include: changelog_4.2_en.adoc
 include::include/en/{file-to-include}[]
+ 
+=== 4.3
+:file-to-include: changelog_4.3_en.adoc
+include::include/en/{file-to-include}[]
+ 
+=== 4.4
+:file-to-include: changelog_4.4_en.adoc
+include::include/en/{file-to-include}[]
+ 
+=== 4.5
+:file-to-include: changelog_4.5_en.adoc
+include::include/en/{file-to-include}[]
+ 
+=== 4.6
+:file-to-include: changelog_4.6_en.adoc
+include::include/en/{file-to-include}[]

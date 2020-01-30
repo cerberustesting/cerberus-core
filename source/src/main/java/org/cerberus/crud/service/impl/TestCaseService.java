@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseDAO;
+import org.cerberus.crud.entity.CampaignLabel;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
@@ -42,6 +43,7 @@ import org.cerberus.crud.factory.IFactoryTest;
 import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ICampaignParameterService;
+import org.cerberus.crud.service.ILabelService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseCountryService;
@@ -95,6 +97,8 @@ public class TestCaseService implements ITestCaseService {
     private IFactoryTestCase factoryTCase;
     @Autowired
     private ICampaignLabelService campaignLabelService;
+    @Autowired
+    private ILabelService labelService;
     @Autowired
     private ICampaignParameterService campaignParameterService;
     @Autowired
@@ -167,7 +171,7 @@ public class TestCaseService implements ITestCaseService {
 
             List<TestCaseLabel> testCaseLabel = testCaseLabelService.readByTestTestCase(initialTest, initialTc, null).getDataList();
             newTcase.setTestCaseLabel(testCaseLabel);
-            
+
         }
         return newTcase;
     }
@@ -221,9 +225,9 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length) {
-        return testCaseDao.readByVarious(test, idProject, app, creator, implementer, system, campaign, labelid, priority, group, status, length);
+    public AnswerList<TestCase> readByVarious(String[] test, String[] app, String[] creator, String[] implementer, String[] system,
+            String[] campaign, List<Integer> labelid, String[] priority, String[] group, String[] status, int length) {
+        return testCaseDao.readByVarious(test, app, creator, implementer, system, campaign, labelid, priority, group, status, length);
     }
 
     /**
@@ -238,9 +242,9 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public List<String> findTestWithTestCaseActiveAutomatedBySystem(String system) {
-        TestCase tCase = factoryTCase.create(null, null, null, null, null, null, null, null, null, null,
+        TestCase tCase = factoryTCase.create(null, null, null, null, null, null, null, null, null,
                 null, null, null, null, -1, null, null, null, null, null, "Y", null, null,
-                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         List<String> result = new ArrayList<>();
         List<TestCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
@@ -258,9 +262,9 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public List<TestCase> findTestCaseActiveAutomatedBySystem(String test, String system) {
-        TestCase tCase = factoryTCase.create(test, null, null, null, null, null, null, null, null, null,
+        TestCase tCase = factoryTCase.create(test, null, null, null, null, null, null, null, null,
                 null, null, null, null, -1, null, null, null, null, null, "Y", null, null,
-                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         List<TestCase> result = new ArrayList<>();
         List<TestCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
@@ -278,18 +282,13 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public void updateTestCase(TestCase tc) throws CerberusException {
-        testCaseDao.updateTestCase(tc);
-    }
-
-    @Override
     public String getMaxNumberTestCase(String test) {
         return this.testCaseDao.getMaxNumberTestCase(test);
     }
 
     @Override
-    public AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
-        AnswerItem<List<TestCase>> result = new AnswerItem<>();
+    public AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
+        AnswerList<TestCase> result = new AnswerList<>();
         String[] status = null;
         String[] system = null;
         String[] application = null;
@@ -321,18 +320,20 @@ public class TestCaseService implements ITestCaseService {
             }
         }
 
-        AnswerList label = campaignLabelService.readByVarious(campaign);
-        //AnswerList battery = campaignContentService.readByCampaign(campaign);
-        boolean ifLabel = (label.getTotalRows() > 0);
-        //boolean ifBattery = (battery.getTotalRows() > 0) ? true : false;
+        AnswerList<CampaignLabel> label = campaignLabelService.readByVarious(campaign);
+
+        List<Integer> labelIdList = new ArrayList<>();
+        List<CampaignLabel> labelList = label.getDataList();
+        for (CampaignLabel campaignLabel : labelList) {
+            labelIdList.add(campaignLabel.getLabelId());
+        }
+
+        labelIdList = labelService.enrichWithChild(labelIdList);
 
         Integer maxReturn = parameterService.getParameterIntegerByKey("cerberus_campaign_maxtestcase", "", 1000);
 
-        if (ifLabel) {
-            result = testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, true, status, system, application, priority, group, maxReturn);
-        } else {
-            result = testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, false, status, system, application, priority, group, maxReturn);
-        }
+        result = testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, labelIdList, status, system, application, priority, group, maxReturn);
+
         return result;
     }
 
@@ -342,15 +343,23 @@ public class TestCaseService implements ITestCaseService {
         List<TestCaseStep> tcsList = testCaseStepService.getListOfSteps(test, testCase);
         for (TestCaseStep tcs : tcsList) {
             if (("Y").equals(tcs.getUseStep())) {
-                result.add(this.findTestCaseByKey(tcs.getUseStepTest(), tcs.getUseStepTestCase()));
+                /**
+                 * We prepend the TestCase in order to leave at the end of the
+                 * list the testcase with the higher prio (which correspond to
+                 * the 1st Use Step found) #1907. That way, if inside the same
+                 * testcase, you import 2 use Step that define a property that
+                 * has the same name, the 1st step imported will define the
+                 * property value.
+                 */
+                result.add(0, this.findTestCaseByKey(tcs.getUseStepTest(), tcs.getUseStepTestCase()));
             }
         }
         return result;
     }
 
     @Override
-    public List<TestCase> findByCriteria(String[] test, String[] project, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery) {
-        return testCaseDao.findTestCaseByCriteria(test, project, app, active, priority, status, group, targetBuild, targetRev, creator, implementer, function, campaign);
+    public List<TestCase> findByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery) {
+        return testCaseDao.findTestCaseByCriteria(test, app, active, priority, status, group, targetBuild, targetRev, creator, implementer, function, campaign);
     }
 
     @Override
@@ -359,7 +368,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country) {
+    public AnswerList<TestListDTO> findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country) {
         return testCaseCountryPropertiesService.findTestCaseCountryPropertiesByValue1(testDataLibId, name, country, TestCaseCountryProperties.TYPE_GETFROMDATALIB);
     }
 
@@ -368,13 +377,13 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList findTestCasesThatUseService(String service) {
+    public AnswerList<TestListDTO> findTestCasesThatUseService(String service) {
 
         AnswerList<TestListDTO> testCaseByServiceByDataLib = testCaseDao.findTestCaseByServiceByDataLib(service);
         AnswerList<TestListDTO> testCaseByService = testCaseDao.findTestCaseByService(service);
         List<TestListDTO> listOfTestCaseByDataLib = testCaseByServiceByDataLib.getDataList();
         List<TestListDTO> listOfTestCaseByService = testCaseByService.getDataList();
-        List<TestListDTO> newTestCase = new ArrayList<TestListDTO>();
+        List<TestListDTO> newTestCase = new ArrayList<>();
 
         if (!listOfTestCaseByDataLib.isEmpty()) {
             for (TestListDTO datalibList : listOfTestCaseByDataLib) {
@@ -405,19 +414,19 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList readByTestByCriteria(List<String> system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<TestCase> readByTestByCriteria(List<String> system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch) {
         return testCaseDao.readByTestByCriteria(system, test, start, amount, sortInformation, searchTerm, individualSearch);
     }
 
     @Override
-    public AnswerItem readByKey(String test, String testCase) {
+    public AnswerItem<TestCase> readByKey(String test, String testCase) {
         return testCaseDao.readByKey(test, testCase);
     }
 
     @Override
-    public AnswerItem readByKeyWithDependency(String test, String testCase) {
-        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
-        AnswerItem ai = testCaseDao.readByKey(test, testCase);
+    public AnswerItem<TestCase> readByKeyWithDependency(String test, String testCase) {
+        AnswerItem<TestCase> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+        AnswerItem<TestCase> ai = testCaseDao.readByKey(test, testCase);
         if (ai.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ai.getItem() != null) {
             TestCase tc = (TestCase) ai.getItem();
             AnswerList<TestCaseStep> al = testCaseStepService.readByTestTestCaseWithDependency(tc.getTest(), tc.getTestCase());
@@ -431,7 +440,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return testCaseDao.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
     }
 
@@ -440,7 +449,7 @@ public class TestCaseService implements ITestCaseService {
         // We first create the corresponding test if it doesn,'t exist.
         if (testCase.getTest() != null) {
             if (!testService.exist(testCase.getTest())) {
-                testService.create(factoryTest.create(testCase.getTest(), "", "Y", testCase.getUsrModif(), null, "", null));
+                testService.create(factoryTest.create(testCase.getTest(), "", "Y", null, testCase.getUsrModif(), null, "", null));
             }
         }
         return testCaseDao.update(keyTest, keyTestCase, testCase);
@@ -451,7 +460,7 @@ public class TestCaseService implements ITestCaseService {
         // We first create the corresponding test if it doesn,'t exist.
         if (testCase.getTest() != null) {
             if (!testService.exist(testCase.getTest())) {
-                testService.create(factoryTest.create(testCase.getTest(), "", "Y", testCase.getUsrCreated(), null, "", null));
+                testService.create(factoryTest.create(testCase.getTest(), "", "Y", null, testCase.getUsrCreated(), null, "", null));
             }
         }
         return testCaseDao.create(testCase);
@@ -523,7 +532,6 @@ public class TestCaseService implements ITestCaseService {
         //TODO ------------------------
         //Check Cerberus version compatibility. If not stop
         //-------------------------------
-        
         //insert testcase
         Answer testCaseImported = this.create(testCase);
         if (!testCaseImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
@@ -531,7 +539,7 @@ public class TestCaseService implements ITestCaseService {
             msg.setDescription(testCaseImported.getResultMessage().getDescription());
             throw new CerberusException(msg);
         }
-        
+
         //for tcstep, insert steps
         for (TestCaseStep tcs : testCase.getTestCaseStep()) {
             Answer testCaseStepImported = testCaseStepService.create(tcs);
@@ -551,7 +559,7 @@ public class TestCaseService implements ITestCaseService {
                 }
             }
         }
-        
+
         //insert tccountry, insert countries
         for (TestCaseCountry tcc : testCase.getTestCaseCountry()) {
             Answer testCaseCountryImported = testCaseCountryService.create(tcc);

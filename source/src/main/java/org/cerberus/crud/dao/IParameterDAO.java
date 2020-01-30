@@ -39,39 +39,88 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IParameterDAO {
 
+    /**
+     *
+     * @param system
+     * @param key
+     * @return
+     * @throws CerberusException
+     */
     Parameter findParameterByKey(String system, String key) throws CerberusException;
 
+    /**
+     *
+     * @return @throws CerberusException
+     */
     List<Parameter> findAllParameter() throws CerberusException;
 
-    void updateParameter(Parameter parameter) throws CerberusException;
-
-    void insertParameter(Parameter parameter) throws CerberusException;
-
+    /**
+     *
+     * @param system
+     * @param system1
+     * @return
+     * @throws CerberusException
+     */
     List<Parameter> findAllParameterWithSystem1(String system, String system1) throws CerberusException;
 
-    AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    /**
+     *
+     * @param system
+     * @param system1
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param individualSearch
+     * @return
+     */
+    AnswerList<Parameter> readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
-    AnswerItem readWithSystem1ByKey(String system, String key, String system1);
+    /**
+     *
+     * @param system
+     * @param key
+     * @param system1
+     * @return
+     */
+    AnswerItem<Parameter> readWithSystem1ByKey(String system, String key, String system1);
 
+    /**
+     *
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
     Parameter loadFromResultSetWithSystem1(ResultSet rs) throws SQLException;
 
+    /**
+     *
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
     Parameter loadFromResultSet(ResultSet rs) throws SQLException;
 
+    /**
+     *
+     * @param system
+     * @param system1
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return
+     */
     AnswerList<String> readDistinctValuesWithSystem1ByCriteria(String system, String system1, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      * Get the {@link Parameter} of the given key
      *
      * @param system the system of the {@link Parameter} to get
-     * @param param  the param of the {@link Parameter} to get
+     * @param param the param of the {@link Parameter} to get
+     * @return
      */
-    AnswerItem readByKey(String system, String param);
-
-    /**
-     * @param object the {@link Parameter} to Create
-     * @return {@link AnswerItem}
-     */
-    Answer create(Parameter object);
+    AnswerItem<Parameter> readByKey(String system, String param);
 
     /**
      * @param object the {@link Parameter} to Update
@@ -80,8 +129,18 @@ public interface IParameterDAO {
     Answer update(Parameter object);
 
     /**
-     * @param object the {@link Parameter} to Delete
-     * @return {@link AnswerItem}
+     *
+     * @param parameterKey
+     * @param system
+     * @param value
+     * @return
      */
-    Answer delete(Parameter object);
+    Answer setParameter(String parameterKey, String system, String value);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer create(Parameter object);
 }

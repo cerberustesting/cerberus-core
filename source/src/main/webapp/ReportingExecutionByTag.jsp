@@ -35,11 +35,11 @@
         <link rel="stylesheet" href="css/pages/ReportingExecutionByTag.css" type="text/css"/>
         <script type="text/javascript" src="dependencies/D3js-3.x.x/js/d3.min.js"></script>
         <script type="text/javascript" src="dependencies/D3-tip-0.6.7/js/index.js"></script>
+        <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <script type="text/javascript" src="js/pages/ReportingExecutionByTag.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
         <script type="text/javascript" src="js/transversalobject/Campaign.js"></script>
-        <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <title id="pageTitle">Campaign Reporting</title>
     </head>
     <body>
@@ -134,18 +134,43 @@
                             <div class="row">
                                 <div class="col-xs-8" id="BugReportDetailTable">
                                     <table id="bugTable" name="bugTable" class="table table-hover display">
-                                        <thead id="bugTableHeader">
+                                        <thead id="bugTableReportHeader">
                                             <tr>
                                                 <td style="text-align: center">Bug</td>
-                                                <td style="text-align: center">Last Exe</td>
+                                                <td style="text-align: center">Test Folder</td>
                                                 <td style="text-align: center">Test Case</td>
-                                                <td style="text-align: center">#Exe</td>
+                                                <td style="text-align: center">Status</td>
                                             </tr>                                    
                                         </thead>
-                                        <tbody id="bugTableBody"></tbody>
+                                        <tbody id="bugTableReportBody"></tbody>
                                     </table>
                                 </div>
                                 <div class="col-xs-4" id="BugReportTable"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default" id="ManualReportByExecutorPanel">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#ManualReportByExecutor">
+                            <span class="fa fa-pie-chart fa-fw"></span>
+                            <label id="bugStatus">Manual Executor Status</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        </div>
+                        <div class="panel-body collapse in" id="ManualReportByExecutor">
+                            <div class="row">
+                                <div class="col-xs-8" id="ManualReportDetailTable">
+                                    <table id="bugTable" name="bugTable" class="table table-hover display">
+                                        <thead id="bugTableHeader">
+                                            <tr>
+                                                <td style="text-align: center">Executor</td>
+                                                <td style="text-align: center">Total</td>
+                                                <td style="text-align: center">Progress %</td>
+                                                <td style="text-align: center">Still to do</td>
+                                            </tr>                                    
+                                        </thead>
+                                        <tbody id="manualTableBody"></tbody>
+                                    </table>
+                                </div>
+                                <div class="col-xs-4" id="ManualReportSum"></div>
                             </div>
                         </div>
                     </div>
@@ -295,8 +320,8 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-lg-12" id="reportByLabel">
+            <div class="row" id="reportByLabel">
+                <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading card clearfix" data-toggle="collapse" data-target="#reportLabel">
                             <label id="envCountryBrowser">Report by Label</label>

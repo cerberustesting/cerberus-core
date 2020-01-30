@@ -66,7 +66,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public AnswerItem<TestCaseExecutionQueueDep> readByKey(long id) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<TestCaseExecutionQueueDep> ans = new AnswerItem<>();
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
@@ -104,7 +104,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public AnswerList<TestCaseExecutionQueueDep> readByExeId(long exeId) {
-        AnswerList ans = new AnswerList<>();
+        AnswerList<TestCaseExecutionQueueDep> ans = new AnswerList<>();
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
@@ -141,7 +141,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     }
 
     @Override
-    public AnswerItem<Integer> readNbWaitingByExeQueue(long exeQueueId) {
+    public AnswerItem<Integer> readNbWaitingByExeQueueId(long exeQueueId) {
         AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
 
@@ -185,7 +185,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     }
 
     @Override
-    public AnswerItem<Integer> readNbReleasedWithNOKByExeQueue(long exeQueueId) {
+    public AnswerItem<Integer> readNbReleasedWithNOKByExeQueueId(long exeQueueId) {
         AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
 
@@ -230,7 +230,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public AnswerList<Long> readExeQueueIdByExeId(long exeId) {
-        AnswerList ans = new AnswerList<>();
+        AnswerList<Long> ans = new AnswerList<>();
         MessageEvent msg = null;
 
         final String query = "SELECT DISTINCT ExeQueueID FROM testcaseexecutionqueuedep WHERE `ExeID` = ?";
@@ -273,7 +273,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public AnswerList<Long> readExeQueueIdByQueueId(long queueId) {
-        AnswerList ans = new AnswerList<>();
+        AnswerList<Long> ans = new AnswerList<>();
         MessageEvent msg = null;
 
         final String query = "SELECT DISTINCT ExeQueueID FROM testcaseexecutionqueuedep WHERE `QueueID` = ?";
@@ -315,8 +315,51 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     }
 
     @Override
+    public AnswerList<TestCaseExecutionQueueDep> readByExeQueueId(long exeQueueId) {
+        AnswerList<TestCaseExecutionQueueDep> ans = new AnswerList<>();
+        MessageEvent msg = null;
+
+        final String query = "SELECT * FROM testcaseexecutionqueuedep WHERE `ExeQueueID` = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.queueId : " + exeQueueId);
+        }
+
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query)) {
+            // Prepare and execute query
+            preStat.setLong(1, exeQueueId);
+            ResultSet rs = preStat.executeQuery();
+            try {
+                List<TestCaseExecutionQueueDep> al = new ArrayList<>();
+                while (rs.next()) {
+                    al.add(loadFromResultSet(rs));
+                }
+                ans.setDataList(al);
+                // Set the final message
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME).resolveDescription("OPERATION", "SELECT");
+            } catch (Exception e) {
+                LOG.error("Unable to execute query : " + e.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION", e.toString());
+            } finally {
+                if (rs != null) {
+                    rs.close();
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Unable to read by exeId : " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION", e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+        return ans;
+    }
+
+    @Override
     public AnswerList<TestCaseExecutionQueueDep> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+        AnswerList<TestCaseExecutionQueueDep> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseExecutionQueueDep> objectList = new ArrayList<>();
@@ -431,8 +474,8 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     }
 
     @Override
-    public AnswerItem<Integer> insertFromTCDep(long queueId, String env, String country, String tag, String test, String testcase) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<Integer> insertFromTestCaseDep(long queueId, String env, String country, String tag, String test, String testcase) {
+        AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
         final String query = "INSERT INTO testcaseexecutionqueuedep(ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status) "
                 + "SELECT ?, ?, ?, ?, Type, DepTest, DepTestCase, DepEvent, 'WAITING' FROM testcasedep "
@@ -475,17 +518,17 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     }
 
     @Override
-    public AnswerItem<Integer> insertFromQueueExeDep(long queueId, long fromQueueId) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<Integer> insertFromExeQueueIdDep(long queueId, long fromExeQueueId) {
+        AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
-        final String query = "INSERT INTO testcaseexecutionqueuedep(ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status, ReleaseDate, Comment, ExeId) "
-                + "SELECT ?, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status, ReleaseDate, Comment, ExeId FROM testcaseexecutionqueuedep "
+        final String query = "INSERT INTO testcaseexecutionqueuedep(ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status, ReleaseDate, Comment, ExeId, QueueId) "
+                + "SELECT ?, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status, ReleaseDate, Comment, ExeId, QueueId FROM testcaseexecutionqueuedep "
                 + "WHERE ExeQueueID=?;";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.test : " + fromQueueId);
+            LOG.debug("SQL.param.test : " + fromExeQueueId);
         }
 
         try (Connection connection = databaseSpring.connect();
@@ -494,7 +537,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             // Prepare and execute query
             int i = 1;
             preStat.setLong(i++, queueId);
-            preStat.setLong(i++, fromQueueId);
+            preStat.setLong(i++, fromExeQueueId);
             try {
                 int rs = preStat.executeUpdate();
                 ans.setItem(rs);
@@ -515,7 +558,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId, long queueId) {
-        AnswerItem<Integer> ans = new AnswerItem();
+        AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
         String query = "UPDATE `testcaseexecutionqueuedep` SET `Status` = 'RELEASED', `Comment` = ? , `ExeId` = ?, `QueueId` = ?, ReleaseDate = NOW(), DateModif = NOW() "
                 + " WHERE `Status` = 'WAITING' and `Type` = ? and `DepTest` = ? and `DepTestCase` = ? and `Tag` = ? and `Environment` = ? and `Country` = ? ";
@@ -555,7 +598,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
@@ -666,6 +709,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Override
     public HashMap<TestCaseExecution, List<TestCaseExecutionQueueDep>> readDependenciesByTestCaseExecution(List<TestCaseExecution> testCaseExecutions) throws CerberusException {
+
         HashMap<TestCaseExecution, List<TestCaseExecutionQueueDep>> hashMap = new HashMap<>();
         if (CollectionUtils.isEmpty(testCaseExecutions)) {
             return hashMap;
@@ -714,12 +758,13 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
         Timestamp releaseDate = rs.getTimestamp("ReleaseDate");
         String comment = ParameterParserUtil.parseStringParam(rs.getString("Comment"), "");
         Long exeID = ParameterParserUtil.parseLongParam(rs.getString("ExeID"), -1);
+        Long queueID = ParameterParserUtil.parseLongParam(rs.getString("QueueID"), -1);
         String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("UsrCreated"), "");
         Timestamp dateCreated = rs.getTimestamp("DateCreated");
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("UsrModif"), "");
         Timestamp dateModif = rs.getTimestamp("DateModif");
 
         return factoryTestCaseExecutionQueueDep.create(id, exeQueueID, environment, country, tag, type, depTest, depTestCase, depEvent, status, releaseDate,
-                comment, exeID, usrCreated, dateCreated, usrModif, dateModif);
+                comment, exeID, queueID, usrCreated, dateCreated, usrModif, dateModif);
     }
 }

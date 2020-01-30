@@ -189,9 +189,15 @@ function aoColumnsFunc(tableId) {
 
             }
         },
-        {"data": "campaign", "sName": "campaign", "sWidth": "80px", "title": doc.getDocLabel("page_testcampaign", "testcampaign_col")},
+        {
+            "data": "campaign", 
+            "sName": "campaign", 
+            "sWidth": "80px", 
+            "title": doc.getDocLabel("page_testcampaign", "testcampaign_col")
+        },
         {
             "data": "notifyStartTagExecution",
+            "visible": false,
             "sName": "notifyStartTagExecution",
             "sWidth": "30px",
             "title": doc.getDocLabel("testcampaign", "notifyStartTagExecution")
@@ -204,12 +210,14 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "distribList",
+            "visible": false,
             "sName": "distribList",
             "sWidth": "80px",
             "title": doc.getDocLabel("testcampaign", "distribList")
         },
         {
             "data": "SlackNotifyStartTagExecution",
+            "visible": false,
             "sName": "SlackNotifyStartTagExecution",
             "sWidth": "30px",
             "title": doc.getDocLabel("testcampaign", "SlackNotifyStartTagExecution")
@@ -222,12 +230,14 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "SlackWebhook",
+            "visible": false,
             "sName": "SlackWebhook",
             "sWidth": "80px",
             "title": doc.getDocLabel("testcampaign", "SlackWebhook")
         },
         {
             "data": "SlackChannel",
+            "visible": false,
             "sName": "SlackChannel",
             "sWidth": "80px",
             "title": doc.getDocLabel("testcampaign", "SlackChannel")
@@ -237,6 +247,56 @@ function aoColumnsFunc(tableId) {
             "sName": "description",
             "sWidth": "180px",
             "title": doc.getDocLabel("page_testcampaign", "description_col")
+        },
+        {
+            "data": "longDescription",
+            "visible": false,
+            "sName": "longDescription",
+            "sWidth": "180px",
+            "title": doc.getDocLabel("campaign", "longDescription")
+        },
+        {
+            "data": "CIScoreThreshold",
+            "visible": false,
+            "sName": "CIScoreThreshold",
+            "sWidth": "180px",
+            "title": doc.getDocLabel("campaign", "CIScoreThreshold")
+        },
+        {
+            "data": "UsrCreated",
+            "visible": false,
+            "sName": "UsrCreated",
+            "sWidth": "70px",
+            "defaultContent": "",
+            "title": doc.getDocOnline("transversal", "UsrCreated")
+        },
+        {
+            "data": "DateCreated",
+            "visible": false,
+            "like": true,
+            "sName": "DateCreated",
+            "sWidth": "110px",
+            "defaultContent": "",
+            "title": doc.getDocOnline("transversal", "DateCreated")
+        },
+        {
+            "data": "UsrModif",
+            "visible": false,
+            "sName": "UsrModif",
+            "sWidth": "70px",
+            "defaultContent": "",
+            "title": doc.getDocOnline("transversal", "UsrModif")
+        },
+        {
+            "data": "DateModif",
+            "visible": false,
+            "sName": "DateModif",
+            "sWidth": "110px",
+            "defaultContent": "",
+            "title": doc.getDocOnline("transversal", "DateModif"),
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["DateModif"]);
+            }
         }
     ];
     return aoColumns;

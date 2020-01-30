@@ -226,12 +226,12 @@ public class ReadTestCaseExecution extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findExecutionColumns(ApplicationContext appContext, HttpServletRequest request, String Tag) throws CerberusException, ParseException, JSONException {
-        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+    private AnswerItem<JSONObject> findExecutionColumns(ApplicationContext appContext, HttpServletRequest request, String Tag) throws CerberusException, ParseException, JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         JSONObject jsonResponse = new JSONObject();
 
-        AnswerList testCaseExecutionList = new AnswerList<>();
-        AnswerList testCaseExecutionListInQueue = new AnswerList<>();
+        AnswerList<TestCaseExecution> testCaseExecutionList = new AnswerList<>();
+        AnswerList<TestCaseExecutionQueue> testCaseExecutionListInQueue = new AnswerList<>();
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
@@ -252,7 +252,7 @@ public class ReadTestCaseExecution extends HttpServlet {
          * Feed hash map with execution from the two list (to get only one by
          * test,testcase,country,env,browser)
          */
-        LinkedHashMap<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap();
+        LinkedHashMap<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap<>();
 
         for (TestCaseExecution testCaseWithExecution : testCaseExecutions) {
             String key = testCaseWithExecution.getBrowser() + "_"
@@ -270,11 +270,11 @@ public class ReadTestCaseExecution extends HttpServlet {
             testCaseExecutionsList.put(key, testCaseExecution);
         }
 
-        testCaseExecutions = new ArrayList<TestCaseExecution>(testCaseExecutionsList.values());
+        testCaseExecutions = new ArrayList<>(testCaseExecutionsList.values());
 
         JSONObject statusFilter = getStatusList(request);
         JSONObject countryFilter = getCountryList(request, appContext);
-        LinkedHashMap<String, JSONObject> columnMap = new LinkedHashMap<String, JSONObject>();
+        LinkedHashMap<String, JSONObject> columnMap = new LinkedHashMap<>();
 
         for (TestCaseExecution testCaseWithExecution : testCaseExecutions) {
             String controlStatus = testCaseWithExecution.getControlStatus();
@@ -293,9 +293,8 @@ public class ReadTestCaseExecution extends HttpServlet {
         return answer;
     }
 
-    private AnswerItem findExecutionListByTag(ApplicationContext appContext, HttpServletRequest request, String Tag)
-            throws CerberusException, ParseException, JSONException {
-        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+    private AnswerItem findExecutionListByTag(ApplicationContext appContext, HttpServletRequest request, String Tag) throws CerberusException, ParseException, JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
@@ -334,7 +333,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         JSONArray executionList = new JSONArray();
         JSONObject statusFilter = getStatusList(request);
         JSONObject countryFilter = getCountryList(request, appContext);
-        LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
+        LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<>();
 
         String globalStart = "";
         String globalEnd = "";
@@ -343,7 +342,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         /**
          * Find the list of labels
          */
-        AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null, null);
+        AnswerList<TestCaseLabel> testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null, null);
 
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             try {
@@ -383,7 +382,6 @@ public class ReadTestCaseExecution extends HttpServlet {
                         ttcObject.put("status", testCaseExecution.getStatus());
                         ttcObject.put("application", testCaseExecution.getApplication());
                         ttcObject.put("priority", testCaseExecution.getTestCaseObj().getPriority());
-                        ttcObject.put("bugId", new JSONObject("{\"bugId\":\"" + testCaseExecution.getTestCaseObj().getBugID() + "\",\"bugTrackerUrl\":\"" + testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID()) + "\"}"));
                         ttcObject.put("comment", testCaseExecution.getTestCaseObj().getComment());
                         execTab.put(execKey, execution);
                         ttcObject.put("execTab", execTab);
@@ -392,7 +390,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                          * Iterate on the label retrieved and generate HashMap
                          * based on the key Test_TestCase
                          */
-                        LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap();
+                        LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap<>();
                         for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
                             String key = label.getTest() + "_" + label.getTestcase();
 
@@ -428,8 +426,8 @@ public class ReadTestCaseExecution extends HttpServlet {
         return answer;
     }
 
-    private AnswerItem findTestCaseExecutionList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException, CerberusException {
-        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+    private AnswerItem<JSONObject> findTestCaseExecutionList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
         List<TestCaseExecution> testCaseExecutionList;
         JSONObject object = new JSONObject();
 
@@ -460,7 +458,7 @@ public class ReadTestCaseExecution extends HttpServlet {
             }
         }
 
-        AnswerList resp = testCaseExecutionService.readByCriteria(startPosition, length, columnName.concat(" ").concat(sort), searchParameter, individualSearch, individualLike, system);
+        AnswerList<TestCaseExecution> resp = testCaseExecutionService.readByCriteria(startPosition, length, columnName.concat(" ").concat(sort), searchParameter, individualSearch, individualLike, system);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -500,20 +498,21 @@ public class ReadTestCaseExecution extends HttpServlet {
     private JSONObject getCountryList(HttpServletRequest request, ApplicationContext appContext) {
         JSONObject countryList = new JSONObject();
         try {
-            IInvariantService invariantService = appContext.getBean(InvariantService.class);
-            AnswerList answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
-            for (Invariant country : (List<Invariant>) answer.getDataList()) {
+            invariantService = appContext.getBean(InvariantService.class);
+            for (Invariant country : invariantService.readByIdName("COUNTRY")) {
                 countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
             }
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.warn("JSON exception when getting Country List.", ex);
+        } catch (CerberusException ex) {
+            LOG.error("JSON exception when getting Country List.", ex);
         }
 
         return countryList;
     }
 
     private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionQueue> testCaseExecutionsInQueue) throws ParseException {
-        LinkedHashMap<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap();
+        LinkedHashMap<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap<>();
         SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
@@ -537,7 +536,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                 testCaseExecutionsList.put(key, testCaseExecution);
             }
         }
-        List<TestCaseExecution> result = new ArrayList<TestCaseExecution>(testCaseExecutionsList.values());
+        List<TestCaseExecution> result = new ArrayList<>(testCaseExecutionsList.values());
 
         return result;
     }
@@ -557,16 +556,16 @@ public class ReadTestCaseExecution extends HttpServlet {
         result.put("ControlMessage", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlMessage()));
         result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecution.getStatus()));
 
-        String bugId;
+        JSONArray bugId = new JSONArray();
         if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
                 && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugID() != null) {
-            bugId = testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID());
-            bugId = new StringBuffer("<a href='")
-                    .append(bugId)
-                    .append("' target='reportBugID'>")
-                    .append(testCaseExecution.getTestCaseObj().getBugID())
-                    .append("</a>")
-                    .toString();
+//            bugId = testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID());
+//            bugId = new StringBuffer("<a href='")
+//                    .append(bugId)
+//                    .append("' target='reportBugID'>")
+//                    .append(testCaseExecution.getTestCaseObj().getBugID())
+//                    .append("</a>")
+//                    .toString();
         } else {
             bugId = testCaseExecution.getTestCaseObj().getBugID();
         }
@@ -587,7 +586,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         ITestCaseExecutionService testCaseExecService = appContext.getBean(ITestCaseExecutionService.class);
 
-        ITestCaseExecutionQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
+        testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
         /**
          * Get list of execution by tag, env, country, browser
          */
@@ -618,9 +617,9 @@ public class ReadTestCaseExecution extends HttpServlet {
      * @throws JSONException
      */
     private AnswerItem findValuesForColumnFilter(List<String> system, String test, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
-        AnswerList values = new AnswerList<>();
+        AnswerList<String> values = new AnswerList<>();
         Map<String, List<String>> individualSearch = new HashMap<>();
 
         testCaseService = appContext.getBean(TestCaseService.class);

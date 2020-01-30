@@ -109,6 +109,9 @@ public class UpdateCampaign extends HttpServlet {
         String distriblist = ParameterParserUtil.parseStringParam(request.getParameter("DistribList"), "");
         String desc = ParameterParserUtil.parseStringParam(request.getParameter("Description"), null);
         String longDesc = ParameterParserUtil.parseStringParam(request.getParameter("LongDescription"), null);
+        String group1 = ParameterParserUtil.parseStringParam(request.getParameter("Group1"), "");
+        String group2 = ParameterParserUtil.parseStringParam(request.getParameter("Group2"), "");
+        String group3 = ParameterParserUtil.parseStringParam(request.getParameter("Group3"), "");
 
         String slackWebhook = ParameterParserUtil.parseStringParam(request.getParameter("SlackWebhook"), "");
         String slackChannel = ParameterParserUtil.parseStringParam(request.getParameter("SlackChannel"), "");
@@ -124,9 +127,9 @@ public class UpdateCampaign extends HttpServlet {
         String manualExecution = ParameterParserUtil.parseStringParam(request.getParameter("ManualExecution"), "");
 
         // Getting list of application from JSON Call
-        JSONArray objApplicationArray = new JSONArray(request.getParameter("SchedulerList"));
+        JSONArray objSchedEntryArray = new JSONArray(request.getParameter("SchedulerList"));
         List<ScheduleEntry> schList = new ArrayList<>();
-        schList = getScheduleEntryListFromParameter(request, appContext, c, objApplicationArray);
+        schList = getScheduleEntryListFromParameter(request, appContext, c, objSchedEntryArray);
 
         if (StringUtil.isNullOrEmpty(c)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
@@ -155,6 +158,9 @@ public class UpdateCampaign extends HttpServlet {
                 camp.setNotifyEndTagExecution(notifyend);
                 camp.setDescription(desc);
                 camp.setLongDescription(longDesc);
+                camp.setGroup1(group1);
+                camp.setGroup2(group2);
+                camp.setGroup3(group3);
                 camp.setSlackChannel(slackChannel);
                 camp.setSlackNotifyEndTagExecution(slackNotifyEndTagExecution);
                 camp.setSlackNotifyStartTagExecution(slackNotifyStartTagExecution);
@@ -174,13 +180,12 @@ public class UpdateCampaign extends HttpServlet {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Scheduler").replace("%OPERATION%", "No Insert"));
                 schedAns.setResultMessage(msg);
-                if (!schList.isEmpty()) {
-                    IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
-                    schedAns = scheduleentryservice.compareSchedListAndUpdateInsertDeleteElements(c, schList);
-                    if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
-                        myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
-                    }
+
+                IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
+                schedAns = scheduleentryservice.compareSchedListAndUpdateInsertDeleteElements(c, schList);
+                if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
+                    myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
                 }
 
                 if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -257,16 +262,14 @@ public class UpdateCampaign extends HttpServlet {
         IFactoryScheduleEntry scheFactory = appContext.getBean(IFactoryScheduleEntry.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
-
         for (int i = 0; i < json.length(); i++) {
             JSONObject tcsaJson = json.getJSONObject(i);
-
             // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
             boolean delete = tcsaJson.getBoolean("toDelete");
             String cronExpression = policy.sanitize(tcsaJson.getString("cronDefinition"));
             String active = policy.sanitize(tcsaJson.getString("active"));
             String strId = tcsaJson.getString("ID");
-            String lastExecutionStr = tcsaJson.getString("lastExecution");
+            String desc = tcsaJson.getString("description");
             String type = "CAMPAIGN";
             String name = campaign;
 
@@ -285,11 +288,10 @@ public class UpdateCampaign extends HttpServlet {
             Timestamp timestampfactice = new Timestamp(System.currentTimeMillis());
 
             if (!delete) {
-                ScheduleEntry sch = scheFactory.create(id, type, name, cronExpression, timestampfactice, active, "", timestampfactice, "", timestampfactice);
+                ScheduleEntry sch = scheFactory.create(id, type, name, cronExpression, timestampfactice, active, desc, request.getRemoteUser(), timestampfactice, request.getRemoteUser(), timestampfactice);
                 scheList.add(sch);
             }
         }
-        LOG.debug("scheList" + scheList);
         return scheList;
     }
 

@@ -69,7 +69,7 @@ public class TagDAO implements ITagDAO {
 
     @Override
     public AnswerItem<Tag> readByKey(String tag) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Tag> ans = new AnswerItem<>();
         Tag result = null;
         final String query = "SELECT * FROM `tag` tag WHERE `tag` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -131,7 +131,7 @@ public class TagDAO implements ITagDAO {
 
     @Override
     public AnswerItem<Tag> readByKeyTech(long id) {
-        AnswerItem ans = new AnswerItem<>();
+        AnswerItem<Tag> ans = new AnswerItem<>();
         Tag result = null;
         final String query = "SELECT * FROM `tag` tag WHERE `id` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -193,7 +193,7 @@ public class TagDAO implements ITagDAO {
 
     @Override
     public AnswerList<Tag> readByVariousByCriteria(String campaign, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, List<String> systems) {
-        AnswerList response = new AnswerList<>();
+        AnswerList<Tag> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Tag> objectList = new ArrayList<Tag>();
@@ -519,6 +519,52 @@ public class TagDAO implements ITagDAO {
     }
 
     @Override
+    public Answer updateBrowserStackBuild(String tag, Tag object) {
+        MessageEvent msg = null;
+        String query = "UPDATE tag SET browserstackBuildHash = ?, dateModif = NOW(), usrModif= ?";
+        query += "  WHERE Tag = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.tag : " + object.getTag());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setString(i++, object.getBrowserstackBuildHash());
+                preStat.setString(i++, object.getUsrModif());
+                preStat.setString(i++, tag);
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
     public Answer updateDateEndQueue(Tag tag) {
         MessageEvent msg = null;
         String query = "UPDATE tag SET DateEndQueue = ?, nbExe = ?, nbExeUsefull = ?, nbOK = ?, nbKO = ?, nbFA = ?, nbNA = ?, nbNE = ?, nbWE = ?, nbPE = ?, nbQU = ?, nbQE = ?, nbCA = ?"
@@ -617,17 +663,18 @@ public class TagDAO implements ITagDAO {
         String applicationList = rs.getString("tag.ApplicationList");
         String reqEnvList = rs.getString("tag.ReqEnvironmentList");
         String reqCountryList = rs.getString("tag.ReqCountryList");
+        String browserstackBuildHash = rs.getString("tag.BrowserstackBuildHash");
 
         //TODO remove when working in test with mockito and autowired
         factoryTag = new FactoryTag();
-        Tag newTag = factoryTag.create(id, tag, description, campaign, dateEndQueue, nbExe, nbExeUsefull, nbOK, nbKO, nbFA, nbNA, nbNE, nbWE, nbPE, nbQU, nbQE, nbCA, ciScore, ciScoreThreshold, ciResult, envList, countryList, robotDecliList, systemList, applicationList, reqEnvList, reqCountryList, usrCreated, dateCreated, usrModif, dateModif);
+        Tag newTag = factoryTag.create(id, tag, description, campaign, dateEndQueue, nbExe, nbExeUsefull, nbOK, nbKO, nbFA, nbNA, nbNE, nbWE, nbPE, nbQU, nbQE, nbCA, ciScore, ciScoreThreshold, ciResult, envList, countryList, robotDecliList, systemList, applicationList, reqEnvList, reqCountryList, browserstackBuildHash, usrCreated, dateCreated, usrModif, dateModif);
 
         return newTag;
     }
 
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String campaign, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();

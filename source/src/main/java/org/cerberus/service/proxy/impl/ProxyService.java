@@ -22,6 +22,13 @@ package org.cerberus.service.proxy.impl;
 import java.net.URI;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.service.proxy.IProxyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,6 +136,46 @@ public class ProxyService implements IProxyService {
         result = result.replace("*", ".*");
         LOG.debug("Leaving convertToRegEx with result : " + result);
         return result;
+    }
+
+    @Override
+    public HttpClientBuilder getBuilderWithProxy(String system, String url) {
+        try {
+
+            if (useProxy(url, system)) {
+
+                String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
+                int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system, DEFAULT_PROXY_PORT);
+
+                HttpHost proxyHostObject = new HttpHost(proxyHost, proxyPort);
+
+                if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system,
+                        DEFAULT_PROXYAUTHENT_ACTIVATE)) {
+
+                    String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", system, DEFAULT_PROXYAUTHENT_USER);
+                    String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", system, DEFAULT_PROXYAUTHENT_PASSWORD);
+
+                    CredentialsProvider credsProvider = new BasicCredentialsProvider();
+                    credsProvider.setCredentials(new AuthScope(proxyHost, proxyPort), new UsernamePasswordCredentials(proxyUser, proxyPassword));
+
+                    LOG.debug("Activating Proxy With Authentification.");
+                    return HttpClientBuilder.create().setProxy(proxyHostObject)
+                            .setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy())
+                            .setDefaultCredentialsProvider(credsProvider);
+
+                } else {
+
+                    LOG.debug("Activating Proxy (No Authentification).");
+                    return HttpClientBuilder.create().setProxy(proxyHostObject);
+                }
+            } else {
+                return HttpClientBuilder.create();
+            }
+
+        } catch (Exception e) {
+            LOG.error("Exception when building httpClientBuilder.", e);
+        }
+        return HttpClientBuilder.create();
     }
 
 }

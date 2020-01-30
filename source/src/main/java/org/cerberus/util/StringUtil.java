@@ -59,6 +59,26 @@ public final class StringUtil {
     }
 
     /**
+     *
+     * @param ex
+     * @return
+     */
+    public static String getExceptionCause(Exception ex) {
+        StringBuilder result = new StringBuilder();
+        StackTraceElement[] ste = ex.getStackTrace();
+        String[] exString = ex.getMessage().split("\n");
+//        LOG.debug(exString.length);
+//        LOG.debug("toto " + ex.getMessage());
+        for (StackTraceElement string : ste) {
+//            LOG.debug("toto : " + string.toString());
+            if (string.toString().contains("Caused by")) {
+                result.append(string.toString());
+            }
+        }
+        return result.toString();
+    }
+
+    /**
      * Determine if the passed parameter boolean value
      *
      * @param parse to check for boolean validity
@@ -167,7 +187,7 @@ public final class StringUtil {
     }
 
     /**
-     * Generate a random string using current time and charset
+     * Return left part of the String.
      *
      * @param string1 String to treat.
      * @param length nb of characters to keep.
@@ -180,6 +200,24 @@ public final class StringUtil {
             return string1;
         } else {
             return string1.substring(0, length);
+        }
+    }
+
+    /**
+     * Return left part of the string adding ... at the end.
+     *
+     * @param string1 String to treat.
+     * @param length nb of characters to keep.
+     * @return the {length} first caracter of the string1.
+     */
+    public static String getLeftStringPretty(String string1, int length) {
+        int lengthminus3 = length - 3;
+        if (string1 == null) {
+            return "";
+        } else if (length >= string1.length()) {
+            return string1;
+        } else {
+            return string1.substring(0, lengthminus3) + "...";
         }
     }
 
@@ -414,11 +452,10 @@ public final class StringUtil {
         String firstPart = "";
         String seccondPart = url;
 
-        if(url.contains("http://") ) {
+        if (url.contains("http://")) {
             firstPart = "http://";
             seccondPart = url.split("http://")[1];
-        }
-        else if (url.contains("https://")) {
+        } else if (url.contains("https://")) {
             firstPart = "https://";
             seccondPart = url.split("https://")[1];
         }
@@ -493,7 +530,7 @@ public final class StringUtil {
             separator = ",";
         }
         boolean first = true;
-        if (listString == null){
+        if (listString == null) {
             return "";
         }
         for (String string : listString) {

@@ -29,7 +29,7 @@
 <%@page import="org.cerberus.version.Infos"%>
 <%!
     Date DatePageStart = new Date();
-    
+
     String display_footer(Date DatePageStart) {
         Date mydate = new Date();
         long Duration = mydate.getTime() - DatePageStart.getTime();
@@ -61,27 +61,27 @@
         <%
             if ((request.getParameter("error") != null) && (request.getParameter("error").equals("403"))) {
         %>
-        <h1>Not Authorised Resource...</h1>
-        <h3> You don't have enough privilege to open this page, Please ask your Cerberus administrator to grant the access.</h3>
+        <br><br>
+        <h1 style="text-align: center">Not Authorised Resource...</h1>
+        <br><br>
+        <h2 style="text-align: center"> You don't have enough privilege to open this page, Please ask your Cerberus administrator to grant the access.</h2>
         <%
         } else {
         %>
-        <h1>Oops...</h1>
-        <h3>Sorry but an unexpected error occurred.</h3>
+        <br><br>
+        <h1 style="text-align: center">Oops...</h1>
+        <br><br>
+        <h2 style="text-align: center">Sorry but an unexpected error occurred.</h2>
         <%
             }
         %>
         <br><br>
-        <h4>Error Code : <%=request.getParameter("error")%></h4>
-        <h4><%=request.getAttribute("javax.servlet.error.message")%></h4>
+        <h4 style="text-align: center">You can try to :</h4><br>
+        <h4 style="text-align: center"><a href="./Logout.jsp">Logout</a></h4><br>
+        <h4 style="text-align: center"><a href="./">Back to homepage</a></h4><br>
         <br>
-        <br>
-        <h4>You can try to :</h4>
-        <a href="./Logout.jsp">Logout</a><br>
-        <a href="./">Back to homepage</a>
-        <br>
-        <br><%
-            out.print(display_footer(DatePageStart));
-        %>
+        <div style="text-align: center"><%
+            out.print(display_footer(DatePageStart));%>            
+        </div>
     </body>
 </html>

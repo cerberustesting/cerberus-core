@@ -25,7 +25,7 @@
 
     <groupId>org.cerberus</groupId>
     <artifactId>cerberus</artifactId>
-    <version>4.2-SNAPSHOT</version>
+    <version>4.6-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>Cerberus</name>
@@ -43,15 +43,15 @@
         <!-- JSON Lib Version -->
         <json.version>20080701</json.version>
         <gson.version>2.8.0</gson.version>
-        <jackson.version>2.9.8</jackson.version>
+        <jackson-databind.version>2.9.10.1</jackson-databind.version>
         <jackson-core-asl.version>1.7.1</jackson-core-asl.version>
         <jackson-mapper-asl.version>1.7.1</jackson-mapper-asl.version>
         <!-- Groovy Version -->
         <groovy.version>2.4.7</groovy.version>
         <groovy-sandbox.version>1.10</groovy-sandbox.version>
         <!-- Appium/Selenium scope Version -->
-        <appium.version>7.0.0</appium.version>
-        <selenium.version>3.14.0</selenium.version>
+        <appium.version>7.2.0</appium.version>
+        <selenium.version>3.141.59</selenium.version>
         <jna.version>4.1.0</jna.version>
         <!-- Log4J Version -->
         <log4j.version>2.9.1</log4j.version>
@@ -63,7 +63,6 @@
         <javax.websocket-api>1.1</javax.websocket-api>
         <guava.version>23.0</guava.version>
         <xmlunit.version>1.5</xmlunit.version>
-        <mysql-connector-java.version>5.1.20</mysql-connector-java.version>
         <owasp-java-html-sanitizer.version>r239</owasp-java-html-sanitizer.version>
         <jcommon.version>1.0.16</jcommon.version>
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
@@ -73,8 +72,8 @@
         <commons-email.version>1.5</commons-email.version>
         <commons-text.version>1.3</commons-text.version>
         <poi.version>3.13</poi.version>
-        <asciidoctor.version>1.5.6</asciidoctor.version>
-        <apache.tika>1.20</apache.tika>
+        <asciidoctor.version>2.1.0</asciidoctor.version>
+        <apache.tika>1.22</apache.tika>
         <fluent-hc.version>4.5.3</fluent-hc.version>
         
         <!-- Test scope -->
@@ -94,8 +93,8 @@
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <javaee-endorsed-api.version>7.0</javaee-endorsed-api.version>
         <ant-jsch.version>1.10.1</ant-jsch.version>
-        <asciidoctor-maven-plugin.version>1.5.6</asciidoctor-maven-plugin.version>
-        <license-maven-plugin.version>3.0</license-maven-plugin.version>
+        <asciidoctor-maven-plugin.version>1.6.0</asciidoctor-maven-plugin.version>
+        <license-maven-plugin.version>2.0</license-maven-plugin.version>
         
         <!-- Quartz version -->
         <quartz.version>2.3.0</quartz.version>
@@ -106,6 +105,7 @@
     </properties>
 
     <dependencies>
+        
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -128,6 +128,11 @@
             <version>${spring.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
             <version>${spring.version}</version>
@@ -138,6 +143,7 @@
             <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
+        
         <!-- JSON Lib -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -152,7 +158,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.9.1</version>
+            <version>${jackson-databind.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
@@ -164,6 +170,7 @@
             <artifactId>jackson-mapper-asl</artifactId>
             <version>${jackson-mapper-asl.version}</version>
         </dependency>
+        
         <!-- Groovy -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
@@ -175,41 +182,12 @@
             <artifactId>groovy-sandbox</artifactId>
             <version>${groovy-sandbox.version}</version>
         </dependency>
+        
         <!-- Appium/Selenium scope -->
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
             <version>${appium.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>asm</groupId>
-                    <artifactId>asm</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>asm</groupId>
-                    <artifactId>asm-attrs</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>cglib</groupId>
-                    <artifactId>cglib</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>cglib</groupId>
-                    <artifactId>cglib</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-java</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-support</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -232,6 +210,7 @@
             <artifactId>jna-platform</artifactId>
             <version>${jna.version}</version>
         </dependency>
+        
         <!-- Log4J -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -248,12 +227,21 @@
             <artifactId>log4j-api</artifactId>
             <version>${log4j.version}</version>
         </dependency>
+        
         <!-- jsonpath -->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>${jsonxpath.version}</version>
         </dependency>
+        
+        <!-- Kafka -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        
         <!-- Compile scope -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -265,6 +253,36 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.26</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.soap</groupId>
+            <artifactId>javax.xml.soap-api</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.messaging.saaj</groupId>
+            <artifactId>saaj-impl</artifactId>
+            <version>1.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.ws</groupId>
+            <artifactId>jaxws-api</artifactId>
+            <version>2.2.6</version>
         </dependency>
         <dependency>
             <groupId>javax</groupId>
@@ -292,11 +310,6 @@
             <groupId>xmlunit</groupId>
             <artifactId>xmlunit</artifactId>
             <version>${xmlunit.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql-connector-java.version}</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
@@ -352,12 +365,12 @@
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj</artifactId>
             <version>${asciidoctor.version}</version>
-            <exclusions>
+            <!--            <exclusions>
                 <exclusion>
                     <groupId>org.jruby</groupId>
                     <artifactId>jruby-complete</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
@@ -417,9 +430,19 @@
             <artifactId>c3p0</artifactId>
             <version>${c3p0.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.9.2</version>
+        </dependency>
         
         <!-- Test scope -->
-        <dependency>
+        <!--        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
@@ -442,7 +465,35 @@
             <artifactId>powermock-api-mockito</artifactId>
             <version>${powermock.version}</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
+        
+        <!-- Comment temporary the dependency --> 
+        <!-- Jax-RS Scope-->
+        <!-- 
+    <dependency>
+        <groupId>org.glassfish.jersey.containers</groupId>
+        <artifactId>jersey-container-servlet</artifactId>
+        <version>2.28</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.glassfish.jersey.inject</groupId>
+        <artifactId>jersey-hk2</artifactId>
+        <version>2.28</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.glassfish.jersey.media</groupId>
+        <artifactId>jersey-media-json-jackson</artifactId>
+        <version>2.28</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.glassfish.jersey.media</groupId>
+        <artifactId>jersey-media-jaxb</artifactId>
+        <version>2.28</version>
+    </dependency>
+        --> 
     </dependencies>
 
     <build>
@@ -489,23 +540,28 @@
                     <compilerArguments>
                         <endorseddirs>${endorsed.dir}</endorseddirs>
                     </compilerArguments>
-<!--                    <compilerArguments>
-                        <Xlint:unchecked />
-                    </compilerArguments>-->
+                    <compilerArgs>
+                        <arg>-Xmaxerrs</arg>
+                        <arg>1000</arg>
+                        <arg>-Xlint:unchecked</arg>
+                        <arg>-Xlint:deprecation</arg>
+                        <arg>-Xmaxwarns</arg>
+                        <arg>9999</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             
             <!-- Fix jenkins build issue  -->
             
             <plugin>
-  		<groupId>org.apache.maven.plugins</groupId>
-  		<artifactId>maven-site-plugin</artifactId>
-  		<version>3.3</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.3</version>
             </plugin>
             <plugin>
-  		<groupId>org.apache.maven.plugins</groupId>
-  		<artifactId>maven-project-info-reports-plugin</artifactId>
-  		<version>2.7</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.7</version>
             </plugin>
 
             <!-- end -->

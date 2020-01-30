@@ -69,7 +69,7 @@
                                 <div class="row">
                                     <div class="form-group form-group-sm col-sm-12">
                                         <label for="behaviorOrValueExpected" name="behaviorOrValueExpectedField">Behavior or value expected</label>
-                                        <textarea id="behaviorOrValueExpected" name="behaviorOrValueExpected" class="form-control wysiwyg" style="height: 200px"></textarea> 
+                                        <textarea id="behaviorOrValueExpected" name="behaviorOrValueExpected" class="form-control wysiwyg" style="height: 200px"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -142,19 +142,23 @@
                                 <label name="activationConditions">Activation conditions</label>
                                 <div class="well well-sm">
                                     <div class="row">
-                                    <div class="form-group form-group-sm col-sm-3">
-                                        <label for="conditionOper" name="conditionOperField">Condition Operator</label>
-                                        <select type="text" class="form-control input-sm" name="conditionOper" id="conditionOper"></select>
+                                        <div class="form-group form-group-sm col-sm-3">
+                                            <label for="conditionOper" name="conditionOperField">Condition Operator</label>
+                                            <select type="text" class="form-control input-sm" name="conditionOper" id="conditionOper"></select>
+                                        </div>
+                                        <div class="form-group form-group-sm col-sm-3">
+                                            <label for="conditionVal1" name="ConditionVal1Field">Condition Value 1</label>
+                                            <input type="text" class="form-control input-sm" name="conditionVal1" id="conditionVal1"/>
+                                        </div>
+                                        <div class="form-group form-group-sm col-sm-3">
+                                            <label for="conditionVal2" name="ConditionVal2Field">Condition Value 2</label>
+                                            <input type="text" class="form-control input-sm" name="conditionVal2" id="conditionVal2"/>
+                                        </div>
+                                        <div class="form-group form-group-sm col-sm-3">
+                                            <label for="conditionVal3" name="ConditionVal3Field">Condition Value 3</label>
+                                            <input type="text" class="form-control input-sm" name="conditionVal3" id="conditionVal3"/>
+                                        </div>
                                     </div>
-                                    <div class="form-group form-group-sm col-sm-3">
-                                        <label for="conditionVal1" name="ConditionVal1Field">Condition Value 1</label>
-                                        <input type="text" class="form-control input-sm" name="conditionVal1" id="conditionVal1"/>
-                                    </div>
-                                    <div class="form-group form-group-sm col-sm-3">
-                                        <label for="conditionVal2" name="ConditionVal2Field">Condition Value 2</label>
-                                        <input type="text" class="form-control input-sm" name="conditionVal2" id="conditionVal2"/>
-                                    </div>
-                                </div>
                                 </div>
                                 <label name="robotConstraints">Robots contraints</label>
                                 <div class="well well-sm">
@@ -205,7 +209,7 @@
                                 </div>
                             </div>
                             <div class="center tab-pane fade marginTop25" id="tabTCBugReport">
-                                <div class="row">
+<!--                                <div class="row">
                                     <div class="form-group form-group-sm col-sm-3">
                                         <label for="bugId" name="bugIdField">Bug ID</label>
                                         <input type="text" class="form-control input-sm" name="bugId" id="bugId"/>
@@ -214,7 +218,28 @@
                                         <label for="link" name="linkField">Link to The Bug</label>
                                         <br><a name="link" id="link" style="display: inline-block;"></a>
                                     </div>
+                                </div>-->
+                                <div class="row">
+                                    <div class="form-group form-group-sm col-sm-12">
+                                        <table class="table table-bordered table-hover nomarginbottom" id="bugTable">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 5%;"></th>
+                                                    <th class="text-center" id="actHeader" name="actHeader">Active</th>
+                                                    <th class="text-center" id="bugidHeader" name="bugidHeader">BugID</th>
+                                                    <th class="text-center" id="descHeader" name="descHeader">Description</th>
+                                                    <th class="text-center" id="linkHeader" name="linkHeader">Bug link</th>
+                                                    <th class="text-center" id="dateCloseHeader" name="dateCloseHeader">Link Closure Date</th>
+                                                    <th class="text-center" id="dateCreateHeader" name="dateCreateHeader">Link Creation Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="bugTableBody">
+                                            </tbody>
+                                        </table>
+                                        <button type="button" class="btn btn-default marginTop10" id="addBug">Add Bug</button>
+                                    </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="form-group form-group-sm col-sm-12">
                                         <label for="comment" name="commentField">Comment</label>
@@ -227,11 +252,15 @@
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <div class="row">
-                                                <div class="form-group form-group-sm col-sm-6">
+                                                <div class="form-group form-group-sm col-sm-5">
                                                     <label for="implementer" name="implementerField">Implementer</label>
                                                     <input class="form-control input-sm"  id="implementer" name="implementer"/>
                                                 </div>
-                                                <div class="form-group form-group-sm col-sm-6">
+                                                <div class="form-group form-group-sm col-sm-5">
+                                                    <label for="executor" name="executorField">Executor</label>
+                                                    <input class="form-control input-sm"  id="executor" name="executor"/>
+                                                </div>
+                                                <div class="form-group form-group-sm col-sm-2">
                                                     <label for="testcaseversion" name="testcaseversionField">Version</label>
                                                     <input class="form-control input-sm"  id="testcaseversion" name="testcaseversion" readonly="readonly"/>
                                                 </div>
@@ -240,33 +269,33 @@
                                                 <div class="form-group col-sm-6">
                                                     <label name="lbl_datecreated" for="datecreated">datecreated</label>
                                                     <div>
-                                                        <input id="datecreated" name="datecreated" class="form-control" readonly="readonly" />     
+                                                        <input id="datecreated" name="datecreated" class="form-control" readonly="readonly" />
                                                     </div>
-                                                </div> 
+                                                </div>
                                                 <div class="form-group col-sm-6">
                                                     <label name="lbl_usrcreated" for="usrcreated">usrcreated</label>
                                                     <div>
-                                                        <input id="usrcreated" name="usrcreated" class="form-control" readonly="readonly" />     
+                                                        <input id="usrcreated" name="usrcreated" class="form-control" readonly="readonly" />
                                                     </div>
-                                                </div> 
-                                            </div> 
+                                                </div>
+                                            </div>
                                             <div class="row">
                                                 <div class="form-group col-sm-6">
                                                     <label name="lbl_datemodif" for="datemodif">datemodif</label>
                                                     <div>
-                                                        <input id="datemodif" name="datemodif" class="form-control" readonly="readonly" />     
+                                                        <input id="datemodif" name="datemodif" class="form-control" readonly="readonly" />
                                                     </div>
-                                                </div> 
+                                                </div>
                                                 <div class="form-group col-sm-6">
                                                     <label name="lbl_usrmodif" for="usrmodif">usrmodif</label>
                                                     <div>
-                                                        <input id="usrmodif" name="usrmodif" class="form-control" readonly="readonly" />     
+                                                        <input id="usrmodif" name="usrmodif" class="form-control" readonly="readonly" />
                                                     </div>
-                                                </div> 
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>  
-                                </div>   
+                                    </div>
+                                </div>
                             </div>
                             <div class="center tab-pane fade marginTop25" id="tabTCDependency">
                                 <div class="row">
@@ -300,12 +329,12 @@
                                                             <div class="dataTables_scrollHeadInner" style="box-sizing: content-box; width: 1138px; padding-right: 0px;">
                                                                 <table class="table table-bordered table-hover display dataTable no-footer" name="parameterTestcampaignsTable" role="grid" style="margin-left: 0px; width: 1138px;">
                                                                     <thead>
-                                                                    <tr role="row">
-                                                                        <th data-column-index="1" class="ui-state-default sorting" tabindex="0" aria-controls="parameterTestcampaignsTable" rowspan="1" colspan="1" style="width: 72px;" aria-label="Parameter: activate to sort column ascending">Actions</th>
-                                                                        <th data-column-index="0" class="ui-state-default sorting_asc" rowspan="1" colspan="1" aria-label="TestCases">Test Cases</th>
-                                                                        <th data-column-index="0" class="ui-state-default sorting_asc" rowspan="1" colspan="1"  style="width: 72px;" aria-label="Activate">Activate</th>
-                                                                        <th data-column-index="0" class="ui-state-default sorting_asc" rowspan="1" colspan="1"  aria-label="Description">Description</th>
-                                                                    </tr>
+                                                                        <tr role="row">
+                                                                            <th data-column-index="1" class="ui-state-default sorting" tabindex="0" aria-controls="parameterTestcampaignsTable" rowspan="1" colspan="1" style="width: 72px;" aria-label="Parameter: activate to sort column ascending">Actions</th>
+                                                                            <th data-column-index="0" class="ui-state-default sorting_asc" rowspan="1" colspan="1" aria-label="TestCases">Test Cases</th>
+                                                                            <th data-column-index="0" class="ui-state-default sorting_asc" rowspan="1" colspan="1"  style="width: 72px;" aria-label="Activate">Activate</th>
+                                                                            <th data-column-index="0" class="ui-state-default sorting_asc" rowspan="1" colspan="1"  aria-label="Description">Description</th>
+                                                                        </tr>
                                                                     </thead>
                                                                 </table>
                                                             </div>

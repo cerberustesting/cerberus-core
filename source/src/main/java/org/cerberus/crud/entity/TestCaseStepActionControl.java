@@ -38,9 +38,11 @@ public class TestCaseStepActionControl {
     private String conditionOper;
     private String conditionVal1;
     private String conditionVal2;
+    private String conditionVal3;
     private String control;
     private String value1;
     private String value2;
+    private String value3;
     private String fatal;
     private String description;
     private String screenshotFilename;
@@ -143,6 +145,14 @@ public class TestCaseStepActionControl {
         this.conditionVal2 = conditionVal2;
     }
 
+    public String getConditionVal3() {
+        return conditionVal3;
+    }
+
+    public void setConditionVal3(String conditionVal3) {
+        this.conditionVal3 = conditionVal3;
+    }
+
     public String getValue2() {
         return value2;
     }
@@ -157,6 +167,14 @@ public class TestCaseStepActionControl {
 
     public void setValue1(String controlValue) {
         this.value1 = controlValue;
+    }
+
+    public String getValue3() {
+        return value3;
+    }
+
+    public void setValue3(String value3) {
+        this.value3 = value3;
     }
 
     public String getFatal() {
@@ -245,9 +263,11 @@ public class TestCaseStepActionControl {
         hash = 67 * hash + (this.conditionOper != null ? this.conditionOper.hashCode() : 0);
         hash = 67 * hash + (this.conditionVal1 != null ? this.conditionVal1.hashCode() : 0);
         hash = 67 * hash + (this.conditionVal2 != null ? this.conditionVal2.hashCode() : 0);
+        hash = 67 * hash + (this.conditionVal3 != null ? this.conditionVal3.hashCode() : 0);
         hash = 67 * hash + (this.control != null ? this.control.hashCode() : 0);
         hash = 67 * hash + (this.value1 != null ? this.value1.hashCode() : 0);
         hash = 67 * hash + (this.value2 != null ? this.value2.hashCode() : 0);
+        hash = 67 * hash + (this.value3 != null ? this.value3.hashCode() : 0);
         hash = 67 * hash + (this.fatal != null ? this.fatal.hashCode() : 0);
         hash = 67 * hash + (this.description != null ? this.description.hashCode() : 0);
         return hash;
@@ -289,6 +309,9 @@ public class TestCaseStepActionControl {
         if ((this.conditionVal2 == null) ? (other.conditionVal2 != null) : !this.conditionVal2.equals(other.conditionVal2)) {
             return false;
         }
+        if ((this.conditionVal3 == null) ? (other.conditionVal3 != null) : !this.conditionVal3.equals(other.conditionVal3)) {
+            return false;
+        }
         if ((this.control == null) ? (other.control != null) : !this.control.equals(other.control)) {
             return false;
         }
@@ -296,6 +319,9 @@ public class TestCaseStepActionControl {
             return false;
         }
         if ((this.value2 == null) ? (other.value2 != null) : !this.value2.equals(other.value2)) {
+            return false;
+        }
+        if ((this.value3 == null) ? (other.value3 != null) : !this.value3.equals(other.value3)) {
             return false;
         }
         if ((this.fatal == null) ? (other.fatal != null) : !this.fatal.equals(other.fatal)) {
@@ -312,7 +338,7 @@ public class TestCaseStepActionControl {
 
     @Override
     public String toString() {
-        return "TestCaseStepActionControl{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", control=" + controlSequence + ", type=" + control + ", controlValue=" + value1 + ", controlProperty=" + value2 + ", fatal=" + fatal + ", description=" + description + '}';
+        return "TestCaseStepActionControl{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", control=" + controlSequence + ", type=" + control + ", controlValue=" + value1 + ", controlProperty=" + value2 + ", controlValue3=" + value3 + ", fatal=" + fatal + ", description=" + description + '}';
     }
 
     public JSONObject toJson() {
@@ -327,10 +353,12 @@ public class TestCaseStepActionControl {
             result.put("conditionOper", this.getConditionOper());
             result.put("conditionVal1", this.getConditionVal1());
             result.put("conditionVal2", this.getConditionVal2());
+            result.put("conditionVal3", this.getConditionVal3());
             result.put("conditionVal2AAAA", this.getConditionVal2());
             result.put("control", this.getControl());
             result.put("value1", this.getValue1());
             result.put("value2", this.getValue2());
+            result.put("value3", this.getValue3());
             result.put("fatal", this.getFatal());
             result.put("description", this.getDescription());
             result.put("screenshotFilename", this.getScreenshotFilename());

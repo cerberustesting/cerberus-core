@@ -33,19 +33,16 @@ import org.cerberus.engine.execution.IRecorderService;
  * How to use ?
  *
  *
- * VideoRecorder videoRecorder = VideoRecorder.getInstance(tCExecution, recorderService); // can throw an UnsupportedOperationException
- * ....
- * try {
- *      ....
- *      videoRecorder.beginRecordVideo()
- *      ...
- * } finally {
- *     videoRecorder.endRecordVideo()
- * }
+ * VideoRecorder videoRecorder = VideoRecorder.getInstance(tCExecution,
+ * recorderService); // can throw an UnsupportedOperationException .... try {
+ * .... videoRecorder.beginRecordVideo() ... } finally {
+ * videoRecorder.endRecordVideo() }
  *
- * If you forgot to `endRecordVideo`, `VideoRecorder` implements a destructor who end video when object is detructed
+ * If you forgot to `endRecordVideo`, `VideoRecorder` implements a destructor
+ * who end video when object is detructed
  */
 public abstract class VideoRecorder {
+
     protected final IRecorderService recorderService;
     protected TestCaseExecution testCaseExecution;
     protected Session session;
@@ -56,12 +53,18 @@ public abstract class VideoRecorder {
 
     /**
      * Create a new instance of VideoRecorder
-     * @throws UnsupportedOperationException  if application type is not supported (only supported by APK at this time)
+     *
+     * @param testCaseExecution
+     * @param recorderService
+     * @return 
+     * @throws UnsupportedOperationException if application type is not
+     * supported (only supported by APK at this time)
      */
     public static VideoRecorder getInstance(TestCaseExecution testCaseExecution, IRecorderService recorderService) {
         String applicationType = null;
-        if(testCaseExecution !=null && testCaseExecution.getApplicationObj() != null)
+        if (testCaseExecution != null && testCaseExecution.getApplicationObj() != null) {
             applicationType = testCaseExecution.getApplicationObj().getType();
+        }
 
         if (Application.TYPE_APK.equals(applicationType)) {
             return new VideoRecorderAPK(testCaseExecution, recorderService);
@@ -78,8 +81,9 @@ public abstract class VideoRecorder {
 
     @Override
     public void finalize() {
-        if (running.get())
+        if (running.get()) {
             endRecordVideo();
+        }
     }
 
     public abstract void beginRecordVideo();

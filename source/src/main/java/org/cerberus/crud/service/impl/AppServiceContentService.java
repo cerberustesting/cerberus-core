@@ -54,27 +54,27 @@ public class AppServiceContentService implements IAppServiceContentService {
     private final String OBJECT_NAME = "Service Content";
 
     @Override
-    public AnswerItem readByKey(String service, String key) {
+    public AnswerItem<AppServiceContent> readByKey(String service, String key) {
         return AppServiceContentDAO.readByKey(service, key);
     }
 
     @Override
-    public AnswerList readAll() {
+    public AnswerList<AppServiceContent> readAll() {
         return readByServiceByCriteria(null, null, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
-    public AnswerList readByVarious(String service, String active) {
+    public AnswerList<AppServiceContent> readByVarious(String service, String active) {
         return AppServiceContentDAO.readByVariousByCriteria(service, active, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<AppServiceContent> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return AppServiceContentDAO.readByVariousByCriteria(null, null, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerList readByServiceByCriteria(String service, String active, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<AppServiceContent> readByServiceByCriteria(String service, String active, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return AppServiceContentDAO.readByVariousByCriteria(service, active, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 

@@ -37,5 +37,5 @@ public interface IConditionService {
      * @param tCExecution
      * @return
      */
-    AnswerItem<Boolean> evaluateCondition(String conditionOper, String conditionValue1, String conditionValue2, TestCaseExecution tCExecution);
+    AnswerItem<Boolean> evaluateCondition(String conditionOper, String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution tCExecution);
 }

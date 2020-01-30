@@ -168,8 +168,8 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
     }
 
     @Override
-    public AnswerList<List<TestCaseLabel>> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<TestCaseLabel> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        AnswerList<TestCaseLabel> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseLabel> objectList = new ArrayList<>();
@@ -393,8 +393,8 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
     }
 
     @Override
-    public AnswerList readByTestTestCase(String test, String testCase, List<TestCase> testCaseList) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<TestCaseLabel> readByTestTestCase(String test, String testCase, List<TestCase> testCaseList) {
+        AnswerList<TestCaseLabel> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseLabel> objectList = new ArrayList<>();
@@ -407,7 +407,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
 
         query.append(" WHERE 1=1");
 
-        HashMap<String, String> testCaseMap = new HashMap();
+        HashMap<String, String> testCaseMap = new HashMap<>();
         if ((testCaseList != null) && !testCaseList.isEmpty()) {
             if (testCaseList.size() < 101) {
                 // if more than 100 testcases to filter, we only filter by testfolder (this is to reduce the size of SQL sent to database engine)
@@ -521,8 +521,8 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
     }
 
     @Override
-    public AnswerList readByTypeSystem(String type, String system) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<TestCaseLabel> readByTypeSystem(String type, String system) {
+        AnswerList<TestCaseLabel> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseLabel> objectList = new ArrayList<>();

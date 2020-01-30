@@ -64,13 +64,12 @@
         </script>
         <script>
             function waitXSecondAndPrintValue(value) {
-                window.setTimeout(function () {
+                window.setTimeout(function() {
                     var i = document.createElement('input');
                     i.setAttribute('id', 'selectedTimeout');
                     i.setAttribute('name', 'selectedTimeout');
                     i.setAttribute('value', 'Hello World!');
                     document.selectTimeout.appendChild(i);
-
                     document.getElementById('selectTimeoutHide').setAttribute('value', 'Hello World!');
                     document.getElementById('selectTimeoutHide').style.display = 'inline';
                 }, value.value);
@@ -105,8 +104,8 @@
         <a href="#" id="openPopup" data-cerberus="openPopup" onclick="javascript:window.open('./index2.jsp', 'popup',
                         'width=500,height=400,scrollbars=yes,menubar=false,location=false');
                 return false;">Open Popup</a>
-                <br><br>
-                <a href="#" id="openPopupWithoutTitle" data-cerberus="openPopupWithoutTitle" onclick="javascript:window.open('./index4.jsp', 'popup',
+        <br><br>
+        <a href="#" id="openPopupWithoutTitle" data-cerberus="openPopupWithoutTitle" onclick="javascript:window.open('./index4.jsp', 'popup',
                         'width=500,height=400,scrollbars=yes,menubar=false,location=false');
                 return false;">Open Popup Without Title</a>
         <br>
@@ -125,8 +124,8 @@
         <br><br>
         <form method="POST" enctype="multipart/form-data">
             <p>Below is part to test action keypress on non-browser windows</p>
-          File to upload: <input type="file" name="template"><br/>
-          <br/>
+            File to upload: <input type="file" name="template"><br/>
+            <br/>
         </form>
 
         <p> Parameters that can be used on that page :</p>
@@ -140,10 +139,38 @@
         <p>A function is triggered when the button is double-clicked. The function outputs some text in a p element with id="demo".</p>
 
         <script>
-        function myFunction() {
-            document.getElementById("demo").innerHTML = "DoubleClick works!";
-        }
-        </script>      
+            function myFunction() {
+                document.getElementById("demo").innerHTML = "DoubleClick works!";
+            }
+        </script>
+        <br>
+        <br>
+        <form>
+            <label for="textField">Type anything</label>
+            <br>
+            <input type="text" id="textField" name="textField"></input>
+            <br>
+            <input type="button" value="submit" id="textFieldSubmit" onclick="showTextFieldContent()" >
+            <br>
+            <span id="textFieldContent"></span>
+        </form>
+        <script language="text/javascript" type="text/javascript">
+            function showTextFieldContent() {
+                var textContent = document.getElementById("textField").value;
+                document.getElementById("textFieldContent").innerHTML = textContent;
+            }
+        </script>
+        <br>
+        <br>
+        <form id="emailInputForm">
+            <input id="emailInput" type="email">
+            <span id="emailInputResult"></span>
+        </form>
+        <script>
+            $("#emailInput").on("click", function() {
+                $("#emailInputForm span").text("OK");
+            });
+        </script>
         <br>
         <br>
         <p>Below is part to test iframe switching</p>

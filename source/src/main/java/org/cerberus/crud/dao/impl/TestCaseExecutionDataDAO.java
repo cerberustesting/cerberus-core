@@ -382,7 +382,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
 
     @Override
     public List<TestCaseExecutionData> readTestCaseExecutionDataFromDependencies(TestCaseExecution tce) throws CerberusException {
-        List<TestCaseExecutionQueueDep> testCaseDep = tce.getTestCaseDep();
+        List<TestCaseExecutionQueueDep> testCaseDep = tce.getTestCaseExecutionQueueDepList();
 
         String query = "SELECT exd.*"
                 + " FROM testcaseexecutionqueue exq"

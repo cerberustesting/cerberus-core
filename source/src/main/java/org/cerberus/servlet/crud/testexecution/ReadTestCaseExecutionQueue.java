@@ -186,22 +186,27 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         }
     }
 
-    private AnswerItem findExecutionQueueByKeyTech(Long queueid, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findExecutionQueueByKeyTech(Long queueid, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         ITestCaseExecutionQueueService queueService = appContext.getBean(ITestCaseExecutionQueueService.class);
 
         //finds the project     
-        AnswerItem answer = queueService.readByKey(queueid);
+        AnswerItem answer = queueService.readByKey(queueid, true);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
-            TestCaseExecutionQueue lib = (TestCaseExecutionQueue) answer.getItem();
-            JSONObject response = convertTestCaseExecutionInQueueToJSONObject(lib);
+            TestCaseExecutionQueue queueEntry = (TestCaseExecutionQueue) answer.getItem();
+            JSONObject response = convertTestCaseExecutionInQueueToJSONObject(queueEntry);
+
+            // Adding nb of entries in the queue before it gets triggered.
             int nb = 0;
-            nb = queueService.getNbEntryToGo(lib.getId(), lib.getPriority());
+            if (TestCaseExecutionQueue.State.QUEUED.equals(queueEntry.getState())) {
+                nb = queueService.getNbEntryToGo(queueEntry.getId(), queueEntry.getPriority());
+            }
             response.put("nbEntryInQueueToGo", nb);
+
             object.put("contentTable", response);
         }
 
@@ -212,9 +217,9 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findExecutionInQueueList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findExecutionInQueueList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         executionService = appContext.getBean(ITestCaseExecutionQueueService.class);
 
@@ -242,7 +247,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
             }
         }
 
-        AnswerList resp = executionService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<TestCaseExecutionQueue> resp = executionService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -261,8 +266,8 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findExecutionInQueueStatus(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findExecutionInQueueStatus(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
         parameterService = appContext.getBean(IParameterService.class);
@@ -360,10 +365,10 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
-        AnswerList values = new AnswerList<>();
+        AnswerList<String> values = new AnswerList<>();
 
         executionService = appContext.getBean(ITestCaseExecutionQueueService.class);
 

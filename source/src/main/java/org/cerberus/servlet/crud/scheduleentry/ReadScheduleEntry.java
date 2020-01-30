@@ -1,20 +1,21 @@
-/* Cerberus Copyright (C) 2013 - 2017 cerberustesting
-DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
-
-This file is part of Cerberus.
-
-Cerberus is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Cerberus is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Cerberus Copyright (C) 2013 - 2017 cerberustesting
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.servlet.crud.scheduleentry;
 
@@ -40,6 +41,7 @@ import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -76,7 +78,7 @@ public class ReadScheduleEntry extends HttpServlet {
             throws ServletException, IOException, JSONException {
         JSONObject jsonResponse = new JSONObject();
         JSONArray jsonArray = new JSONArray();
-        AnswerItem<List> ans = new AnswerItem<>();
+        AnswerList<ScheduleEntry> ans = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
@@ -109,7 +111,7 @@ public class ReadScheduleEntry extends HttpServlet {
             IScheduleEntryService scheduleEntryService = appContext.getBean(IScheduleEntryService.class);
             ans = scheduleEntryService.readByName(name);
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-                for (ScheduleEntry sched : (List<ScheduleEntry>) ans.getItem()) {
+                for (ScheduleEntry sched : (List<ScheduleEntry>) ans.getDataList()) {
                     jsonArray.put(convertScheduleEntrytoJSONObject(sched));
                 }
             }

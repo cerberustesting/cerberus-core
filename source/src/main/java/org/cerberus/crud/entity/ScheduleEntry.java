@@ -1,47 +1,45 @@
-/*Cerberus Copyright (C) 2013 - 2017 cerberustesting
-DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
-
-This file is part of Cerberus.
-
-Cerberus is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Cerberus is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without 
-
-even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-
-import java.sql.Timestamp;
- */
 /**
+ * Cerberus Copyright (C) 2013 - 2017 cerberustesting
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
- * @author cdelage
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
 
+/**
+ *
+ * @author cdelage
+ */
 public class ScheduleEntry {
 
-    private Integer ID;
+    private long ID;
     private String type;
     private String name;
     private String cronDefinition;
     private Timestamp lastExecution;
     private String active;
+    private String description;
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
     private Timestamp DateModif;
 
-    public Integer getID() {
+    public long getID() {
         return ID;
     }
 
@@ -65,6 +63,14 @@ public class ScheduleEntry {
         return active;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getUsrCreated() {
         return UsrCreated;
     }
@@ -81,7 +87,7 @@ public class ScheduleEntry {
         return DateModif;
     }
 
-    public void setID(Integer ID) {
+    public void setID(long ID) {
         this.ID = ID;
     }
 
@@ -128,8 +134,8 @@ public class ScheduleEntry {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        
-        if (getID() != obj.getID()){
+
+        if (getID() != obj.getID()) {
             return false;
         }
 
@@ -147,13 +153,16 @@ public class ScheduleEntry {
         if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
             return false;
         }
-        if ((this.ID == null) ? (other.ID != null) : !this.ID.equals(other.ID)) {
+        if (this.ID != other.ID) {
             return false;
         }
         if ((this.cronDefinition == null) ? (other.cronDefinition != null) : !this.cronDefinition.equals(other.cronDefinition)) {
             return false;
         }
         if ((this.active == null) ? (other.active != null) : !this.active.equals(other.active)) {
+            return false;
+        }
+        if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
             return false;
         }
         if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {

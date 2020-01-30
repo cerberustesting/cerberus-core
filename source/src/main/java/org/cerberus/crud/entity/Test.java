@@ -29,6 +29,7 @@ public class Test {
     private String test;
     private String description;
     private String active;
+    private String parentTest;
     private String usrCreated;
     private Timestamp dateCreated;
     private String usrModif;
@@ -46,6 +47,14 @@ public class Test {
 
     public void setActive(String active) {
         this.active = active;
+    }
+
+    public String getParentTest() {
+        return parentTest;
+    }
+
+    public void setParentTest(String parentTest) {
+        this.parentTest = parentTest;
     }
 
     public String getDescription() {

@@ -20,11 +20,17 @@
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author vertigo
  */
 public class Tag {
+
+    private static final Logger LOG = LogManager.getLogger(Tag.class);
 
     private long id;
     private String tag;
@@ -53,6 +59,7 @@ public class Tag {
     private String applicationList;
     private String reqEnvironmentList;
     private String reqCountryList;
+    private String browserstackBuildHash;
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
@@ -306,6 +313,14 @@ public class Tag {
         this.description = description;
     }
 
+    public String getBrowserstackBuildHash() {
+        return browserstackBuildHash;
+    }
+
+    public void setBrowserstackBuildHash(String browserstackBuildHash) {
+        this.browserstackBuildHash = browserstackBuildHash;
+    }
+
     public boolean hasSameKey(Tag obj) {
         if (obj == null) {
             return false;
@@ -351,6 +366,21 @@ public class Tag {
             return false;
         }
         return true;
+    }
+
+    public JSONObject toJsonLight() {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("tag", this.tag);
+            result.put("campaign", this.campaign);
+            result.put("description", this.description);
+            result.put("browserstackBuildHash", this.browserstackBuildHash);
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        } catch (Exception ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return result;
     }
 
     @Override

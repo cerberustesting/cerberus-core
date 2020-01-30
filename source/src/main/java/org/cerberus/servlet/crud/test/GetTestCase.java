@@ -85,9 +85,8 @@ public class GetTestCase extends HttpServlet {
                 jsonObject.put("refOrigin", tcInfo.getRefOrigine());
                 jsonObject.put("creator", tcInfo.getUsrCreated());
                 jsonObject.put("implementer", tcInfo.getImplementer());
+                jsonObject.put("executor", tcInfo.getExecutor());
                 jsonObject.put("lastModifier", tcInfo.getUsrModif());
-                jsonObject.put("project", tcInfo.getProject());
-                jsonObject.put("ticket", tcInfo.getTicket());
                 jsonObject.put("application", tcInfo.getApplication());
                 jsonObject.put("runQA", tcInfo.getActiveQA());
                 jsonObject.put("runUAT", tcInfo.getActiveUAT());

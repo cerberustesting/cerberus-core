@@ -163,9 +163,9 @@ public class ReadCountryEnvDeployType extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findCountryEnvironmentDeployTypeList(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findCountryEnvironmentDeployTypeList(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         celService = appContext.getBean(ICountryEnvDeployTypeService.class);
 
@@ -179,7 +179,7 @@ public class ReadCountryEnvDeployType extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = celService.readByVariousByCriteria(system, country, environment, null, startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList<CountryEnvDeployType> resp = celService.readByVariousByCriteria(system, country, environment, null, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

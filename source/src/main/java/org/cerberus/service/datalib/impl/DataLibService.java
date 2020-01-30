@@ -33,15 +33,12 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
-import org.cerberus.crud.factory.IFactoryAppService;
-import org.cerberus.crud.service.IAppServiceService;
 import org.cerberus.crud.service.ICountryEnvironmentDatabaseService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
@@ -51,7 +48,6 @@ import org.cerberus.service.appservice.IServiceService;
 import org.cerberus.service.datalib.IDataLibService;
 import org.cerberus.service.file.IFileService;
 import org.cerberus.service.json.IJsonService;
-import org.cerberus.service.soap.ISoapService;
 import org.cerberus.service.sql.ISQLService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.util.StringUtil;
@@ -59,7 +55,6 @@ import org.cerberus.util.XmlUtil;
 import org.cerberus.util.XmlUtilException;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
-import org.jfree.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -94,13 +89,7 @@ public class DataLibService implements IDataLibService {
     @Autowired
     private ISQLService sqlService;
     @Autowired
-    private IAppServiceService appServiceService;
-    @Autowired
     private IServiceService serviceService;
-    @Autowired
-    private ISoapService soapService;
-    @Autowired
-    private IFactoryAppService factoryAppService;
     @Autowired
     private IXmlUnitService xmlUnitService;
     @Autowired
@@ -253,7 +242,7 @@ public class DataLibService implements IDataLibService {
      * @return List of items (dataObject) from the dataObjectList filtered out
      * of records depending on the nature.
      */
-    private AnswerList<HashMap<String, String>> filterWithNature(String nature, AnswerList dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperties, int outputRequestedDimention) {
+    private AnswerList<HashMap<String, String>> filterWithNature(String nature, AnswerList<HashMap<String, String>> dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperties, int outputRequestedDimention) {
         switch (nature) {
             case TestCaseCountryProperties.NATURE_STATIC:
                 return filterWithNatureSTATIC(dataObjectList, outputRequestedDimention);
@@ -289,7 +278,7 @@ public class DataLibService implements IDataLibService {
         AnswerList<HashMap<String, String>> result = new AnswerList<>();
 
         List<HashMap<String, String>> resultObject;
-        resultObject = new ArrayList<HashMap<String, String>>();
+        resultObject = new ArrayList<>();
 
         for (int i = 0; i < outputRequestedDimention; i++) {
             resultObject.add(dataObjectList.getDataList().get(i));
@@ -477,12 +466,12 @@ public class DataLibService implements IDataLibService {
      * @return
      */
     private AnswerItem<HashMap<String, String>> getSubDataFromType(TestDataLib lib) {
-        AnswerList answerData = new AnswerList<>();
+        AnswerList<TestDataLibData> answerData = new AnswerList<>();
         AnswerItem<HashMap<String, String>> result = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
 
-        List<TestDataLibData> objectDataList = new ArrayList<TestDataLibData>();
-        HashMap<String, String> row = new HashMap<String, String>();
+        List<TestDataLibData> objectDataList = new ArrayList<>();
+        HashMap<String, String> row = new HashMap<>();
 
         switch (lib.getType()) {
 
@@ -604,12 +593,11 @@ public class DataLibService implements IDataLibService {
      * @param columnList
      * @return
      */
-    private AnswerList<HashMap<String, String>> getDataObjectList(TestDataLib lib, HashMap<String, String> columnList, int rowLimit,
-            TestCaseExecution tCExecution, TestCaseExecutionData testCaseExecutionData) {
-        AnswerList result = new AnswerList<>();
+    private AnswerList<HashMap<String, String>> getDataObjectList(TestDataLib lib, HashMap<String, String> columnList, int rowLimit, TestCaseExecution tCExecution, TestCaseExecutionData testCaseExecutionData) {
+        AnswerList<HashMap<String, String>> result = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         CountryEnvironmentDatabase countryEnvironmentDatabase;
-        AnswerList responseList;
+        AnswerList<HashMap<String, String>> responseList;
         String system = tCExecution.getApplicationObj().getSystem();
         String country = tCExecution.getCountry();
         String environment = tCExecution.getEnvironment();
@@ -788,7 +776,7 @@ public class DataLibService implements IDataLibService {
             case TestDataLib.TYPE_SERVICE:
                 AppService appService = new AppService();
                 HashMap<String, String> resultHash = new HashMap<>();
-                List<HashMap<String, String>> listResult = new ArrayList<HashMap<String, String>>();
+                List<HashMap<String, String>> listResult = new ArrayList<>();
 
                 // Temporary list of string.
                 List<String> listTemp1 = null;
@@ -806,7 +794,7 @@ public class DataLibService implements IDataLibService {
                 LOG.debug("Service Path : " + lib.getServicePath());
 
                 // Service Call is made here.
-                AnswerItem ai = serviceService.callService(lib.getService(), lib.getDatabaseUrl(), lib.getEnvelope(), lib.getServicePath(), lib.getMethod(), tCExecution);
+                AnswerItem ai = serviceService.callService(lib.getService(), null, null, lib.getDatabaseUrl(), lib.getEnvelope(), lib.getServicePath(), lib.getMethod(), tCExecution);
 
                 msg = ai.getResultMessage();
 
@@ -996,8 +984,8 @@ public class DataLibService implements IDataLibService {
                                         msg.setDescription(msg.getDescription()
                                                 .replace("%XPATH%", lib.getSubDataParsingAnswer())
                                                 .replace("%SUBDATA%", "")
-                                                .replace("%REASON%", ex.toString() +
-                                                        "\n api response : " + appService.getResponseHTTPBody()));
+                                                .replace("%REASON%", ex.toString()
+                                                        + "\n api response : " + appService.getResponseHTTPBody()));
                                     }
                                 }
 

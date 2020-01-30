@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,20 +40,20 @@ public interface IApplicationService {
      * @param id
      * @return
      */
-    AnswerItem readByKey(String id);
+    AnswerItem<Application> readByKey(String id);
 
     /**
      *
      * @return
      */
-    AnswerList readAll();
+    AnswerList<Application> readAll();
 
     /**
      *
      * @param System
      * @return
      */
-    AnswerList readBySystem(List<String> System);
+    AnswerList<Application> readBySystem(List<String> System);
 
     /**
      *
@@ -64,7 +65,7 @@ public interface IApplicationService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Application> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -77,14 +78,14 @@ public interface IApplicationService {
      * @param individualSearch
      * @return
      */
-    AnswerList readBySystemByCriteria(List<String> system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Application> readBySystemByCriteria(List<String> system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
      * @param system
      * @return
      */
-    AnswerItem readTestCaseCountersBySystemByStatus(List<String> system);
+    AnswerItem<HashMap<String, HashMap<String, Integer>>> readTestCaseCountersBySystemByStatus(List<String> system);
 
     /**
      *

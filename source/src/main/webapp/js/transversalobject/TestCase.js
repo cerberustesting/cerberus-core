@@ -18,6 +18,8 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 var curMode = "";
+var bugTrackerUrl = "";
+var checkEmptyDescription = false;
 /***
  * Open the modal with testcase information.
  * @param {String} test - id of the test to open the modal
@@ -28,6 +30,8 @@ var curMode = "";
  */
 function openModalTestCase(test, testcase, mode, tab) {
     curMode = mode;
+
+    checkEmptyDescription = getParameterBoolean("cerberus_testcasepage_controlemptybugdescription", getUser().defaultSystem, true);
 
     // We only load the Labels and bind the events once for performance optimisations.
     if ($('#editTestCaseModal').data("initLabel") === undefined) {
@@ -62,12 +66,19 @@ function initModalTestCase() {
         selector: ".wysiwyg"
     });
 
+    var availableUsers = getUserArray(true);
+    $("#editTestCaseModal input#executor").autocomplete({
+        source: availableUsers
+    });
+    $("#editTestCaseModal input#implementer").autocomplete({
+        source: availableUsers
+    });
+
     $("[name='testField']").html(doc.getDocOnline("test", "Test"));
     $("[name='testCaseField']").html(doc.getDocOnline("testcase", "TestCase"));
     $("[name='lastModifierField']").html(doc.getDocOnline("testcase", "LastModifier"));
     $("[name='applicationField']").html(doc.getDocOnline("application", "Application"));
     $("[name='statusField']").html(doc.getDocOnline("testcase", "Status"));
-    $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
     $("[name='actQAField']").html(doc.getDocOnline("testcase", "activeQA"));
     $("[name='actUATField']").html(doc.getDocOnline("testcase", "activeUAT"));
     $("[name='actUATField']").html(doc.getDocOnline("testcase", "activeUAT"));
@@ -78,10 +89,10 @@ function initModalTestCase() {
     $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
     $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
     $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
+    $("[name='executorField']").html(doc.getDocOnline("testcase", "Executor"));
     $("[name='typeField']").html(doc.getDocOnline("invariant", "Type"));
     $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
     $("[name='countryListLabel']").html(doc.getDocOnline("testcase", "countryListLabel"));
-    $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
     $("[name='activeField']").html(doc.getDocOnline("testcase", "TcActive"));
     $("[name='fromSprintField']").html(doc.getDocOnline("testcase", "FromBuild"));
@@ -93,6 +104,7 @@ function initModalTestCase() {
     $("[name='conditionOperField']").html(doc.getDocOnline("testcase", "ConditionOper"));
     $("[name='conditionVal1Field']").html(doc.getDocOnline("testcase", "ConditionVal1"));
     $("[name='conditionVal2Field']").html(doc.getDocOnline("testcase", "ConditionVal2"));
+    $("[name='conditionVal3Field']").html(doc.getDocOnline("testcase", "ConditionVal3"));
     $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
     $("[name='versionActivation']").html(doc.getDocOnline("testcase", "versionActivation"));
     $("[name='activationConditions']").html(doc.getDocOnline("testcase", "activationConditions"));
@@ -132,7 +144,7 @@ function initModalTestCase() {
 
     var availableUserAgent = getInvariantArray("USERAGENT", false);
     $('#editTestCaseModal').find("#userAgent").autocomplete({
-        source: availableUserAgent
+        source: availableUsers
     });
     var availableScreenSize = getInvariantArray("SCREENSIZE", false);
     $('#editTestCaseModal').find("#screenSize").autocomplete({
@@ -163,6 +175,7 @@ function initModalTestCase() {
             addHtmlForDependencyLine(0, test, testCase, testCaseTxt, true, "")
         }
     })
+
 }
 
 function addHtmlForDependencyLine(id, test, testCase, testCaseTxt, activate, description) {
@@ -186,7 +199,7 @@ function addHtmlForDependencyLine(id, test, testCase, testCaseTxt, activate, des
 }
 
 function getHtmlIdForTestCase(test, testCase) {
-    return (test + '-' + testCase).replace(/ /g, '_').replace(/./g, '_')
+    return (test + '-' + testCase).replace(/ /g, '_').replace(/\./g, '_').replace(/\:/g, '_').replace(/\)/g, '_').replace(/\(/g, '_');
 }
 
 function removeTestCaseDependency(test, testCase) {
@@ -320,7 +333,7 @@ function addTestCaseClick(defaultTest) {
 }
 
 /***
- * Feed the testcase field inside modalForm modal with a new occurence value 
+ * Feed the testcase field inside modalForm modal with a new occurence value
  * for the given test. used when create or duplicate a new testcase.
  * @param {String} test - test used to calculate the new testcase value.
  * @param {String} modalForm - modal name where the testcase will be filled.
@@ -399,34 +412,64 @@ function confirmTestCaseModalHandler(mode) {
     var testIdElementInvalid = testIdElement.prop("value").search("&");
     var testIdElementEmpty = testIdElement.prop("value") === '';
 
+    var bugIdElement = formEdit.find("#editTCBugReport");
+    var bugIdEmptyDesc = false;
+    var bugIdDuplicated = false;
+    var bugIdDuplicatedList = [];
+    var table1 = $("#bugTableBody tr");
+    var listBugId = "";
+    for (var i = 0; i < table1.length; i++) {
+        var bug = $(table1[i]).data("bug");
+        if (isEmpty(bug.desc)) {
+            bugIdEmptyDesc = true;
+        }
+        if (listBugId.indexOf(bug.id + "/") >= 0) {
+            bugIdDuplicated = true;
+            bugIdDuplicatedList.push(bug.id);
+        }
+        listBugId += bug.id + "/";
+    }
+
+    var localMessage = new Message("danger", "Unexpected Error!");
     if (nameElementEmpty) {
-        var localMessage = new Message("danger", "Please specify the name of the application!");
+        localMessage = new Message("danger", "Please specify the name of the application!");
         nameElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
-    } else if (testElementInvalid != -1) {
-        var localMessage = new Message("danger", "The test name cannot contains the symbol : &");
+    } else if (testElementInvalid !== -1) {
+        localMessage = new Message("danger", "The test name cannot contains the symbol : &");
         // only the Test label will be put in red
         testElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
-    } else if (testIdElementInvalid != -1) {
-        var localMessage = new Message("danger", "The testcase id name cannot contains the symbol : &");
+    } else if (testIdElementInvalid !== -1) {
+        localMessage = new Message("danger", "The testcase id name cannot contains the symbol : &");
         // only the TestId label will be put in red
         testIdElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
     } else if (testElementEmpty) {
-        var localMessage = new Message("danger", "Please specify the name of the test!");
+        localMessage = new Message("danger", "Please specify the name of the test!");
         testElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
     } else if (testIdElementEmpty) {
-        var localMessage = new Message("danger", "Please specify the name of the Testcase Id!");
+        localMessage = new Message("danger", "Please specify the name of the Testcase Id!");
         testIdElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else if (bugIdDuplicated) {
+        localMessage = new Message("danger", "Duplicate BugID on Bug Report Tab! " + bugIdDuplicatedList.length + " duplicate entry(ies) : " + bugIdDuplicatedList.toString());
+        bugIdElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else if (bugIdEmptyDesc && checkEmptyDescription) {
+        localMessage = new Message("danger", "At least one BugID Description is empty on Bug Report Tab!");
+        bugIdElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
     } else {
         nameElement.parents("div.form-group").removeClass("has-error");
+        testIdElement.parents("div.form-group").removeClass("has-error");
+        testElement.parents("div.form-group").removeClass("has-error");
+        bugIdElement.parents("div.form-group").removeClass("has-error");
     }
 
     // verify if all mandatory fields are not empty and valid
-    if (nameElementEmpty || testElementInvalid != -1 || testIdElementInvalid != -1 || testElementEmpty || testIdElementEmpty)
+    if (nameElementEmpty || testElementInvalid !== -1 || testIdElementInvalid !== -1 || testElementEmpty || testIdElementEmpty || bugIdDuplicated || (bugIdEmptyDesc && checkEmptyDescription))
         return;
 
     tinyMCE.triggerSave();
@@ -462,15 +505,32 @@ function confirmTestCaseModalHandler(mode) {
     }
 
     // Getting Data from Label List
-    var table2 = $("#editTestCaseModal input[name=labelid]:checked");
     var table_label = [];
+    var table2 = $('#selectLabelS').treeview('getSelected', {levels: 20, silent: true});
     for (var i = 0; i < table2.length; i++) {
         var newLabel1 = {
-            labelId: $(table2[i]).val(),
+            labelId: table2[i].id,
             toDelete: false
         };
         table_label.push(newLabel1);
     }
+    var table2 = $('#selectLabelR').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        var newLabel1 = {
+            labelId: table2[i].id,
+            toDelete: false
+        };
+        table_label.push(newLabel1);
+    }
+    var table2 = $('#selectLabelB').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        var newLabel1 = {
+            labelId: table2[i].id,
+            toDelete: false
+        };
+        table_label.push(newLabel1);
+    }
+
 
     // Getting Dependency data
     let testcaseDependency = []
@@ -486,6 +546,24 @@ function confirmTestCaseModalHandler(mode) {
     var data = convertSerialToJSONObject(formEdit.serialize());
 
     showLoaderInModal('#editTestCaseModal');
+
+    // Getting Data from Bug table body.
+    var table1 = $("#bugTableBody tr");
+    var table_bug = [];
+
+    for (var i = 0; i < table1.length; i++) {
+        var bug = $(table1[i]).data("bug")
+        if (bug.toDelete !== true) {
+            var DataObj1 = {};
+            DataObj1.id = bug.id;
+            DataObj1.desc = bug.desc;
+            DataObj1.act = bug.act;
+            DataObj1.dateCreated = bug.dateCreated;
+            DataObj1.dateClosed = bug.dateClosed;
+            table_bug.push(DataObj1);
+        }
+    }
+
     $.ajax({
         url: myServlet,
         async: true,
@@ -501,12 +579,13 @@ function confirmTestCaseModalHandler(mode) {
             activeUAT: data.activeUAT,
             application: data.application,
             behaviorOrValueExpected: data.behaviorOrValueExpected,
-            bugId: data.bugId,
+            bugId: JSON.stringify(table_bug),
             comment: data.comment,
             fromRev: data.fromRev,
             fromSprint: data.fromSprint,
             group: data.group,
             implementer: data.implementer,
+            executor: data.executor,
             origin: data.origin,
             priority: data.priority,
             project: data.project,
@@ -518,6 +597,7 @@ function confirmTestCaseModalHandler(mode) {
             conditionOper: data.conditionOper,
             conditionVal1: data.conditionVal1,
             conditionVal2: data.conditionVal2,
+            conditionVal3: data.conditionVal3,
             ticket: data.ticket,
             toRev: data.toRev,
             toSprint: data.toSprint,
@@ -533,6 +613,8 @@ function confirmTestCaseModalHandler(mode) {
                 oTable.fnDraw(false);
                 $('#editTestCaseModal').data("Saved", true);
                 $('#editTestCaseModal').data("testcase", data);
+                $('#editTestCaseModal').data("bug", table_bug);
+                $('#editTestCaseModal').data("appURL", bugTrackerUrl);
                 $('#editTestCaseModal').modal('hide');
                 showMessage(dataMessage);
             } else {
@@ -554,6 +636,11 @@ function feedNewTestCaseModal(modalId, defaultTest) {
     clearResponseMessageMainPage();
 
     var formEdit = $('#' + modalId);
+
+    $("#addBug").off("click");
+    $("#addBug").click(function () {
+        addNewBugRow("bugTableBody", undefined);
+    });
 
     appendBuildRevListOnTestCase(getUser().defaultSystem, undefined);
 
@@ -584,42 +671,32 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
     $.when(jqxhr).then(function (data) {
 
         var testCase = data.contentTable;
+        var testperm = data["hasPermissionsUpdate"];
 
         var appInfo = $.getJSON("ReadApplication", "application=" + encodeURIComponent(testCase.application));
 
         $.when(appInfo).then(function (appData) {
             var currentSys = getUser().defaultSystem;
             var t = appData.contentTable;
-            var bugTrackerUrl = t.bugTrackerUrl;
+            bugTrackerUrl = t.bugTrackerUrl;
+
+            feedTestCaseData(testCase, modalId, mode, testperm, undefined, bugTrackerUrl);
+
+            $("#addBug").off("click");
+            $("#addBug").click(function () {
+                addNewBugRow("bugTableBody", bugTrackerUrl);
+            });
 
             // Loading build and revision various combos.
             appendBuildRevListOnTestCase(t.system, testCase);
             // Title of the label list.
             $("#labelField").html("Labels from system : " + t.system);
             // Loading the label list from aplication of the testcase.
-            loadLabel(testCase.labelList, t.system, "#selectLabel");
+            loadLabel(testCase.labelList, t.system, "#selectLabel", undefined, testCase.test, testCase.testCase);
             // Loading application combo from the system of the current application.
             appendApplicationList(testCase.application, t.system);
 
-            var newbugTrackerUrl = "";
-            if (testCase.bugID !== "" && bugTrackerUrl) {
-                newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", testCase.bugID);
-            }
-            formEdit.find("#link").prop("href", newbugTrackerUrl).text(testCase.bugID);
-            formEdit.find("#link").prop("target", "_blank");
-
-            formEdit.find("#bugId").change(function () {
-                var newbugid = formEdit.find("#bugId").val();
-                var newbugTrackerUrl = "";
-                if (newbugid !== "" && bugTrackerUrl) {
-                    newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", newbugid);
-                }
-                formEdit.find("#link").prop("href", newbugTrackerUrl).text(newbugid);
-                formEdit.find("#link").prop("target", "_blank");
-            });
         });
-
-        feedTestCaseData(testCase, modalId, mode, data["hasPermissionsUpdate"]);
 
         formEdit.modal('show');
     });
@@ -664,7 +741,7 @@ function fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases
                 for (var i = 0; i < data.contentTable.length; i++) {
                     $(selectorTestCaseSelect).append("<option value='" + data.contentTable[i].testCase + "'>" + data.contentTable[i].testCase + " - " + data.contentTable[i].description + "</option>")
                 }
-                if (testcase != null) {
+                if (testcase !== null) {
                     $(selectorTestCaseSelect + " option[value='" + testcase + "']").prop('selected', true);
                     window.document.title = "TestCase - " + testcase;
                 }
@@ -717,7 +794,7 @@ function fillTestAndTestCaseSelect(selectorTestSelect, selectorTestCaseSelect, t
 }
 
 
-function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, defaultTest) {
+function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, defaultTest, bugTrackerUrl) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
 
@@ -725,7 +802,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
 
     var observer = new MutationObserver(function (mutations, me) {
         var behaviorOrValueExpected = tinyMCE.get('behaviorOrValueExpected');
-        if (behaviorOrValueExpected != null) {
+        if (behaviorOrValueExpected !== null) {
             if (isEmpty(testCase)) {
                 tinyMCE.get('behaviorOrValueExpected').setContent("");
             } else {
@@ -775,6 +852,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#originalTest").prop("value", "");
         formEdit.find("#originalTestCase").prop("value", "");
         formEdit.find("#implementer").prop("value", "");
+        formEdit.find("#executor").prop("value", "");
         formEdit.find("#group").val("AUTOMATED");
         formEdit.find("#priority option:nth(0)").attr("selected", "selected");
         formEdit.find("#actQA").val("Y");
@@ -783,10 +861,11 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#screenSize").prop("value", "");
         formEdit.find("#shortDesc").prop("value", "");
         formEdit.find("#active").prop("value", "Y");
-        formEdit.find("#bugId").prop("value", "");
+        $('#bugTableBody tr').remove();
         formEdit.find("#conditionOper").prop("value", "always");
         formEdit.find("#conditionVal1").prop("value", "");
         formEdit.find("#conditionVal2").prop("value", "");
+        formEdit.find("#conditionVal3").prop("value", "");
         formEdit.find("#comment").prop("value", "");
     } else {
         formEdit.find("#test").prop("value", testCase.test);
@@ -794,6 +873,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#originalTestCase").prop("value", testCase.testCase);
         formEdit.find("#newTest").prop("value", testCase.test);
         formEdit.find("#implementer").prop("value", testCase.implementer);
+        formEdit.find("#executor").prop("value", testCase.executor);
         formEdit.find("#tcDateCrea").prop("value", testCase.dateCreated);
         formEdit.find("#group").prop("value", testCase.group);
         formEdit.find("#priority").prop("value", testCase.priority);
@@ -803,10 +883,47 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#screenSize").prop("value", testCase.screenSize);
         formEdit.find("#shortDesc").prop("value", testCase.description);
         formEdit.find("#active").prop("value", testCase.tcActive);
-        formEdit.find("#bugId").prop("value", testCase.bugID);
+
+        $('#bugTableBody tr').remove();
+        // Sorting Bug list.
+        testCase.bugID.sort(function (a, b) {
+            if (a.act === b.act) {
+                if (a.id === b.id) {
+                    if (b.dateCreated < a.dateCreated)
+                        return 1;
+                    else
+                        return -1;
+                } else {
+                    if (a.id > b.id)
+                        return 1;
+                    else
+                        return -1;
+                }
+            }
+            if (a.act === false)
+                return 1;
+            else
+                return -1;
+        });
+        $.each(testCase.bugID, function (idx, obj) {
+            obj.toDelete = false;
+            if (isEmpty(obj.act)) {
+                obj.act = true;
+            }
+            if (isEmpty(obj.dateCreated)) {
+                obj.dateCreated = new Date('1970-01-01');
+            }
+            if (isEmpty(obj.dateClosed)) {
+                obj.dateClosed = new Date('1970-01-01');
+            }
+
+            appendbugRow(obj, "bugTableBody", bugTrackerUrl);
+        });
+
         formEdit.find("#conditionOper").prop("value", testCase.conditionOper);
         formEdit.find("#conditionVal1").prop("value", testCase.conditionVal1);
         formEdit.find("#conditionVal2").prop("value", testCase.conditionVal2);
+        formEdit.find("#conditionVal3").prop("value", testCase.conditionVal3);
         formEdit.find("#comment").prop("value", testCase.comment);
         formEdit.find("#testcaseversion").prop("value", testCase.testCaseVersion);
         appendTestCaseDepList(testCase);
@@ -849,7 +966,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#conditionOper").prop("disabled", "disabled");
         formEdit.find("#conditionVal1").prop("disabled", "disabled");
         formEdit.find("#conditionVal2").prop("disabled", "disabled");
-        formEdit.find("#bugId").prop("readonly", "readonly");
+        formEdit.find("#conditionVal3").prop("disabled", "disabled");
+//        formEdit.find("#bugId").prop("readonly", "readonly");
         // feed the country list.
         appendTestCaseCountryList(testCase, true);
         // Save button is hidden.
@@ -860,7 +978,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#test").removeAttr("disabled");
         formEdit.find("#testCase").removeAttr("readonly");
         formEdit.find("#active").removeProp("disabled");
-        formEdit.find("#bugId").removeProp("readonly");
+//        formEdit.find("#bugId").removeProp("readonly");
         formEdit.find("#implementer").removeProp("readonly");
         formEdit.find("#application").removeProp("disabled");
         formEdit.find("#status").removeProp("disabled");
@@ -884,13 +1002,94 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#conditionOper").removeProp("disabled");
         formEdit.find("#conditionVal1").removeProp("disabled");
         formEdit.find("#conditionVal2").removeProp("disabled");
-        formEdit.find("#bugId").removeProp("readonly");
+        formEdit.find("#conditionVal3").removeProp("disabled");
         formEdit.find("#comment").removeProp("readonly");
         // feed the country list.
         appendTestCaseCountryList(testCase, false);
     }
 
 }
+
+function appendbugRow(obj, tablebody, bugTrackerUrl) {
+    var table = $("#" + tablebody);
+
+    var newbugTrackerUrl = "";
+    if (!isEmpty(bugTrackerUrl)) {
+        if (!isEmpty(obj.id)) {
+            newbugTrackerUrl = bugTrackerUrl.replace(/%BUGID%/g, obj.id);
+        }
+    }
+
+    var row = $("<tr></tr>");
+    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var actInput = $("<input type='checkbox'>").addClass("form-control input-sm").prop("checked", obj.act);
+    var bugidInput = $("<input  maxlength=\"10\">").addClass("form-control input-sm").val(obj.id);
+    var bugdescInput = $("<input  maxlength=\"50\">").addClass("form-control input-sm").val(obj.desc);
+    var dateCreatedInput = $("<input readonly=\"true\">").addClass("form-control input-sm").val(getDate(obj.dateCreated).toLocaleString());
+    var dateClosedInput = $("<input readonly=\"true\">").addClass("form-control input-sm").val(getDate(obj.dateClosed).toLocaleString());
+    if (newbugTrackerUrl !== "") {
+        var buglinkText = $("<a></a>").text(obj.id);
+        buglinkText.prop("href", newbugTrackerUrl).prop("target", "_blank");
+    } else {
+        var buglinkText = $("<div></div>").text(obj.id);
+    }
+    var deleteData = $("<td></td>").append(deleteBtn);
+    var actData = $("<td></td>").append(actInput);
+    var bugidData = $("<td></td>").append(bugidInput);
+    var bugdescData = $("<td></td>").append(bugdescInput);
+    var buglinkData = $("<td></td>").append(buglinkText);
+    var dateCreatedData = $("<td></td>").append(dateCreatedInput);
+    var dateClosedData = $("<td></td>").append(dateClosedInput);
+
+    deleteBtn.click(function () {
+        obj.toDelete = (obj.toDelete) ? false : true;
+
+        if (obj.toDelete) {
+            row.addClass("danger");
+        } else {
+            row.removeClass("danger");
+        }
+    });
+
+    actInput.click(function () {
+        obj.act = (obj.act) ? false : true;
+
+        if ((obj.act) === false) {
+            obj.dateClosed = new Date();
+            dateClosedInput.val(obj.dateClosed.toLocaleString());
+        }
+    });
+
+    bugidInput.change(function () {
+        obj.id = $(this).val();
+        var newbugTrackerUrl = "";
+        if (obj.id !== "" && bugTrackerUrl) {
+            newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", obj.id);
+        }
+        buglinkText.prop("href", newbugTrackerUrl).text(obj.id);
+    });
+    bugdescInput.change(function () {
+        obj.desc = $(this).val();
+    });
+
+    row.append(deleteData).append(actData).append(bugidData).append(bugdescData).append(buglinkData).append(dateClosedData).append(dateCreatedData);
+    row.data("bug", obj);
+    table.append(row);
+}
+
+function addNewBugRow(dataTableBody, bugTrackerUrl) {
+    var nbRows = $("#" + dataTableBody + " tr").size() + 1;
+    var newBugData = {
+        id: "BUGID" + nbRows,
+        desc: "",
+        act: true,
+        dateCreated: new Date(),
+        dateClosed: new Date('1970-01-01'),
+        toDelete: false
+    };
+    appendbugRow(newBugData, dataTableBody, bugTrackerUrl);
+}
+
 
 /***
  * Feed Build and Revision combo on the testcase modal.
@@ -1018,9 +1217,11 @@ function appendTestCaseCountryList(testCase, isReadOnly) {
  * @param {String} mySystem - system that will be used in order to load the label list. if not feed, the default system from user will be used.
  * @param {String} myLabelDiv - Reference of the div where the label will be added. Ex : "#selectLabel".
  * @param {String} labelSize - size of col-xs-?? from 1 to 12. Default to 2 Ex : "4".
+ * @param {String} test - Test Folder to Select.
+ * @param {String} testCase - Test ID to Select.
  * @returns {null}
  */
-function loadLabel(labelList, mySystem, myLabelDiv, labelSize) {
+function loadLabel(labelList, mySystem, myLabelDiv, labelSize, test, testCase) {
 
     if (isEmpty(labelSize)) {
         labelSize = "2";
@@ -1031,61 +1232,28 @@ function loadLabel(labelList, mySystem, myLabelDiv, labelSize) {
         targetSystem = getUser().defaultSystem;
     }
 
-    var jqxhr = $.get("ReadLabel?system=" + targetSystem, "", "json");
+    var jqxhr = $.get("ReadLabel?system=" + targetSystem + "&withHierarchy=true&isSelectable=Y&testSelect=" + encodeURI(test) + "&testCaseSelect=" + encodeURI(testCase), "", "json");
 
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
+
         //DRAW LABEL LIST
         if (messageType === "success") {
-            $(labelDiv + "S").empty();
-            $(labelDiv + "R").empty();
-            $(labelDiv + "B").empty();
-            var index;
-            for (index = 0; index < data.contentTable.length; index++) {
-                //the character " needs a special encoding in order to avoid breaking the string that creates the html element
-                var l = data.contentTable[index];
-                var labelTag = '<div style="float:left" align="center"><input name="labelid" id="labelId' + l.id + '" value="' + l.id + '" type="checkbox">\n\
-                <span class="label label-primary" style="cursor:pointer;background-color:' + l.color + '">' + l.label + '</span></div> ';
-                var option = $('<div style="float:left; height:60px" name="itemLabelDiv" id="itemLabelId' + l.id + '" class="col-xs-' + labelSize + ' list-group-item list-label"></div>')
-                        .attr("value", l.label).html(labelTag);
-                var a = "S";
-                if (l.type === "REQUIREMENT") {
-                    a = "R";
-                } else if (l.type === "BATTERY") {
-                    a = "B";
-                }
-                if (l.system === targetSystem) {
-                    $(labelDiv + a).prepend(option);
-                } else {
-                    $(labelDiv + a).append(option);
-                }
-            }
+
+            //DRAW LABEL TREE
+
+            $(labelDiv + 'S').treeview({data: data.labelHierarchy.stickers, enableLinks: false, showTags: true, multiSelect: true});
+            $(labelDiv + 'B').treeview({data: data.labelHierarchy.batteries, enableLinks: false, showTags: true, multiSelect: true});
+            $(labelDiv + 'R').treeview({data: data.labelHierarchy.requirements, enableLinks: false, showTags: true, multiSelect: true});
+
+            $(labelDiv + 'S').treeview('expandAll', {levels: 20, silent: true});
+            $(labelDiv + 'B').treeview('expandAll', {levels: 20, silent: true});
+            $(labelDiv + 'R').treeview('expandAll', {levels: 20, silent: true});
+
         } else {
             showMessageMainPage(messageType, data.message, true);
         }
-        // Put the selected testcaselabel at the top and check them. 
-        if (!(isEmpty(labelList))) {
-            var index;
-            for (index = 0; index < labelList.length; index++) {
-                var l = labelList[index].label;
-                //For each testcaselabel, put at the top of the list and check them
-                var element = $("#itemLabelId" + l.id);
-                element.remove();
-                var a = "S";
-                if (l.type === "REQUIREMENT") {
-                    a = "R";
-                } else if (l.type === "BATTERY") {
-                    a = "B";
-                }
-                $(labelDiv + a).prepend(element);
-                $("#labelId" + l.id).prop("checked", true);
-            }
-        }
-        //ADD CLICK EVENT ON LABEL
-        $(labelDiv + "S").find('span').click(function () {
-            var status = $(this).parent().find("input").prop('checked');
-            $(this).parent().find("input").prop('checked', !status);
-        });
+
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
@@ -1117,21 +1285,7 @@ function appendTestList(defautValue) {
     $('#editTestCaseModal [name="test"]').empty();
     $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
 
-//    var user = getUser();
-//    $("#editTestCaseModal [name=test]").empty();
-//
-//    var jqxhr = $.getJSON("ReadTest", "");
-//    $.when(jqxhr).then(function (data) {
-//        var testList = $("[name=test]");
-//
-//        for (var index = 0; index < data.contentTable.length; index++) {
-//            testList.append($('<option></option>').text(data.contentTable[index].test).val(data.contentTable[index].test));
-//        }
-//        testList.val(defautValue);
-//
-//    });
-
-// Set Select2 Value.
+    // Set Select2 Value.
     var myoption = $('<option></option>').text(defautValue).val(defautValue);
     $("#editTestCaseModal [name=test]").append(myoption).trigger('change'); // append the option and update Select2
 

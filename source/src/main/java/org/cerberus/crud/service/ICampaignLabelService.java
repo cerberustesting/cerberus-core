@@ -57,9 +57,10 @@ public interface ICampaignLabelService {
     /**
      *
      * @param campaign
+     * @param withChild true if you want the return list to include all child labels
      * @return
      */
-    AnswerList readByVarious(String campaign);
+    AnswerList<CampaignLabel> readByVarious(String campaign);
 
     /**
      *
@@ -71,7 +72,7 @@ public interface ICampaignLabelService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<CampaignLabel> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -84,7 +85,7 @@ public interface ICampaignLabelService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByVariousByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<CampaignLabel> readByVariousByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *

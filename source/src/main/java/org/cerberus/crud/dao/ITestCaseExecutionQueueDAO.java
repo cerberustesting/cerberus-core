@@ -68,7 +68,7 @@ public interface ITestCaseExecutionQueueDAO {
      * @return
      * @throws CerberusException
      */
-    public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+    public AnswerList<TestCaseExecutionQueue> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
     /**
      * Read TestCaseExecutionInQueue By Tag
@@ -99,7 +99,7 @@ public interface ITestCaseExecutionQueueDAO {
      * @param individualSearch
      * @return
      */
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    public AnswerList<TestCaseExecutionQueue> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -114,7 +114,7 @@ public interface ITestCaseExecutionQueueDAO {
      * @param tag
      * @return
      */
-    public AnswerList readDistinctEnvCountryBrowserByTag(String tag);
+    public AnswerList<TestCaseExecutionQueue> readDistinctEnvCountryBrowserByTag(String tag);
 
     /**
      *
@@ -125,7 +125,7 @@ public interface ITestCaseExecutionQueueDAO {
      * @param app
      * @return
      */
-    public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
+    public AnswerList<TestCaseExecutionQueue> readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
 
     /**
      *
@@ -136,7 +136,7 @@ public interface ITestCaseExecutionQueueDAO {
      * @param column
      * @return
      */
-    public AnswerList readDistinctValuesByCriteria(String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, String column);
+    public AnswerList<String> readDistinctValuesByCriteria(String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, String column);
 
     /**
      *
@@ -174,7 +174,7 @@ public interface ITestCaseExecutionQueueDAO {
      * @param ticket
      * @return
      */
-    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket);
+    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket);
 
     TestCaseExecutionQueue findByKeyWithDependencies(long id) throws CerberusException;
 
@@ -210,9 +210,26 @@ public interface ITestCaseExecutionQueueDAO {
      *
      * @param id
      * @param comment
+     * @param targetState
+     * @return
+     */
+    Answer updateToState(long id, String comment, TestCaseExecutionQueue.State targetState);
+
+    /**
+     *
+     * @param id
+     * @param comment
      * @return
      */
     Answer updateToQueued(long id, String comment);
+
+    /**
+     *
+     * @param tag
+     * @param queueIds
+     * @return
+     */
+    Answer updateAllTagToQueuedFromQuTemp(String tag, List<Long> queueIds);
 
     /**
      *

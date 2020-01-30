@@ -38,6 +38,7 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.dto.TestListDTO;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
@@ -164,11 +165,6 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         // find all properties of the used step
         LOG.debug("Getting properties definition from Used Step.");
         tcList.addAll(testCaseService.findUseTestCaseList(test, testcase));
-        // find all properties for potentiel dependencies used step
-//        List<TestCaseDep> dependencies = testCaseDepService.readByTestAndTestCase(mainTC.getTest(), mainTC.getTestCase());
-//        for (TestCaseDep tcd : dependencies) {
-//            tcList.addAll(testCaseService.findUseTestCaseList(tcd.getDepTest(), tcd.getDepTestCase()));
-//        }
         // add this TC
         tcList.add(mainTC);
 
@@ -182,7 +178,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
 
             //Keep only one property by name
             //all properties that are defined for the country are included
-            HashMap tccpMap = new HashMap();
+            HashMap<String, TestCaseCountryProperties> tccpMap = new HashMap<>();
             for (TestCaseCountryProperties tccp : tccpListPerCountry) {
                 tccpMap.put(tccp.getProperty(), tccp);
             }
@@ -240,7 +236,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     }
 
     @Override
-    public AnswerList findTestCaseCountryPropertiesByValue1(int testDataLibID, String name, String country, String propertyType) {
+    public AnswerList<TestListDTO> findTestCaseCountryPropertiesByValue1(int testDataLibID, String name, String country, String propertyType) {
         return testCaseCountryPropertiesDAO.findTestCaseCountryPropertiesByValue1(testDataLibID, name, country, propertyType);
     }
 

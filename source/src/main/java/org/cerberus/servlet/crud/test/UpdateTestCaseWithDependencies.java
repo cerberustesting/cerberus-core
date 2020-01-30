@@ -218,7 +218,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 tc.setUsrModif(request.getUserPrincipal().getName());
                 tc.setTestCaseVersion(tc.getTestCaseVersion() + 1);
 
-                testCaseService.updateTestCase(tc);
+                testCaseService.update(tc.getTest(), tc.getTestCase(), tc);
 
                 /**
                  * Adding Log entry.
@@ -349,6 +349,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionOper = step.getString("conditionOper");
             String conditionVal1 = step.getString("conditionVal1");
             String conditionVal2 = step.getString("conditionVal2");
+            String conditionVal3 = step.getString("conditionVal3");
             String description = step.getString("description");
             String useStep = step.getString("useStep");
             String useStepTest = step.getString("useStepTest");
@@ -359,7 +360,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             JSONArray stepActions = step.getJSONArray("actionArr");
 
             if (!delete) {
-                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, sort, loop, conditionOper, conditionVal1, conditionVal2, description, useStep, useStepTest,
+                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, sort, loop, conditionOper, conditionVal1, conditionVal2, conditionVal3, description, useStep, useStepTest,
                         useStepTestCase, useStepStep, inLibrary, forceExe, null, null, request.getUserPrincipal().getName(), null);
 
                 if (useStep.equals("N")) {
@@ -395,16 +396,18 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionOper = tcsaJson.getString("conditionOper");
             String conditionVal1 = tcsaJson.getString("conditionVal1");
             String conditionVal2 = tcsaJson.getString("conditionVal2");
+            String conditionVal3 = tcsaJson.getString("conditionVal3");
             String action = tcsaJson.getString("action");
             String object = tcsaJson.getString("object");
             String property = tcsaJson.getString("property");
+            String value3 = tcsaJson.getString("value3");
             String forceExeStatus = tcsaJson.getString("forceExeStatus");
             String description = tcsaJson.getString("description");
             String screenshot = tcsaJson.getString("screenshotFileName");
             JSONArray controlArray = tcsaJson.getJSONArray("controlArr");
 
             if (!delete) {
-                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, sort, conditionOper, conditionVal1, conditionVal2, action, object, property, forceExeStatus, description, screenshot);
+                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, sort, conditionOper, conditionVal1, conditionVal2, conditionVal3, action, object, property, value3, forceExeStatus, description, screenshot);
                 tcsa.setTestCaseStepActionControl(getTestCaseStepActionControlFromParameter(request, appContext, test, testCase, controlArray));
                 testCaseStepAction.add(tcsa);
             }
@@ -427,15 +430,17 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionOper = controlJson.isNull("conditionOper") ? "always" : controlJson.getString("conditionOper");
             String conditionVal1 = controlJson.isNull("conditionVal1") ? "" : controlJson.getString("conditionVal1");
             String conditionVal2 = controlJson.isNull("conditionVal2") ? "" : controlJson.getString("conditionVal2");
+            String conditionVal3 = controlJson.isNull("conditionVal3") ? "" : controlJson.getString("conditionVal3");
             String type = controlJson.getString("objType");
             String controlValue = controlJson.getString("control");
             String value1 = controlJson.getString("value1");
             String value2 = controlJson.getString("value2");
+            String value3 = controlJson.isNull("value3") ? "" : controlJson.getString("value3");
             String fatal = controlJson.getString("fatal");
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");
             if (!delete) {
-                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, sort, conditionOper, conditionVal1, conditionVal2, controlValue, value1, value2, fatal, description, screenshot));
+                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, sort, conditionOper, conditionVal1, conditionVal2, conditionVal3, controlValue, value1, value2, value3, fatal, description, screenshot));
             }
         }
         return testCaseStepActionControl;

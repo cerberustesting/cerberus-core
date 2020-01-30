@@ -84,7 +84,7 @@ public class ReadBuildRevisionBatch extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -172,9 +172,9 @@ public class ReadBuildRevisionBatch extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findBuildRevisionBatchList(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findBuildRevisionBatchList(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         brbService = appContext.getBean(IBuildRevisionBatchService.class);
 
@@ -188,11 +188,11 @@ public class ReadBuildRevisionBatch extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = brbService.readByVariousByCriteria(system, country, environment, startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList<BuildRevisionBatch> resp = brbService.readByVariousByCriteria(system, country, environment, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (BuildRevisionBatch brb : (List<BuildRevisionBatch>) resp.getDataList()) {
+            for (BuildRevisionBatch brb : resp.getDataList()) {
                 jsonArray.put(convertToJSONObject(brb));
             }
         }
@@ -208,26 +208,25 @@ public class ReadBuildRevisionBatch extends HttpServlet {
 
     }
 
-
     private JSONObject convertToJSONObject(BuildRevisionBatch brb) throws JSONException {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(brb));
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         brbService = appContext.getBean(IBuildRevisionBatchService.class);
-        
+
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "ID,system,country,Environment,Build,Revision,Batch,DateBatch");
         String columnToSort[] = sColumns.split(",");
 
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         for (int a = 0; a < columnToSort.length; a++) {
-            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }

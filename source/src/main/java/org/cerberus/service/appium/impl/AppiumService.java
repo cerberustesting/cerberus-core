@@ -79,7 +79,10 @@ public abstract class AppiumService implements IAppiumService {
         MessageEvent message;
         AppiumDriver driver = session.getAppiumDriver();
         String newContext = "";
+
+        @SuppressWarnings("unchecked")
         Set<String> contextNames = driver.getContextHandles();
+
         for (String contextName : contextNames) {
             LOG.error("Context : " + contextName);
             if (contextName.contains("WEBVIEW")) {
@@ -100,7 +103,7 @@ public abstract class AppiumService implements IAppiumService {
         try {
             if (!StringUtil.isNull(property)) {
                 WebElement elmt = this.getElement(session, identifier, false, false);
-                if(elmt instanceof MobileElement) {
+                if (elmt instanceof MobileElement) {
                     ((MobileElement) this.getElement(session, identifier, false, false)).setValue(property);
                 } else { // FIXME See if we can delete it ??
                     TouchAction action = new TouchAction(session.getAppiumDriver());
@@ -271,7 +274,7 @@ public abstract class AppiumService implements IAppiumService {
                                 window.getWidth() / 2,
                                 2 * window.getHeight() / 3,
                                 0,
-                                - window.getHeight() / 3
+                                -window.getHeight() / 3
                         )
                 );
                 break;
@@ -290,7 +293,7 @@ public abstract class AppiumService implements IAppiumService {
                         new Line2D.Double(
                                 2 * window.getWidth() / 3,
                                 window.getHeight() / 2,
-                                - window.getWidth() / 3,
+                                -window.getWidth() / 3,
                                 0
                         )
                 );
@@ -331,9 +334,8 @@ public abstract class AppiumService implements IAppiumService {
             // check text
             if (element.getIdentifier().equals("text")) {
                 scrollDown(driver, By.xpath("//*[contains(@text,'" + element.getLocator() + "')]"), numberOfScrollDown);
-            }
-            else {
-                scrollDown(driver,this.getBy(element), numberOfScrollDown);
+            } else {
+                scrollDown(driver, this.getBy(element), numberOfScrollDown);
             }
 
             message.setDescription(message.getDescription().replace("%VALUE%", element.toString()));
@@ -349,6 +351,7 @@ public abstract class AppiumService implements IAppiumService {
 
     /**
      * Scroll down and stop when element is present
+     *
      * @param driver
      * @param element
      * @return
@@ -357,25 +360,26 @@ public abstract class AppiumService implements IAppiumService {
 
         int pressX = driver.manage().window().getSize().width / 2;
 
-        int bottomY = driver.manage().window().getSize().height * 4/5;
+        int bottomY = driver.manage().window().getSize().height * 4 / 5;
 
         int topY = driver.manage().window().getSize().height / 8;
 
         int i = 0;
 
-        do{
-            boolean isPresent = driver.findElements(element).size()>0;
-            if(isPresent){
+        do {
+            boolean isPresent = driver.findElements(element).size() > 0;
+            if (isPresent) {
                 Object elmtObj = driver.findElements(element).get(0);
 
-                if(elmtObj != null && ((MobileElement) elmtObj).isDisplayed())
+                if (elmtObj != null && ((MobileElement) elmtObj).isDisplayed()) {
                     return true;
+                }
+            } else {
+                scroll(driver, pressX, bottomY, pressX, topY);
             }
-            else{
-                scroll(driver, pressX, bottomY, pressX, topY);}
             i++;
 
-        } while(i <= numberOfScrollDown);
+        } while (i <= numberOfScrollDown);
 
         return false;
     }
@@ -427,13 +431,13 @@ public abstract class AppiumService implements IAppiumService {
             final TouchAction action = new TouchAction(session.getAppiumDriver());
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
                 final Coordinates coordinates = getCoordinates(identifier);
-                click(session,  identifier);
+                click(session, identifier);
             } else {
-                click(session,  identifier);
+                click(session, identifier);
                 //action.press(ElementOption.element(getElement(session, identifier, false, false))).waitAction(WaitOptions.waitOptions(Duration.ofMillis(8000))).release().perform();
                 //MobileElement element = (MobileElement) session.getAppiumDriver().findElementByAccessibilityId("SomeAccessibilityID");
                 //element.clear();
-               // WebElement elmt = this.getElement(session, identifier, false, false);
+                // WebElement elmt = this.getElement(session, identifier, false, false);
                 ((MobileElement) this.getElement(session, identifier, false, false)).clear();
 
             }

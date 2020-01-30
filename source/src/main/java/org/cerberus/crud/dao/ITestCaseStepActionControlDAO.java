@@ -49,7 +49,7 @@ public interface ITestCaseStepActionControlDAO {
 
     public List<TestCaseStepActionControl> findControlByTestTestCase(String test, String testCase) throws CerberusException;
 
-    public AnswerList readByTestTestCase(String test, String testcase);
+    public AnswerList<TestCaseStepActionControl> readByTestTestCase(String test, String testcase);
 
     /**
      *

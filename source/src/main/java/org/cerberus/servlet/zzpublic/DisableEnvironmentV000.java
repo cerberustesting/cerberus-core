@@ -144,7 +144,7 @@ public class DisableEnvironmentV000 extends HttpServlet {
             MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
             Answer finalAnswer = new Answer(msg);
 
-            AnswerList answerList = new AnswerList<>();
+            AnswerList<CountryEnvParam> answerList = new AnswerList<>();
             if (country.equalsIgnoreCase(PARAMETERALL)) {
                 country = null;
             }

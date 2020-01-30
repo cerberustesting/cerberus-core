@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -44,20 +45,21 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
     @Override
     public TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment, String country,
             String robot, String robotExecutor, String robotHost, String robotPort, String robotDecli,
-            String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
+            String browser, String version, String platform, long start, long end, String controlStatus, String controlMessage,
             String application, Application applicationObj, String url, String tag, int verbose, int screenshot, int pageSource, int seleniumLog,
             boolean synchroneous, String timeout, String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor,
-            int numberOfRetries, String screenSize, Robot robotObj,
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String manualExecution, String userAgent, int testCaseVersion, int testCasePriority, String system) {
+            int numberOfRetries, String screenSize, Robot robotObj, String robotProvider, String robotSessionId,
+            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3,
+            String manualExecution, String userAgent, int testCaseVersion, int testCasePriority, String system,
+            String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         TestCaseExecution newTce = new TestCaseExecution();
         newTce.setApplicationObj(applicationObj);
         newTce.setApplication(application);
         newTce.setBrowser(browser);
         newTce.setVersion(version);
         newTce.setPlatform(platform);
-        newTce.setBrowserFullVersion(browserFullVersion);
         newTce.setBuild(build);
         newTce.setControlMessage(controlMessage);
         newTce.setControlStatus(controlStatus);
@@ -72,6 +74,8 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setRobotHost(robotHost);
         newTce.setRobotPort(robotPort);
         newTce.setRobotDecli(robotDecli);
+        newTce.setRobotProvider(robotProvider);
+        newTce.setRobotSessionID(robotSessionId);
         newTce.setRevision(revision);
         newTce.setStart(start);
         newTce.setStatus(status);
@@ -110,6 +114,8 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setConditionVal1Init(conditionVal1Init);
         newTce.setConditionVal2(conditionVal2);
         newTce.setConditionVal2Init(conditionVal2Init);
+        newTce.setConditionVal3(conditionVal3);
+        newTce.setConditionVal3Init(conditionVal3Init);
         newTce.setManualExecution(manualExecution);
         newTce.setUserAgent(userAgent);
         newTce.setDescription(description);
@@ -122,6 +128,11 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setNbExecutions(1);
         newTce.setTestCaseVersion(testCaseVersion);
         newTce.setTestCasePriority(testCasePriority);
+        newTce.setUsrCreated(usrCreated);
+        newTce.setDateCreated(dateCreated);
+        newTce.setUsrModif(usrModif);
+        newTce.setDateModif(dateModif);
+
         return newTce;
     }
 

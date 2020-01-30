@@ -19,8 +19,11 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ConcurrentModificationException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -30,15 +33,15 @@ import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.factory.IFactoryParameter;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
-import org.cerberus.util.observe.ObservableEngine;
-import org.cerberus.util.observe.Observer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,10 +56,40 @@ public class ParameterService implements IParameterService {
     @Autowired
     private IFactoryParameter factoryParameter;
     @Autowired
-    private ObservableEngine<String, Parameter> observableEngine;
+    private IExecutionThreadPoolService executionThreadPoolService;
 
-    
+    private HashMap<String, Parameter> cacheEntry = new HashMap<>();
+
     private static final Logger LOG = LogManager.getLogger(ParameterService.class);
+
+    @Override
+    public HashMap<String, Parameter> getCacheEntry() {
+        return cacheEntry;
+    }
+
+    @Override
+    public void purgeCacheEntry(String parameter) {
+        if (StringUtil.isNullOrEmpty(parameter)) {
+            cacheEntry.clear();
+            LOG.debug("All Parameter cache entries purged.");
+        } else {
+            try {
+                for (Map.Entry<String, Parameter> entry : cacheEntry.entrySet()) {
+                    String key = entry.getKey();
+                    Parameter value = entry.getValue();
+                    if (parameter == null || key.contains(parameter)) {
+                        cacheEntry.remove(key);
+                        LOG.debug("Purged Parameter " + key + " from cache entries.");
+
+                    }
+                }
+            } catch (ConcurrentModificationException e) {
+                // If we failed to removed the parameter entries (ConcurrentModificationException) , we purge everything ;-).
+                cacheEntry.clear();
+                LOG.debug("All Parameter cache entries purged. (specific parameter execution failed).");
+            }
+        }
+    }
 
     @Override
     public Parameter findParameterByKey(String key, String system) throws CerberusException {
@@ -66,6 +99,21 @@ public class ParameterService implements IParameterService {
          * not exist or empty, we get it with system="" which correspond to the
          * default global Cerberus Parameter.
          */
+        LocalDateTime currentTime = LocalDateTime.now();
+        String cacheKey = key + '#' + system;
+        if (cacheEntry == null) {
+            cacheEntry = new HashMap<>();
+        }
+        if (Parameter.CACHE_DURATION > 0 && !Parameter.VALUE_cerberus_queueexecution_enable.equals(key)) {
+            if (cacheEntry.containsKey(cacheKey)
+                    && cacheEntry.get(cacheKey) != null
+                    && cacheEntry.get(cacheKey).getCacheEntryCreation() != null
+                    && cacheEntry.get(cacheKey).getCacheEntryCreation().plusSeconds(Parameter.CACHE_DURATION).isAfter(currentTime)) {
+                LOG.debug("Return parameter from cache Value.");
+                return cacheEntry.get(cacheKey);
+            }
+        }
+
         try {
             LOG.debug("Trying to retrieve parameter : " + key + " - [" + system + "]");
             myParameter = parameterDao.findParameterByKey(system, key);
@@ -75,7 +123,17 @@ public class ParameterService implements IParameterService {
         } catch (CerberusException ex) {
             LOG.debug("Trying to retrieve parameter (default value) : " + key + " - []");
             myParameter = parameterDao.findParameterByKey("", key);
+            if (myParameter != null) {
+                LOG.debug("Insert parameter to cache.");
+                myParameter.setCacheEntryCreation(currentTime);
+                cacheEntry.put(cacheKey, myParameter);
+            }
             return myParameter;
+        }
+        if (myParameter != null) {
+            LOG.debug("Insert parameter to cache.");
+            myParameter.setCacheEntryCreation(currentTime);
+            cacheEntry.put(cacheKey, myParameter);
         }
         return myParameter;
     }
@@ -109,7 +167,7 @@ public class ParameterService implements IParameterService {
                 outPutResult = Integer.valueOf(myParameter.getValue());
                 LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
             } catch (CerberusException | NumberFormatException ex) {
-                LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
+                LOG.debug("Error when trying to retrieve parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
             }
             return outPutResult;
         }
@@ -121,7 +179,7 @@ public class ParameterService implements IParameterService {
             outPutResult = Integer.valueOf(myParameter.getValue());
             LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
         } catch (CerberusException | NumberFormatException ex) {
-            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
+            LOG.error("Error when trying to retrieve parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
         }
         return outPutResult;
     }
@@ -134,7 +192,7 @@ public class ParameterService implements IParameterService {
             myParameter = this.findParameterByKey(key, system);
             outPutResult = Long.parseLong(myParameter.getValue());
         } catch (CerberusException | NumberFormatException ex) {
-            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
+            LOG.error("Error when trying to retrieve parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
         }
         LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
         return outPutResult;
@@ -148,7 +206,7 @@ public class ParameterService implements IParameterService {
             myParameter = this.findParameterByKey(key, system);
             outPutResult = Float.valueOf(myParameter.getValue());
         } catch (CerberusException | NumberFormatException ex) {
-            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
+            LOG.error("Error when trying to retrieve parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
         }
         LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
         return outPutResult;
@@ -162,7 +220,7 @@ public class ParameterService implements IParameterService {
             myParameter = this.findParameterByKey(key, system);
             outPutResult = myParameter.getValue();
         } catch (CerberusException ex) {
-            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
+            LOG.error("Error when trying to retrieve parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
         }
         LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
         return outPutResult;
@@ -174,49 +232,17 @@ public class ParameterService implements IParameterService {
     }
 
     @Override
-    public void updateParameter(Parameter parameter) throws CerberusException {
-        parameterDao.updateParameter(parameter);
-        fireUpdate(parameter.getParam(), parameter);
-    }
-
-    @Override
-    public void insertParameter(Parameter parameter) throws CerberusException {
-        parameterDao.insertParameter(parameter);
-        fireCreate(parameter.getParam(), parameter);
-    }
-
-    @Override
-    public void saveParameter(Parameter parameter) throws CerberusException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Saving Parameter");
-        }
-        try {
-            parameterDao.findParameterByKey(parameter.getSystem(), parameter.getParam());
-            updateParameter(parameter);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Parameter Updated");
-            }
-
-        } catch (CerberusException ex) {
-            insertParameter(parameter);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Parameter Inserted");
-            }
-        }
-    }
-
-    @Override
     public List<Parameter> findAllParameterWithSystem1(String system, String system1) throws CerberusException {
         return parameterDao.findAllParameterWithSystem1(system, system1);
     }
 
     @Override
-    public AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<Parameter> readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return parameterDao.readWithSystem1BySystemByCriteria(system, system1, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerItem readWithSystem1ByKey(String system, String key, String system1) {
+    public AnswerItem<Parameter> readWithSystem1ByKey(String system, String key, String system1) {
         return parameterDao.readWithSystem1ByKey(system, key, system1);
     }
 
@@ -226,56 +252,81 @@ public class ParameterService implements IParameterService {
     }
 
     @Override
-    public AnswerItem readByKey(String system, String param) {
+    public AnswerItem<Parameter> readByKey(String system, String param) {
         return parameterDao.readByKey(system, param);
-    }
-
-    @Override
-    public Answer create(Parameter object) {
-        Answer answer = parameterDao.create(object);
-        if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getSource())) {
-            fireCreate(object.getParam(), object);
-        }
-        return answer;
     }
 
     @Override
     public Answer update(Parameter object) {
         Answer answer = parameterDao.update(object);
         if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getSource())) {
-            fireUpdate(object.getParam(), object);
+
+            // A parameter is changed so we purge the cache.
+            purgeCacheEntry(object.getParam());
+
+            // If we activate the parameter to active the job, we trigger it directly.
+            if (Parameter.VALUE_cerberus_queueexecution_enable.equals(object.getParam()) && ParameterParserUtil.parseBooleanParam(object.getValue(), false)) {
+                try {
+                    // Run the Execution pool Job.
+                    executionThreadPoolService.executeNextInQueueAsynchroneously(false);
+                } catch (CerberusException ex) {
+                    LOG.error("Exeption triggering the ThreadPool job.", ex);
+                }
+            }
         }
         return answer;
     }
 
     @Override
-    public Answer delete(Parameter object) {
-        Answer answer = parameterDao.delete(object);
-        if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getCode())) {
-            fireDelete(object.getParam(), object);
+    public Answer setParameter(String parameterKey, String system, String value) {
+        Answer answer = parameterDao.setParameter(parameterKey, system, value);
+        if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getSource())) {
+
+            // A parameter is changed so we purge the cache.
+            purgeCacheEntry(parameterKey);
+
+            // If we activate the parameter to active the job, we trigger it directly.
+            if (Parameter.VALUE_cerberus_queueexecution_enable.equals(parameterKey) && ParameterParserUtil.parseBooleanParam(value, false)) {
+                try {
+                    // Run the Execution pool Job.
+                    executionThreadPoolService.executeNextInQueueAsynchroneously(false);
+                } catch (CerberusException ex) {
+                    LOG.error("Exeption triggering the ThreadPool job.", ex);
+                }
+            }
         }
         return answer;
     }
 
     @Override
-    public Answer save(Parameter object) {
+    public Answer create(Parameter object) {
+        Answer answer = parameterDao.create(object);
+        if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getSource())) {
+            purgeCacheEntry(object.getParam());
+        }
+        return answer;
+    }
+
+    @Override
+    public Answer save(Parameter object, HttpServletRequest request) {
         Answer finalAnswer = new Answer();
-        if (Parameter.VALUE_queueexecution_global_threadpoolsize_master.equalsIgnoreCase(object.getParam())) {
+        if (!hasPermissionsUpdate(object, request)) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNAUTHORISED);
             msg.setDescription(msg.getDescription()
                     .replace("%ITEM%", "Parameter")
                     .replace("%OPERATION%", "update")
-                    .replace("%REASON%", "This parameter (saas) cannot be updated."));
+                    .replace("%REASON%", "This parameter is protected and cannot be updated."));
             finalAnswer = new Answer(msg);
             LOG.warn("Attempt to modify Parameter '" + object.getParam() + "' to value '" + object.getValue() + "' refused !");
             return finalAnswer;
         }
-        AnswerItem resp = readByKey(object.getSystem(), object.getParam());
+        AnswerItem<Parameter> resp = readByKey(object.getSystem(), object.getParam());
         if (!MessageEventEnum.DATA_OPERATION_OK.equals(resp.getResultMessage().getSource())) {
             /**
              * Object could not be found. We stop here and report the error.
              */
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+
         } else if (resp.getItem() == null) {
             finalAnswer = create(object);
         } else if (!((object.getValue()).equals(((Parameter) resp.getItem()).getValue()))) {
@@ -284,7 +335,7 @@ public class ParameterService implements IParameterService {
             /**
              * Nothing is done but everything went OK
              */
-            finalAnswer = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED));
+            finalAnswer = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED).resolveDescription("ITEM", "Parameter").resolveDescription("OPERATION", "Save").resolveDescription("REASON", "Parameter does not exist"));
         }
         return finalAnswer;
     }
@@ -298,14 +349,33 @@ public class ParameterService implements IParameterService {
     @Override
     public boolean hasPermissionsUpdate(Parameter parameter, HttpServletRequest request) {
         // Access right calculation.
+
         // master parameters cannot be changed.
         if (Parameter.VALUE_queueexecution_global_threadpoolsize_master.equalsIgnoreCase(parameter.getParam())) {
             return false;
         }
-        // parameters that have a master value cannot be changed in saas mode.
-        if (Parameter.VALUE_queueexecution_global_threadpoolsize.equalsIgnoreCase(parameter.getParam())
-                && Property.isSaaS()) {
-            return false;
+        // parameters that are protected in saas mode mode.
+        if (Property.isSaaS()) {
+            if (Parameter.VALUE_queueexecution_global_threadpoolsize.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_applicationobject_path.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_exeautomedia_path.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_exemanualmedia_path.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_ftpfile_path.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_testdatalibcsv_path.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_gui_url.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_screenshot_max_size.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_smtp_host.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_smtp_isSetTls.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_smtp_password.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_smtp_port.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_smtp_username.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_manage_timeout.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_manage_token.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_url.equalsIgnoreCase(parameter.getParam())) {
+
+                return false;
+
+            }
         }
         return request.isUserInRole("Administrator");
     }
@@ -341,7 +411,8 @@ public class ParameterService implements IParameterService {
         if (parameter.getParam().equals("cerberus_accountcreation_defaultpassword")
                 || parameter.getParam().equals("cerberus_proxyauthentification_password")
                 || parameter.getParam().equals("cerberus_jenkinsadmin_password")
-                || parameter.getParam().equals("cerberus_smtp_password")) {
+                || parameter.getParam().equals("cerberus_smtp_password")
+                || parameter.getParam().equals("cerberus_executeCerberusCommand_password")) {
             return true;
         }
         return false;
@@ -391,41 +462,6 @@ public class ParameterService implements IParameterService {
             default:
                 return false;
         }
-    }
-
-    @Override
-    public boolean register(Observer<String, Parameter> observer) {
-        return observableEngine.register(observer);
-    }
-
-    @Override
-    public boolean register(String topic, Observer<String, Parameter> observer) {
-        return observableEngine.register(topic, observer);
-    }
-
-    @Override
-    public boolean unregister(String topic, Observer<String, Parameter> observer) {
-        return observableEngine.unregister(topic, observer);
-    }
-
-    @Override
-    public boolean unregister(Observer<String, Parameter> observer) {
-        return observableEngine.unregister(observer);
-    }
-
-    @Override
-    public void fireCreate(String topic, Parameter parameter) {
-        observableEngine.fireCreate(topic, parameter);
-    }
-
-    @Override
-    public void fireUpdate(String topic, Parameter parameter) {
-        observableEngine.fireUpdate(topic, parameter);
-    }
-
-    @Override
-    public void fireDelete(String topic, Parameter parameter) {
-        observableEngine.fireDelete(topic, parameter);
     }
 
 }

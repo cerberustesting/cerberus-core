@@ -1,26 +1,25 @@
-/* Cerberus Copyright (C) 2013 - 2017 cerberustesting
-DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
-
-This file is part of Cerberus.
-
-Cerberus is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Cerberus is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Cerberus Copyright (C) 2013 - 2017 cerberustesting
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.servlet.crud.scheduleentry;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -40,7 +39,7 @@ import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,9 +58,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class CreateScheduleEntry extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateScheduleEntry.class);
-    
+
     @Autowired
     CronExpression cronExpression;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -74,7 +74,7 @@ public class CreateScheduleEntry extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, JSONException {
         JSONObject jsonResponse = new JSONObject();
-        AnswerItem<Integer> ans = new AnswerItem<>();
+        Answer ans = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
@@ -92,6 +92,7 @@ public class CreateScheduleEntry extends HttpServlet {
         String cronDefinition = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("cronDefinition"), "");
         String type = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("type"), "CAMPAIGN");
         String active = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("active"), "Y");
+        String desc = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("description"), "Y");
         Boolean validCron = org.quartz.CronExpression.isValidExpression(cronDefinition);
         LOG.debug("validCron : " + validCron);
         /**
@@ -110,17 +111,20 @@ public class CreateScheduleEntry extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IFactoryScheduleEntry factoryScheduleEntry = appContext.getBean(IFactoryScheduleEntry.class);
             IScheduleEntryService scheduleEntryService = appContext.getBean(IScheduleEntryService.class);
-            ScheduleEntry scheduleEntry = factoryScheduleEntry.create(0, type, name, cronDefinition, null, active, request.getUserPrincipal().getName(), null, null, null);
+            ScheduleEntry scheduleEntry = factoryScheduleEntry.create(0, type, name, cronDefinition, null, active, desc, request.getUserPrincipal().getName(), null, null, null);
             ans = scheduleEntryService.create(scheduleEntry);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                /**
+                 * Object created. Updating Scheduler Version.
+                 */
+                IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
+                myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
                 /**
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
-                myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
                 logEventService.createForPrivateCalls("/CreateScheduleEntry", "CREATE", "Create schedule entry : ['" + scheduleEntry.getName() + "']", request);
             }
         }
@@ -130,7 +134,7 @@ public class CreateScheduleEntry extends HttpServlet {
          */
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
-        
+
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
 

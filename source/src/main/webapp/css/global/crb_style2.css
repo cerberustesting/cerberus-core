@@ -998,8 +998,12 @@ table.dataTable thead th {
     background-color: #5C025C; 
 }
 
+.statusBLACK {
+    background-color: black; 
+}
+
 /* HIDDEN FEATURES */
 
 .hiddenFeature-secondary-property{
-	display:none !important;
+    display:none !important;
 }

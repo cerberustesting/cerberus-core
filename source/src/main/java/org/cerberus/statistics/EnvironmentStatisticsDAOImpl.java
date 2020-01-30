@@ -52,7 +52,7 @@ public class EnvironmentStatisticsDAOImpl implements IEnvironmentStatisticsDAO {
 
     @Override
     public AnswerList<BuildRevisionStatisticsEnv> getEnvironmentStatistics(List<String> system) {
-        AnswerList response = new AnswerList<>();
+        AnswerList<BuildRevisionStatisticsEnv> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<BuildRevisionStatisticsEnv> objectList = new ArrayList<>();

@@ -66,11 +66,11 @@ public class CountryEnvLinkDAO implements ICountryEnvLinkDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<CountryEnvLink> readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        AnswerList<CountryEnvLink> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<CountryEnvLink> objectList = new ArrayList<CountryEnvLink>();
+        List<CountryEnvLink> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();

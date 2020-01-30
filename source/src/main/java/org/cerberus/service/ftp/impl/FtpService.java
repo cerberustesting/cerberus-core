@@ -1,4 +1,4 @@
-/*
+/**
  * Cerberus Copyright (C) 2013 - 2017 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -28,7 +28,6 @@ import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.net.SocketAddress;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -150,7 +149,7 @@ public class FtpService implements IFtpService {
 
     public AnswerItem<AppService> callFTP(String chain, String system, String content, String method, String filePath, String service) {
         MessageEvent message = null;
-        AnswerItem result = new AnswerItem<>();
+        AnswerItem<AppService> result = new AnswerItem<>();
         HashMap<String, String> informations = this.fromFtpStringToHashMap(chain);
 
         if (informations.size() <= 4) {
@@ -164,7 +163,7 @@ public class FtpService implements IFtpService {
 
         FTPClient ftp = new FTPClient();
         AppService myResponse = factoryAppService.create(service, AppService.TYPE_FTP,
-                method, "", "", content, "", informations.get("path"), "", "", "", null, "", null, filePath);
+                method, "", "", content, "", "", "", "", "", informations.get("path"), "", "", "", null, "", null, filePath);
 
         try {
             if (proxyService.useProxy(StringUtil.getURLFromString(informations.get("host"), "", "", "ftp://"), system)) {
@@ -215,7 +214,7 @@ public class FtpService implements IFtpService {
     @Override
     public AnswerItem<AppService> getFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse) throws IOException {
         MessageEvent message = null;
-        AnswerItem result = new AnswerItem<>();
+        AnswerItem<AppService> result = new AnswerItem<>();
         LOG.info("Start retrieving ftp file");
         FTPFile[] ftpFile = ftp.listFiles(informations.get("path"));
         if (ftpFile.length != 0) {
@@ -238,7 +237,7 @@ public class FtpService implements IFtpService {
                 result.setResultMessage(message);
                 String expectedContent = IOUtils.toString(new ByteArrayInputStream(content), "UTF-8");
                 String extension = testCaseExecutionFileService.checkExtension(informations.get("path"), "");
-                if (extension == "JSON" || extension == "XML" || extension == "TXT") {
+                if ("JSON".equals(extension) || "XML".equals(extension) || "TXT".equals(extension)) {
                     myResponse.setResponseHTTPBody(expectedContent);
                 }
                 myResponse.setResponseHTTPBodyContentType(extension);
@@ -267,7 +266,7 @@ public class FtpService implements IFtpService {
     @Override
     public AnswerItem<AppService> postFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse) throws IOException {
         MessageEvent message = null;
-        AnswerItem result = new AnswerItem<>();
+        AnswerItem<AppService> result = new AnswerItem<>();
         InputStream inputStream = null;
         byte[] byteContent = null;
         LOG.info("Start retrieving ftp file");
@@ -278,7 +277,7 @@ public class FtpService implements IFtpService {
         } else if (!myResponse.getFileName().isEmpty()) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     "cerberus_ftpfile_path Parameter not found");
-            AnswerItem a = parameterService.readByKey("", "cerberus_ftpfile_path");
+            AnswerItem<Parameter> a = parameterService.readByKey("", "cerberus_ftpfile_path");
             if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 Parameter p = (Parameter) a.getItem();
                 String uploadPath = p.getValue();

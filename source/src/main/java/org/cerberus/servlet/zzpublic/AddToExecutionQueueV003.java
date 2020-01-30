@@ -44,6 +44,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.servlet.ServletUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -103,7 +104,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     private static final String PARAMETER_EXECUTOR = "executor";
 
     private static final String DEFAULT_VALUE_TAG = "";
-    private static final int DEFAULT_VALUE_SCREENSHOT = 0;
+    private static final int DEFAULT_VALUE_SCREENSHOT = 1;
     private static final int DEFAULT_VALUE_MANUAL_URL = 0;
     private static final int DEFAULT_VALUE_VERBOSE = 1;
     private static final long DEFAULT_VALUE_TIMEOUT = 300;
@@ -177,7 +178,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
-        AnswerItem<List<TestCase>> testcases = null;
+        AnswerList<TestCase> testcases = null;
 
         /**
          * Adding Log entry.
@@ -333,10 +334,9 @@ public class AddToExecutionQueueV003 extends HttpServlet {
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String mytimestamp = sdf.format(timestamp);
-        String myuser = request.getRemoteUser();
-        if (myuser == null) {
-            myuser = "";
-        }
+        String myuser = ServletUtil.getUser(request);
+        LOG.debug("User : " + myuser);
+        LOG.debug("Executor : " + executor);
         String reqEnvironments = StringUtil.convertToString(environments, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
         String reqCountries = StringUtil.convertToString(countries, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
         tag = tag
@@ -367,8 +367,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 testcases = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()]));
 
                 if (testcases != null) {
-                    if (testcases.getItem() != null) {
-                        for (TestCase campaignTestCase : testcases.getItem()) {
+                    if (testcases.getDataList() != null) {
+                        for (TestCase campaignTestCase : testcases.getDataList()) {
                             selectTest.add(campaignTestCase.getTest());
                             selectTestCase.add(campaignTestCase.getTestCase());
                         }
@@ -404,7 +404,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
 
         int nbExe = 0;
         JSONArray jsonArray = new JSONArray();
-        String user = request.getRemoteUser() == null ? "" : request.getRemoteUser();
+        String user = myuser;
         user = StringUtil.isNullOrEmpty(user) && !StringUtil.isNullOrEmpty(executor) ? executor : user;
 
         int nbtestcasenotactive = 0;
@@ -421,6 +421,10 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         if (StringUtil.isNullOrEmpty(robotIP)) {
             if (robots == null || robots.isEmpty()) {
                 // RobotIP is not defined and no robot are provided so the content is probably testcases that does not require robot definition.
+                if (manualExecution.equalsIgnoreCase("Y") || manualExecution.equalsIgnoreCase("A")) {
+                    robotIP = "manual";
+                    robotsMap.put("", robotFactory.create(0, "", platform, browser, "", "Y", "", "", "", screenSize, browser, ""));
+                }
                 nbrobot = 1;
             } else {
                 // Not RobotIP defined but at least 1 robot has been found from servlet call or campaign definition.
@@ -441,6 +445,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             robots.add("");
             robotsMap.put("", robotFactory.create(0, "", platform, browser, "", "Y", "", "", "", screenSize, browser, ""));
         }
+
+        HashMap<String, Application> appMap = new HashMap<>();
 
         // Starting the request only if previous parameters exist.
         if (!error) {
@@ -488,7 +494,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                             || (envGp1.equals("DEV"))
                                             || (envGp1.equals(""))) {
                                         // Getting Application in order to check application type against browser.
-                                        Application app = applicationService.convert(applicationService.readByKey(tc.getApplication()));
+                                        appMap = updateMapWithApplication(tc.getApplication(), appMap);
+                                        Application app = appMap.get(tc.getApplication());
                                         if ((envMap.containsKey(app.getSystem() + LOCAL_SEPARATOR + country.getCountry() + LOCAL_SEPARATOR + environment))
                                                 || (environment.equals("MANUAL"))) {
 
@@ -583,11 +590,12 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 LOG.warn(ex);
             }
 
-            // Part 2: Try to insert all these test cases to the execution queue.
-            List<String> errorMessages = new ArrayList<String>();
+            // Part 2a: Try to insert all these test cases to the execution queue.
+            List<String> errorMessages = new ArrayList<>();
+            List<Long> queueInsertedIds = new ArrayList<>();
             for (TestCaseExecutionQueue toInsert : toInserts) {
                 try {
-                    inQueueService.convert(inQueueService.create(toInsert, 0));
+                    inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUTEMP));
                     nbExe++;
                     JSONObject value = new JSONObject();
                     value.put("queueId", toInsert.getId());
@@ -595,6 +603,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     value.put("testcase", toInsert.getTestCase());
                     value.put("country", toInsert.getCountry());
                     value.put("environment", toInsert.getEnvironment());
+                    queueInsertedIds.add(toInsert.getId());
 
                     jsonArray.put(value);
                 } catch (CerberusException e) {
@@ -606,6 +615,9 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     LOG.error(ex, ex);
                 }
             }
+
+            // Part 2b: move all the execution queue from tag to QUEUE state.
+            inQueueService.updateAllTagToQueuedFromQuTemp(tag, queueInsertedIds);
 
             // Part 3 : Trigger JobQueue
             try {
@@ -678,7 +690,17 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 }
                 response.getWriter().print(errorMessage.toString());
         }
+        Date date1 = new Date();
+        LOG.debug("TOTAL Duration : " + (date1.getTime() - requestDate.getTime()));
 
+    }
+
+    private HashMap<String, Application> updateMapWithApplication(String application, HashMap<String, Application> appMap) throws CerberusException {
+        if (!appMap.containsKey(application)) {
+            Application app = applicationService.convert(applicationService.readByKey(application));
+            appMap.put(application, app);
+        }
+        return appMap;
     }
 
     /**
@@ -716,10 +738,10 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         }
         try {
             JSONObject myJSONObj = new JSONObject(manualHost);
-            Iterator<String> nameItr = myJSONObj.keys();
+            Iterator<?> nameItr = myJSONObj.keys();
             LOG.debug("Converting from JSON.");
             while (nameItr.hasNext()) {
-                String name = nameItr.next();
+                String name = (String) nameItr.next();
                 myHostMap.put(name, myJSONObj.getString(name));
             }
             return myHostMap;

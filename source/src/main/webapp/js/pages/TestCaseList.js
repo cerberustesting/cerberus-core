@@ -50,6 +50,12 @@ function initPage() {
         'placement': 'auto',
         'container': 'body'}
     );
+    
+    var availableUsers = getUserArray(true);
+    $("input#massExecutor").autocomplete({
+        source: availableUsers
+    });
+    
 }
 
 function initMassActionModal() {
@@ -87,6 +93,15 @@ function initMassActionModal() {
             $("#massActionTestCaseModal #massPriority").prop("disabled", false);
         } else {
             $("#massActionTestCaseModal #massPriority").prop("disabled", true);
+        }
+    });
+    $("#massActionTestCaseModal #massExecutor").prop("disabled", true);
+    $("#executorCheckbox").prop("checked", false);
+    $("#executorCheckbox").change(function () {
+        if ($(this).prop("checked")) {
+            $("#massActionTestCaseModal #massExecutor").prop("disabled", false);
+        } else {
+            $("#massActionTestCaseModal #massExecutor").prop("disabled", true);
         }
     });
 }
@@ -218,7 +233,7 @@ function deleteEntryHandlerClick() {
         showMessageMainPage(messageType, data.message, false);
         //close confirmation window
         $('#confirmationModal').modal('hide');
-        
+
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
@@ -235,6 +250,19 @@ function massActionModalSaveHandler_addLabel() {
     var formNewValues = $('#massActionTestCaseModal #massActionTestCaseModalFormAddLabel');
     var formList = $('#massActionForm');
     var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
+
+    var table2 = $('#selectLabelAddS').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
+    var table2 = $('#selectLabelAddR').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
+    var table2 = $('#selectLabelAddB').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
 
     showLoaderInModal('#massActionTestCaseModal');
 
@@ -259,6 +287,19 @@ function massActionModalSaveHandler_removeLabel() {
     var formNewValues = $('#massActionTestCaseModal #massActionTestCaseModalFormAddLabel');
     var formList = $('#massActionForm');
     var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
+
+    var table2 = $('#selectLabelAddS').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
+    var table2 = $('#selectLabelAddR').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
+    var table2 = $('#selectLabelAddB').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
+    }
 
     showLoaderInModal('#massActionTestCaseModal');
 
@@ -335,7 +376,7 @@ function massActionModalSaveHandler_delete() {
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_testcase", "message_delete_all");
     messageComplete += "</br></br>";
-    
+
     $("input[data-line=select]:checked").each(function (index, file) {
         var t = $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
         var test = t.split("test=")[1].split("&testcase=")[0];
@@ -344,17 +385,17 @@ function massActionModalSaveHandler_delete() {
         messageComplete += "</br>";
     });
     showModalConfirmation(deleteMassTestCase, undefined, "Delete", messageComplete);
-    
+
 }
 
 function deleteMassTestCase() {
     var returnMessage = '{"messageType":"OK","message":"Delete OK"}';
-    
+
     //Loop on TestCase Selected to delete them 
     $("input[data-line=select]:checked").each(function (index, file) {
         var t = $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testCase=');
-        var url = "DeleteTestCase?"+t;
-        
+        var url = "DeleteTestCase?" + t;
+
         $.ajax({
             url: url,
             async: true,
@@ -372,17 +413,17 @@ function deleteMassTestCase() {
 
     });
     showMessage(JSON.parse(returnMessage));
-    
+
     $('#testCaseTable').DataTable().draw();
     $("#selectAll").prop("checked", false);
     $('#confirmationModal').modal('hide');
     $('#massActionTestCaseModal').modal('hide');
-    
+
 }
 
 function massActionModalCloseHandler() {
     // reset form values
-    $('#massActionTestCaseModal #massActionTestCaseModalForm')[0].reset();
+    $('#massActionTestCaseModal #massActionTestCaseModalFormUpdate')[0].reset();
     // remove all errors on the form fields
     $(this).find('div.has-error').removeClass("has-error");
     // clear the response messages of the modal
@@ -453,11 +494,11 @@ function importTestCaseClick() {
     $("#importTestCaseButton").click(function () {
         confirmImportTestCaseModalHandler();
     });
-    
+
     var doc = new Doc();
     var text = doc.getDocLabel("page_testcaselist", "import_testcase_msg");
     $('#importTestCaseModalText').text(text);
-    
+
     $('#importTestCaseModal').modal('show');
 }
 
@@ -700,7 +741,7 @@ function aoColumnsFunc(countries, tableId) {
             "sWidth": "120px",
             "sDefaultContent": "",
             "mRender": function (data, type, oObj, full) {
-                    if(full.row == 0){
+                if (full.row == 0) {
                     testAutomaticModal = oObj.test;
                 }
                 return oObj.test;
@@ -725,6 +766,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "labels",
+            "visible": false,
             "sName": "lab.label",
             "title": doc.getDocOnline("label", "label"),
             "bSortable": false,
@@ -755,6 +797,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "labelsREQUIREMENT",
+            "visible": false,
             "sName": "lab.labelsREQUIREMENT",
             "title": doc.getDocOnline("label", "labelsREQUIREMENT"),
             "bSortable": false,
@@ -770,6 +813,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "labelsBATTERY",
+            "visible": false,
             "sName": "lab.labelsBATTERY",
             "title": doc.getDocOnline("label", "labelsBATTERY"),
             "bSortable": false,
@@ -806,6 +850,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "tcActive",
+            "visible": false,
             "sName": "tec.tcactive",
             "title": doc.getDocOnline("testcase", "TcActive"),
             "sDefaultContent": "",
@@ -831,6 +876,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "priority",
+            "visible": false,
             "sName": "tec.priority",
             "title": doc.getDocOnline("invariant", "PRIORITY"),
             "sWidth": "70px",
@@ -838,6 +884,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "function",
+            "visible": false,
             "like": true,
             "sName": "tec.function",
             "title": doc.getDocOnline("testcase", "Function"),
@@ -845,14 +892,8 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
-            "data": "project",
-            "sName": "tec.project",
-            "title": doc.getDocOnline("project", "idproject"),
-            "sWidth": "100px",
-            "sDefaultContent": ""
-        },
-        {
             "data": "origine",
+            "visible": false,
             "sName": "tec.origine",
             "title": doc.getDocOnline("testcase", "Origine"),
             "sWidth": "70px",
@@ -860,6 +901,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "refOrigine",
+            "visible": false,
             "sName": "tec.refOrigine",
             "like": true,
             "title": doc.getDocOnline("testcase", "RefOrigine"),
@@ -868,13 +910,39 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "group",
+            "visible": false,
             "sName": "tec.group",
             "title": doc.getDocOnline("invariant", "Type"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
+            "data": "testCaseVersion",
+            "visible": false,
+            "sName": "tec.testCaseVersion",
+            "title": doc.getDocOnline("testcase", "TestCaseVersion"),
+            "sWidth": "50px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "implementer",
+            "visible": false,
+            "sName": "tec.implementer",
+            "title": doc.getDocOnline("testcase", "Implementer"),
+            "sWidth": "50px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "executor",
+            "visible": false,
+            "sName": "tec.executor",
+            "title": doc.getDocOnline("testcase", "Executor"),
+            "sWidth": "50px",
+            "sDefaultContent": ""
+        },
+        {
             "data": "dateCreated",
+            "visible": false,
             "sName": "tec.dateCreated",
             "like": true,
             "title": doc.getDocOnline("transversal", "DateCreated"),
@@ -883,20 +951,15 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "usrCreated",
+            "visible": false,
             "sName": "tec.usrCreated",
             "title": doc.getDocOnline("transversal", "UsrCreated"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
-            "data": "testCaseVersion",
-            "sName": "tec.testCaseVersion",
-            "title": doc.getDocOnline("testcase", "TestCaseVersion"),
-            "sWidth": "50px",
-            "sDefaultContent": ""
-        },
-        {
             "data": "dateModif",
+            "visible": false,
             "like": true,
             "sName": "tec.dateModif",
             "title": doc.getDocOnline("transversal", "DateModif"),
@@ -909,6 +972,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "usrModif",
+            "visible": false,
             "sName": "tec.usrModif",
             "title": doc.getDocOnline("transversal", "UsrModif"),
             "sWidth": "100px",
@@ -938,6 +1002,7 @@ function aoColumnsFunc(countries, tableId) {
                 }
             },
             "bSortable": false,
+            "visible": false,
             "bSearchable": false,
             "sClass": "center",
             "title": country,

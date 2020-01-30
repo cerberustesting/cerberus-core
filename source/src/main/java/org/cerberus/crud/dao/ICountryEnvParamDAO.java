@@ -60,7 +60,7 @@ public interface ICountryEnvParamDAO {
      * @param string
      * @return
      */
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    public AnswerList<CountryEnvParam> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *
@@ -79,7 +79,7 @@ public interface ICountryEnvParamDAO {
      * @param string
      * @return
      */
-    public AnswerList readByVariousByCriteria(List<String> systems, String country, String environment, String build, String revision, String active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> string);
+    public AnswerList<CountryEnvParam> readByVariousByCriteria(List<String> systems, String country, String environment, String build, String revision, String active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> string);
 
     /**
      *
@@ -98,7 +98,7 @@ public interface ICountryEnvParamDAO {
      * @param string
      * @return
      */
-    public AnswerList readDistinctEnvironmentByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    public AnswerList<CountryEnvParam> readDistinctEnvironmentByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *
@@ -129,6 +129,6 @@ public interface ICountryEnvParamDAO {
      * @param columnName
      * @return 
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

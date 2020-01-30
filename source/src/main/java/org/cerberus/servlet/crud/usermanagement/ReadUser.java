@@ -170,9 +170,9 @@ public class ReadUser extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findUserList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    private AnswerItem<JSONObject> findUserList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         userService = appContext.getBean(UserService.class);
 
@@ -200,17 +200,17 @@ public class ReadUser extends HttpServlet {
             }
         }
 
-        AnswerList resp = userService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<User> resp = userService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         boolean userHasPermissions = request.isUserInRole("Administrator");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (User user : (List<User>) resp.getDataList()) {
+            for (User user : resp.getDataList()) {
                 JSONObject res = convertUserToJSONObject(user);
                 res.put("isKeycloakManaged", Property.isKeycloak());
                 if (request.getParameter("systems") != null) {
                     IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
-                    AnswerList a = userSystemService.readByUser(user.getLogin());
+                    AnswerList<UserSystem> a = userSystemService.readByUser(user.getLogin());
                     if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null) {
                         JSONArray JSONsystems = new JSONArray();
                         List<UserSystem> systems = a.getDataList();
@@ -222,7 +222,7 @@ public class ReadUser extends HttpServlet {
                 }
                 if (request.getParameter("groups") != null) {
                     IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
-                    AnswerList a = userGroupService.readByUser(user.getLogin());
+                    AnswerList<UserGroup> a = userGroupService.readByUser(user.getLogin());
                     if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null) {
                         JSONArray JSONgroups = new JSONArray();
                         List<UserGroup> groups = a.getDataList();
@@ -255,7 +255,7 @@ public class ReadUser extends HttpServlet {
         String login = ParameterParserUtil.parseStringParam(request.getParameter("login"), "");
         boolean userHasPermissions = request.isUserInRole("Administrator");
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         userService = appContext.getBean(UserService.class);
 
@@ -268,7 +268,7 @@ public class ReadUser extends HttpServlet {
 
             if (request.getParameter("systems") != null) {
                 IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
-                AnswerList a = userSystemService.readByUser(login);
+                AnswerList<UserSystem> a = userSystemService.readByUser(login);
                 if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null) {
                     JSONArray JSONsystems = new JSONArray();
                     List<UserSystem> systems = a.getDataList();
@@ -280,7 +280,7 @@ public class ReadUser extends HttpServlet {
             }
             if (request.getParameter("groups") != null) {
                 IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
-                AnswerList a = userGroupService.readByUser(login);
+                AnswerList<UserGroup> a = userGroupService.readByUser(login);
                 if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null) {
                     JSONArray JSONgroups = new JSONArray();
                     List<UserGroup> groups = a.getDataList();

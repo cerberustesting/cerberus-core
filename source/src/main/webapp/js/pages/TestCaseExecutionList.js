@@ -171,6 +171,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "testCaseVersion",
+            "visible": false,
             "sName": "exe.testCaseVersion",
             "title": doc.getDocOnline("testcase", "TestCaseVersion"),
             "sWidth": "50px",
@@ -178,6 +179,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "status",
+            "visible": false,
             "sName": "exe.status",
             "title": doc.getDocOnline("page_executiondetail", "status"),
             "sWidth": "70px",
@@ -199,6 +201,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "description",
+            "visible": false,
             "like": true,
             "sName": "exe.description",
             "bSearchable": true,
@@ -208,6 +211,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "build",
+            "visible": false,
             "sName": "exe.build",
             "title": doc.getDocOnline("page_executiondetail", "build"),
             "sWidth": "70px",
@@ -215,6 +219,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "revision",
+            "visible": false,
             "sName": "exe.revision",
             "title": doc.getDocOnline("page_executiondetail", "revision"),
             "sWidth": "70px",
@@ -229,6 +234,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "url",
+            "visible": false,
             "sName": "exe.url",
             "title": doc.getDocOnline("page_executiondetail", "url"),
             "sWidth": "70px",
@@ -236,6 +242,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "browser",
+            "visible": false,
             "sName": "exe.browser",
             "title": doc.getDocOnline("page_executiondetail", "browser"),
             "sWidth": "70px",
@@ -243,6 +250,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "version",
+            "visible": false,
             "sName": "exe.version",
             "title": doc.getDocOnline("page_executiondetail", "version"),
             "sWidth": "70px",
@@ -250,20 +258,15 @@ function aoColumnsFunc() {
         },
         {
             "data": "platform",
+            "visible": false,
             "sName": "exe.platform",
             "title": doc.getDocOnline("page_executiondetail", "platform"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
-            "data": "browserFullVersion",
-            "sName": "exe.browserfullversion",
-            "title": doc.getDocOnline("page_executiondetail", "browserfull"),
-            "sWidth": "70px",
-            "sDefaultContent": ""
-        },
-        {
             "data": "start",
+            "visible": false,
             "sName": "exe.start",
             "like": true,
             "title": doc.getDocOnline("page_executiondetail", "start"),
@@ -276,6 +279,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "end",
+            "visible": false,
             "sName": "exe.end",
             "like": true,
             "title": doc.getDocOnline("page_executiondetail", "end"),
@@ -291,11 +295,12 @@ function aoColumnsFunc() {
             "sName": "exe.controlmessage",
             "like": true,
             "title": doc.getDocOnline("page_executiondetail", "controlmessage"),
-            "sWidth": "70px",
+            "sWidth": "270px",
             "sDefaultContent": ""
         },
         {
             "data": "ip",
+            "visible": false,
             "sName": "exe.ip",
             "title": doc.getDocOnline("page_executiondetail", "robothost"),
             "sWidth": "70px",
@@ -303,6 +308,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "port",
+            "visible": false,
             "sName": "exe.port",
             "title": doc.getDocOnline("page_executiondetail", "robotport"),
             "sWidth": "70px",
@@ -313,7 +319,7 @@ function aoColumnsFunc() {
             "sName": "exe.tag",
             "like": true,
             "title": doc.getDocOnline("page_executiondetail", "tag"),
-            "sWidth": "70px",
+            "sWidth": "170px",
             "sDefaultContent": "",
             "mRender": function (data, type, obj) {
                 if (data !== "") {
@@ -326,6 +332,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "verbose",
+            "visible": false,
             "sName": "exe.verbose",
             "title": doc.getDocOnline("page_executiondetail", "verbose"),
             "sWidth": "70px",
@@ -333,6 +340,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "crbVersion",
+            "visible": false,
             "sName": "exe.crbVersion",
             "like": true,
             "title": doc.getDocOnline("page_executiondetail", "cerberusversion"),
@@ -341,6 +349,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "executor",
+            "visible": false,
             "sName": "exe.executor",
             "title": doc.getDocOnline("page_executiondetail", "executor"),
             "sWidth": "70px",
@@ -348,6 +357,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "screenSize",
+            "visible": false,
             "sName": "exe.screensize",
             "title": doc.getDocOnline("page_executiondetail", "screensize"),
             "sWidth": "70px",
@@ -355,6 +365,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "userAgent",
+            "visible": false,
             "sName": "exe.userAgent",
             "title": doc.getDocOnline("page_executiondetail", "userAgent"),
             "sWidth": "130px",
@@ -362,6 +373,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "queueId",
+            "visible": false,
             "sName": "exe.queueId",
             "title": doc.getDocOnline("page_executiondetail", "queueId"),
             "sWidth": "130px",
@@ -410,13 +422,18 @@ function generateTooltip(data) {
     if (data.controlMessage.length > 200) {
         ctrlmessage = data.controlMessage.substring(0, 200) + '...';
     }
-    htmlRes = '<div><span class=\'bold\'>Execution IDs :</span> ' + data.id + '</div>' +
-            '<div><span class=\'bold\'>Country : </span>' + data.country + '</div>' +
-            '<div><span class=\'bold\'>Environment : </span>' + data.environment + '</div>' +
-            '<div><span class=\'bold\'>Browser : </span>' + data.browser + '</div>' +
-            '<div><span class=\'bold\'>Start : </span>' + new Date(data.start) + '</div>' +
-            '<div><span class=\'bold\'>End : </span>' + new Date(data.end) + '</div>' +
-            '<div>' + ctrlmessage + '</div>';
+
+    htmlRes = '<div><span class=\'bold\'>Execution IDs :</span> ' + data.id + '</div>'
+    htmlRes += '<div><span class=\'bold\'>Country : </span>' + data.country + '</div>'
+    htmlRes += '<div><span class=\'bold\'>Environment : </span>' + data.environment + '</div>'
+    if (data.robotDecli !== "") {
+        htmlRes += '<div><span class=\'bold\'>Browser : </span>' + data.robotDecli + ' (' + data.browser + ')</div>'
+    }
+    htmlRes += '<div><span class=\'bold\'>Start : </span>' + getDateMedium(data.start) + '</div>';
+    if (getDateShort(data.end) !== "") {
+        htmlRes += '<div><span class=\'bold\'>End : </span>' + getDateShort(data.end) + '</div>';
+    }
+    htmlRes += '<div>' + ctrlmessage + '</div>';
 
     return htmlRes;
 }

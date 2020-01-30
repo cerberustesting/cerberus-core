@@ -38,13 +38,13 @@ public interface IDeployTypeDAO {
      * @param deployType
      * @return
      */
-    public AnswerItem readByKey(String deployType);
+    public AnswerItem<DeployType> readByKey(String deployType);
 
     /**
      *
      * @return
      */
-    public AnswerList readAll();
+    public AnswerList<DeployType> readAll();
 
     /**
      *
@@ -53,10 +53,10 @@ public interface IDeployTypeDAO {
      * @param columnName
      * @param sort
      * @param searchParameter
-     * @param string
+     * @param individualSearch
      * @return
      */
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    public AnswerList<DeployType> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *

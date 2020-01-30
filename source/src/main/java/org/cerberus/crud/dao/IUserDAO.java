@@ -144,20 +144,7 @@ public interface IUserDAO {
      * @param login
      * @return
      */
-    AnswerItem readByKey(String login);
-
-    /**
-     *
-     * @param system
-     * @param start
-     * @param amount
-     * @param column
-     * @param dir
-     * @param searchTerm
-     * @param individualSearch
-     * @return
-     */
-    AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerItem<User> readByKey(String login);
 
     /**
      *
@@ -169,7 +156,19 @@ public interface IUserDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<User> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    /**
+     *
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    AnswerList<User> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *

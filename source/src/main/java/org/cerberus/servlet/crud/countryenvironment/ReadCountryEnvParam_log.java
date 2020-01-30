@@ -172,9 +172,9 @@ public class ReadCountryEnvParam_log extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findCountryEnvParamList(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findCountryEnvParamList(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         ceplService = appContext.getBean(ICountryEnvParam_logService.class);
 
@@ -197,7 +197,7 @@ public class ReadCountryEnvParam_log extends HttpServlet {
             }
         }
         
-        AnswerList resp = ceplService.readByVariousByCriteria(system, country, environment, null, null, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<CountryEnvParam_log> resp = ceplService.readByVariousByCriteria(system, country, environment, null, null, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -224,8 +224,8 @@ public class ReadCountryEnvParam_log extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         ceplService = appContext.getBean(ICountryEnvParam_logService.class);

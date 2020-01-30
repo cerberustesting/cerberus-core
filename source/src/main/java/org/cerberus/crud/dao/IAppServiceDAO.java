@@ -38,9 +38,21 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IAppServiceDAO {
 
+    /**
+     *
+     * @param name
+     * @return
+     * @throws CerberusException
+     */
     AppService findAppServiceByKey(String name) throws CerberusException;
 
-    AnswerList findAppServiceByLikeName(String service, int limit);
+    /**
+     *
+     * @param service
+     * @param limit
+     * @return
+     */
+    AnswerList<AppService> findAppServiceByLikeName(String service, int limit);
 
     /**
      * Get the {@link AppService} List of the given {@link System} with the
@@ -55,7 +67,7 @@ public interface IAppServiceDAO {
      * @param systems
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems);
+    AnswerList<AppService> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems);
 
     /**
      * Get the {@link AppService} of the given key
@@ -63,7 +75,7 @@ public interface IAppServiceDAO {
      * @param key the key of the {@link AppService} to get
      * @return
      */
-    AnswerItem readByKey(String key);
+    AnswerItem<AppService> readByKey(String key);
 
     /**
      * Get the distinctValue of the column
@@ -73,7 +85,7 @@ public interface IAppServiceDAO {
      * @param individualSearch the string to search for each column
      * @return
      */
-    AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      * @param object the {@link AppService} to Create
@@ -101,5 +113,11 @@ public interface IAppServiceDAO {
      */
     AppService loadFromResultSet(ResultSet rs) throws SQLException;
 
+    /**
+     *
+     * @param service
+     * @param file
+     * @return
+     */
     Answer uploadFile(String service, FileItem file);
 }

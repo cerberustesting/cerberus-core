@@ -1,4 +1,4 @@
-/*
+/**
  * Cerberus Copyright (C) 2013 - 2017 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -134,6 +134,22 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('appservice','srvRequest','','fr','Requête','','_librairie_de_services')");
         b.append(",('appservice','type','','en','Type','','_service_library')");
         b.append(",('appservice','type','','fr','Type','','_librairie_de_services')");
+        b.append(",('appservicecontent','Sort','','en','Sort','','_service_library')");
+        b.append(",('appservicecontent','Sort','','fr','Tri','','_librairie_de_services')");
+        b.append(",('appservicecontent','Key','','en','Key','','_service_library')");
+        b.append(",('appservicecontent','Key','','fr','Clé','','_librairie_de_services')");
+        b.append(",('appservicecontent','Value','','en','Value','','_service_library')");
+        b.append(",('appservicecontent','Value','','fr','Valeur','','_librairie_de_services')");
+        b.append(",('appservicecontent','Description','','en','Description','','_service_library')");
+        b.append(",('appservicecontent','Description','','fr','Description','','_librairie_de_services')");
+        b.append(",('appserviceheader','Sort','','en','Sort','','_service_library')");
+        b.append(",('appserviceheader','Sort','','fr','Tri','','_librairie_de_services')");
+        b.append(",('appserviceheader','Key','','en','Key','','_service_library')");
+        b.append(",('appserviceheader','Key','','fr','Clé','','_librairie_de_services')");
+        b.append(",('appserviceheader','Value','','en','Value','','_service_library')");
+        b.append(",('appserviceheader','Value','','fr','Valeur','','_librairie_de_services')");
+        b.append(",('appserviceheader','Description','','en','Description','','_service_library')");
+        b.append(",('appserviceheader','Description','','fr','Description','','_librairie_de_services')");
         b.append(",('batchinvariant','Batch','','en','Batch','','_batch_invariant_attributes')");
         b.append(",('batchinvariant','Batch','','fr','Batch','','_batch_invariant_attributes')");
         b.append(",('batchinvariant','Description','','en','Description','Description of the batch.','_batch_invariant_attributes')");
@@ -416,10 +432,14 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('robotexecutor','executorProxyPort','','en','Executor Proxy Port','Port of the executor proxy. If 0, port will be determined randomly.',NULL)");
         b.append(",('robotexecutor','executorProxyActive','','fr','Proxy Actif / Inactif', 'Activer / Désactiver l\\'utilisation du proxy de l\\'extension de l\\'executor.',NULL)");
         b.append(",('robotexecutor','executorProxyActive','','en','Active / Unactive Proxy', 'Activate / Unactivate the usage of of proxy through the Executor Extension.',NULL)");
-        b.append(",('scheduler','cronDefinition','','fr','Expression Cron','Expression Cron parametree pour ordonnancer la campagne',NULL)");
-        b.append(",('scheduler','cronDefinition','','en','Cron Expression','Cron expression use to schedule campaign',NULL)");
-        b.append(",('scheduler','active','','en','Active','Scheduler activity',NULL)");
-        b.append(",('scheduler','active','','fr','Active','Activité du scheduler',NULL)");
+        b.append(",('scheduleentry','cronDefinition','','fr','Expression Cron Quartz','Expression Cron parametree pour ordonnancer la campagne',NULL)");
+        b.append(",('scheduleentry','cronDefinition','','en','Quartz Cron Expression','Cron expression use to schedule campaign',NULL)");
+        b.append(",('scheduleentry','description','','fr','Description','',NULL)");
+        b.append(",('scheduleentry','description','','en','Description','',NULL)");
+        b.append(",('scheduleentry','active','','en','Active','Scheduler activity',NULL)");
+        b.append(",('scheduleentry','active','','fr','Active','Activité du scheduler',NULL)");
+        b.append(",('scheduleentry','lastexecution','','en','Last Execution','',NULL)");
+        b.append(",('scheduleentry','lastexecution','','fr','Dernière execution','',NULL)");
         b.append(",('tag','id','','en','Tag ID','Technical ID of the tag',NULL)");
         b.append(",('tag','id','','fr','ID du Tag','ID technique du Tag',NULL)");
         b.append(",('tag','tag','','en','Tag','',NULL)");
@@ -498,6 +518,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','HowTo','','fr','Comment Reproduire','','_cas_de_test')");
         b.append(",('testcase','Implementer','','en','Implementer','This is the name of the Cerberus user who implemented the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','Implementer','','fr','Réalisateur','Nom de l\\'utilisateur Cerberus qui a implementé le cas de test.','_testcase')");
+        b.append(",('testcase','Executor','','en','Manual Executor','This is the name of the Cerberus user who will execute that test case in manual mode.','_testcase')");
+        b.append(",('testcase','Executor','','fr','Executeur Manuel','Nom de l\\'utilisateur Cerberus qui executera le cas de test en mode manuel.','_testcase')");
         b.append(",('testcase','LastModifier','','en','LastModifier','This is the name of the Cerberus user who last modified the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','LastModifier','','fr','Dernier Modificateur','','_cas_de_test')");
         b.append(",('testcase','Origine','','en','Origin','This is the country or the team that identified the scenario of the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
@@ -611,6 +633,18 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcaseexecutionqueue','debugFlag','','fr','Activation du mode debug',NULL,NULL)");
         b.append(",('testcaseexecutionqueue','priority','','en','Priority',NULL,NULL)");
         b.append(",('testcaseexecutionqueue','priority','','fr','Priorité',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','type','','en','Dependency Type',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','type','','fr','Type de dépendance',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','status','','en','Status',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','status','','fr','Status',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','releaseDate','','en','Release Date',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','releaseDate','','fr','Date de liberation',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','comment','','en','Comment',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','comment','','fr','Commentaire',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','exeId','','en','Execution Id',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','exeId','','fr','Id d\\'execution',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','exeQueueId','','en','Queue Id',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','exeQueueId','','fr','Id de la file d\\'attente',NULL,NULL)");
         b.append(",('testcaseexecutionwwwsum','css_nb','','en','Css_nb','Number of css downloaded for all the scenario',NULL)");
         b.append(",('testcaseexecutionwwwsum','css_nb','','fr','Css_nb',NULL,NULL)");
         b.append(",('testcaseexecutionwwwsum','css_size_max','','en','Css_size_max','Size of the biggest css dowloaded during the scenario',NULL)");
@@ -1084,6 +1118,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','conditionVal2','','fr','Condition Value2','',NULL)");
         b.append(",('page_executiondetail','conditionVal2Init','','en','Condition Value2 Initial','',NULL)");
         b.append(",('page_executiondetail','conditionVal2Init','','fr','Condition Value2 Initiale','',NULL)");
+        b.append(",('page_executiondetail','conditionVal3','','en','Condition Value3','',NULL)");
+        b.append(",('page_executiondetail','conditionVal3','','fr','Condition Value3','',NULL)");
+        b.append(",('page_executiondetail','conditionVal3Init','','en','Condition Value3 Initial','',NULL)");
+        b.append(",('page_executiondetail','conditionVal3Init','','fr','Condition Value3 Initiale','',NULL)");
         b.append(",('page_executiondetail','controlmessage','','en','Control Message','',NULL)");
         b.append(",('page_executiondetail','controlmessage','','fr','Message du control','',NULL)");
         b.append(",('page_executiondetail','controlstatus','','en','Control Status','',NULL)");
@@ -1183,6 +1221,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','value2','','fr','Valeur 2','',NULL)");
         b.append(",('page_executiondetail','value2init','','en','Value 2 Initial','',NULL)");
         b.append(",('page_executiondetail','value2init','','fr','Valeur 2 Initiale','',NULL)");
+        b.append(",('page_executiondetail','value3','','en','Value 3','',NULL)");
+        b.append(",('page_executiondetail','value3','','fr','Valeur 3','',NULL)");
+        b.append(",('page_executiondetail','value3init','','en','Value 3 Initial','',NULL)");
+        b.append(",('page_executiondetail','value3init','','fr','Valeur 3 Initiale','',NULL)");
         b.append(",('page_executiondetail','verbose','','en','Verbose','',NULL)");
         b.append(",('page_executiondetail','verbose','','fr','Loquacité','',NULL)");
         b.append(",('page_executiondetail','version','','en','Version','',NULL)");
@@ -2172,6 +2214,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcasescript','value2init_field','','fr','Valeur 2 Initiale','',NULL)");
         b.append(",('page_testcasescript','value2_field','','en','Value 2','',NULL)");
         b.append(",('page_testcasescript','value2_field','','fr','Value 2','',NULL)");
+        b.append(",('page_testcasescript','value3init_field','','en','Value 3 Initial','',NULL)");
+        b.append(",('page_testcasescript','value3init_field','','fr','Valeur 3 Initiale','',NULL)");
+        b.append(",('page_testcasescript','value3_field','','en','Value 3','',NULL)");
+        b.append(",('page_testcasescript','value3_field','','fr','Value 3','',NULL)");
         b.append(",('page_testcasescript','value_field','','en','Value','',NULL)");
         b.append(",('page_testcasescript','value_field','','fr','Valeur','',NULL)");
         b.append(",('page_testcasescript','warning_nocountry','','en','That Testcase has no country selected, please add at east one country (in \\'Activation Criteria\\' Tab of the testcase) in order to be able to add and define properties.','',NULL)");
@@ -2334,6 +2380,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         /**
          * Cerberus Transversal GUI Pages Documentation.
          */
+        b.append(",('scheduler','cronexp','','en','Cron Expression','Scheduler use cron expression in quartz format to plan campaign execution. Example : 0 0 12 1/1 * ? * <br> everyday at noon',NULL)");
+        b.append(",('scheduler','cronexp','','fr','Cron Expression','Le plannificateur utilise les expressions CRON au format Quartz pour ordonnancer les campagnes. Exemple : 0 0 12 1/1 * ? * <br> Tout les jours à midi',NULL)");
         b.append(",('dataTable','colVis','','en','Show/Hide columns','',NULL)");
         b.append(",('dataTable','colVis','','fr','Afficher/Cacher les colonnes','',NULL)");
         b.append(",('dataTable','sEmptyTable','','en','No data available in table','',NULL)");
@@ -2408,8 +2456,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('transversal','DateModif','','fr','Date de Modification','Date de dernière modification de l\\'objet.','_librairie_de_données')");
         b.append(",('transversal','UsrCreated','','en','Created by','User who created the object.','_data_library')");
         b.append(",('transversal','UsrCreated','','fr','Créé par','Utilisateur ayant créé l\\'objet.','_librairie_de_données')");
-        b.append(",('transversal','UsrModif','','en','Modified by','Last modification date of the object.','_data_library')");
-        b.append(",('transversal','UsrModif','','fr','Modifié par','Date de dernière modification de l\\'objet.','_librairie_de_données')");
+        b.append(",('transversal','UsrModif','','en','Modified by','User who last modified the object.','_data_library')");
+        b.append(",('transversal','UsrModif','','fr','Modifié par','Dernier utilisateur ayant modifié l\\'objet.','_librairie_de_données')");
         /**
          * Cerberus TUTO Documentation.
          */

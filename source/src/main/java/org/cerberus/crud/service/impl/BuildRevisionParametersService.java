@@ -69,17 +69,17 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
     }
 
     @Override
-    public AnswerList readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<BuildRevisionParameters> readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return this.buildRevisionParametersDAO.readByVarious1ByCriteria(system, application, build, revision, start, amount, column, dir, searchTerm, individualSearch);
     }
 
     @Override
-    public AnswerList readMaxSVNReleasePerApplication(String system, String build, String revision, String lastBuild, String lastRevision) {
+    public AnswerList<BuildRevisionParameters> readMaxSVNReleasePerApplication(String system, String build, String revision, String lastBuild, String lastRevision) {
         return this.buildRevisionParametersDAO.readMaxSVNReleasePerApplication(system, build, revision, lastBuild, lastRevision);
     }
 
     @Override
-    public AnswerList readNonSVNRelease(String system, String build, String revision, String lastBuild, String lastRevision) {
+    public AnswerList<BuildRevisionParameters> readNonSVNRelease(String system, String build, String revision, String lastBuild, String lastRevision) {
         return this.buildRevisionParametersDAO.readNonSVNRelease(system, build, revision, lastBuild, lastRevision);
     }
 
@@ -201,7 +201,7 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return buildRevisionParametersDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
 

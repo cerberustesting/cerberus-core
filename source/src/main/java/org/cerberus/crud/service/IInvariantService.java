@@ -40,9 +40,14 @@ public interface IInvariantService {
      * @param idName
      * @return
      */
-    @Deprecated
-    AnswerList readByIdname(String idName);
+    AnswerList<Invariant> readByIdname(String idName);
 
+    /**
+     *
+     * @param idName
+     * @return
+     * @throws CerberusException
+     */
     List<Invariant> readByIdName(String idName) throws CerberusException;
 
     /**
@@ -61,25 +66,111 @@ public interface IInvariantService {
      */
     HashMap<String, String> readToHashMapGp1StringByIdname(String idName, String defaultValue);
 
-    AnswerList readByIdnameGp1(String idName, String gp);
+    /**
+     *
+     * @param idName
+     * @param gp
+     * @return
+     */
+    AnswerList<Invariant> readByIdnameGp1(String idName, String gp);
 
-    AnswerList readByIdnameNotGp1(String idName, String gp);
+    /**
+     *
+     * @param idName
+     * @param gp
+     * @return
+     */
+    AnswerList<Invariant> readByIdnameNotGp1(String idName, String gp);
 
-    AnswerList readCountryListEnvironmentLastChanges(String system, Integer nbDays);
+    /**
+     *
+     * @param system
+     * @param nbDays
+     * @return
+     */
+    AnswerList<Invariant> readCountryListEnvironmentLastChanges(String system, Integer nbDays);
 
+    /**
+     *
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
     AnswerList<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
+    /**
+     *
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
     AnswerList<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
-    AnswerList readDistinctValuesByPublicByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName);
+    /**
+     *
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @param columnName
+     * @return
+     */
+    AnswerList<String> readDistinctValuesByPublicByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 
+    /**
+     *
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
     AnswerList<Invariant> readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
+    /**
+     *
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
     AnswerList<Invariant> readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
+    /**
+     *
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @param columnName
+     * @return
+     */
     AnswerList readDistinctValuesByPrivateByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 
-    AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    /**
+     *
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    AnswerList<Invariant> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      *
@@ -102,7 +193,7 @@ public interface IInvariantService {
      * @param value
      * @return
      */
-    AnswerItem readByKey(String id, String value);
+    AnswerItem<Invariant> readByKey(String id, String value);
 
     /**
      *

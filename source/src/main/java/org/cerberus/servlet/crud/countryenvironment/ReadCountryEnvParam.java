@@ -184,9 +184,9 @@ public class ReadCountryEnvParam extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findCountryEnvParamList(String country, String environment, String build, String revision, String active, String envGp, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findCountryEnvParamList(String country, String environment, String build, String revision, String active, String envGp, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         cepService = appContext.getBean(ICountryEnvParamService.class);
 
@@ -204,20 +204,19 @@ public class ReadCountryEnvParam extends HttpServlet {
 
         List<String> systems = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
 
-
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
-                } 
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
+                }
             }
         }
 
-        AnswerList resp = cepService.readByVariousByCriteria(systems, country, environment, build, revision, active, envGp, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<CountryEnvParam> resp = cepService.readByVariousByCriteria(systems, country, environment, build, revision, active, envGp, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -237,12 +236,12 @@ public class ReadCountryEnvParam extends HttpServlet {
 
     }
 
-    private AnswerItem findUniqueEnvironmentList(String system, String active, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findUniqueEnvironmentList(String system, String active, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         cepService = appContext.getBean(ICountryEnvParamService.class);
 
-        AnswerList resp = cepService.readDistinctEnvironmentByVarious(system, null, null, null, null, null);
+        AnswerList<CountryEnvParam> resp = cepService.readDistinctEnvironmentByVarious(system, null, null, null, null, null);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -263,8 +262,8 @@ public class ReadCountryEnvParam extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findCountryEnvParamByKey(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findCountryEnvParamByKey(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         ICountryEnvParamService libService = appContext.getBean(ICountryEnvParamService.class);
@@ -299,12 +298,12 @@ public class ReadCountryEnvParam extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         cepService = appContext.getBean(ICountryEnvParamService.class);
-        
+
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "system,country,environment,description,build,revision,distriblist,emailbodyrevision,type,emailbodychain,emailbodydisableenvironment,active,maintenanceact,maintenancestr,maintenanceeend");
         String columnToSort[] = sColumns.split(",");
@@ -314,17 +313,17 @@ public class ReadCountryEnvParam extends HttpServlet {
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-            	List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-            	if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
-                } 
+                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
+                }
             }
         }
 
         List<String> systems = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
-        
+
         AnswerList cepList = cepService.readDistinctValuesByCriteria(systems, searchParameter, individualSearch, columnName);
 
         object.put("distinctValues", cepList.getDataList());

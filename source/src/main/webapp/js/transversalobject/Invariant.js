@@ -56,7 +56,7 @@ function initModalInvariant() {
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
     $("[name='buttonDuplicate']").html(doc.getDocLabel("page_global", "btn_duplicate"));
-    $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "btn_edit"));
+    $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
 
     $("[name='descriptionField']").html(doc.getDocLabel("page_invariant", "description"));
     $("[name='idnameField']").html(doc.getDocLabel("page_invariant", "idname"));
@@ -238,6 +238,8 @@ function confirmInvariantModalHandler(mode) {
     }
 
     showLoaderInModal('#editInvariantModal');
+    var inv1 = data.originalIdName;
+    var inv2 = data.idname;
 
     $.ajax({
         url: myServlet,
@@ -272,6 +274,11 @@ function confirmInvariantModalHandler(mode) {
                 $('#editInvariantModal').data("Saved", true);
                 $('#editInvariantModal').modal('hide');
                 showMessage(data);
+                // Clean local Storage
+                cleanCacheInvariant(inv1);
+                if (inv1 !== inv2) {
+                    cleanCacheInvariant(inv2);
+                }
             } else {
                 showMessage(data, $('#editInvariantModal'));
             }

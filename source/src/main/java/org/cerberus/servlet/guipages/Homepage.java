@@ -103,12 +103,12 @@ public class Homepage extends HttpServlet {
         }
     }
 
-    private AnswerItem readApplicationList(List<String> system, ApplicationContext appContext) throws JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> readApplicationList(List<String> system, ApplicationContext appContext) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         IApplicationService applicationService = appContext.getBean(ApplicationService.class);
 
-        AnswerItem resp = applicationService.readTestCaseCountersBySystemByStatus(system);
+        AnswerItem<HashMap<String, HashMap<String, Integer>>> resp = applicationService.readTestCaseCountersBySystemByStatus(system);
 
         JSONArray jsonArray = new JSONArray();
         HashMap<String, HashMap<String, Integer>> totalMap = (HashMap<String, HashMap<String, Integer>>) resp.getItem();

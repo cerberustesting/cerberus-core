@@ -31,11 +31,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExecutionUUID {
 
-    private HashMap executionHashMap;
+    private HashMap<String, TestCaseExecution> executionHashMap;
 
     @PostConstruct
     public void init() {
-        executionHashMap = new HashMap<String, TestCaseExecution>();
+        executionHashMap = new HashMap<>();
     }
 
     public HashMap getExecutionUUIDList() {

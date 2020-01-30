@@ -51,8 +51,8 @@ services:
       - "4444"
     ports:
       - "14444:4444"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
     restart: always
   selenium-node-firefox:
     image: selenium/node-firefox-debug:latest
@@ -62,8 +62,8 @@ services:
       - "5900"
     ports:
       - "15900:5900"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
     restart: always
   selenium-node-chrome:
     image: selenium/node-chrome-debug:latest
@@ -73,6 +73,6 @@ services:
       - "5900"
     ports:
       - "15901:5900"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
     restart: always

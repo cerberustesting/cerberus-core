@@ -30,22 +30,19 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.imageio.ImageIO;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
@@ -64,6 +61,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -77,6 +75,7 @@ import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -91,6 +90,9 @@ public class WebDriverService implements IWebDriverService {
     private static final int TIMEOUT_FOCUS = 1000;
 
     private static final Logger LOG = LogManager.getLogger("WebDriverService");
+
+    @Autowired
+    ParameterService parameterService;
 
     private By getBy(Identifier identifier) {
 
@@ -124,18 +126,36 @@ public class WebDriverService implements IWebDriverService {
 
     @Override
     public MessageEvent scrollTo(Session session, Identifier identifier, String text) {
-        WebDriver mWebdriver = session.getDriver();
-        MessageEvent message;
+        MessageEvent message = null;
+        WebElement webElement = null;
 
         try {
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO);
             if (StringUtil.isNullOrEmpty(text)) {
-                scrollElement(mWebdriver, identifier);
+                AnswerItem answer = this.getSeleniumElement(session, identifier, false, false);
+                if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
+                    webElement = (WebElement) answer.getItem();
+                }
             } else {
-                scrollText(mWebdriver, text);
+                webElement = session.getDriver().findElement(By.xpath("//*[contains(text()," + text + ")]"));
             }
+
+            if (webElement != null) {
+
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO);
+                if (StringUtil.isNullOrEmpty(text)) {
+                    scrollElement(session, webElement);
+                } else {
+                    scrollText(session, webElement);
+                }
+            }
+
             return message;
 
+        } catch (NoSuchElementException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SCROLL_NO_SUCH_ELEMENT);
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            LOG.debug(exception.toString());
+            return message;
         } catch (Exception e) {
             LOG.error("An error occured during scroll to (element:" + identifier, e);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
@@ -146,38 +166,27 @@ public class WebDriverService implements IWebDriverService {
 
     }
 
-    private void scrollText(WebDriver driver, String text) {
+    private void scrollText(Session session,  WebElement element) {
         // Create instance of Javascript executor
-        JavascriptExecutor je = (JavascriptExecutor) driver;
-
-        //Identify the WebElement which will appear after scrolling down
-        WebElement element = driver.findElement(By.xpath("//*[contains(text()," + text + ")]"));
+        JavascriptExecutor je = (JavascriptExecutor) session.getDriver();
 
         // now execute query which actually will scroll until that element is not appeared on page.
-        je.executeScript("arguments[0].scrollIntoView(true);", element);
+        je.executeScript("arguments[0].scrollIntoView(true);window.scrollBy(" + session.getCerberus_selenium_autoscroll_horizontal_offset() + "," + session.getCerberus_selenium_autoscroll_vertical_offset() + ");", element);
     }
 
-    private void scrollElement(WebDriver driver, Identifier identifier) {
+    private void scrollElement(Session session, WebElement element) {
         /**
          * WebElement element =
          * driver.findElement(By.id(identifier.getLocator())); Actions actions =
          * new Actions(driver); actions.moveToElement(element);
          * actions.perform();
          */
-        WebElement element;
-        String locator = identifier.getLocator().replaceAll("\"", "");
-        if (identifier.getIdentifier().contains("xpath")) {
-            element = driver.findElement(By.xpath(locator));
-        } else {
-            element = driver.findElement(By.xpath("//*[@" + identifier.getIdentifier() + "='" + locator + "']"));
-        }
-
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", element);
+        ((JavascriptExecutor) session.getDriver()).executeScript("arguments[0].scrollIntoView();window.scrollBy(" + session.getCerberus_selenium_autoscroll_horizontal_offset() + "," + session.getCerberus_selenium_autoscroll_vertical_offset() + ");", element);
 
     }
 
     private AnswerItem<WebElement> getSeleniumElement(Session session, Identifier identifier, boolean visible, boolean clickable) {
-        AnswerItem<WebElement> answer = new AnswerItem<WebElement>();
+        AnswerItem<WebElement> answer = new AnswerItem<>();
         MessageEvent msg;
         By locator = this.getBy(identifier);
         LOG.debug("Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
@@ -186,7 +195,8 @@ public class WebDriverService implements IWebDriverService {
             WebElement element;
             if (visible) {
                 if (session.isCerberus_selenium_autoscroll()) {
-                    scrollElement(session.getDriver(), identifier);
+                    element = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+                    scrollElement(session, element);
                 }
                 if (clickable) {
                     element = wait.until(ExpectedConditions.elementToBeClickable(locator));
@@ -411,7 +421,7 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public File takeScreenShotFile(Session session) {
+    public File takeScreenShotFile(Session session, String cropValues) {
         boolean event = true;
         long timeout = System.currentTimeMillis() + (session.getCerberus_selenium_wait_element());
         //Try to capture picture. Try again until timeout is WebDriverException is raised.
@@ -419,6 +429,19 @@ public class WebDriverService implements IWebDriverService {
             try {
                 WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
                 File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
+                if (!StringUtil.isNullOrEmpty(cropValues)) {
+                    BufferedImage fullImg = ImageIO.read(image);
+                    // x - the X coordinate of the upper-left corner of the specified rectangular region y - the Y coordinate of the upper-left corner of the specified rectangular region w - the width of the specified rectangular region h - the height of the specified rectangular region 
+                    //Left, Top, largeur-Top, largeur-Left-Right, hauteur-Top-Bottom
+                    int l = getValue(cropValues, 0);
+                    int r = getValue(cropValues, 1);
+                    int t = getValue(cropValues, 2);
+                    int b = getValue(cropValues, 3);
+                    if ((fullImg.getWidth() > (l + r)) && (fullImg.getHeight() > (t + b))) {
+                        BufferedImage eleScreenshot = fullImg.getSubimage(l, t, (fullImg.getWidth() - l - r), (fullImg.getHeight() - t - b));
+                        ImageIO.write(eleScreenshot, "png", image);
+                    }
+                }
 
                 if (image != null) {
                     //logs for debug purposes
@@ -432,10 +455,27 @@ public class WebDriverService implements IWebDriverService {
                     LOG.warn(exception.toString());
                 }
                 event = false;
+            } catch (IOException ex) {
+                LOG.error("Exception when reading snapshot generated.", ex);
             }
         }
 
         return null;
+    }
+
+    private int getValue(String cropValues, int index) {
+        String[] cropS = cropValues.split(",");
+        if (cropS.length < 4) {
+            return 0;
+        }
+        int returnv = 0;
+        try {
+            returnv = Integer.valueOf(cropS[index]);
+        } catch (NumberFormatException e) {
+            LOG.debug("Failed to convert Integer.");
+            return 0;
+        }
+        return returnv;
     }
 
     @Override
@@ -517,51 +557,26 @@ public class WebDriverService implements IWebDriverService {
                 final WebElement webElement = (WebElement) answer.getItem();
 
                 if (webElement != null) {
-                    // We noticed that sometimes, webelement.click never finished whatever the timeout set.
-                    // Below is an implementation to secure timeout on thread before calling selenium.
-                    // This is a test that can be extended or clean depending on the result.
-//                    ExecutorService executor = Executors.newCachedThreadPool();
-//                    Callable<MessageEvent> task = new Callable<MessageEvent>() {
-//                        public MessageEvent call() {
-//                            MessageEvent message;
-//                            Actions actions = new Actions(session.getDriver());
-//                            actions.click(webElement);
-//                            actions.build().perform();
-//                            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
-//                            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-//                            return message;
-//                        }
-//                    };
-//                    Future<MessageEvent> future = executor.submit(task);
-//                    
-//                    try {
-//                        MessageEvent result = future.get(session.getCerberus_selenium_action_click_timeout(), TimeUnit.MILLISECONDS);
-//                        return result;
-//                    } catch (java.util.concurrent.TimeoutException ex) {
-//                        // handle the timeout
-//                        LOG.warn("Exception clicking on element :" + ex, ex);
-//                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-//                        message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
-//                        return message;
-//                    } catch (InterruptedException e) {
-//                        // handle the interrupts
-//                        LOG.warn("Exception clicking on element :" + e, e);
-//                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK);
-//                        message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()).replace("%MESS%", e.toString()));
-//                        return message;
-//                    } catch (ExecutionException e) {
-//                        // handle other exceptions
-//                        LOG.warn("Exception clicking on element :" + e, e);
-//                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
-//                        message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()).replace("%MESS%", e.toString()));
-//                        return message;
-//                    } finally {
-//                        future.cancel(true);
-//                    }
-
-                    Actions actions = new Actions(session.getDriver());
-                    actions.click(webElement);
-                    actions.build().perform();
+                    /**
+                     * Actions implementation doesn't work properly for test on
+                     * browser on real mobile device use the implementation
+                     * click from Selenium instead
+                     */
+                    if (Platform.ANDROID.equals(session.getDesiredCapabilities().getPlatform())
+                            || Platform.IOS.equals(session.getDesiredCapabilities().getPlatform())) {
+                        webElement.click();
+                    } else {
+                        /**
+                         * webElement.click(); did not provide good result for
+                         * generating Selenium error : Element is not clickable
+                         * at point
+                         * https://github.com/cerberustesting/cerberus-source/issues/2030
+                         */
+                        //                    webElement.click();
+                        Actions actions = new Actions(session.getDriver());
+                        actions.click(webElement);
+                        actions.build().perform();
+                    }
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
@@ -574,11 +589,6 @@ public class WebDriverService implements IWebDriverService {
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             LOG.debug(exception.toString());
             return message;
-//        } catch (TimeoutException exception) {
-//            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-//            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
-//            MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
-//            return message;
         } catch (WebDriverException exception) {
             LOG.warn(exception.toString());
             return parseWebDriverException(exception);
@@ -587,11 +597,11 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionMouseDown(Session session, Identifier identifier) {
+    public MessageEvent doSeleniumActionMouseDown(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
 
-            AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
+            AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {
@@ -622,10 +632,10 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionMouseUp(Session session, Identifier identifier) {
+    public MessageEvent doSeleniumActionMouseUp(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
-            AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
+            AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {
@@ -849,10 +859,10 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionType(Session session, Identifier identifier, String property, String propertyName) {
+    public MessageEvent doSeleniumActionType(Session session, Identifier identifier, String property, String propertyName, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
-            AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
+            AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {
@@ -888,10 +898,10 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier) {
+    public MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
-            AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
+            AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement menuHoverLink = (WebElement) answer.getItem();
                 if (menuHoverLink != null) {
@@ -970,6 +980,26 @@ public class WebDriverService implements IWebDriverService {
         }
     }
 
+    @Override
+    public MessageEvent doSeleniumActionRefreshCurrentPage(Session session) {
+
+        MessageEvent message;
+
+        try {
+            session.getDriver().navigate().refresh();
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_REFRESHCURRENTPAGE);
+            return message;
+        } catch (TimeoutException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_REFRESHCURRENTPAGE);
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_pageLoadTimeout())));
+            LOG.warn(exception.toString());
+        } catch (WebDriverException exception) {
+            LOG.warn(exception.toString());
+            return parseWebDriverException(exception);
+        }
+        return message;
+    }
+
     /**
      * Interface to Windows instrumentation in order to have control over all
      * the others applications running in the OS
@@ -997,46 +1027,52 @@ public class WebDriverService implements IWebDriverService {
     public boolean focusBrowserWindow(Session session) {
         WebDriver driver = session.getDriver();
         String title = driver.getTitle();
-        User32 user32 = User32.instance;
+        try {
+            User32 user32 = User32.instance;
 
-        // Arbitrary
-        String[] browsers = new String[]{
-            "",
-            "Google Chrome",
-            "Mozilla Firefox",
-            "Opera",
-            "Safari",
-            "Internet Explorer",
-            "Microsoft Edge",};
+            // Arbitrary
+            String[] browsers = new String[]{
+                "",
+                "Google Chrome",
+                "Mozilla Firefox",
+                "Opera",
+                "Safari",
+                "Internet Explorer",
+                "Microsoft Edge",};
 
-        for (String browser : browsers) {
-            HWND window;
-            if (browser.isEmpty()) {
-                window = user32.FindWindow(null, title);
-            } else {
-                window = user32.FindWindow(null, title + " - " + browser);
+            for (String browser : browsers) {
+                HWND window;
+                if (browser.isEmpty()) {
+                    window = user32.FindWindow(null, title);
+                } else {
+                    window = user32.FindWindow(null, title + " - " + browser);
+                }
+                if (user32.ShowWindow(window, User32.SW_SHOW)) {
+                    return user32.SetForegroundWindow(window);
+                }
             }
-            if (user32.ShowWindow(window, User32.SW_SHOW)) {
-                return user32.SetForegroundWindow(window);
-            }
+
+        } catch (Exception e) {
+            LOG.error(e, e);
         }
+
         return false;
     }
 
     @Override
-    public MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String property) {
+    public MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String keyToPress, boolean waitForVisibility, boolean waitForClickability) {
 
         MessageEvent message;
         try {
             if (!StringUtil.isNullOrEmpty(identifier.getLocator())) {
-                AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
+                AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
                 if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                     WebElement webElement = (WebElement) answer.getItem();
                     if (webElement != null) {
-                        webElement.sendKeys(Keys.valueOf(property));
+                        webElement.sendKeys(Keys.valueOf(keyToPress));
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
                         message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-                        message.setDescription(message.getDescription().replace("%DATA%", property));
+                        message.setDescription(message.getDescription().replace("%DATA%", keyToPress));
                         return message;
                     }
 
@@ -1054,33 +1090,41 @@ public class WebDriverService implements IWebDriverService {
                     //focus the browser window for Robot to work
                     if (this.focusBrowserWindow(session)) {
                         //wait until the browser is focused
-                        wait.withTimeout(TIMEOUT_FOCUS, TimeUnit.MILLISECONDS);
+                        Duration mydur = Duration.ofMillis(TIMEOUT_FOCUS);
+                        wait.withTimeout(mydur);
                     }
 
-                    //gets the robot 
+                    //gets the robot
                     Robot r = new Robot();
                     //converts the Key description sent through Cerberus into the AWT key code
-                    int keyCode = KeyCodeEnum.getAWTKeyCode(property);
+                    int keyCode = KeyCodeEnum.getAWTKeyCode(keyToPress);
 
                     if (keyCode != KeyCodeEnum.NOT_VALID.getKeyCode()) {
                         //if the code is valid then presses the key and releases the key
                         r.keyPress(keyCode);
                         r.keyRelease(keyCode);
                         //wait until the action is performed
-                        wait.withTimeout(TIMEOUT_WEBELEMENT, TimeUnit.MILLISECONDS);
+                        Duration mydur = Duration.ofMillis(TIMEOUT_WEBELEMENT);
+                        wait.withTimeout(mydur);
 
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT);
                     } else {
                         //the key enterer is not valid
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NOT_AVAILABLE);
-                        LOG.debug("Key " + property + "is not available in the current environment");
+                        LOG.debug("Key " + keyToPress + "is not available in the current context");
                     }
 
-                    message.setDescription(message.getDescription().replace("%KEY%", property));
+                    message.setDescription(message.getDescription().replace("%KEY%", keyToPress));
 
                 } catch (AWTException ex) {
                     LOG.warn(ex);
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_ENV_ERROR);
+
+                } catch (Exception exception) {
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
+                    message.setDescription(message.getDescription().replace("%DETAIL%", exception.toString()));
+                    LOG.debug(exception.toString());
+
                 }
             }
 
@@ -1097,6 +1141,11 @@ public class WebDriverService implements IWebDriverService {
         } catch (WebDriverException exception) {
             LOG.warn(exception.toString());
             return parseWebDriverException(exception);
+
+        } catch (Exception exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
+            message.setDescription(message.getDescription().replace("%DETAIL%", exception.toString()));
+            LOG.debug(exception.toString());
 
         }
         return message;
@@ -1136,12 +1185,12 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionSelect(Session session, Identifier object, Identifier property) {
+    public MessageEvent doSeleniumActionSelect(Session session, Identifier object, Identifier property, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
             Select select;
             try {
-                AnswerItem answer = this.getSeleniumElement(session, object, true, true);
+                AnswerItem answer = this.getSeleniumElement(session, object, waitForVisibility, waitForClickability);
                 if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                     WebElement webElement = (WebElement) answer.getItem();
                     if (webElement != null) {
@@ -1175,11 +1224,11 @@ public class WebDriverService implements IWebDriverService {
 
     // we need to implement the right selenium dragAndDrop method when it works
     @Override
-    public MessageEvent doSeleniumActionDragAndDrop(Session session, Identifier drag, Identifier drop) throws IOException {
+    public MessageEvent doSeleniumActionDragAndDrop(Session session, Identifier drag, Identifier drop, boolean waitForVisibility, boolean waitForClickability) throws IOException {
         MessageEvent message;
         try {
-            AnswerItem answerDrag = this.getSeleniumElement(session, drag, true, true);
-            AnswerItem answerDrop = this.getSeleniumElement(session, drop, true, true);
+            AnswerItem answerDrag = this.getSeleniumElement(session, drag, waitForVisibility, waitForClickability);
+            AnswerItem answerDrop = this.getSeleniumElement(session, drop, waitForVisibility, waitForClickability);
             if (answerDrag.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())
                     && answerDrop.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement source = (WebElement) answerDrag.getItem();
@@ -1392,12 +1441,12 @@ public class WebDriverService implements IWebDriverService {
         }
         return null;
     }
-    
+
     @Override
     public Integer getNumberOfElements(Session session, Identifier identifier) {
         By locator = this.getBy(identifier);
         return session.getDriver().findElements(locator).size();
-    } 
+    }
 
     @Override
     public List<String> getSeleniumLog(Session session) {

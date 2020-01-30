@@ -180,9 +180,9 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
                     for (int i = 0; i < array.length(); i++) {
                         HashMap<String, String> hashJson = new HashMap<>();
                         JSONObject obj = array.getJSONObject(i);
-                        Iterator<String> nameItr = obj.keys();
+                        Iterator<?> nameItr = obj.keys();
                         while (nameItr.hasNext()) {
-                            String name = nameItr.next();
+                            String name = (String) nameItr.next();
                             hashJson.put(name, obj.getString(name));
                         }
                         libRawData.add(hashJson);

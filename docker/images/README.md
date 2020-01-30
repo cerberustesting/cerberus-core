@@ -10,12 +10,13 @@ Hereafter the set of available Cerberus Docker images:
 
 Name                                                                                                                                | Description
 ------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------
-[`cerberus/cerberus-as-glassfish`](https://github.com/cerberustesting/cerberus-source/tree/master/docker/images/cerberus-as-glassfish)     | Run Cerberus under the Glassfish application server
+[`cerberus/cerberus-as-tomcat`](https://github.com/cerberustesting/cerberus-source/tree/master/docker/images/cerberus-as-tomcat)     | Run Cerberus under the Tomcat application server
+[`cerberus/cerberus-as-tomcat-keycloak`](https://github.com/cerberustesting/cerberus-source/tree/master/docker/images/cerberus-as-tomcat-keycloak)     | Run Cerberus under the Tomcat application server with Keycloak support
 [`cerberus/cerberus-db-mysql`](https://github.com/cerberustesting/cerberus-source/tree/master/docker/images/cerberus-db-mysql)             | Run a Cerberus dedicated MySQL database
 
 ## License
 
-Cerberus Copyright (C) 2013 - 2017 cerberustesting
+Cerberus Copyright (C) 2013 - 2019 cerberustesting
 
 This file is part of Cerberus.
 

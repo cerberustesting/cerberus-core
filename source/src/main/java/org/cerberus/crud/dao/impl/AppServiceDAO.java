@@ -107,8 +107,12 @@ public class AppServiceDAO implements IAppServiceDAO {
                         Timestamp dateCreated = resultSet.getTimestamp("DateCreated");
                         Timestamp dateModif = resultSet.getTimestamp("DateModif");
                         String fileName = resultSet.getString("FileName");
+                        String kafkaTopic = resultSet.getString("KafkaTopic");
+                        String kafkaKey = resultSet.getString("KafkaKey");
+                        String kafkaFilterPath = resultSet.getString("KafkaFilterPath");
+                        String kafkaFilterValue = resultSet.getString("KafkaFilterValue");
 
-                        result = this.factoryAppService.create(service, type, method, application, group, serviceRequest, description, servicePath, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif, fileName);
+                        result = this.factoryAppService.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, description, servicePath, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif, fileName);
                     } else {
                         throwEx = true;
                     }
@@ -140,12 +144,12 @@ public class AppServiceDAO implements IAppServiceDAO {
     }
 
     @Override
-    public AnswerList findAppServiceByLikeName(String service, int limit) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<AppService> findAppServiceByLikeName(String service, int limit) {
+        AnswerList<AppService> response = new AnswerList<>();
         boolean throwEx = false;
         AppService result = null;
         final String query = "SELECT * FROM appservice srv WHERE `service` LIKE ? limit ?";
-        List<AppService> objectList = new ArrayList<AppService>();
+        List<AppService> objectList = new ArrayList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
@@ -201,9 +205,9 @@ public class AppServiceDAO implements IAppServiceDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, List<String> systems) {
+    public AnswerList<AppService> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, List<String> systems) {
 
-        AnswerList response = new AnswerList<>();
+        AnswerList<AppService> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<AppService> objectList = new ArrayList<AppService>();
@@ -226,6 +230,10 @@ public class AppServiceDAO implements IAppServiceDAO {
             searchSQL.append(" or srv.Method like ?");
             searchSQL.append(" or srv.Operation like ?");
             searchSQL.append(" or srv.ServiceRequest like ?");
+            searchSQL.append(" or srv.KafkaTopic like ?");
+            searchSQL.append(" or srv.KafkaKey like ?");
+            searchSQL.append(" or srv.KafkaFilterPath like ?");
+            searchSQL.append(" or srv.KafkaFilterValue like ?");
             searchSQL.append(" or srv.AttachementURL like ?");
             searchSQL.append(" or srv.Group like ?");
             searchSQL.append(" or srv.Description like ?");
@@ -282,6 +290,10 @@ public class AppServiceDAO implements IAppServiceDAO {
                 int i = 1;
 
                 if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -379,8 +391,8 @@ public class AppServiceDAO implements IAppServiceDAO {
     }
 
     @Override
-    public AnswerItem readByKey(String key) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<AppService> readByKey(String key) {
+        AnswerItem<AppService> ans = new AnswerItem<>();
         AppService result = null;
         final String query = "SELECT * FROM `appservice` srv WHERE `service` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -438,13 +450,13 @@ public class AppServiceDAO implements IAppServiceDAO {
     }
 
     @Override
-    public AnswerList readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT distinct ");
@@ -457,6 +469,10 @@ public class AppServiceDAO implements IAppServiceDAO {
             searchSQL.append(" or srv.Group like ?");
             searchSQL.append(" or srv.ServicePath like ?");
             searchSQL.append(" or srv.Operation like ?");
+            searchSQL.append(" or srv.KafkaTopic like ?");
+            searchSQL.append(" or srv.KafkaKey like ?");
+            searchSQL.append(" or srv.KafkaFilterPath like ?");
+            searchSQL.append(" or srv.KafkaFilterValue like ?");
             searchSQL.append(" or srv.AttachementURL like ?");
             searchSQL.append(" or srv.Description like ?");
             searchSQL.append(" or srv.ServiceRequest like ?)");
@@ -485,6 +501,10 @@ public class AppServiceDAO implements IAppServiceDAO {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -547,11 +567,11 @@ public class AppServiceDAO implements IAppServiceDAO {
     public Answer create(AppService object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `Operation`, `ServiceRequest`, `AttachementURL`, `Description`, `FileName`) ");
+        query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `Operation`, `ServiceRequest`, `KafkaTopic`, `KafkaKey`, `KafkaFilterPath`, `KafkaFilterValue`, `AttachementURL`, `Description`, `FileName`) ");
         if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
-            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         } else {
-            query.append("VALUES (?,?,null,?,?,?,?,?,?,?,?)");
+            query.append("VALUES (?,?,null,?,?,?,?,?,?,?,?,?,?,?,?)");
         }
 
         // Debug message on SQL.
@@ -573,6 +593,10 @@ public class AppServiceDAO implements IAppServiceDAO {
                 preStat.setString(i++, object.getServicePath());
                 preStat.setString(i++, object.getOperation());
                 preStat.setString(i++, object.getServiceRequest());
+                preStat.setString(i++, object.getKafkaTopic());
+                preStat.setString(i++, object.getKafkaKey());
+                preStat.setString(i++, object.getKafkaFilterPath());
+                preStat.setString(i++, object.getKafkaFilterValue());
                 preStat.setString(i++, object.getAttachementURL());
                 preStat.setString(i++, object.getDescription());
                 preStat.setString(i++, object.getFileName());
@@ -613,7 +637,7 @@ public class AppServiceDAO implements IAppServiceDAO {
     @Override
     public Answer update(String service, AppService object) {
         MessageEvent msg = null;
-        String query = "UPDATE appservice srv SET `Service` = ?, `Group` = ?, `ServicePath` = ?, `Operation` = ?, ServiceRequest = ?, AttachementURL = ?, "
+        String query = "UPDATE appservice srv SET `Service` = ?, `Group` = ?, `ServicePath` = ?, `Operation` = ?, ServiceRequest = ?, KafkaTopic = ?, KafkaKey = ?, KafkaFilterPath = ?, KafkaFilterValue = ?, AttachementURL = ?, "
                 + "Description = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW(), `FileName` = ?";
         if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
             query += " ,Application = ?";
@@ -637,6 +661,10 @@ public class AppServiceDAO implements IAppServiceDAO {
                 preStat.setString(i++, object.getServicePath());
                 preStat.setString(i++, object.getOperation());
                 preStat.setString(i++, object.getServiceRequest());
+                preStat.setString(i++, object.getKafkaTopic());
+                preStat.setString(i++, object.getKafkaKey());
+                preStat.setString(i++, object.getKafkaFilterPath());
+                preStat.setString(i++, object.getKafkaFilterValue());
                 preStat.setString(i++, object.getAttachementURL());
                 preStat.setString(i++, object.getDescription());
                 preStat.setString(i++, object.getType());
@@ -772,9 +800,12 @@ public class AppServiceDAO implements IAppServiceDAO {
         Timestamp dateCreated = rs.getTimestamp("srv.DateCreated");
         Timestamp dateModif = rs.getTimestamp("srv.DateModif");
         String fileName = ParameterParserUtil.parseStringParam(rs.getString("srv.FileName"), "");
-        //TODO remove when working in test with mockito and autowired
+        String kafkaTopic = ParameterParserUtil.parseStringParam(rs.getString("srv.kafkaTopic"), "");
+        String kafkaKey = ParameterParserUtil.parseStringParam(rs.getString("srv.kafkaKey"), "");
+        String kafkaFilterPath = ParameterParserUtil.parseStringParam(rs.getString("srv.kafkaFilterPath"), "");
+        String kafkaFilterValue = ParameterParserUtil.parseStringParam(rs.getString("srv.kafkaFilterValue"), "");
         factoryAppService = new FactoryAppService();
-        return factoryAppService.create(service, type, method, application, group, serviceRequest, description, servicePath, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif, fileName);
+        return factoryAppService.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, description, servicePath, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif, fileName);
     }
 
     private static void deleteFolder(File folder, boolean deleteit) {

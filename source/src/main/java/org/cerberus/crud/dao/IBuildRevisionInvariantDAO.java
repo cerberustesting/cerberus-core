@@ -45,7 +45,7 @@ public interface IBuildRevisionInvariantDAO {
      * @param seq
      * @return
      */
-    AnswerItem readByKey(String system, Integer level, Integer seq);
+    AnswerItem<BuildRevisionInvariant> readByKey(String system, Integer level, Integer seq);
 
     /**
      *
@@ -54,7 +54,7 @@ public interface IBuildRevisionInvariantDAO {
      * @param versionName
      * @return
      */
-    AnswerItem readByKey(String system, Integer level, String versionName);
+    AnswerItem<BuildRevisionInvariant> readByKey(String system, Integer level, String versionName);
 
     /**
      *
@@ -68,7 +68,7 @@ public interface IBuildRevisionInvariantDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList readByVariousByCriteria(List<String> system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<BuildRevisionInvariant> readByVariousByCriteria(List<String> system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -110,5 +110,5 @@ public interface IBuildRevisionInvariantDAO {
      * @param columnName
      * @return
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

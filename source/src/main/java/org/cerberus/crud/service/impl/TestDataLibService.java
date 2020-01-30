@@ -61,32 +61,32 @@ public class TestDataLibService implements ITestDataLibService {
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(TestDataLibService.class);
 
     @Override
-    public AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country) {
+    public AnswerItem<TestDataLib> readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country) {
         return testDataLibDAO.readByNameBySystemByEnvironmentByCountry(name, system, environment, country);
     }
 
     @Override
-    public AnswerItem readByKey(int testDatalib) {
+    public AnswerItem<TestDataLib> readByKey(int testDatalib) {
         return testDataLibDAO.readByKey(testDatalib);
     }
-    
+
     @Override
     public Answer uploadFile(int id, FileItem file) {
         return testDataLibDAO.uploadFile(id, file);
     }
 
     @Override
-    public AnswerList readNameListByName(String testDataLibName, int limit, boolean like) {
+    public AnswerList<TestDataLib> readNameListByName(String testDataLibName, int limit, boolean like) {
         return testDataLibDAO.readNameListByName(testDataLibName, limit, like);
     }
 
     @Override
-    public AnswerList readAll() {
+    public AnswerList<TestDataLib> readAll() {
         return testDataLibDAO.readAll();
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String name, List<String> systems, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<TestDataLib> readByVariousByCriteria(String name, List<String> systems, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return testDataLibDAO.readByVariousByCriteria(name, systems, environment, country, type, start, amount, column, dir, searchTerm, individualSearch);
     }
 
@@ -97,35 +97,30 @@ public class TestDataLibService implements ITestDataLibService {
 
     @Override
     public AnswerList<HashMap<String, String>> readINTERNALWithSubdataByCriteria(String dataName, String dataSystem, String dataCountry, String dataEnvironment, int rowLimit, String system) {
-        AnswerList answer = new AnswerList<>();
-        AnswerList answerData = new AnswerList<>();
+        AnswerList<HashMap<String, String>> answer = new AnswerList<>();
+        AnswerList<TestDataLib> answerDataLib = new AnswerList<>();
+        AnswerList<TestDataLibData> answerData = new AnswerList<>();
         MessageEvent msg;
 
-        List<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
+        List<HashMap<String, String>> result = new ArrayList<>();
 
         // We start by calculating the max nb of row we can fetch. Either specified by rowLimit either defined by a parameter.
-        int maxSecurityFetch = 100;
-        try {
-            String maxSecurityFetch1 = parameterService.findParameterByKey("cerberus_testdatalib_fetchmax", system).getValue();
-            maxSecurityFetch = Integer.valueOf(maxSecurityFetch1);
-        } catch (CerberusException ex) {
-            LOG.error(ex, ex);
-        }
-        int maxFetch = maxSecurityFetch;
+        int maxSecurityFetch = parameterService.getParameterIntegerByKey("cerberus_testdatalib_fetchmax", system, 100);
+        int maxFetch;
         if (rowLimit > 0 && rowLimit < maxSecurityFetch) {
             maxFetch = rowLimit;
         } else {
             maxFetch = maxSecurityFetch;
         }
-        answer = this.readByVariousByCriteria(dataName, new ArrayList<>(Arrays.asList(dataSystem)), dataEnvironment, dataCountry, "INTERNAL", 0, maxFetch, null, null, null, null);
-        List<TestDataLib> objectList = new ArrayList<TestDataLib>();
-        objectList = answer.getDataList();
+        answerDataLib = this.readByVariousByCriteria(dataName, new ArrayList<>(Arrays.asList(dataSystem)), dataEnvironment, dataCountry, "INTERNAL", 0, maxFetch, null, null, null, null);
+        List<TestDataLib> objectList = new ArrayList<>();
+        objectList = (List<TestDataLib>) answerDataLib.getDataList();
         for (TestDataLib tdl : objectList) {
 
             answerData = testDataLibDataService.readByVarious(tdl.getTestDataLibID(), null, null, null);
-            List<TestDataLibData> objectDataList = new ArrayList<TestDataLibData>();
+            List<TestDataLibData> objectDataList = new ArrayList<>();
             objectDataList = answerData.getDataList();
-            HashMap<String, String> row = new HashMap<String, String>();
+            HashMap<String, String> row = new HashMap<>();
             for (TestDataLibData tdld : objectDataList) {
                 row.put(tdld.getSubData(), tdld.getValue());
             }
@@ -133,16 +128,18 @@ public class TestDataLibService implements ITestDataLibService {
             result.add(row);
         }
         answer.setDataList(result);
+        answer.setResultMessage(answerDataLib.getResultMessage());
+        answer.setTotalRows(answerDataLib.getTotalRows());
         return answer;
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         return testDataLibDAO.readDistinctValuesByCriteria(searchTerm, individualSearch, columnName);
     }
 
     @Override
-    public AnswerItem create(TestDataLib object) {
+    public AnswerItem<TestDataLib> create(TestDataLib object) {
         return testDataLibDAO.create(object);
     }
 
@@ -155,17 +152,17 @@ public class TestDataLibService implements ITestDataLibService {
     public Answer update(TestDataLib object) {
         return testDataLibDAO.update(object);
     }
-    
+
     @Override
     public List<Answer> bulkRename(String oldName, String newName) {
-    	// Call the 2 DAO updates
-    	Answer answerDataLib = testDataLibDAO.bulkRenameDataLib(oldName,newName);
-    	Answer answerProperties = testCaseCountryProperties.bulkRenameProperties(oldName,newName);
-    	List<Answer> ansList = new ArrayList<Answer>();
-    	ansList.add(answerDataLib);
-    	ansList.add(answerProperties);
-    	return ansList;
-       // TO DO : get the updated numbers of datalib and properties
+        // Call the 2 DAO updates
+        Answer answerDataLib = testDataLibDAO.bulkRenameDataLib(oldName, newName);
+        Answer answerProperties = testCaseCountryProperties.bulkRenameProperties(oldName, newName);
+        List<Answer> ansList = new ArrayList<Answer>();
+        ansList.add(answerDataLib);
+        ansList.add(answerProperties);
+        return ansList;
+        // TO DO : get the updated numbers of datalib and properties
     }
 
     @Override
@@ -194,7 +191,7 @@ public class TestDataLibService implements ITestDataLibService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
-    
+
     @Override
     public boolean userHasPermission(TestDataLib lib, String userName) {
         if ("Y".equals(lib.getPrivateData())) {

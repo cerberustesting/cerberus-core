@@ -56,7 +56,7 @@ function initModalRobot() {
     $("#editRobotModal [name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("#editRobotModal [name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
     $("#editRobotModal [name='buttonDuplicate']").html(doc.getDocLabel("page_global", "btn_duplicate"));
-    $("#editRobotModal [name='buttonEdit']").html(doc.getDocLabel("page_global", "btn_edit"));
+    $("#editRobotModal [name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
 
     $("#editRobotModal [name='addEntryField']").html(doc.getDocLabel("page_robot", "button_create"));
     $("#editRobotModal [name='confirmationField']").html(doc.getDocLabel("page_robot", "button_delete"));
@@ -556,10 +556,10 @@ function appendExecutorRow(tableBody, executor) {
     var dname = $("<div class='form-group col-sm-4'></div>").append("<label for='devicename'>" + doc.getDocOnline("robotexecutor", "deviceName") + "</label>").append(deviceNameInput);
     var dport = $("<div class='form-group col-sm-2'></div>").append("<label for='deviceport'>" + doc.getDocOnline("robotexecutor", "devicePort") + "</label>").append(devicePortInput);
     var dLockUnlock = $("<div class='form-group col-sm-2'></div>").append("<label for='devicelockunlockinput'>" + doc.getDocOnline("robotexecutor", "deviceLockUnlock") + "</label>").append(deviceLockUnlockInput);
-    var eeport = $("<div class='form-group col-sm-2'></div>").append("<label for='executorextensionport'>" + doc.getDocOnline("robotexecutor", "executorExtensionPort") + "</label>").append(executorExtensionPortInput);
-    var ephost = $("<div class='form-group col-sm-2'></div>").append("<label for='executorproxyhost'>" + doc.getDocOnline("robotexecutor", "executorProxyHost") + "</label>").append(executorProxyHostInput);
-    var epport = $("<div class='form-group col-sm-2'></div>").append("<label for='executorproxyport'>" + doc.getDocOnline("robotexecutor", "executorProxyPort") + "</label>").append(executorProxyPortInput);
-    var epActive = $("<div class='form-group col-sm-2'></div>").append("<label for='executorproxyactive'>" + doc.getDocOnline("robotexecutor", "executorProxyActive") + "</label>").append(executorProxyActiveInput);
+    var epActive = $("<div class='form-group col-sm-3'></div>").append("<label for='executorproxyactive'>" + doc.getDocOnline("robotexecutor", "executorProxyActive") + "</label>").append(executorProxyActiveInput);
+    var eeport = $("<div class='form-group col-sm-3'></div>").append("<label for='executorextensionport'>" + doc.getDocOnline("robotexecutor", "executorExtensionPort") + "</label>").append(executorExtensionPortInput);
+    var ephost = $("<div class='form-group col-sm-3'></div>").append("<label for='executorproxyhost'>" + doc.getDocOnline("robotexecutor", "executorProxyHost") + "</label>").append(executorProxyHostInput);
+    var epport = $("<div class='form-group col-sm-3'></div>").append("<label for='executorproxyport'>" + doc.getDocOnline("robotexecutor", "executorProxyPort") + "</label>").append(executorProxyPortInput);
     var drow1 = $("<div class='row'></div>").append(active).append(rank);
     var drow2 = $("<div class='row'></div>").append(host).append(port);
     var drow3 = $("<div class='row'></div>").append(hostuser).append(hostpass);

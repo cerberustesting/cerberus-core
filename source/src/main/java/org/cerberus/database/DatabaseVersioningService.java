@@ -8174,6 +8174,223 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1420
         a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_appium_action_longpress_wait', '8000', 'Integer value that correspond to the nb of ms of the longpress Appium action.');");
 
+        // Remove integrity on schedulerexecution table.
+        // 1421
+        a.add("ALTER TABLE `scheduledexecution` DROP FOREIGN KEY `FK_scheduledexecution_01`;");
+
+        // Removed not necessary BrowserFullVersion information and added Robot provider and session.
+        // 1422
+        a.add("ALTER TABLE `testcaseexecution` DROP COLUMN `BrowserFullVersion`, ADD COLUMN `RobotProvider` VARCHAR(20) NOT NULL DEFAULT '' AFTER `RobotDecli`, ADD COLUMN `RobotSessionId` VARCHAR(100) NOT NULL DEFAULT '' AFTER `RobotProvider`;");
+
+        // New parameters.
+        // 1423
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + "('', 'cerberus_browserstack_defaultexename', 'Exe : %EXEID%', 'Define the default value for the name of the execution to be sent to Browserstack when a test is executed. Variable %EXEID% can be used.'),"
+                + "('', 'cerberus_kobiton_defaultsessionname', '%EXEID% : %TEST% - %TESTCASE%', 'Define the default value for the SessionName to be sent to Kobiton when a test is executed. Variables %EXEID%, %APPLI%, %TAG%, %TEST%, %TESTCASE%, %TESTCASEDESC% can be used.'),"
+                + "('', 'cerberus_kobiton_defaultsessiondescription', '%TESTCASEDESC%', 'Define the default value for the SessionDescription to be sent to Kobiton when a test is executed. Variables %EXEID%, %APPLI%, %TAG%, %TEST%, %TESTCASE%, %TESTCASEDESC% can be used.');");
+
+        // Adding browserstack Build column.
+        // 1424
+        a.add("ALTER TABLE `tag` ADD COLUMN `browserstackBuildHash` VARCHAR(100) NOT NULL DEFAULT '' AFTER `ReqEnvironmentList`;");
+
+        // Adding description on scheduler definition.
+        // 1425
+        a.add("ALTER TABLE `scheduleentry` ADD COLUMN `description` VARCHAR(200) NOT NULL DEFAULT '' AFTER `active`;");
+
+        // Adding constrain in order to secure that same campaign schedule is not triggered at the same time.
+        // 1426-1427
+        a.add("TRUNCATE `scheduledexecution`;");
+        a.add("ALTER TABLE `scheduledexecution` ADD UNIQUE INDEX `IX_scheduledexecution_02` (`scheduleName` ASC, `scheduleFireTime` ASC);");
+
+        // add the refreshPageAction private invariant
+        // 1428
+        a.add("INSERT INTO invariant(idname, value, sort, description, VeryShortDesc) VALUES('ACTION', 'refreshCurrentPage', 6520, 'refresh current page', 'refresh current page');");
+
+        // add Value3 column in testcasestepactioncontrol and testcasestepactioncontrolexecution tables
+        // 1429-1430
+        a.add("ALTER TABLE testcasestepactioncontrol ADD Value3 TEXT after Value2;");
+        a.add("ALTER TABLE testcasestepactioncontrolexecution ADD Value3 TEXT AFTER Value2, ADD Value3Init TEXT AFTER Value2Init;");
+
+        // add columns for Value3 and ConditionValue3 fields
+        // 1431-1438
+        a.add("ALTER TABLE testcase ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcasestep ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcasestepaction ADD Value3 TEXT AFTER Value2, ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcasestepactioncontrol ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcaseexecution ADD ConditionVal3Init TEXT AFTER ConditionVal2Init, ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcasestepexecution ADD ConditionVal3Init TEXT AFTER ConditionVal2Init, ADD ConditionVal3 TEXT AFTER ConditionVal2;");
+        a.add("ALTER TABLE testcasestepactionexecution ADD Value3 TEXT AFTER Value2, ADD Value3Init TEXT AFTER Value2Init, ADD ConditionVal3 TEXT AFTER ConditionVal2, ADD ConditionVal3Init TEXT AFTER ConditionVal2Init;");
+        a.add("ALTER TABLE testcasestepactioncontrolexecution ADD ConditionVal3 TEXT AFTER ConditionVal2, ADD ConditionVal3Init TEXT AFTER ConditionVal2Init;");
+
+        // add groups columns for Campaign fields
+        // 1439
+        a.add("ALTER TABLE campaign ADD Group1 VARCHAR(100) NOT NULL DEFAULT '' AFTER LongDescription, ADD Group2 VARCHAR(100) NOT NULL DEFAULT '' AFTER Group1, ADD Group3 VARCHAR(100) NOT NULL DEFAULT '' AFTER Group2;");
+
+        // add new action executeCerberusCommand
+        // 1440
+        a.add("INSERT INTO invariant(idname, value, sort, description, VeryShortDesc) VALUES('ACTION', 'executeCerberusCommand', 6552, 'execute Cerberus command', 'execute Cerberus command');");
+
+        // Add the cerberus-stop
+        // 1441
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + "('', 'cerberus_stopinstance_timeout', '300', 'Integer value that correspond to the nb of s until the stopinstance servlet will stop waiting.');");
+
+        // Add the manage servlet parameters
+        // 1442-1443
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + "('', 'cerberus_manage_token', LEFT(MD5(RAND()), 32), 'Token in order to secure public access to manage api.');");
+        a.add("UPDATE `parameter` SET `param` = 'cerberus_manage_timeout', `description` = 'Integer value that correspond to the nb of s until the manage servlet will stop waiting a clean stop of a global or instance stop.' WHERE (`param` = 'cerberus_stopinstance_timeout');");
+
+        // add columns for Kafka support
+        // 1444
+        a.add("ALTER TABLE `appservice` "
+                + "ADD COLUMN `KafkaTopic` VARCHAR(1000) NULL DEFAULT '' AFTER `ServiceRequest`,"
+                + "ADD COLUMN `KafkaKey` VARCHAR(1000) NULL DEFAULT '' AFTER `KafkaTopic`,"
+                + "ADD COLUMN `KafkaFilterPath` VARCHAR(1000) NULL DEFAULT '' AFTER `KafkaKey`,"
+                + "ADD COLUMN `KafkaFilterValue` VARCHAR(1000) NULL DEFAULT '' AFTER `KafkaFilterPath`;");
+
+        // ADD Kafka Method and type in invariants
+        // 1445
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES "
+                + "  ('SRVMETHOD', 'PRODUCE', 600 , 'Produce a Kafka event'),"
+                + "  ('SRVMETHOD', 'SEARCH', 700 , 'Search in a Kafka stream'),"
+                + "  ('SRVTYPE', 'KAFKA', 400 , 'KAFKA Service')");
+
+        // ADD parameters to perform execute Cerberus command action
+        // 1446
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_executeCerberusCommand_path', '/opt/CerberusMedias/scripts/', 'Path to the Cerberus script folder'),"
+                + " ('', 'cerberus_executeCerberusCommand_user', 'cerberus', 'User used to execute a script with Cerberus'),"
+                + " ('', 'cerberus_executeCerberusCommand_password', LEFT(MD5(RAND()), 32), 'Password used to execute a script with Cerberus')");
+
+        // create table dashboardTypeReportItem, store type of report-item for front dashboard
+        // 1447
+        a.add("CREATE TABLE `dashboardTypeReportItem` ("
+                + "`idTypeRepItem` int(11) NOT NULL AUTO_INCREMENT,"
+                + "`codeTypeRepItem` varchar(50) NOT NULL ,"
+                + "`descTypeRepItem` varchar(255) NOT NULL,"
+                + "PRIMARY KEY (`idTypeRepItem`)"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // ADD type in dashboardTypeReportItem
+        // 1448
+        a.add("INSERT INTO `dashboardTypeReportItem` (`codeTypeRepItem`,`descTypeRepItem`) VALUES "
+                + "('CAMPAIGN','Report-Item associés aux campagnes'),"
+                + "('CAMPAIGN_GROUP','Report-Item associés aux groupes de campagnes'),"
+                + " ('APPLICATION','Report-Item associés aux applications'),"
+                + "('GENERIC','Report-Item génériques sur l\\'instance de Cerberus'),"
+                + "('ENVIRONMENT','Report-Item associés aux environnements');");
+
+        // create table dashboardReportItem, store existing report-item for dashboard
+        // 1449
+        a.add("CREATE TABLE `dashboardReportItem` ("
+                + "`reportItemCode` varchar(50) NOT NULL,"
+                + "`reportItemTitre` varchar(50) NOT NULL,"
+                + "`isConfigurable` BOOL,"
+                + "`reportItemType` int(11) NOT NULL,"
+                + "PRIMARY KEY (`reportItemCode`),"
+                + "CONSTRAINT `FK_typeReportItem_01` FOREIGN KEY (`reportItemType`) REFERENCES `dashboardTypeReportItem` (`idTypeRepItem`)"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // ADD first report item : campaign evolution
+        // 1450
+        a.add("INSERT INTO `dashboardReportItem` (`reportItemCode`,`reportItemTitre`,`isConfigurable`,`reportItemType`) VALUES"
+                + "('CAMPAIGN_EVOLUTION','Campaign evolution',true,'1');");
+
+        // create table dashboardGroupEntries, store Group entries report-item for dashboard
+        // 1451
+        a.add("CREATE TABLE `dashboardGroupEntries` ("
+                + "`idGroupEntries` int(11) NOT NULL AUTO_INCREMENT,"
+                + "`codeGroupeEntries` varchar(50) NOT NULL,"
+                + "`sort` int(11) DEFAULT 10,"
+                + "`dashboardUserId` int(10) UNSIGNED NOT NULL,"
+                + "`reportItemType` int(11) NOT NULL,"
+                + "PRIMARY KEY (`idGroupEntries`),"
+                + "CONSTRAINT `FK_dashboardGroup_01` FOREIGN KEY (`dashboardUserId`) REFERENCES `user` (`UserID`) ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "CONSTRAINT `FK_dashboardGroup_02` FOREIGN KEY (`reportItemType`) REFERENCES `dashboardTypeReportItem` (`idTypeRepItem`)"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // create table dashboardGroupEntriesCampaign, store Group entries campaign link for dashboard
+        //1452
+        a.add("CREATE TABLE `dashboardGroupEntriesCampaign` ("
+                + "`idGroupEntries` int(11) NOT NULL,"
+                + "`idCampaign` int(10) UNSIGNED NOT NULL,"
+                + "PRIMARY KEY (`idGroupEntries`,`idCampaign`),"
+                + "CONSTRAINT `FK_dashboardGroupCampaign_01` FOREIGN KEY (`idGroupEntries`) REFERENCES `dashboardGroupEntries` (`idGroupEntries`) ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "CONSTRAINT `FK_dashboardGroupCampaign_02` FOREIGN KEY (`idCampaign`) REFERENCES `campaign` (`campaignId`) ON DELETE CASCADE ON UPDATE CASCADE"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // create table dashboardGroupEntriesApplication, store Group entries application link for dashboard
+        //1453
+        a.add("CREATE TABLE `dashboardGroupEntriesApplication` ("
+                + "`idGroupEntries` int(11) NOT NULL,"
+                + "`application` varchar(200) NOT NULL,"
+                + "PRIMARY KEY (`idGroupEntries`,`application`),"
+                + "CONSTRAINT `FK_dashboardGroupApplication_01` FOREIGN KEY (`idGroupEntries`) REFERENCES `dashboardGroupEntries` (`idGroupEntries`) ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "CONSTRAINT `FK_dashboardGroupApplication_02` FOREIGN KEY (`application`) REFERENCES `application` (`Application`) ON DELETE CASCADE ON UPDATE CASCADE"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // create table dashboardEntry, store entries report item for dashboard
+        //1454
+        a.add("CREATE TABLE `dashboardEntry` ("
+                + "`idGroupEntries` int(11) NOT NULL,"
+                + "`reportItemCode` varchar(50) NOT NULL,"
+                + "`paramId1` varchar(255) DEFAULT NULL,"
+                + "`paramId2` varchar(255) DEFAULT NULL,"
+                + "`UsrCreated` varchar(45) DEFAULT NULL,"
+                + "`DateCreated` timestamp NULL DEFAULT NULL,"
+                + "`UsrModif` varchar(45) DEFAULT NULL,"
+                + "`DateModif` timestamp NULL DEFAULT NULL,"
+                + "PRIMARY KEY (`idGroupEntries`),"
+                + "CONSTRAINT `FK_dashboardEntry_01` FOREIGN KEY (`idGroupEntries`) REFERENCES `dashboardGroupEntries` (`idGroupEntries`) ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "CONSTRAINT `FK_dashboardEntry_02` FOREIGN KEY (`reportItemCode`) REFERENCES `dashboardReportItem` (`reportItemCode`)"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // Alter ReportItem, replace boolean by String to match with Cerberus standard
+        // 1455
+        a.add("ALTER TABLE `dashboardReportItem` MODIFY `isConfigurable` varchar(1);");
+
+        // Replace ReportItem value from boolean to string value
+        // 1456
+        a.add("UPDATE dashboardReportItem SET `isConfigurable`='Y' WHERE 1=1;");
+
+        // Update value3 and conditionValue3 to avoid null value that will fail tc saving
+        // 1457-1462
+        a.add("UPDATE testcase SET ConditionVal3 = '' WHERE ConditionVal3 IS NULL");
+        a.add("UPDATE testcasestep SET ConditionVal3 = '' WHERE ConditionVal3 IS NULL");
+        a.add("UPDATE testcasestepaction SET ConditionVal3 = '' WHERE ConditionVal3 IS NULL");
+        a.add("UPDATE testcasestepaction SET Value3 = '' WHERE Value3 IS NULL");
+        a.add("UPDATE testcasestepactioncontrol SET ConditionVal3 = '' WHERE ConditionVal3 IS NULL");
+        a.add("UPDATE testcasestepactioncontrol SET Value3 = '' WHERE Value3 IS NULL");
+
+        // Added executor and remove project and ticket columns
+        // 1463-1464
+        a.add("ALTER TABLE `testcase` DROP FOREIGN KEY `FK_testcase_03`, DROP COLUMN `Ticket`, DROP COLUMN `Project`, ADD COLUMN `Executor` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Implementer`, CHANGE COLUMN `BugID` `BugID` TEXT NOT NULL, DROP INDEX `IX_testcase_04`  ;");
+        a.add("UPDATE testcase SET bugID = CASE WHEN bugID = \"\" or bugID is null THEN \"[]\" ELSE concat('[{\"id\":\"',bugID,'\",\"desc\":\"\"}]') END;");
+
+        // Added parent test in order to handle hierarchy.
+        // 1465
+        a.add("ALTER TABLE `test` ADD COLUMN `ParentTest` VARCHAR(45) NULL DEFAULT NULL AFTER `Active`;");
+        
+        // ADD parameters 
+        // 1466
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_testcasepage_controlemptybugdescription', 'N', 'Boolean that activate a blocking control when saving a testcase that have at least one empty bugid description.')");
+
+        
+        // ADD iOS Platform 
+        // 1467
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES "
+                + " ('PLATFORM', 'IOS', '20', 'iOS Platform', '');");
+
+        
+        // ADD autoscroll parameters
+        // 1468
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+         + " ('', 'cerberus_selenium_autoscroll_vertical_offset', '0', 'Integer that correspond to the hertical offset applied after autoscrolling to element. '), "
+         + " ('', 'cerberus_selenium_autoscroll_horizontal_offset', '0', 'Integer that correspond to the horizontal offset applied after autoscrolling to element');");
+
+        
         return a;
     }
 

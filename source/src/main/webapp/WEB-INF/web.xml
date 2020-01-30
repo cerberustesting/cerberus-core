@@ -620,8 +620,8 @@
     </servlet>
     <servlet>
         <description>Execute the next record from the execution queue.</description>
-        <servlet-name>ExecuteNextInQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testexecution.ExecuteNextInQueue</servlet-class>
+        <servlet-name>GetExecutionsInQueue</servlet-name>
+        <servlet-class>org.cerberus.servlet.administration.GetExecutionsInQueue</servlet-class>
     </servlet>
     <servlet>
         <description>Get a list of test cases based on criteria.</description>
@@ -659,6 +659,10 @@
     <servlet>
         <servlet-name>ReadCerberusDetailInformation</servlet-name>
         <servlet-class>org.cerberus.servlet.information.ReadCerberusDetailInformation</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>manageV001</servlet-name>
+        <servlet-class>org.cerberus.servlet.zzpublic.ManageV001</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SetTagToExecution</servlet-name>
@@ -793,9 +797,32 @@
         <servlet-name>ImportTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.testcase.ImportTestCase</servlet-class>
     </servlet>
+    <!-- 
+    <servlet>
+        <servlet-name>JerseyWebapp</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>org.cerberus.servlet.zzpublic</param-value>
+        </init-param>
+        <init-param>
+            <param-name>jersey.config.server.provider.scanning.recursive</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>JerseyWebapp</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+    -->
     <servlet-mapping>
         <servlet-name>springrest</servlet-name>
         <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>manageV001</servlet-name>
+        <url-pattern>/manageV001</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadCerberusDetailInformation</servlet-name>
@@ -1358,8 +1385,8 @@
         <url-pattern>/AddToExecutionQueueV003</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ExecuteNextInQueue</servlet-name>
-        <url-pattern>/ExecuteNextInQueue</url-pattern>
+        <servlet-name>GetExecutionsInQueue</servlet-name>
+        <url-pattern>/GetExecutionsInQueue</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetTestCasesV000</servlet-name>
@@ -1547,19 +1574,6 @@
         <servlet-name>ImportTestCase</servlet-name>
         <url-pattern>/ImportTestCase</url-pattern>
     </servlet-mapping>
-
-
-    <!-- Filter allow CORS on Cerberus API. Need to override the FRONT_URL en variable to works-->
-    <filter>
-        <filter-name>corsFilter</filter-name>
-        <filter-class>org.cerberus.filter.SimpleCORSFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>corsFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
@@ -1569,11 +1583,11 @@
     </error-page>
     <error-page>
         <error-code>403</error-code>
-        <location>/ErrorPages/Error.jsp</location>
+        <location>/ErrorPages/Error403.jsp</location>
     </error-page>
     <error-page>
         <error-code>404</error-code>
-        <location>/ErrorPages/Error.jsp</location>
+        <location>/ErrorPages/Error404.jsp</location>
     </error-page>
     <error-page>
         <error-code>500</error-code>
@@ -1686,7 +1700,6 @@
             <description>jsp</description>
             <url-pattern>/SqlLibrary.jsp</url-pattern>
             <url-pattern>/TestDataLibList.jsp</url-pattern>
-            <url-pattern>/Label.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1717,7 +1730,6 @@
             <url-pattern>/UpdateTestCaseProperties</url-pattern>
             <url-pattern>/Thumbnailer</url-pattern>
             <url-pattern>/UpdateTestCaseField</url-pattern>
-            <url-pattern>/ReadLabel</url-pattern>
             <url-pattern>/SaveTestCaseLabel</url-pattern>
             <url-pattern>/ReadTestCaseLabel</url-pattern>
         </web-resource-collection>
@@ -1728,6 +1740,11 @@
     </security-constraint>
     <security-constraint>
         <display-name>Label</display-name>
+        <web-resource-collection>
+            <web-resource-name>jsp</web-resource-name>
+            <description/>
+            <url-pattern>/Label.jsp</url-pattern>
+        </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
@@ -2014,10 +2031,13 @@
             <url-pattern>/NewEnvironmentEventV000</url-pattern>
             <url-pattern>/GetTagExecutions</url-pattern>
             <url-pattern>/GetTestCasesV000</url-pattern>
+            <url-pattern>/manageV001</url-pattern>
             <!--            Password Management Servlets -->
             <url-pattern>/ForgotPassword</url-pattern>
             <url-pattern>/ForgotPasswordEmailConfirmation</url-pattern>
             <url-pattern>/ChangeUserPassword</url-pattern>
+            <!--            Ressources used during TestExecution Servlets -->
+            <url-pattern>/ReadApplicationObjectImage</url-pattern>
             <!--            Dummy Servlets -->
             <url-pattern>/DummyRESTCall</url-pattern>
             <url-pattern>/DummyRESTCallEmpty</url-pattern>
@@ -2063,9 +2083,9 @@
             <url-pattern>/ReadTestCaseExecution</url-pattern>
             <url-pattern>/ReadTag</url-pattern>
             <url-pattern>/ReadParameter</url-pattern>
-            <url-pattern>/ExecuteNextInQueue</url-pattern>
+            <url-pattern>/GetExecutionsInQueue</url-pattern>
             <url-pattern>/ReadDocumentation</url-pattern>
-            <url-pattern>/ReadApplicationObjectImage</url-pattern>
+            <url-pattern>/ReadLabel</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description/>
@@ -2081,12 +2101,6 @@
             <role-name>Administrator</role-name>
         </auth-constraint>
     </security-constraint>
-    <!--
-    <login-config>
-        <auth-method>BASIC</auth-method>
-        <realm-name>Enable this in order to activate KeyCloak</realm-name>
-    </login-config>
-    -->
     <login-config>
         <auth-method>FORM</auth-method>
         <form-login-config>

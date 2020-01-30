@@ -36,9 +36,10 @@
                             <li><a data-toggle="tab" href="#tabsCreate-6" id="createTab6Text" name="tabTCList">TestCase List</a></li>
                             <li><a data-toggle="tab" href="#tabsCreate-3" id="createTab3Text" name="tabEnv">Environments, Countries & Robots List</a></li>
                             <li><a data-toggle="tab" href="#tabsCreate-7" id="createTab7Text" name="tabParameters">Execution Settings</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-8" id="createTab8Text" name="tabsEdit8">Scheduler</a></li>
                             <li><a data-toggle="tab" href="#tabsCreate-2" id="createTab2Text" name="tabNotifications">Notifications</a></li>
+                            <li><a data-toggle="tab" href="#tabs-9" id="createTab9Text" name="tabAdvanced">Advanced</a></li>
                             <li><a data-toggle="tab" href="#tabsEdit-5" id="tab5Text" name="tabsEdit5">Tracability</a></li>
-                            <li style="display : none"><a data-toggle="tab" href="#tabsEdit-8" id="createTab8Text" name="tabsEdit8">Scheduler</a></li>
                         </ul>
 
                         <div class="tab-content">
@@ -51,7 +52,7 @@
                                     </div>
                                 </div>
                                 <div class="row" style="">
-                                    <div class="form-group col-xs-6">
+                                    <div class="form-group col-sm-6 col-xs-12">
                                         <label for="cIScoreThreshold" name="cIScoreThresholdField">CI Score</label>
                                         <input class="form-control" name="cIScoreThreshold" id="cIScoreThreshold" aria-describedby="basic-addon1"/>
                                     </div>
@@ -213,9 +214,8 @@
                                         </div>
                                     </div>
                                 </div>                                
-
-
                             </div>
+
                             <div class="center marginTop25 tab-pane fade in" id="tabsEdit-5">
                                 <div class="row">
                                     <div class="col-xs-12">
@@ -250,31 +250,77 @@
                                     </div>
                                 </div>  
                             </div>  
-                            <div class="center marginTop25 tab-pane fade in" id="tabsEdit-8">
+
+                            <div class="center marginTop25 tab-pane fade in" id="tabs-9">
                                 <div class="row">
                                     <div class="col-xs-12">
-
-                                        <div class="form-group col-sm-12">
-                                            <label name="lbl_cronexp" for="cronexp">Cron Expression</label>
-                                            <div class="input-group col-sm-6">
-                                                <input type="text" class="form-control" id='schedulerinput'>
-                                                <span class="input-group-btn">
-                                                    <button class="btn btn-default" type="button" id='addscheduler'>Add</button>
-                                                </span>
-                                            </div>
-                                            <br>
-                                            <br>
-                                                <div id="parameterScheduler">
-                                                    <table id="parameterSchedulerTable" class="table table-bordered table-hover display" name="parameterTestcaseTable"></table>
-                                                    <div class="marginBottom20"></div>
+                                        <div class="row">
+                                            <div class="form-group col-sm-6">
+                                                <label name="lbl_gp1" for="group1">Group 1</label>
+                                                <div>
+                                                    <input id="group1" name="group1" class="form-control" maxlength="100"/>     
+                                                </div>
+                                            </div> 
+                                            <div class="form-group col-sm-6">
+                                                <label name="lbl_gp2" for="group2">Group 2</label>
+                                                <div>
+                                                    <input id="group2" name="group2" class="form-control" maxlength="100"/>     
+                                                </div>
+                                            </div> 
+                                            <div class="form-group col-sm-6">
+                                                <label name="lbl_gp3" for="group3">Group 3</label>
+                                                <div>
+                                                    <input id="group3" name="group3" class="form-control" maxlength="100"/>     
                                                 </div>
                                             </div>
-
-                                        </div>   
+                                        </div>
                                     </div>
+                                </div>  
+                            </div>  
+
+                            <div class="center marginTop25 tab-pane fade in" id="tabsEdit-8">
+                                <div class="row">
+                                    <div class="form-group col-sm-6">
+                                        <label name="lbl_cronexp" for="cronexp">Cron Expression</label>
+                                        <div class="input-group col-sm-6">
+                                            <input type="text" class="form-control" id='schedulerinput'>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" id='addscheduler'>Add</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label name="lbl_ex1" for="ex1">Example 1 : Every Week day at 12</label>
+                                                <div>
+                                                    <input id="ex1" class="form-control" readonly="readonly" value="0 0 12 ? * MON-FRI *"/>     
+                                                </div>
+                                                <label name="lbl_ex2" for="ex2">Example 2 : Every 10 minutes</label>
+                                                <div>
+                                                    <input id="ex2" class="form-control" readonly="readonly"  value="0 0/10 * 1/1 * ? *"/>     
+                                                </div>
+                                                <div>
+                                                    <h4 class="">Build your own syntax at <a target="_blank" href="http://www.cronmaker.com/">cronmaker.com</a></h4>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm-12">
+                                            <div id="parameterScheduler">
+                                                <table id="parameterSchedulerTable" class="table table-bordered table-hover display" name="parameterTestcaseTable"></table>
+                                                <div class="marginBottom20"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
+
                         </div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">

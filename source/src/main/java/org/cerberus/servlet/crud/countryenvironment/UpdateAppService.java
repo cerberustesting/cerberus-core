@@ -96,7 +96,7 @@ public class UpdateAppService extends HttpServlet {
 
         response.setContentType("text/html;charset=UTF-8");
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
-        
+
         Map<String, String> fileData = new HashMap<String, String>();
         FileItem file = null;
 
@@ -120,25 +120,28 @@ public class UpdateAppService extends HttpServlet {
         } catch (FileUploadException e) {
             e.printStackTrace();
         }
-        
-        String fileName = null;
-        if(file != null) {
-        	fileName = file.getName();
-        }
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("service"), null, charset);
+        String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("group"), null, charset);
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("description"), null, charset);
+        String attachementurl = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("attachementurl"), null, charset);
+        String operation = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("operation"), null, charset);
         String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("application"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("type"), null, charset);
         String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("method"), "", charset);
-        String operation = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("operation"), null, charset);
-        String attachementurl = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("attachementurl"), null, charset);
-        String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("group"), null, charset);
-        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("description"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String servicePath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("servicePath"), null, charset);
         String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(fileData.get("srvRequest"), null, charset);
+        String kafkaTopic = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaTopic"), "", charset);
+        String kafkaKey = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaKey"), "", charset);
+        String kafkaFilterPath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterPath"), "", charset);
+        String kafkaFilterValue = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterValue"), "", charset);
+        String fileName = null;
+        if (file != null) {
+            fileName = file.getName();
+        }
 
         // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
@@ -175,15 +178,15 @@ public class UpdateAppService extends HttpServlet {
                  * The service was able to perform the query and confirm the
                  * object exist, then we can update it.
                  */
-            	AppService appService = (AppService) resp.getItem();
-            	
-            	if(file != null) {
-            		ans = appServiceService.uploadFile(appService.getService(), file);
-            		if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                AppService appService = (AppService) resp.getItem();
+
+                if (file != null) {
+                    ans = appServiceService.uploadFile(appService.getService(), file);
+                    if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         appService.setFileName(file.getName());
                     }
-                }                                    
-                
+                }
+
                 appService.setGroup(group);
                 appService.setAttachementURL(attachementurl);
                 appService.setDescription(description);
@@ -194,6 +197,10 @@ public class UpdateAppService extends HttpServlet {
                 appService.setMethod(method);
                 appService.setServicePath(servicePath);
                 appService.setUsrModif(request.getRemoteUser());
+                appService.setKafkaKey(kafkaKey);
+                appService.setKafkaTopic(kafkaTopic);
+                appService.setKafkaFilterPath(kafkaFilterPath);
+                appService.setKafkaFilterValue(kafkaFilterValue);
                 ans = appServiceService.update(appService.getService(), appService);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
@@ -202,7 +209,7 @@ public class UpdateAppService extends HttpServlet {
                      * Update was successful. Adding Log entry.
                      */
                     logEventService = appContext.getBean(ILogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateAppService", "UPDATE", "Updated AppService : ['" + service + "']", request);                                       
+                    logEventService.createForPrivateCalls("/UpdateAppService", "UPDATE", "Updated AppService : ['" + service + "']", request);
                 }
 
                 // Update content

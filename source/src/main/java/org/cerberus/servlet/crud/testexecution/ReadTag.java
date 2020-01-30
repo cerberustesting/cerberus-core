@@ -178,9 +178,9 @@ public class ReadTag extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findTagList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findTagList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         tagService = appContext.getBean(TagService.class);
 
@@ -211,7 +211,7 @@ public class ReadTag extends HttpServlet {
             }
         }
 
-        AnswerList resp = tagService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
+        AnswerList<Tag> resp = tagService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -230,8 +230,8 @@ public class ReadTag extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findTagByKeyTech(long id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findTagByKeyTech(long id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         ITagService libService = appContext.getBean(ITagService.class);
@@ -253,8 +253,8 @@ public class ReadTag extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findTagByKey(String tag, ApplicationContext appContext, HttpServletRequest request) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findTagByKey(String tag, ApplicationContext appContext, HttpServletRequest request) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         ITagService libService = appContext.getBean(ITagService.class);
@@ -286,8 +286,8 @@ public class ReadTag extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         tagService = appContext.getBean(TagService.class);

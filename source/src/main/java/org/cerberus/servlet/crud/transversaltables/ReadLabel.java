@@ -36,6 +36,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Label;
+import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.service.ILabelService;
 import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.crud.service.impl.LabelService;
@@ -132,8 +134,8 @@ public class ReadLabel extends HttpServlet {
                 }
             }
             if ((request.getParameter("withHierarchy") != null)) {
-                    List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
-                answer1 = getLabelHierarchy(system, appContext, userHasPermissions, request);
+                List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
+                answer1 = getLabelHierarchy(system, appContext, userHasPermissions, request, (request.getParameter("isSelectable") != null), (request.getParameter("hasButtons") != null));
                 JSONObject jsonHierarchy = (JSONObject) answer1.getItem();
                 jsonResponse.put("labelHierarchy", jsonHierarchy);
 
@@ -146,7 +148,11 @@ public class ReadLabel extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            LOG.warn(e);
+            LOG.error("JSON Exception", e);
+            //returns a default error message with the json format that is able to be parsed by the client-side
+            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+        } catch (Exception e) {
+            LOG.error("General Exception", e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
@@ -199,9 +205,9 @@ public class ReadLabel extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findLabelList(List<String> system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findLabelList(List<String> system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         labelService = appContext.getBean(LabelService.class);
 
@@ -229,7 +235,7 @@ public class ReadLabel extends HttpServlet {
                 }
             }
         }
-        AnswerList resp = labelService.readByVariousByCriteria(system, strictSystemFilter, new ArrayList<>(), startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList<Label> resp = labelService.readByVariousByCriteria(system, strictSystemFilter, new ArrayList<>(), startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -253,21 +259,40 @@ public class ReadLabel extends HttpServlet {
         return item;
     }
 
-    private AnswerItem getLabelHierarchy(List<String> system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> getLabelHierarchy(List<String> system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request, boolean isSelectable, boolean hasButtons) throws JSONException {
+        testCaseLabelService = appContext.getBean(TestCaseLabelService.class);
 
-        AnswerItem item = new AnswerItem<>();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
+        List<TestCaseLabel> labelList = new ArrayList<>();
+        HashMap<Integer, Integer> labelFromTestCaseList = new HashMap<>();
+        if (request.getParameter("testSelect") != null) {
+            // If parameter 'testSelect' is defined, we load the labels attached to 'testSelect' and 'testCaseSelect' in order to select the corresponding values when building the list of labels.
+            try {
+                String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
+                String test1 = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("testSelect"), null, charset);
+                String testCase1 = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("testCaseSelect"), null, charset);
+                ;
+                labelList = (List<TestCaseLabel>) testCaseLabelService.convert(testCaseLabelService.readByTestTestCase(test1, testCase1, new ArrayList<TestCase>()));
+            } catch (CerberusException ex) {
+                LOG.error("Could not get TestCase Label", ex);
+            }
+            for (TestCaseLabel testCaseLabel : labelList) {
+                labelFromTestCaseList.put(testCaseLabel.getLabelId(), 0);
+            }
+        }
+
         JSONArray jsonObject = new JSONArray();
-        jsonObject = getTree(system, Label.TYPE_REQUIREMENT, appContext);
+        jsonObject = getTree(system, Label.TYPE_REQUIREMENT, appContext, isSelectable, hasButtons, labelFromTestCaseList);
         object.put("requirements", jsonObject);
 
         jsonObject = new JSONArray();
-        jsonObject = getTree(system, Label.TYPE_STICKER, appContext);
+        jsonObject = getTree(system, Label.TYPE_STICKER, appContext, isSelectable, hasButtons, labelFromTestCaseList);
         object.put("stickers", jsonObject);
 
         jsonObject = new JSONArray();
-        jsonObject = getTree(system, Label.TYPE_BATTERY, appContext);
+        jsonObject = getTree(system, Label.TYPE_BATTERY, appContext, isSelectable, hasButtons, labelFromTestCaseList);
         object.put("batteries", jsonObject);
 
         item.setItem(object);
@@ -275,13 +300,13 @@ public class ReadLabel extends HttpServlet {
         return item;
     }
 
-    private JSONArray getTree(List<String> system, String type, ApplicationContext appContext) throws JSONException {
+    private JSONArray getTree(List<String> system, String type, ApplicationContext appContext, boolean isSelectable, boolean hasButtons, HashMap<Integer, Integer> labelFromTestCaseToSelect) throws JSONException {
         labelService = appContext.getBean(LabelService.class);
         testCaseLabelService = appContext.getBean(TestCaseLabelService.class);
         TreeNode node;
         JSONArray jsonArray = new JSONArray();
 
-        AnswerList resp = labelService.readByVarious(system, new ArrayList<>(asList(type)));
+        AnswerList<Label> resp = labelService.readByVarious(system, new ArrayList<>(asList(type)));
 
         // Building tree Structure;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -291,17 +316,19 @@ public class ReadLabel extends HttpServlet {
             for (Label label : (List<Label>) resp.getDataList()) {
 
                 String text = "";
-                text += "<button id='editLabel' onclick=\"stopPropagation(event);editEntryClick(\'" + label.getId() + "\', \'" + label.getSystem() + "\');\" class='editLabel btn-tree btn btn-default btn-xs margin-right5' name='editLabel' title='Edit Label' type='button'>";
-                text += " <span class='glyphicon glyphicon-pencil'></span></button>";
+                if (hasButtons) {
+                    text += "<button id='editLabel' onclick=\"stopPropagation(event);editEntryClick(\'" + label.getId() + "\', \'" + label.getSystem() + "\');\" class='editLabel btn-tree btn btn-default btn-xs margin-right5' name='editLabel' title='Edit Label' type='button'>";
+                    text += " <span class='glyphicon glyphicon-pencil'></span></button>";
 
-                text += "<button id='deleteLabel' onclick=\"stopPropagation(event);deleteEntryClick(\'" + label.getId() + "\', \'" + label.getLabel() + "\');\" class='deleteLabel btn-tree btn btn-default btn-xs margin-right5' name='deleteLabel' title='Delete Label' type='button'>";
-                text += " <span class='glyphicon glyphicon-trash'></span></button>";
+                    text += "<button id='deleteLabel' onclick=\"stopPropagation(event);deleteEntryClick(\'" + label.getId() + "\', \'" + label.getLabel() + "\');\" class='deleteLabel btn-tree btn btn-default btn-xs margin-right5' name='deleteLabel' title='Delete Label' type='button'>";
+                    text += " <span class='glyphicon glyphicon-trash'></span></button>";
 
-                text += "<button id='tc1Label' onclick=\"stopPropagation(event);window.open('./TestCaseList.jsp?label=" + label.getLabel() + "','_blank');\" class='btn-tree btn btn-default btn-xs margin-right5' name='tcLabel' title='Open Testcase list in new window' type='button'>";
-                text += " <span class='glyphicon glyphicon-list'></span></button>";
+                    text += "<button id='tc1Label' onclick=\"stopPropagation(event);window.open('./TestCaseList.jsp?label=" + label.getLabel() + "','_blank');\" class='btn-tree btn btn-default btn-xs margin-right5' name='tcLabel' title='Open Testcase list in new window' type='button'>";
+                    text += " <span class='glyphicon glyphicon-list'></span></button>";
 
-                text += "<button id='tc1Label' onclick=\"stopPropagation(event);window.location.href = './TestCaseList.jsp?label=" + label.getLabel() + "';\" class='btn-tree btn btn-primary btn-xs margin-right5' name='tcLabel' title='Open Testcase list.' type='button'>";
-                text += " <span class='glyphicon glyphicon-list'></span></button>";
+                    text += "<button id='tc1Label' onclick=\"stopPropagation(event);window.location.href = './TestCaseList.jsp?label=" + label.getLabel() + "';\" class='btn-tree btn btn-primary btn-xs margin-right5' name='tcLabel' title='Open Testcase list.' type='button'>";
+                    text += " <span class='glyphicon glyphicon-list'></span></button>";
+                }
 
                 text += "<span class='label label-primary' style='background-color:" + label.getColor() + "' data-toggle='tooltip' data-labelid='" + label.getId() + "' title='' data-original-title=''>" + label.getLabel() + "</span>";
                 text += "<span style='margin-left: 5px; margin-right: 5px;' class=''>" + label.getDescription() + "</span>";
@@ -334,9 +361,19 @@ public class ReadLabel extends HttpServlet {
                 node.setCounter1(label.getCounter1());
                 node.setCounter1WithChild(label.getCounter1());
                 node.setTags(attributList);
+                node.setLabelObj(label);
                 node.setCounter1Text("<span style='background-color:#000000' class='cnt1 badge badge-pill badge-secondary'>%COUNTER1%</span>");
                 node.setCounter1WithChildText("<span class='cnt1WC badge badge-pill badge-secondary'>%COUNTER1WITHCHILD%</span>");
                 node.setNbNodesText("<span style='background-color:#337ab7' class='nbNodes badge badge-pill badge-primary'>%NBNODESWITHCHILD%</span>");
+                // If label is in HashMap, we set it as selected.
+                if (labelFromTestCaseToSelect.containsKey(label.getId())) {
+                    node.setSelected(true);
+                } else {
+                    node.setSelected(false);
+                }
+                if (isSelectable) {
+                    node.setSelectable(true);
+                }
                 inputList.put(label.getId(), node);
             }
 
@@ -351,11 +388,11 @@ public class ReadLabel extends HttpServlet {
         return jsonArray;
     }
 
-    private AnswerItem findLabelByKey(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findLabelByKey(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
-        ILabelService labelService = appContext.getBean(ILabelService.class);
+        labelService = appContext.getBean(ILabelService.class);
 
         //finds the project     
         AnswerItem answer = labelService.readByKey(id);
@@ -393,8 +430,8 @@ public class ReadLabel extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         labelService = appContext.getBean(ILabelService.class);

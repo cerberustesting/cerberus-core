@@ -43,13 +43,17 @@ public class TestCaseStepActionExecution {
     private String conditionOper;
     private String conditionVal1Init;
     private String conditionVal2Init;
+    private String conditionVal3Init;
     private String conditionVal1;
     private String conditionVal2;
+    private String conditionVal3;
     private String action;
     private String value1Init;
     private String value2Init;
+    private String value3Init;
     private String value1;
     private String value2;
+    private String value3;
     private String forceExeStatus;
     private String description;
     private String returnCode;
@@ -116,6 +120,14 @@ public class TestCaseStepActionExecution {
         this.conditionVal2Init = conditionVal2Init;
     }
 
+    public String getConditionVal3Init() {
+        return conditionVal3Init;
+    }
+
+    public void setConditionVal3Init(String conditionVal3Init) {
+        this.conditionVal3Init = conditionVal3Init;
+    }
+
     public String getConditionVal1() {
         return conditionVal1;
     }
@@ -132,6 +144,14 @@ public class TestCaseStepActionExecution {
         this.conditionVal2 = conditionVal2;
     }
 
+    public String getConditionVal3() {
+        return conditionVal3;
+    }
+
+    public void setConditionVal3(String conditionVal3) {
+        this.conditionVal3 = conditionVal3;
+    }
+
     public String getValue1Init() {
         return value1Init;
     }
@@ -146,6 +166,14 @@ public class TestCaseStepActionExecution {
 
     public void setValue2Init(String value2Init) {
         this.value2Init = value2Init;
+    }
+
+    public String getValue3Init() {
+        return value3Init;
+    }
+
+    public void setValue3Init(String value3Init) {
+        this.value3Init = value3Init;
     }
 
     public String getForceExeStatus() {
@@ -264,6 +292,14 @@ public class TestCaseStepActionExecution {
         this.value2 = value2;
     }
 
+    public String getValue3() {
+        return value3;
+    }
+
+    public void setValue3(String value3) {
+        this.value3 = value3;
+    }
+
     public String getReturnCode() {
         return returnCode;
     }
@@ -375,9 +411,9 @@ public class TestCaseStepActionExecution {
     }
 
     /**
-     * Convert the current TestCaseStepActionExecution into JSON format
-     * Note that if withChilds and withParents are both set to true, only the
-     * child will be included to avoid loop.
+     * Convert the current TestCaseStepActionExecution into JSON format Note
+     * that if withChilds and withParents are both set to true, only the child
+     * will be included to avoid loop.
      *
      * @param withChilds boolean that define if childs should be included
      * @param withParents boolean that define if parents should be included
@@ -401,13 +437,17 @@ public class TestCaseStepActionExecution {
             result.put("conditionOper", this.getConditionOper());
             result.put("conditionVal1Init", this.getConditionVal1Init());
             result.put("conditionVal2Init", this.getConditionVal2Init());
+            result.put("conditionVal3Init", this.getConditionVal3Init());
             result.put("conditionVal1", this.getConditionVal1());
             result.put("conditionVal2", this.getConditionVal2());
+            result.put("conditionVal3", this.getConditionVal3());
             result.put("action", this.getAction());
             result.put("value1", this.getValue1());
             result.put("value2", this.getValue2());
+            result.put("value3", this.getValue3());
             result.put("value1init", this.getValue1Init());
             result.put("value2init", this.getValue2Init());
+            result.put("value3init", this.getValue3Init());
             result.put("forceExeStatus", this.getForceExeStatus());
             result.put("start", this.getStart());
             result.put("end", this.getEnd());
@@ -417,25 +457,25 @@ public class TestCaseStepActionExecution {
             result.put("returnCode", this.getReturnCode());
             result.put("returnMessage", this.getReturnMessage());
 
-            if (withChilds){
-            JSONArray array = new JSONArray();
-            if (this.getTestCaseStepActionControlExecutionList() != null) {
-                for (Object testCaseStepActionControlExecution : this.getTestCaseStepActionControlExecutionList()) {
-                    array.put(((TestCaseStepActionControlExecution) testCaseStepActionControlExecution).toJson(true, false));
+            if (withChilds) {
+                JSONArray array = new JSONArray();
+                if (this.getTestCaseStepActionControlExecutionList() != null) {
+                    for (Object testCaseStepActionControlExecution : this.getTestCaseStepActionControlExecutionList()) {
+                        array.put(((TestCaseStepActionControlExecution) testCaseStepActionControlExecution).toJson(true, false));
+                    }
                 }
-            }
-            result.put("testCaseStepActionControlExecutionList", array);
+                result.put("testCaseStepActionControlExecutionList", array);
 
-            array = new JSONArray();
-            if (this.getFileList() != null) {
-                for (Object actionFileList : this.getFileList()) {
-                    array.put(((TestCaseExecutionFile) actionFileList).toJson());
+                array = new JSONArray();
+                if (this.getFileList() != null) {
+                    for (Object actionFileList : this.getFileList()) {
+                        array.put(((TestCaseExecutionFile) actionFileList).toJson());
+                    }
                 }
+                result.put("fileList", array);
             }
-            result.put("fileList", array);
-            }
-            
-            if (withParents){
+
+            if (withParents) {
                 result.put("testCaseStepExecution", this.getTestCaseStepExecution().toJson(false, true));
             }
 

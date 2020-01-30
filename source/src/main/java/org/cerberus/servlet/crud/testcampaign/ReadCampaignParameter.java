@@ -57,10 +57,10 @@ public class ReadCampaignParameter extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -99,14 +99,13 @@ public class ReadCampaignParameter extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -117,10 +116,10 @@ public class ReadCampaignParameter extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -138,8 +137,8 @@ public class ReadCampaignParameter extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findParameterListByCampaign(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response, String campaign) throws JSONException {
-        AnswerItem item = new AnswerItem<>();
+    private AnswerItem<JSONObject> findParameterListByCampaign(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response, String campaign) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         campaignParameterService = appContext.getBean(ICampaignParameterService.class);
 
@@ -152,12 +151,12 @@ public class ReadCampaignParameter extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = campaignParameterService.readByCampaignByCriteria(campaign, startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList<CampaignParameter> resp = campaignParameterService.readByCampaignByCriteria(campaign, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
 
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (CampaignParameter param : (List<CampaignParameter>) resp.getDataList()) {
+            for (CampaignParameter param : resp.getDataList()) {
                 jsonArray.put(convertProjectToJSONObject(param));
             }
         }

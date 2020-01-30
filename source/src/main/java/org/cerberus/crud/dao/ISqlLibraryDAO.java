@@ -104,22 +104,27 @@ public interface ISqlLibraryDAO {
      * @param startPosition    the start index to look for
      * @param length           the number of {@link SqlLibrary} to get
      * @param columnName       the Column name to sort
+     * @param sort
      * @param searchParameter  the string to search in the {@link SqlLibrary}
      * @param individualSearch the string to search for each column
+     * @return 
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<SqlLibrary> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      * Get the {@link SqlLibrary} of the given key
      *
      * @param key the key of the {@link SqlLibrary} to get
+     * @return 
      */
-    AnswerItem readByKey(String key);
+    AnswerItem<SqlLibrary> readByKey(String key);
 
     /**
      * Load a {@link SqlLibrary} of a ResultSet
      *
      * @param rs the {@link ResultSet}
+     * @return 
+     * @throws java.sql.SQLException
      */
     SqlLibrary loadFromResultSet(ResultSet rs) throws SQLException;
 
@@ -129,8 +134,9 @@ public interface ISqlLibraryDAO {
      * @param columnName       the Column name to get
      * @param searchParameter  the string to search in the {@link SqlLibrary}
      * @param individualSearch the string to search for each column
+     * @return 
      */
-    AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      * @param object the {@link SqlLibrary} to Create

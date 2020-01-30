@@ -50,7 +50,7 @@ function renderOptionsForCampaign_Label(tableId) {
     $("#" + tableId + "_wrapper #labelSelect").select2();
 
     $("#" + tableId + "_wrapper #labelSelect2").select2(camp_getComboConfigLabel("", "", tableId));
-    $('#labelSelect2').on('select2:select', function (e) {
+    $('#labelSelect2').on('select2:select', function(e) {
         $('#addLabelTestcampaignButton').prop("disabled", false);
     });
 
@@ -66,17 +66,17 @@ function camp_getComboConfigLabel(labelType, system, tableId) {
                     url: "ReadLabel?bStrictSystemFilter=Y&iSortCol_0=0&sSortDir_0=desc&sColumns=type&iDisplayLength=30&sSearch_0=" + labelType + "&system=" + system,
                     dataType: 'json',
                     delay: 250,
-                    data: function (params) {
+                    data: function(params) {
                         params.page = params.page || 1;
                         return {
                             sSearch: params.term, // search term
                             iDisplayStart: (params.page * 30) - 30
                         };
                     },
-                    processResults: function (data, params) {
+                    processResults: function(data, params) {
                         params.page = params.page || 1;
                         return {
-                            results: $.map(data.contentTable, function (obj) {
+                            results: $.map(data.contentTable, function(obj) {
                                 if (!(findValueTableDataByCol(tableId, 4, obj.label))) {
                                     return {id: obj.id, label: obj.label, color: obj.color, description: obj.description, system: obj.system, type: obj.type};
                                 }
@@ -90,7 +90,7 @@ function camp_getComboConfigLabel(labelType, system, tableId) {
                     allowClear: true
                 },
                 width: "100%",
-                escapeMarkup: function (markup) {
+                escapeMarkup: function(markup) {
                     return markup;
                 }, // let our custom formatter work
                 minimumInputLength: 0,
@@ -203,14 +203,14 @@ function viewEntryClick(param) {
 
 
     var jqxhr = $.getJSON("ReadCampaign?testcase=true&", "campaign=" + param);
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         var obj = data["contentTable"];
 
         /* TESTCASE */
 
         var array = [];
 
-        $.each(obj.testcase, function (e) {
+        $.each(obj.testcase, function(e) {
             array.push(
                     [obj.testcase[e].test, obj.testcase[e].testCase, obj.testcase[e].application, obj.testcase[e].description, obj.testcase[e].status]
                     );
@@ -248,14 +248,14 @@ function viewStatEntryClick(param) {
 
 
     var jqxhr = $.getJSON("ReadCampaign?tag=true&", "campaign=" + param);
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         var obj = data["contentTable"];
 
         /* TAG */
 
         var array = [];
 
-        $.each(obj.tag, function (e) {
+        $.each(obj.tag, function(e) {
             array.push(
                     [obj.tag[e], obj.tag[e].tag, obj.tag[e].nbExe, obj.tag[e].nbExeUsefull, obj.tag[e].DateCreated, obj.tag[e].DateEndQueue, obj.tag[e].ciResult, obj.tag[e].ciScore]
                     );
@@ -307,7 +307,7 @@ function editEntryClick(param) {
     showLoader("#testcampaignList");
 
     var jqxhr = $.getJSON("ReadCampaign?parameter=true&label=true", "campaign=" + param);
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         var obj = data["contentTable"];
         var parameters = []
         var criterias = []
@@ -333,6 +333,9 @@ function editEntryClick(param) {
         formEdit.find("#channel").val(obj["SlackChannel"]);
         formEdit.find("#cIScoreThreshold").val(obj["CIScoreThreshold"]);
         formEdit.find("#description").prop("value", obj["description"]);
+        formEdit.find("#group1").prop("value", obj["group1"]);
+        formEdit.find("#group2").prop("value", obj["group2"]);
+        formEdit.find("#group3").prop("value", obj["group3"]);
         if (tinyMCE.get('longDescription') != null)
             tinyMCE.get('longDescription').setContent(obj["longDescription"]);
 
@@ -358,6 +361,9 @@ function editEntryClick(param) {
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
             formEdit.find("#campaign").prop("readonly", "readonly");
             formEdit.find("#description").prop("readonly", "readonly");
+            formEdit.find("#group1").prop("readonly", "readonly");
+            formEdit.find("#group2").prop("readonly", "readonly");
+            formEdit.find("#group3").prop("readonly", "readonly");
             formEdit.find("#id").prop("readonly", "readonly");
 
             $('#editTestcampaignButton').attr('class', '');
@@ -368,7 +374,7 @@ function editEntryClick(param) {
 
         var array = [];
 
-        $.each(obj.label, function (e) {
+        $.each(obj.label, function(e) {
             array.push(
                     [obj.label[e].campaign, obj.label[e].campaignLabelID, obj.label[e].LabelId, obj.label[e].label.system, obj.label[e].label.label, obj.label[e].label.color, obj.label[e].label.description, obj.label[e].label.type]
                     );
@@ -388,7 +394,7 @@ function editEntryClick(param) {
 
         var array = [];
 
-        $.each(parameters, function (e) {
+        $.each(parameters, function(e) {
             array.push([parameters[e].campaign, parameters[e].campaignparameterID, parameters[e].parameter, parameters[e].value])
         });
 
@@ -410,7 +416,7 @@ function editEntryClick(param) {
 
         var array = [];
 
-        $.each(criterias, function (e) {
+        $.each(criterias, function(e) {
             array.push([criterias[e].campaign, criterias[e].campaignparameterID, criterias[e].parameter, criterias[e].value])
         });
 
@@ -428,12 +434,30 @@ function editEntryClick(param) {
         hideLoader("#testcampaignList");
 
         /* SCHEDULER */
+        var doc = new Doc();
+        $("[name='lbl_cronexp']").html(doc.getDocOnline("scheduler", "cronexp"));
+
         $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
         formEdit.modal('show');
         $('#addscheduler').off('click');
         $('#addscheduler').click(addNewSchedulerRow);
+        $('#schedulerinput').val('0 0 12 1/1 * ? *');
+
+        loadCronList();
+
         loadSchedulerTable(param);
 
+    });
+
+}
+
+function loadCronList() {
+    var cronList = [];
+    cronList.push("0 0 12 1/1 * ? *");
+    cronList.push("0 0 12 ? * MON-FRI *");
+    cronList.push("0 0/10 * 1/1 * ? *");
+    $("#schedulerinput").autocomplete({
+        source: cronList
     });
 
 }
@@ -495,6 +519,9 @@ function editEntryModalSaveHandler() {
             SlackChannel: data.channel,
             CIScoreThreshold: data.cIScoreThreshold,
             Description: data.description,
+            Group1: data.group1,
+            Group2: data.group2,
+            Group3: data.group3,
             LongDescription: data.longDescription,
             Labels: JSON.stringify(labels),
             Parameters: JSON.stringify(parameters),
@@ -509,7 +536,7 @@ function editEntryModalSaveHandler() {
             ManualExecution: data.manualExecution,
             SchedulerList: JSON.stringify(table_scheduler)
         },
-        success: function (data) {
+        success: function(data) {
 //            data = JSON.parse(data);
             hideLoaderInModal('#editTestcampaignModal');
             if (getAlertType(data.messageType) === 'success') {
@@ -585,6 +612,11 @@ function addEntryClick() {
     $('#parameterScheduler tr').remove();
     $('#addscheduler').off('click');
     $('#addscheduler').click(addNewSchedulerRow);
+    $('#schedulerinput').val('0 0 12 1/1 * ? *');
+    loadCronList();
+
+    loadSchedulerTable("");
+
 }
 
 function addEntryModalSaveHandler() {
@@ -647,6 +679,9 @@ function addEntryModalSaveHandler() {
             SlackChannel: data.channel,
             CIScoreThreshold: data.cIScoreThreshold,
             Description: data.description,
+            Group1: data.group1,
+            Group2: data.group2,
+            Group3: data.group3,
             LongDescription: data.longDescription,
             Labels: JSON.stringify(labels),
             Parameters: JSON.stringify(parameters),
@@ -663,7 +698,7 @@ function addEntryModalSaveHandler() {
 
 
         },
-        success: function (data) {
+        success: function(data) {
 //            data = JSON.parse(data);
             hideLoaderInModal('#editTestcampaignModal');
             if (getAlertType(data.messageType) === 'success') {
@@ -708,10 +743,10 @@ function addLabelEntryClick(tableId) {
 }
 
 function removeLabelEntryClick(tableId, key) {
-    $('#' + tableId + '_wrapper #removeLabel').filter(function (i, e) {
+    $('#' + tableId + '_wrapper #removeLabel').filter(function(i, e) {
         return $(e).attr("key") == key;
     }).off().prop("disabled", true);
-    $("#" + tableId).DataTable().rows(function (i, d, n) {
+    $("#" + tableId).DataTable().rows(function(i, d, n) {
         return d[2] == key;
     }).remove().draw();
     updateSelectLabel(tableId);
@@ -746,10 +781,10 @@ function addCriteriaEntryClick(tableId) {
 }
 
 function removeParameterEntryClick(tableId, key, key1) {
-    $('#' + tableId + '_wrapper #removeTestbattery').filter(function (i, e) {
+    $('#' + tableId + '_wrapper #removeTestbattery').filter(function(i, e) {
         return $(e).attr("key") == key && $(e).attr("key1") == key1;
     }).off().prop("disabled", true);
-    $("#" + tableId).DataTable().rows(function (i, d, n) {
+    $("#" + tableId).DataTable().rows(function(i, d, n) {
         return d[2] == key && d[3] == key1;
     }).remove().draw()
     updateSelectParameter(tableId);
@@ -783,7 +818,7 @@ function updateSelectParameter(id) {
         $("#" + id + '_wrapper #addParameterTestcampaignButton').prop("disabled", true);
     } else {
         $("#" + id + '_wrapper #parameterTestSelect2').parent().show();
-        $("#" + id + '_wrapper #addParameterTestcampaignButton').bind("click", function () {
+        $("#" + id + '_wrapper #addParameterTestcampaignButton').bind("click", function() {
             addParameterEntryClick(id);
         }).prop("disabled", false);
     }
@@ -813,7 +848,7 @@ function updateSelectCriteria(id) {
         $("#" + id + '_wrapper #addCriteriaTestcampaignButton').prop("disabled", true);
     } else {
         $("#" + id + '_wrapper #criteriaTestSelect2').parent().show();
-        $("#" + id + '_wrapper #addCriteriaTestcampaignButton').bind("click", function () {
+        $("#" + id + '_wrapper #addCriteriaTestcampaignButton').bind("click", function() {
             addCriteriaEntryClick(id);
         }).prop("disabled", false);
     }
@@ -822,7 +857,7 @@ function updateSelectCriteria(id) {
 function findValueTableDataByCol(tableId, colIndex, value) {
     var result = false;
     //Iterate all td's in second column
-    $.each($("#" + tableId).DataTable().rows().data(), function (i, v) {
+    $.each($("#" + tableId).DataTable().rows().data(), function(i, v) {
         if (v[colIndex] == value) {
             result = true;
         }
@@ -838,7 +873,7 @@ function aoColumnsFunc_Label(tableId) {
             "bSortable": false,
             "bSearchable": false,
             "title": doc.getDocLabel("page_testcampaign", "button_col"),
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
                 var removeButton = '<button id="removeTestlabel" key="' + obj[2] + '" onclick="removeLabelEntryClick(\'' + tableId + '\',\'' + obj[2] + '\');"\n\
@@ -856,7 +891,7 @@ function aoColumnsFunc_Label(tableId) {
             "data": "4",
             "sName": "label",
             "title": doc.getDocLabel("label", "label"),
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 var result = "<div style='float:left;height: 34px'><span class='label label-primary' style='background-color:"
                         + obj[5] + "' data-toggle='tooltip' data-labelid='"
                         + obj[2] + "' title='"
@@ -879,7 +914,7 @@ function aoColumnsFunc_Parameter(tableId) {
             "bSortable": false,
             "bSearchable": false,
             "title": doc.getDocLabel("page_testcampaign", "button_col"),
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
                 var removeButton = '<button id="removeTestparameter" key="' + obj[2] + '" key1="' + obj[3] + '" onclick="removeParameterEntryClick(\'' + tableId + '\',\'' + obj[2] + '\',\'' + obj[3] + '\');"\n\
                                         class="removeTestparameter btn btn-default btn-xs margin-right5" \n\
@@ -902,7 +937,7 @@ function aoColumnsFunc_TestCase() {
         {"data": "0", "sName": "tbc.Test", "title": doc.getDocLabel("test", "Test")},
         {
             "data": "1", "sName": "tbc.Testcase", "title": doc.getDocLabel("testcase", "TestCase"),
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 return "<a target=\"_blank\" href='TestCaseScript.jsp?test=" + obj[0] + "&testcase=" + obj[1] + "'>" + obj[1] + "</a>";
             }
         },
@@ -922,7 +957,7 @@ function aoColumnsFunc_Tag() {
             "data": "6",
             "sName": "ciresult",
             "sWidth": "40px",
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 if (isEmpty(obj[0].ciResult)) {
                     return "";
                 } else {
@@ -935,7 +970,7 @@ function aoColumnsFunc_Tag() {
             "data": null,
             "sName": "result",
             "sWidth": "150px",
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 return result(obj[0]);
             },
             "title": doc.getDocLabel("page_tag", "result")
@@ -945,7 +980,7 @@ function aoColumnsFunc_Tag() {
             "sName": "duration",
             "sWidth": "40px",
             className: 'dt-body-right',
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 return getDuration(obj[0]);
             },
             "title": doc.getDocOnline("page_tag", "duration")
@@ -955,7 +990,7 @@ function aoColumnsFunc_Tag() {
             "data": null,
             "sName": "reliability",
             "sWidth": "150px",
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 return reliability(obj[0]);
             },
             "title": doc.getDocOnline("page_tag", "reliability")
@@ -964,7 +999,7 @@ function aoColumnsFunc_Tag() {
             "data": null,
             "sName": "exepermin",
             "sWidth": "40px",
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 var dur = getDuration(obj[0]);
                 if (dur > 0) {
                     return Math.round((obj[0].nbExe / dur) * 10) / 10;
@@ -979,7 +1014,7 @@ function aoColumnsFunc_Tag() {
             "data": "5",
             "sName": "DateEndQueue",
             "sWidth": "150px",
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 return getDate(obj[0].DateEndQueue);
             },
             "title": doc.getDocOnline("tag", "dateendqueue")}
@@ -1032,25 +1067,19 @@ function loadSchedulerTable(name) {
     $('#parameterScheduler tr').remove();
     var table = $('#parameterSchedulerTable')
     var deleteBtn = $('<div id="deleteBtnFirst"></div>').addClass("h6").text("Delete");
-    var cronEntry = $('<div id="cronExpression"></div>').addClass("h6").text("CronExpression");
-    var active = $('<div id="active"></div>').addClass("h6").text("Active");
-    var lastExec = $('<div id="lastExec"></div>').addClass("h6").text("Last Execution");
+    var cronEntry = $('<div id="cronExpression"></div>').addClass("h6").text("Definition");
     var row = $("<tr></tr>");
-    var td1 = $("<td class='row form-group col-sm-1'></td>").append(deleteBtn);
-    var td2 = $("<td class='row form-group col-sm-5'></td>").append(cronEntry);
-    var td3 = $("<td class='row form-group col-sm-1'></td>").append(active);
-    var td4 = $("<td class='row form-group col-sm-5'></td>").append(lastExec);
+    var td1 = $("<td class='row form-group'></td>").append(deleteBtn);
+    var td2 = $("<td class='row form-group'></td>").append(cronEntry);
 
 
     row.append(td1);
     row.append(td2);
-    row.append(td3);
-    row.append(td4);
     table.append(row);
 
     var jqxhr = $.getJSON("ReadScheduleEntry", "&name=" + name);
-    $.when(jqxhr).then(function (result) {
-        $.each(result["contentTable"], function (idx, obj) {
+    $.when(jqxhr).then(function(result) {
+        $.each(result["contentTable"], function(idx, obj) {
             obj.toDelete = false;
             appendSchedulerRow(obj);
         });
@@ -1059,67 +1088,75 @@ function loadSchedulerTable(name) {
 
 function appendSchedulerRow(scheduler) {
 
+    var activebool = true;
+    if (scheduler.active === "Y") {
+        activebool = true;
+    } else {
+        activebool = false;
+    }
+
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-s").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var var1Input = $("<input maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel('scheduler', 'cronDefinition') + " --\">").addClass("form-control input-sm");
-    var active = $("<input type='checkbox' id='activeCheckBox" + scheduler.ID + "'>");
+    var cronInput = $("<input name=\"cronDefinition\" maxlength=\"200\">").addClass("form-control input-sm").val(scheduler.cronDefinition);
+    var descInput = $("<input name=\"cronDescription\" maxlength=\"200\">").addClass("form-control input-sm").val(scheduler.description);
+    var activeInput = $("<input name=\"cronActive\" type='checkbox'>").addClass("form-control").prop("checked", activebool);
+    var lastExecInput = $("<input name=\"cronLastExecInput\" readonly>").addClass("form-control input-sm").val(scheduler.lastExecution);
+    var userCreateInput = $("<input name=\"cronUserCreateInput\" readonly>").addClass("form-control input-sm").val(scheduler.UsrCreated);
+    var userModifInput = $("<input name=\"cronUserModifInput\" readonly>").addClass("form-control input-sm").val(scheduler.UsrModif);
+
+    var cron = $("<div class='form-group col-sm-10'></div>").append("<label for='cronDefinition'>" + doc.getDocOnline("scheduleentry", "cronDefinition") + "</label>").append(cronInput);
+    var active = $("<div class='form-group col-sm-2'></div>").append("<label for='cronActive'>" + doc.getDocOnline("scheduleentry", "active") + "</label>").append(activeInput);
+    var lastExec = $("<div class='form-group col-sm-4'></div>").append("<label for='cronLastExecInput'>" + doc.getDocOnline("scheduleentry", "lastexecution") + "</label>").append(lastExecInput);
+    var description = $("<div class='form-group col-sm-12'></div>").append("<label for='cronDescription'>" + doc.getDocOnline("scheduleentry", "description") + "</label>").append(descInput);
+    var userCreate = $("<div class='form-group col-sm-4'></div>").append("<label for='cronUserCreateInput'>" + doc.getDocOnline("transversal", "UsrCreated") + "</label>").append(userCreateInput);
+    var userModif = $("<div class='form-group col-sm-4'></div>").append("<label for='cronUserModifInput'>" + doc.getDocOnline("transversal", "UsrModif") + "</label>").append(userModifInput);
+
+
     var table = $('#parameterSchedulerTable')
-    var lastExec = $('<div id="lastExecution"></div>').addClass("h6").text(" " + scheduler.lastExecution);
     var row = $("<tr class='dataField'></tr>");
 
+    var drow1 = $("<div class='row'></div>").append(cron).append(active).append(description).append(lastExec).append(userCreate).append(userModif);
 
-    var cronDefinition = $("<div class='form-group col-sm-12'></div>").append(var1Input.val(scheduler.cronDefinition))
-    var drow01 = $("<div></div>").append(cronDefinition);
-    var td1 = $("<td class='row'></td>").append(drow01);
-    var td2 = $("<td class='row form-group col-sm-1'></td>").append(deleteBtn);
-    var td3 = $("<td class='row form-group col-sm-1'></td>").append(active)
-    var td4 = $("<td class='row form-group col-sm-5'></td>").append(lastExec)
-    deleteBtn.click(function () {
+    var td1 = $("<td class='row form-group'></td>").append(deleteBtn);
+    var td2 = $("<td class='row form-group'></td>").append(drow1);
+
+    deleteBtn.click(function() {
         scheduler.toDelete = (scheduler.toDelete) ? false : true;
         if (scheduler.toDelete) {
-            console.log("toDelete - Danger");
-            console.log(scheduler.toDelete);
             row.addClass("danger");
         } else {
-            console.log(scheduler.toDelete);
-            console.log("Not delete");
             row.removeClass("danger");
         }
     });
 
-    cronDefinition.change(function () {
-        scheduler.cronDefinition = $(var1Input).val();
+    cronInput.change(function() {
+        scheduler.cronDefinition = $(this).val();
     })
 
-    active.change(function () {
-        if (scheduler.active != "Y") {
+    descInput.change(function() {
+        scheduler.description = $(this).val();
+    })
+
+    activeInput.change(function() {
+        if ($(this).prop("checked")) {
             scheduler.active = "Y";
-            console.log("scheduler active statement  : " + scheduler.active);
         } else {
             scheduler.active = "N";
-            console.log("scheduler active statement : " + scheduler.active);
         }
     })
 
-    row.append(td2);
     row.append(td1);
-    row.append(td3);
-    row.append(td4);
+    row.append(td2);
     row.data("scheduler", scheduler);
     table.append(row);
-
-    if (scheduler.active == "Y") {
-        $('#activeCheckBox' + scheduler.ID).prop('checked', true);
-    } else {
-        $('#activeCheckBox' + scheduler.ID).prop('checked', false);
-    }
 }
 
 function addNewSchedulerRow() {
     var newScheduler = {
         cronDefinition: $('#schedulerinput').val(),
-        active: "N",
+        active: "Y",
         lastExecution: "",
+        description: "",
         ID: "0",
         toDelete: false
     }

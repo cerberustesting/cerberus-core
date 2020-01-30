@@ -59,7 +59,7 @@ public interface ITagService {
      * @param campaign
      * @return
      */
-    AnswerList readByCampaign(String campaign);
+    AnswerList<Tag> readByCampaign(String campaign);
 
     /**
      *
@@ -72,7 +72,7 @@ public interface ITagService {
      * @param system
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> system);
+    AnswerList<Tag> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> system);
 
     /**
      *
@@ -85,7 +85,7 @@ public interface ITagService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByVariousByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Tag> readByVariousByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -134,6 +134,17 @@ public interface ITagService {
      * @return
      */
     Answer createAuto(String tag, String campaign, String user, JSONArray reqEnvironmentList, JSONArray reqCountryList);
+
+    /**
+     * will enrich the tag with Browserstack buildId hash.
+     *
+     * @param system
+     * @param tagS
+     * @param user
+     * @param pass
+     * @return
+     */
+    String enrichTagWithBrowserStackBuild(String system, String tagS, String user, String pass);
 
     /**
      *

@@ -1,20 +1,21 @@
-/* Cerberus Copyright (C) 2013 - 2017 cerberustesting
-DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
-
-This file is part of Cerberus.
-
-Cerberus is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Cerberus is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Cerberus Copyright (C) 2013 - 2017 cerberustesting
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.crud.entity;
 
@@ -26,8 +27,8 @@ import java.sql.Timestamp;
  */
 public class ScheduledExecution {
 
-    private Integer ID; // to convert in long
-    private Integer schedulerId;
+    private long ID; // to convert in long
+    private long schedulerId;
     private String scheduleName;
     private String status;
     private String comment;
@@ -39,12 +40,20 @@ public class ScheduledExecution {
     private Timestamp dateCreated;
     private Timestamp dateModif;
 
+    /**
+     * Invariant PROPERTY TYPE String.
+     */
+    public static final String STATUS_TOLAUCH = "TOLAUCH";
+    public static final String STATUS_IGNORED = "IGNORED";
+    public static final String STATUS_TRIGGERED = "TRIGGERED";
+    public static final String STATUS_ERROR = "ERROR";
+
     // PRIVATE STATIC INVARIANTS STATUS : TOLAUNCH / IGNORED / TRIGGERED / ERROR
-    public Integer getID() {
+    public long getID() {
         return ID;
     }
 
-    public Integer getSchedulerId() {
+    public long getSchedulerId() {
         return schedulerId;
     }
 
@@ -84,11 +93,11 @@ public class ScheduledExecution {
         return dateModif;
     }
 
-    public void setID(Integer ID) {
+    public void setID(long ID) {
         this.ID = ID;
     }
 
-    public void setSchedulerId(Integer schedulerId) {
+    public void setSchedulerId(long schedulerId) {
         this.schedulerId = schedulerId;
     }
 

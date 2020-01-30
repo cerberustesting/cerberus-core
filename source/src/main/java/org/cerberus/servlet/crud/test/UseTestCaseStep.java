@@ -80,6 +80,7 @@ public class UseTestCaseStep extends HttpServlet {
         String conditionOper = request.getParameter("ConditionOper");
         String conditionVal1 = request.getParameter("ConditionVal1");
         String conditionVal2 = request.getParameter("ConditionVal2");
+        String conditionVal3 = request.getParameter("ConditionVal3");
         String description = request.getParameter("Description");
         String fromTest = request.getParameter("FromTest");
         String fromTestCase = request.getParameter("FromTestCase");
@@ -90,7 +91,7 @@ public class UseTestCaseStep extends HttpServlet {
             importProperty = request.getParameter("ImportProperty");
         }
 
-        TestCaseStep tcs = testCaseStepFactory.create(test, testCase, step, step, loop, conditionOper, conditionVal1, conditionVal2, description, "Y", fromTest, fromTestCase, fromStep, null, null, null, null, null, null);
+        TestCaseStep tcs = testCaseStepFactory.create(test, testCase, step, step, loop, conditionOper, conditionVal1, conditionVal2, conditionVal3, description, "Y", fromTest, fromTestCase, fromStep, null, null, null, null, null, null);
 
         /**
          * Import Step, properties

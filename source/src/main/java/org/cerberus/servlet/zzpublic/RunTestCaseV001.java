@@ -177,7 +177,7 @@ public class RunTestCaseV001 extends HttpServlet {
 
             // hidden parameters.
             long idFromQueue = ParameterParserUtil.parseIntegerParam(request.getParameter("IdFromQueue"), 0);
-            String executor = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("executor"), ParameterParserUtil.parseStringParamAndSanitize(request.getRemoteUser(), null));
+            String executor = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter(PARAMETER_EXECUTOR), ParameterParserUtil.parseStringParamAndSanitize(request.getRemoteUser(), ""));
 
             String helpMessage = "\nThis servlet is used to start the execution of a test case.\n"
                     + "Parameter list :\n"
@@ -294,11 +294,11 @@ public class RunTestCaseV001 extends HttpServlet {
                 TestCase tCase = factoryTCase.create(test, testCase);
 
                 // Building Execution Object.
-                TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, robot, robotExecutor, robotHost, robotPort, "", browser, version, platform, "",
+                TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, robot, robotExecutor, robotHost, robotPort, "", browser, version, platform,
                         0, 0, "", "", "", null, null, tag, verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                         Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort,
-                        null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, null,
-                        "", "", "", "", "", manualExecution, "", 0, 0, "");
+                        null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, null, "", "",
+                        "", "", "", "", "", "", "", manualExecution, "", 0, 0, "", executor, null, executor, null);
 
                 /**
                  * Set IdFromQueue

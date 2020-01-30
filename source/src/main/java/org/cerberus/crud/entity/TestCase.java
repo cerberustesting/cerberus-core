@@ -47,6 +47,7 @@ public class TestCase {
     private String conditionOper;
     private String conditionVal1;
     private String conditionVal2;
+    private String conditionVal3;
     private String group;
     private String origine;
     private String refOrigine;
@@ -56,10 +57,11 @@ public class TestCase {
     private String fromRev;
     private String toBuild;
     private String toRev;
-    private String bugID;
+    private JSONArray bugID;
     private String targetBuild;
     private String targetRev;
     private String implementer;
+    private String executor;
     private String activeQA;
     private String activeUAT;
     private String activePROD;
@@ -169,6 +171,14 @@ public class TestCase {
         this.conditionVal2 = conditionVal2;
     }
 
+    public String getConditionVal3() {
+        return conditionVal3;
+    }
+
+    public void setConditionVal3(String conditionVal3) {
+        this.conditionVal3 = conditionVal3;
+    }
+
     public String getApplication() {
         return application;
     }
@@ -177,11 +187,19 @@ public class TestCase {
         this.application = application;
     }
 
-    public String getBugID() {
+    public String getExecutor() {
+        return executor;
+    }
+
+    public void setExecutor(String executor) {
+        this.executor = executor;
+    }
+
+    public JSONArray getBugID() {
         return bugID;
     }
 
-    public void setBugID(String bugID) {
+    public void setBugID(JSONArray bugID) {
         this.bugID = bugID;
     }
 
@@ -424,7 +442,7 @@ public class TestCase {
     public void setTestCaseDep(List<TestCaseDep> testCaseDep) {
         this.testCaseDep = testCaseDep;
     }
-    
+
     public String getUserAgent() {
         return userAgent;
     }
@@ -455,8 +473,6 @@ public class TestCase {
             result.put("test", this.getTest());
             result.put("testcase", this.getTestCase());
             result.put("application", this.getApplication());
-            result.put("project", this.getProject());
-            result.put("ticket", this.getTicket());
             result.put("description", this.getDescription());
             result.put("behaviourOrValueExpected", this.getBehaviorOrValueExpected());
             result.put("priority", this.getPriority());
@@ -465,6 +481,7 @@ public class TestCase {
             result.put("conditionOper", this.getConditionOper());
             result.put("conditionValue1", this.getConditionVal1());
             result.put("conditionValue2", this.getConditionVal2());
+            result.put("conditionValue3", this.getConditionVal3());
             result.put("group", this.getGroup());
             result.put("origine", this.getOrigine());
             result.put("refOrigine", this.getRefOrigine());
@@ -478,6 +495,7 @@ public class TestCase {
             result.put("targetBuild", this.getTargetBuild());
             result.put("targetRev", this.getTargetRev());
             result.put("implementer", this.getImplementer());
+            result.put("executor", this.getExecutor());
             result.put("activeQA", this.getActiveQA());
             result.put("activeUAT", this.getActiveUAT());
             result.put("activePROD", this.getActivePROD());
@@ -501,5 +519,5 @@ public class TestCase {
         }
         return result;
     }
-   
+
 }

@@ -42,7 +42,6 @@ import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestService;
 import org.cerberus.engine.execution.IExecutionCheckService;
 import org.cerberus.engine.execution.IExecutionStartService;
-import org.cerberus.engine.execution.ISeleniumServerService;
 import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,6 +52,7 @@ import org.cerberus.crud.service.IRobotExecutorService;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.engine.execution.IRobotServerService;
 
 /**
  *
@@ -82,7 +82,7 @@ public class ExecutionStartService implements IExecutionStartService {
     @Autowired
     ExecutionUUID executionUUIDObject;
     @Autowired
-    private ISeleniumServerService serverService;
+    private IRobotServerService serverService;
     @Autowired
     private IParameterService parameterService;
     @Autowired
@@ -152,6 +152,8 @@ public class ExecutionStartService implements IExecutionStartService {
                 tCExecution.setConditionVal1Init(tCase.getConditionVal1());
                 tCExecution.setConditionVal2(tCase.getConditionVal2());
                 tCExecution.setConditionVal2Init(tCase.getConditionVal2());
+                tCExecution.setConditionVal3(tCase.getConditionVal3());
+                tCExecution.setConditionVal3Init(tCase.getConditionVal3());
                 tCExecution.setTestCaseVersion(tCase.getTestCaseVersion());
                 tCExecution.setTestCasePriority(tCase.getPriority());
             } else {
@@ -544,18 +546,26 @@ public class ExecutionStartService implements IExecutionStartService {
          * Stop the browser if executionID is equal to zero (to prevent database
          * instabilities)
          */
-        if (!tCExecution.getManualExecution().equals("Y")) {
-            try {
-                if (tCExecution.getId() == 0) {
-                    LOG.debug("Starting to Stop the Selenium Server.");
-                    this.serverService.stopServer(tCExecution);
-                    LOG.debug("Selenium Server stopped.");
-                }
-            } catch (Exception ex) {
-                LOG.warn(ex.toString(), ex);
-            }
+        if (tCExecution.getManualExecution().equals(TestCaseExecution.MANUAL_Y)) {
+            // Set execution executor from testcase executor (only for manual execution).
+            tCExecution.setExecutor(tCExecution.getTestCaseObj().getExecutor());
+//            try {
+//                if (tCExecution.getId() == 0) {
+//                    LOG.debug("Starting to Stop the Selenium Server.");
+//                    this.serverService.stopServer(tCExecution);
+//                    LOG.debug("Selenium Server stopped.");
+//                    this.serverService.stopRemoteProxy(tCExecution);
+//
+//                }
+//            } catch (Exception ex) {
+//                LOG.warn(ex.toString(), ex);
+//            }
         }
 
+        /**
+         * Stop the Cerberus Executor Proxy
+         */
+//        this.serverService.stopRemoteProxy(tCExecution);
         /**
          * Feature Flipping. Should be removed when websocket push is fully
          * working

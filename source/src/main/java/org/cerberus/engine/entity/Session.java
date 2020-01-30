@@ -20,8 +20,8 @@
 package org.cerberus.engine.entity;
 
 import io.appium.java_client.AppiumDriver;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
  *
@@ -44,7 +44,9 @@ public class Session {
     private Integer cerberus_appium_action_longpress_wait;
     private boolean started;
     private boolean cerberus_selenium_autoscroll;
-    private DesiredCapabilities desiredCapabilities;
+    private Integer cerberus_selenium_autoscroll_vertical_offset;
+    private Integer cerberus_selenium_autoscroll_horizontal_offset;
+    private MutableCapabilities desiredCapabilities;
 
     public Integer getCerberus_selenium_pageLoadTimeout() {
         return cerberus_selenium_pageLoadTimeout;
@@ -94,11 +96,11 @@ public class Session {
         this.appiumDriver = appiumDriver;
     }
 
-    public DesiredCapabilities getDesiredCapabilities() {
+    public MutableCapabilities getDesiredCapabilities() {
         return desiredCapabilities;
     }
 
-    public void setDesiredCapabilities(DesiredCapabilities capabilities) {
+    public void setDesiredCapabilities(MutableCapabilities capabilities) {
         this.desiredCapabilities = capabilities;
     }
 
@@ -181,6 +183,22 @@ public class Session {
     
     public void setCerberus_appium_action_longpress_wait(Integer cerberus_appium_action_longpress_wait) {
         this.cerberus_appium_action_longpress_wait = cerberus_appium_action_longpress_wait;
+    }
+
+    public Integer getCerberus_selenium_autoscroll_vertical_offset() {
+        return cerberus_selenium_autoscroll_vertical_offset;
+    }
+
+    public void setCerberus_selenium_autoscroll_vertical_offset(Integer cerberus_selenium_autoscroll_vertical_offset) {
+        this.cerberus_selenium_autoscroll_vertical_offset = cerberus_selenium_autoscroll_vertical_offset;
+    }
+
+    public Integer getCerberus_selenium_autoscroll_horizontal_offset() {
+        return cerberus_selenium_autoscroll_horizontal_offset;
+    }
+
+    public void setCerberus_selenium_autoscroll_horizontal_offset(Integer cerberus_selenium_autoscroll_horizontal_offset) {
+        this.cerberus_selenium_autoscroll_horizontal_offset = cerberus_selenium_autoscroll_horizontal_offset;
     }
     
 }

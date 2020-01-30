@@ -95,6 +95,7 @@ function getSubDataLabel(type) {
  * @param {String} defaultValue [optional] value to be selected in combo.
  * @param {String} addValue1 [optional] Adds a value on top of the normal List.
  * @param {String} asyn [optional] Do a async ajax request. Default: true
+ * @param {String} funcAfterLoad [optional] Function to call after load.
  * @returns {void}
  */
 function displayInvariantList(selectName, idName, forceReload, defaultValue, addValue1, asyn, funcAfterLoad) {
@@ -154,7 +155,6 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
             $("[name='" + selectName + "']").val(defaultValue);
         }
         if (funcAfterLoad !== undefined) {
-            console.info("toto");
             funcAfterLoad();
         }
     }
@@ -487,7 +487,7 @@ function displayUniqueEnvList(selectName, system, defaultValue) {
                 text = text + " [Currently Disabled]";
             $("[name='" + selectName + "']").append($('<option></option>').text(text).val(data.contentTable[option].environment));
         }
-        if (data.contentTable.length <= 1) { // If only 1 environment, we select it directly. 
+        if (data.contentTable.length <= 1) { // If only 1 environment, we select it directly.
             $("[name='" + selectName + "']").val(data.contentTable[0].environment);
         } else { // More than 1 value, we may select the default value.
             if (defaultValue !== undefined) {
@@ -511,6 +511,62 @@ function displayUserList(selectName) {
         }
     });
 }
+
+
+/**
+ * Method that return a list of value retrieved from the invariant list
+ * @param {String} forceReload true in order to force the reload of list from database.
+ * @param {String} addValue1 [optional] Adds a value on top of the normal List.
+ * @param {String} asyn [optional] Do a async ajax request. Default: true
+ * @returns {array}
+ */
+function getUserArray(forceReload, addValue1, asyn) {
+    var result = [];
+    // Adding the specific value when defined.
+    if (addValue1 !== undefined) {
+        result.add(addValue1);
+    }
+
+    if (forceReload === undefined) {
+        forceReload = true;
+    }
+
+    var async = true;
+    if (asyn !== undefined) {
+        async = asyn;
+    }
+
+    var cacheEntryName = "USERLIST";
+    if (forceReload) {
+        sessionStorage.removeItem(cacheEntryName);
+    }
+    var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
+
+    if (list === null) {
+        $.ajax({
+            url: "ReadUserPublic",
+            async: async,
+            success: function (data) {
+                list = data.contentTable;
+                sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
+                for (var index = 0; index < list.length; index++) {
+                    var item = list[index].login;
+                    result.push(item);
+                }
+            }
+        });
+    } else {
+        for (var index = 0; index < list.length; index++) {
+            var item = list[index].login;
+
+            result.push(item);
+        }
+    }
+
+    return result;
+}
+
+
 
 /**
  * Auxiliary method that retrieves a list containing the values that belong to the invariant that matches the provided idname.
@@ -588,6 +644,11 @@ function getSelectInvariant(idName, forceReload, notAsync, addValue) {
     }
 
     return select;
+}
+
+function cleanCacheInvariant(idName) {
+    var cacheEntryName = idName + "INVARIANT";
+    sessionStorage.removeItem(cacheEntryName);
 }
 
 /**
@@ -788,7 +849,7 @@ function getSelectDeployType(forceReload) {
  * @param {string} param value of the parameter to get ex : "cerberus_homepage_nbdisplayedtag"
  * @param {string} sys system that will be used to get the parameter
  * @param {boolean} forceReload true if we want to force the reload on cache from the server
- * 
+ *
  */
 function getParameter(param, sys, forceReload) {
     var result;
@@ -819,8 +880,31 @@ function getParameter(param, sys, forceReload) {
     return result;
 }
 
+/**
+ * Get and cache a parameter value.
+ * The forceReload boolean can force the refresh of the list from the server.
+ * @param {string} param value of the parameter to get ex : "cerberus_homepage_nbdisplayedtag"
+ * @param {string} sys system that will be used to get the parameter
+ * @param {boolean} forceReload true if we want to force the reload on cache from the server
+ *
+ */
 function getParameterString(param, sys, forceReload) {
     return getParameter(param, sys, forceReload).value;
+}
+
+/**
+ * Get and cache a parameter value.
+ * The forceReload boolean can force the refresh of the list from the server.
+ * @param {string} param value of the parameter to get ex : "cerberus_homepage_nbdisplayedtag"
+ * @param {string} sys system that will be used to get the parameter
+ * @param {boolean} forceReload true if we want to force the reload on cache from the server
+ *
+ */
+function getParameterBoolean(param, sys, forceReload) {
+    let val = getParameter(param, sys, forceReload).value;
+    if (val === 'Y' || val === 'y' || val === 'true' || val === 'yes')
+        return true;
+    return false;
 }
 
 /***********************************************Messages/ALERT***************************************/
@@ -1317,6 +1401,12 @@ function returnMessageHandler(response) {
 }
 
 function showUnexpectedError(jqXHR, textStatus, errorThrown) {
+
+    console.log(jqXHR.responseText);
+    console.log(jqXHR.statusText);
+    console.log(textStatus);
+    console.log(errorThrown);
+
     clearResponseMessageMainPage();
     var type = getAlertType(textStatus);
     var message = "";
@@ -1342,7 +1432,7 @@ function showUnexpectedError(jqXHR, textStatus, errorThrown) {
  */
 function createDataTableWithPermissions(tableConfigurations, callbackFunction, objectWaitingLayer, filtrableColumns, checkPermissions, userCallbackFunction, createdRowCallback) {
     /**
-     * Define datatable config with tableConfiguration object received 
+     * Define datatable config with tableConfiguration object received
      */
     var configs = {};
     var domConf = 'ZRCB<"clear">lf<"pull-right"p>rti<"marginTop5">'; // Z allow to activate table resize
@@ -1607,7 +1697,7 @@ function afterDatatableFeeds(divId, ajaxSource, oSettings) {
     showTitleWhenTextOverflow();
 
     /**
-     * If specific function defined in page, call 
+     * If specific function defined in page, call
      */
 
     if (typeof afterTableLoad === "function") {
@@ -2016,18 +2106,6 @@ function escapeHtml(unsafe) {
             .replace(/'/g, "\\'");
 }
 
-function generateExecutionLink(status, id, tag) {
-    var result = "";
-    if (status === "NE") {
-        // Not executed (means manual execution).
-        result = "./TestCaseExecution.jsp?executionId=" + id;
-    } else {
-        // No longuer in the queue so we display the result.
-        result = "./TestCaseExecution.jsp?executionId=" + id;
-    }
-    return result;
-}
-
 function getRowClass(status) {
     var rowClass = [];
 
@@ -2097,6 +2175,31 @@ function getDate(date) {
     var endExe = new Date(date);
     if (endExe > d1) {
         return endExe;
+    } else {
+        return "";
+    }
+}
+
+/**
+ * Method that return a String that contain the date. If date is 1970, the string return will be empty.
+ * @param {string} date
+ * @returns {string} date in string format
+ */
+function getDateShort(date) {
+    var endExe = new Date(date);
+    var d1 = new Date('1980-01-01');
+    if (endExe > d1) {
+        return ('0' + endExe.getHours()).substr(-2) + ":" + ('0' + endExe.getMinutes()).substr(-2) + ":" + ('0' + endExe.getSeconds()).substr(-2);
+    } else {
+        return "";
+    }
+}
+
+function getDateMedium(date) {
+    var endExe = new Date(date);
+    var d1 = new Date('1980-01-01');
+    if (endExe > d1) {
+        return ("0" + endExe.getDate()).slice(-2) + "-" + ("0" + (endExe.getMonth() + 1)).slice(-2) + "-" + endExe.getFullYear() + " " + ('0' + endExe.getHours()).substr(-2) + ":" + ('0' + endExe.getMinutes()).substr(-2) + ":" + ('0' + endExe.getSeconds()).substr(-2);
     } else {
         return "";
     }
@@ -2632,3 +2735,26 @@ function getComboConfigApplication() {
             };
     return config;
 }
+
+function getBugIdList(data, appurl) {
+    var link = "";
+    if (isEmpty(appurl)) {
+        $.each(data, function (idx, obj) {
+            link = link + '' + obj.id;
+            if (obj.desc !== "") {
+                link = link + " - " + obj.desc;
+            }
+            link = link + "<br>";
+        });
+    } else {
+        $.each(data, function (idx, obj) {
+            link = link + '<a target="_blank" href="' + appurl.replace(/%BUGID%/g, obj.id) + '">' + obj.id;
+            if (obj.desc !== "") {
+                link = link + " - " + obj.desc;
+            }
+            link = link + "</a><br>";
+        });
+    }
+    return link;
+}
+

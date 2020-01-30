@@ -104,7 +104,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         response.setCharacterEncoding("utf8");
         String echo = request.getParameter("sEcho");
 
-        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         tagService = appContext.getBean(ITagService.class);
@@ -115,6 +115,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             // Data/Filter Parameters.
             String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
             List<String> outputReport = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("outputReport"), new ArrayList<>(), "UTF-8");
+            boolean fullList = ParameterParserUtil.parseBooleanParam(request.getParameter("fullList"), false);
 
             JSONObject jsonResponse = new JSONObject();
             JSONObject statusFilter = getStatusList(request);
@@ -138,13 +139,17 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 }
 
                 testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
-                AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null, tcList);
+                AnswerList<TestCaseLabel> testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null, tcList);
                 testCaseLabelScopeList = testCaseLabelList.getDataList();
             }
 
             // Table that contain the list of testcases and corresponding executions
             if (outputReport.isEmpty() || outputReport.contains("table")) {
-                jsonResponse.put("table", generateTestCaseExecutionTable(appContext, testCaseExecutions, statusFilter, countryFilter, testCaseLabelScopeList));
+                jsonResponse.put("table", generateTestCaseExecutionTable(appContext, testCaseExecutions, statusFilter, countryFilter, testCaseLabelScopeList, fullList));
+            }
+            // Table that contain the list of testcases and corresponding executions
+            if (outputReport.isEmpty() || outputReport.contains("table")) {
+                jsonResponse.put("manualExecutionList", generateManualExecutionTable(appContext, testCaseExecutions, statusFilter, countryFilter));
             }
             // Executions per Function (or Test).
             if (outputReport.isEmpty() || outputReport.contains("functionChart")) {
@@ -211,53 +216,56 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         result.put("Country", JavaScriptUtils.javaScriptEscape(testCaseExecution.getCountry()));
         result.put("RobotDecli", JavaScriptUtils.javaScriptEscape(testCaseExecution.getRobotDecli()));
         result.put("ManualExecution", JavaScriptUtils.javaScriptEscape(testCaseExecution.getManualExecution()));
+        if (testCaseExecution.getExecutor() != null) {
+            result.put("Executor", JavaScriptUtils.javaScriptEscape(testCaseExecution.getExecutor()));
+        }
         result.put("ControlStatus", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlStatus()));
         result.put("ControlMessage", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlMessage()));
         result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecution.getStatus()));
         result.put("NbExecutions", String.valueOf(testCaseExecution.getNbExecutions()));
+        result.put("previousExeId", testCaseExecution.getPreviousExeId());
+        if (testCaseExecution.getPreviousExeStatus() != null) {
+            result.put("previousExeControlStatus", JavaScriptUtils.javaScriptEscape(testCaseExecution.getPreviousExeStatus()));
+        }
         if (testCaseExecution.getQueueState() != null) {
             result.put("QueueState", JavaScriptUtils.javaScriptEscape(testCaseExecution.getQueueState()));
         }
 
-        String bugId;
-        String comment;
-        String function;
-        String shortDesc;
-        if ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getTest() != null)) {
-            if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
-                    && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugID() != null) {
-                bugId = testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID());
-                bugId = new StringBuffer("<a href='")
-                        .append(bugId)
-                        .append("' target='reportBugID'>")
-                        .append(testCaseExecution.getTestCaseObj().getBugID())
-                        .append("</a>")
-                        .toString();
-            } else {
-                bugId = testCaseExecution.getTestCaseObj().getBugID();
-            }
-            comment = JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getComment());
-            function = JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getFunction());
-            shortDesc = testCaseExecution.getTestCaseObj().getDescription();
-        } else {
-            bugId = "";
-            comment = "";
-            function = "";
-            shortDesc = "";
-        }
-        result.put("BugID", bugId);
-
-        result.put("Priority", JavaScriptUtils.javaScriptEscape(String.valueOf(testCaseExecution.getTestCaseObj().getPriority())));
-        result.put("Comment", comment);
-        result.put("Function", function);
-        result.put("ShortDescription", shortDesc);
-
-        result.put("Application", JavaScriptUtils.javaScriptEscape(testCaseExecution.getApplication()));
-
+//        if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
+//                && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugID() != null) {
+//            result.put("AppBugURL", testCaseExecution.getApplicationObj().getBugTrackerUrl());
+//                bugId = testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID());
+//                bugId = new StringBuffer("<a href='")
+//                        .append(bugId)
+//                        .append("' target='reportBugID'>")
+//                        .append(testCaseExecution.getTestCaseObj().getBugID())
+//                        .append("</a>")
+//                        .toString();
+//        }
+//        String comment;
+//        String function;
+//        String shortDesc;
+//        JSONArray bugId = new JSONArray();
+//        if ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getTest() != null)) {
+//            bugId = testCaseExecution.getTestCaseObj().getBugID();
+//            comment = JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getComment());
+//            function = JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getFunction());
+//            shortDesc = testCaseExecution.getTestCaseObj().getDescription();
+//        } else {
+//            comment = "";
+//            function = "";
+//            shortDesc = "";
+//        }
+//        result.put("BugID", bugId);
+//        result.put("Priority", JavaScriptUtils.javaScriptEscape(String.valueOf(testCaseExecution.getTestCaseObj().getPriority())));
+//        result.put("Comment", comment);
+//        result.put("Function", function);
+//        result.put("ShortDescription", shortDesc);
+//        result.put("Application", JavaScriptUtils.javaScriptEscape(testCaseExecution.getApplication()));
         List<JSONObject> testCaseDep = new ArrayList<>();
 
-        if (testCaseExecution.getTestCaseDep() != null) {
-            for (TestCaseExecutionQueueDep tce : testCaseExecution.getTestCaseDep()) {
+        if (testCaseExecution.getTestCaseExecutionQueueDepList() != null) {
+            for (TestCaseExecutionQueueDep tce : testCaseExecution.getTestCaseExecutionQueueDepList()) {
                 JSONObject obj = new JSONObject();
                 obj.put("test", tce.getDepTest());
                 obj.put("testcase", tce.getDepTestCase());
@@ -294,21 +302,20 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         JSONObject countryList = new JSONObject();
         try {
             IInvariantService invariantService = appContext.getBean(InvariantService.class);
-            AnswerList answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
-            for (Invariant country : (List<Invariant>) answer.getDataList()) {
+            for (Invariant country : (List<Invariant>) invariantService.readByIdName("COUNTRY")) {
                 countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
             }
-        } catch (JSONException ex) {
+        } catch (JSONException | CerberusException ex) {
             LOG.error("Error on getCountryList : " + ex, ex);
         }
 
         return countryList;
     }
 
-    private JSONObject generateTestCaseExecutionTable(ApplicationContext appContext, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter, List<TestCaseLabel> testCaseLabelList) {
+    private JSONObject generateTestCaseExecutionTable(ApplicationContext appContext, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter, List<TestCaseLabel> testCaseLabelList, boolean fullList) {
         JSONObject testCaseExecutionTable = new JSONObject();
-        LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
-        LinkedHashMap<String, JSONObject> columnMap = new LinkedHashMap<String, JSONObject>();
+        LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<>();
+        LinkedHashMap<String, JSONObject> columnMap = new LinkedHashMap<>();
 
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             try {
@@ -329,10 +336,36 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         execTab = ttcObject.getJSONObject("execTab");
                         execTab.put(execKey, executionJSON);
                         ttcObject.put("execTab", execTab);
-                        Integer nbExeTot = (Integer) ttcObject.get("NbExecutionsTotal");
-                        nbExeTot += testCaseExecution.getNbExecutions() - 1;
-                        ttcObject.put("NbExecutionsTotal", nbExeTot);
-
+                        // Nb Total Executions
+                        Integer nbExeTot = (Integer) ttcObject.get("NbExe");
+                        nbExeTot += testCaseExecution.getNbExecutions();
+                        ttcObject.put("NbExe", nbExeTot);
+                        // Nb Total Executions
+                        Integer nbRetryTot = (Integer) ttcObject.get("NbRetry");
+                        nbRetryTot += testCaseExecution.getNbExecutions() - 1;
+                        ttcObject.put("NbRetry", nbRetryTot);
+                        // Nb Total Usefull Executions
+                        Integer nbExeUsefullTot = (Integer) ttcObject.get("NbExeUsefull");
+                        nbExeUsefullTot++;
+                        ttcObject.put("NbExeUsefull", nbExeUsefullTot);
+                        // Nb Total Usefull Executions in QU or OK status
+                        Integer nbExeTmp;
+                        if (isToHide(controlStatus)) {
+                            nbExeTmp = (Integer) ttcObject.get("NbExeUsefullToHide");
+                            ttcObject.put("NbExeUsefullToHide", ++nbExeTmp);
+                        }
+                        if (isNotBug(controlStatus)) {
+                            nbExeTmp = (Integer) ttcObject.get("NbExeUsefullOK");
+                            ttcObject.put("NbExeUsefullOK", ++nbExeTmp);
+                        }
+                        if (isBug(controlStatus)) {
+                            nbExeTmp = (Integer) ttcObject.get("NbExeUsefullHasBug");
+                            ttcObject.put("NbExeUsefullHasBug", ++nbExeTmp);
+                        }
+                        if (isPending(controlStatus)) {
+                            nbExeTmp = (Integer) ttcObject.get("NbExeUsefullIsPending");
+                            ttcObject.put("NbExeUsefullIsPending", ++nbExeTmp);
+                        }
                     } else {
                         // We add a new testcase entry (with The current execution).
                         ttcObject.put("test", testCaseExecution.getTest());
@@ -342,25 +375,57 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         ttcObject.put("application", testCaseExecution.getApplication());
                         boolean testExist = ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getTest() != null));
                         if (testExist) {
+
                             ttcObject.put("function", testCaseExecution.getTestCaseObj().getFunction());
                             ttcObject.put("priority", testCaseExecution.getTestCaseObj().getPriority());
                             ttcObject.put("comment", testCaseExecution.getTestCaseObj().getComment());
-                            if ((testCaseExecution.getApplicationObj() != null) && (testCaseExecution.getApplicationObj().getBugTrackerUrl() != null) && (testCaseExecution.getTestCaseObj().getBugID() != null)) {
-                                ttcObject.put("bugId", new JSONObject("{\"bugId\":\"" + testCaseExecution.getTestCaseObj().getBugID() + "\",\"bugTrackerUrl\":\"" + testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID()) + "\"}"));
-                            } else {
-                                ttcObject.put("bugId", new JSONObject("{\"bugId\":\"\",\"bugTrackerUrl\":\"\"}"));
-                            }
+                            ttcObject.put("bugId", testCaseExecution.getTestCaseObj().getBugID());
+
                         } else {
+
                             ttcObject.put("function", "");
                             ttcObject.put("priority", 0);
                             ttcObject.put("comment", "");
-                            ttcObject.put("bugId", new JSONObject("{\"bugId\":\"\",\"bugTrackerUrl\":\"\"}"));
+                            ttcObject.put("bugId", new JSONArray());
+
                         }
+
                         // Flag that report if test case still exist.
                         ttcObject.put("testExist", testExist);
 
                         // Adding nb of execution on retry.
-                        ttcObject.put("NbExecutionsTotal", (testCaseExecution.getNbExecutions() - 1));
+                        ttcObject.put("NbRetry", (testCaseExecution.getNbExecutions() - 1));
+
+                        // Adding nb of execution on retry.
+                        ttcObject.put("NbExe", (testCaseExecution.getNbExecutions()));
+
+                        // Nb Total Usefull Executions
+                        ttcObject.put("NbExeUsefull", 1);
+
+                        // Nb Total Usefull Executions in QU or OK status
+                        if (isToHide(controlStatus)) {
+                            ttcObject.put("NbExeUsefullToHide", 1);
+                        } else {
+                            ttcObject.put("NbExeUsefullToHide", 0);
+                        }
+                        // Nb Total Usefull Executions in QU or OK status
+                        if (isNotBug(controlStatus)) {
+                            ttcObject.put("NbExeUsefullOK", 1);
+                        } else {
+                            ttcObject.put("NbExeUsefullOK", 0);
+                        }
+                        // Nb Total Usefull Executions in QU or OK status
+                        if (isBug(controlStatus)) {
+                            ttcObject.put("NbExeUsefullHasBug", 1);
+                        } else {
+                            ttcObject.put("NbExeUsefullHasBug", 0);
+                        }
+                        // Nb Total Usefull Executions in QU or OK status
+                        if (isPending(controlStatus)) {
+                            ttcObject.put("NbExeUsefullIsPending", 1);
+                        } else {
+                            ttcObject.put("NbExeUsefullIsPending", 0);
+                        }
 
                         execTab.put(execKey, executionJSON);
                         ttcObject.put("execTab", execTab);
@@ -369,7 +434,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                          * Iterate on the label retrieved and generate HashMap
                          * based on the key Test_TestCase
                          */
-                        LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap();
+                        LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap<>();
                         for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList) {
                             if (Label.TYPE_STICKER.equals(label.getLabel().getType())) { // We only display STICKER Type Label in Reporting By Tag Page..
                                 String key = label.getTest() + "_" + label.getTestcase();
@@ -393,10 +458,94 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                     columnMap.put(testCaseExecution.getRobotDecli() + "_" + testCaseExecution.getCountry() + "_" + testCaseExecution.getEnvironment(), column);
 
                 }
-                Map<String, JSONObject> treeMap = new TreeMap<String, JSONObject>(columnMap);
-                testCaseExecutionTable.put("tableContent", ttc.values());
-                testCaseExecutionTable.put("iTotalRecords", ttc.size());
-                testCaseExecutionTable.put("iTotalDisplayRecords", ttc.size());
+
+                TreeMap<String, JSONObject> bugMap = new TreeMap<>();
+                HashMap<String, Boolean> bugMapUniq = new HashMap<>();
+                int nbTOCLEAN = 0;
+                int nbPENDING = 0;
+                int nbTOREPORT = 0;
+                // building Bug Status.
+                for (Map.Entry<String, JSONObject> entry : ttc.entrySet()) {
+                    JSONObject val = entry.getValue();
+                    JSONArray bugA = new JSONArray(val.getString("bugId"));
+                    int nbBug = bugA.length();
+                    if (nbBug > 0) {
+                        for (int i = 0; i < nbBug; i++) {
+                            bugMapUniq.put(bugA.getJSONObject(i).getString("id"), true);
+                            String key = bugA.getJSONObject(i).getString("id") + "#" + val.getString("test") + "#" + val.getString("testCase");
+
+                            if (bugMap.containsKey(key)) {
+                                JSONObject bugO = bugMap.get(key);
+                            } else {
+                                JSONObject bugO = new JSONObject();
+                                bugO.put("test", val.getString("test"));
+                                bugO.put("testCase", val.getString("testCase"));
+                                bugO.put("bug", bugA.getJSONObject(i).getString("id"));
+                                bugO.put("NbExeUsefullHasBug", val.getInt("NbExeUsefullHasBug"));
+                                bugO.put("testExist", val.getBoolean("testExist"));
+                                bugO.put("NbExeUsefull", val.getInt("NbExeUsefull"));
+                                bugO.put("NbExeUsefullIsPending", val.getInt("NbExeUsefullIsPending"));
+                                if (val.getInt("NbExeUsefullIsPending") > 0) {
+                                    bugO.put("status", "STILL RUNNING...");
+                                    nbPENDING++;
+                                } else {
+                                    if (val.getInt("NbExeUsefull") == val.getInt("NbExeUsefullOK")) {
+                                        bugO.put("status", "TO CLEAN");
+                                        nbTOCLEAN++;
+                                    }
+
+                                }
+                                bugMap.put(key, bugO);
+                            }
+                        }
+                    } else {
+                        if (val.getInt("NbExeUsefullHasBug") > 0) {
+                            String key = val.getString("test") + "#" + val.getString("testCase");
+
+                            JSONObject bugO = new JSONObject();
+                            bugO.put("test", val.getString("test"));
+                            bugO.put("testCase", val.getString("testCase"));
+                            bugO.put("bug", "");
+                            bugO.put("NbExeUsefullHasBug", val.getInt("NbExeUsefullHasBug"));
+                            bugO.put("testExist", val.getBoolean("testExist"));
+                            bugO.put("NbExeUsefull", val.getInt("NbExeUsefull"));
+                            bugO.put("NbExeUsefullIsPending", val.getInt("NbExeUsefullIsPending"));
+                            bugO.put("status", "TO REPORT...");
+                            nbTOREPORT++;
+                            bugMap.put(key, bugO);
+                        }
+                    }
+                }
+                JSONObject bugRes = new JSONObject();
+                bugRes.put("bugSummary", bugMap.values());
+                bugRes.put("nbTOREPORT", nbTOREPORT);
+                bugRes.put("nbPENDING", nbPENDING);
+                bugRes.put("nbTOCLEAN", nbTOCLEAN);
+                bugRes.put("nbBugs", bugMapUniq.size());
+                testCaseExecutionTable.put("bugContent", bugRes);
+
+                // Now loading only necessary records to final structure (filtering testcase that have all usefull executions OK of QU).
+                if (fullList) {
+                    testCaseExecutionTable.put("tableContent", ttc.values());
+                    testCaseExecutionTable.put("iTotalRecords", ttc.size());
+                    testCaseExecutionTable.put("iTotalDisplayRecords", ttc.size());
+                } else {
+                    LinkedHashMap<String, JSONObject> newttc = new LinkedHashMap<>();
+                    for (Map.Entry<String, JSONObject> entry : ttc.entrySet()) {
+                        String key = entry.getKey();
+                        JSONObject val = entry.getValue();
+                        if ((val.getInt("NbExeUsefullToHide") != val.getInt("NbExeUsefull")) // One of the execution of the test case has a status <> QU and OK
+                                || (val.getJSONArray("bugId").length() > 0) // At least 1 bug has been assigned to the testcase.
+                                ) {
+                            newttc.put(key, val);
+                        }
+                    }
+                    testCaseExecutionTable.put("tableContent", newttc.values());
+                    testCaseExecutionTable.put("iTotalRecords", newttc.size());
+                    testCaseExecutionTable.put("iTotalDisplayRecords", newttc.size());
+                }
+
+                Map<String, JSONObject> treeMap = new TreeMap<>(columnMap);
                 testCaseExecutionTable.put("tableColumns", treeMap.values());
             } catch (JSONException ex) {
                 LOG.error("Error on generateTestCaseExecutionTable : " + ex, ex);
@@ -405,6 +554,96 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             }
         }
         return testCaseExecutionTable;
+    }
+
+    private boolean isToHide(String controlStatus) {
+        return (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_QU) || controlStatus.equals(TestCaseExecution.CONTROLSTATUS_OK));
+    }
+
+    private boolean isPending(String controlStatus) {
+        return (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_QU) || controlStatus.equals(TestCaseExecution.CONTROLSTATUS_WE) || controlStatus.equals(TestCaseExecution.CONTROLSTATUS_PE));
+    }
+
+    private boolean isBug(String controlStatus) {
+        return (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_FA) || controlStatus.equals(TestCaseExecution.CONTROLSTATUS_KO));
+    }
+
+    private boolean isNotBug(String controlStatus) {
+        return (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_OK) || controlStatus.equals(TestCaseExecution.CONTROLSTATUS_QE));
+    }
+
+    private JSONObject generateManualExecutionTable(ApplicationContext appContext, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter) {
+        JSONObject manualExecutionTable = new JSONObject();
+        HashMap<String, JSONObject> manualExecutions = new HashMap<>();
+        int totalManualExecution = 0;
+        int totalManualWEExecution = 0;
+
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+            try {
+                String controlStatus = testCaseExecution.getControlStatus();
+                boolean isManual = StringUtil.parseBoolean(testCaseExecution.getManualExecution());
+
+                // We check is Country and status is inside the fitered values.
+                if (countryFilter.get(testCaseExecution.getCountry()).equals("on")) {
+
+                    if (isManual) {
+                        totalManualExecution++;
+
+                        String executor = "NoExecutorDefined";
+                        if (!StringUtil.isNullOrEmpty(testCaseExecution.getExecutor())) {
+                            executor = testCaseExecution.getExecutor();
+                        }
+
+                        if (manualExecutions.containsKey(executor)) {
+                            JSONObject executorObj = manualExecutions.get(executor);
+                            JSONArray array = (JSONArray) executorObj.get("executionList");
+                            array.put(testCaseExecution.getId());
+                            JSONArray arrayWE = (JSONArray) executorObj.get("executionWEList");
+                            if (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_WE)) {
+                                arrayWE.put(testCaseExecution.getId());
+                            }
+                            executorObj.put("executionList", array);
+                            executorObj.put("executionWEList", arrayWE);
+                            executorObj.put("executor", executor);
+                            manualExecutions.put(executor, executorObj);
+                        } else {
+                            JSONObject executorObj = new JSONObject();
+                            JSONArray array = new JSONArray();
+                            array.put(testCaseExecution.getId());
+                            JSONArray arrayWE = new JSONArray();
+                            if (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_WE)) {
+                                arrayWE.put(testCaseExecution.getId());
+                            }
+                            executorObj.put("executionList", array);
+                            executorObj.put("executionWEList", arrayWE);
+                            executorObj.put("executor", executor);
+                            manualExecutions.put(executor, executorObj);
+                        }
+
+                        if (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_WE)) {
+                            totalManualWEExecution++;
+                        }
+                    }
+
+                }
+
+                JSONArray array = new JSONArray();
+                for (Map.Entry<String, JSONObject> entry : manualExecutions.entrySet()) {
+                    Object key = entry.getKey();
+                    JSONObject val = entry.getValue();
+                    array.put(val);
+                }
+                manualExecutionTable.put("perExecutor", array);
+                manualExecutionTable.put("totalExecution", totalManualExecution);
+                manualExecutionTable.put("totalWEExecution", totalManualWEExecution);
+
+            } catch (JSONException ex) {
+                LOG.error("Error on generateManualExecutionTable : " + ex, ex);
+            } catch (Exception ex) {
+                LOG.error("Error on generateManualExecutionTable : " + ex, ex);
+            }
+        }
+        return manualExecutionTable;
     }
 
     private JSONObject generateFunctionChart(List<TestCaseExecution> testCaseExecutions, String tag, JSONObject statusFilter, JSONObject countryFilter) throws JSONException {
@@ -550,7 +789,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         int totalBugToReport = 0;
         int totalBugToReportReported = 0;
         int totalBugToClean = 0;
-        HashMap<String, SummaryStatisticsBugTrackerDTO> statMap = new HashMap<String, SummaryStatisticsBugTrackerDTO>();
+        HashMap<String, SummaryStatisticsBugTrackerDTO> statMap = new HashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             String controlStatus = testCaseExecution.getControlStatus();
             if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseExecution.getCountry()).equals("on")) {
@@ -560,36 +799,41 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 if (bugsToReport.contains(testCaseExecution.getControlStatus())) {
                     totalBugToReport++;
                 }
-                if ((testCaseExecution.getTestCaseObj() != null) && (!StringUtil.isNullOrEmpty(testCaseExecution.getTestCaseObj().getBugID()))) {
-                    key = testCaseExecution.getTestCaseObj().getBugID();
-                    stat = statMap.get(key);
-                    totalBugReported++;
-                    if (stat == null) {
-                        stat = new SummaryStatisticsBugTrackerDTO();
-                        stat.setNbExe(1);
-                        stat.setBugId(testCaseExecution.getTestCaseObj().getBugID());
-                        stat.setBugIdURL(testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID()));
-                        stat.setExeIdLastStatus(testCaseExecution.getControlStatus());
-                        stat.setExeIdFirst(testCaseExecution.getId());
-                        stat.setExeIdLast(testCaseExecution.getId());
-                        stat.setTestFirst(testCaseExecution.getTest());
-                        stat.setTestLast(testCaseExecution.getTest());
-                        stat.setTestCaseFirst(testCaseExecution.getTestCase());
-                        stat.setTestCaseLast(testCaseExecution.getTestCase());
-                    } else {
-                        stat.setNbExe(stat.getNbExe() + 1);
-                        stat.setExeIdLastStatus(testCaseExecution.getControlStatus());
-                        stat.setExeIdLast(testCaseExecution.getId());
-                        stat.setTestLast(testCaseExecution.getTest());
-                        stat.setTestCaseLast(testCaseExecution.getTestCase());
+                if ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getBugID().length() > 0)) {
+                    JSONArray arr = testCaseExecution.getTestCaseObj().getBugID();
+                    for (int i = 0; i < arr.length(); i++) {
+                        JSONObject bug = (JSONObject) arr.get(i);
+                        key = bug.getString("id");
+
+                        stat = statMap.get(key);
+                        totalBugReported++;
+                        if (stat == null) {
+                            stat = new SummaryStatisticsBugTrackerDTO();
+                            stat.setNbExe(1);
+                            stat.setBugId(key);
+                            stat.setBugIdURL(testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", key));
+                            stat.setExeIdLastStatus(testCaseExecution.getControlStatus());
+                            stat.setExeIdFirst(testCaseExecution.getId());
+                            stat.setExeIdLast(testCaseExecution.getId());
+                            stat.setTestFirst(testCaseExecution.getTest());
+                            stat.setTestLast(testCaseExecution.getTest());
+                            stat.setTestCaseFirst(testCaseExecution.getTestCase());
+                            stat.setTestCaseLast(testCaseExecution.getTestCase());
+                        } else {
+                            stat.setNbExe(stat.getNbExe() + 1);
+                            stat.setExeIdLastStatus(testCaseExecution.getControlStatus());
+                            stat.setExeIdLast(testCaseExecution.getId());
+                            stat.setTestLast(testCaseExecution.getTest());
+                            stat.setTestCaseLast(testCaseExecution.getTestCase());
+                        }
+                        if (!(bugsToReport.contains(testCaseExecution.getControlStatus()))) {
+                            totalBugToClean++;
+                            stat.setToClean(true);
+                        } else {
+                            totalBugToReportReported++;
+                        }
+                        statMap.put(key, stat);
                     }
-                    if (!(bugsToReport.contains(testCaseExecution.getControlStatus()))) {
-                        totalBugToClean++;
-                        stat.setToClean(true);
-                    } else {
-                        totalBugToReportReported++;
-                    }
-                    statMap.put(key, stat);
                 }
 
             }
@@ -703,12 +947,12 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         JSONArray jsonArraySTICKER = new JSONArray();
         JSONArray jsonArrayREQUIREMENT = new JSONArray();
 
-        AnswerList resp = labelService.readByVarious(new ArrayList<>(), new ArrayList<>(asList(Label.TYPE_STICKER, Label.TYPE_REQUIREMENT)));
+        AnswerList<Label> resp = labelService.readByVarious(new ArrayList<>(), new ArrayList<>(asList(Label.TYPE_STICKER, Label.TYPE_REQUIREMENT)));
 
         // Building Label inputlist with target layout
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
 
-            HashMap<Integer, TreeNode> inputList = new HashMap();
+            HashMap<Integer, TreeNode> inputList = new HashMap<>();
 
             for (Label label : (List<Label>) resp.getDataList()) {
 
@@ -747,11 +991,12 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 node.setCounter1Text("<span style='background-color:#000000' class='cnt1 badge badge-pill badge-secondary'>%COUNTER1%</span>");
                 node.setCounter1WithChildText("<span class='cnt1WC badge badge-pill badge-secondary'>%COUNTER1WITHCHILD%</span>");
                 node.setNbNodesText("<span style='background-color:#337ab7' class='nbNodes badge badge-pill badge-primary'>%NBNODESWITHCHILD%</span>");
+                node.setLabelObj(label);
                 inputList.put(node.getId(), node);
 //                    LOG.debug("Label : " + node.getId() + " T : " + node);
             }
 
-            HashMap<String, List<Integer>> testCaseWithLabel1 = new HashMap();
+            HashMap<String, List<Integer>> testCaseWithLabel1 = new HashMap<>();
             for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList) {
 //                LOG.debug("TCLabel : " + label.getLabel() + " T : " + label.getTest() + " C : " + label.getTestcase() + " Type : " + label.getLabel().getType());
                 if ((Label.TYPE_STICKER.equals(label.getLabel().getType()))
@@ -848,6 +1093,9 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
         }
 
+        if ((jsonArraySTICKER.length() <= 0) && (jsonArrayREQUIREMENT.length() <= 0)) {
+            return null;
+        }
         jsonResult.put("labelTreeSTICKER", jsonArraySTICKER);
         jsonResult.put("labelTreeREQUIREMENT", jsonArrayREQUIREMENT);
 

@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -48,10 +51,14 @@ import org.cerberus.service.json.IJsonService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -89,14 +96,43 @@ public class ControlService implements IControlService {
         AnswerItem<String> answerDecode = new AnswerItem<>();
 
         /**
+         * Decode the step action control description
+         */
+        try {
+            // When starting a new action, we reset the property list that was already calculated.
+            tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+
+            answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getDescription(),
+                    tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
+            testCaseStepActionControlExecution.setDescription((String) answerDecode.getItem());
+
+            if (!(answerDecode.isCodeStringEquals("OK"))) {
+                // If anything wrong with the decode --> we stop here with decode message in the control result.
+                testCaseStepActionControlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Description"));
+                testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                testCaseStepActionControlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                testCaseStepActionControlExecution.setEnd(new Date().getTime());
+                LOG.debug("Control interupted due to decode 'Description' Error.");
+                return testCaseStepActionControlExecution;
+            }
+        } catch (CerberusEventException cex) {
+            testCaseStepActionControlExecution.setControlResultMessage(cex.getMessageError());
+            testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            return testCaseStepActionControlExecution;
+        }
+
+        /**
          * Decode the 2 fields property and values before doing the control.
          */
         try {
 
             // for both control property and control value
             //if the getvalue() indicates that the execution should stop then we stop it before the doControl  or
-            //if the property service was unable to decode the property that is specified in the object, 
+            //if the property service was unable to decode the property that is specified in the object,
             //then the execution of this control should not performed
+            if (testCaseStepActionControlExecution.getValue1() == null) {
+                testCaseStepActionControlExecution.setValue1("");
+            }
             if (testCaseStepActionControlExecution.getValue1().contains("%")) {
 
                 // When starting a new control, we reset the property list that was already calculated.
@@ -118,6 +154,9 @@ public class ControlService implements IControlService {
 
             }
 
+            if (testCaseStepActionControlExecution.getValue2() == null) {
+                testCaseStepActionControlExecution.setValue2("");
+            }
             if (testCaseStepActionControlExecution.getValue2().contains("%")) {
 
                 // When starting a new control, we reset the property list that was already calculated.
@@ -134,6 +173,30 @@ public class ControlService implements IControlService {
                     testCaseStepActionControlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                     testCaseStepActionControlExecution.setEnd(new Date().getTime());
                     LOG.debug("Control interupted due to decode 'Control Value2' Error.");
+                    return testCaseStepActionControlExecution;
+                }
+
+            }
+
+            if (testCaseStepActionControlExecution.getValue3() == null) {
+                testCaseStepActionControlExecution.setValue3("");
+            }
+            if (testCaseStepActionControlExecution.getValue3().contains("%")) {
+
+                // When starting a new control, we reset the property list that was already calculated.
+                tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+
+                answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue3(),
+                        tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
+                testCaseStepActionControlExecution.setValue3((String) answerDecode.getItem());
+
+                if (!(answerDecode.isCodeStringEquals("OK"))) {
+                    // If anything wrong with the decode --> we stop here with decode message in the control result.
+                    testCaseStepActionControlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value3"));
+                    testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                    testCaseStepActionControlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                    testCaseStepActionControlExecution.setEnd(new Date().getTime());
+                    LOG.debug("Control interupted due to decode 'Control Value3' Error.");
                     return testCaseStepActionControlExecution;
                 }
 
@@ -158,10 +221,10 @@ public class ControlService implements IControlService {
             switch (testCaseStepActionControlExecution.getControl()) {
 
                 case TestCaseStepActionControl.CONTROL_VERIFYSTRINGEQUAL:
-                    res = this.verifyStringEqual(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    res = this.verifyStringEqual(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYSTRINGDIFFERENT:
-                    res = this.verifyStringDifferent(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    res = this.verifyStringDifferent(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYSTRINGGREATER:
                     res = this.verifyStringGreater(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
@@ -170,10 +233,10 @@ public class ControlService implements IControlService {
                     res = this.verifyStringMinor(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYSTRINGCONTAINS:
-                    res = this.verifyStringContains(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    res = this.verifyStringContains(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYSTRINGNOTCONTAINS:
-                    res = this.verifyStringNotContains(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    res = this.verifyStringNotContains(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYNUMERICEQUALS:
                 case TestCaseStepActionControl.CONTROL_VERIFYNUMERICDIFFERENT:
@@ -216,10 +279,10 @@ public class ControlService implements IControlService {
                     res = this.verifyElementNotClickable(tCExecution, testCaseStepActionControlExecution.getValue1());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYTEXTINELEMENT:
-                    res = this.verifyTextInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    res = this.verifyTextInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYTEXTNOTINELEMENT:
-                    res = this.verifyTextNotInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    res = this.verifyTextNotInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYREGEXINELEMENT:
                     res = this.VerifyRegexInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
@@ -231,7 +294,7 @@ public class ControlService implements IControlService {
                     res = this.VerifyTextNotInPage(tCExecution, testCaseStepActionControlExecution.getValue1());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYTITLE:
-                    res = this.verifyTitle(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    res = this.verifyTitle(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYURL:
                     res = this.verifyUrl(tCExecution, testCaseStepActionControlExecution.getValue1());
@@ -243,7 +306,7 @@ public class ControlService implements IControlService {
                     res = this.verifyXmlTreeStructure(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
                     break;
                 case TestCaseStepActionControl.CONTROL_TAKESCREENSHOT:
-                    res = this.takeScreenshot(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
+                    res = this.takeScreenshot(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution, testCaseStepActionControlExecution.getValue1());
                     break;
                 case TestCaseStepActionControl.CONTROL_GETPAGESOURCE:
                     res = this.getPageSource(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
@@ -285,63 +348,72 @@ public class ControlService implements IControlService {
         return testCaseStepActionControlExecution;
     }
 
-    private MessageEvent verifyStringDifferent(String value1, String value2) {
+    private MessageEvent verifyStringDifferent(String value1, String value2, String isCaseSensitive) {
         MessageEvent mes;
-        if (!value1.equalsIgnoreCase(value2)) {
-            mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_DIFFERENT);
+        if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? !value1.equals(value2) : !value1.equalsIgnoreCase(value2)) {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_STRINGDIFFERENT);
             mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
             mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+            mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_DIFFERENT);
         mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
         mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+        mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
         return mes;
     }
 
-    private MessageEvent verifyStringEqual(String value1, String value2) {
+    private MessageEvent verifyStringEqual(String value1, String value2, String isCaseSensitive) {
         MessageEvent mes;
-        if (value1.equalsIgnoreCase(value2)) {
-            mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_EQUAL);
+        if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? value1.equals(value2) : value1.equalsIgnoreCase(value2)) {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_STRINGEQUAL);
             mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
             mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+            mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_EQUAL);
         mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
         mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+        mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
         return mes;
 
     }
 
-    private MessageEvent verifyStringContains(String value1, String value2) {
+    private MessageEvent verifyStringContains(String value1, String value2, String isCaseSensitive) {
         MessageEvent mes;
-        if (value1.indexOf(value2) >= 0) {
+        if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? value1.indexOf(value2) >= 0 : value1.toLowerCase().indexOf(value2.toLowerCase()) >= 0) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_CONTAINS);
             mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
             mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+            mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_CONTAINS);
         mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
         mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+        mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
         return mes;
 
     }
 
-    private MessageEvent verifyStringNotContains(String value1, String value2) {
+    private MessageEvent verifyStringNotContains(String value1, String value2, String isCaseSensitive) {
         MessageEvent mes;
-        if (value1.indexOf(value2) >= 0) {
-            
-        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCONTAINS);
-        mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-        mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-        return mes;
-        }
-            mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTCONTAINS);
+        if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? value1.indexOf(value2) >= 0 : value1.toLowerCase().indexOf(value2.toLowerCase()) >= 0) {
+
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCONTAINS);
             mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
             mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+            mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
+
             return mes;
+        }
+        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTCONTAINS);
+        mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+        mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+        mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
+        return mes;
 
     }
 
@@ -881,11 +953,12 @@ public class ControlService implements IControlService {
 
     }
 
-    public MessageEvent verifyTextInElement(TestCaseExecution tCExecution, String path, String expected) {
+    public MessageEvent verifyTextInElement(TestCaseExecution tCExecution, String path, String expected, String isCaseSensitive) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Control: verifyTextInElement on " + path + " element against value: " + expected);
         }
 
+        MessageEvent mes;
         // Get value from the path element according to the application type
         String actual = null;
         try {
@@ -899,21 +972,22 @@ public class ControlService implements IControlService {
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
                 // In case of null actual value then we alert user
                 if (actual == null) {
-                    MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NULL);
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NULL);
                     mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                     return mes;
                 }
                 // Construct the message from the actual response
-                MessageEvent mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT);
+
+                mes = verifyTextInElementCaseSensitiveCheck(actual, expected, isCaseSensitive);
                 mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                 mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                 mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                mes.setDescription(mes.getDescription().replace("%STRING4%", caseSensitiveMessageValue(isCaseSensitive)));
                 return mes;
 
             } else if (Application.TYPE_SRV.equalsIgnoreCase(applicationType)) {
 
                 if (tCExecution.getLastServiceCalled() != null) {
-                    MessageEvent mes;
                     String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
                     switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
@@ -931,10 +1005,11 @@ public class ControlService implements IControlService {
                                 return mes;
                             }
                             // Construct the message from the actual response
-                            mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT);
+                            mes = verifyTextInElementCaseSensitiveCheck(actual, expected, isCaseSensitive);
                             mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                             mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                             mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                            mes.setDescription(mes.getDescription().replace("%STRING4%", caseSensitiveMessageValue(isCaseSensitive)));
                             return mes;
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
@@ -952,10 +1027,11 @@ public class ControlService implements IControlService {
                             return mes;
                         }
                         // Construct the message from the actual response
-                        mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT);
+                        mes = verifyTextInElementCaseSensitiveCheck(actual, expected, isCaseSensitive);
                         mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                         mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                         mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                        mes.setDescription(mes.getDescription().replace("%STRING4%", caseSensitiveMessageValue(isCaseSensitive)));
                         return mes;
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
@@ -966,20 +1042,20 @@ public class ControlService implements IControlService {
 
                     // TODO Give the actual element found into the description.
                 } else {
-                    MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOOBJECTINMEMORY);
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOOBJECTINMEMORY);
                     return mes;
                 }
 
             } else {
 
-                MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyTextInElement"));
                 mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
                 return mes;
             }
 
         } catch (NoSuchElementException exception) {
-            MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT);
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
             return mes;
         } catch (WebDriverException exception) {
@@ -988,11 +1064,22 @@ public class ControlService implements IControlService {
 
     }
 
-    public MessageEvent verifyTextNotInElement(TestCaseExecution tCExecution, String path, String expected) {
+    private MessageEvent verifyTextInElementCaseSensitiveCheck(String actual, String expected, String isCaseSensitive) {
+        MessageEvent mes;
+        if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false)) {
+            mes = actual.equals(expected) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT);
+        } else {
+            mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT);
+        }
+        return mes;
+    }
+
+    public MessageEvent verifyTextNotInElement(TestCaseExecution tCExecution, String path, String expected, String isCaseSensitive) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Control: verifyTextNotInElement on " + path + " element against value: " + expected);
         }
 
+        MessageEvent mes;
         // Get value from the path element according to the application type
         String actual = null;
         try {
@@ -1006,15 +1093,16 @@ public class ControlService implements IControlService {
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
                 // In case of null actual value then we alert user
                 if (actual == null) {
-                    MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT_NULL);
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT_NULL);
                     mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                     return mes;
                 }
                 // Construct the message from the actual response
-                MessageEvent mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINELEMENT);
+                mes = verifyTextNotInElementCaseSensitiveCheck(actual, expected, isCaseSensitive);
                 mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                 mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                 mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                mes.setDescription(mes.getDescription().replace("%STRING4%", caseSensitiveMessageValue(isCaseSensitive)));
                 return mes;
 
             } else if (Application.TYPE_SRV.equalsIgnoreCase(applicationType)) {
@@ -1022,7 +1110,6 @@ public class ControlService implements IControlService {
                 if (tCExecution.getLastServiceCalled() != null) {
 
                     String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
-                    MessageEvent mes;
 
                     switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
@@ -1039,10 +1126,11 @@ public class ControlService implements IControlService {
                             }
 
                             // Construct the message from the actual response
-                            mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINELEMENT);
+                            mes = verifyTextNotInElementCaseSensitiveCheck(actual, expected, isCaseSensitive);
                             mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                             mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                             mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                            mes.setDescription(mes.getDescription().replace("%STRING4%", caseSensitiveMessageValue(isCaseSensitive)));
                             return mes;
 
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
@@ -1061,7 +1149,7 @@ public class ControlService implements IControlService {
                             return mes;
                         }
                         // Construct the message from the actual response
-                        mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINELEMENT);
+                        mes = verifyTextNotInElementCaseSensitiveCheck(actual, expected, isCaseSensitive);
                         mes.setDescription(mes.getDescription().replace("%STRING1%", path));
                         mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                         mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
@@ -1075,25 +1163,35 @@ public class ControlService implements IControlService {
                     }
 
                 } else {
-                    MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOOBJECTINMEMORY);
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOOBJECTINMEMORY);
                     return mes;
                 }
 
             } else {
-                MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyTextNotInElement"));
                 mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
                 return mes;
             }
 
         } catch (NoSuchElementException exception) {
-            MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT_NO_SUCH_ELEMENT);
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
             return mes;
         } catch (WebDriverException exception) {
             return parseWebDriverException(exception);
         }
 
+    }
+
+    private MessageEvent verifyTextNotInElementCaseSensitiveCheck(String actual, String expected, String isCaseSensitive) {
+        MessageEvent mes;
+        if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false)) {
+            mes = actual.equals(expected) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINELEMENT);
+        } else {
+            mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINELEMENT);
+        }
+        return mes;
     }
 
     private MessageEvent VerifyRegexInElement(TestCaseExecution tCExecution, String path, String regex) {
@@ -1339,22 +1437,47 @@ public class ControlService implements IControlService {
         if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
 
             MessageEvent mes;
+            String url = "";
+            // Control is made forcing the / at the beginning of URL. getCurrentUrl from Selenium
+            //  already have that control but value1 is specified by user and could miss it.
+            final String controlUrl = StringUtil.addPrefixIfNotAlready(value1, "/");
+            url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
+
             try {
-                String url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
-                // Control is made forcing the / at the beginning of URL. getCurrentUrl from Selenium 
-                //  already have that control but value1 is specified by user and could miss it.
-                String controlUrl = StringUtil.addPrefixIfNotAlready(value1, "/");
-                if (url.equalsIgnoreCase(controlUrl)) {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_URL);
-                    mes.setDescription(mes.getDescription().replace("%STRING1%", url));
-                    mes.setDescription(mes.getDescription().replace("%STRING2%", controlUrl));
-                    return mes;
-                } else {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL);
-                    mes.setDescription(mes.getDescription().replace("%STRING1%", url));
-                    mes.setDescription(mes.getDescription().replace("%STRING2%", controlUrl));
-                    return mes;
-                }
+                LOG.debug("Before wait" + System.currentTimeMillis());
+                WebDriverWait wait = new WebDriverWait(tCExecution.getSession().getDriver(),
+                        TimeUnit.MILLISECONDS.toSeconds(tCExecution.getSession().getCerberus_selenium_wait_element()));
+
+                //Wait until the url is the expected one
+                wait.until(new Function<WebDriver, Boolean>() {
+
+                    String value;
+                    String expectedValue = controlUrl;
+
+                    public Boolean apply(WebDriver driver) {
+                        try {
+                            this.value = webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
+                            LOG.debug("Get new url : " + value + " >> Expected url : " + expectedValue);
+                        } catch (CerberusEventException ex) {
+                            java.util.logging.Logger.getLogger(ControlService.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        return value.equalsIgnoreCase(expectedValue);
+                    }
+                });
+
+                LOG.debug("After wait" + System.currentTimeMillis());
+                url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
+
+                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_URL);
+                mes.setDescription(mes.getDescription().replace("%STRING1%", url));
+                mes.setDescription(mes.getDescription().replace("%STRING2%", controlUrl));
+                return mes;
+
+            } catch (TimeoutException exception) {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL);
+                mes.setDescription(mes.getDescription().replace("%STRING1%", url));
+                mes.setDescription(mes.getDescription().replace("%STRING2%", controlUrl));
+                return mes;
             } catch (WebDriverException exception) {
                 return parseWebDriverException(exception);
             }
@@ -1369,24 +1492,46 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent verifyTitle(TestCaseExecution tCExecution, String title) {
+    private MessageEvent verifyTitle(TestCaseExecution tCExecution, String title, String isCaseSensitive) {
         LOG.debug("Control : verifyTitle on : " + title);
         MessageEvent mes;
         if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
 
+            String pageTitle = this.webdriverService.getTitle(tCExecution.getSession());
+
             try {
-                String pageTitle = this.webdriverService.getTitle(tCExecution.getSession());
-                if (pageTitle.equalsIgnoreCase(title)) {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TITLE);
-                    mes.setDescription(mes.getDescription().replace("%STRING1%", pageTitle));
-                    mes.setDescription(mes.getDescription().replace("%STRING2%", title));
-                    return mes;
-                } else {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TITLE);
-                    mes.setDescription(mes.getDescription().replace("%STRING1%", pageTitle));
-                    mes.setDescription(mes.getDescription().replace("%STRING2%", title));
-                    return mes;
-                }
+                LOG.debug("Before wait" + System.currentTimeMillis());
+                WebDriverWait wait = new WebDriverWait(tCExecution.getSession().getDriver(),
+                        TimeUnit.MILLISECONDS.toSeconds(tCExecution.getSession().getCerberus_selenium_wait_element()));
+
+                //Wait until the title is the expected one
+                wait.until(new Function<WebDriver, Boolean>() {
+
+                    String value;
+                    String expectedValue = title;
+
+                    public Boolean apply(WebDriver driver) {
+                        this.value = webdriverService.getTitle(tCExecution.getSession());
+                        LOG.debug("Get new title : " + value + " >> Expected title : " + expectedValue);
+                        return ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? expectedValue.equals(value) : expectedValue.equalsIgnoreCase(value);
+                    }
+                });
+                LOG.debug("After wait" + System.currentTimeMillis());
+
+                pageTitle = this.webdriverService.getTitle(tCExecution.getSession());
+
+                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TITLE);
+                mes.setDescription(mes.getDescription().replace("%STRING1%", pageTitle));
+                mes.setDescription(mes.getDescription().replace("%STRING2%", title));
+                mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
+                return mes;
+
+            } catch (TimeoutException exception) {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TITLE);
+                mes.setDescription(mes.getDescription().replace("%STRING1%", pageTitle));
+                mes.setDescription(mes.getDescription().replace("%STRING2%", title));
+                mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
+                return mes;
             } catch (WebDriverException exception) {
                 return parseWebDriverException(exception);
             }
@@ -1513,13 +1658,22 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent takeScreenshot(TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
+    private String caseSensitiveMessageValue(String isCaseSensitive) {
+
+        if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false)) {
+            return "case sensitive";
+        } else {
+            return "case insensitive";
+        }
+    }
+
+    private MessageEvent takeScreenshot(TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution, String cropValues) {
         MessageEvent message;
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-            TestCaseExecutionFile file = recorderService.recordScreenshot(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlSequence());
+            TestCaseExecutionFile file = recorderService.recordScreenshot(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlSequence(), cropValues);
             testCaseStepActionControlExecution.addFileList(file);
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TAKESCREENSHOT);
             return message;
@@ -1537,7 +1691,7 @@ public class ControlService implements IControlService {
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
             TestCaseExecutionFile file = recorderService.recordPageSource(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlSequence());
             if (file != null) {
-                List<TestCaseExecutionFile> fileList = new ArrayList<TestCaseExecutionFile>();
+                List<TestCaseExecutionFile> fileList = new ArrayList<>();
                 fileList.add(file);
                 testCaseStepActionControlExecution.setFileList(fileList);
             }

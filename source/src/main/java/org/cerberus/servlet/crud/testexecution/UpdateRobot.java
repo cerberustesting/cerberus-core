@@ -106,8 +106,13 @@ public class UpdateRobot extends HttpServlet {
         String lbexemethod = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("lbexemethod"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
 
-        List<RobotCapability> capabilities = (List<RobotCapability>) (request.getParameter("capabilities") == null ? Collections.emptyList() : gson.fromJson(request.getParameter("capabilities"), new TypeToken<List<RobotCapability>>() {
-        }.getType()));
+        List<RobotCapability> capabilities;
+        if (request.getParameter("capabilities") == null) {
+            capabilities = Collections.emptyList();
+        } else {
+            capabilities = gson.fromJson(request.getParameter("capabilities"), new TypeToken<List<RobotCapability>>() {
+            }.getType());
+        }
 
         JSONArray objExecutorArray = new JSONArray(request.getParameter("executors"));
         List<RobotExecutor> executors = new ArrayList<>();
@@ -115,13 +120,13 @@ public class UpdateRobot extends HttpServlet {
 
         // Securing capabilities by setting them the associated robot name
         // Check also if there is no duplicated capability
-        Map<String, Object> capabilityMap = new HashMap<String, Object>();
+        Map<String, Object> capabilityMap = new HashMap<>();
         for (RobotCapability capability : capabilities) {
             capabilityMap.put(capability.getCapability(), null);
             capability.setRobot(robot);
         }
 
-        Map<String, Object> executorMap = new HashMap<String, Object>();
+        Map<String, Object> executorMap = new HashMap<>();
         for (RobotExecutor executor : executors) {
             executorMap.put(executor.getExecutor(), null);
             executor.setRobot(robot);

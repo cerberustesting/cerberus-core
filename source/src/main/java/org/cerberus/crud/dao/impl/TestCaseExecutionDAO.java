@@ -76,9 +76,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         boolean throwEx = false;
         final String query = "INSERT INTO testcaseexecution(test, testcase, description, build, revision, environment, environmentData, country, browser, application, robothost, "
-                + "url, robotport, tag, status, start, controlstatus, controlMessage, crbversion, browserFullVersion, executor, screensize,"
-                + "conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, UserAgent, queueId, testCaseVersion, TestCasePriority, system, robotdecli, robot, robotexecutor) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "url, robotport, tag, status, start, controlstatus, controlMessage, crbversion, executor, screensize, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, "
+                + "manualExecution, UserAgent, queueId, testCaseVersion, TestCasePriority, system, robotdecli, robot, robotexecutor, RobotProvider, RobotSessionId, UsrCreated) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -111,14 +111,15 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getControlStatus());
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getControlMessage(), 65000));
                 preStat.setString(i++, tCExecution.getCrbVersion());
-                preStat.setString(i++, tCExecution.getBrowserFullVersion());
                 preStat.setString(i++, tCExecution.getExecutor());
                 preStat.setString(i++, tCExecution.getScreenSize());
                 preStat.setString(i++, tCExecution.getConditionOper());
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal1Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal2Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal3Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal1(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal2(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal3(), 65000));
                 preStat.setString(i++, tCExecution.getManualExecution());
                 preStat.setString(i++, tCExecution.getUserAgent());
                 preStat.setLong(i++, tCExecution.getQueueID());
@@ -128,12 +129,15 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getRobotDecli());
                 preStat.setString(i++, tCExecution.getRobot());
                 preStat.setString(i++, tCExecution.getRobotExecutor());
+                preStat.setString(i++, tCExecution.getRobotProvider());
+                preStat.setString(i++, tCExecution.getRobotSessionID());
+                preStat.setString(i++, tCExecution.getUsrCreated());
 
                 preStat.executeUpdate();
                 ResultSet resultSet = preStat.getGeneratedKeys();
                 try {
                     if (resultSet.first()) {
-                        return resultSet.getInt(1);
+                        return resultSet.getLong(1);
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString(), exception);
@@ -172,9 +176,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         final String query = "UPDATE testcaseexecution SET test = ?, testcase = ?, description = ?, build = ?, revision = ?, environment = ?, environmentData = ?, country = ?"
                 + ", browser = ?, application = ?, robothost = ?, url = ?, robotport = ?, tag = ?, status = ?"
                 + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ? "
-                + ", browserFullVersion = ?, version = ?, platform = ?, executor = ?, screensize = ? "
-                + ", ConditionOper = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ManualExecution = ?, UserAgent = ?, queueId = ?, testCaseVersion = ?, testCasePriority = ?, system = ? "
-                + ", robotdecli = ?, robot = ?, robotexecutor = ? WHERE id = ?";
+                + ", version = ?, platform = ?, executor = ?, screensize = ? "
+                + ", ConditionOper = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal3Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ConditionVal3 = ?, ManualExecution = ?, UserAgent = ?, queueId = ?, testCaseVersion = ?, testCasePriority = ?, system = ? "
+                + ", robotdecli = ?, robot = ?, robotexecutor = ?, RobotProvider = ?, RobotSessionId = ?, UsrModif = ?, DateModif = NOW() WHERE id = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -211,7 +215,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getControlStatus());
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getControlMessage(), 65000));
                 preStat.setString(i++, tCExecution.getCrbVersion());
-                preStat.setString(i++, tCExecution.getBrowserFullVersion());
                 preStat.setString(i++, tCExecution.getVersion());
                 preStat.setString(i++, tCExecution.getPlatform());
                 preStat.setString(i++, tCExecution.getExecutor());
@@ -219,8 +222,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getConditionOper());
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal1Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal2Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal3Init(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal1(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal2(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal3(), 65000));
                 preStat.setString(i++, tCExecution.getManualExecution());
                 preStat.setString(i++, tCExecution.getUserAgent());
                 preStat.setLong(i++, tCExecution.getQueueID());
@@ -230,6 +235,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getRobotDecli());
                 preStat.setString(i++, tCExecution.getRobot());
                 preStat.setString(i++, tCExecution.getRobotExecutor());
+                preStat.setString(i++, tCExecution.getRobotProvider());
+                preStat.setString(i++, tCExecution.getRobotSessionID());
+                preStat.setString(i++, tCExecution.getUsrModif());
                 preStat.setLong(i++, tCExecution.getId());
 
                 preStat.executeUpdate();
@@ -301,8 +309,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerItem readLastByCriteria(String application) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<TestCaseExecution> readLastByCriteria(String application) {
+        AnswerItem<TestCaseExecution> ans = new AnswerItem<>();
         TestCaseExecution result = null;
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -310,7 +318,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
-        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
         query.append("select * from testcaseexecution exe ");
 
@@ -671,66 +679,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList findTagList(int tagnumber) {
-        AnswerList response = new AnswerList<>();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        List<String> list = null;
-        StringBuilder query = new StringBuilder();
-
-        query.append("SELECT DISTINCT exe.tag FROM testcaseexecution exe WHERE tag != ''");
-
-        if (tagnumber != 0) {
-            query.append("ORDER BY id desc LIMIT ");
-            query.append(tagnumber);
-        }
-
-        query.append(";");
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<String>();
-
-                    while (resultSet.next()) {
-                        list.add(resultSet.getString("exe.tag"));
-                    }
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TagList").replace("%OPERATION%", "SELECT"));
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-
-        response.setResultMessage(msg);
-        response.setDataList(list);
-        return response;
-    }
-
-    @Override
     public void setTagToExecution(long id, String tag) throws CerberusException {
         boolean throwEx = false;
         final String query = "UPDATE testcaseexecution exe SET exe.tag = ? WHERE exe.id = ?";
@@ -768,8 +716,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Override
     public List<TestCaseExecution> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList<>();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         final StringBuffer query = new StringBuffer();
 
@@ -844,9 +791,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList readByTag(String tag) throws CerberusException {
+    public AnswerList<TestCaseExecution> readByTag(String tag) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList<>();
+        AnswerList<TestCaseExecution> answer = new AnswerList<>();
 
         final StringBuffer query = new StringBuffer();
 
@@ -860,7 +807,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             LOG.debug("SQL : " + query.toString());
             LOG.debug("SQL.param.tag : " + tag);
         }
-        List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
+        List<TestCaseExecution> testCaseExecutionList = new ArrayList<>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -975,7 +922,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Override
     public AnswerList<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList response = new AnswerList<>();
+        AnswerList<TestCaseExecution> response = new AnswerList<>();
         List<String> individalColumnSearchValues = new ArrayList<>();
         List<TestCaseExecution> objectList = new ArrayList<>();
 
@@ -1163,8 +1110,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<TestCaseExecution> readDistinctEnvCoutnryBrowserByTag(String tag) {
+        AnswerList<TestCaseExecution> answer = new AnswerList<>();
         StringBuilder query = new StringBuilder();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
 
@@ -1224,8 +1171,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<TestCaseExecution> readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
+        AnswerList<TestCaseExecution> answer = new AnswerList<>();
         StringBuilder query = new StringBuilder();
         StringBuilder distinct = new StringBuilder();
         int prev = 0;
@@ -1345,8 +1292,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerItem readByKey(long executionId) {
-        AnswerItem ans = new AnswerItem<>();
+    public AnswerItem<TestCaseExecution> readByKey(long executionId) {
+        AnswerItem<TestCaseExecution> ans = new AnswerItem<>();
         TestCaseExecution result = null;
         final String query = "SELECT * FROM `testcaseexecution` exe WHERE exe.`id` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -1419,7 +1366,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String browser = ParameterParserUtil.parseStringParam(resultSet.getString("exe.browser"), "");
         String version = ParameterParserUtil.parseStringParam(resultSet.getString("exe.version"), "");
         String platform = ParameterParserUtil.parseStringParam(resultSet.getString("exe.platform"), "");
-        String browserFullVersion = ParameterParserUtil.parseStringParam(resultSet.getString("exe.browserFullVersion"), "");
         long start = ParameterParserUtil.parseLongParam(String.valueOf(resultSet.getTimestamp("exe.start").getTime()), 0);
         long end = ParameterParserUtil.parseLongParam(String.valueOf(resultSet.getTimestamp("exe.end").getTime()), 0);
         String controlStatus = ParameterParserUtil.parseStringParam(resultSet.getString("exe.controlStatus"), "");
@@ -1436,17 +1382,26 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String conditionVal1Init = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal1Init"), "");
         String conditionVal2 = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal2"), "");
         String conditionVal2Init = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal2Init"), "");
+        String conditionVal3 = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal3"), "");
+        String conditionVal3Init = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal3Init"), "");
         String manualExecution = ParameterParserUtil.parseStringParam(resultSet.getString("exe.manualExecution"), "N");
         String userAgent = ParameterParserUtil.parseStringParam(resultSet.getString("exe.userAgent"), "");
         String system = ParameterParserUtil.parseStringParam(resultSet.getString("exe.system"), "");
         long queueId = ParameterParserUtil.parseLongParam(resultSet.getString("exe.queueId"), 0);
         int testCaseVersion = ParameterParserUtil.parseIntegerParam(resultSet.getInt("exe.testCaseVersion"), 0);
         int testCasePriority = ParameterParserUtil.parseIntegerParam(resultSet.getInt("exe.testCasePriority"), 0);
+        String robotProvider = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robotProvider"), "");
+        String robotSessionId = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robotSessionId"), "");
+        String usrModif = ParameterParserUtil.parseStringParam(resultSet.getString("exe.UsrModif"), "");
+        String usrCreated = ParameterParserUtil.parseStringParam(resultSet.getString("exe.UsrCreated"), "");
+        Timestamp dateCreated = resultSet.getTimestamp("exe.DateCreated");
+        Timestamp dateModif = resultSet.getTimestamp("exe.DateModif");
         TestCaseExecution result = factoryTCExecution.create(id, test, testcase, description, build, revision, environment,
-                country, robot, robotExecutor, robotHost, robotPort, robotDecli, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, application, null, url,
+                country, robot, robotExecutor, robotHost, robotPort, robotDecli, browser, version, platform, start, end, controlStatus, controlMessage, application, null, url,
                 tag, 0, 0, 0, 0, true, "", "", status, crbVersion, null, null, null,
-                false, null, null, null, environmentData, null, null, null, null, executor, 0, screenSize, null,
-                conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, userAgent, testCaseVersion, testCasePriority, system);
+                false, null, null, null, environmentData, null, null, null, null, executor, 0, screenSize, null, robotProvider, robotSessionId,
+                conditionOper, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, manualExecution, userAgent, testCaseVersion, testCasePriority, system,
+                usrCreated, dateCreated, usrModif, dateModif);
         result.setQueueID(queueId);
         return result;
     }
@@ -1474,12 +1429,12 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         final StringBuffer query = new StringBuffer();
 

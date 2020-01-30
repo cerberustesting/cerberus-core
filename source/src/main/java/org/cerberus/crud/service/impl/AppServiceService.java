@@ -63,28 +63,28 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public AnswerList readByLikeName(String name, int limit) {
+    public AnswerList<AppService> readByLikeName(String name, int limit) {
         return appServiceDao.findAppServiceByLikeName(name, limit);
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems) {
+    public AnswerList<AppService> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems) {
         return appServiceDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
     }
 
     @Override
-    public AnswerItem readByKey(String key) {
+    public AnswerItem<AppService> readByKey(String key) {
         return appServiceDao.readByKey(key);
     }
 
     @Override
-    public AnswerItem readByKeyWithDependency(String key, String activedetail) {
-        AnswerItem answerAppService = this.readByKey(key);
+    public AnswerItem<AppService> readByKeyWithDependency(String key, String activedetail) {
+        AnswerItem<AppService> answerAppService = this.readByKey(key);
         AppService appService = (AppService) answerAppService.getItem();
         try {
-            AnswerList content = appServiceContentService.readByVarious(key, activedetail);
+            AnswerList<AppServiceContent> content = appServiceContentService.readByVarious(key, activedetail);
             appService.setContentList((List<AppServiceContent>) content.getDataList());
-            AnswerList header = appServiceHeaderService.readByVarious(key, activedetail);
+            AnswerList<AppServiceHeader> header = appServiceHeaderService.readByVarious(key, activedetail);
             appService.setHeaderList((List<AppServiceHeader>) header.getDataList());
             answerAppService.setItem(appService);
         } catch (Exception e) {
@@ -94,7 +94,7 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return appServiceDao.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
     }
 

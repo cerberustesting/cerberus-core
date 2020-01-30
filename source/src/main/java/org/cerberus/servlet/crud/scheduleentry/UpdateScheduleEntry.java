@@ -1,20 +1,21 @@
-/* Cerberus Copyright (C) 2013 - 2017 cerberustesting
-DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
-
-This file is part of Cerberus.
-
-Cerberus is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Cerberus is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Cerberus Copyright (C) 2013 - 2017 cerberustesting
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.servlet.crud.scheduleentry;
 
@@ -121,12 +122,15 @@ public class UpdateScheduleEntry extends HttpServlet {
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
+                 * Object created. Updating scheduler entry.
+                 */
+                IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
+                myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
+                /**
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
-                myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
                 logEventService.createForPrivateCalls("/UpdateScheduleEntry", "Update", "Update schedule entry : ['" + scheduleEntry.getName() + "']", request);
             }
         }

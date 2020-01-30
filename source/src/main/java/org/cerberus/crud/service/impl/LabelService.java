@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ILabelDAO;
@@ -52,38 +53,45 @@ public class LabelService implements ILabelService {
 
     @Autowired
     private ILabelDAO labelDAO;
+    @Autowired
+    private ILabelService labelService;
 
     private static final Logger LOG = LogManager.getLogger("LabelService");
 
     private final String OBJECT_NAME = "Label";
 
     @Override
-    public AnswerItem readByKey(Integer id) {
+    public AnswerItem<Label> readByKey(Integer id) {
         return labelDAO.readByKey(id);
     }
 
     @Override
-    public AnswerList readAll() {
+    public AnswerList<Label> readAll() {
         return readByVariousByCriteria(new ArrayList<>(), false, new ArrayList<>(), 0, 0, "Label", "asc", null, null);
     }
 
     @Override
-    public AnswerList readBySystem(List<String> system) {
+    public AnswerList<Label> readAllLinks() {
+        return labelDAO.readAllLinks();
+    }
+
+    @Override
+    public AnswerList<Label> readBySystem(List<String> system) {
         return labelDAO.readBySystemByCriteria(system, false, new ArrayList<>(), 0, 0, "Label", "asc", null, null);
     }
 
     @Override
-    public AnswerList readByVarious(List<String> system, List<String> type) {
+    public AnswerList<Label> readByVarious(List<String> system, List<String> type) {
         return labelDAO.readBySystemByCriteria(system, false, type, 0, 0, "Label", "asc", null, null);
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<Label> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return labelDAO.readBySystemByCriteria(new ArrayList<>(), false, new ArrayList<>(), startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(List<String> system, boolean strictSystemFilter, List<String> type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<Label> readByVariousByCriteria(List<String> system, boolean strictSystemFilter, List<String> type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return labelDAO.readBySystemByCriteria(system, strictSystemFilter, type, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
@@ -177,6 +185,58 @@ public class LabelService implements ILabelService {
     }
 
     @Override
+    public List<Integer> enrichWithChild(List<Integer> labelIdList) {
+
+        try {
+            // Loading list of labelId into a map in order to dedup it.
+            HashMap<Integer, Integer> finalMap = new HashMap<>();
+            HashMap<Integer, Integer> initMap = new HashMap<>();
+            // Dedup list on a MAP
+            for (Integer labelId : labelIdList) {
+                finalMap.put(labelId, 0);
+                initMap.put(labelId, 0);
+            }
+
+            // Loading from database the list of links from parent to childs.
+            List<Label> labelLinkList = labelService.convert(labelService.readAllLinks());
+
+            // Looping of each campaign label and add the childs.
+            Integer initSize = initMap.size();
+            Integer finalSize = initSize;
+            Integer i = 0;
+            do {
+                for (Map.Entry<Integer, Integer> entry : finalMap.entrySet()) {
+                    Integer key = entry.getKey();
+                    initMap.put(key, 0);
+                }
+                initSize = initMap.size();
+                for (Map.Entry<Integer, Integer> entry : initMap.entrySet()) {
+                    Integer key = entry.getKey();
+                    Integer value = entry.getValue();
+                    for (Label label : labelLinkList) {
+                        if (Objects.equals(key, label.getParentLabelID())) {
+                            finalMap.put(label.getId(), 0);
+                        }
+                    }
+                }
+                finalSize = finalMap.size();
+                i++;
+            } while (!Objects.equals(finalSize, initSize) && i < 50);
+
+            List<Integer> finalList = new ArrayList<>();
+            for (Map.Entry<Integer, Integer> entry : finalMap.entrySet()) {
+                Integer key = entry.getKey();
+                finalList.add(key);
+            }
+
+            return finalList;
+        } catch (CerberusException ex) {
+            LOG.error("Exception when enriching Labels with Child.", ex);
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
     public Label convert(AnswerItem<Label> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
@@ -204,7 +264,7 @@ public class LabelService implements ILabelService {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return labelDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
 

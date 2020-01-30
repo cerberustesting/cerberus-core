@@ -46,7 +46,7 @@ public interface IControlService {
      * @param expected
      * @return
      */
-    MessageEvent verifyTextInElement(TestCaseExecution tCExecution, String path, String expected);
+    MessageEvent verifyTextInElement(TestCaseExecution tCExecution, String path, String expected, String isCaseSensitive);
 
     /**
      *
@@ -55,6 +55,6 @@ public interface IControlService {
      * @param expected
      * @return
      */
-    MessageEvent verifyTextNotInElement(TestCaseExecution tCExecution, String path, String expected);
+    MessageEvent verifyTextNotInElement(TestCaseExecution tCExecution, String path, String expected, String isCaseSensitive);
 
 }

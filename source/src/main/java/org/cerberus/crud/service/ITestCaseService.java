@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.cerberus.crud.entity.TestCase;
+import org.cerberus.dto.TestListDTO;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -44,12 +45,35 @@ public interface ITestCaseService {
      */
     TestCase findTestCaseByKey(String test, String testCase) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @return
+     * @throws CerberusException
+     */
     TestCase findTestCaseByKeyWithDependency(String test, String testCase) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @return
+     */
     List<TestCase> findTestCaseByTest(String test);
 
+    /**
+     *
+     * @param test
+     * @param system
+     * @return
+     */
     List<TestCase> findTestCaseByTestSystem(String test, String system);
 
+    /**
+     *
+     * @param application
+     * @return
+     */
     List<TestCase> findTestCaseByApplication(String application);
 
     /**
@@ -66,14 +90,42 @@ public interface ITestCaseService {
      */
     List<TestCase> getTestCaseForPrePostTesting(String testFilter, String applicationFilter, String country, String system, String build, String revision);
 
+    /**
+     *
+     * @param testCase
+     * @return
+     */
     boolean updateTestCaseInformation(TestCase testCase);
 
+    /**
+     *
+     * @param tc
+     * @return
+     */
     boolean updateTestCaseInformationCountries(TestCase tc);
 
+    /**
+     *
+     * @param testCase
+     * @return
+     * @throws CerberusException
+     */
     boolean createTestCase(TestCase testCase) throws CerberusException;
 
+    /**
+     *
+     * @param tCase
+     * @param text
+     * @param system
+     * @return
+     */
     List<TestCase> findTestCaseByAllCriteria(TestCase tCase, String text, String system);
 
+    /**
+     *
+     * @param column
+     * @return
+     */
     List<String> findUniqueDataOfColumn(String column);
 
     /**
@@ -104,9 +156,7 @@ public interface ITestCaseService {
      * countries
      * @since 1.0.2
      */
-    AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries);
-
-    public void updateTestCase(TestCase tc) throws CerberusException;
+    AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries);
 
     /**
      * @param test
@@ -115,10 +165,42 @@ public interface ITestCaseService {
      */
     String getMaxNumberTestCase(String test);
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @return
+     * @throws CerberusException
+     */
     List<TestCase> findUseTestCaseList(String test, String testCase) throws CerberusException;
 
-    List<TestCase> findByCriteria(String[] test, String[] project, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery);
+    /**
+     *
+     * @param test
+     * @param project
+     * @param app
+     * @param active
+     * @param priority
+     * @param status
+     * @param group
+     * @param targetBuild
+     * @param targetRev
+     * @param creator
+     * @param implementer
+     * @param function
+     * @param campaign
+     * @param battery
+     * @return
+     */
+    List<TestCase> findByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @return
+     * @throws CerberusException
+     */
     String findSystemOfTestCase(String test, String testcase) throws CerberusException;
 
     /**
@@ -130,8 +212,13 @@ public interface ITestCaseService {
      * @return an answer with the test cases and a message indicating the status
      * of the operation
      */
-    AnswerList findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country);
+    AnswerList<TestListDTO> findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country);
 
+    /**
+     *
+     * @param test
+     * @return
+     */
     AnswerList readTestCaseByStepsInLibrary(String test);
 
     /**
@@ -144,26 +231,25 @@ public interface ITestCaseService {
      * @param individualSearch
      * @return
      */
-    public AnswerList readByTestByCriteria(List<String> system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
+    public AnswerList<TestCase> readByTestByCriteria(List<String> system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      * @param test
      * @param testCase
      * @return
      */
-    public AnswerItem readByKey(String test, String testCase);
+    public AnswerItem<TestCase> readByKey(String test, String testCase);
 
     /**
      * @param test
      * @param testCase
      * @return
      */
-    public AnswerItem readByKeyWithDependency(String test, String testCase);
+    public AnswerItem<TestCase> readByKeyWithDependency(String test, String testCase);
 
     /**
      *
      * @param test
-     * @param idProject
      * @param app
      * @param creator
      * @param implementer
@@ -176,8 +262,8 @@ public interface ITestCaseService {
      * @param length
      * @return
      */
-    public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length);
+    public AnswerList<TestCase> readByVarious(String[] test, String[] app, String[] creator, String[] implementer, String[] system,
+            String[] campaign, List<Integer> labelid, String[] priority, String[] group, String[] status, int length);
 
     /**
      *
@@ -188,7 +274,7 @@ public interface ITestCaseService {
      * @param columnName
      * @return
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      *
@@ -285,13 +371,12 @@ public interface ITestCaseService {
      * @param service
      * @return
      */
-    public AnswerList findTestCasesThatUseService(String service);
-    
+    public AnswerList<TestListDTO> findTestCasesThatUseService(String service);
+
     /**
-     * 
-     * @param testCase 
-     * @param cerberusVersion 
-     * @throws org.cerberus.exception.CerberusException 
+     *
+     * @param testCase
+     * @throws org.cerberus.exception.CerberusException
      */
     public void importWithDependency(TestCase testCase) throws CerberusException;
 

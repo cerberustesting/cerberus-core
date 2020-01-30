@@ -45,7 +45,7 @@ public interface ICountryEnvLinkDAO {
      * @param string
      * @return
      */
-    AnswerList readByVariousByCriteria(String system, String country, String environment, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    AnswerList<CountryEnvLink> readByVariousByCriteria(String system, String country, String environment, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *

@@ -34,7 +34,6 @@ import org.cerberus.crud.entity.MyVersion;
 import org.cerberus.crud.entity.ScheduleEntry;
 import org.cerberus.crud.factory.IFactoryScheduleEntry;
 import org.cerberus.crud.service.IMyVersionService;
-import org.cerberus.util.answer.AnswerItem;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -47,6 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.cerberus.crud.service.IScheduleEntryService;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerList;
 
 @Component
 public class SchedulerInit {
@@ -65,12 +65,29 @@ public class SchedulerInit {
     Scheduler myScheduler;
     //Création du job
     JobDetail scheduledJob = JobBuilder.newJob(ScheduledJob.class).withIdentity("ScheduledJob", "group1").build();
+    private Set<Trigger> myTriggersSet = new HashSet<>();
+
+    public void setMyTriggersSet(Set<Trigger> myTriggersSet) {
+        this.myTriggersSet = myTriggersSet;
+    }
+
+    public Set<Trigger> getMyTriggersSet() {
+        return myTriggersSet;
+    }
+
+    public String getInstanceSchedulerVersion() {
+        return instanceSchedulerVersion;
+    }
+
+    public boolean isIsRunning() {
+        return isRunning;
+    }
 
     @PostConstruct
     public void init() {
         try {
-            AnswerItem<List> ans = new AnswerItem();
-            List<ScheduleEntry> listSched = new ArrayList<ScheduleEntry>();
+            AnswerList<ScheduleEntry> ans = new AnswerList<>();
+            List<ScheduleEntry> listSched = new ArrayList<>();
 
             // read myversion scheduler_version
             MyVersion databaseSchedulerVersion;
@@ -86,13 +103,12 @@ public class SchedulerInit {
                     if (isRunning == false) {
                         isRunning = true;
                         LOG.info("Start of Reload Scheduler entries from database.");
-                        //Création d'une liste de Trigger
-                        Set<Trigger> myTriggersSet = new HashSet();
+                        Set<Trigger> myTriggersSetList = new HashSet<>();
 
                         try {
                             // Get all active entry of scheduleentry
                             ans = scheduleEntryService.readAllActive();
-                            listSched = ans.getItem();
+                            listSched = ans.getDataList();
                             if (ans.getMessageCodeString().equalsIgnoreCase("OK")) {
                                 // Browse all entry
                                 for (ScheduleEntry sched : listSched) {
@@ -101,8 +117,8 @@ public class SchedulerInit {
                                     String cron = sched.getCronDefinition();
                                     String name = sched.getName();
                                     String type = sched.getType();
-                                    String id = sched.getID().toString();
-                                    int schedulerId = sched.getID();
+                                    String id = String.valueOf(sched.getID()); 
+                                    long schedulerId = sched.getID();
 
                                     String user = "";
                                     if (!StringUtil.isNullOrEmpty(sched.getUsrModif())) {
@@ -114,9 +130,9 @@ public class SchedulerInit {
                                     Trigger myTrigger = TriggerBuilder.newTrigger().withIdentity(id, "group1").usingJobData("schedulerId", schedulerId).usingJobData("name", name).usingJobData("type", type).usingJobData("user", user).withSchedule(CronScheduleBuilder.cronSchedule(cron).inTimeZone(TimeZone.getTimeZone("UTC+2"))).forJob(scheduledJob).build();
 
                                     //Add trigger to list of trigger
-                                    myTriggersSet.add(myTrigger);
+                                    myTriggersSetList.add(myTrigger);
                                 }
-
+                                this.setMyTriggersSet(myTriggersSetList);
                                 try {
                                     //Clean old entry
                                     closeScheduler();
@@ -128,7 +144,7 @@ public class SchedulerInit {
                                     myScheduler.start();
 
                                     //run job on list of trigger
-                                    myScheduler.scheduleJob(scheduledJob, myTriggersSet, false);
+                                    myScheduler.scheduleJob(scheduledJob, myTriggersSetList, false);
                                     LOG.info("End of Reload Scheduler entries from database.");
                                     LOG.info("Scheduler version updated from : " + instanceSchedulerVersion + " to : " + databaseSchedulerVersion.getValueString());
                                     instanceSchedulerVersion = databaseSchedulerVersion.getValueString();

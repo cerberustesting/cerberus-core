@@ -24,12 +24,12 @@ image:applicationpage.png[ApplicationPage]
 ==== Application type
 
 Application type recognizable by Cerberus ::
-* APK (*Android* application)
+* GUI (*Web* application using Selenium backend)
+* APK (*Android* application using Appium backend)
+* IPA (*IOS* application using Appium backend)
+* FAT (*Fat* application using Sikuli backend)
 * BAT (*BATCH* application)
-* GUI (*Web* application)
-* IPA (*IOS* application)
 * SRV (*Service*)
-* WS (*Web Service*)
 * NONE (*Not defined*)
 
 ==== New Bug URL
@@ -58,6 +58,10 @@ The following variables can be used inside the URL :
 | *%BUILD%* | Build
 
 | *%REV%* | Revision
+
+| *%BROWSER%* | Browser used during the test execution (ex : firefox, chrome,...)
+
+| *%BROWSERFULLVERSION%* | Browser fulle version used during the test execution (ex : firefox 47 LINUX,...)
 
 |=== 
 

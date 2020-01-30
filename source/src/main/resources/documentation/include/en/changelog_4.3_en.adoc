@@ -1,0 +1,16 @@
+*Bug fixes*
+[square]
+* Fixed issue when saving a testcase that have properties declined on 2 different range of countries. #2021
+* Fixed an issue when a user is administrator and tries to run a testcase that he does not have the corresponding system athorized.
+* Fixed issue on selenium click (element is not clickable at point...) #2030
+* Fixed issue on parameter update
+* Removed a lot of compilation warnings.
+
+*Improvements / New features*
+[square]
+* Actions and control description can now also use variables that will be decoded. #1931
+* 3 new generic fields at campaign level in order to allow to enrich campaign definition. #2023
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* none

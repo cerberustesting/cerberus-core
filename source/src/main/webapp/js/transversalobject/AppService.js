@@ -38,7 +38,7 @@ function openModalAppService(service, mode, page = undefined) {
 function initModalAppService() {
     console.info("init");
     var doc = new Doc();
-    
+
     displayInvariantList("type", "SRVTYPE", false, "REST");
     displayInvariantList("method", "SRVMETHOD", false, "GET");
     displayApplicationList("application", "", "", "");
@@ -61,14 +61,14 @@ function initModalAppService() {
     $("[name='lbl_creator']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_lastModified']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_lastModifier']").html(doc.getDocOnline("transversal", "UsrModif"));
-    
+
     var configs = {
-    	'system': true,
-    	'object': false,
-    	'propertie': false,
-    	'identifier': false
+        'system': true,
+        'object': false,
+        'propertie': false,
+        'identifier': false
     }
-    
+
     initAutocompleteWithTags([$("[name='servicePath']")], configs, null);
 
     $('[data-toggle="popover"]').popover({
@@ -77,7 +77,7 @@ function initModalAppService() {
     );
 
     setUpDragAndDrop('#editSoapLibraryModal');
-    
+
 
 }
 
@@ -91,7 +91,7 @@ function editAppServiceClick(service, page) {
     $("[name='editSoapLibraryField']").html(doc.getDocLabel("page_appservice", "editSoapLibrary_field"));
 
     $("#editSoapLibraryButton").off("click");
-    $("#editSoapLibraryButton").click(function () {
+    $("#editSoapLibraryButton").click(function() {
         confirmAppServiceModalHandler("EDIT", page);
     });
 
@@ -117,7 +117,7 @@ function editAppServiceClick(service, page) {
  */
 function duplicateAppServiceClick(service) {
     $("#duplicateSoapLibraryButton").off("click");
-    $("#duplicateSoapLibraryButton").click(function () {
+    $("#duplicateSoapLibraryButton").click(function() {
         confirmAppServiceModalHandler("DUPLICATE", undefined);
     });
 
@@ -142,7 +142,7 @@ function duplicateAppServiceClick(service) {
  */
 function addAppServiceClick(service, page) {
     $("#addSoapLibraryButton").off("click");
-    $("#addSoapLibraryButton").click(function () {
+    $("#addSoapLibraryButton").click(function() {
         confirmAppServiceModalHandler("ADD", page);
     });
 
@@ -171,11 +171,11 @@ function prepareAppServiceModal() {
 
     // when type is changed we enable / disable type field.
     $("#editSoapLibraryModal #type").off("change");
-    $("#editSoapLibraryModal #type").change(function () {
+    $("#editSoapLibraryModal #type").change(function() {
         refreshDisplayOnTypeChange($(this).val());
     });
 
-    $("#editSoapLibraryModal #method").change(function () {
+    $("#editSoapLibraryModal #method").change(function() {
         if ($("#editSoapLibraryModal #type").val() == "FTP") {
             if ($(this).val() == "GET") {
                 $("#editSoapLibraryModal #srvRequest textarea").hide();
@@ -207,6 +207,9 @@ function prepareAppServiceModal() {
  */
 function confirmAppServiceModalHandler(mode, page) {
     clearResponseMessage($('#editSoapLibraryModal'));
+
+    var serviceName = $('#service').val();
+    $('#service').val($.trim(serviceName));
 
     var formEdit = $('#editSoapLibraryModal #editSoapLibraryModalForm');
 
@@ -266,7 +269,7 @@ function confirmAppServiceModalHandler(mode, page) {
         data: formData,
         processData: false,
         contentType: false,
-        success: function (data) {
+        success: function(data) {
             data = JSON.parse(data);
 
             if (getAlertType(data.messageType) === "success") {
@@ -303,43 +306,83 @@ function refreshDisplayOnTypeChange(newValue) {
 
     if (newValue === "SOAP") {
         // If SOAP service, no need to feed the method.
-    	$('.upload-drop-zone').hide();
-    	$( "label[name='screenshotfilenameField']" ).hide();
-    	$( "label[name='operationField']" ).show();
-    	$( "input[name='operation']" ).show();
-    	$( "label[name='attachementurlField']" ).show();
-    	$( "input[name='attachementurl']" ).show();
+        $('.upload-drop-zone').hide();
+        $("label[name='screenshotfilenameField']").hide();
+        $("label[name='operationField']").parent().show();
+//        $("input[name='operation']").show();
+        $("label[name='attachementurlField']").parent().show();
+//        $("input[name='attachementurl']").show();
         $('#editSoapLibraryModal #method').prop("disabled", true);
         $('#editSoapLibraryModal #addContent').prop("disabled", false);
         $('#editSoapLibraryModal #addHeader').prop("disabled", false);
+        $("label[name='kafkaTopicField']").parent().hide();
+        $("label[name='kafkaKeyField']").parent().hide();
+        $("label[name='kafkaFilterPathField']").parent().hide();
+        $("label[name='kafkaFilterValueField']").parent().hide();
     } else if (newValue === "FTP") {
         $('#editSoapLibraryModal #method').prop("disabled", false);
-        $('#editSoapLibraryModal #addContent').prop("disabled", true);
-        $('#editSoapLibraryModal #addHeader').prop("disabled", true);
         $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="PUT"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="PATCH"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="GET"]').css("display", "block");
+        $('#editSoapLibraryModal #method option[value="POST"]').css("display", "block");
+        $('#editSoapLibraryModal #method option[value="SEEK"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "none");
+        $('#editSoapLibraryModal #addContent').prop("disabled", true);
+        $('#editSoapLibraryModal #addHeader').prop("disabled", true);
+        $('.upload-drop-zone').show();
+        $("label[name='screenshotfilenameField']").show();
+        $("label[name='operationField']").parent().hide();
+//        $("input[name='operation']").hide();
+        $("label[name='attachementurlField']").parent().hide();
+//        $("input[name='attachementurl']").hide();
+        $("label[name='kafkaTopicField']").parent().hide();
+        $("label[name='kafkaKeyField']").parent().hide();
+        $("label[name='kafkaFilterPathField']").parent().hide();
+        $("label[name='kafkaFilterValueField']").parent().hide();
+    } else if (newValue === "KAFKA") {
         $('#editSoapLibraryModal #method').prop("disabled", false);
-    	$('.upload-drop-zone').show();
-    	$( "label[name='screenshotfilenameField']" ).show();
-    	$( "label[name='operationField']" ).hide();
-    	$( "input[name='operation']" ).hide();
-    	$( "label[name='attachementurlField']" ).hide();
-    	$( "input[name='attachementurl']" ).hide();
-    } else {
-        $('#editSoapLibraryModal #method').prop("disabled", false);
-        $('#editSoapLibraryModal #addContent').prop("disabled", false);
+        $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="PUT"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="PATCH"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="GET"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="POST"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="SEEK"]').css("display", "block");
+        $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "block");
+        $('#editSoapLibraryModal #addContent').prop("disabled", true);
         $('#editSoapLibraryModal #addHeader').prop("disabled", false);
-    	$('.upload-drop-zone').hide();
-    	$( "label[name='screenshotfilenameField']" ).hide();
+        $('.upload-drop-zone').hide();
+        $("label[name='screenshotfilenameField']").hide();
+        $("label[name='operationField']").parent().hide();
+//        $("input[name='operation']").hide();
+        $("label[name='attachementurlField']").parent().hide();
+//        $("input[name='attachementurl']").hide();
+        $("label[name='kafkaTopicField']").parent().show();
+        $("label[name='kafkaKeyField']").parent().show();
+        $("label[name='kafkaFilterPathField']").parent().show();
+        $("label[name='kafkaFilterValueField']").parent().show();
+    } else { // REST
+        $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "block");
         $('#editSoapLibraryModal #method option[value="PUT"]').css("display", "block");
         $('#editSoapLibraryModal #method option[value="PATCH"]').css("display", "block");
-    	$( "label[name='operationField']" ).hide();
-    	$( "input[name='operation']" ).hide();
-    	$( "label[name='attachementurlField']" ).hide();
-    	$( "input[name='attachementurl']" ).hide();
-    }    
+        $('#editSoapLibraryModal #method option[value="GET"]').css("display", "block");
+        $('#editSoapLibraryModal #method option[value="POST"]').css("display", "block");
+        $('#editSoapLibraryModal #method option[value="SEEK"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "none");
+        $('#editSoapLibraryModal #addContent').prop("disabled", false);
+        $('#editSoapLibraryModal #addHeader').prop("disabled", false);
+        $('.upload-drop-zone').hide();
+        $("label[name='screenshotfilenameField']").hide();
+        $("label[name='operationField']").parent().hide();
+//        $("input[name='operation']").hide();
+        $("label[name='attachementurlField']").parent().hide();
+//        $("input[name='attachementurl']").hide();
+        $("label[name='kafkaTopicField']").parent().hide();
+        $("label[name='kafkaKeyField']").parent().hide();
+        $("label[name='kafkaFilterPathField']").parent().hide();
+        $("label[name='kafkaFilterValueField']").parent().hide();
+    }
 }
 
 
@@ -356,10 +399,13 @@ function feedAppServiceModal(serviceName, modalId, mode) {
 
     if (mode === "DUPLICATE" || mode === "EDIT") {
         $.ajax({
-            url: "ReadAppService?service=" + serviceName,
+            url: "ReadAppService",
             async: true,
-            method: "GET",
-            success: function (data) {
+            method: "POST",
+            data: {
+                service: serviceName
+            },
+            success: function(data) {
                 if (data.messageType === "OK") {
 
                     // Feed the data to the screen and manage authorities.
@@ -368,12 +414,12 @@ function feedAppServiceModal(serviceName, modalId, mode) {
 
                     // Force a change event on method field.
                     refreshDisplayOnTypeChange(service.type);
-                    
+
                     //initialize the select2
                     $('#editSoapLibraryModal #application').select2(getComboConfigApplicationList());
                     // set it with the service value
                     $("#editSoapLibraryModal #application").val(service.application).trigger('change');
-                    
+
 
                     formEdit.modal('show');
                 } else {
@@ -391,6 +437,10 @@ function feedAppServiceModal(serviceName, modalId, mode) {
         serviceObj1.type = "REST";
         serviceObj1.method = "GET";
         serviceObj1.servicePath = "";
+        serviceObj1.kafkaTopic = "";
+        serviceObj1.kafkaKey = "";
+        serviceObj1.kafkaFilterPath = "";
+        serviceObj1.kafkaFilterValue = "";
         serviceObj1.operation = "";
         serviceObj1.attachementurl = "";
         serviceObj1.description = "";
@@ -460,6 +510,10 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#operation").prop("value", "");
         formEdit.find("#description").prop("value", "");
         formEdit.find("#Filename").val("Drag and drop Files");
+        formEdit.find("#kafkaTopic").prop("value", "");
+        formEdit.find("#kafkaKey").prop("value", "");
+        formEdit.find("#kafkaFilterPath").prop("value", "");
+        formEdit.find("#kafkaFilterValue").prop("value", "");
     } else {
         formEdit.find("#application").val(service.application);
         formEdit.find("#type").val(service.type);
@@ -470,7 +524,11 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#group").prop("value", service.group);
         formEdit.find("#operation").prop("value", service.operation);
         formEdit.find("#description").prop("value", service.description);
-        if (service.fileName == "") {
+        formEdit.find("#kafkaTopic").prop("value", service.kafkaTopic);
+        formEdit.find("#kafkaKey").prop("value", service.kafkaKey);
+        formEdit.find("#kafkaFilterPath").prop("value", service.kafkaFilterPath);
+        formEdit.find("#kafkaFilterValue").prop("value", service.kafkaFilterValue);
+        if (service.fileName === "") {
             updateDropzone("Drag and drop Files", "#" + modalId);
         } else {
             updateDropzone(service.fileName, "#" + modalId);
@@ -492,7 +550,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
 
     //On ADD, try to autodetect Ace mode until it is defined
 
-    $($("#editSoapLibraryModal #srvRequest").get(0)).keyup(function () {
+    $($("#editSoapLibraryModal #srvRequest").get(0)).keyup(function() {
         if (editor.getSession().getMode().$id === "ace/mode/text") {
             editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
         }
@@ -515,6 +573,10 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#attachementurl").prop("readonly", true);
         formEdit.find("#srvRequest").prop("readonly", "readonly");
         formEdit.find("#description").prop("readonly", "readonly");
+        formEdit.find("#kafkaTopic").prop("readonly", "readonly");
+        formEdit.find("#kafkaKey").prop("readonly", "readonly");
+        formEdit.find("#kafkaFilterPath").prop("readonly", "readonly");
+        formEdit.find("#kafkaFilterValue").prop("readonly", "readonly");
         // We hide Save button.
         $('#editSoapLibraryButton').attr('class', '');
         $('#editSoapLibraryButton').attr('hidden', 'hidden');
@@ -526,21 +588,25 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#attachementurl").prop("readonly", false);
         formEdit.find("#srvRequest").removeProp("readonly");
         formEdit.find("#description").removeProp("disabled");
+        formEdit.find("#kafkaTopic").removeProp("disabled");
+        formEdit.find("#kafkaKey").removeProp("disabled");
+        formEdit.find("#kafkaFilterPath").removeProp("disabled");
+        formEdit.find("#kafkaFilterValue").removeProp("disabled");
     }
 
 
 }
 
-function appendApplicationListServiceModal(defaultValue){
+function appendApplicationListServiceModal(defaultValue) {
     $('#editServiceModal [name="application"]').select2(getComboConfigApplicationList());
     var myoption = $('<option></option>').text(defaultValue).val(defaultValue);
-    $("#editServiceModal [name='application']").append(myoption).trigger('change'); // append the option and update Select2	
+    $("#editServiceModal [name='application']").append(myoption).trigger('change'); // append the option and update Select2
 }
 
 function feedAppServiceModalDataContent(ContentList) {
     $('#contentTableBody tr').remove();
     if (!isEmpty(ContentList)) {
-        $.each(ContentList, function (idx, obj) {
+        $.each(ContentList, function(idx, obj) {
             obj.toDelete = false;
             appendContentRow(obj);
         });
@@ -565,7 +631,7 @@ function appendContentRow(content) {
     var keyName = $("<td></td>").append(keyInput);
     var valueName = $("<td></td>").append(valueInput);
     var descriptionName = $("<td></td>").append(descriptionInput);
-    deleteBtn.click(function () {
+    deleteBtn.click(function() {
         content.toDelete = (content.toDelete) ? false : true;
 
         if (content.toDelete) {
@@ -574,19 +640,19 @@ function appendContentRow(content) {
             row.removeClass("danger");
         }
     });
-    activeSelect.change(function () {
+    activeSelect.change(function() {
         content.active = $(this).val();
     });
     /*sortInput.change(function () {
-        content.sort = $(this).val();
-    });*/
-    keyInput.change(function () {
+     content.sort = $(this).val();
+     });*/
+    keyInput.change(function() {
         content.key = $(this).val();
     });
-    valueInput.change(function () {
+    valueInput.change(function() {
         content.value = $(this).val();
     });
-    descriptionInput.change(function () {
+    descriptionInput.change(function() {
         content.description = $(this).val();
     });
     row.append(deleteBtnRow);
@@ -615,7 +681,7 @@ function feedAppServiceModalDataHeader(headerList) {
 
     $('#headerTableBody tr').remove();
     if (!isEmpty(headerList)) {
-        $.each(headerList, function (idx, obj) {
+        $.each(headerList, function(idx, obj) {
             obj.toDelete = false;
             appendHeaderRow(obj);
         });
@@ -639,27 +705,27 @@ function appendHeaderRow(content) {
     var keyName = $("<td></td>").append(keyInput);
     var valueName = $("<td></td>").append(valueInput);
     var descriptionName = $("<td></td>").append(descriptionInput);
-    deleteBtn.click(function () {
+    deleteBtn.click(function() {
         content.toDelete = (content.toDelete) ? false : true;
-
         if (content.toDelete) {
             row.addClass("danger");
         } else {
+            row.removeClass("danger");
         }
     });
-    activeSelect.change(function () {
+    activeSelect.change(function() {
         content.active = $(this).val();
     });
     /**sortInput.change(function () {
-        content.sort = $(this).val();
-    });*/
-    keyInput.change(function () {
+     content.sort = $(this).val();
+     });*/
+    keyInput.change(function() {
         content.key = $(this).val();
     });
-    valueInput.change(function () {
+    valueInput.change(function() {
         content.value = $(this).val();
     });
-    descriptionInput.change(function () {
+    descriptionInput.change(function() {
         content.description = $(this).val();
     });
     row.append(deleteBtnRow);
@@ -685,9 +751,9 @@ function addNewHeaderRow() {
 }
 
 /**
- * get the picture from items and update the label with the name of the 
- * return a boolean if whether or not it succeed to handle the file 
- * @param {DataTransferItemList} items 
+ * get the picture from items and update the label with the name of the
+ * return a boolean if whether or not it succeed to handle the file
+ * @param {DataTransferItemList} items
  * @returns {boolean}
  */
 function handlePictureSend(items, idModal) {
@@ -712,11 +778,11 @@ function handlePictureSend(items, idModal) {
 function pasteListennerForClipboardPicture(idModal) {
     var _self = this;
     //handlers
-    document.addEventListener('paste', function (e) {
+    document.addEventListener('paste', function(e) {
         _self.paste_auto(e);
     }, false);
     //on paste
-    this.paste_auto = function (e) {
+    this.paste_auto = function(e) {
         //handle paste event if the user do not select an input;
         if (e.clipboardData && !$(e.target).is("input")) {
             var items = e.clipboardData.items;
@@ -735,7 +801,7 @@ function setUpDragAndDrop(idModal) {
     var dropzone = $(idModal).find("#dropzone")[0];
     dropzone.addEventListener("dragenter", dragenter, false);
     dropzone.addEventListener("dragover", dragover, false);
-    dropzone.addEventListener("drop", function (event) {
+    dropzone.addEventListener("drop", function(event) {
         drop(event, idModal);
     });
 }
@@ -779,7 +845,7 @@ function drop(e, idModal) {
 function listennerForInputTypeFile(idModal) {
 
     var inputs = $(idModal).find("#Filename");
-    inputs[0].addEventListener('change', function (e) {
+    inputs[0].addEventListener('change', function(e) {
         //check if the input is an image
         var fileName = '';
         if (this.files && this.files.length > 1)
@@ -815,36 +881,35 @@ function updateDropzone(messageToDisplay, idModal) {
 }
 
 function getComboConfigApplicationList() {
-	var appList =
-    {
-        ajax: {
-            url: "ReadApplication",
-        	dataType: 'json',
-            delay: 0,
-            data: function (params) {
-                params.page = params.page || 1;
-                return {
-                    sSearch: params.term, // search term
-                    iDisplayStart: (params.page * 30) - 30
-                };
-            },
-            processResults: function (data, params) {
-                params.page = params.page || 1;
-                return {
-                    results: $.map(data.contentTable, function (obj) {
-                    	return {id: obj.service, text: obj.service};
-                    }),
-                    pagination: {
-                        more: (params.page * 30) < data.iTotalRecords
-                    }
-                };
-            },
-            cache: true,
-            allowClear: true
-        },
-        width: "100%",
-        minimumInputLength: 0
-    };
+    var appList =
+            {
+                ajax: {
+                    url: "ReadApplication",
+                    dataType: 'json',
+                    delay: 0,
+                    data: function(params) {
+                        params.page = params.page || 1;
+                        return {
+                            sSearch: params.term, // search term
+                            iDisplayStart: (params.page * 30) - 30
+                        };
+                    },
+                    processResults: function(data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: $.map(data.contentTable, function(obj) {
+                                return {id: obj.service, text: obj.service};
+                            }),
+                            pagination: {
+                                more: (params.page * 30) < data.iTotalRecords
+                            }
+                        };
+                    },
+                    cache: true,
+                    allowClear: true
+                },
+                width: "100%",
+                minimumInputLength: 0
+            };
 }
-
 

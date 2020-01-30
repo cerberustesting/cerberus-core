@@ -260,6 +260,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "dateCreated",
+            "visible": false,
             "sName": "tes.dateCreated",
             "like": true,
             "title": doc.getDocOnline("transversal", "DateCreated"),
@@ -271,6 +272,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "usrCreated",
+            "visible": false,
             "sName": "tes.usrCreated",
             "title": doc.getDocOnline("transversal", "UsrCreated"),
             "sWidth": "100px",
@@ -278,6 +280,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "dateModif",
+            "visible": false,
             "like": true,
             "sName": "tes.dateModif",
             "title": doc.getDocOnline("transversal", "DateModif"),
@@ -290,6 +293,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "usrModif",
+            "visible": false,
             "sName": "tes.usrModif",
             "title": doc.getDocOnline("transversal", "UsrModif"),
             "sWidth": "100px",

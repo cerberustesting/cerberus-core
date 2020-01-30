@@ -149,7 +149,7 @@ public class RestService implements IRestService {
                 public AppService handleResponse(final HttpResponse response)
                         throws ClientProtocolException, IOException {
                     AppService myResponse = factoryAppService.create("", AppService.TYPE_REST,
-                            AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", null, "", null, null);
+                            AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", "", "", "", null, "", null, null);
                     int responseCode = response.getStatusLine().getStatusCode();
                     myResponse.setResponseHTTPCode(responseCode);
                     myResponse.setResponseHTTPVersion(response.getProtocolVersion().toString());
@@ -179,8 +179,8 @@ public class RestService implements IRestService {
     public AnswerItem<AppService> callREST(String servicePath, String requestString, String method,
             List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
             String system, TestCaseExecution tcexecution) {
-        AnswerItem result = new AnswerItem<>();
-        AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "",
+        AnswerItem<AppService> result = new AnswerItem<>();
+        AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "", "", "", "", "",
                 "", null, "", null, null);
         serviceREST.setProxy(false);
         serviceREST.setProxyHost(null);
@@ -209,10 +209,8 @@ public class RestService implements IRestService {
         HttpClientBuilder httpclientBuilder;
         if (proxyService.useProxy(servicePath, system)) {
 
-            String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system,
-                    DEFAULT_PROXY_HOST);
-            int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system,
-                    DEFAULT_PROXY_PORT);
+            String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
+            int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system, DEFAULT_PROXY_PORT);
 
             serviceREST.setProxy(true);
             serviceREST.setProxyHost(proxyHost);

@@ -50,7 +50,7 @@ NB : If under Windows, you can submit the command from docker bash.
 * Choose 'cerberus-testing-xnew.ynew' branch
 * Put in title : cerberus-testing-xnew.ynew
 * copy/paste adoc file under source/src/main/resources/documentation/include/en/changelog_xdev_ydev.adoc to content.
-* Upload Cerberus-xnew.ynew.zip and Cerberus-xnew.ynew.war from source/target/
+* Upload Cerberus-xnew.ynew.zip from source/target/
 * Press 'Publish Release'
 
 ### Cerberus docker release
@@ -71,7 +71,7 @@ Where:
 
 Go to your cerberus/docker folder
 
-    cd <path_to_cerberusclone>/release/cerberus-source/docker/images/cerberus-as-glassfish
+    cd <path_to_cerberusclone>/release/cerberus-source/docker/images/cerberus-as-tomcat
 
 And run the release cmd :
 
@@ -79,9 +79,8 @@ And run the release cmd :
        -e RELEASE_VERSION <release version> 
        -s ./release.cmds
 
-Go to the 2 other docker images in order to perform the same release command.
+Go to the other docker image in order to perform the same release command.
 
-    cd <path_to_cerberusclone>/release/cerberus-source/docker/images/cerberus-as-tomcat
     cd <path_to_cerberusclone>/release/cerberus-source/docker/images/cerberus-as-tomcat-keycloak
 
 NB : If under Windows, you can submit the command from docker bash.
@@ -93,11 +92,11 @@ Hereafter the list of available release processes:
 
 File                            | Description                        
 --------------------------------|---------------------------------------------------------------------
-[common.cmds](./common.cmds)    | Release all necessary Cerberus project modules for a common release which are [cerberus-source](https://github.com/cerberustesting/cerberus-source) and [cerberus-as-glassfish](https://github.com/cerberustesting/cerberus-source/tree/master/docker/images/cerberus-as-glassfish).
+[common.cmds](./common.cmds)    | Release all necessary Cerberus project modules for a common release which are [cerberus-source](https://github.com/cerberustesting/cerberus-source) and [cerberus-as-tomcat](https://github.com/cerberustesting/cerberus-source/tree/master/docker/images/cerberus-as-tomcat).
   
 ## License
 
-Cerberus Copyright (C) 2013 - 2017 cerberustesting
+Cerberus Copyright (C) 2013 - 2019 cerberustesting
 
 This file is part of Cerberus.
 

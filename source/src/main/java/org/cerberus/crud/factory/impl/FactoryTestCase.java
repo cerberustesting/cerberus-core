@@ -31,6 +31,7 @@ import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepBatch;
 import org.springframework.stereotype.Service;
 import org.cerberus.crud.factory.IFactoryTestCase;
+import org.json.JSONArray;
 
 /**
  * @author bcivel
@@ -39,19 +40,19 @@ import org.cerberus.crud.factory.IFactoryTestCase;
 public class FactoryTestCase implements IFactoryTestCase {
 
     private static final Logger LOG = LogManager.getLogger(FactoryTestCase.class);
-    
-//    private TestCase newTestCase;
 
+//    private TestCase newTestCase;
     @Override
-    public TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, String implementer, String usrModif, String project, String ticket, String function, String application,
-            String activeQA, String activeUAT, String activePROD, int priority, String group, String status, String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String fromBuild, String fromRev,
-            String toBuild, String toRev, String lastExecutionStatus, String bugID, String targetBuild, String targetRev, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry,
+    public TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, String implementer, String executor, String usrModif, String function, String application,
+            String activeQA, String activeUAT, String activePROD, int priority, String group, String status, String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String conditionVal3, String fromBuild, String fromRev,
+            String toBuild, String toRev, String lastExecutionStatus, JSONArray bugID, String targetBuild, String targetRev, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry,
             List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep, List<TestCaseStepBatch> testCaseStepBatch) {
         TestCase newTestCase = new TestCase();
         newTestCase.setTcActive(tcActive);
         newTestCase.setConditionOper(conditionOper);
         newTestCase.setConditionVal1(conditionVal1);
         newTestCase.setConditionVal2(conditionVal2);
+        newTestCase.setConditionVal3(conditionVal3);
         newTestCase.setApplication(application);
         newTestCase.setBugID(bugID);
         newTestCase.setComment(comment);
@@ -61,9 +62,9 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setGroup(group);
         newTestCase.setHowTo(howTo);
         newTestCase.setImplementer(implementer);
+        newTestCase.setExecutor(executor);
         newTestCase.setOrigine(origine);
         newTestCase.setPriority(priority);
-        newTestCase.setProject(project);
         newTestCase.setRefOrigine(refOrigine);
         newTestCase.setActivePROD(activePROD);
         newTestCase.setActiveQA(activeQA);
@@ -74,7 +75,6 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setTargetBuild(targetBuild);
         newTestCase.setTest(test);
         newTestCase.setTestCase(testCase);
-        newTestCase.setTicket(ticket);
         newTestCase.setToRev(toRev);
         newTestCase.setToBuild(toBuild);
         newTestCase.setUsrCreated(usrCreated);
@@ -92,14 +92,15 @@ public class FactoryTestCase implements IFactoryTestCase {
     }
 
     @Override
-    public TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, String implementer, String usrModif, String project, String ticket, String function, String application,
-            String activeQA, String activeUAT, String activePROD, int priority, String group, String status, String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String fromBuild, String fromRev,
-            String toBuild, String toRev, String lastExecutionStatus, String bugID, String targetBuild, String targetRev, String comment, String dateCreated, String userAgent, String screenSize, Timestamp dateModif, int testCaseVersion) {
+    public TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, String implementer, String executor, String usrModif, String function, String application,
+            String activeQA, String activeUAT, String activePROD, int priority, String group, String status, String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String conditionVal3, String fromBuild, String fromRev,
+            String toBuild, String toRev, String lastExecutionStatus, JSONArray bugID, String targetBuild, String targetRev, String comment, String dateCreated, String userAgent, String screenSize, Timestamp dateModif, int testCaseVersion) {
         TestCase newTestCase = new TestCase();
         newTestCase.setTcActive(tcActive);
         newTestCase.setConditionOper(conditionOper);
         newTestCase.setConditionVal1(conditionVal1);
         newTestCase.setConditionVal2(conditionVal2);
+        newTestCase.setConditionVal3(conditionVal3);
         newTestCase.setApplication(application);
         newTestCase.setBugID(bugID);
         newTestCase.setComment(comment);
@@ -109,10 +110,10 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setGroup(group);
         newTestCase.setHowTo(howTo);
         newTestCase.setImplementer(implementer);
+        newTestCase.setExecutor(executor);
         newTestCase.setLastExecutionStatus(lastExecutionStatus);
         newTestCase.setOrigine(origine);
         newTestCase.setPriority(priority);
-        newTestCase.setProject(project);
         newTestCase.setRefOrigine(refOrigine);
         newTestCase.setActivePROD(activePROD);
         newTestCase.setActiveQA(activeQA);
@@ -123,7 +124,6 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setTargetBuild(targetBuild);
         newTestCase.setTest(test);
         newTestCase.setTestCase(testCase);
-        newTestCase.setTicket(ticket);
         newTestCase.setToRev(toRev);
         newTestCase.setToBuild(toBuild);
         newTestCase.setFunction(function);

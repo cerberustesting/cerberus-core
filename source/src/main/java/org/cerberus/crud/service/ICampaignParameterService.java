@@ -34,9 +34,9 @@ import java.util.Map;
  */
 public interface ICampaignParameterService {
 
-    AnswerList readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    AnswerList<CampaignParameter> readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
-    AnswerList readByCampaign(String campaign);
+    AnswerList<CampaignParameter> readByCampaign(String campaign);
 
     AnswerItem<Map<String, List<String>>> parseParametersByCampaign(String campaignName);
 

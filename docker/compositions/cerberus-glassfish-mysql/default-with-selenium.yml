@@ -51,7 +51,7 @@ services:
       - "13306:3306"
     volumes:
       - ./localdata/mysql-db:/var/lib/mysql
-      - /etc/localtime:/etc/localtime:ro
+#      - /etc/localtime:/etc/localtime:ro
     restart: always
   cerberus-as-glassfish:
     image: cerberustesting/cerberus-as-glassfish:latest
@@ -68,7 +68,7 @@ services:
       - ./localdata/server:/glassfish5/glassfish/domains/cerberus  # allow to persist database pool connection / custom glassfish settings
 #      - ./localdata/lib:/tmp/lib/ # allow to add jdbc library to connect database to cerberus. Uncomment only if folder not empty.
       - ./localdata/cerberusmedia:/opt/CerberusMedias/
-      - /etc/localtime:/etc/localtime:ro
+#      - /etc/localtime:/etc/localtime:ro
     restart: always
     depends_on:
       - cerberus-db-mysql
@@ -81,8 +81,8 @@ services:
       - "4444"
     ports:
       - "14444:4444"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
     restart: always
   selenium-node-firefox:
     image: selenium/node-firefox-debug:latest
@@ -92,8 +92,8 @@ services:
       - "5900"
     ports:
       - "15900:5900"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
     restart: always
   selenium-node-chrome:
     image: selenium/node-chrome-debug:latest
@@ -103,6 +103,6 @@ services:
       - "5900"
     ports:
       - "15901:5900"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
     restart: always

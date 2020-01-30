@@ -28,6 +28,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
         displayFooter(doc);
         displayPageLabel(doc);
 
+        var availableUsers = getUserArray(true);
+        $("#tabDetail input#executor").autocomplete({
+            source: availableUsers
+        });
+
         var executionId = GetURLParameter("executionId");
         var executionQueueId = GetURLParameter("executionQueueId");
         paramActivatewebsocketpush = getParameterString("cerberus_featureflipping_activatewebsocketpush", "", true);
@@ -173,7 +178,7 @@ function loadExecutionInformation(executionId, stepList, sockets) {
                     } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
                     socket.onmessage = function (e) {
                         var data = JSON.parse(e.data);
-                            updatePage(data, stepList);
+                        updatePage(data, stepList);
                     } //on récupère les messages provenant du serveur websocket
                     socket.onclose = function (e) {
                     } //on est informé lors de la fermeture de la connexion vers le serveur
@@ -318,6 +323,13 @@ function displayPageLabel(doc) {
     $("#editTcHeader").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_executiondetail", "edittch"));
     $("#editTcStepInfo").html("<span class='glyphicon glyphicon-new-window'></span> " + doc.getDocLabel("page_executiondetail", "edittcstep"));
     $("#saveTestCaseExecution").html("<span class='glyphicon glyphicon-save'></span> " + doc.getDocLabel("page_executiondetail", "save"));
+
+    // Tracability
+    $("[name='lbl_datecreated']").html(doc.getDocOnline("transversal", "DateCreated"));
+    $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
+    $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
+    $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
+
 }
 
 function updatePage(data, stepList) {
@@ -400,37 +412,42 @@ function updatePage(data, stepList) {
             async: true,
             success: function (dataApp) {
                 var link;
-                var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
+
                 if (data.testCaseObj !== undefined) {
-                    if ((data.testCaseObj.bugId === undefined || data.testCaseObj.bugId === "") && newBugURL !== undefined) {
-                        if (!isEmpty(newBugURL)) {
-                            newBugURL = newBugURL.replace("%EXEID%", data.id);
-                            newBugURL = newBugURL.replace("%EXEDATE%", new Date(data.start).toLocaleString());
-                            newBugURL = newBugURL.replace("%TEST%", data.test);
-                            newBugURL = newBugURL.replace("%TESTCASE%", data.testcase);
-                            newBugURL = newBugURL.replace("%TESTCASEDESC%", data.testCaseObj.description);
-                            newBugURL = newBugURL.replace("%COUNTRY%", data.country);
-                            newBugURL = newBugURL.replace("%ENV%", data.environment);
-                            newBugURL = newBugURL.replace("%BUILD%", data.build);
-                            newBugURL = newBugURL.replace("%REV%", data.revision);
-                            newBugURL = newBugURL.replace("%BROWSER%", data.browser);
-                            newBugURL = newBugURL.replace("%BROWSERFULLVERSION%", data.browserFullVersion);
-                            link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text("Open a new bug"));
-                        } else {
-                            link = $('<a id="bugID">').attr("href", "#").append($("<button class='btn btn-default btn-block'>").text("No 'New Bug' URL Specified.").attr("title", "Please specify 'New Bug' URL at application level."));
-                        }
+
+                    // Display already existing bugs.
+                    link = getBugIdList(data.testCaseObj.bugId, dataApp.contentTable.bugTrackerUrl);
+                    $("#bugID").append(link);
+
+                    // Adding a button to create a new bug.
+                    var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
+                    if (!isEmpty(newBugURL)) {
+                        newBugURL = newBugURL.replace(/%EXEID%/g, data.id);
+                        newBugURL = newBugURL.replace(/%EXEDATE%/g, new Date(data.start).toLocaleString());
+                        newBugURL = newBugURL.replace(/%TEST%/g, data.test);
+                        newBugURL = newBugURL.replace(/%TESTCASE%/g, data.testcase);
+                        newBugURL = newBugURL.replace(/%TESTCASEDESC%/g, data.testCaseObj.description);
+                        newBugURL = newBugURL.replace(/%COUNTRY%/g, data.country);
+                        newBugURL = newBugURL.replace(/%ENV%/g, data.environment);
+                        newBugURL = newBugURL.replace(/%BUILD%/g, data.build);
+                        newBugURL = newBugURL.replace(/%REV%/g, data.revision);
+                        newBugURL = newBugURL.replace(/%BROWSER%/g, data.browser);
+                        newBugURL = newBugURL.replace(/%BROWSERFULLVERSION%/g, data.browser + ' ' + data.version + ' ' + data.platform);
+                        link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block marginTop5'>").text("Open a new bug"));
                     } else {
-                        newBugURL = dataApp.contentTable.bugTrackerUrl;
-                        if (newBugURL !== undefined && newBugURL !== "") {
-                            newBugURL = newBugURL.replace("%BUGID%", data.testCaseObj.bugId);
-                            link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text(data.testCaseObj.bugId));
-                        } else {
-                            link = $("<span>").text(data.testCaseObj.bugId);
-                        }
+                        link = $('<a id="bugID">').attr("href", "#").append($("<button class='btn btn-default btn-block'>").text("No 'New Bug' URL Specified.").attr("title", "Please specify 'New Bug' URL on application '" + data.application + "'."));
                     }
                     $("#bugID").append(link);
-                    $("#bugID").data("appBugURL", "true");
+                    link = $('<a id="bugID">').append($("<button class='btn btn-default btn-block marginTop5' id='editTcHeaderBug'>").text("Assign to Test Case"));
+                    $("#bugID").append(link);
+                    $("#editTcHeaderBug").unbind("click").click(function () {
+                        openModalTestCase(data.test, data.testcase, "EDIT", "tabTCBugReport")
+                    })
+
+
                 }
+                $("#bugID").data("appBugURL", "true");
+
             }
         });
     }
@@ -440,6 +457,7 @@ function updatePage(data, stepList) {
     createProperties(data.testCaseExecutionDataList);
     createVideo(data.videos);
     setUpClickFunctionToSaveTestCaseExecutionButton(data);
+    drawDependencies(data.testCaseExecutionQueueDepList, "depTableBody", "editTabDep");
 }
 
 
@@ -561,6 +579,12 @@ function setConfigPanel(data) {
     configPanel.find("#exReturnMessage").text(data.controlMessage);
     configPanel.find("#controlstatus").text(data.controlStatus);
 
+    if (isTheExecutionManual) {
+        var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnMessageEx' placeholder='Execution Result Message'>");
+        returnMessageField.val(data.controlMessage);
+        $("#returnMessage").html(returnMessageField);
+    }
+
     $("#editTcHeader").unbind("click").click(function () {
         openModalTestCase(data.test, data.testcase, "EDIT")
     })
@@ -570,7 +594,6 @@ function setConfigPanel(data) {
     configPanel.find("#tcDescription").text(data.description);
     configPanel.find("input#application").val(data.application);
     configPanel.find("input#browser").val(data.browser);
-    configPanel.find("input#browserfull").val(data.browserFullVersion);
     configPanel.find("input#build").val(data.build);
     configPanel.find("input#country").val(data.country);
     configPanel.find("input#environment").val(data.environment);
@@ -589,6 +612,10 @@ function setConfigPanel(data) {
     configPanel.find("input#platform").val(data.platform);
     configPanel.find("input#revision").val(data.revision);
     configPanel.find("input#cerberusversion").val(data.crbVersion);
+    if (isTheExecutionManual) {
+        $("input#executor").prop("readonly", false);
+    }
+
     configPanel.find("input#executor").val(data.executor);
     configPanel.find("input#screenSize").val(data.screenSize);
     configPanel.find("input#userAgent").val(data.userAgent);
@@ -600,13 +627,49 @@ function setConfigPanel(data) {
     configPanel.find("input#testcaseversion").val(data.testCaseVersion);
     configPanel.find("input#system").val(data.system);
     configPanel.find("input#robotdecli").val(data.robotDecli);
+    configPanel.find("input#robotsessionid").val(data.robotSessionId);
+    if (data.robotProvider === "BROWSERSTACK") {
+        if (data.tagObj !== undefined) {
+            let targetUrl = "https://automate.browserstack.com/builds/" + data.tagObj.browserstackBuildHash + "/sessions/" + data.robotSessionId;
+            let provImg = $('<img src="./images/browserstack.png" width="20">');
+            $("#sessionLinkHeader").empty().append(provImg).show();
+            $("#sessionLinkHeader").parent().attr("href", targetUrl).attr("target", "_blank");
+            provImg = $('<img src="./images/browserstack.png" width="20">');
+            $("#sessionLink").empty().append(provImg).show();
+            $("#sessionLink").parent().attr("href", targetUrl).attr("target", "_blank");
+        }
+    } else if (data.robotProvider === "KOBITON") {
+        let targetUrl = "https://portal.kobiton.com/sessions/" + data.robotSessionId;
+        let provImg = $('<img src="./images/kobiton.png" width="20">');
+        $("#sessionLinkHeader").empty().append(provImg).show();
+        $("#sessionLinkHeader").parent().attr("href", targetUrl).attr("target", "_blank");
+        provImg = $('<img src="./images/kobiton.png" width="20">');
+        $("#sessionLink").empty().append(provImg).show();
+        $("#sessionLink").parent().attr("href", targetUrl).attr("target", "_blank");
+    } else {
+        $("#sessionLink").hide();
+        $("#sessionLinkHeader").hide();
+    }
     configPanel.find("input#version").val(data.version);
 
-    configPanel.find("input#conditionOperTC").val(data.conditionOper);
-    configPanel.find("input#conditionVal1InitTC").val(data.conditionVal1Init);
-    configPanel.find("input#conditionVal2InitTC").val(data.conditionVal2Init);
-    configPanel.find("input#conditionVal1TC").val(data.conditionVal1);
-    configPanel.find("input#conditionVal2TC").val(data.conditionVal2);
+    if (data.conditionOper === "always" || data.conditionOper === "") {
+        configPanel.find("#condrow1").hide();
+        configPanel.find("#condrow2").hide();
+    } else {
+        configPanel.find("input#conditionOperTC").val(data.conditionOper);
+        configPanel.find("input#conditionVal1InitTC").val(data.conditionVal1Init);
+        configPanel.find("input#conditionVal2InitTC").val(data.conditionVal2Init);
+        configPanel.find("input#conditionVal3InitTC").val(data.conditionVal3Init);
+        configPanel.find("input#conditionVal1TC").val(data.conditionVal1);
+        configPanel.find("input#conditionVal2TC").val(data.conditionVal2);
+        configPanel.find("input#conditionVal3TC").val(data.conditionVal3);
+    }
+
+    configPanel.find("input#usrcreated").val(data.usrCreated);
+    configPanel.find("input#datecreated").val(data.dateCreated);
+    configPanel.find("input#usrmodif").val(data.usrModif);
+    configPanel.find("input#datemodif").val(data.dateModif);
+
 
     //setTestCaseControlStatue(data.controlStatus);
     setLoadBar(data);
@@ -631,7 +694,7 @@ function showSaveTestCaseExecutionButton() {
 }
 
 /*
- * 
+ *
  * set up click function if the button is visible ( visible if alt least one action or step or control have a controlStatus NE )
  * @param {type} data
  * @returns {undefined}
@@ -848,7 +911,7 @@ function drawProperty(property, table, isSecondary) {
     }
 
     // Starting to reduce the size of the row by the length of elements.
-    $(row).find("#contentField").removeClass("col-sm-10").addClass("col-sm-" + (9 - property.fileList.length));
+    $(row).find("#contentField").removeClass("col-sm-10").addClass("col-sm-" + (9 - property.fileList.length)).addClass("col-sm-" + (9 - property.fileList.length));
     // Adding all media attached to action execution.
     addFileLink(property.fileList, $(row).find("#contentRow"), isTheExecutionManual);
 
@@ -897,11 +960,7 @@ function getPropertyContent(property) {
     var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly", true);
     var rankField = $("<input type='text' class='form-control' id='rank'>").prop("readonly", true);
 
-    var returnMessageField = $("<textarea style='width:100%;' class='form-control input-sm' id='returnmessage'>");
-//    returnMessageField.prop("readonly", true);
-//    if (this.returnCode === "NE")
-//        returnMessageField.prop("readonly", false);
-//    this.returnMessageField = returnMessageField;
+    var returnMessageField = $("<textarea style='width:100%;' class='form-control input-sm' id='returnmessage'>").prop("readonly", true);
 
     var indexField = $("<input type='text' class='form-control' id='index'>").prop("readonly", true);
     var natureField = $("<input type='text' class='form-control' id='nature'>").prop("readonly", true);
@@ -912,10 +971,10 @@ function getPropertyContent(property) {
     var retryPeriodField = $("<input type='text' class='form-control' id='retryPeriod'>").prop("readonly", true);
 
     var typeGroup = $("<div class='form-group'></div>").append($("<label for='type'>" + doc.getDocLabel("testcaseexecutiondata", "type") + "</label>")).append(typeField);
-    
+
     // add rank
     var rankGroup = $("<div class='form-group'></div>").append($("<label for='rank'>" + doc.getDocLabel("testcasecountryproperties", "Rank") + "</label>")).append(rankField);
-    
+
     var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
     var value1Group = $("<div class='form-group'></div>").append($("<label for='value1'>" + doc.getDocLabel("page_executiondetail", "value1") + "</label>")).append(value1Field);
     var value1InitGroup = $("<div class='form-group'></div>").append($("<label for='value1init'>" + doc.getDocLabel("page_executiondetail", "value1init") + "</label>")).append(value1InitField);
@@ -1008,11 +1067,11 @@ function createPropertiesOld(propList) {
         var moreBtn = $("<div></div>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down").attr("style", "font-size:1.5em"));
 
         var rcDiv = $("<div>").addClass("col-sm-1");
-        if (property.RC == "OK") {
+        if (property.RC === "OK") {
             rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-ok pull-left' style='font-size:1.5em'></span>"))
-        } else if (property.RC == "FA") {
+        } else if (property.RC === "FA") {
             rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-alert pull-left' style='font-size:1.5em'></span>"))
-        } else if (property.RC == "PE") {
+        } else if (property.RC === "PE") {
             rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-refresh spin pull-left' style='font-size:1.5em'></span>"))
         } else {
             rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-remove pull-left' style='font-size:1.5em'></span>"))
@@ -1121,11 +1180,11 @@ function createPropertiesOld(propList) {
 
         content.append(headerDiv).append(propsbody);
 
-        if (property.RC == "OK") {
+        if (property.RC === "OK") {
             content.addClass("panel-success");
-        } else if (property.RC == "KO") {
+        } else if (property.RC === "KO") {
             content.addClass("panel-danger");
-        } else if (property.RC == "PE") {
+        } else if (property.RC === "PE") {
             content.addClass("panel-primary");
         } else {
             content.addClass("panel-warning");
@@ -1204,8 +1263,10 @@ function Step(json, stepList, id) {
     this.conditionOper = json.conditionOper;
     this.conditionVal1 = json.conditionVal1;
     this.conditionVal2 = json.conditionVal2;
+    this.conditionVal3 = json.conditionVal3;
     this.conditionVal1Init = json.conditionVal1Init;
     this.conditionVal2Init = json.conditionVal2Init;
+    this.conditionVal3Init = json.conditionVal3Init;
     this.useStep = json.useStep;
     this.useStepTest = json.useStepTest;
     this.useStepTestCase = json.useStepTestCase;
@@ -1365,8 +1426,21 @@ Step.prototype.show = function () {
     $("#stepConditionOper").val(object.conditionOper);
     $("#stepConditionVal1").val(object.conditionVal1);
     $("#stepConditionVal2").val(object.conditionVal2);
+    $("#stepConditionVal3").val(object.conditionVal3);
     $("#stepConditionVal1Init").val(object.conditionVal1Init);
     $("#stepConditionVal2Init").val(object.conditionVal2Init);
+    $("#stepConditionVal3Init").val(object.conditionVal3Init);
+
+    if (isTheExecutionManual) {
+        $("#stepRow2").hide();
+        $("#stepRow3").hide();
+        $("#stepRow4").hide();
+    }
+
+    if (object.conditionOper === "always") {
+        $("#stepRow3").hide();
+        $("#stepRow4").hide();
+    }
 
     returnMessageWritableForStep(object, $("#stepMessage"));
 
@@ -1429,7 +1503,7 @@ function returnMessageWritableForStep(object, field) {
     field.data("currentStep", object);
 
     field.prop("readonly", true);
-    if (object.returnCode === "WE" && isTheExecutionManual) {
+    if (isTheExecutionManual) {
         field.prop("readonly", false);
         field.change(function () {
             var currentObject = field.data("currentStep");
@@ -1449,6 +1523,8 @@ Step.prototype.getJsonData = function () {
     json.conditionVal1Init = this.conditionVal1Init;
     json.conditionVal2 = this.conditionVal2;
     json.conditionVal2Init = this.conditionVal2Init;
+    json.conditionVal3 = this.conditionVal3;
+    json.conditionVal3Init = this.conditionVal3Init;
     json.description = this.description;
     json.end = this.end;
     json.fullEnd = this.fullEnd;
@@ -1499,8 +1575,10 @@ function Action(json, parentStep) {
         this.testcase = json.testcase;
         this.value1 = json.value1;
         this.value2 = json.value2;
+        this.value3 = json.value3;
         this.value1init = json.value1init;
         this.value2init = json.value2init;
+        this.value3init = json.value3init;
         this.screenshotFileName = json.screenshotFileName;
         this.controlListJson = json.testCaseStepActionControlExecutionList;
         this.controlList = [];
@@ -1508,8 +1586,10 @@ function Action(json, parentStep) {
         this.conditionOper = json.conditionOper;
         this.conditionVal1Init = json.conditionVal1Init;
         this.conditionVal2Init = json.conditionVal2Init;
+        this.conditionVal3Init = json.conditionVal3Init;
         this.conditionVal1 = json.conditionVal1;
         this.conditionVal2 = json.conditionVal2;
+        this.conditionVal3 = json.conditionVal3;
     } else {
         this.action = "Unknown";
         this.description = "";
@@ -1529,8 +1609,10 @@ function Action(json, parentStep) {
         this.testcase = "";
         this.value1 = "";
         this.value2 = "";
+        this.value3 = "";
         this.value1init = "";
         this.value2init = "";
+        this.value3init = "";
         this.screenshotFileName = "";
         this.controlListJson = "";
         this.controlList = [];
@@ -1538,8 +1620,10 @@ function Action(json, parentStep) {
         this.conditionOper = "always";
         this.conditionVal1Init = "";
         this.conditionVal2Init = "";
+        this.conditionVal3Init = "";
         this.conditionVal1 = "";
         this.conditionVal2 = "";
+        this.conditionVal3 = "";
     }
 
     this.toDelete = false;
@@ -1659,7 +1743,7 @@ function returnMessageWritable(object, field) {
 
     field.empty();
     field.prop("readonly", true);
-    if (object.returnCode === "WE" && isTheExecutionManual) {
+    if (isTheExecutionManual) {
         field.prop("readonly", false);
         field.change(function () {
             object.setReturnMessage(field.val());
@@ -1697,46 +1781,26 @@ Action.prototype.generateHeader = function (id) {
             event.preventDefault();
             event.stopPropagation();
             triggerActionExecution(this, id, "OK");
-            $(this).parent().parent().find(buttonUpload).remove()
-            $(this).parent().parent().find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
-
-            if ($(this).parent().parent().find(".btn-upload").length == 0) {
-                $(this).parent().parent().append(buttonUpload)
-            }
-            buttonUpload.click(function (event) {
-                var indexStep = $("#nav-execution").find(".active").data("index");
-                var indexAction = $(this).parents("a").data('index')
-                var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
-                var idex = $("#idlabel").text()
-                openModalFile(true, currentActionOrControl, "ADD", idex)
-                event.preventDefault()
-                event.stopPropagation()
-            })
-            $(buttonUpload).css("float", "right")
         });
         buttonFA.click(function (event) {
             event.preventDefault();
             event.stopPropagation();
             triggerActionExecution(this, id, "FA");
-            $(this).parent().parent().find(buttonUpload).remove()
-            $(this).parent().parent().find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
-            if ($(this).parent().parent().find(".btn-upload").length == 0) {
-                $(this).parent().parent().append(buttonUpload)
-            }
-            buttonUpload.click(function (event) {
-                var indexStep = $("#nav-execution").find(".active").data("index");
-                var indexAction = $(this).parents("a").data('index')
-                var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
-                var idex = $("#idlabel").text()
-                openModalFile(true, currentActionOrControl, "ADD", idex)
-                event.preventDefault()
-                event.stopPropagation()
-            })
-
-            $(buttonUpload).css("float", "right")
         });
 
+        buttonUpload.click(function (event) {
+            var indexStep = $("#nav-execution").find(".active").data("index");
+            var indexAction = $(this).parents("a").data('index')
+            var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
+            var idex = $("#idlabel").text()
+            openModalFile(true, currentActionOrControl, "ADD", idex)
+            event.preventDefault()
+            event.stopPropagation()
+        })
+        $(buttonUpload).css("float", "right")
+
         contentField.append($("<div class='col-xs-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
+        contentField.append(buttonUpload);
         //hide save button
         showSaveTestCaseExecutionButton();
     } else {
@@ -2035,13 +2099,27 @@ Action.prototype.generateContent = function () {
     var obj = this;
     var doc = new Doc();
 
+    var hideOnManual = "";
+    var hideOnDoNothing = "";
+    var hideCondition = "";
+    if (isTheExecutionManual) {
+        hideOnManual = " hide";
+        if (this.action === "doNothing" || this.action === "Unknown") {
+            hideOnDoNothing = " hide";
+        }
+    } else {
+        if (this.conditionOper === "always") {
+            hideCondition = " hide";
+        }
+    }
+
     var row1 = $("<div></div>").addClass("row");
-    var row2 = $("<div></div>").addClass("row");
-    var row3 = $("<div></div>").addClass("row");
-    var row4 = $("<div></div>").addClass("row");
+    var row2 = $("<div></div>").addClass("row" + hideOnDoNothing);
+    var row3 = $("<div></div>").addClass("row" + hideOnDoNothing);
+    var row4 = $("<div></div>").addClass("row" + hideOnManual);
     var row5 = $("<div></div>").addClass("row");
-    var row6 = $("<div></div>").addClass("row");
-    var row7 = $("<div></div>").addClass("row");
+    var row6 = $("<div></div>").addClass("row" + hideOnManual + hideCondition);
+    var row7 = $("<div></div>").addClass("row" + hideOnManual + hideCondition);
     var container = $("<div id='content-container'></div>").addClass("action-group row list-group-item");
     var actionList = $("<input type='text' class='form-control' id='action'>").prop("readonly", true);
     var descField = $("<textarea type='text' rows='1' class='form-control' id='description'>").prop("readonly", true);
@@ -2049,6 +2127,8 @@ Action.prototype.generateContent = function () {
     var value1InitField = $("<textarea type='text' rows='1' class='form-control' id='value1init'>").prop("readonly", true);
     var value2Field = $("<textarea type='text' rows='1' class='form-control' id='value2'>").prop("readonly", true);
     var value2InitField = $("<textarea type='text' rows='1' class='form-control' id='value2init'>").prop("readonly", true);
+    var value3Field = $("<textarea type='text' rows='1' class='form-control' id='value3'>").prop("readonly", true);
+    var value3InitField = $("<textarea type='text' rows='1' class='form-control' id='value3init'>").prop("readonly", true);
     var timeField = $("<input type='text' class='form-control' id='time'>").prop("readonly", true);
     var forceexecField = $("<input type='text' class='form-control' id='forceexec'>").prop("readonly", true);
     var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly", true);
@@ -2060,8 +2140,10 @@ Action.prototype.generateContent = function () {
     var conditionOperField = $("<textarea type='text' rows='1' class='form-control' id='conditionOper'>").prop("readonly", true);
     var conditionVal1InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal1Init'>").prop("readonly", true);
     var conditionVal2InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal2Init'>").prop("readonly", true);
+    var conditionVal3InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal3Init'>").prop("readonly", true);
     var conditionVal1Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal1'>").prop("readonly", true);
     var conditionVal2Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal2'>").prop("readonly", true);
+    var conditionVal3Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal3'>").prop("readonly", true);
 
     var actionGroup = $("<div class='form-group'></div>").append($("<label for='action'>" + doc.getDocLabel("page_executiondetail", "action") + "</label>")).append(actionList);
     var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
@@ -2077,9 +2159,10 @@ Action.prototype.generateContent = function () {
     var conditionOperGroup = $("<div class='form-group'></div>").append($("<label for='conditionOper'>" + doc.getDocLabel("page_executiondetail", "conditionOper") + "</label>")).append(conditionOperField);
     var conditionVal1InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal1Init") + "</label>")).append(conditionVal1InitField);
     var conditionVal2InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal2Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal2Init") + "</label>")).append(conditionVal2InitField);
+    var conditionVal3InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal3Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal3Init") + "</label>")).append(conditionVal3InitField);
     var conditionVal1Group = $("<div class='form-group'></div>").append($("<label for='conditionVal1'>" + doc.getDocLabel("page_executiondetail", "conditionVal1") + "</label>")).append(conditionVal1Field);
     var conditionVal2Group = $("<div class='form-group'></div>").append($("<label for='conditionVal2'>" + doc.getDocLabel("page_executiondetail", "conditionVal2") + "</label>")).append(conditionVal2Field);
-
+    var conditionVal3Group = $("<div class='form-group'></div>").append($("<label for='conditionVal3'>" + doc.getDocLabel("page_executiondetail", "conditionVal3") + "</label>")).append(conditionVal3Field);
 
     descField.val(this.description);
     actionList.val(this.action);
@@ -2087,6 +2170,8 @@ Action.prototype.generateContent = function () {
     value1InitField.val(this.value1init);
     value2Field.val(this.value2);
     value2InitField.val(this.value2init);
+    value3Field.val(this.value3);
+    value3InitField.val(this.value3init);
     if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
         timeField.val((convToDate(this.endlong) - convToDate(this.startlong)) + " ms");
     } else {
@@ -2099,8 +2184,10 @@ Action.prototype.generateContent = function () {
     conditionOperField.val(this.conditionOper);
     conditionVal1InitField.val(this.conditionVal1Init);
     conditionVal2InitField.val(this.conditionVal2Init);
+    conditionVal3InitField.val(this.conditionVal3Init);
     conditionVal1Field.val(this.conditionVal1);
     conditionVal2Field.val(this.conditionVal2);
+    conditionVal3Field.val(this.conditionVal3);
 
     row1.append($("<div></div>").addClass("col-sm-2").append(returncodeGroup));
     row1.append($("<div></div>").addClass("col-sm-10").append(descGroup));
@@ -2115,11 +2202,13 @@ Action.prototype.generateContent = function () {
     row4.append($("<div></div>").addClass("col-sm-5").append(timeGroup));
     row5.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
     row6.append($("<div></div>").addClass("col-sm-2"));
-    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal1InitGroup));
-    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal2InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal1InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal2InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-2").append(conditionVal3InitGroup));
     row7.append($("<div></div>").addClass("col-sm-2").append(conditionOperGroup));
-    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal1Group));
-    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal2Group));
+    row7.append($("<div></div>").addClass("col-sm-4").append(conditionVal1Group));
+    row7.append($("<div></div>").addClass("col-sm-4").append(conditionVal2Group));
+    row7.append($("<div></div>").addClass("col-sm-2").append(conditionVal3Group));
 
     container.append(row1);
     container.append(row2);
@@ -2142,6 +2231,8 @@ Action.prototype.getJsonData = function () {
     json.conditionVal1Init = this.conditionVal1Init;
     json.conditionVal2 = this.conditionVal2;
     json.conditionVal2Init = this.conditionVal2Init;
+    json.conditionVal3 = this.conditionVal3;
+    json.conditionVal3Init = this.conditionVal3Init;
     json.description = this.description;
     json.end = this.end;
     json.endlong = this.endlong;
@@ -2162,6 +2253,8 @@ Action.prototype.getJsonData = function () {
     json.value1init = this.value1init;
     json.value2 = this.value2;
     json.value2init = this.value2init;
+    json.value3 = this.value3;
+    json.value3init = this.value3init;
     //Value the user is able to modified
     return json;
 };
@@ -2173,8 +2266,10 @@ function Control(json, parentAction) {
         this.controlSequence = json.controlSequence;
         this.value1 = json.controlProperty;
         this.value2 = json.controlValue;
+        this.value3 = json.controlValue3;
         this.value1init = json.controlPropertyInit;
         this.value2init = json.controlValueInit;
+        this.value3init = json.controlValue3Init;
         this.description = json.description;
         this.end = json.end;
         this.endlong = json.endlong;
@@ -2195,16 +2290,20 @@ function Control(json, parentAction) {
         this.conditionOper = json.conditionOper;
         this.conditionVal1Init = json.conditionVal1Init;
         this.conditionVal2Init = json.conditionVal2Init;
+        this.conditionVal3Init = json.conditionVal3Init;
         this.conditionVal1 = json.conditionVal1;
         this.conditionVal2 = json.conditionVal2;
+        this.conditionVal3 = json.conditionVal3;
     } else {
         this.control = "";
         this.controlType = "Unknown";
         this.controlSequence = 1;
         this.value1 = "";
         this.value2 = "";
+        this.value3 = "";
         this.value1init = "";
         this.value2init = "";
+        this.value3init = "";
         this.description = "";
         this.end = 0;
         this.endlong = 0;
@@ -2225,8 +2324,10 @@ function Control(json, parentAction) {
         this.conditionOper = "always";
         this.conditionVal1Init = "";
         this.conditionVal2Init = "";
+        this.conditionVal3Init = "";
         this.conditionVal1 = "";
         this.conditionVal2 = "";
+        this.conditionVal3 = "";
     }
 
     this.parentStep = parentAction.parentStep;
@@ -2285,7 +2386,7 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
         content.hide();
     }
     // Starting to reduce the size of the row by the length of elements.
-    $(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length));
+    $(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length * 2)).addClass("col-sm-" + (12 - this.fileList.length * 2));
     // Adding all media attached to control execution.
     addFileLink(this.fileList, $(header).find(".row"), isTheExecutionManual, idMotherStep);
 
@@ -2346,45 +2447,24 @@ Control.prototype.generateHeader = function (id) {
             event.preventDefault();
             event.stopPropagation();
             triggerControlExecution(this, id, "OK");
-            $(this).parent().parent().find(buttonUpload).remove()
-            $(this).parent().parent().find(".col-xs-10").removeClass("col-xs-10").addClass("col-xs-8")
-            if ($(this).parent().parent().find(".btn-upload").length == 0) {
-                $(this).parent().parent().append(buttonUpload)
-            }
-            $(buttonUpload).click(function (event) {
-                var indexStep = $("#nav-execution").find(".active").data("index");
-                var indexAction = $(this).parents("a").parent().find(".action").data('index')
-                var indexControl = $(this).parents("a").data('index')
-                var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]["controlArr"][indexControl]
-                var idex = $("#idlabel").text()
-                openModalFile(false, currentActionOrControl, "ADD", idex)
-                event.preventDefault()
-                event.stopPropagation()
-            })
-            $(buttonUpload).css("float", "right")
         });
         buttonFA.click(function (event) {
             event.preventDefault();
             event.stopPropagation();
             triggerControlExecution(this, id, "KO");
-            $(this).parent().parent().find(buttonUpload).remove()
-            $(this).parent().parent().find(".col-xs-10").removeClass("col-xs-10").addClass("col-xs-8")
-            if ($(this).parent().parent().find(".btn-upload").length == 0) {
-                $(this).parent().parent().append(buttonUpload)
-            }
-            $(buttonUpload).click(function (event) {
-                var indexStep = $("#nav-execution").find(".active").data("index");
-                var indexAction = $(this).parents("a").parent().find(".action").data('index')
-                var indexControl = $(this).parents("a").data('index')
-                var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]["controlArr"][indexControl]
-                var idex = $("#idlabel").text()
-                openModalFile(false, currentActionOrControl, "ADD", idex)
-                event.preventDefault()
-                event.stopPropagation()
-            })
-            $(buttonUpload).css("float", "right")
         });
+        $(buttonUpload).click(function (event) {
+            var indexStep = $("#nav-execution").find(".active").data("index");
+            var indexAction = $(this).parents("a").parent().find(".action").data('index')
+            var indexControl = $(this).parents("a").data('index')
+            var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]["controlArr"][indexControl]
+            var idex = $("#idlabel").text()
+            openModalFile(false, currentActionOrControl, "ADD", idex)
+            event.preventDefault()
+            event.stopPropagation()
+        })
         contentField.append($("<div class='col-xs-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
+        contentField.append(buttonUpload);
         showSaveTestCaseExecutionButton();
     } else {
         contentField.append($("<div class='col-xs-2'>").append(elapsedTime));
@@ -2410,7 +2490,7 @@ function triggerControlExecution(element, id, status) {
         $(currentElement.find("span")[0]).removeClass(function (index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-ok");
-        //Modify Status of current action 
+        //Modify Status of current action
         $(currentElement).next("div").find("input[id='returncode']").val("OK").change();
         $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
         $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
@@ -2422,7 +2502,7 @@ function triggerControlExecution(element, id, status) {
         $(currentElement.find("span")[0]).removeClass(function (index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-remove");
-        //Modify Status of current action 
+        //Modify Status of current action
         $(currentElement).next("div").find("input[id='returncode']").val("KO").change();
         $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
         $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
@@ -2477,13 +2557,27 @@ Control.prototype.generateContent = function () {
     var doc = new Doc();
     var obj = this;
 
+    var hideOnManual = "";
+    var hideOnDoNothing = "";
+    var hideCondition = "";
+    if (isTheExecutionManual) {
+        hideOnManual = " hide";
+        if (this.controlType === "Unknown") {
+            hideOnDoNothing = " hide";
+        }
+    } else {
+        if (this.conditionOper === "always") {
+            hideCondition = " hide";
+        }
+    }
+
     var row1 = $("<div></div>").addClass("row");
-    var row2 = $("<div></div>").addClass("row");
-    var row3 = $("<div></div>").addClass("row");
-    var row4 = $("<div></div>").addClass("row");
+    var row2 = $("<div></div>").addClass("row" + hideOnDoNothing);
+    var row3 = $("<div></div>").addClass("row" + hideOnDoNothing);
+    var row4 = $("<div></div>").addClass("row" + hideOnManual);
     var row5 = $("<div></div>").addClass("row");
-    var row6 = $("<div></div>").addClass("row");
-    var row7 = $("<div></div>").addClass("row");
+    var row6 = $("<div></div>").addClass("row" + hideOnManual + hideCondition);
+    var row7 = $("<div></div>").addClass("row" + hideOnManual + hideCondition);
     var container = $("<div id='content-container'></div>").addClass("action-group row list-group-item").css("margin-left", "25px");
 
     var descField = $("<textarea type='text' rows='1' class='form-control' id='description'>").prop("readonly", true);
@@ -2493,6 +2587,8 @@ Control.prototype.generateContent = function () {
     var value1InitField = $("<textarea type='text' rows='1' class='form-control' id='value1init'>").prop("readonly", true);
     var value2Field = $("<textarea type='text' rows='1' class='form-control' id='value2'>").prop("readonly", true);
     var value2InitField = $("<textarea type='text' rows='1' class='form-control' id='value2init'>").prop("readonly", true);
+    var value3Field = $("<textarea type='text' rows='1' class='form-control' id='value3'>").prop("readonly", true);
+    var value3InitField = $("<textarea type='text' rows='1' class='form-control' id='value3init'>").prop("readonly", true);
     var timeField = $("<input type='text' class='form-control' id='time'>").prop("readonly", true);
 
     var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnmessage'>");
@@ -2503,8 +2599,10 @@ Control.prototype.generateContent = function () {
     var conditionOperField = $("<textarea type='text' rows='1' class='form-control' id='conditionOper'>").prop("readonly", true);
     var conditionVal1InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal1Init'>").prop("readonly", true);
     var conditionVal2InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal2Init'>").prop("readonly", true);
+    var conditionVal3InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal3Init'>").prop("readonly", true);
     var conditionVal1Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal1'>").prop("readonly", true);
     var conditionVal2Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal2'>").prop("readonly", true);
+    var conditionVal3Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal3'>").prop("readonly", true);
 
     var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
     var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>" + doc.getDocLabel("page_executiondetail", "return_code") + "</label>")).append(returnCodeField);
@@ -2515,14 +2613,17 @@ Control.prototype.generateContent = function () {
     var timeGroup = $("<div class='form-group'></div>").append($("<label for='time'>" + doc.getDocLabel("page_executiondetail", "time") + "</label>")).append(timeField);
     var controlValue2Group = $("<div class='form-group'></div>").append($("<label for='controlproperty'>" + doc.getDocLabel("page_executiondetail", "value2") + "</label>")).append(value2Field);
     var controlValue2InitGroup = $("<div class='form-group'></div>").append($("<label for='controlpropertyinit'>" + doc.getDocLabel("page_executiondetail", "value2init") + "</label>")).append(value2InitField);
+    var controlValue3Group = $("<div class='form-group'></div>").append($("<label for='controlvalue3'>" + doc.getDocLabel("page_executiondetail", "value3") + "</label>")).append(value3Field);
+    var controlValue3InitGroup = $("<div class='form-group'></div>").append($("<label for='controlvalue3init'>" + doc.getDocLabel("page_executiondetail", "value3init") + "</label>")).append(value3InitField);
     var fatalGroup = $("<div class='form-group'></div>").append($("<label for='fatal'>" + doc.getDocLabel("page_executiondetail", "fatal") + "</label>")).append(fatalField);
     var sortGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("page_executiondetail", "sort") + "</label>")).append(sortField);
     var conditionOperGroup = $("<div class='form-group'></div>").append($("<label for='conditionOper'>" + doc.getDocLabel("page_executiondetail", "conditionOper") + "</label>")).append(conditionOperField);
     var conditionVal1InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal1Init") + "</label>")).append(conditionVal1InitField);
     var conditionVal2InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal2Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal2Init") + "</label>")).append(conditionVal2InitField);
+    var conditionVal3InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal3Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal3Init") + "</label>")).append(conditionVal3InitField);
     var conditionVal1Group = $("<div class='form-group'></div>").append($("<label for='conditionVal1'>" + doc.getDocLabel("page_executiondetail", "conditionVal1") + "</label>")).append(conditionVal1Field);
     var conditionVal2Group = $("<div class='form-group'></div>").append($("<label for='conditionVal2'>" + doc.getDocLabel("page_executiondetail", "conditionVal2") + "</label>")).append(conditionVal2Field);
-
+    var conditionVal3Group = $("<div class='form-group'></div>").append($("<label for='conditionVal3'>" + doc.getDocLabel("page_executiondetail", "conditionVal3") + "</label>")).append(conditionVal3Field);
 
 
     descField.val(this.description);
@@ -2538,32 +2639,40 @@ Control.prototype.generateContent = function () {
     value1InitField.val(this.value1init);
     value2Field.val(this.value2);
     value2InitField.val(this.value2init);
+    value3Field.val(this.value3);
+    value3InitField.val(this.value3init);
     fatalField.val(this.fatal);
     sortField.val(this.sort);
     conditionOperField.val(this.conditionOper);
     conditionVal1InitField.val(this.conditionVal1Init);
     conditionVal2InitField.val(this.conditionVal2Init);
+    conditionVal3InitField.val(this.conditionVal3Init);
     conditionVal1Field.val(this.conditionVal1);
     conditionVal2Field.val(this.conditionVal2);
+    conditionVal3Field.val(this.conditionVal3);
 
     row1.append($("<div></div>").addClass("col-sm-2").append(returncodeGroup));
     row1.append($("<div></div>").addClass("col-sm-10").append(descGroup));
     row2.append($("<div></div>").addClass("col-sm-2"));
-    row2.append($("<div></div>").addClass("col-sm-5").append(controlValue1InitGroup));
-    row2.append($("<div></div>").addClass("col-sm-5").append(controlValue2InitGroup));
+    row2.append($("<div></div>").addClass("col-sm-4").append(controlValue1InitGroup));
+    row2.append($("<div></div>").addClass("col-sm-4").append(controlValue2InitGroup));
+    row2.append($("<div></div>").addClass("col-sm-2").append(controlValue3InitGroup));
     row3.append($("<div></div>").addClass("col-sm-2").append(controlTypeGroup));
-    row3.append($("<div></div>").addClass("col-sm-5").append(controlValue1Group));
-    row3.append($("<div></div>").addClass("col-sm-5").append(controlValue2Group));
+    row3.append($("<div></div>").addClass("col-sm-4").append(controlValue1Group));
+    row3.append($("<div></div>").addClass("col-sm-4").append(controlValue2Group));
+    row3.append($("<div></div>").addClass("col-sm-2").append(controlValue3Group));
     row4.append($("<div></div>").addClass("col-sm-2").append(sortGroup));
     row4.append($("<div></div>").addClass("col-sm-5").append(fatalGroup));
     row4.append($("<div></div>").addClass("col-sm-5").append(timeGroup));
     row5.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
     row6.append($("<div></div>").addClass("col-sm-2"));
-    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal1InitGroup));
-    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal2InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal1InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal2InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-2").append(conditionVal3InitGroup));
     row7.append($("<div></div>").addClass("col-sm-2").append(conditionOperGroup));
-    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal1Group));
-    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal2Group));
+    row7.append($("<div></div>").addClass("col-sm-4").append(conditionVal1Group));
+    row7.append($("<div></div>").addClass("col-sm-4").append(conditionVal2Group));
+    row7.append($("<div></div>").addClass("col-sm-2").append(conditionVal3Group));
 
     container.append(row1);
     container.append(row2);
@@ -2584,6 +2693,8 @@ Control.prototype.getJsonData = function () {
     json.conditionVal1Init = this.conditionVal1Init;
     json.conditionVal2 = this.conditionVal2;
     json.conditionVal2Init = this.conditionVal2Init;
+    json.conditionVal3 = this.conditionVal3;
+    json.conditionVal3Init = this.conditionVal3Init;
     json.control = this.control;
     json.controlType = this.controlType;
     json.controlSequence = this.controlSequence;
@@ -2607,9 +2718,12 @@ Control.prototype.getJsonData = function () {
     json.value1init = this.value1init;
     json.value2 = this.value2;
     json.value2init = this.value2init;
+    json.value3 = this.value3;
+    json.value3init = this.value3init;
     json.type = this.type;
     json.controlProperty = this.value1;
     json.controlValue = this.value2;
+    json.controlValue3 = this.value3;
     //Value the user is able to modified
     json.returnMessage = this.returnMessage;
 
@@ -2646,7 +2760,7 @@ function addFileLink(fileList, container, manual, idStep) {
         if ((fileList[i].fileType === "JPG") || (fileList[i].fileType === "PNG")) {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
             var fileDesc = fileList[i].fileDesc;
-            var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+            var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                     .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
                     .click(function (e) {
                         changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
@@ -2664,28 +2778,28 @@ function addFileLink(fileList, container, manual, idStep) {
             var fileDesctxt = fileList[i].fileDesc;
             var filetypetxt = fileList[i].fileType.toLowerCase();
             if (i === 0) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 1) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 2) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 3) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
@@ -2698,12 +2812,12 @@ function addFileLink(fileList, container, manual, idStep) {
             var linkBoxtxt = null;
 
             if (fileList[i].fileType === "BIN") {
-                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function (f) {
+                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
             } else if (fileList[i].fileType === "PDF") {
-                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function (f) {
+                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
@@ -2715,7 +2829,7 @@ function addFileLink(fileList, container, manual, idStep) {
 
 
 
-    if (isTheExecutionManual && fileList.length != 0) {
+    if (isTheExecutionManual && fileList.length !== 0) {
         var buttonUpload = $($("<button>").addClass("btn btn-info btn-upload btn-inverse").attr("type", "button").text("UPLOAD"));
         $(buttonUpload).css("float", "right")
         buttonUpload.click(function (event) {
@@ -2752,6 +2866,10 @@ function saveExecution(data) {
 
     var propertyWithoutCountry = false;
 
+    var rMessage = $("#returnMessageEx").val();
+    var rCode = $("#controlstatus").html();
+    var executor = $("#tabDetail input#executor").val();
+
     var saveProp = function () {
         showLoaderInModal('#propertiesModal');
         getScriptInformationOfStep()
@@ -2763,6 +2881,9 @@ function saveExecution(data) {
             //dataType: 'json',
             data: JSON.stringify({
                 executionId: GetURLParameter("executionId"),
+                controlstatus: rCode,
+                executor: executor,
+                returnMessage: rMessage,
                 stepArray: getScriptInformationOfStep()
             }),
             success: function () {
@@ -2794,7 +2915,7 @@ function saveExecution(data) {
 }
 
 /*
- * 
+ *
  * @param {type} stepListData
  * @returns {Array}
  */
@@ -2835,6 +2956,5 @@ function getScriptInformationOfStep() {
     }
     return stepArr;
 }
-
 
 

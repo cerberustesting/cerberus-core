@@ -74,11 +74,11 @@ public class ReadMyUser extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IUserService userService = appContext.getBean(UserService.class);
-        IFactoryUser userFactory = appContext.getBean(IFactoryUser.class);
-        IInvariantService invariantService = appContext.getBean(IInvariantService.class);
-        IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
-        IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
+        userService = appContext.getBean(UserService.class);
+        userFactory = appContext.getBean(IFactoryUser.class);
+        invariantService = appContext.getBean(IInvariantService.class);
+        userSystemService = appContext.getBean(IUserSystemService.class);
+        userGroupService = appContext.getBean(UserGroupService.class);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
@@ -185,6 +185,7 @@ public class ReadMyUser extends HttpServlet {
             HttpSession session = request.getSession();
             session.setAttribute("MySystem", myUser.getDefaultSystem());
             session.setAttribute("MySystemsAllow", userSysList);
+            session.setAttribute("MySystemsIsAdministrator", (request.isUserInRole("Administrator")));
             session.setAttribute("MyLang", myUser.getLanguage());
 
         } catch (CerberusException ex) {

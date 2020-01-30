@@ -19,6 +19,8 @@
  */
 package org.cerberus.service.proxy;
 
+import org.apache.http.impl.client.HttpClientBuilder;
+
 /**
  *
  * @author bcivel
@@ -43,4 +45,12 @@ public interface IProxyService {
      */
     public String convertToRegEx(String useProxy);
 
+    /**
+     *
+     * @param system
+     * @param url
+     * @return
+     */
+    public HttpClientBuilder getBuilderWithProxy(String system, String url);
+    
 }

@@ -1,0 +1,29 @@
+*Bug fixes*
+[square]
+* Avoid null pointer Exception when robot not defined when starting an execution.
+* variable usage in bug report URL can now be repeated. #2035
+* Secure stable implementation for click on both Appium and Selenium.
+* Label mass actions are now fixed (both for add and remove).
+* Fixed editing the testcase header from execution page.
+* Keypress without element parameter no longer leave the execution in PE status.
+
+*Improvements / New features*
+[square]
+* NEW KAFKA connector for both producing and searching events. Search of the event is limited to the timeframe from the beginning of the execution.
+* Improved error message when could not connect to Cerberus Executor.
+* Starting Cerberus Executor Proxy no matter application type.
+* Secured to close Cerberus Executor Proxy at the end of each execution (even when selenium server fail).
+* Cleaner error message (avoid duplicating the Selenium or Appium exception message when they occur)
+* Better UI on queue management screen. Allowing to start and stop queue management by a 'one click' button.
+* New 'manage' api that allow to smoothly start and stop processing new execution in one instance or globally. Servlet timeout can now be setup with parameter 'cerberus_manage_timeout' (default to 300 seconds). access needs a token that can be configured and retrieved with parameter 'cerberus_manage_token'.
+* Execution, Steps, Action and Control descriptions can now also be decoded from variables.
+* New ExecuteCerberusCommmand Action that allow to execute scripts located in 'cerberus_executeCerberusCommand_path'. Script will be executed by user 'cerberus_executeCerberusCommand_user' using password 'cerberus_executeCerberusCommand_password'.
+* Run a manual TestCase no longer require as mandatory the robot information.
+* Allow case sensitive or not comparison on controls.
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* Selenium client moved to latest 3.141.59
+* Appium client moved to latest 7.2.0
+* Removed display of project information at testcase level.
+* No longer support on Glassfish application server.

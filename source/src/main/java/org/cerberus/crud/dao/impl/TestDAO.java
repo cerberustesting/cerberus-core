@@ -43,7 +43,6 @@ import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
-import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -102,8 +101,8 @@ public class TestDAO implements ITestDAO {
     public Answer create(Test test) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO test (test, description, active, UsrCreated) ");
-        query.append("VALUES (?, ?, ?, ?)");
+        query.append("INSERT INTO test (test, description, active, ParentTest, UsrCreated) ");
+        query.append("VALUES (?, ?, ?, ?, ?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -119,6 +118,7 @@ public class TestDAO implements ITestDAO {
                 preStat.setString(i++, test.getTest());
                 preStat.setString(i++, test.getDescription());
                 preStat.setString(i++, test.getActive());
+                preStat.setString(i++, test.getParentTest());
                 preStat.setString(i++, test.getUsrCreated());
 
                 preStat.executeUpdate();
@@ -200,7 +200,7 @@ public class TestDAO implements ITestDAO {
     @Override
     public Answer update(String keyTest, Test test) {
         MessageEvent msg = null;
-        final String query = "UPDATE test SET test = ?, description = ?, active = ?, usrModif = ?, DateModif = CURRENT_TIMESTAMP WHERE test = ?";
+        final String query = "UPDATE test SET test = ?, description = ?, active = ?, ParentTest = ?, usrModif = ?, DateModif = CURRENT_TIMESTAMP WHERE test = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -216,6 +216,7 @@ public class TestDAO implements ITestDAO {
                 preStat.setString(i++, test.getTest());
                 preStat.setString(i++, test.getDescription());
                 preStat.setString(i++, test.getActive());
+                preStat.setString(i++, test.getParentTest());
                 preStat.setString(i++, test.getUsrModif());
                 preStat.setString(i++, keyTest);
 
@@ -253,20 +254,21 @@ public class TestDAO implements ITestDAO {
         String test = resultSet.getString("tes.test") == null ? "" : resultSet.getString("tes.test");
         String description = resultSet.getString("tes.description") == null ? "" : resultSet.getString("tes.description");
         String active = resultSet.getString("tes.active") == null ? "" : resultSet.getString("tes.active");
+        String parentTest = resultSet.getString("tes.ParentTest");
         String usrCreated = resultSet.getString("tes.UsrCreated");
         Timestamp dateCreated = resultSet.getTimestamp("tes.DateCreated");
         String usrModif = resultSet.getString("tes.UsrModif");
         Timestamp dateModif = resultSet.getTimestamp("tes.DateModif");
 
-        return factoryTest.create(test, description, active, usrCreated, dateCreated, usrModif, dateModif);
+        return factoryTest.create(test, description, active, parentTest, usrCreated, dateCreated, usrModif, dateModif);
     }
 
     @Override
-    public AnswerList readDistinctBySystem(String system) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<Test>readDistinctBySystem(String system) {
+        AnswerList<Test> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<Test> testList = new ArrayList<Test>();
+        List<Test> testList = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
@@ -353,13 +355,13 @@ public class TestDAO implements ITestDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<Test> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        AnswerList<Test> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<Test> testList = new ArrayList<Test>();
+        List<Test> testList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
@@ -485,8 +487,8 @@ public class TestDAO implements ITestDAO {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList<>();
+    public AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+        AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();

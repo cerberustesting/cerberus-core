@@ -38,6 +38,7 @@ import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.IRobotExecutorService;
 import org.cerberus.crud.service.IRobotService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.exception.CerberusException;
@@ -61,6 +62,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     private static final String CONST_SEPARATOR = "////";
 
+    private boolean instanceActive = true;
+
     @Autowired
     private ITestCaseExecutionQueueService tceiqService;
     @Autowired
@@ -74,6 +77,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     @Autowired
     private ITestCaseExecutionQueueService queueService;
     @Autowired
+    private ITestCaseExecutionQueueDepService queueDepService;
+    @Autowired
     private IRetriesService retriesService;
     @Autowired
     private IRobotExecutorService robotExecutorService;
@@ -83,13 +88,23 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     private IFactoryRobotExecutor factoryRobotExecutor;
 
     @Override
+    public boolean isInstanceActive() {
+        return instanceActive;
+    }
+
+    @Override
+    public void setInstanceActive(boolean instanceActive) {
+        this.instanceActive = instanceActive;
+    }
+
+    @Override
     public HashMap<String, Integer> getCurrentlyRunning() throws CerberusException {
-        AnswerList answer = new AnswerList<>();
-        HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
+        AnswerList<TestCaseExecutionQueueToTreat> answer = new AnswerList<>();
+        HashMap<String, Integer> constrains_current = new HashMap<>();
 
         // Getting all executions already running in the queue.
         answer = tceiqService.readQueueRunning();
-        List<TestCaseExecutionQueueToTreat> executionsRunning = (List<TestCaseExecutionQueueToTreat>) answer.getDataList();
+        List<TestCaseExecutionQueueToTreat> executionsRunning = answer.getDataList();
         // Calculate constrain values.
         for (TestCaseExecutionQueueToTreat exe : executionsRunning) {
             String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
@@ -124,7 +139,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     @Override
     public HashMap<String, Integer> getCurrentlyPoolSizes() throws CerberusException {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<TestCaseExecutionQueueToTreat> answer = new AnswerList<>();
         HashMap<String, Integer> constrains_current = new HashMap<>();
 
         String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
@@ -138,7 +153,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
         // Getting all executions to be treated.
         answer = tceiqService.readQueueToTreatOrRunning();
-        List<TestCaseExecutionQueueToTreat> executionsToTreat = (List<TestCaseExecutionQueueToTreat>) answer.getDataList();
+        List<TestCaseExecutionQueueToTreat> executionsToTreat = answer.getDataList();
         // Calculate constrain values.
         for (TestCaseExecutionQueueToTreat exe : executionsToTreat) {
             String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
@@ -166,12 +181,12 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     @Override
     public HashMap<String, Integer> getCurrentlyToTreat() throws CerberusException {
-        AnswerList answer = new AnswerList<>();
+        AnswerList<TestCaseExecutionQueueToTreat> answer = new AnswerList<>();
         HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
 
         // Getting all executions to be treated.
         answer = tceiqService.readQueueToTreat();
-        List<TestCaseExecutionQueueToTreat> executionsToTreat = (List<TestCaseExecutionQueueToTreat>) answer.getDataList();
+        List<TestCaseExecutionQueueToTreat> executionsToTreat = answer.getDataList();
 
         // Calculate constrain values.
         for (TestCaseExecutionQueueToTreat exe : executionsToTreat) {
@@ -210,6 +225,12 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
      */
     @Override
     public void executeNextInQueue(boolean forceExecution) throws CerberusException {
+
+        if (!instanceActive) {
+            LOG.warn("Queue execution disable on that JVM instance.");
+            return;
+        }
+
         // Job can be desactivated by parameter.
         if (!(parameterService.getParameterBooleanByKey("cerberus_queueexecution_enable", "", true))) {
             LOG.debug("Queue_Processing_Job disabled by parameter : 'cerberus_queueexecution_enable'.");
@@ -247,9 +268,9 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                     LOG.debug("Starting Queue_Processing_Job.");
 
                     // Getting all executions to be treated.
-                    AnswerList answer = new AnswerList<>();
+                    AnswerList<TestCaseExecutionQueueToTreat> answer = new AnswerList<>();
                     answer = tceiqService.readQueueToTreat();
-                    List<TestCaseExecutionQueueToTreat> executionsInQueue = (List<TestCaseExecutionQueueToTreat>) answer.getDataList();
+                    List<TestCaseExecutionQueueToTreat> executionsInQueue = answer.getDataList();
 
                     int poolSizeGeneral = 12;
                     int poolSizeRobot = 10;
@@ -328,18 +349,18 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                             // Application require a robot so we can get the list of executors.
                             if (StringUtil.isNullOrEmpty(robot)) {
                                 exelist = new ArrayList<>();
-                                exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", "", "", null, "", 0, "",0,"", "", "", null, "", null));
+                                exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", "", "", null, "", 0, "", 0, "", "", "", null, "", null));
                             } else {
                                 exelist = robot_executor.get(robot);
                                 if (exelist == null || exelist.size() < 1) {
                                     exelist = new ArrayList<>();
-                                    exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", 0, "",0,"", "", "", null, "", null));
+                                    exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", 0, "", 0, "", "", "", null, "", null));
                                 }
                             }
                         } else {
                             // Application does not require a robot so we create a fake one with empty data.
                             exelist = new ArrayList<>();
-                            exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", 0, "",0,"", "", "", null, "", null));
+                            exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", 0, "", 0, "", "", "", null, "", null));
                         }
 
                         // Looping other every potential executor on the corresponding robot.
@@ -405,13 +426,13 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                             }
                             // Eval Constrain 3
                             boolean constMatch03;
-                            if (exe.getPoolSizeApplication()== 0) {
+                            if (exe.getPoolSizeApplication() == 0) {
                                 // if poolsize == 0, this means no constrain specified.
                                 constMatch03 = false;
                             } else {
                                 constMatch03 = (const03_current >= exe.getPoolSizeApplication());
                             }
-                            
+
                             // Eval Constrain 4
                             if (constrains_current.containsKey(const04_key)) {
                                 const04_current = constrains_current.get(const04_key);
@@ -464,6 +485,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                             task.setSelectedRobotHost(robotHost);
                                             task.setToExecuteTimeout(queueTimeout);
                                             task.setQueueService(queueService);
+                                            task.setQueueDepService(queueDepService);
                                             task.setRetriesService(retriesService);
                                             task.setExecThreadPool(threadQueuePool);
                                             Future<?> future = threadQueuePool.getExecutor().submit(task);
@@ -499,7 +521,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                     notTriggeredExeMessage += "Robot Host contrain on '" + const04_key + "' reached. " + robothost_poolsize_final + " Execution(s) already in pool. ";
                                 }
                                 if (constMatch03) {
-                                    notTriggeredExeMessage += "Application contrain on '" + const03_key + "' reached . " + exe.getPoolSizeApplication()+ " Execution(s) already in pool. ";
+                                    notTriggeredExeMessage += "Application contrain on '" + const03_key + "' reached . " + exe.getPoolSizeApplication() + " Execution(s) already in pool. ";
                                 }
                                 if (constMatch02) {
                                     notTriggeredExeMessage += "Application Environment contrain on '" + const02_key + "' reached . " + exe.getPoolSizeAppEnvironment() + " Execution(s) already in pool. ";
@@ -512,7 +534,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                             }
                         }
 
-//                  End of Queue entry analysis accross all Executors.                    
+//                  End of Queue entry analysis accross all Executors.
                         if ((exe.getDebugFlag() != null) && (exe.getDebugFlag().equalsIgnoreCase("Y"))) {
                             if (triggerExe == false) {
                                 queueService.updateComment(exe.getId(), notTriggeredExeMessage);

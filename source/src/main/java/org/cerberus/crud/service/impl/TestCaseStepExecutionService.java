@@ -70,22 +70,22 @@ public class TestCaseStepExecutionService implements ITestCaseStepExecutionServi
     }
 
     @Override
-    public AnswerList readByVarious1(long executionId, String test, String testcase) {
+    public AnswerList<TestCaseStepExecution> readByVarious1(long executionId, String test, String testcase) {
         return testCaseStepExecutionDao.readByVarious1(executionId, test, testcase);
     }
 
     @Override
-    public AnswerList readByVarious1WithDependency(long executionId, String test, String testcase) {
-        AnswerList steps = this.readByVarious1(executionId, test, testcase);
-        AnswerList response = null;
+    public AnswerList<TestCaseStepExecution> readByVarious1WithDependency(long executionId, String test, String testcase) {
+        AnswerList<TestCaseStepExecution> steps = this.readByVarious1(executionId, test, testcase);
+        AnswerList<TestCaseStepExecution> response = null;
         List<TestCaseStepExecution> tcseList = new ArrayList<>();
         for (Object step : steps.getDataList()) {
             TestCaseStepExecution tces = (TestCaseStepExecution) step;
 
-            AnswerList actions = testCaseStepActionExecutionService.readByVarious1WithDependency(executionId, tces.getTest(), tces.getTestCase(), tces.getStep(), tces.getIndex());
+            AnswerList<TestCaseStepActionExecution> actions = testCaseStepActionExecutionService.readByVarious1WithDependency(executionId, tces.getTest(), tces.getTestCase(), tces.getStep(), tces.getIndex());
             tces.setTestCaseStepActionExecutionList((List<TestCaseStepActionExecution>) actions.getDataList());
 
-            AnswerList files = testCaseExecutionFileService.readByVarious(executionId, tces.getTest() + "-" + tces.getTestCase() + "-" + tces.getStep() + "-" + tces.getIndex());
+            AnswerList<TestCaseExecutionFile> files = testCaseExecutionFileService.readByVarious(executionId, tces.getTest() + "-" + tces.getTestCase() + "-" + tces.getStep() + "-" + tces.getIndex());
             tces.setFileList((List<TestCaseExecutionFile>) files.getDataList());
 
             tcseList.add(tces);

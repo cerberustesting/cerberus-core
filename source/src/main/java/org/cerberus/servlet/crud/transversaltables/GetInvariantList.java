@@ -31,8 +31,8 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.impl.InvariantService;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,7 +43,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class GetInvariantList extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(GetInvariantList.class);
-    
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
@@ -63,7 +63,7 @@ public class GetInvariantList extends HttpServlet {
 
         try {
             if (request.getParameter("action") != null) {
-                    //gets a list of invariants in the same call, it can be useful if we want to
+                //gets a list of invariants in the same call, it can be useful if we want to
                 //retrieve all the information in one client call
                 if ("getNInvariant".equals(action)) {
                     //gets a list of invariants
@@ -71,18 +71,15 @@ public class GetInvariantList extends HttpServlet {
                     for (int i = 0; i < listOfInvariants.length(); i++) {
                         String invariantName = (String) listOfInvariants.get(String.valueOf(i));
                         JSONArray array = new JSONArray();
-                        AnswerList answer = invariantService.readByIdname(invariantName); //TODO: handle if the response does not turn ok
-                        for (Invariant myInvariant : (List<Invariant>) answer.getDataList()) {
+                        for (Invariant myInvariant : invariantService.readByIdName(invariantName)) {
                             array.put(myInvariant.getValue());
                         }
                         jsonResponse.put(invariantName, array);
                     }
                 }
             } else {
-                    //gets one item
-
-                AnswerList answer = invariantService.readByIdname(idName); //TODO: handle if the response does not turn ok
-                for (Invariant myInvariant : (List<Invariant>) answer.getDataList()) {
+                //gets one item
+                for (Invariant myInvariant : invariantService.readByIdName(idName)) {
                     jsonResponse.put(myInvariant.getValue(), myInvariant.getValue());
                 }
             }
@@ -92,6 +89,8 @@ public class GetInvariantList extends HttpServlet {
             LOG.warn(e);
             response.setContentType("text/html");
             response.getWriter().print(e.getMessage());
+        } catch (CerberusException ex) {
+            LOG.warn("JSON exception when getting Country List.", ex);
         }
     }
 }

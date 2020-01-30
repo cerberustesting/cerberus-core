@@ -87,6 +87,6 @@ public interface ISQLService {
      * @param columnsToGet
      * @return
      */
-    AnswerList queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet);
+    AnswerList<HashMap<String, String>> queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet);
 
 }

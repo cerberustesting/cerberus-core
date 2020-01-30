@@ -118,6 +118,7 @@ function initPage() {
     $("#exportList").change(controlExportRadioButtons);
     loadSummaryTableOptions();
 }
+
 function loadSummaryTableOptions() {
     if (document.queryCommandSupported('Copy')) {
         $("#copyButton").html("Copy to Clipboard");
@@ -202,6 +203,7 @@ function displayExportDataLabel(doc) {
     //$("#exportDataLabel").html(doc.getDocOnline("page_global", "export_data")); //export panel //TODO:FN remove comments after development
     //$("#exportDataButton").html(doc.getDocOnline("page_global", "btn_export")); //button export //TODO:FN remove comments after development
 }
+
 function displayPageLabel(doc) {
     $("#pageTitle").html(doc.getDocLabel("page_reportbytag", "title"));
     $("#title").html(doc.getDocOnline("page_reportbytag", "title"));
@@ -217,7 +219,6 @@ function displayPageLabel(doc) {
     $("#statusLabel").html(doc.getDocLabel("testcase", "Status") + " :");
 }
 
-
 function loadTagFilters(urlTag) {
 
     $("#selectTag").select2(getComboConfigTag());
@@ -227,7 +228,6 @@ function loadTagFilters(urlTag) {
         $("#selectTag").append($option).trigger('change'); // append the option and update Select2
     }
 }
-
 
 function loadAllReports(urlTag) {
 
@@ -247,6 +247,7 @@ function loadReportingData(selectTag) {
     showLoader($("#ReportByStatus"));
     showLoader($("#functionChart"));
     showLoader($("#BugReportByStatus"));
+    showLoader($("#ManualReportByExecutor"));
     showLoader($("#reportEnvCountryBrowser"));
     showLoader($("#reportLabel"));
     showLoader($("#listReport"));
@@ -260,8 +261,21 @@ function loadReportingData(selectTag) {
     $("#durExe").val("");
     $("#TagUsrCreated").val("");
     $("#Tagcampaign").val("");
+
+    var fullL = "";
+    var fullListSelected = "";
+    if (document.getElementById("fullList") !== null) {
+        var fullL = "fullList=" + document.getElementById("fullList").checked;
+        if (document.getElementById("fullList").checked === true) {
+            fullListSelected = "checked";
+        } else {
+            fullListSelected = "";
+        }
+    }
+    var param = "?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + paramsLabel.serialize() + fullL;
+
     //Retrieve data for charts and draw them
-    var jqxhr = $.get("ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + paramsLabel.serialize(), null, "json");
+    var jqxhr = $.get("ReadTestCaseExecutionByTag" + param, null, "json");
     $.when(jqxhr).then(function (data) {
 
         if (data.hasOwnProperty('tagObject')) {
@@ -305,20 +319,24 @@ function loadReportingData(selectTag) {
 
             // Bug Report
             $("#BugReportTable").empty();
-            loadBugReportByStatusTable(data.bugTrackerStat, selectTag);
+            loadBugReportByStatusTable(data.table.bugContent, selectTag);
+
+            // Manual Report
+            $("#ManualReportSum").empty();
+            loadManualReportByExecutorTable(data.manualExecutionList, selectTag);
 
             // Report By Application Environment Country Browser
             loadEnvCountryBrowserReport(data.statsChart);
 
             // Report By Label
             $("#progressLabel").empty();
-//        if (!$.isEmptyObject(data.labelStat)) {
             loadLabelReport(data.labelStat);
-//        }
 
             // Detailed Test Case List Report
-            loadReportList(data.table, selectTag);
+            loadReportList(data.table, selectTag, fullListSelected);
+
         } else {
+
             hideLoader($("#TagDetail"));
             hideLoader($("#ReportByStatus"));
             hideLoader($("#functionChart"));
@@ -487,23 +505,19 @@ function loadLabelReport(data) {
     showLoader($("#reportLabel"));
     $("#progressLabel").empty();
 
-//    var len = data.labelStats.split.length;
-//    $("#reportByLabel").show();
-//    if (len > 0) {
-//        for (var index = 0; index < len; index++) {
-//            //draw a progress bar for each combo retrieved
-//            buildLabelBar(data.labelStats.split[index]);
-//        }
-//    }
-
-    $('#mainTreeExeS').treeview({data: data.labelTreeSTICKER, enableLinks: false, showTags: true, levels: 1});
-    $('#mainTreeExeR').treeview({data: data.labelTreeREQUIREMENT, enableLinks: false, showTags: true, levels: 1});
+    if (data !== undefined) {
+        $("#reportByLabel").show();
+        $('#mainTreeExeS').treeview({data: data.labelTreeSTICKER, enableLinks: false, showTags: true, levels: 1});
+        $('#mainTreeExeR').treeview({data: data.labelTreeREQUIREMENT, enableLinks: false, showTags: true, levels: 1});
+    } else {
+        $("#reportByLabel").hide();
+    }
 
     hideLoader($("#reportLabel"));
 
 }
 
-function loadReportList(data2, selectTag) {
+function loadReportList(data2, selectTag, fullListSelected) {
     if (data2.tableColumns) {
         showLoader($("#listReport"));
 
@@ -522,7 +536,7 @@ function loadReportList(data2, selectTag) {
             var table = createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
             hideLoader($("#listReport"));
-            renderOptionsForExeList(selectTag);
+            renderOptionsForExeList(selectTag, fullListSelected);
         }
 
     } else {
@@ -536,77 +550,76 @@ function loadReportList(data2, selectTag) {
  */
 
 function loadBugReportByStatusTable(data, selectTag) {
-    var len = data.BugTrackerStat.length;
+    var len = data.bugSummary.length;
     var doc = new Doc();
 
-    $("#bugTableBody tr").remove();
+    $("#bugTableReportBody tr").remove();
 
     if (len > 0) {
         $("#BugReportByStatusPanel").show();
         //calculate totaltest nb
         for (var index = 0; index < len; index++) {
             // increase the total execution
-            var bugLink = '<a target="_blank" href="' + data.BugTrackerStat[index].bugIdURL + '">' + data.BugTrackerStat[index].bugId + "</a>";
-            var editEntry = '<button id="editEntry" onclick="openModalTestCase_FromRepTag(this,\'' + escapeHtml(data.BugTrackerStat[index].testFirst) + '\',\'' + escapeHtml(data.BugTrackerStat[index].testCaseFirst) + '\',\'EDIT\');"\n\
-                                class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-pencil"></span></button>' + data.BugTrackerStat[index].testCaseFirst;
-            var exeLink = '<a target="_blank" href="TestCaseExecution.jsp?executionId=' + data.BugTrackerStat[index].exeIdLast + '">' + data.BugTrackerStat[index].exeIdLast + "</a> (" + data.BugTrackerStat[index].exeIdLastStatus + ")";
+//            var bugLink = '<a target="_blank" href="' + data.BugTrackerStat[index].bugIdURL + '">' + data.BugTrackerStat[index].bugId + "</a>";
+//            var editEntry = '<button id="editEntry" onclick="openModalTestCase_FromRepTag(this,\'' + escapeHtml(data.BugTrackerStat[index].testFirst) + '\',\'' + escapeHtml(data.BugTrackerStat[index].testCaseFirst) + '\',\'EDIT\');"\n\
+//                                class="editEntry btn btn-default btn-xs margin-right5" \n\
+//                                name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
+//                                <span class="glyphicon glyphicon-pencil"></span></button>' + data.BugTrackerStat[index].testCaseFirst;
+//            var exeLink = '<a target="_blank" href="TestCaseExecution.jsp?executionId=' + data.BugTrackerStat[index].exeIdLast + '">' + data.BugTrackerStat[index].exeIdLast + "</a> (" + data.BugTrackerStat[index].exeIdLastStatus + ")";
 
-            var $tr = $('<tr>');
-            $tr.append($('<td>').html(bugLink).css("text-align", "center"));
-            if (data.BugTrackerStat[index].exeIdLast !== 0) {
-                $tr.append($('<td>').html(exeLink).css("text-align", "center"));
-            } else {
-                $tr.append($('<td>'));
-            }
-            $tr.append($('<td>').html(editEntry).css("text-align", "center"));
-            $tr.append($('<td>').text(data.BugTrackerStat[index].nbExe).css("text-align", "center"));
-            $("#bugTableBody").append($tr);
+            var tr = $('<tr>');
+            tr.append($('<td>').text(data.bugSummary[index].bug).css("text-align", "center"));
+            tr.append($('<td>').text(data.bugSummary[index].test).css("text-align", "center"));
+            tr.append($('<td>').text(data.bugSummary[index].testCase).css("text-align", "center"));
+            tr.append($('<td>').text(data.bugSummary[index].status).css("text-align", "center"));
+            $("#bugTableReportBody").append(tr);
 
         }
 
 // add a panel for the total
 
-        if (data.totalBugToReport > 0) {
-            if (data.totalBugToReportReported !== data.totalBugToReport) {
-                $("#BugReportTable").append(
-                        $("<div class='panel panel-primary'></div>").append(
-                        $('<div class="panel-heading"></div>').append(
-                        $('<div class="row"></div>').append(
-                        $('<div class="col-xs-8 status"></div>').text("Bugs to Report").prepend(
-                        $('<span class="" style="margin-right: 5px;"></span>'))).append(
-                        $('<div class="col-xs-4 text-right"></div>').append(
-                        $('<div class="total"></div>').text(data.totalBugToReport))
-                        ))));
-            }
-            if (data.totalBugToReportReported !== 0) {
-                $("#BugReportTable").append(
-                        $("<div class='panel panel-primary'></div>").append(
-                        $('<div class="panel-heading"></div>').append(
-                        $('<div class="row"></div>').append(
-                        $('<div class="col-xs-8 status"></div>').text("Bugs Reported").prepend(
-                        $('<span class="" style="margin-right: 5px;"></span>'))).append(
-                        $('<div class="col-xs-4 text-right"></div>').append(
-                        $('<div class="total"></div>').text(data.totalBugToReportReported)).append(
-                        $('<div class="row"></div>').append(
-                        $('<div class="percentage pull-right"></div>').text(Math.round(((data.totalBugToReportReported / data.totalBugToReport) * 100) * 100) / 100 + '%'))
-                        )
-                        ))));
-            }
-        }
+        $("#BugReportTable").append(data.nbBugs + " bugs<br>" + data.nbTOCLEAN + " TestCases / Bugs to Clean<br>" + data.nbPENDING + " TestCases / Bugs Still Running<br>" + data.nbTOREPORT + " TestCases / Bugs To report<br>");
 
-        if (data.totalBugToClean !== 0) {
-            $("#BugReportTable").append(
-                    $("<div class='panel panelTOCLEAN'></div>").append(
-                    $('<div class="panel-heading"></div>').append(
-                    $('<div class="row"></div>').append(
-                    $('<div class="col-xs-8 status"></div>').text("Bugs to Clean").prepend(
-                    $('<span class="" style="margin-right: 5px;"></span>'))).append(
-                    $('<div class="col-xs-4 text-right"></div>').append(
-                    $('<div class="total"></div>').text(data.totalBugToClean))
-                    ))));
-        }
+
+//        if (data.totalBugToReport > 0) {
+//            if (data.totalBugToReportReported !== data.totalBugToReport) {
+//                $("#BugReportTable").append(
+//                        $("<div class='panel panel-primary'></div>").append(
+//                        $('<div class="panel-heading"></div>').append(
+//                        $('<div class="row"></div>').append(
+//                        $('<div class="col-xs-8 status"></div>').text("Bugs to Report").prepend(
+//                        $('<span class="" style="margin-right: 5px;"></span>'))).append(
+//                        $('<div class="col-xs-4 text-right"></div>').append(
+//                        $('<div class="total"></div>').text(data.totalBugToReport))
+//                        ))));
+//            }
+//            if (data.totalBugToReportReported !== 0) {
+//                $("#BugReportTable").append(
+//                        $("<div class='panel panel-primary'></div>").append(
+//                        $('<div class="panel-heading"></div>').append(
+//                        $('<div class="row"></div>').append(
+//                        $('<div class="col-xs-8 status"></div>').text("Bugs Reported").prepend(
+//                        $('<span class="" style="margin-right: 5px;"></span>'))).append(
+//                        $('<div class="col-xs-4 text-right"></div>').append(
+//                        $('<div class="total"></div>').text(data.totalBugToReportReported)).append(
+//                        $('<div class="row"></div>').append(
+//                        $('<div class="percentage pull-right"></div>').text(Math.round(((data.totalBugToReportReported / data.totalBugToReport) * 100) * 100) / 100 + '%'))
+//                        )
+//                        ))));
+//            }
+//        }
+//
+//        if (data.totalBugToClean !== 0) {
+//            $("#BugReportTable").append(
+//                    $("<div class='panel panelTOCLEAN'></div>").append(
+//                    $('<div class="panel-heading"></div>').append(
+//                    $('<div class="row"></div>').append(
+//                    $('<div class="col-xs-8 status"></div>').text("Bugs to Clean").prepend(
+//                    $('<span class="" style="margin-right: 5px;"></span>'))).append(
+//                    $('<div class="col-xs-4 text-right"></div>').append(
+//                    $('<div class="total"></div>').text(data.totalBugToClean))
+//                    ))));
+//        }
     } else {
         $("#BugReportByStatusPanel").hide();
     }
@@ -615,6 +628,49 @@ function loadBugReportByStatusTable(data, selectTag) {
 
 }
 
+/*
+ * Manual Executions panel
+ */
+
+function loadManualReportByExecutorTable(data, selectTag) {
+    var len = data.perExecutor.length;
+    var doc = new Doc();
+
+    $("#manualTableBody tr").remove();
+
+    if (len > 0) {
+        $("#ManualReportByExecutorPanel").show();
+        //calculate totaltest nb
+        for (var index = 0; index < len; index++) {
+            var tr = $('<tr>');
+            if (getUser().login === data.perExecutor[index].executor) {
+                tr.append($('<td>').html(data.perExecutor[index].executor).css("text-align", "center").css("background-color", "yellow"));
+            } else {
+                tr.append($('<td>').html(data.perExecutor[index].executor).css("text-align", "center"));
+            }
+            tr.append($('<td>').text(data.perExecutor[index].executionList.length).css("text-align", "center"));
+            var per = (data.perExecutor[index].executionList.length - data.perExecutor[index].executionWEList.length) / data.perExecutor[index].executionList.length;
+            tr.append($('<td>').html(Math.round(((per) * 100) * 100) / 100 + '%').css("text-align", "center"));
+            tr.append($('<td>').text(data.perExecutor[index].executionWEList.length).css("text-align", "center"));
+            $("#manualTableBody").append(tr);
+
+        }
+    } else {
+        $("#ManualReportByExecutorPanel").hide();
+    }
+
+
+// add a panel for the total
+
+    var per = (data.totalExecution - data.totalWEExecution) / data.totalExecution;
+    var done = (data.totalExecution - data.totalWEExecution);
+    var buildBar = '<div class="progress"><div class="progress-bar statusBLACK"  role="progressbar" style="width:' + Math.round(((per) * 100) * 100) / 100 + '%">' + Math.round(((per) * 100) * 100) / 100 + '%</div></div>';
+    buildBar += '<div style="text-align: center;"> ' + Math.round(((per) * 100) * 100) / 100 + '% (' + done + ' / ' + data.totalExecution + ')</div>';
+    $("#ManualReportSum").html(buildBar);
+
+    hideLoader($("#ManualReportByExecutor"));
+
+}
 
 /*
  * Status panels
@@ -1108,13 +1164,25 @@ function generateTooltip(data) {
     } else {
         htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.ID + '</div>';
     }
-    htmlRes +=
-            '<div><span class=\'bold\'>Environment : </span>' + data.Environment + '</div>' +
-            '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>' +
-            '<div><span class=\'bold\'>Robot Decli : </span>' + data.RobotDecli + '</div>' +
-            '<div><span class=\'bold\'>Start : </span>' + new Date(data.Start) + '</div>' +
-            '<div><span class=\'bold\'>End : </span>' + new Date(data.End) + '</div>' +
-            '<div>' + ctrlmessage + '</div>';
+    htmlRes += '<div><span class=\'bold\'>Environment : </span>' + data.Environment + '</div>';
+    htmlRes += '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>';
+    if ((data.ManualExecution === "Y")) {
+        htmlRes += '<div><span class=\'bold\'>Manual Execution';
+        if ((data.Executor !== "")) {
+            htmlRes += ' by ' + data.Executor;
+        } else {
+            htmlRes += '.</span></div>';
+
+        }
+    }
+    if ((data.RobotDecli !== undefined) && (data.RobotDecli !== '')) {
+        htmlRes += '<div><span class=\'bold\'>Robot Decli : </span>' + data.RobotDecli + '</div>';
+    }
+    htmlRes += '<div><span class=\'bold\'>Start : </span>' + getDateShort(data.Start) + '</div>';
+    if (getDateShort(data.End) !== "") {
+        htmlRes += '<div><span class=\'bold\'>End : </span>' + getDateShort(data.End) + '</div>';
+    }
+    htmlRes += '<div>' + ctrlmessage + '</div>';
 
     return htmlRes;
 }
@@ -1128,9 +1196,20 @@ function openModalTestCase_FromRepTag(element, test, testcase, mode) {
         if ((!(testcaseobj === undefined)) && ($('#editTestCaseModal').data("Saved"))) {
             // when modal is closed, we check that testcase object exist and has been saved in order to update the comment and bugid on reportbytag screen.
             var newComment = $('#editTestCaseModal').data("testcase").comment;
-            var newBugId = $('#editTestCaseModal').data("testcase").bugId;
-            $(element).parent().parent().find('td.comment').text(newComment);
-            $(element).parent().parent().find('td.bugid').text(newBugId);
+            $(element).parent().parent().find('td.comment').text(decodeURI(newComment).replace(/\+/g, ' ').replace(/%2B/g, '+'));
+
+            var newBugId = $('#editTestCaseModal').data("bug");
+            var link = "";
+            var appurl = $('#editTestCaseModal').data("appURL");
+            $.each(newBugId, function (idx, obj) {
+                link = link + '<a target="_blank" href="' + appurl.replace(/%BUGID%/g, obj.id) + '">' + obj.id;
+                if (obj.desc !== "") {
+                    link = link + " - " + obj.desc;
+                }
+                link = link + "</a><br>";
+            });
+
+            $(element).parent().parent().find('td.bugid').html(link);
         }
     });
 }
@@ -1164,13 +1243,17 @@ function refreshNbChecked() {
     if (nbchecked > 0) {
         $('#submitExe').prop("disabled", false);
         $('#submitExe').html("<span class='glyphicon glyphicon-play'></span> Submit Again (" + nbchecked + ")");
+        $('#submitExewithDep').prop("disabled", false);
+        $('#submitExewithDep').html("<span class='glyphicon glyphicon-play'></span> Submit Again with Dep (" + nbchecked + ")");
     } else {
         $('#submitExe').prop("disabled", true);
         $('#submitExe').html("<span class='glyphicon glyphicon-play'></span> Submit Again");
+        $('#submitExewithDep').prop("disabled", true);
+        $('#submsubmitExewithDepitExe').html("<span class='glyphicon glyphicon-play'></span> Submit Again with Dep");
     }
 }
 
-function renderOptionsForExeList(selectTag) {
+function renderOptionsForExeList(selectTag, fullListSelected) {
     if ($("#blankSpace").length === 0) {
         var doc = new Doc();
         var contentToAdd = "<div class='marginBottom10'>";
@@ -1181,9 +1264,14 @@ function renderOptionsForExeList(selectTag) {
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKO' type='checkbox'></input>KO</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKOManual' type='checkbox'></input>KO (Manual)</label>";
         contentToAdd += "<label class='checkbox-inline marginRight10'><input id='selectAllQueueNA' type='checkbox'></input>NA</label>";
+        contentToAdd += "<div class='btn-group marginRight20'>";
         contentToAdd += "<button id='submitExe' type='button' disabled='disabled' title='Submit again the selected executions.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again</button>";
-        contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
-        contentToAdd += "<button id='refresh' type='button' title='Refresh.' class='btn btn-default' onclick='loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
+        contentToAdd += "<button id='btnGroupDrop4' type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
+        contentToAdd += "<div class='dropdown-menu'><button id='submitExewithDep' type='button' disabled='disabled' title='Submit again the selected executions with all dependencies.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again with Dep</button></div>";
+        contentToAdd += "</div>";
+        contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default marginLeft20'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
+        contentToAdd += "<label class='checkbox-inline'><input id='fullList' type='checkbox' " + fullListSelected + "></input>Full List</label>";
+        contentToAdd += "<button id='refresh' type='button' title='Refresh.' class='btn btn-default marginLeft20' onclick='loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
         contentToAdd += "</div>";
 
         $("#listTable_length").before(contentToAdd);
@@ -1206,12 +1294,16 @@ function renderOptionsForExeList(selectTag) {
         $('#selectAllQueueNA').click(function () {
             selectAllQueue("selectAllQueueNA", "", "NA");
         });
-        $('#submitExe').click(massAction_copyQueue);
+        $('#submitExe').click(massAction_copyQueueWithoutDep);
+        $('#submitExewithDep').click(massAction_copyQueueWithDep);
     }
 }
 
-function massAction_copyQueue() {
+function massAction_copyQueue(option) {
 
+    if (option === undefined) {
+        option = "toQUEUED";
+    }
     clearResponseMessageMainPage();
 
     var doc = new Doc();
@@ -1223,7 +1315,7 @@ function massAction_copyQueue() {
         showMessage(localMessage, null);
     } else {
 
-        var jqxhr = $.post("CreateTestCaseExecutionQueue", paramSerialized + "&actionState=toQUEUED&actionSave=save", "json");
+        var jqxhr = $.post("CreateTestCaseExecutionQueue", paramSerialized + "&actionState=" + option + "&actionSave=save", "json");
         $.when(jqxhr).then(function (data) {
             // unblock when remote call returns 
             if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
@@ -1237,6 +1329,13 @@ function massAction_copyQueue() {
         }).fail(handleErrorAjaxAfterTimeout);
     }
 
+}
+
+function massAction_copyQueueWithDep() {
+    massAction_copyQueue("toQUEUEDwithDep");
+}
+function massAction_copyQueueWithoutDep() {
+    massAction_copyQueue("toQUEUED");
 }
 
 var cptDep = 0;
@@ -1293,6 +1392,7 @@ function aoColumnsFunc(Columns) {
             "title": title,
             "bSortable": true,
             "bSearchable": true,
+            "class": "mainCell",
             "sWidth": "40px",
             "data": function (row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
@@ -1306,11 +1406,12 @@ function aoColumnsFunc(Columns) {
             "mRender": function (data, type, row, meta) {
                 if (data !== "") {
                     // Getting selected Tag;
-                    var executionLink = generateExecutionLink(data.ControlStatus, data.ID, tag);
                     var glyphClass = getRowClass(data.ControlStatus);
                     var tooltip = generateTooltip(data);
+                    let idProgressBar = (data.Test + "_" + data.TestCase + "_" + data.Country + "_" + data.Environment + "_" + data.RobotDecli).replace(/\./g, '_').replace(/ /g, '_').replace(/\:/g, '_');
                     var cell = "";
-                    cell += '<div class="input-group"><span style="border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon status' + data.ControlStatus + '">';
+                    cell += '<div class="input-group mainCell" id="' + idProgressBar + '">';
+                    cell += '<span style="border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon status' + data.ControlStatus + '">';
                     var state = data.ControlStatus;
                     if (!isEmpty(data.QueueState)) {
                         state += data.QueueState;
@@ -1319,39 +1420,52 @@ function aoColumnsFunc(Columns) {
                         cell += '<input id="selectLine" name="id" value=' + data.QueueID + ' onclick="refreshNbChecked()" data-select="id" data-line="select' + data.ManualExecution + '-' + state + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input>';
                     }
                     cell += '</span>';
-                    let idProgressBar = (data.Test + "_" + data.TestCase + "_" + data.RobotDecli).replace("\.", "_").replace(" ", "_");
-                    if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
-                        cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" id="' + idProgressBar + '" ';
-                    } else {
-                        cell += '<div class="progress-bar status' + data.ControlStatus + '" id="' + idProgressBar + '" ';
+                    let statWidth = "100";
+                    if (data.previousExeControlStatus !== undefined) {
+                        cell += '<div style="width: 20%;cursor: pointer; height: 40px;" class="progress-bar status' + data.previousExeControlStatus + '"';
+                        cell += ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + data.previousExeId + '\')">';
+                        cell += data.previousExeControlStatus;
+                        cell += '</div>';
+                        statWidth = "80";
                     }
-                    cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;"';
+                    if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
+                        cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" id1="' + idProgressBar + '" ';
+                    } else {
+                        cell += '<div class="progress-bar status' + data.ControlStatus + '" id1="' + idProgressBar + '" ';
+                    }
+                    cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: ' + statWidth + '%;cursor: pointer; height: 40px;"';
                     cell += 'data-toggle="tooltip" data-html="true" title="' + tooltip + '"';
                     if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
                         cell += ' onclick="openModalTestCaseExecutionQueue(' + data.QueueID + ', \'EDIT\');">\n\' ';
                     } else {
-                        cell += ' onclick="window.open(\'' + executionLink + '\')">';
+                        cell += ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + data.ID + '\')">';
                     }
                     cell += '<span class="' + glyphClass.glyph + ' marginRight5"></span>';
-                    cell += '<span name="tcResult">' + data.ControlStatus + '<span>';
+                    if (getUser().login === data.Executor) {
+                        cell += '<span style="color:yellow" name="tcResult">' + data.ControlStatus + '</span>';
+                    } else {
+                        cell += '<span name="tcResult">' + data.ControlStatus + '</span>';
+                    }
+                    if (data.QueueState !== undefined) {
+                        cell += '<br><span style="font-size: xx-small">' + data.QueueState + " " + '</span>';
+                    }
                     if (data.TestCaseDep.length > 0) {
                         let button = ""
                         let txt = ""
                         let dependencyArray = ""
                         for (let dep of data.TestCaseDep) {
-                            dependencyArray += "{test:'" + dep.test + "',testcase:'" + dep.testcase + "',robotdecli:'" + data.RobotDecli + "'},"
-
+                            dependencyArray += "{test:'" + dep.test + "',testcase:'" + dep.testcase + "',Country:'" + data.Country + "',Environment:'" + data.Environment + "',robotdecli:'" + data.RobotDecli + "'},"
                         }
-
-                        let dependency = "renderDependency('dep" + cptDep + "',[" + dependencyArray + "]);"
-
-                        button = '<button id="dep' + cptDep + '" type="button" class="btn  btn-info hideFeatureTCDependencies" onclick="stopPropagation(event);' + dependency + '" data-html="true" data-toggle="popover">' +
-                                '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> </button>'
-                                ;
-                        cell += '<br><span style="font-size: xx-small">' + data.QueueState + " " + button + '<span>';
-                        cptDep++
+                        var dependency = "renderDependency('dep" + cptDep + "',[" + dependencyArray + "]);"
                     }
                     cell += '</div>';
+                    if (data.TestCaseDep.length > 0) {
+                        cell += '<span style="padding:0px; border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon ">';
+                        cell += '<a id="dep' + cptDep + '" role="button" class="btn btn-info hideFeatureTCDependencies" onclick="stopPropagation(event);' + dependency + '" data-html="true" data-toggle="popover" data-placement="right">' +
+                                '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> </a>'
+                        cell += '</span>';
+                        cptDep++;
+                    }
                     cell += '</div>';
                     return cell;
                 } else {
@@ -1381,14 +1495,10 @@ function aoColumnsFunc(Columns) {
     aoColumns.push(col);
     var col =
             {
-                "data": "bugId.bugId",
+                "data": "bugId",
+                "bSearchable": false,
                 "mRender": function (data, type, obj) {
-                    if (obj.bugId.bugTrackerUrl !== "") {
-                        var link = '<a target="_blank" href="' + obj.bugId.bugTrackerUrl + '">' + obj.bugId.bugId + "</a>";
-                        return link;
-                    } else {
-                        return obj.bugId.bugId;
-                    }
+                    return getBugIdList(data, obj.AppBugURL);
                 },
                 "sName": "tec.bugId",
                 "sClass": "bugid",
@@ -1399,9 +1509,9 @@ function aoColumnsFunc(Columns) {
 
     var col =
             {
-                "data": "NbExecutionsTotal",
-                "sName": "NbExecutionsTotal",
-                "sClass": "NbExecutionsTotal",
+                "data": "NbRetry",
+                "sName": "NbRetry",
+                "sClass": "NbRetry",
                 "sWidth": "40px",
                 "title": "Total nb of Retries"
             };
@@ -1410,22 +1520,23 @@ function aoColumnsFunc(Columns) {
     return aoColumns;
 }
 
-
 function renderDependency(id, dependencyArray) {
     let text = ""
-
+    // Remove all background of mainCell
+    $(".mainCell").parent().removeClass("info");
     dependencyArray.forEach(dep => {
-        let idProgressBar = (dep.test + "_" + dep.testcase + "_" + dep.robotdecli).replace("\.", "_").replace(" ", "_");
+        let idProgressBar = (dep.test + "_" + dep.testcase + "_" + dep.Country + "_" + dep.Environment + "_" + dep.robotdecli).replace(/ /g, '_').replace(/\./g, '_').replace(/\:/g, '_');
         let tcDepResult = $("#" + idProgressBar).find("[name='tcResult']").text();
-
-        text += "<a href='#" + idProgressBar + "'>" + dep.test + " - " + dep.testcase + " - " + tcDepResult + "</a><a onclick='$(\"#" + idProgressBar + "\").click()'> (open on new tab)</a><br />"
-    })
-
+        text += "<a style='cursor: pointer;' onclick='$(\"#" + idProgressBar + "\").click()' style='font-size: xx-small'><div style='width: 20%' class='progress-bar status" + tcDepResult + "'>" + tcDepResult + "</div></a><a href='#" + idProgressBar + "'>" + dep.test + " - " + dep.testcase + "</a><br>";
+        // Add background of mainCell that are dependent.
+        $("#" + idProgressBar).parent().addClass("info");
+    });
     $("#" + id).attr('title', "Dependency")
+            .addClass("info")
             .popover('fixTitle')
             .attr("data-content", text)
+            .attr("data-placement", "right")
             .popover('show');
-
 }
 
 function customConfig(config) {

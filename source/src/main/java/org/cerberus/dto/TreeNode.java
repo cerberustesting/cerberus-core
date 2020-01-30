@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.entity.Label;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,8 +43,9 @@ public class TreeNode {
     private String icon;
     private String href;
     private boolean selectable;
+    private boolean selected;
+    private List<String> tags; // This is not Cerberus tags but GUI hierarchy tag.
     private List<TreeNode> nodes;
-    private List<String> tags;
     private String type;
     private Integer nbNodesWithChild;
     private String nbNodesText;
@@ -61,6 +63,7 @@ public class TreeNode {
     private Integer nbQE;
     private Integer nbQU;
     private Integer nbCA;
+    private Label labelObj;
 
     private static final Logger LOG = LogManager.getLogger(TreeNode.class);
 
@@ -86,6 +89,22 @@ public class TreeNode {
         this.nbQE = 0;
         this.nbQU = 0;
         this.nbCA = 0;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    public Label getLabelObj() {
+        return labelObj;
+    }
+
+    public void setLabelObj(Label labelObj) {
+        this.labelObj = labelObj;
     }
 
     public String getSystem() {
@@ -401,10 +420,31 @@ public class TreeNode {
             result.put("icon", this.getIcon());
             result.put("href", this.getHref());
             result.put("selectable", this.isSelectable());
+            JSONObject state = new JSONObject();
+            state.put("selected", this.isSelected());
+            result.put("state", state);
             result.put("nbNodesWithChild", this.getNbNodesWithChild());
             result.put("counter1", this.getCounter1());
             result.put("counter1WithChild", this.getCounter1WithChild());
             result.put("tags", this.getTags());
+            if (this.getLabelObj() != null) {
+                result.put("label", this.getLabelObj().toJsonGUI());
+            }
+            JSONObject stats = new JSONObject();
+            stats.put("nbOK", this.nbOK);
+            stats.put("nbKO", this.nbKO);
+            stats.put("nbCA", this.nbCA);
+            stats.put("nbPE", this.nbPE);
+            stats.put("nbFA", this.nbFA);
+            stats.put("nbNA", this.nbNA);
+            stats.put("nbNE", this.nbNE);
+            stats.put("nbQE", this.nbQE);
+            stats.put("nbQU", this.nbQU);
+            stats.put("nbWE", this.nbWE);
+            stats.put("nbElement", this.counter1);
+            stats.put("nbElementWithChild", this.counter1WithChild);
+            stats.put("nbNodesWithChild", this.nbNodesWithChild);
+            result.put("stats", stats);
             if (this.getNodes() != null) {
                 JSONArray array = new JSONArray();
                 for (Object childList : this.getNodes()) {

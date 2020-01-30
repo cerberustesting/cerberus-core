@@ -64,26 +64,26 @@ public class TestCaseStepActionControlExecutionService implements ITestCaseStepA
     }
 
     @Override
-    public AnswerList readByVarious1(long executionId, String test, String testcase, int step, int index, int sequence) {
+    public AnswerList<TestCaseStepActionControlExecution> readByVarious1(long executionId, String test, String testcase, int step, int index, int sequence) {
         return testCaseStepActionControlExecutionDao.readByVarious1(executionId, test, testcase, step, index, sequence);
     }
 
     @Override
-    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int index, int sequence, int controlSequence) {
+    public AnswerItem<TestCaseStepActionControlExecution> readByKey(long executionId, String test, String testcase, int step, int index, int sequence, int controlSequence) {
         return testCaseStepActionControlExecutionDao.readByKey(executionId, test, testcase, step, index, sequence, controlSequence);
     }
 
     @Override
-    public AnswerList readByVarious1WithDependency(long executionId, String test, String testcase, int step, int index, int sequence) {
+    public AnswerList<TestCaseStepActionControlExecution> readByVarious1WithDependency(long executionId, String test, String testcase, int step, int index, int sequence) {
 
-        AnswerList controls = this.readByVarious1(executionId, test, testcase, step, index, sequence);
-        AnswerList response = null;
+        AnswerList<TestCaseStepActionControlExecution> controls = this.readByVarious1(executionId, test, testcase, step, index, sequence);
+        AnswerList<TestCaseStepActionControlExecution> response = null;
         List<TestCaseStepActionControlExecution> tcsaceList = new ArrayList<>();
         for (Object control : controls.getDataList()) {
 
             TestCaseStepActionControlExecution tcsace = (TestCaseStepActionControlExecution) control;
 
-            AnswerList files = testCaseExecutionFileService.readByVarious(executionId, tcsace.getTest() + "-" + tcsace.getTestCase() + "-" + tcsace.getStep() + "-" + tcsace.getIndex() + "-" + tcsace.getSequence() + "-" + tcsace.getControlSequence());
+            AnswerList<TestCaseExecutionFile> files = testCaseExecutionFileService.readByVarious(executionId, tcsace.getTest() + "-" + tcsace.getTestCase() + "-" + tcsace.getStep() + "-" + tcsace.getIndex() + "-" + tcsace.getSequence() + "-" + tcsace.getControlSequence());
             tcsace.setFileList((List<TestCaseExecutionFile>) files.getDataList());
 
             tcsaceList.add(tcsace);

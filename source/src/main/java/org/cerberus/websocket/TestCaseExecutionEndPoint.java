@@ -21,21 +21,6 @@ package org.cerberus.websocket;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.websocket.decoders.TestCaseExecutionDecoder;
-import org.cerberus.websocket.encoders.TestCaseExecutionEncoder;
-
-import javax.websocket.EndpointConfig;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.PathParam;
-import javax.websocket.server.ServerEndpoint;
-import javax.websocket.server.ServerEndpointConfig;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -45,9 +30,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import javax.websocket.EndpointConfig;
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.server.PathParam;
+import javax.websocket.server.ServerEndpoint;
+import javax.websocket.server.ServerEndpointConfig;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.websocket.decoders.TestCaseExecutionDecoder;
+import org.cerberus.websocket.encoders.TestCaseExecutionEncoder;
 
 /**
- * {@link ServerEndpoint} to be kept informed about {@link TestCaseExecution} changes
+ * {@link ServerEndpoint} to be kept informed about {@link TestCaseExecution}
+ * changes
  *
  * @author corentin
  * @author abourdon
@@ -61,10 +61,13 @@ import java.util.concurrent.locks.ReentrantLock;
 public class TestCaseExecutionEndPoint {
 
     /**
-     * The {@link javax.websocket.server.ServerEndpointConfig.Configurator} of this {@link ServerEndpoint} that give always the same {@link TestCaseExecutionEndPoint} instance to deserve websocket support.
+     * The {@link javax.websocket.server.ServerEndpointConfig.Configurator} of
+     * this {@link ServerEndpoint} that give always the same
+     * {@link TestCaseExecutionEndPoint} instance to deserve websocket support.
      */
     public static class SingletonConfigurator extends ServerEndpointConfig.Configurator {
 
+        @SuppressWarnings("unchecked")
         @Override
         public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
             if (!TestCaseExecutionEndPoint.class.equals(endpointClass)) {
@@ -102,12 +105,15 @@ public class TestCaseExecutionEndPoint {
     private Map<Long, Set<String>> executions = new HashMap<>();
 
     /**
-     * Send the given {@link TestCaseExecution} for all session opened to this execution.
+     * Send the given {@link TestCaseExecution} for all session opened to this
+     * execution.
      * <p>
-     * Message is sent only if the current timestamp is out of the {@link TestCaseExecution#getCerberus_featureflipping_websocketpushperiod()}
+     * Message is sent only if the current timestamp is out of the
+     * {@link TestCaseExecution#getCerberus_featureflipping_websocketpushperiod()}
      *
      * @param execution the {@link TestCaseExecution} to send to opened sessions
-     * @param forcePush if send has to be forced, regardless of the {@link TestCaseExecution#getCerberus_featureflipping_websocketpushperiod()}}
+     * @param forcePush if send has to be forced, regardless of the
+     * {@link TestCaseExecution#getCerberus_featureflipping_websocketpushperiod()}}
      * @see TestCaseExecution#getLastWebsocketPush()
      */
     public void send(TestCaseExecution execution, boolean forcePush) {
@@ -160,7 +166,8 @@ public class TestCaseExecutionEndPoint {
     }
 
     /**
-     * Process to the end of the given {@link TestCaseExecution}, i.e., close all registered session to the given {@link TestCaseExecution}
+     * Process to the end of the given {@link TestCaseExecution}, i.e., close
+     * all registered session to the given {@link TestCaseExecution}
      *
      * @param execution the given {@link TestCaseExecution} to end
      */
@@ -195,9 +202,10 @@ public class TestCaseExecutionEndPoint {
     /**
      * Callback when receiving message from client side
      *
-     * @param session     the client {@link Session}
-     * @param execution   the associated {@link TestCaseExecution} sent by client
-     * @param executionId the execution identifier from the {@link ServerEndpoint} path
+     * @param session the client {@link Session}
+     * @param execution the associated {@link TestCaseExecution} sent by client
+     * @param executionId the execution identifier from the
+     * {@link ServerEndpoint} path
      */
     @OnMessage
     public void message(final Session session, TestCaseExecution execution, @PathParam("execution-id") int executionId) {
@@ -207,9 +215,10 @@ public class TestCaseExecutionEndPoint {
     /**
      * Callback when receiving opened connection from client side
      *
-     * @param session     the client {@link Session}
-     * @param config      the associated {@link EndpointConfig} to the new connection
-     * @param executionId the execution identifier from the {@link ServerEndpoint} path
+     * @param session the client {@link Session}
+     * @param config the associated {@link EndpointConfig} to the new connection
+     * @param executionId the execution identifier from the
+     * {@link ServerEndpoint} path
      */
     @OnOpen
     public void openConnection(Session session, EndpointConfig config, @PathParam("execution-id") long executionId) {
@@ -233,8 +242,9 @@ public class TestCaseExecutionEndPoint {
     /**
      * Callback when receiving closed connection from client side
      *
-     * @param session     the client {@link Session}
-     * @param executionId the execution identifier from the {@link ServerEndpoint} path
+     * @param session the client {@link Session}
+     * @param executionId the execution identifier from the
+     * {@link ServerEndpoint} path
      */
     @OnClose
     public void closedConnection(Session session, @PathParam("execution-id") long executionId) {
@@ -257,7 +267,7 @@ public class TestCaseExecutionEndPoint {
      * Callback when receiving error connection from client side
      *
      * @param session the client {@link Session}
-     * @param error   the associated {@link Throwable} to the received error
+     * @param error the associated {@link Throwable} to the received error
      */
     @OnError
     public void error(Session session, Throwable error) {

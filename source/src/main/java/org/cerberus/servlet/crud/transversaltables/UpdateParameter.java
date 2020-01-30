@@ -55,15 +55,15 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class UpdateParameter extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(UpdateParameter.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -114,8 +114,8 @@ public class UpdateParameter extends HttpServlet {
             FactoryParameter factoryparameter = appContext.getBean(FactoryParameter.class);
 
             Parameter para = factoryparameter.create(system, id, value, "");
-            ans = parameterService.save(para);
-            if (!ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) 
+            ans = parameterService.save(para, request);
+            if (!ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())
                     && !ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED.getCode())) {
                 /**
                  * Object could not be found. We stop here and report the error.
@@ -132,7 +132,7 @@ public class UpdateParameter extends HttpServlet {
                 }
                 if (system1 != null && system1value != null) {
                     Parameter para1 = factoryparameter.create(system1, id, system1value, "");
-                    ans = parameterService.save(para1);
+                    ans = parameterService.save(para1, request);
 
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         /**
@@ -158,14 +158,13 @@ public class UpdateParameter extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -183,10 +182,10 @@ public class UpdateParameter extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

@@ -106,7 +106,7 @@ public class UserService implements IUserService {
 
     @Override
     public AnswerItem<User> updateUserPassword(User user, String currentPassword, String newPassword, String confirmPassword, String resetPasswordToken) {
-        AnswerItem answUpdate = new AnswerItem<>();
+        AnswerItem<User> answUpdate = new AnswerItem<>();
         MessageEvent msg;
         //First check if both new password are the same
         if (newPassword.equals(confirmPassword)) {
@@ -152,7 +152,7 @@ public class UserService implements IUserService {
 
     @Override
     public AnswerItem<User> updateUserPasswordAdmin(User user, String newPassword) {
-        AnswerItem answUpdate = new AnswerItem<>();
+        AnswerItem<User> answUpdate = new AnswerItem<>();
         MessageEvent msg;
         //verifications succeed, update password
         answUpdate = userDAO.updateUserPassword(user, newPassword, user.getRequest());
@@ -203,17 +203,17 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public AnswerItem readByKey(String login) {
+    public AnswerItem<User> readByKey(String login) {
         return userDAO.readByKey(login);
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
+    public AnswerList<User> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
         return userDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, string);
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<User> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return userDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 

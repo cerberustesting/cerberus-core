@@ -42,7 +42,7 @@ function initModalApplicationObject(page, application) {
     $("[name='buttonClose']").html(
             doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
-    $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "btn_edit"));
+    $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
     $("[name='addEntryField']").html(
             doc.getDocLabel("page_applicationObject", "button_create"));
     $("[name='confirmationField']").html(

@@ -636,24 +636,28 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "team",
+            "visible": false,
             "sName": "team",
             "sWidth": "50px",
             "title": doc.getDocLabel("page_user", "team_col")
         },
         {
             "data": "defaultSystem",
+            "visible": false,
             "sName": "defaultSystem",
             "sWidth": "50px",
             "title": doc.getDocLabel("page_user", "defaultsystem_col")
         },
         {
             "data": "request",
+            "visible": false,
             "sName": "reqest",
             "sWidth": "50px",
             "title": doc.getDocLabel("page_user", "request_col")
         },
         {
             "data": "email",
+            "visible": false,
             "like": true,
             "sName": "email",
             "sWidth": "80px",

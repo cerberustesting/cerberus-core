@@ -41,20 +41,35 @@ public interface ILabelService {
      * @param id
      * @return
      */
-    AnswerItem readByKey(Integer id);
+    AnswerItem<Label> readByKey(Integer id);
 
     /**
      *
      * @return
      */
-    AnswerList readAll();
+    AnswerList<Label> readAll();
+
+    /**
+     * Reading from database all lines of Parent / Child Labels.
+     *
+     * @return
+     */
+    AnswerList<Label> readAllLinks();
+
+    /**
+     * Add child element into list of Label Id.
+     *
+     * @param labelIdList
+     * @return
+     */
+    List<Integer> enrichWithChild(List<Integer> labelIdList);
 
     /**
      *
      * @param system
      * @return
      */
-    AnswerList readBySystem(List<String> system);
+    AnswerList<Label> readBySystem(List<String> system);
 
     /**
      *
@@ -62,7 +77,7 @@ public interface ILabelService {
      * @param type
      * @return
      */
-    AnswerList readByVarious(List<String> system, List<String> type);
+    AnswerList<Label> readByVarious(List<String> system, List<String> type);
 
     /**
      *
@@ -74,11 +89,12 @@ public interface ILabelService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Label> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
      * @param system
+     * @param strictSystemFilter
      * @param type
      * @param startPosition
      * @param length
@@ -88,7 +104,7 @@ public interface ILabelService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByVariousByCriteria(List<String> system, boolean strictSystemFilter, List<String> type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Label> readByVariousByCriteria(List<String> system, boolean strictSystemFilter, List<String> type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -149,7 +165,7 @@ public interface ILabelService {
      * @param columnName
      * @return
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      *

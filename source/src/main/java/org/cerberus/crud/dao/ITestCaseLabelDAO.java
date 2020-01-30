@@ -65,7 +65,7 @@ public interface ITestCaseLabelDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList<List<TestCaseLabel>> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<TestCaseLabel> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -108,7 +108,7 @@ public interface ITestCaseLabelDAO {
      * @param testCaseList
      * @return
      */
-    AnswerList readByTestTestCase(String test, String testCase, List<TestCase> testCaseList);
+    AnswerList<TestCaseLabel> readByTestTestCase(String test, String testCase, List<TestCase> testCaseList);
     
     /**
      *
@@ -116,6 +116,6 @@ public interface ITestCaseLabelDAO {
      * @param system
      * @return
      */
-    AnswerList readByTypeSystem(String type, String system);
+    AnswerList<TestCaseLabel> readByTypeSystem(String type, String system);
 
 }

@@ -35,6 +35,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.engine.execution.IRetriesService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.zzpublic.RunTestCaseV001;
@@ -52,6 +53,7 @@ public class ExecutionQueueWorkerThread implements Runnable {
 
     private ITestCaseExecutionQueueService queueService;
     private IRetriesService retriesService;
+    private ITestCaseExecutionQueueDepService queueDepService;
 
     private ExecutionQueueThreadPool execThreadPool;
 
@@ -108,7 +110,7 @@ public class ExecutionQueueWorkerThread implements Runnable {
             paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_MANUAL_EXECUTION, getToExecute().getManualExecution());
             paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_OUTPUT_FORMAT, PARAMETER_OUTPUT_FORMAT_VALUE);
             paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_SYNCHRONEOUS, ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE);
-            
+
         } catch (UnsupportedEncodingException ex) {
             LOG.error("Error when encoding string in URL : ", ex);
         }
@@ -129,6 +131,14 @@ public class ExecutionQueueWorkerThread implements Runnable {
             super(message, cause);
         }
 
+    }
+
+    public ITestCaseExecutionQueueDepService getQueueDepService() {
+        return queueDepService;
+    }
+
+    public void setQueueDepService(ITestCaseExecutionQueueDepService queueDepService) {
+        this.queueDepService = queueDepService;
     }
 
     public String getRobotExecutor() {
@@ -201,7 +211,7 @@ public class ExecutionQueueWorkerThread implements Runnable {
 
             LOG.debug("Get queue exe to execute : " + queueId);
             // Getting the queue full object.
-            setToExecute(queueService.convert(queueService.readByKey(queueId)));
+            setToExecute(queueService.convert(queueService.readByKey(queueId, false)));
 
             StringBuilder url = new StringBuilder();
             url.append(cerberusExecutionUrl);
@@ -216,8 +226,10 @@ public class ExecutionQueueWorkerThread implements Runnable {
         } catch (Exception e) {
             LOG.warn("Execution in queue " + queueId + " has finished with error");
             try {
+
                 queueService.updateToError(queueId, e.getMessage());
-                
+                queueDepService.manageDependenciesEndOfQueueExecution(queueId);
+
             } catch (CerberusException again) {
                 LOG.error("Unable to mark execution in queue " + queueId + " as in error", again);
             }

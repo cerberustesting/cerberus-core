@@ -119,8 +119,8 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readByIdnameByGp1(String idName, String gp) {
-        AnswerList ansList = new AnswerList<>();
+    public AnswerList<Invariant> readByIdnameByGp1(String idName, String gp) {
+        AnswerList<Invariant> ansList = new AnswerList<>();
         MessageEvent msg;
 
         List<Invariant> invariantList = new ArrayList<Invariant>();
@@ -190,11 +190,11 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readByIdnameByNotGp1(String idName, String gp) {
-        AnswerList ansList = new AnswerList<>();
+    public AnswerList<Invariant> readByIdnameByNotGp1(String idName, String gp) {
+        AnswerList<Invariant> ansList = new AnswerList<>();
         MessageEvent msg;
 
-        List<Invariant> invariantList = new ArrayList<Invariant>();
+        List<Invariant> invariantList = new ArrayList<>();
         final String query = "SELECT * FROM invariant i  WHERE i.idname = ? AND i.gp1 <> ? ORDER BY sort";
 
         // Debug message on SQL.
@@ -261,9 +261,9 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter) {
+    public AnswerList<Invariant> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter) {
         List<Invariant> invariantList = new ArrayList<>();
-        AnswerList answer = new AnswerList<>();
+        AnswerList<Invariant> answer = new AnswerList<>();
         MessageEvent msg;
 
         StringBuilder searchSQL = new StringBuilder();
@@ -375,9 +375,9 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter) {
+    public AnswerList<Invariant> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter) {
         List<Invariant> invariantList = new ArrayList<>();
-        AnswerList answer = new AnswerList<>();
+        AnswerList<Invariant> answer = new AnswerList<>();
         List<String> individalColumnSearchValues = new ArrayList<>();
         MessageEvent msg;
 
@@ -506,10 +506,10 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readDistinctValuesByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter, String columnName) {
         List<String> invariantList = new ArrayList<>();
-        AnswerList answer = new AnswerList<>();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        AnswerList<String> answer = new AnswerList<>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
         MessageEvent msg;
 
         StringBuilder searchSQL = new StringBuilder();
@@ -621,11 +621,11 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readCountryListEnvironmentLastChanges(String system, Integer nbdays) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<Invariant> readCountryListEnvironmentLastChanges(String system, Integer nbdays) {
+        AnswerList<Invariant> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<Invariant> objectList = new ArrayList<Invariant>();
+        List<Invariant> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();

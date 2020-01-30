@@ -54,8 +54,8 @@ services:
       - "4444"
     ports:
       - "14444:4444"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
     restart: always
   selenium-node-firefox:
     image: selenium/node-firefox-debug:latest
