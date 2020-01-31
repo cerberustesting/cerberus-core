@@ -47,7 +47,6 @@ import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -184,7 +183,6 @@ public class TestController {
     @ApiImplicitParams({
         @ApiImplicitParam(required = true, dataType = "string", name = "test", value = "This is the test")})
     @GetMapping("/readByKey")
-    @Secured("Test")
     public String readByKey(HttpServletRequest request, String test) {
 
         JSONObject object = new JSONObject();
@@ -221,7 +219,6 @@ public class TestController {
      * @return
      */
     @GetMapping("/read")
-    @Secured("Test")
     public String read(HttpServletRequest request) {
 
         boolean userHasPermissions = request.isUserInRole("TestAdmin");
@@ -264,7 +261,6 @@ public class TestController {
     @ApiImplicitParams({
         @ApiImplicitParam(required = true, dataType = "string", name = "system", value = "This is the system")})
     @GetMapping("readBySystem")
-    @Secured("Test")
     public String readBySystem(HttpServletRequest request, String system) {
         JSONObject object = new JSONObject();
         boolean userHasPermissions = request.isUserInRole("TestAdmin");
