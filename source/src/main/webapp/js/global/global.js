@@ -2740,19 +2740,23 @@ function getBugIdList(data, appurl) {
     var link = "";
     if (isEmpty(appurl)) {
         $.each(data, function (idx, obj) {
-            link = link + '' + obj.id;
-            if (obj.desc !== "") {
-                link = link + " - " + obj.desc;
+            if (obj.act) {
+                link = link + '' + obj.id;
+                if (obj.desc !== "") {
+                    link = link + " - " + obj.desc;
+                }
+                link = link + "<br>";
             }
-            link = link + "<br>";
         });
     } else {
         $.each(data, function (idx, obj) {
-            link = link + '<a target="_blank" href="' + appurl.replace(/%BUGID%/g, obj.id) + '">' + obj.id;
-            if (obj.desc !== "") {
-                link = link + " - " + obj.desc;
+            if (obj.act) {
+                link = link + '<a target="_blank" href="' + appurl.replace(/%BUGID%/g, obj.id) + '">' + obj.id;
+                if (obj.desc !== "") {
+                    link = link + " - " + obj.desc;
+                }
+                link = link + "</a><br>";
             }
-            link = link + "</a><br>";
         });
     }
     return link;

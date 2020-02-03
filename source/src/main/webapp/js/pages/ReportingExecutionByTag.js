@@ -1201,13 +1201,7 @@ function openModalTestCase_FromRepTag(element, test, testcase, mode) {
             var newBugId = $('#editTestCaseModal').data("bug");
             var link = "";
             var appurl = $('#editTestCaseModal').data("appURL");
-            $.each(newBugId, function (idx, obj) {
-                link = link + '<a target="_blank" href="' + appurl.replace(/%BUGID%/g, obj.id) + '">' + obj.id;
-                if (obj.desc !== "") {
-                    link = link + " - " + obj.desc;
-                }
-                link = link + "</a><br>";
-            });
+            link = getBugIdList(newBugId, appurl);
 
             $(element).parent().parent().find('td.bugid').html(link);
         }

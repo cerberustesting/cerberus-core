@@ -199,6 +199,21 @@ public class TestCase {
         return bugID;
     }
 
+    public JSONArray getBugIDActive() {
+        JSONArray res = new JSONArray();
+        for (int i = 0; i < bugID.length(); i++) {
+            try {
+                JSONObject jo = bugID.getJSONObject(i);
+                if (jo.getBoolean("act")) {
+                    res.put(jo);
+                }
+            } catch (JSONException ex) {
+                LOG.error(ex);
+            }
+        }
+        return res;
+    }
+
     public void setBugID(JSONArray bugID) {
         this.bugID = bugID;
     }
