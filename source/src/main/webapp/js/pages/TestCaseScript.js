@@ -238,6 +238,20 @@ var propertyUIList = {
             "period": null
         },
         {
+            "type": "getRawFromXml",
+            "value1": "Xpath",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/xquery",
+            "value2": "[opt] XML or URL to XML file",
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
             "type": "getDifferencesFromXml",
             "value1": "value1",
             "value1Class": "col-sm-8",
@@ -458,6 +472,21 @@ var propertyUIList = {
         },
         {
             "type": "getFromXml",
+            "value1": "Xpath",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/xquery",
+            "value2": "[opt] XML or URL to XML file",
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null,
+            "rank": "Rank"
+        },
+        {
+            "type": "getRawFromXml",
             "value1": "Xpath",
             "value1Class": "col-sm-8",
             "value1EditorMode": "ace/mode/xquery",

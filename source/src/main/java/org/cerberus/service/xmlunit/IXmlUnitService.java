@@ -57,11 +57,16 @@ public interface IXmlUnitService {
     /**
      * Apply the given XPath to the given XML value to parse
      *
-     * @param xmlToParse the XML value to parse. Can be either a plain XML text or an URL from which getting the XML value
+     * @param xmlToParse the XML value to parse. Can be either a plain XML text
+     * or an URL from which getting the XML value
      * @param xpath to the element to get text value
-     * @return the result for XPath search from the given XML value or {@link org.cerberus.service.xmlunit.impl.XmlUnitService#DEFAULT_GET_FROM_XML_VALUE} if an error occurred
+     * @return the result for XPath search from the given XML value or
+     * {@link org.cerberus.service.xmlunit.impl.XmlUnitService#DEFAULT_GET_FROM_XML_VALUE}
+     * if an error occurred
      */
     String getFromXml(String xmlToParse, String xpath);
+
+    String getRawFromXml(String xmlToParse, String xpath);
 
     /**
      * Gets differences from XML representations given in argument.

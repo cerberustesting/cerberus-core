@@ -63,6 +63,7 @@ public class TestCaseCountryProperties {
     public static final String TYPE_GETATTRIBUTEFROMHTML = "getAttributeFromHtml";
     public static final String TYPE_GETFROMCOOKIE = "getFromCookie";
     public static final String TYPE_GETFROMXML = "getFromXml";
+    public static final String TYPE_GETRAWFROMXML = "getRawFromXml";
     public static final String TYPE_GETDIFFERENCESFROMXML = "getDifferencesFromXml";
     public static final String TYPE_GETFROMJSON = "getFromJson";
     public static final String TYPE_GETFROMGROOVY = "getFromGroovy";
@@ -249,16 +250,16 @@ public class TestCaseCountryProperties {
         }
         return true;
     }
-    
+
     public int getRank() {
-		return Rank;
-	}
+        return Rank;
+    }
 
-	public void setRank(int Rank) {
-		this.Rank = Rank;
-	}
+    public void setRank(int Rank) {
+        this.Rank = Rank;
+    }
 
-	@Override
+    @Override
     public int hashCode() {
         int hash = 5;
         hash = 83 * hash + (this.test != null ? this.test.hashCode() : 0);

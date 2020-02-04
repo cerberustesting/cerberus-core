@@ -204,8 +204,8 @@ public class PropertyService implements IPropertyService {
                 LOG.debug("Trying to calculate Property : '" + tcExeData.getProperty() + "' " + tcExeData);
             }
 
-            /*  First check if property has already been calculated 
-             *  if action is calculateProperty, then set isKnownData to false. 
+            /*  First check if property has already been calculated
+             *  if action is calculateProperty, then set isKnownData to false.
              */
             tcExeData = getExecutionDataFromList(tCExecution.getTestCaseExecutionDataMap(), eachTccp, forceCalculation, tcExeData);
 
@@ -222,7 +222,7 @@ public class PropertyService implements IPropertyService {
             if (MessageEventEnum.PROPERTY_PENDING.equals(tcExeData.getPropertyResultMessage().getSource())) {
                 calculateProperty(tcExeData, tCExecution, testCaseStepActionExecution, eachTccp, forceCalculation);
                 msg = tcExeData.getPropertyResultMessage();
-                //saves the result 
+                //saves the result
                 try {
                     testCaseExecutionDataService.save(tcExeData);
                     /**
@@ -340,7 +340,7 @@ public class PropertyService implements IPropertyService {
             return result;
         }
 
-        /* 
+        /*
          * Check if property value1 and value2 contains internal properties
          */
         List<String> allProperties = new ArrayList<>();
@@ -721,6 +721,9 @@ public class PropertyService implements IPropertyService {
                             testCaseExecutionData = this.property_getFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                             break;
 
+                        case TestCaseCountryProperties.TYPE_GETRAWFROMXML:
+                            testCaseExecutionData = this.property_getRawFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                            break;
                         case TestCaseCountryProperties.TYPE_GETDIFFERENCESFROMXML:
                             testCaseExecutionData = this.property_getDifferencesFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                             break;
@@ -926,7 +929,7 @@ public class PropertyService implements IPropertyService {
     private TestCaseExecutionData property_executeSqlFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
         try {
             String script = this.sqlLibraryService.findSqlLibraryByKey(testCaseExecutionData.getValue1()).getScript();
-            testCaseExecutionData.setValue1(script); //TODO use the new library 
+            testCaseExecutionData.setValue1(script); //TODO use the new library
 
         } catch (CerberusException ex) {
             LOG.warn(ex);
@@ -1202,7 +1205,8 @@ public class PropertyService implements IPropertyService {
                     answerDecode = variableService.decodeStringCompletly(appService.getAttachementURL(), tCExecution, testCaseStepActionExecution, false);
                     decodedAttachement = (String) answerDecode.getItem();
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
-                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                        // If anything wrong with the decode --> we stop here with decode message in the action r
+                        // If anything wrong with the decode --> we stop here with decode message in the acesult.
                         testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SOAP Attachement URL"));
                         testCaseExecutionData.setStopExecution(answerDecode.getResultMessage().isStopTest());
                         LOG.debug("Property interupted due to decode 'SOAP Attachement URL.");
@@ -1246,8 +1250,8 @@ public class PropertyService implements IPropertyService {
     }
 
     private TestCaseExecutionData property_getFromXml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
-        // 1. Get XML value to parse
 
+        // 1. Get XML value to parse
         String xmlToParse = null;
         // If value2 is defined, then take it as XML value to parse
         if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue2()))) {
@@ -1267,6 +1271,51 @@ public class PropertyService implements IPropertyService {
 
         try {
             String valueFromXml = xmlUnitService.getFromXml(xmlToParse, testCaseExecutionData.getValue1());
+            if (valueFromXml != null) {
+                testCaseExecutionData.setValue(valueFromXml);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMXML);
+                res.setDescription(res.getDescription().replace("%VALUE%", valueFromXml));
+                res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
+                testCaseExecutionData.setPropertyResultMessage(res);
+            } else {
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMXML);
+                res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
+                res.setDescription(res.getDescription().replace("%VALUE2%", testCaseExecutionData.getValue2()));
+                testCaseExecutionData.setPropertyResultMessage(res);
+            }
+        } catch (Exception ex) {
+            LOG.debug(ex.toString());
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMXML);
+
+            res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%VALUE2%", testCaseExecutionData.getValue2()));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        }
+        return testCaseExecutionData;
+    }
+
+    private TestCaseExecutionData property_getRawFromXml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
+
+        // 1. Get XML value to parse
+        String xmlToParse = null;
+        // If value2 is defined, then take it as XML value to parse
+        if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue2()))) {
+            xmlToParse = testCaseExecutionData.getValue2();
+        } // Else try to get the last known response from service call
+        else if (tCExecution.getLastServiceCalled() != null) {
+            xmlToParse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+        } // If XML to parse is still null, then there is an error in XML value definition
+        else if (xmlToParse == null) {
+            testCaseExecutionData.setPropertyResultMessage(
+                    new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMXML)
+                            .resolveDescription("VALUE1", testCaseExecutionData.getValue1())
+                            .resolveDescription("VALUE2", testCaseExecutionData.getValue2()));
+            return testCaseExecutionData;
+        }
+        // Else we can try to parse it thanks to the dedicated service
+
+        try {
+            String valueFromXml = xmlUnitService.getRawFromXml(xmlToParse, testCaseExecutionData.getValue1());
             if (valueFromXml != null) {
                 testCaseExecutionData.setValue(valueFromXml);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMXML);
