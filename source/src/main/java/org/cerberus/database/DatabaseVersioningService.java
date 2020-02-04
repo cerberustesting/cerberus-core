@@ -8371,26 +8371,28 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Added parent test in order to handle hierarchy.
         // 1465
         a.add("ALTER TABLE `test` ADD COLUMN `ParentTest` VARCHAR(45) NULL DEFAULT NULL AFTER `Active`;");
-        
-        // ADD parameters 
+
+        // ADD parameters
         // 1466
         a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
                 + " ('', 'cerberus_testcasepage_controlemptybugdescription', 'N', 'Boolean that activate a blocking control when saving a testcase that have at least one empty bugid description.')");
 
-        
-        // ADD iOS Platform 
+        // ADD iOS Platform
         // 1467
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES "
                 + " ('PLATFORM', 'IOS', '20', 'iOS Platform', '');");
 
-        
         // ADD autoscroll parameters
         // 1468
         a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
-         + " ('', 'cerberus_selenium_autoscroll_vertical_offset', '0', 'Integer that correspond to the hertical offset applied after autoscrolling to element. '), "
-         + " ('', 'cerberus_selenium_autoscroll_horizontal_offset', '0', 'Integer that correspond to the horizontal offset applied after autoscrolling to element');");
+                + " ('', 'cerberus_selenium_autoscroll_vertical_offset', '0', 'Integer that correspond to the hertical offset applied after autoscrolling to element. '), "
+                + " ('', 'cerberus_selenium_autoscroll_horizontal_offset', '0', 'Integer that correspond to the horizontal offset applied after autoscrolling to element');");
 
-        
+        // ADD getRawFromXml as private invariant
+        // 1469
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES('PROPERTYTYPE', 'getRawFromXml', 55, 'Get XML code', 'Get XML code');");
+
         return a;
     }
 
