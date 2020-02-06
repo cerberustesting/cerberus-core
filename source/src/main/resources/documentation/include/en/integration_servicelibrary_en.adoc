@@ -1,7 +1,7 @@
-A service is a Cerberus entity that carry all the information necessary to :
+A service is a Cerberus entity that carries all the information necessary to :
 
 * perform HTTP actions (GET,POST...)
-* performa SOAP calls
+* perform SOAP calls
 * perform FTP actions
 * Interact with Apache Kafka topics
 
