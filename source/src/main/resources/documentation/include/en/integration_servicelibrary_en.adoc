@@ -1,1 +1,43 @@
-In this section, you will find information on Service library in Cerberus.
+A service is a Cerberus entity that carry all the information necessary to :
+
+* perform HTTP actions (GET,POST...)
+* performa SOAP calls
+* perform FTP actions
+* Interact with Apache Kafka topics
+
+=== Service Type
+
+There are four service type :
+
+* SOAP : for SOAP endpoints
+* REST : for REST endpoints
+* FTP : interact with files in a distant folder
+* KAFKA : for Apache Kafka Topics
+
+==== KAFKA
+
+In Cerberus, you can :
+
+* produce an event to a topic
+* search for an event in a topic
+
+Choosing Kafka service type will add 4 new fields to the service : Topic, Key, Filter Path, Filter Value
+
+===== PRODUCE
+
+Producing an event is pretty easy. Additionaly to the others topics, you must fill topic and key in.
+
+===== SEARCH
+
+Searching an event will always return all the events generated during the execution and after its beginning.
+Additionaly to the others topics, you must fill topic and key in. You can also filters the list of events found.
+
+The best practise is to produce an event with a functionnal key unique to cerberus (e.g. 'cerberus%system.EXECUTIONID%') that will be persisted in every topics and filters on that key to be able to perform controls on it.
+
+Example
+image:kafka_search.png[kafka_search_filters]
+
+The results will be stored in the Cerberus elements (as it is done for SOAP/REST resposne) and filtered will all the elements matching the filter path = value.
+
+If you want to have multiples conditions, you stack all your condition in JSON in the filter path and set the last one into the value field like this
+image:kafka_search2.png[kafka_search_filters_multiple_conditions]
