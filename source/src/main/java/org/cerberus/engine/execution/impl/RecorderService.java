@@ -58,6 +58,7 @@ import org.cerberus.version.Infos;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -162,7 +163,7 @@ public class RecorderService implements IRecorderService {
                         objectFileList.add(objectFile);
                     }
                 } else {
-                    LOG.debug(logPrefix + "Not Doing screenshot because connectivity with selenium server lost.");
+                    LOG.debug(logPrefix + "Not getting page source because connectivity with selenium server lost.");
                 }
             }
         } else {
@@ -419,6 +420,11 @@ public class RecorderService implements IRecorderService {
 
             } catch (IOException ex) {
                 LOG.error(ex.toString(), ex);
+
+            } catch (WebDriverException ex) {
+                LOG.debug("Exception recording Page Source on execution : " + testCaseExecution.getId(), ex);
+                object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Page Source [ERROR]", recorder.getRelativeFilenameURL(), "HTML", "", null, "", null);
+                testCaseExecutionFileService.save(object);
             }
 
         } catch (CerberusException ex) {
@@ -708,13 +714,20 @@ public class RecorderService implements IRecorderService {
                         LOG.info("File saved : " + recorder.getFullFilename());
 
                         // Index file created to database.
-                        object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Selenium log", recorder.getRelativeFilenameURL(), "TXT", "", null, "", null);
+                        object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Selenium Log", recorder.getRelativeFilenameURL(), "TXT", "", null, "", null);
                         testCaseExecutionFileService.save(object);
 
                     } catch (FileNotFoundException ex) {
                         LOG.error("Exception on recording Selenium file.", ex);
+
                     } catch (IOException ex) {
                         LOG.error("Exception on recording Selenium file.", ex);
+
+                    } catch (WebDriverException ex) {
+                        LOG.debug("Exception recording Selenium Log on execution : " + testCaseExecution.getId(), ex);
+                        object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Selenium Log [ERROR]", recorder.getRelativeFilenameURL(), "HTML", "", null, "", null);
+                        testCaseExecutionFileService.save(object);
+
                     }
 
                     LOG.debug("Selenium log recorded in : " + recorder.getRelativeFilenameURL());

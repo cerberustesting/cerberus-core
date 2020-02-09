@@ -263,19 +263,19 @@ public class ReadTestCase extends AbstractCrudTestCase {
          * Iterate on the country retrieved and generate HashMap based on the
          * key Test_TestCase
          */
-        LinkedHashMap<String, JSONObject> testCaseWithCountry = new LinkedHashMap<>();
+        LinkedHashMap<String, JSONArray> testCaseWithCountry = new LinkedHashMap<>();
         for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountryList.getDataList()) {
             String key = country.getTest() + "_" + country.getTestCase();
 
             if (testCaseWithCountry.containsKey(key)) {
-                testCaseWithCountry.get(key).put(country.getCountry(), country.getCountry());
+                testCaseWithCountry.get(key).put(convertToJSONObject(country));
             } else {
-                testCaseWithCountry.put(key, new JSONObject().put(country.getCountry(), country.getCountry()));
+                testCaseWithCountry.put(key, new JSONArray().put(convertToJSONObject(country)));
             }
         }
 
         /**
-         * find the liste of dependencies
+         * find the list of dependencies
          */
         List<TestCaseDep> testCaseDepList = testCaseDepService.readByTestAndTestCase(testCaseList.getDataList());
         LinkedHashMap<String, JSONArray> testCaseWithDep = new LinkedHashMap<>();
@@ -343,6 +343,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
             for (TestCase testCase : (List<TestCase>) testCaseList.getDataList()) {
                 String key = testCase.getTest() + "_" + testCase.getTestCase();
                 JSONObject value = convertToJSONObject(testCase);
+                value.put("bugID", testCase.getBugID());
                 value.put("hasPermissionsDelete", testCaseService.hasPermissionsDelete(testCase, request));
                 value.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(testCase, request));
                 value.put("hasPermissionsCreate", testCaseService.hasPermissionsCreate(testCase, request));
@@ -448,7 +449,9 @@ public class ReadTestCase extends AbstractCrudTestCase {
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (TestCase tc : (List<TestCase>) answer.getDataList()) {
-                dataArray.put(convertToJSONObject(tc));
+                JSONObject value = convertToJSONObject(tc);
+                value.put("bugID", tc.getBugID());
+                dataArray.put(value);
             }
         }
 
@@ -478,7 +481,9 @@ public class ReadTestCase extends AbstractCrudTestCase {
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (Object c : resp.getDataList()) {
                 TestCase cc = (TestCase) c;
-                dataArray.put(convertToJSONObject(cc));
+                JSONObject value = convertToJSONObject(cc);
+                value.put("bugID", cc.getBugID());
+                dataArray.put(value);
             }
         }
 
@@ -511,15 +516,18 @@ public class ReadTestCase extends AbstractCrudTestCase {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             TestCase tc = (TestCase) answer.getItem();
             object = convertToJSONObject(tc);
-            object.put("countryList", new JSONObject());
+            object.put("bugID", tc.getBugID());
+
             jsonResponse.put("hasPermissionsDelete", testCaseService.hasPermissionsDelete(tc, request));
             jsonResponse.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
             jsonResponse.put("hasPermissionsStepLibrary", (request.isUserInRole("TestStepLibrary")));
         }
 
+        JSONArray countryLst = new JSONArray();
         for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountryList.getDataList()) {
-            object.getJSONObject("countryList").put(country.getCountry(), country.getCountry());
+            countryLst.put(convertToJSONObject(country));
         }
+        object.put("countryList", countryLst);
 
         JSONArray stepList = new JSONArray();
         Gson gson = new Gson();
