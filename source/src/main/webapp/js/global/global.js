@@ -345,25 +345,6 @@ function displayApplicationList(selectName, system, defaultValue, extraValue) {
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the Project list
  * @param {String} selectName value name of the select tag in the html
- * @param {String} defaultValue to be selected
- * @returns {void}
- */
-function displayProjectList(selectName, defaultValue) {
-    $.when($.getJSON("ReadProject", "")).then(function (data) {
-        $("[name='" + selectName + "']").append($('<option></option>').text("NONE").val(""));
-        for (var option in data.contentTable) {
-            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].idProject + " - " + data.contentTable[option].description).val(data.contentTable[option].idProject));
-        }
-
-        if (defaultValue !== undefined) {
-            $("[name='" + selectName + "']").val(defaultValue);
-        }
-    });
-}
-
-/**
- * Method that display a combo box in all the selectName tags with the value retrieved from the Project list
- * @param {String} selectName value name of the select tag in the html
  * @param {String} system value to filter the relevant list of batch
  * @param {String} defaultValue to be selected [optional]
  * @returns {void}
