@@ -1135,11 +1135,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                     // Building full list of country from testcase.
                     var myCountry = [];
                     $.each(testcaseinfo.countryList, function (index) {
-                        myCountry.push(index);
-                    });
-
-                    $("#manageProp").click(function () {
-                        editPropertiesModalClick(test, testcase, testcaseinfo, undefined, undefined, data.hasPermissionsUpdate);
+                        myCountry.push(testcaseinfo.countryList[index].country);
                     });
 
                     // Button Add Property insert a new Property
@@ -1197,7 +1193,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                 error: showUnexpectedError
             });
 
-            $("#propertiesModal [name='buttonSave']").click(editPropertiesModalSaveHandler);
+//            $("#propertiesModal [name='buttonSave']").click(editPropertiesModalSaveHandler);
 
             $("#addStep").click({stepList: stepList}, function (event) {
                 // Store the current saveScript button status and disable it
@@ -1353,7 +1349,6 @@ function displayPageLabel(doc) {
     $("#deleteTestCase").html("<span class='glyphicon glyphicon-trash'></span> " + doc.getDocLabel("page_testcasescript", "delete"));
 
     $("#addStep").html(doc.getDocLabel("page_testcasescript", "add_step"));
-    $("#manageProp").html(doc.getDocLabel("page_testcasescript", "manage_prop"));
     $("#addActionBottomBtn button").html(doc.getDocLabel("page_testcasescript", "add_action"));
     $("#stepConditionOper").prev().html(doc.getDocLabel("page_testcasescript", "step_condition_operation"));
     $("#stepConditionVal1").prev().html(doc.getDocLabel("page_testcasescript", "step_condition_value1"));
@@ -2087,7 +2082,7 @@ function loadPropertiesAndDraw(test, testcase, testcaseinfo, propertyToFocus, ca
                 for (var index = 0; index < data.length; index++) {
                     var property = data[index];
                     // check if the property is secondary
-                    var isSecondary = property.rank == 2;
+                    var isSecondary = property.rank === 2;
                     //var isSecondary = property.description.indexOf("[secondary]") >= 0;
 
                     if (isSecondary) {
@@ -3992,107 +3987,69 @@ function deleteTestCaseHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-editPropertiesModalClick = function (test, testcase, info, propertyToAdd, propertyToFocus, canUpdate) {
-    // $("#propTable").empty();
-    loadPropertiesAndDraw(test, testcase, info, propertyToFocus, canUpdate).then(function () {
-        autocompleteAllFields();
-    });
-    if (propertyToAdd !== undefined && propertyToAdd !== null) {
-        // Building full list of country from testcase.
-        var myCountry = [];
-        $.each(info.countryList, function (index) {
-            myCountry.push(index);
-        });
-
-        var newProperty = {
-            property: propertyToAdd,
-            description: "",
-            country: myCountry,
-            type: "text",
-            database: "",
-            value1: "",
-            value2: "",
-            length: 0,
-            rowLimit: 0,
-            nature: "STATIC",
-            retryNb: 0,
-            retryPeriod: 0,
-            rank: 1,
-            toDelete: false
-        };
-
-        var prop = drawProperty(newProperty, info, true, $("div[name='propertyLine']").length);
-        setPlaceholderProperty(prop[0], prop[1]);
-
-    }
-
-    // $("#propertiesModal").modal('show');
-};
-
-
-function editPropertiesModalSaveHandler() {
-    clearResponseMessage($('#propertiesModal'));
-    var doc = new Doc();
-
-    var properties = $("#propTable #masterProp");
-    var propArr = [];
-    var propertyWithoutCountry = false;
-    for (var i = 0; i < properties.length; i++) {
-        if ($(properties[i]).data("property").country.length <= 0) {
-            propertyWithoutCountry = true;
-        }
-        propArr.push($(properties[i]).data("property"));
-    }
-    var saveProp = function () {
-        showLoaderInModal('#propertiesModal');
-        $.ajax({
-            url: "UpdateTestCaseProperties",
-            async: true,
-            method: "POST",
-            data: {
-                informationInitialTest: GetURLParameter("test"),
-                informationInitialTestCase: GetURLParameter("testcase"),
-                informationTest: GetURLParameter("test"),
-                informationTestCase: GetURLParameter("testcase"),
-                propArr: JSON.stringify(propArr)
-            },
-            success: function (data) {
-                var Tags = getTags();
-
-                var array = [];
-
-                for (var i = 0; i < propArr.length; i++) {
-                    array.push(propArr[i].property);
-                }
-
-                for (var i = 0; i < Tags.length; i++) {
-                    if (Tags[i].regex === "%property\\.") {
-                        Tags[i].array = array;
-                    }
-                }
-
-                hideLoaderInModal('#propertiesModal');
-                if (getAlertType(data.messageType) === 'success') {
-                    $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("input");
-                    showMessage(data);
-                    $('#propertiesModal').modal('hide');
-                } else {
-                    showMessage(data, $('#propertiesModal'));
-                }
-            },
-            error: showUnexpectedError
-        });
-    };
-
-    if (propertyWithoutCountry) {
-        showModalConfirmation(function () {
-            $('#confirmationModal').modal('hide');
-            saveProp();
-        }, undefined, undefined, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcasescript", "warning_no_country"), "", "", "", "");
-    } else {
-        saveProp();
-    }
-}
+//function editPropertiesModalSaveHandler() {
+//    clearResponseMessage($('#propertiesModal'));
+//    var doc = new Doc();
+//
+//    var properties = $("#propTable #masterProp");
+//    var propArr = [];
+//    var propertyWithoutCountry = false;
+//    for (var i = 0; i < properties.length; i++) {
+//        if ($(properties[i]).data("property").country.length <= 0) {
+//            propertyWithoutCountry = true;
+//        }
+//        propArr.push($(properties[i]).data("property"));
+//    }
+//    var saveProp = function () {
+//        showLoaderInModal('#propertiesModal');
+//        $.ajax({
+//            url: "UpdateTestCaseProperties",
+//            async: true,
+//            method: "POST",
+//            data: {
+//                informationInitialTest: GetURLParameter("test"),
+//                informationInitialTestCase: GetURLParameter("testcase"),
+//                informationTest: GetURLParameter("test"),
+//                informationTestCase: GetURLParameter("testcase"),
+//                propArr: JSON.stringify(propArr)
+//            },
+//            success: function (data) {
+//                var Tags = getTags();
+//
+//                var array = [];
+//
+//                for (var i = 0; i < propArr.length; i++) {
+//                    array.push(propArr[i].property);
+//                }
+//
+//                for (var i = 0; i < Tags.length; i++) {
+//                    if (Tags[i].regex === "%property\\.") {
+//                        Tags[i].array = array;
+//                    }
+//                }
+//
+//                hideLoaderInModal('#propertiesModal');
+//                if (getAlertType(data.messageType) === 'success') {
+//                    $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("input");
+//                    showMessage(data);
+//                    $('#propertiesModal').modal('hide');
+//                } else {
+//                    showMessage(data, $('#propertiesModal'));
+//                }
+//            },
+//            error: showUnexpectedError
+//        });
+//    };
+//
+//    if (propertyWithoutCountry) {
+//        showModalConfirmation(function () {
+//            $('#confirmationModal').modal('hide');
+//            saveProp();
+//        }, undefined, undefined, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcasescript", "warning_no_country"), "", "", "", "");
+//    } else {
+//        saveProp();
+//    }
+//}
 
 function setPlaceholderAction(actionElement) {
 
