@@ -50,6 +50,8 @@ import org.springframework.stereotype.Service;
  *
  * @author vertigo17
  */
+
+// TEST
 @Service
 public class ConditionService implements IConditionService {
 
@@ -99,7 +101,17 @@ public class ConditionService implements IConditionService {
                 ans = evaluateCondition_ifElementNotPresent(conditionOper, conditionValue1, tCExecution);
                 mes = ans.getResultMessage();
                 break;
+                
+            case TestCaseStepAction.CONDITIONOPER_IFELEMENTVISIBLE:
+                ans = evaluateCondition_ifElementVisible(conditionOper, conditionValue1, tCExecution);
+                mes = ans.getResultMessage();
+                break;
 
+            case TestCaseStepAction.CONDITIONOPER_IFELEMENTNOTVISIBLE:
+                ans = evaluateCondition_ifElementNotVisible(conditionOper, conditionValue1, tCExecution);
+                mes = ans.getResultMessage();
+                break;
+                
             case TestCaseStepAction.CONDITIONOPER_IFPROPERTYEXIST:
                 ans = evaluateCondition_ifPropertyExist(conditionOper, conditionValue1, tCExecution);
                 mes = ans.getResultMessage();
@@ -522,7 +534,102 @@ public class ConditionService implements IConditionService {
         ans.setResultMessage(mes);
         return ans;
     }
+    
+    private AnswerItem<Boolean> evaluateCondition_ifElementVisible(String conditionOper, String conditionValue1, TestCaseExecution tCExecution) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if Element Visible");
+        }
+        AnswerItem<Boolean> ans = new AnswerItem<>();
+        MessageEvent mes;
 
+        if (tCExecution.getManualExecution().equals("Y")) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_NOTPOSSIBLE);
+        } else if (StringUtil.isNullOrEmpty(conditionValue1)) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTVISIBLE_MISSINGPARAMETER);
+            mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
+        } else {
+        	if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+
+                try {
+                    Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);
+                    if (this.webdriverService.isElementVisible(tCExecution.getSession(), identifier)) {
+                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTVISIBLE);
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
+                       
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTVISIBLE);
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
+                      
+                    }
+                } catch (WebDriverException exception) {
+                	mes = parseWebDriverException(exception);
+                }
+
+            } else {
+
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_MESSAGETYPE);
+                mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementVisible"));
+                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+
+            }
+        }
+        ans.setResultMessage(mes);
+        return ans;
+    }
+
+    private AnswerItem<Boolean> evaluateCondition_ifElementNotVisible(String conditionOper, String conditionValue1, TestCaseExecution tCExecution) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if Element is Not Visible");
+        }
+        AnswerItem<Boolean> ans = new AnswerItem<>();
+        MessageEvent mes;
+
+        if (tCExecution.getManualExecution().equals("Y")) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_NOTPOSSIBLE);
+        } else if (StringUtil.isNullOrEmpty(conditionValue1)) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTNOTVISIBLE_MISSINGPARAMETER);
+            mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
+        } else {
+        	if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+
+                try {
+                    Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);
+                    if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                        if (this.webdriverService.isElementNotVisible(tCExecution.getSession(), identifier)) {
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTVISIBLE);
+                            mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
+                            
+                        } else {
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTVISIBLE);
+                            mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
+                            
+                        }
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTVISIBLE);
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
+                        
+                    }
+                } catch (WebDriverException exception) {
+                    mes = parseWebDriverException(exception);
+                }
+
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_MESSAGETYPE);
+                mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementNotVisible"));
+                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+
+
+            }
+
+        }
+        ans.setResultMessage(mes);
+        return ans;
+    }
+   
     private AnswerItem<Boolean> evaluateCondition_ifStringEqual(String conditionOper, String conditionValue1, String conditionValue2, String isCaseSensitive) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if String Equal");

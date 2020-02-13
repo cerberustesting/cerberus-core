@@ -8390,6 +8390,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
          + " ('', 'cerberus_selenium_autoscroll_vertical_offset', '0', 'Integer that correspond to the hertical offset applied after autoscrolling to element. '), "
          + " ('', 'cerberus_selenium_autoscroll_horizontal_offset', '0', 'Integer that correspond to the horizontal offset applied after autoscrolling to element');");
 
+        // Adding new Element visible Condition.
+        // 1469
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        b.append("('ACTIONCONDITIONOPER', 'ifElementVisible', 920, 'Only execute if Element is visible.', ''),");
+        b.append("('STEPCONDITIONOPER', 'ifElementVisible', 920, 'Only execute if Element is visible.', ''),");
+        b.append("('CONTROLCONDITIONOPER', 'ifElementVisible', 920, 'Only execute if Element is visible.', ''),");
+        b.append("('ACTIONCONDITIONOPER', 'ifElementNotVisible', 930, 'Only execute if Element is not visible.', ''),");
+        b.append("('STEPCONDITIONOPER', 'ifElementNotVisible', 930, 'Only execute if Element is not visible.', ''),");
+        b.append("('CONTROLCONDITIONOPER', 'ifElementNotVisible', 930, 'Only execute if Element is not visible.', '')");
+        a.add(b.toString());
         
         return a;
     }
