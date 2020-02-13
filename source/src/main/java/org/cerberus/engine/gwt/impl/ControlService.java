@@ -99,7 +99,7 @@ public class ControlService implements IControlService {
          * Decode the step action control description
          */
         try {
-            // When starting a new action, we reset the property list that was already calculated.
+            // When starting a new control, we reset the property list that was already calculated.
             tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
             answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getDescription(),
@@ -318,8 +318,9 @@ public class ControlService implements IControlService {
             }
         } catch (final CerberusEventException exception) {
             res = exception.getMessageError();
+
         } catch (final Exception unexpected) {
-            LOG.error("Unexpected exception: " + unexpected.getMessage(), unexpected);
+            LOG.debug("Unexpected exception on control!", unexpected);
             res = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC).resolveDescription("ERROR", unexpected.getMessage());
         }
 
@@ -1441,17 +1442,17 @@ public class ControlService implements IControlService {
             // Control is made forcing the / at the beginning of URL. getCurrentUrl from Selenium
             //  already have that control but value1 is specified by user and could miss it.
             final String controlUrl = StringUtil.addPrefixIfNotAlready(value1, "/");
-            url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
+//            url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
 
             try {
-                LOG.debug("Before wait" + System.currentTimeMillis());
+                LOG.debug("Before wait : " + System.currentTimeMillis());
                 WebDriverWait wait = new WebDriverWait(tCExecution.getSession().getDriver(),
                         TimeUnit.MILLISECONDS.toSeconds(tCExecution.getSession().getCerberus_selenium_wait_element()));
 
                 //Wait until the url is the expected one
                 wait.until(new Function<WebDriver, Boolean>() {
 
-                    String value;
+                    String value = "";
                     String expectedValue = controlUrl;
 
                     public Boolean apply(WebDriver driver) {
@@ -1459,13 +1460,14 @@ public class ControlService implements IControlService {
                             this.value = webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
                             LOG.debug("Get new url : " + value + " >> Expected url : " + expectedValue);
                         } catch (CerberusEventException ex) {
-                            java.util.logging.Logger.getLogger(ControlService.class.getName()).log(Level.SEVERE, null, ex);
+                            LOG.warn(ex.getMessageError().getDescription());
                         }
                         return value.equalsIgnoreCase(expectedValue);
                     }
+
                 });
 
-                LOG.debug("After wait" + System.currentTimeMillis());
+                LOG.debug("After wait : " + System.currentTimeMillis());
                 url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
 
                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_URL);
@@ -1474,10 +1476,12 @@ public class ControlService implements IControlService {
                 return mes;
 
             } catch (TimeoutException exception) {
+                url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL);
                 mes.setDescription(mes.getDescription().replace("%STRING1%", url));
                 mes.setDescription(mes.getDescription().replace("%STRING2%", controlUrl));
                 return mes;
+
             } catch (WebDriverException exception) {
                 return parseWebDriverException(exception);
             }
@@ -1711,7 +1715,7 @@ public class ControlService implements IControlService {
      */
     private MessageEvent parseWebDriverException(WebDriverException exception) {
         MessageEvent mes;
-        LOG.fatal(exception.toString());
+        LOG.error(exception.toString(), exception);
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_SELENIUM_CONNECTIVITY);
         mes.setDescription(mes.getDescription().replace("%ERROR%", exception.getMessage().split("\n")[0]));
         return mes;

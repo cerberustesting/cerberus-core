@@ -402,11 +402,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         Map<String, List<String>> map = new HashMap();
         AddElementToMap(map, "test", test);
         AddElementToMap(map, "testCase", testCase);
-        
+
         if (tag != null) {
             AddElementToMap(map, "tag", tag);
         }
-     
+
         AnswerList<TestCaseExecution> list = readByCriteria(0, numberOfExecution, " exe.`id` desc ", null, map, null, null);
 
         JSONArray ja = new JSONArray();
@@ -416,8 +416,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         }
         return ja;
     }
-    
-    private void AddElementToMap(Map<String, List<String>> map, String key, String value){
+
+    private void AddElementToMap(Map<String, List<String>> map, String key, String value) {
         List<String> element = new ArrayList();
         element.add(value);
         map.put(key, element);

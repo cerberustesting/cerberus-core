@@ -67,7 +67,6 @@ function initPage() {
 //        }).fail(handleErrorAjaxAfterTimeout);
     });
 
-    displayProjectList("project");
     displayUserList("releaseowner");
 
     var table = loadBCTable(urlBuild, urlRevision, urlApplication);

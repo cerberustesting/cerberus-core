@@ -435,6 +435,29 @@ public final class XmlUtil {
         return result;
     }
 
+    public static Node evaluateNode(Document doc, String xpath) throws XmlUtilException {
+        if (doc == null || xpath == null) {
+            throw new XmlUtilException("Unable to evaluate null document or xpath");
+        }
+
+        XPathFactory xpathFactory = XPathFactory.newInstance();
+        XPath xpathObject = xpathFactory.newXPath();
+        xpathObject.setNamespaceContext(new UniversalNamespaceCache(doc));
+        Node node = null;
+        try {
+            XPathExpression expr = xpathObject.compile(xpath);
+            node = (Node) expr.evaluate(doc, XPathConstants.NODE);
+        } catch (XPathExpressionException xpee) {
+            throw new XmlUtilException(xpee);
+        }
+
+        if (node == null) {
+            throw new XmlUtilException("Evaluation caused a null result");
+        }
+
+        return node;
+    }
+
     /**
      * {@link String} version of the {@link #evaluate(Document, String)} method
      *

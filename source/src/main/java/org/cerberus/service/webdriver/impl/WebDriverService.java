@@ -405,15 +405,16 @@ public class WebDriverService implements IWebDriverService {
          * No matter what, the output current relative URl will start by /
          */
         // We start to remove the protocol part of the urls.
-        String cleanedCurrentURL = StringUtil.removeProtocolFromHostURL(session.getDriver().getCurrentUrl());
+        String currentURL = session.getDriver().getCurrentUrl();
+        String cleanedCurrentURL = StringUtil.removeProtocolFromHostURL(currentURL);
         String cleanedURL = StringUtil.removeProtocolFromHostURL(applicationUrl);
         // We remove from current url the host part of the application.
         String strings[] = cleanedCurrentURL.split(cleanedURL, 2);
         if (strings.length < 2) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL_NOT_MATCH_APPLICATION);
             msg.setDescription(msg.getDescription().replace("%HOST%", applicationUrl));
-            msg.setDescription(msg.getDescription().replace("%CURRENTURL%", session.getDriver().getCurrentUrl()));
-            LOG.warn(msg.toString());
+            msg.setDescription(msg.getDescription().replace("%CURRENTURL%", currentURL));
+            LOG.debug(msg.getDescription());
             throw new CerberusEventException(msg);
         }
         String result = StringUtil.addPrefixIfNotAlready(strings[1], "/");

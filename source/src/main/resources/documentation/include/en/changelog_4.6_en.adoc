@@ -1,10 +1,11 @@
 *Bug fixes*
 [square]
-* none
+* added link on bug on reportbytag page.
 
 *Improvements / New features*
 [square]
-* none
+* New property getRawFromXml in order to get a rawXml content.
+* Hide non active bug link on reportbytag screen.  
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

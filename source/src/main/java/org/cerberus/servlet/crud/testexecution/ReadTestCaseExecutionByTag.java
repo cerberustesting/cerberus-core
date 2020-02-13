@@ -373,13 +373,17 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         ttcObject.put("shortDesc", testCaseExecution.getDescription());
                         ttcObject.put("status", testCaseExecution.getStatus());
                         ttcObject.put("application", testCaseExecution.getApplication());
+                        if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
+                                && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugID() != null) {
+                            ttcObject.put("AppBugURL", testCaseExecution.getApplicationObj().getBugTrackerUrl());
+                        }
                         boolean testExist = ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getTest() != null));
                         if (testExist) {
 
                             ttcObject.put("function", testCaseExecution.getTestCaseObj().getFunction());
                             ttcObject.put("priority", testCaseExecution.getTestCaseObj().getPriority());
                             ttcObject.put("comment", testCaseExecution.getTestCaseObj().getComment());
-                            ttcObject.put("bugId", testCaseExecution.getTestCaseObj().getBugID());
+                            ttcObject.put("bugId", testCaseExecution.getTestCaseObj().getBugIDActive());
 
                         } else {
 

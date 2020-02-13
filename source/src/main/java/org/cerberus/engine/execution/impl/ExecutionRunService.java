@@ -1025,7 +1025,7 @@ public class ExecutionRunService implements IExecutionRunService {
         AnswerItem<String> answerDecode = new AnswerItem<>();
 
         // Initialise the Step Data List.
-        List<TestCaseExecutionData> myStepDataList = new ArrayList<TestCaseExecutionData>();
+        List<TestCaseExecutionData> myStepDataList = new ArrayList<>();
         testCaseStepExecution.setTestCaseExecutionDataList(myStepDataList);
         // Initialise the Data List used to enter the action.
         /**

@@ -420,7 +420,9 @@ public class TestCaseStepActionControlExecution {
                 JSONArray array = new JSONArray();
                 if (this.getFileList() != null) {
                     for (Object actionFileList : this.getFileList()) {
-                        array.put(((TestCaseExecutionFile) actionFileList).toJson());
+                        if (actionFileList != null) {
+                            array.put(((TestCaseExecutionFile) actionFileList).toJson());
+                        }
                     }
                 }
                 result.put("fileList", array);

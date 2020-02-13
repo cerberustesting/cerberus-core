@@ -162,9 +162,6 @@
                                     <div id="tcButton">
                                         <!--<h4>Actions</h4>-->
                                         <button class="btn btn-info btn-block marginTop25" id="addStep" disabled>Add Step</button>
-                                        <!--                                        <div id="manageProperties" style="margin-bottom: 5px; margin-top: 5px;">
-                                                                                    <button class="btn btn-warning btn-block" id="manageProp">Manage Properties</button>
-                                                                                </div>-->
                                     </div>
                                 </div>
                             </nav>
