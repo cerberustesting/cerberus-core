@@ -81,7 +81,6 @@ function initPage() {
 
     // Adding rows in edit Modal.
     $("#addDatabase").click(addNewDatabaseRow);
-    $("#addApplication").click(addNewApplicationRow);
     $("#addDependencies").click(addNewDependenciesRow);
     $("#addDeployType").click(addNewDeployTypeRow);
 
@@ -500,6 +499,10 @@ function editEntryClick(system, country, environment) {
             $('#editEnvButton').attr('class', '');
             $('#editEnvButton').attr('hidden', 'hidden');
         }
+        $("#addApplication").unbind("click").click(function () {
+            addNewApplicationRow(system);
+        });
+
 
         formEdit.modal('show');
     });
@@ -621,21 +624,21 @@ function loadApplicationTable(selectSystem, selectCountry, selectEnvironment) {
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
             obj.toDelete = false;
-            appendApplicationRow(obj);
+            appendApplicationRow(obj, selectSystem);
         });
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function appendApplicationRow(app) {
+function appendApplicationRow(app, selectSystem) {
     nbRow++;
-    
+
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var selectApplication = getSelectApplication(getUser().defaultSystem);
+    var selectApplication = getSelectApplication(selectSystem, false);
     var ipInput = $("<input maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "IP") + " --\">").addClass("form-control input-sm").val(app.ip);
     var urlInput = $("<input maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URL") + " --\">").addClass("form-control input-sm").val(app.url);
     var poolSizeInput = $("<input maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "poolSize") + " --\">").addClass("form-control input-sm").val(app.poolSize);
-    
+
     var domainInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "domain") + " --\">").addClass("form-control input-sm").val(app.domain);
     var urlLoginInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URLLOGIN") + " --\">").addClass("form-control input-sm").val(app.urlLogin);
     var variable1 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var1") + " --\">").addClass("form-control input-sm").val(app.var1);
@@ -648,18 +651,18 @@ function appendApplicationRow(app) {
     var table = $("#applicationTableBody");
 
     var row = $("<tr></tr>");
-    
+
     var td1 = $("<td></td>").append(deleteBtn);
-    
+
     var td2 = $("<td></td>").append(selectApplication.val(app.application));
 //    var td2 = $("<td></td>").append(application);
-    
+
     var ipName = $("<div class='form-group col-sm-5'></div>").append("<label for='ip'>" + doc.getDocOnline("countryenvironmentparameters", "IP") + "</label>").append(ipInput);
     var urlName = $("<div class='form-group col-sm-3'></div>").append("<label for='url'>" + doc.getDocOnline("countryenvironmentparameters", "URL") + "</label>").append(urlInput);
     var poolSizeName = $("<div class='form-group col-sm-2'></div>").append("<label for='poolSize'>" + doc.getDocOnline("countryenvironmentparameters", "poolSize") + "</label>").append(poolSizeInput);
     var expandName = $("<div class='form-group col-sm-2'></div>").append("<button class='btn btn-primary' type='button' data-toggle='collapse' data-target='#col" + nbRow + "' aria-expanded='false' aria-controls='col" + nbRow + "'><span class='glyphicon glyphicon-chevron-down'></span></button>");
     var drow1 = $("<div class='row'></div>").append(ipName).append(urlName).append(poolSizeName).append(expandName);
-    
+
     var loginName = $("<div class='form-group col-sm-6'></div>").append("<label for='login'>" + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN") + "</label>").append(urlLoginInput);
     var domainName = $("<div class='form-group col-sm-6'></div>").append("<label for='domain'>" + doc.getDocOnline("countryenvironmentparameters", "domain") + "</label>").append(domainInput);
     var drow2 = $("<div class='row'></div>").append(loginName).append(domainName);
@@ -673,7 +676,7 @@ function appendApplicationRow(app) {
     var mobileActivityName = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobileActivity") + "</label>").append(mobileActivity);
     var mobilePackageName = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobilePackage") + "</label>").append(mobilePackage);
     var drow4 = $("<div class='row'></div>").append(mobileActivityName).append(mobilePackageName);
-    
+
     //    var ipName = $("<td></td>").append(ipInput).append(urlLoginInput);
 //    var urlName = $("<td></td>").append(urlInput).append(domainInput);
 //    var vars1 = $("<td></td>").append(variable1).append(variable2);
@@ -681,9 +684,9 @@ function appendApplicationRow(app) {
 //    var poolSize = $("<td></td>").append(poolSizeInput);
 //    var mobileData = $("<td></td>").append(mobileActivity).append(mobilePackage);
 //    var drow2 = $("<div class='row'></div>").append(vars1).append(vars2);
-    
+
     var panelExtra = $("<div class='collapse' id='col" + nbRow + "'></div>").append(drow2).append(drow3).append(drow4);
-    
+
     var td3 = $("<td></td>").append(drow1).append(panelExtra);
 
     deleteBtn.click(function () {
@@ -730,7 +733,7 @@ function appendApplicationRow(app) {
     mobilePackage.change(function () {
         app.mobilePackage = $(this).val();
     });
-    
+
     row.append(td1);
     row.append(td2);
     row.append(td3);
@@ -748,7 +751,7 @@ function appendApplicationRow(app) {
     table.append(row);
 }
 
-function addNewApplicationRow() {
+function addNewApplicationRow(selectSystem) {
     var newApplication = {
         application: "",
         ip: "",
@@ -764,7 +767,7 @@ function addNewApplicationRow() {
         mobilePackage: "",
         toDelete: false
     };
-    appendApplicationRow(newApplication);
+    appendApplicationRow(newApplication, selectSystem);
 }
 
 function loadDependenciesTable(selectSystem, selectCountry, selectEnvironment) {
