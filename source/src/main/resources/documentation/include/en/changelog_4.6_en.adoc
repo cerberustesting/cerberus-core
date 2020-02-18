@@ -6,6 +6,7 @@
 [square]
 * New property getRawFromXml in order to get a rawXml content.
 * Hide non active bug link on reportbytag screen.  
+* Add ExecutorExtensionHost parameter in RobotExecutor in order to run extension in other server than Selenium or Appium. By default, value is set to localhost.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
