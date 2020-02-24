@@ -63,7 +63,7 @@ public abstract class VideoRecorder {
     public static VideoRecorder getInstance(TestCaseExecution testCaseExecution, IRecorderService recorderService) {
         String applicationType = null;
         if (testCaseExecution != null && testCaseExecution.getApplicationObj() != null) {
-            applicationType = testCaseExecution.getApplicationObj().getType();
+            applicationType = testCaseExecution.getAppTypeEngine();
         }
 
         if (Application.TYPE_APK.equals(applicationType)) {

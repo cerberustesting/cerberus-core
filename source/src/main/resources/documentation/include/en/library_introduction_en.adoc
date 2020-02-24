@@ -1,1 +1,1 @@
-In this section, you will find information on library in Cerberus
+In this section, you will find information on how to manage and use test case data in Cerberus

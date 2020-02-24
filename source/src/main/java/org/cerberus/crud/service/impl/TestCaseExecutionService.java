@@ -399,7 +399,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
 
     public JSONArray getLastByCriteria(String test, String testCase, String tag, String campaign, Integer numberOfExecution) throws CerberusException {
 
-        Map<String, List<String>> map = new HashMap();
+        Map<String, List<String>> map = new HashMap<>();
         AddElementToMap(map, "test", test);
         AddElementToMap(map, "testCase", testCase);
 
@@ -418,7 +418,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     private void AddElementToMap(Map<String, List<String>> map, String key, String value) {
-        List<String> element = new ArrayList();
+        List<String> element = new ArrayList<>();
         element.add(value);
         map.put(key, element);
     }

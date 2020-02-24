@@ -17,37 +17,22 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.engine.gwt;
+package org.cerberus.service.har;
 
-import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
-import org.cerberus.engine.entity.MessageEvent;
+import org.json.JSONObject;
 
 /**
- * {Insert class description here}
  *
- * @author Tiago Bernardes
- * @version 1.0, 24/01/2013
- * @since 2.0.0
+ * @author vertigo17
  */
-public interface IControlService {
+public interface IHarService {
 
     /**
      *
-     * @param testCaseStepActionControlExecution
+     * @param har
+     * @param domains
      * @return
      */
-    TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution);
-
-    /**
-     *
-     * @param control
-     * @param tCExecution
-     * @param path
-     * @param expected
-     * @param isCaseSensitive
-     * @return
-     */
-    MessageEvent verifyElementXXX(String control, TestCaseExecution tCExecution, String path, String expected, String isCaseSensitive);
+    JSONObject enrichWithStats(JSONObject har, String domains);
 
 }

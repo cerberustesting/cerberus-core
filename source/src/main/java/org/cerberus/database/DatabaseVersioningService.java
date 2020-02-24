@@ -8393,6 +8393,32 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
                 + "VALUES('PROPERTYTYPE', 'getRawFromXml', 55, 'Get XML code', 'Get XML code');");
 
+        // ADD setHarContent as private invariant
+        // 1470
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES('ACTION', 'setHARContent', 24900, 'Set Network Traffic to current content', 'Set HAR content');");
+
+        // ADD parameters
+        // 1471
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_webperf_thirdpartyfilepath', '', 'Full location of the file descriptor for thirdparty definition. ex : /opt/data/entities.json')");
+
+        // ADD parameters
+        // 1472-1478
+        a.add("UPDATE invariant set value = 'VerifyElementTextMatchRegex', description = 'VerifyElementTextMatchRegex' where value = 'VerifyRegexInElement' and idname='CONTROL';");
+        a.add("UPDATE invariant set value = 'verifyElementTextDifferent', description = 'verifyElementTextDifferent' where value = 'verifyTextNotInElement' and idname='CONTROL';");
+        a.add("UPDATE invariant set value = 'verifyElementTextEqual', description = 'verifyElementTextEqual' where value = 'verifyTextInElement' and idname='CONTROL';");
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES ('CONTROL', 'verifyElementNumericEqual', 4400, 'verifyElementNumericEqual', '')"
+                + ",('CONTROL', 'verifyElementNumericDifferent', 4500, 'verifyElementNumericDifferent', '')"
+                + ",('CONTROL', 'verifyElementNumericGreater', 4600, 'verifyElementNumericGreater', '')"
+                + ",('CONTROL', 'verifyElementNumericGreaterOrEqual', 4700, 'verifyElementNumericGreaterOrEqual', '')"
+                + ",('CONTROL', 'verifyElementNumericMinor', 4800, 'verifyElementNumericMinor', '')"
+                + ",('CONTROL', 'verifyElementNumericMinorOrEqual', 4900, 'verifyElementNumericMinorOrEqual', '');");
+        a.add("UPDATE testcasestepactioncontrol set control = 'VerifyElementTextMatchRegex' where control = 'VerifyRegexInElement' ;");
+        a.add("UPDATE testcasestepactioncontrol set control = 'verifyElementTextDifferent' where control = 'verifyTextNotInElement' ;");
+        a.add("UPDATE testcasestepactioncontrol set control = 'verifyElementTextEqual' where control = 'verifyTextInElement' ;");
+
         return a;
     }
 

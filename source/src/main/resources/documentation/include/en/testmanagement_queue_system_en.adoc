@@ -69,24 +69,26 @@ Just put the new priority value and cick on 'Change Priority'
 
 === Constrain management
  
-When submitting too many execution in a too short period of time, the result could be uncertain.
+When submitting too many execution in a too short period of time, the result could be uncertain due to overloading the application being tested or robot infrastructure used.
 In order to prevent that issue, 3 levels of constrains can be defined.
 
 - constrain **'constrain1_global'** : Global level of constrain in order to secure that Cerberus itself is not saturated by number of simultaneous execution.
  Parameter _cerberus_queueexecution_global_threadpoolsize_ allow to configure the number of simultaneous execution will handle in total.
 
-- constrain **'constrain2_application'** : Application level constrain. An application on a given environment could have some limitation that can be controlled by that constrain.
+- constrain **'constrain2_applienvironment'** : Application/Environment level constrain. An application on a given environment could have some limitation that can be controlled by that constrain.
  The number of simultaneous execution can be defined in 'Pool Size' field from application screen or Environment screen.
 
-- constrain **'constrain3_robot'** : Robot level constrain. Some robot cannot handle too many execution at the same time. The configuration of simultaneous execution is done at robot host level.
+- constrain **'constrain3_application'** : Global Application level constrain. An application could have some limitation (whether environment) that can be controlled by that constrain.
+ The number of simultaneous execution can be defined in 'Pool Size' field from application screen.
+
+- constrain **'constrain4_robot'** : Robot level constrain. Some robot cannot handle too many execution at the same time. The configuration of simultaneous execution is done at robot host level.
  Please use public invariant **ROBOTHOST** in order to define that number of simultaneous execution using gp1 field.
 
 image:queuerobothost.png[QueueRobotHost]
 
- A default value can be configured with parameter _cerberus_queueexecution_defaultrobothost_threadpoolsize_. That parameter will be used in case the invariant entry does not exist or cannot be converted to numeric value.
+A default value can be configured with parameter _cerberus_queueexecution_defaultrobothost_threadpoolsize_. That parameter will be used in case the invariant entry does not exist or cannot be converted to numeric value.
 
-- NB1 : Only the applications that require a robot will enter to that constrain (GUI, IPA, APK, FAT).
-- NB2 : Robot host will be taken by preference from Robot and then from execution itself.
+NOTE: Only the applications that require a robot will enter to that constrain (GUI, IPA, APK, FAT).
 
 The 'Pools Follow Up' tab allow to control and follow up all those constrain value
 
@@ -107,9 +109,11 @@ The 'Queue Job Status' tab allow to monitor the 'queue execution job'.
 
 image:queuejobstatus.png[QueueJobStatus]
 
-- 'Job Status' is at Y when the job that analyse the queue is currently running (that should almost never happen).
-- 'Job Start' correspond to the time when the last job was triggered. That job automatically trigger when a new execution is inserted inside the queue or an execution finish (releasing some space for a new execution to start).
-- 'Job Activate' is at Y if the Job is enable. Job can be disable (in case you want to pause the release of any new execution) or enable by changing the parameter _cerberus_queueexecution_enable_.
+- 'Instance Job Activated' is at Y when the job on that instance (Tomcat JVM instance) is allowed to run. Job can be temporary disabled during **maintenance** period using the manage API.
+- 'Is Queue Job currently running ?' is at Y when the job that analyze the queue is currently running (that should almost never happen).
+- 'Last Queue Job start' correspond to the time when the last job was triggered. That job automatically trigger when a new execution is inserted inside the queue or an execution finish (releasing some space for a new execution to start).
+
+Button 'Stop Queue Job' allow to stop the queue job to be triggered. That will stop submitting new execution keeping all of them into the queue until the job is started again.
 
 Button 'Force Execution' will force the execution in case the job is not automatically triggered.
 

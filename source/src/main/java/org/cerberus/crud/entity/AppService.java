@@ -77,6 +77,7 @@ public class AppService {
     private int kafkaResponsePartition;
     private int kafkaWaitNbEvent;
     private int kafkaWaitSecond;
+    private boolean recordTraceFile;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -103,6 +104,14 @@ public class AppService {
 
     public void setFile(byte[] file) {
         this.file = file;
+    }
+
+    public boolean isRecordTraceFile() {
+        return recordTraceFile;
+    }
+
+    public void setRecordTraceFile(boolean recordTraceFile) {
+        this.recordTraceFile = recordTraceFile;
     }
 
     public int getTimeoutms() {

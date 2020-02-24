@@ -113,6 +113,7 @@ public class TestCaseExecution {
     // Objects.
     private TestCaseExecutionQueue testCaseExecutionQueue;
     private Application applicationObj;
+    private String appTypeEngine;
     private Invariant CountryObj;
     private Test testObj;
     private TestCase testCaseObj;
@@ -191,6 +192,14 @@ public class TestCaseExecution {
     public static final String ROBOTPROVIDER_BROWSERSTACK = "BROWSERSTACK";
     public static final String ROBOTPROVIDER_KOBITON = "KOBITON";
     public static final String ROBOTPROVIDER_NONE = "NONE";
+
+    public String getAppTypeEngine() {
+        return appTypeEngine;
+    }
+
+    public void setAppTypeEngine(String appTypeEngine) {
+        this.appTypeEngine = appTypeEngine;
+    }
 
     public HashMap<String, Map<TopicPartition, Long>> getKafkaLatestOffset() {
         return kafkaLatestOffset;

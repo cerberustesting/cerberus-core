@@ -59,6 +59,7 @@ public class TestCaseStepAction {
      */
     public static final String ACTION_UNKNOWN = "Unknown";
     public static final String ACTION_CLICK = "click";
+    public static final String ACTION_LONGPRESS = "longPress";
     public static final String ACTION_MOUSELEFTBUTTONPRESS = "mouseLeftButtonPress";
     public static final String ACTION_MOUSELEFTBUTTONRELEASE = "mouseLeftButtonRelease";
     public static final String ACTION_DOUBLECLICK = "doubleClick";
@@ -72,31 +73,33 @@ public class TestCaseStepAction {
     public static final String ACTION_OPENURLWITHBASE = "openUrlWithBase";
     public static final String ACTION_OPENURLLOGIN = "openUrlLogin";
     public static final String ACTION_OPENURL = "openUrl";
+    public static final String ACTION_REFRESHCURRENTPAGE = "refreshCurrentPage";
     public static final String ACTION_EXECUTEJS = "executeJS";
+    public static final String ACTION_EXECUTECOMMAND = "executeCommand";
+    public static final String ACTION_EXECUTECERBERUSCOMMAND = "executeCerberusCommand";
     public static final String ACTION_OPENAPP = "openApp";
     public static final String ACTION_CLOSEAPP = "closeApp";
+    public static final String ACTION_DRAGANDDROP = "dragAndDrop";
     public static final String ACTION_SELECT = "select";
     public static final String ACTION_KEYPRESS = "keypress";
     public static final String ACTION_TYPE = "type";
+    public static final String ACTION_CLEARFIELD = "clearField";
     public static final String ACTION_HIDEKEYBOARD = "hideKeyboard";
     public static final String ACTION_SWIPE = "swipe";
+    public static final String ACTION_SCROLLTO = "scrollTo";
+    public static final String ACTION_INSTALLAPP = "installApp";
+    public static final String ACTION_REMOVEAPP = "removeApp";
     public static final String ACTION_WAIT = "wait";
     public static final String ACTION_WAITVANISH = "waitVanish";
     public static final String ACTION_CALLSERVICE = "callService";
     public static final String ACTION_EXECUTESQLUPDATE = "executeSqlUpdate";
     public static final String ACTION_EXECUTESQLSTOREPROCEDURE = "executeSqlStoredProcedure";
     public static final String ACTION_CALCULATEPROPERTY = "calculateProperty";
+    public static final String ACTION_SETHARCONTENT = "setHARContent";
     public static final String ACTION_DONOTHING = "doNothing";
-    public static final String ACTION_EXECUTECOMMAND = "executeCommand";
-    public static final String ACTION_EXECUTECERBERUSCOMMAND = "executeCerberusCommand";
+    
+    // ??? TODO. Clean this unused action.
     public static final String ACTION_PERFORMEDITORACTION = "performEditorAction";
-    public static final String ACTION_SCROLLTO = "scrollTo";
-    public static final String ACTION_INSTALLAPP = "installApp";
-    public static final String ACTION_REMOVEAPP = "removeApp";
-    public static final String ACTION_DRAGANDDROP = "dragAndDrop";
-    public static final String ACTION_LONGPRESS = "longPress";
-    public static final String ACTION_CLEARFIELD = "clearField";
-    public static final String ACTION_REFRESHCURRENTPAGE = "refreshCurrentPage";
 
     // DEPRECATED
     public static final String ACTION_REMOVEDIFFERENCE = "removeDifference";

@@ -65,6 +65,7 @@ public class FactoryAppService implements IFactoryAppService {
         s.setKafkaKey(kafkaKey);
         s.setKafkaFilterPath(kafkaFilterPath);
         s.setKafkaFilterValue(kafkaFilterValue);
+        s.setRecordTraceFile(true);
         return s;
     }
 }

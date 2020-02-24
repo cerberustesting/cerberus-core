@@ -152,8 +152,8 @@ public class RobotServerService implements IRobotServerService {
              * level, set the selenium & appium wait element with this value,
              * else, take the one from parameter
              */
-            Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, 
-                    cerberus_selenium_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout, 
+            Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout,
+                    cerberus_selenium_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout,
                     cerberus_appium_action_longpress_wait, cerberus_selenium_autoscroll_vertical_offset, cerberus_selenium_autoscroll_horizontal_offset;
             boolean cerberus_selenium_autoscroll;
 
@@ -753,6 +753,10 @@ public class RobotServerService implements IRobotServerService {
                 }
 
                 options.setProfile(profile);
+
+                // Accept Insecure Certificates.
+                options.setAcceptInsecureCerts(true);
+
                 return options;
 //                capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, options);
 
@@ -801,19 +805,20 @@ public class RobotServerService implements IRobotServerService {
                     Proxy proxy = new Proxy();
                     proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                     proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                    proxy.setNoProxy("");
                     options.setCapability("proxy", proxy);
                 }
+
+                // Accept Insecure Certificates.
+                options.setAcceptInsecureCerts(true);
+
                 return options;
 //                capabilities.setCapability(ChromeOptions.CAPABILITY, options);
 //                additionalCapabilities.add(factoryRobotCapability.create(0, "", ChromeOptions.CAPABILITY, options.toString()));
 
             } else if (browser.contains("android")) {
 
-                // Launch the proxy with the settings specified in the robot options (executor)
-                // since proxy Settings is out the Appium's scope, you must set it manually on your device
-                // set the same port on device and robot
                 if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
-                    this.startRemoteProxy(tCExecution);
                     Proxy proxy = new Proxy();
                     proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                     proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
@@ -829,8 +834,15 @@ public class RobotServerService implements IRobotServerService {
 
             } else if (browser.contains("safari")) {
                 SafariOptions options = new SafariOptions();
+                
+                if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                    Proxy proxy = new Proxy();
+                    proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                    proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                    options.setProxy(proxy);
+                }
+                
                 return options;
-//                capabilities = DesiredCapabilities.safari();
 
             } else {
                 LOG.warn("Not supported Browser : " + browser);

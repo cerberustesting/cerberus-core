@@ -4,8 +4,17 @@
 
 *Improvements / New features*
 [square]
-* New property getRawFromXml in order to get a rawXml content.
+* New property 'getRawFromXml' in order to get a raw XML content.
 * Hide non active bug link on reportbytag screen.  
+* Removed support of fr version of documentation.
+* new Action 'setHarContent' that allow to get the full Network traffic information and stats of every calls in a json files that can be verified on the attached controls.
+* new Controls 'verifyElementNumericEqual', 'verifyElementNumericDifferent', 'verifyElementNumericGreater', 'verifyElementNumericGreaterOrEqual', 'verifyElementNumericMinor', 'verifyElementNumericMinorOrEqual'
+* renamed Control 'VerifyRegexInElement' to 'verifyElementTextMatchRegex'
+* renamed Control 'verifyTextNotInElement' to 'verifyElementTextDifferent'
+* renamed Control 'verifyTextInElement' to 'verifyElementTextEqual'
+* Various documentation improvements.
+* By default Cerberus now allow untrusted certificates. #2069
+
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

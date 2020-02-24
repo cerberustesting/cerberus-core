@@ -28,6 +28,7 @@ import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepAction;
+import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.execution.IConditionService;
@@ -193,7 +194,7 @@ public class ConditionService implements IConditionService {
 
         isCaseSensitive = defaultIsSensitiveValue(isCaseSensitive);
 
-        resultControlMes = controlService.verifyTextInElement(tCExecution, path, expected, isCaseSensitive);
+        resultControlMes = controlService.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTEQUAL, tCExecution, path, expected, isCaseSensitive);
 
         if ("OK".equals(resultControlMes.getCodeString())) {
 
@@ -224,7 +225,7 @@ public class ConditionService implements IConditionService {
 
         isCaseSensitive = defaultIsSensitiveValue(isCaseSensitive);
 
-        resultMes = controlService.verifyTextNotInElement(tCExecution, path, expected, isCaseSensitive);
+        resultMes = controlService.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTDIFFERENT, tCExecution, path, expected, isCaseSensitive);
 
         if ("OK".equals(resultMes.getCodeString())) {
 

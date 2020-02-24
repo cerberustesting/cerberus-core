@@ -1,19 +1,18 @@
 === Test
 
-In this section, you will find information on Test in Cerberus.
-
-Test description...
+In this section, you will find information on *[red]#Test Folder#* in Cerberus.
+A *[red]#Test Folder#* is just a way to group and classify your test case. Every test case must be attached to a unique *[red]#Test Folder#*. Inside the same *[red]#Test Folder#*, every test case must have a different id. 2 test cases can have the same id if they belong to 2 different *[red]#Test Folder#*.
 
 image:testpage.png[TestPage]
 
 [%hardbreaks]
-NOTE: There are 2 Tests that have a specific behaviour and allow to add before and after any test case some other testcases. 
-Those 2 tests are 'Pre Testing' and 'Post Testing'. They are identifying all test cases that will respectivly be added at the begginning and the end of the testcases.
-For a given testcase running on an application app1, the following rules will apply :
-. Only testcases inside 'Pre Testing' and 'Post Testing' will be added.
-. Only active testcases will be added.
-. Only testcases that are within the From Sprint / From Rev and To Sprint / To Rev
-. The testcases will be added sorted by testcase id.
+NOTE: There are 2 *[red]#Test Folder#* that have a specific behavior and allow to automatically add before and after any steps execution. 
+Those 2 tests are *[blue]#Pre Testing#* and *[blue]#Post Testing#*. They are identifying all test cases that will respectively be added at the beginning and at the end of the test cases.
+For a given test case running on an application #app1#, the following rules will apply :
+. Only test cases inside *[blue]#Pre Testing#* and *[blue]#Post Testing#* will be added if they belong to the same application #app1#.
+. Only active test cases will be added.
+. Only test cases that are within the From Sprint / From Rev and To Sprint / To Rev
+. The test cases will be executed sorted by test case id.
 
 === Test attributes
 |=== 
@@ -24,15 +23,6 @@ For a given testcase running on an application app1, the following rules will ap
 
 | Description | Description of the test.
 
-| Active | Define if the test is active.
+| Active | Define if the test is active. When Inactive, all associated test cases will be desactivated and will be allowed to be executed.
 
 |=== 
-
-=== Create test 
-
-. Go to *[red]#Test -> Test#*. image:testcreate.png[CreateTest,200,200,float="right",align="center"]
-. Click on *[red]#Create Test#*.
-.. Feed the *[red]#Test#* field with the test name.
-.. Feed the *[red]#Description#* field with a short description of this test.
-.. Select the activation information in the *[red]#Active#* field.
-.. Click on *[red]#Save#*.

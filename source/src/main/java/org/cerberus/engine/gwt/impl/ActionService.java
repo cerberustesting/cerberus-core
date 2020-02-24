@@ -52,6 +52,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.service.appium.IAppiumService;
 import org.cerberus.service.appservice.IServiceService;
 import org.cerberus.service.cerberuscommand.ICerberusCommand;
+import org.cerberus.service.har.IHarService;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.service.sikuli.impl.SikuliService;
@@ -61,6 +62,7 @@ import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.json.JSONObject;
 import org.openqa.selenium.Platform;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -81,6 +83,8 @@ public class ActionService implements IActionService {
     private ISoapService soapService;
     @Autowired
     private IRestService restService;
+    @Autowired
+    private IHarService harService;
     @Autowired
     private IAppServiceService appServiceService;
     @Autowired
@@ -224,6 +228,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_CLICK:
                     res = this.doActionClick(tCExecution, value1, value2);
                     break;
+                case TestCaseStepAction.ACTION_LONGPRESS:
+                    res = this.doActionLongPress(tCExecution, value1, value2);
+                    break;
                 case TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS:
                     res = this.doActionMouseLeftButtonPress(tCExecution, value1, value2);
                     break;
@@ -264,14 +271,26 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_OPENURL:
                     res = this.doActionOpenURL(tCExecution, value1, value2, false);
                     break;
+                case TestCaseStepAction.ACTION_REFRESHCURRENTPAGE:
+                    res = this.doActionRefreshCurrentPage(tCExecution);
+                    break;
                 case TestCaseStepAction.ACTION_EXECUTEJS:
                     res = this.doActionExecuteJS(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_EXECUTECOMMAND:
+                    res = this.doActionExecuteCommand(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_EXECUTECERBERUSCOMMAND:
+                    res = this.doActionExecuteCerberusCommand(tCExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_OPENAPP:
                     res = this.doActionOpenApp(tCExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_CLOSEAPP:
                     res = this.doActionCloseApp(tCExecution, value1);
+                    break;
+                case TestCaseStepAction.ACTION_DRAGANDDROP:
+                    res = this.doActionDragAndDrop(tCExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_SELECT:
                     res = this.doActionSelect(tCExecution, value1, value2);
@@ -282,11 +301,23 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_TYPE:
                     res = this.doActionType(tCExecution, value1, value2, propertyName);
                     break;
+                case TestCaseStepAction.ACTION_CLEARFIELD:
+                    res = this.doActionClearField(tCExecution, value1);
+                    break;
                 case TestCaseStepAction.ACTION_HIDEKEYBOARD:
                     res = this.doActionHideKeyboard(tCExecution);
                     break;
                 case TestCaseStepAction.ACTION_SWIPE:
                     res = this.doActionSwipe(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_SCROLLTO:
+                    res = this.doActionScrollTo(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_INSTALLAPP:
+                    res = this.doActionInstallApp(tCExecution, value1);
+                    break;
+                case TestCaseStepAction.ACTION_REMOVEAPP:
+                    res = this.doActionRemoveApp(tCExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_WAIT:
                     res = this.doActionWait(tCExecution, value1, value2);
@@ -306,35 +337,11 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_CALCULATEPROPERTY:
                     res = this.doActionCalculateProperty(testCaseStepActionExecution, value1, value2);
                     break;
+                case TestCaseStepAction.ACTION_SETHARCONTENT:
+                    res = this.doActionSetHARContent(tCExecution, testCaseStepActionExecution, value1);
+                    break;
                 case TestCaseStepAction.ACTION_DONOTHING:
                     res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
-                    break;
-                case TestCaseStepAction.ACTION_EXECUTECOMMAND:
-                    res = this.doActionExecuteCommand(tCExecution, value1, value2);
-                    break;
-                case TestCaseStepAction.ACTION_EXECUTECERBERUSCOMMAND:
-                    res = this.doActionExecuteCerberusCommand(tCExecution, value1);
-                    break;
-                case TestCaseStepAction.ACTION_SCROLLTO:
-                    res = this.doActionScrollTo(tCExecution, value1, value2);
-                    break;
-                case TestCaseStepAction.ACTION_INSTALLAPP:
-                    res = this.doActionInstallApp(tCExecution, value1);
-                    break;
-                case TestCaseStepAction.ACTION_REMOVEAPP:
-                    res = this.doActionRemoveApp(tCExecution, value1);
-                    break;
-                case TestCaseStepAction.ACTION_DRAGANDDROP:
-                    res = this.doActionDragAndDrop(tCExecution, value1, value2);
-                    break;
-                case TestCaseStepAction.ACTION_LONGPRESS:
-                    res = this.doActionLongPress(tCExecution, value1, value2);
-                    break;
-                case TestCaseStepAction.ACTION_CLEARFIELD:
-                    res = this.doActionClearField(tCExecution, value1);
-                    break;
-                case TestCaseStepAction.ACTION_REFRESHCURRENTPAGE:
-                    res = this.doActionRefreshCurrentPage(tCExecution);
                     break;
                 /**
                  * DEPRECATED ACTIONS FROM HERE.
@@ -1482,6 +1489,56 @@ public class ActionService implements IActionService {
             }
         }
         return message;
+    }
+
+    public MessageEvent doActionSetHARContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String urlToFilter) throws IOException {
+        MessageEvent message;
+        try {
+            // Check that robot has executor activated
+            if (!"Y".equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyActive()) || StringUtil.isNullOrEmpty(exe.getRobotExecutorObj().getExecutorProxyHost())) {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETHARCONTENT_ROBOTEXECUTORPROXYNOTACTIVATED);
+                message.setDescription(message.getDescription().replace("%ROBOT%", exe.getRobotExecutorObj().getRobot()).replace("%EXECUTOR%", exe.getRobotExecutorObj().getExecutor()));
+                return message;
+            }
+
+            /**
+             * Building the url to get the Har file from cerberus-executor
+             */
+            String url = "http://" + exe.getRobotExecutorObj().getHost() + ":" + exe.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + exe.getRemoteProxyUUID();
+            if (!StringUtil.isNullOrEmpty(urlToFilter)) {
+                url += "&requestUrl=" + urlToFilter;
+            }
+
+            LOG.debug("Getting HAR content from URL : " + url);
+
+            AnswerItem<AppService> result = new AnswerItem<>();
+            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", exe);
+
+            AppService appSrv = result.getItem();
+            JSONObject har = new JSONObject(appSrv.getResponseHTTPBody());
+
+            har = harService.enrichWithStats(har, exe.getCountryEnvironmentParameters().getDomain());
+            appSrv.setResponseHTTPBody(har.toString());
+            appSrv.setRecordTraceFile(false);
+
+            exe.setLastServiceCalled(appSrv);
+
+            /**
+             * Record the Request and Response in file system.
+             */
+            exe.addFileList(recorderService.recordHarContent(exe, actionexe, 0, null, result.getItem()));
+
+            // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
+            exe.setAppTypeEngine(Application.TYPE_SRV);
+
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETHARCONTENT);
+            return message;
+        } catch (Exception ex) {
+            LOG.error("Error doing Action setHARContent :" + ex);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETHARCONTENT);
+            message.setDescription(message.getDescription().replace("%DETAIL%", ex.toString()));
+            return message;
+        }
     }
 
     private String getElementToUse(String value1, String value2, String action, TestCaseExecution tCExecution) throws CerberusEventException {

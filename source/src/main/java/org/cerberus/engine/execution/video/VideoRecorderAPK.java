@@ -93,7 +93,7 @@ public class VideoRecorderAPK extends VideoRecorder {
 
         AppiumDriver driver = null;
         try {
-            String applicationType = testCaseExecution.getApplicationObj().getType();
+            String applicationType = testCaseExecution.getAppTypeEngine();
 
             Session session = testCaseExecution.getSession();
             if (applicationType.equals(Application.TYPE_APK)) {

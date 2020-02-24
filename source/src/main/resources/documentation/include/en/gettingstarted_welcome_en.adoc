@@ -36,13 +36,12 @@ NB : If the list of tag is defined, the search Text will be ignored.
 
 You will find below definitions of Cerberus common terms.
 
-* *System* : Business Application or CI (Configuration Item)
-* *Application* : Technical component. Applications are linked to a single System.
-* *Battery* : (obsolete since 3.0 release) Group of TestCase to be executed together.
-* *Campaign* : Group of testcases (selected using labels) all linked to execution parameters (country - environment - browser - robot (optionnal)). Batteries were used instead of labels in release before 3.0
-* *TestCase* : Test scénario made of steps, actions and controls. (User story implementation in Cerberus)
+* *System* : Business Application or CI (Configuration Item). It correspond to a group of application that needs to be tested. User access are defined at that level.
+* *Application* : Technical component. every Application is linked to a 'System'.
+* *Test Folder* : Group of TestCases, This is  flexible way to group and classify the test cases.
+* *TestCase* : Test scenario made of steps, actions and controls. (User story implementation in Cerberus)
 * *Label* : Mark to describe TestCases, so you can group and filter easily.
-* *Test* : Group of TestCases, Test is also considered as an application function. Executions can be sorted by Test.
+* *Campaign* : Group of testcases (selected using labels) all linked to execution parameters (country - environment - browser - robot (optional)).
 
 ==== Representation
 
@@ -81,8 +80,8 @@ NOTE: Please verify with your administrator if system and application are alread
 
 You will find below step to create and execute a TestCase.
 
-* Create a Test. Example : « Search Engine » (see <<Create test>>)
-* Access to TestCase list  and create a TestCase (cf <<Create TestCase>>). Mandatory fields : Test /  Application / TestCase ID (Should already be filled with a reference)
+* Optionally you can created one or several Test Folder in order to host your test cases. Example : « Search Engine » (see <<Create test>>)
+* Access to TestCase list  and create a TestCase (cf <<Create TestCase>>). Mandatory fields : Test /  Application / TestCase ID (Should already be filled with a reference).
 
 NOTE: _Activation criteria tab : Activate for PROD your TestCase. (default setting not active for PROD) For the example, We will run our TestCase on PROD environment_
 
@@ -96,8 +95,6 @@ NOTE: _Activation criteria tab : Activate for PROD your TestCase. (default setti
 * Fill robot information. Mandatory fields :  IP / port / browser. 
 
 NOTE: _You must first run your selenium server (see <<Selenium>>)_
-
-TIP: To see execution step by step parameter Synchroneous to N.
 
 * Click on the execution button. image:runbuttonexecution.png[BoutonRun,200,200,float="right",align="center"]
 
