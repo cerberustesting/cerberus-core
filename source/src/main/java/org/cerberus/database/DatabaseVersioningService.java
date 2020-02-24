@@ -8392,6 +8392,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1469
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
                 + "VALUES('PROPERTYTYPE', 'getRawFromXml', 55, 'Get XML code', 'Get XML code');");
+        
+        // ADD column executorExtensionHost in robotexecutor table
+        // 1470
+        a.add("ALTER TABLE `robotexecutor` ADD COLUMN `executorExtensionHost` VARCHAR(255) NULL DEFAULT NULL AFTER `deviceLockUnlock`;");
+
 
         // ADD setHarContent as private invariant
         // 1470

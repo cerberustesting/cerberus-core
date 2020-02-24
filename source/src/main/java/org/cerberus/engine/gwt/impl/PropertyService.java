@@ -953,7 +953,7 @@ public class PropertyService implements IPropertyService {
                 // String remoteHarMD5 = "http://" + tCExecution.getRobotExecutorObj().getHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHarMD5?uuid="+tCExecution.getRemoteProxyUUID();
 
                 //getHarFile
-                String url = "http://" + tCExecution.getRobotExecutorObj().getHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + tCExecution.getRemoteProxyUUID();
+                String url = "http://" + tCExecution.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + tCExecution.getRemoteProxyUUID();
                 //tCExecution.addFileList(recorderService.recordHarLog(tCExecution, url));
                 testCaseExecutionData.setValue2(url);
                 testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, tCExecution, forceCalculation);

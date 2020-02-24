@@ -424,6 +424,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('robotexecutor','description','','fr','Description','',NULL)");
         b.append(",('robotexecutor','dateLastExeSubmitted','','en','Timestamp of last Exe Submitted','',NULL)");
         b.append(",('robotexecutor','dateLastExeSubmitted','','fr','Timestamp de la dernière execution soumise','',NULL)");
+        b.append(",('robotexecutor','executorExtensionHost','','fr','Host de l\\'extension de l\\'Executor','Host d\\'écoute de l\\'extension de l\\'Executor. Si vide, le host est le même que celui de l\\'executor.',NULL)");
+        b.append(",('robotexecutor','executorExtensionHost','','en','Executor Extension Host', 'Host of the extension of the executor. If empty, Extension Host is the same than the executor Host.',NULL)");
         b.append(",('robotexecutor','executorExtensionPort','','fr','Port de l\\'extension de l\\'Executor','Port d\\'écoute de l\\'extension de l\\'Executor. Le host est le même que celui de l\\'executor.',NULL)");
         b.append(",('robotexecutor','executorExtensionPort','','en','Executor Extension Port', 'Port of the extension of the executor. Extension Host is the same than the executor Host.',NULL)");
         b.append(",('robotexecutor','executorProxyHost','','fr','Nom d\\'hote du proxy', 'Nom d\\'hote du proxy de l\\'executor.',NULL)");

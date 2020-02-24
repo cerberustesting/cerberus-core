@@ -14,7 +14,7 @@
 * renamed Control 'verifyTextInElement' to 'verifyElementTextEqual'
 * Various documentation improvements.
 * By default Cerberus now allow untrusted certificates. #2069
-
+* Add ExecutorExtensionHost parameter in RobotExecutor in order to run extension in other server than Selenium or Appium. By default, value is set to localhost.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

@@ -964,7 +964,7 @@ public class RobotServerService implements IRobotServerService {
                 // If proxy started and parameter verbose >= 1 activated
                 if ("Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())
                         && tce.getVerbose() >= 1) {
-                    String url = "http://" + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + tce.getRemoteProxyUUID();
+                    String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + tce.getRemoteProxyUUID();
                     LOG.debug("Url to get HAR : " + url);
                     tce.addFileList(recorderService.recordHarLog(tce, url));
                     LOG.debug("Retrieved Har file by calling : " + url);
@@ -1064,13 +1064,13 @@ public class RobotServerService implements IRobotServerService {
 
     private void startRemoteProxy(TestCaseExecution tce) {
 
-        String url = "http://" + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/startProxy";
+        String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/startProxy";
         if (tce.getRobotExecutorObj().getExecutorProxyPort() != 0) {
             url += "?port=" + tce.getRobotExecutorObj().getExecutorProxyPort();
         }
         LOG.debug("Starting Proxy on Cerberus Executor calling : " + url);
 
-        try (InputStream is = new URL(url).openStream()) {
+        try ( InputStream is = new URL(url).openStream()) {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
             StringBuilder sb = new StringBuilder();
             int cp;
@@ -1087,7 +1087,7 @@ public class RobotServerService implements IRobotServerService {
             LOG.debug("Cerberus Executor Proxy extention started on port : " + tce.getRemoteProxyPort() + " (uuid : " + tce.getRemoteProxyUUID() + ")");
 
         } catch (Exception ex) {
-            LOG.error("Exception Starting Remote Proxy " + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString(), ex);
+            LOG.error("Exception Starting Remote Proxy " + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString(), ex);
         }
 
     }
@@ -1104,7 +1104,7 @@ public class RobotServerService implements IRobotServerService {
                 // Ask the Proxy to stop.
                 if (tce.getRobotExecutorObj() != null && "Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())) {
 
-                    String urlStop = "http://" + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/stopProxy?uuid=" + tce.getRemoteProxyUUID();
+                    String urlStop = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/stopProxy?uuid=" + tce.getRemoteProxyUUID();
 
                     LOG.debug("Shutting down of Proxy on Cerberus Executor calling : " + urlStop);
 
