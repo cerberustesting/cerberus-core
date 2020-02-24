@@ -8397,19 +8397,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1470
         a.add("ALTER TABLE `robotexecutor` ADD COLUMN `executorExtensionHost` VARCHAR(255) NULL DEFAULT NULL AFTER `deviceLockUnlock`;");
 
-
-        // ADD setHarContent as private invariant
-        // 1470
+        // ADD setHarContent Action.
+        // 1471
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
                 + "VALUES('ACTION', 'setHARContent', 24900, 'Set Network Traffic to current content', 'Set HAR content');");
 
-        // ADD parameters
-        // 1471
+        // ADD parameters to define third party definition file.
+        // 1472
         a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
                 + " ('', 'cerberus_webperf_thirdpartyfilepath', '', 'Full location of the file descriptor for thirdparty definition. ex : /opt/data/entities.json')");
 
-        // ADD parameters
-        // 1472-1478
+        // Renamed and created controls
+        // 1473-1479
         a.add("UPDATE invariant set value = 'VerifyElementTextMatchRegex', description = 'VerifyElementTextMatchRegex' where value = 'VerifyRegexInElement' and idname='CONTROL';");
         a.add("UPDATE invariant set value = 'verifyElementTextDifferent', description = 'verifyElementTextDifferent' where value = 'verifyTextNotInElement' and idname='CONTROL';");
         a.add("UPDATE invariant set value = 'verifyElementTextEqual', description = 'verifyElementTextEqual' where value = 'verifyTextInElement' and idname='CONTROL';");
