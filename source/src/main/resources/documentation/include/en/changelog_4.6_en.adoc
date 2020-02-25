@@ -9,7 +9,7 @@
 * Removed support of fr version of documentation.
 * new Action 'setHarContent' that allow to get the full Network traffic information and stats of every calls in a json files that can be verified on the attached controls.
 * new Controls 'verifyElementNumericEqual', 'verifyElementNumericDifferent', 'verifyElementNumericGreater', 'verifyElementNumericGreaterOrEqual', 'verifyElementNumericMinor', 'verifyElementNumericMinorOrEqual'
-* renamed Control 'VerifyRegexInElement' to 'verifyElementTextMatchRegex'
+* renamed Control 'verifyRegexInElement' to 'verifyElementTextMatchRegex'
 * renamed Control 'verifyTextNotInElement' to 'verifyElementTextDifferent'
 * renamed Control 'verifyTextInElement' to 'verifyElementTextEqual'
 * Various documentation improvements.

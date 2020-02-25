@@ -8409,7 +8409,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // Renamed and created controls
         // 1473-1479
-        a.add("UPDATE invariant set value = 'VerifyElementTextMatchRegex', description = 'VerifyElementTextMatchRegex' where value = 'VerifyRegexInElement' and idname='CONTROL';");
+        a.add("UPDATE invariant set value = 'verifyElementTextMatchRegex', description = 'verifyElementTextMatchRegex' where value = 'verifyRegexInElement' and idname='CONTROL';");
         a.add("UPDATE invariant set value = 'verifyElementTextDifferent', description = 'verifyElementTextDifferent' where value = 'verifyTextNotInElement' and idname='CONTROL';");
         a.add("UPDATE invariant set value = 'verifyElementTextEqual', description = 'verifyElementTextEqual' where value = 'verifyTextInElement' and idname='CONTROL';");
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
@@ -8419,7 +8419,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + ",('CONTROL', 'verifyElementNumericGreaterOrEqual', 4700, 'verifyElementNumericGreaterOrEqual', '')"
                 + ",('CONTROL', 'verifyElementNumericMinor', 4800, 'verifyElementNumericMinor', '')"
                 + ",('CONTROL', 'verifyElementNumericMinorOrEqual', 4900, 'verifyElementNumericMinorOrEqual', '');");
-        a.add("UPDATE testcasestepactioncontrol set control = 'VerifyElementTextMatchRegex' where control = 'VerifyRegexInElement' ;");
+        a.add("UPDATE testcasestepactioncontrol set control = 'verifyElementTextMatchRegex' where control = 'verifyRegexInElement' ;");
         a.add("UPDATE testcasestepactioncontrol set control = 'verifyElementTextDifferent' where control = 'verifyTextNotInElement' ;");
         a.add("UPDATE testcasestepactioncontrol set control = 'verifyElementTextEqual' where control = 'verifyTextInElement' ;");
 
