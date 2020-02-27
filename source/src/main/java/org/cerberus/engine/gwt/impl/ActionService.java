@@ -818,7 +818,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionType(TestCaseExecution tCExecution, String object, String property, String propertyName) {
+    private MessageEvent doActionType(TestCaseExecution tCExecution, String value1, String value2, String propertyName) {
         try {
             /**
              * Check object and property are not null for GUI/APK/IPA Check
@@ -827,11 +827,11 @@ public class ActionService implements IActionService {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                if (object == null || property == null) {
+                if (value1 == null || value2 == null) {
                     return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                if (property == null) {
+                if (value2 == null) {
                     return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
                 }
             }
@@ -839,33 +839,33 @@ public class ActionService implements IActionService {
              * Get Identifier (identifier, locator) if object not null
              */
             Identifier identifier = new Identifier();
-            if (object != null) {
-                identifier = identifierService.convertStringToIdentifier(object);
+            if (value1 != null) {
+                identifier = identifierService.convertStringToIdentifier(value1);
             }
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, property, propertyName, false, false);
+                    return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, value2, propertyName, false, false);
                 } else {
                     if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                        return sikuliService.doSikuliActionType(tCExecution.getSession(), identifier.getLocator(), property);
+                        return sikuliService.doSikuliActionType(tCExecution.getSession(), identifier.getLocator(), value2);
                     } else {
                         identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                        return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, property, propertyName, true, true);
+                        return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, value2, propertyName, true, true);
                     }
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                return androidAppiumService.type(tCExecution.getSession(), identifier, property, propertyName);
+                return androidAppiumService.type(tCExecution.getSession(), identifier, value2, propertyName);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                return iosAppiumService.type(tCExecution.getSession(), identifier, property, propertyName);
+                return iosAppiumService.type(tCExecution.getSession(), identifier, value2, propertyName);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 String locator = "";
-                if (!StringUtil.isNullOrEmpty(object)) {
+                if (!StringUtil.isNullOrEmpty(value1)) {
                     identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                     locator = identifier.getLocator();
                 }
-                return sikuliService.doSikuliActionType(tCExecution.getSession(), locator, property);
+                return sikuliService.doSikuliActionType(tCExecution.getSession(), locator, value2);
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "Type")
