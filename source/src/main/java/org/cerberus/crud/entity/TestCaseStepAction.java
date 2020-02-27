@@ -95,7 +95,7 @@ public class TestCaseStepAction {
     public static final String ACTION_EXECUTESQLUPDATE = "executeSqlUpdate";
     public static final String ACTION_EXECUTESQLSTOREPROCEDURE = "executeSqlStoredProcedure";
     public static final String ACTION_CALCULATEPROPERTY = "calculateProperty";
-    public static final String ACTION_SETHARCONTENT = "setHARContent";
+    public static final String ACTION_SETNETWORKTRAFFICCONTENT = "setNetworkTrafficContent";
     public static final String ACTION_DONOTHING = "doNothing";
     
     // ??? TODO. Clean this unused action.

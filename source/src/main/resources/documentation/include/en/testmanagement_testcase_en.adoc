@@ -153,7 +153,7 @@ Supported keys are : [BACK_SPACE], [TAB], [RETURN], [ENTER], [SHIFT], [LEFT_SHIF
 | executeSqlStoredProcedure | will allow you to execute SQL stored procedure. Feed the *[red]#Database Name#* and the *[red]#Stored Procedure#* to execute. Database has to be declared to your system and environment. | 
 | calculateProperty | will allow you to calculate a *[red]#Property#* defined in the property section of the test case.
 [Optional] Feed *[red]#Value2#* with another property to affect to the previous *[red]#Property Name#* a new value. Useful to override the one defined from the property section during an execution. | 
-| setHarContent | Retreive the network traffic catched from Cerberus Executor (when activated at robot level) and calculate a json message that can be used for direct controls on all attached controls | 
+| setNetworkTrafficContent | Retrieve the network traffic from Cerberus Executor (when activated at robot level) and calculate a json message that can be used for direct controls on all attached controls | 
 | doNothing | Just perform no action. No action will be executed and engine will go to the next action or control | 
 | removeDifference | DEPRECATED | 
 

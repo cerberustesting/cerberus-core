@@ -8397,10 +8397,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1470
         a.add("ALTER TABLE `robotexecutor` ADD COLUMN `executorExtensionHost` VARCHAR(255) NULL DEFAULT NULL AFTER `deviceLockUnlock`;");
 
-        // ADD setHarContent Action.
+        // ADD setNetworkTrafficContent Action.
         // 1471
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
-                + "VALUES('ACTION', 'setHARContent', 24900, 'Set Network Traffic to current content', 'Set HAR content');");
+                + "VALUES('ACTION', 'setNetworkTrafficContent', 24900, 'Set Network Traffic to current content', 'Set HAR content');");
 
         // ADD parameters to define third party definition file.
         // 1472

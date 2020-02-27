@@ -7,7 +7,7 @@
 * New property 'getRawFromXml' in order to get a raw XML content.
 * Hide non active bug link on reportbytag screen.  
 * Removed support of fr version of documentation.
-* new Action 'setHarContent' that allow to get the full Network traffic information and stats of every calls in a json files that can be verified on the attached controls.
+* new Action 'setNetworkTrafficContent' that allow to get the full Network traffic information and stats of every calls in a json files that can be verified on the attached controls.
 * new Controls 'verifyElementNumericEqual', 'verifyElementNumericDifferent', 'verifyElementNumericGreater', 'verifyElementNumericGreaterOrEqual', 'verifyElementNumericMinor', 'verifyElementNumericMinorOrEqual'
 * renamed Control 'verifyRegexInElement' to 'verifyElementTextMatchRegex'
 * renamed Control 'verifyTextNotInElement' to 'verifyElementTextDifferent'

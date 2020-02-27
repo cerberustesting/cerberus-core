@@ -337,8 +337,8 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_CALCULATEPROPERTY:
                     res = this.doActionCalculateProperty(testCaseStepActionExecution, value1, value2);
                     break;
-                case TestCaseStepAction.ACTION_SETHARCONTENT:
-                    res = this.doActionSetHARContent(tCExecution, testCaseStepActionExecution, value1);
+                case TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT:
+                    res = this.doActionSetNetworkTrafficContent(tCExecution, testCaseStepActionExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_DONOTHING:
                     res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
@@ -1491,12 +1491,12 @@ public class ActionService implements IActionService {
         return message;
     }
 
-    public MessageEvent doActionSetHARContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String urlToFilter) throws IOException {
+    public MessageEvent doActionSetNetworkTrafficContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String urlToFilter) throws IOException {
         MessageEvent message;
         try {
             // Check that robot has executor activated
             if (!"Y".equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyActive()) || StringUtil.isNullOrEmpty(exe.getRobotExecutorObj().getExecutorProxyHost())) {
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETHARCONTENT_ROBOTEXECUTORPROXYNOTACTIVATED);
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETNETWORKTRAFFICCONTENT_ROBOTEXECUTORPROXYNOTACTIVATED);
                 message.setDescription(message.getDescription().replace("%ROBOT%", exe.getRobotExecutorObj().getRobot()).replace("%EXECUTOR%", exe.getRobotExecutorObj().getExecutor()));
                 return message;
             }
@@ -1531,11 +1531,11 @@ public class ActionService implements IActionService {
             // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
             exe.setAppTypeEngine(Application.TYPE_SRV);
 
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETHARCONTENT);
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETNETWORKTRAFFICCONTENT);
             return message;
         } catch (Exception ex) {
-            LOG.error("Error doing Action setHARContent :" + ex);
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETHARCONTENT);
+            LOG.error("Error doing Action setNetworkTrafficContent :" + ex);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETNETWORKTRAFFICCONTENT);
             message.setDescription(message.getDescription().replace("%DETAIL%", ex.toString()));
             return message;
         }
