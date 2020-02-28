@@ -141,7 +141,7 @@ public class WebDriverService implements IWebDriverService {
 
             if (webElement != null) {
 
-                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO);
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO).resolveDescription("VALUE", identifier.toString());
                 if (StringUtil.isNullOrEmpty(text)) {
                     scrollElement(session, webElement);
                 } else {
