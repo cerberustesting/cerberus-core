@@ -25,4 +25,4 @@ image:buildcontentpage.png[BuildContentPage]
 
 ==== Automatically
 
-To describe.
+Calling the associated public service.

@@ -78,6 +78,17 @@ public interface IRecorderService {
 
     /**
      *
+     * @param testCaseExecution
+     * @param testCaseStepActionExecution
+     * @param control
+     * @param property
+     * @param service
+     * @return
+     */
+    List<TestCaseExecutionFile> recordHarContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, AppService service);
+
+    /**
+     *
      * @param runId
      * @param property
      * @param propertyIndex

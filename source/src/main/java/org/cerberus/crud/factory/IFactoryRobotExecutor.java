@@ -55,6 +55,6 @@ public interface IFactoryRobotExecutor {
      */
     RobotExecutor create(Integer ID, String robot, String executor, String active, 
             Integer rank, String host, String port, String hostUser, String hostPassword, String deviceUdid,
-            String deviceName, Integer devicePort, String deviceLockUnlock, Integer executorExtensionPort, String executorProxyHost, Integer executorProxyPort, String executorProxyActive, 
+            String deviceName, Integer devicePort, String deviceLockUnlock, String executorExtensionHost, Integer executorExtensionPort, String executorProxyHost, Integer executorProxyPort, String executorProxyActive, 
             String description, String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif);
 }

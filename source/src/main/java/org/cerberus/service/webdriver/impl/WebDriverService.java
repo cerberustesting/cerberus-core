@@ -141,7 +141,7 @@ public class WebDriverService implements IWebDriverService {
 
             if (webElement != null) {
 
-                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO);
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO).resolveDescription("VALUE", identifier.toString());
                 if (StringUtil.isNullOrEmpty(text)) {
                     scrollElement(session, webElement);
                 } else {
@@ -860,7 +860,7 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionType(Session session, Identifier identifier, String property, String propertyName, boolean waitForVisibility, boolean waitForClickability) {
+    public MessageEvent doSeleniumActionType(Session session, Identifier identifier, String valueToType, String propertyName, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
             AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
@@ -868,13 +868,13 @@ public class WebDriverService implements IWebDriverService {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {
                     webElement.clear();
-                    if (!StringUtil.isNull(property)) {
-                        webElement.sendKeys(property);
+                    if (!StringUtil.isNull(valueToType)) {
+                        webElement.sendKeys(valueToType);
                     }
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-                    if (!StringUtil.isNull(property)) {
-                        message.setDescription(message.getDescription().replace("%DATA%", ParameterParserUtil.securePassword(property, propertyName)));
+                    if (!StringUtil.isNull(valueToType)) {
+                        message.setDescription(message.getDescription().replace("%DATA%", ParameterParserUtil.securePassword(valueToType, propertyName)));
                     } else {
                         message.setDescription(message.getDescription().replace("%DATA%", "No property"));
                     }

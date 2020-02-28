@@ -49,6 +49,7 @@ public class RobotExecutor {
     private String deviceLockUnlock;
     private String description;
     private long dateLastExeSubmitted;
+    private String executorExtensionHost;
     private Integer executorExtensionPort;
     private String executorProxyHost;
     private Integer executorProxyPort;
@@ -198,6 +199,14 @@ public class RobotExecutor {
         this.devicePort = devicePort;
     }
 
+    public String getExecutorExtensionHost() {
+        return executorExtensionHost;
+    }
+
+    public void setExecutorExtensionHost(String executorExtensionHost) {
+        this.executorExtensionHost = executorExtensionHost;
+    }
+    
     public Integer getExecutorExtensionPort() {
         return executorExtensionPort;
     }
@@ -344,6 +353,9 @@ public class RobotExecutor {
         if ((this.executorProxyActive == null) ? (other.executorProxyActive != null) : !this.executorProxyActive.equals(other.executorProxyActive)) {
             return false;
         }
+        if ((this.executorExtensionHost == null) ? (other.executorExtensionHost != null) : !this.executorExtensionHost.equals(other.executorExtensionHost)) {
+            return false;
+        }
         if ((this.executorExtensionPort == null) ? (other.executorExtensionPort != null) : !this.executorExtensionPort.equals(other.executorExtensionPort)) {
             return false;
         }
@@ -375,6 +387,7 @@ public class RobotExecutor {
             result.put("deviceUdid", this.getDeviceUuid());
             result.put("devicePort", this.getDevicePort());
             result.put("deviceLockUnlock", "Y".equals(this.getDeviceLockUnlock()) ? true : false);
+            result.put("executorExtensionHost", this.getExecutorExtensionHost());
             result.put("executorExtensionPort", this.getExecutorExtensionPort());
             result.put("executorProxyHost", this.getExecutorProxyHost());
             result.put("executorProxyPort", this.getExecutorProxyPort());

@@ -123,6 +123,8 @@ public class ServiceService implements IServiceService {
 
                 // We start by calculating the servicePath and decode it.
                 servicePath = appService.getServicePath();
+                
+                // Autocomplete of service path is disable for KAFKA service (this is because there could be a list of host).
                 if (!appService.getType().equals(AppService.TYPE_KAFKA)) {
 
                     if (!(StringUtil.isURL(servicePath))) {
@@ -499,7 +501,7 @@ public class ServiceService implements IServiceService {
                         switch (appService.getMethod()) {
                             case AppService.METHOD_HTTPGET:
                             case AppService.METHOD_HTTPPOST:
-                                result = ftpService.callFTP(decodedServicePath, system, appService.getServiceRequest(),
+                                result = ftpService.callFTP(decodedServicePath, system, decodedRequest,
                                         appService.getMethod(), appService.getFileName(), appService.getService());
                                 message = result.getResultMessage();
                                 break;

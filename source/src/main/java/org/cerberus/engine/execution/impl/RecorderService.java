@@ -103,13 +103,13 @@ public class RecorderService implements IRecorderService {
             myExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
             doScreenshot = testCaseStepActionExecution.getActionResultMessage().isDoScreenshot();
             getPageSource = testCaseStepActionExecution.getActionResultMessage().isGetPageSource();
-            applicationType = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType();
+            applicationType = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getAppTypeEngine();
             returnCode = testCaseStepActionExecution.getReturnCode();
         } else {
             myExecution = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
             doScreenshot = testCaseStepActionControlExecution.getControlResultMessage().isDoScreenshot();
             getPageSource = testCaseStepActionControlExecution.getControlResultMessage().isGetPageSource();
-            applicationType = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getApplicationObj().getType();
+            applicationType = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getAppTypeEngine();
             returnCode = testCaseStepActionControlExecution.getReturnCode();
             controlNumber = testCaseStepActionControlExecution.getControlSequence();
         }
@@ -324,7 +324,7 @@ public class RecorderService implements IRecorderService {
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         String controlString = (control < 0) ? null : String.valueOf(control);
         long runId = testCaseExecution.getId();
-        String applicationType = testCaseExecution.getApplicationObj().getType();
+        String applicationType = testCaseExecution.getAppTypeEngine();
 
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - [" + test + " - " + testCase + " - step: " + step + " action: " + sequence + "] ";
@@ -439,7 +439,11 @@ public class RecorderService implements IRecorderService {
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
 
-        List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
+
+        if (!se.isRecordTraceFile()) {
+            return objectFileList;
+        }
         TestCaseExecutionFile object = null;
         String test = null;
         String testCase = null;
@@ -541,6 +545,61 @@ public class RecorderService implements IRecorderService {
             }
         } catch (Exception ex) {
             LOG.error(logPrefix + ex.toString(), ex);
+        }
+        return objectFileList;
+    }
+
+    @Override
+    public List<TestCaseExecutionFile> recordHarContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, AppService se) {
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
+        TestCaseExecutionFile object = null;
+        String test = null;
+        String testCase = null;
+        String step = null;
+        String index = null;
+        String sequence = null;
+        if (testCaseStepActionExecution != null) {
+            test = testCaseExecution.getTest();
+            testCase = testCaseExecution.getTestCase();
+            step = String.valueOf(testCaseStepActionExecution.getStep());
+            index = String.valueOf(testCaseStepActionExecution.getIndex());
+            sequence = String.valueOf(testCaseStepActionExecution.getSequence());
+        }
+        String controlString = control.equals(0) ? null : String.valueOf(control);
+        long runId = testCaseExecution.getId();
+        int propertyIndex = 0;
+        if (!(StringUtil.isNullOrEmpty(property))) {
+            propertyIndex = 1;
+        }
+        try {
+
+            // Full Har.
+            if (!(StringUtil.isNullOrEmpty(se.getResponseHTTPBody()))) {
+                Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "har_content", "json", false);
+                recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), se.getResponseHTTPBody());
+
+                // Index file created to database.
+                object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "HAR Content", recorderResponse.getRelativeFilenameURL(), TestCaseExecutionFile.FILETYPE_JSON, "", null, "", null);
+                testCaseExecutionFileService.save(object);
+                objectFileList.add(object);
+
+            }
+
+            // Stat.
+            if (!(StringUtil.isNullOrEmpty(se.getResponseHTTPBody()))) {
+                JSONObject stat = new JSONObject(se.getResponseHTTPBody());
+                Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "har_stat", "json", false);
+                recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), stat.getString("stat"));
+
+                // Index file created to database.
+                object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "HAR Stat", recorderResponse.getRelativeFilenameURL(), TestCaseExecutionFile.FILETYPE_JSON, "", null, "", null);
+                testCaseExecutionFileService.save(object);
+                objectFileList.add(object);
+
+            }
+
+        } catch (Exception ex) {
+            LOG.error(ex.toString(), ex);
         }
         return objectFileList;
     }

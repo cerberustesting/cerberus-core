@@ -197,6 +197,9 @@ public class ExecutionStartService implements IExecutionStartService {
         try {
             tCExecution.setApplication(tCExecution.getTestCaseObj().getApplication());
             tCExecution.setApplicationObj(applicationService.convert(this.applicationService.readByKey(tCExecution.getTestCaseObj().getApplication())));
+            // Setting Application Type to value coming from Application.
+            tCExecution.setAppTypeEngine(tCExecution.getApplicationObj().getType());
+            // Setting System from queue.
             tCExecution.getTestCaseExecutionQueue().setSystem(tCExecution.getApplicationObj().getSystem());
             LOG.debug("Application Information Loaded - " + tCExecution.getApplicationObj().getApplication() + " - " + tCExecution.getApplicationObj().getDescription());
         } catch (CerberusException ex) {
@@ -499,7 +502,7 @@ public class ExecutionStartService implements IExecutionStartService {
         /**
          * For GUI application, check if Browser is supported.
          */
-        if (!tCExecution.getManualExecution().equals("Y") && tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+        if (!tCExecution.getManualExecution().equals("Y") && tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)) {
             try {
                 myInvariant = invariantService.convert(invariantService.readByKey("BROWSER", tCExecution.getBrowser()));
             } catch (CerberusException ex) {

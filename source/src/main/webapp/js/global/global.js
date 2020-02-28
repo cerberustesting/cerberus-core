@@ -113,7 +113,7 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
         async = asyn
     }
 
-    var cacheEntryName = idName + "INVARIANT";
+    var cacheEntryName = "INVARIANT_" + idName;
     if (forceReload) {
         sessionStorage.removeItem(cacheEntryName);
     }
@@ -184,7 +184,7 @@ function getInvariantArray(idName, forceReload, addValue1, asyn) {
         async = asyn;
     }
 
-    var cacheEntryName = idName + "INVARIANT";
+    var cacheEntryName = "INVARIANT_" + idName ;
     if (forceReload) {
         sessionStorage.removeItem(cacheEntryName);
     }
@@ -587,7 +587,7 @@ function getInvariantListN(list, handleData) {
  * @param {boolean} addValue Value that can be added at the beginning of the combo.
  */
 function getSelectInvariant(idName, forceReload, notAsync, addValue) {
-    var cacheEntryName = idName + "INVARIANT";
+    var cacheEntryName = "INVARIANT_" + idName;
     if (forceReload) {
         sessionStorage.removeItem(cacheEntryName);
     }
@@ -628,7 +628,7 @@ function getSelectInvariant(idName, forceReload, notAsync, addValue) {
 }
 
 function cleanCacheInvariant(idName) {
-    var cacheEntryName = idName + "INVARIANT";
+    var cacheEntryName = "INVARIANT_" + idName;
     sessionStorage.removeItem(cacheEntryName);
 }
 
@@ -696,7 +696,7 @@ function getSelectRobot(forceReload, notAsync) {
  * @param {boolean} notAsync true if we dont want to have Async ajax
  */
 function getSelectLabel(system, forceReload, notAsync) {
-    var cacheEntryName = "LABEL" + system;
+    var cacheEntryName = "LABEL_" + system;
     if (forceReload) {
         sessionStorage.removeItem(cacheEntryName);
     }
@@ -733,8 +733,7 @@ function getSelectLabel(system, forceReload, notAsync) {
 }
 
 function getSelectApplication(system, forceReload) {
-    system = ""
-    var cacheEntryName = system + "INVARIANT";
+    var cacheEntryName = "APPLICATIONS_" + system;
     if (forceReload) {
         sessionStorage.removeItem(cacheEntryName);
     }
