@@ -8392,7 +8392,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1469
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
                 + "VALUES('PROPERTYTYPE', 'getRawFromXml', 55, 'Get XML code', 'Get XML code');");
-        
+
         // ADD column executorExtensionHost in robotexecutor table
         // 1470
         a.add("ALTER TABLE `robotexecutor` ADD COLUMN `executorExtensionHost` VARCHAR(255) NULL DEFAULT NULL AFTER `deviceLockUnlock`;");
@@ -8424,17 +8424,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("UPDATE testcasestepactioncontrol set control = 'verifyElementTextEqual' where control = 'verifyTextInElement' ;");
 
         // Adding new Element visible Condition.
-        // 1470
+        // 1480
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
-        b.append("('ACTIONCONDITIONOPER', 'ifElementVisible', 920, 'Only execute if Element is visible.', ''),");
-        b.append("('STEPCONDITIONOPER', 'ifElementVisible', 920, 'Only execute if Element is visible.', ''),");
-        b.append("('CONTROLCONDITIONOPER', 'ifElementVisible', 920, 'Only execute if Element is visible.', ''),");
-        b.append("('ACTIONCONDITIONOPER', 'ifElementNotVisible', 930, 'Only execute if Element is not visible.', ''),");
-        b.append("('STEPCONDITIONOPER', 'ifElementNotVisible', 930, 'Only execute if Element is not visible.', ''),");
-        b.append("('CONTROLCONDITIONOPER', 'ifElementNotVisible', 930, 'Only execute if Element is not visible.', '')");
+        b.append("('ACTIONCONDITIONOPER', 'ifElementVisible', 264, 'Only execute if Element is visible.', ''),");
+        b.append("('STEPCONDITIONOPER', 'ifElementVisible', 264, 'Only execute if Element is visible.', ''),");
+        b.append("('CONTROLCONDITIONOPER', 'ifElementVisible', 264, 'Only execute if Element is visible.', ''),");
+        b.append("('ACTIONCONDITIONOPER', 'ifElementNotVisible', 265, 'Only execute if Element is not visible.', ''),");
+        b.append("('STEPCONDITIONOPER', 'ifElementNotVisible', 265, 'Only execute if Element is not visible.', ''),");
+        b.append("('CONTROLCONDITIONOPER', 'ifElementNotVisible', 265, 'Only execute if Element is not visible.', '')");
         a.add(b.toString());
-       
+
         return a;
     }
 
