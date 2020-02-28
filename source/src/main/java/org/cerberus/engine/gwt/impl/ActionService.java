@@ -1504,7 +1504,7 @@ public class ActionService implements IActionService {
             /**
              * Building the url to get the Har file from cerberus-executor
              */
-            String url = "http://" + exe.getRobotExecutorObj().getHost() + ":" + exe.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + exe.getRemoteProxyUUID();
+            String url = "http://" + exe.getRobotExecutorObj().getExecutorExtensionHost() + ":" + exe.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + exe.getRemoteProxyUUID();
             if (!StringUtil.isNullOrEmpty(urlToFilter)) {
                 url += "&requestUrl=" + urlToFilter;
             }
