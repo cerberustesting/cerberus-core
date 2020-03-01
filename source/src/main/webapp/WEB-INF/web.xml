@@ -701,6 +701,10 @@
         <servlet-class>org.cerberus.servlet.crud.test.testcase.ReadTestCase</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadTestCaseV2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.test.testcase.ReadTestCaseV2</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GeneratePerformanceString</servlet-name>
         <servlet-class>org.cerberus.servlet.reporting.GeneratePerformanceString</servlet-class>
     </servlet>
@@ -931,6 +935,10 @@
     <servlet-mapping>
         <servlet-name>ReadTestCase</servlet-name>
         <url-pattern>/ReadTestCase</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadTestCaseV2</servlet-name>
+        <url-pattern>/ReadTestCaseV2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>TCEwwwDetail</servlet-name>
@@ -1683,6 +1691,7 @@
             <url-pattern>/GetReport</url-pattern>
             <url-pattern>/GetStepInLibrary</url-pattern>
             <url-pattern>/ReadTestCase</url-pattern>
+            <url-pattern>/ReadTestCaseV2</url-pattern>
             <url-pattern>/ReadTest</url-pattern>
             <url-pattern>/ReadTestCaseStep</url-pattern>
             <url-pattern>/GetReportTest</url-pattern>
