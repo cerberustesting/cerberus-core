@@ -91,97 +91,465 @@ image:testlooptep.png[TestCaseLoopStep]
 
 === TestCase Action
 
-|=== 
-
-| *Action* | *Description* | *Example* 
-| Unknown 
-| Unknown action. Should be used when the action is not yet known. 
+==== Unknown 
+Unknown action. Should be used when the action is not yet known. 
 Warning: make the execution fail. 
-| 
-| click 
-| Click on the left mouse button on an element inside the current page.
-*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. 
-| `id=html_reference`
-`xpath=//*[@id='html_reference']`
-`picture=%object.NameOfYourObject.pictureurl%` (for Sikuli)
-| mouseLeftButtonPress 
-| Press and keep the left mouse button pressed until the action 'mouseLeftButtonRelease' is executed. 
-| 
-| mouseLeftButtonRelease 
-| release the mouse button. Usefull with ButtonPress to perform drag & drop 
-| 
-| doubleClick 
-|  Double click on an element inside the current page.
-*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference 
-| 
-| rightClick 
-|  Right click on an element inside the current page. 
-*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference 
-| 
-| mouseOver | mouse cursor over an object *[red]#Element path#* : the id of the element | 
-| focustoIframe | TBD | 
-| focustoDefaultIframe | TBD | 
-| switchToWindow | Switch to another window (like popup dialog). Just specify the title or the URL of the other window to switch to this window. 
-| `title=titleOfThisNewWindow`
- `url=http://url_of_this_new_window`
-| manageDialog 
-| Close the browser popup alert windows either by accepting it with `ok` either by cancelling it with `cancel` 
-| `ok`
-`cancel`
+ 
+==== click 
+Click on the left mouse button on an _element_ inside the current page.
 
-| manageDialogKeypress 
-| Keypress inside the browser popup alert windows. You can use special keys with [TAB] 
+*[blue]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference.
+
+==== longPress 
+Click during a specific duration on the left mouse button on an _element_ inside the current page.
+
+*[blue]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference.
+
+*[blue]#Value2#*	Duration of the click in milliseconds.
+
+==== mouseLeftButtonPress
+Press and keep the left mouse button pressed on an _element_ until the action 'mouseLeftButtonRelease' is executed. 
+
+*[blue]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference.
+
+==== mouseLeftButtonRelease
+Release the mouse button on an __element__. 
+Usefull with ButtonPress to perform drag & drop 
+
+*[blue]#Value1#*	Identifier and name of the element where release will be done in the form of : identifier=html_reference.
+
+==== doubleClick 
+Double click on an _element_ inside the current page.
+
+*[blue]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference.
+
+==== rightClick 
+Right click on an element inside the current page. 
+
+*[blue]#Value1#*	Identifier and name of the element to double click in the form of : identifier=html_reference. 
+
+==== mouseOver
+Mouse cursor over an _element_ inside the current page.
+
+*[blue]#Value1#*	Identifier and name of the element to over in the form of : identifier=html_reference.
+
+==== focustoIframe
+Set the focus to a specific frame on the current page.
+
+*[blue]#Value1#*	Identifier and name of the frame to focus in the form of : identifier=html_reference.
+
+==== focustoDefaultIframe
+Set back the focus to the previous frame on the current page.
+
+==== switchToWindow
+Switch the focus to another window (like popup dialog).
+
+*[blue]#Value1#*	Title or URL of the other window to switch to.
+
+.By Tittle
+====
+title=titleOfThisNewWindow
+====
+
+.By Tittle
+====
+url=http://url_of_this_new_window
+====
+
+==== manageDialog
+Close the browser popup alert windows either by accepting it with `ok` either by cancelling it with `cancel`
+
+*[blue]#Value1#*	`ok` or `cancel`
+
+==== manageDialogKeypress 
+Keypress inside the browser popup alert windows.
+
+*[blue]#Value1#*	List of characters to type. You can use several special keys into the same action
+
+.Normal test
+====
+texttoenter[ENTER]
+====
+
+.Normal test and special keys
+====
+user[TAB]password[ENTER]
+====
+    
+
+[NOTE]
+====
 Supported keys are : [BACK_SPACE], [TAB], [RETURN], [ENTER], [SHIFT], [LEFT_SHIFT], [CONTROL], [LEFT_CONTROL], [ALT], [LEFT_ALT], [ESCAPE], [SPACE], [PAGE_UP], [PAGE_DOWN], [LEFT], [ARROW_LEFT], [UP], [ARROW_UP], [RIGHT], [ARROW_RIGHT], [DOWN], [ARROW_DOWN], [DELETE], [SEMICOLON], [EQUALS], [NUMPAD0], [NUMPAD1], [NUMPAD2], [NUMPAD3], [NUMPAD4], [NUMPAD5], [NUMPAD6], [NUMPAD7], [NUMPAD8], [NUMPAD9], [MULTIPLY], [ADD], [SEPARATOR], [SUBTRACT], [DECIMAL], [DIVIDE], [F1], [F2], [F3], [F4], [F5], [F6], [F7], [F8], [F9], [F10], [F11], [F12]
-| `texttoenter`
-`user[TAB]password`
+====
 
-| OpenUrlWithBase | OpenUrl action using the base defined in the application / environment section | `/cerberustesting`
-| OpenUrlLogin | OpenUrl action using the login page defined at application / environment level. | 
-| OpenUrl | Open a specified url | `https://github.com`
-| executeJS | execute a JS script (no output can be retrieved) | 
-| openApp | TBD | 
-| closeApp | TBD | 
-| select | select an option in a <select> tag. this 'text' must be defined : <option value="text"> | 
-| keypress | will allow you to press any key in the current web page. *[red]#Value1#* : Location of the element from which press the key. *[red]#Value2#* : Keycode of the key to press | Examples : `ENTER` (GUI) , `Key.ENTER` (FAT)
-| type | Write a data in a field. *[red]#Element path#* : the id of the field  *[red]#Property Name#* : the property containing the value to type (can be a property or text. | 
-| hidekeyboard | Hide the currently visible keyboard | 
-| swipe | The action simulates a user pressing down on the screen, sliding to another position, and removing their finger from the screen. Swipe action can be used neither with unique parameter *[red]#UP#*,*[red]#DOWN#*,*[red]#LEFT#*,*[red]#RIGHT#*, or with combination of parameter *[red]#CUSTOM#* and *[red]#x1;y1;x2;y2#*, which are coordinates of origin point (x1;y1) and #relatives# coodinates of destination point (x2;y2) | swipe UP : will swipe from the 2/3 to the 1/3 of the screen. swipe CUSTOM 100;100;0;100 : will swipe from the point (100;100) to the point (100;200)
-| wait | Wait for a certain amount of time Feed a number (ms) or wait for element present feed an element (xpath) |
-| waitVanish | TBD | 
-| callService | call a service defined the Service Library and provide the output within the execution | 
-| executeSqlUpdate |  will allow you to execute SQL update (insert,delete,update). Feed the *[red]#Database Name#* and the *[red]#Script#* to execute. Database has to be declared to your system and environment. | 
-| executeSqlStoredProcedure | will allow you to execute SQL stored procedure. Feed the *[red]#Database Name#* and the *[red]#Stored Procedure#* to execute. Database has to be declared to your system and environment. | 
-| calculateProperty | will allow you to calculate a *[red]#Property#* defined in the property section of the test case.
-[Optional] Feed *[red]#Value2#* with another property to affect to the previous *[red]#Property Name#* a new value. Useful to override the one defined from the property section during an execution. | 
-| setNetworkTrafficContent | Retrieve the network traffic from Cerberus Executor (when activated at robot level) and calculate a json message that can be used for direct controls on all attached controls | 
-| doNothing | Just perform no action. No action will be executed and engine will go to the next action or control | 
-| removeDifference | DEPRECATED | 
+==== OpenUrlWithBase
+OpenUrl action using the base defined in the application / environment section.
 
-|=== 
+*[blue]#Value1#*	Relative URL to open.
 
-+**For FAT client**
+.relative URL
+====
+/cerberustesting/page.html
+====
+
+==== OpenUrlLogin
+OpenUrl action using the login page defined at application / environment level.
+
+==== OpenUrl
+Open a specified full url.
+
+*[blue]#Value1#*	Complete URL to open.
+
+.Title
+====
+https://github.com
+====
+
+==== refreshCurrentPage
+Reload the current page.
+
+==== executeJS
+Execute a JS script (no output can be retrieved)
+
+*[blue]#Value1#*	Javascript to execute.
+
+.Javascript
+====
+    var newOption = new Option('%property.ApplicationName%', '%property.ApplicationName%', true, true);
+    $('#application').append(newOption).trigger('change');
+====
+
+==== executeCommand
+Execute a Command on the robot side.
+
+*[blue]#Value1#*	Command to execute.
+
+*[blue]#Value2#*	Arguments of the command.
+
+==== executeCerberusCommand
+Execute a Command from the Cerberus Server side. The command will be executed using the user defined in the parameter `cerberus_executeCerberusCommand_user`, password defined in `cerberus_executeCerberusCommand_password` and script from the path `cerberus_executeCerberusCommand_path` 
+
+*[blue]#Value1#*	Command to execute.
+
+==== openApp
+Open an Application.
+
+*[blue]#Value1#*	Application to Open.
+
+*[blue]#Value2#*	Activity.
+
+
+==== closeApp
+Close an application.
+
+*[blue]#Value1#*	Application to Open.
+
+==== dragAndDrop
+Will Drag from an _Element_ to another __Element__.
+
+*[blue]#Value1#*	Identifier and name of the element to drag in the form of : identifier=html_reference.
+
+*[blue]#Value2#*	Identifier and name of the element where to drop in the form of : identifier=html_reference..
+
+==== select
+Select an option in a <select> Element. this 'text' must be defined : <option value="text">
+
+*[blue]#Value1#*	Identifier and name of the element of the select in the form of : identifier=html_reference.
+
+*[blue]#Value2#*	Element to drop.
+
+.Title
+====
+<option value="text">
+====
+
+==== keypress
+will allow you to press any key in the current web page.
+
+*[blue]#Value1#* : Identifier and name of the element where the key is pressed in the form of : identifier=html_reference.
+
+*[blue]#Value2#* : Keycode of the key to press.
+
+.for a GUI application
+====
+ENTER
+====
+.for a FAT application
+====
+Key.ENTER
+====
+
+The keycodes (see. keypress action) also changes depending on the application type (GUI, IPA, APK or FAT). The syntaxes are:
+
+- for GUI : `KEYNAME`
+
+Following Selenium `KEYNAME` can be used : NULL, CANCEL, HELP, BACK_SPACE, TAB, CLEAR, RETURN, ENTER, SHIFT, LEFT_SHIFT, CONTROL, LEFT_CONTROL, ALT, LEFT_ALT, PAUSE, ESCAPE, SPACE, PAGE_UP, PAGE_DOWN, END, HOME, LEFT, ARROW_LEFT, UP, ARROW_UP, RIGHT, ARROW_RIGHT, DOWN, ARROW_DOWN, INSERT, DELETE, SEMICOLON, EQUALS, NUMPAD0, NUMPAD1, NUMPAD2, NUMPAD3, NUMPAD4, NUMPAD5, NUMPAD6, NUMPAD7, NUMPAD8, NUMPAD9, MULTIPLY, ADD, SEPARATOR, SUBTRACT, DECIMAL, DIVIDE, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, META, COMMAND, ZENKAKU_HANKAKU
+
+- for APK : `KEYNAME`
+
+Following Appium Android `KEYNAME` can be used : UNKNOWN, SOFT_LEFT, SOFT_RIGHT, HOME, BACK, CALL, ENDCALL, DIGIT_0, DIGIT_1, DIGIT_2, DIGIT_3, DIGIT_4, DIGIT_5, DIGIT_6, DIGIT_7, DIGIT_8, DIGIT_9, STAR, POUND, DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAD_RIGHT, DPAD_CENTER, VOLUME_UP, VOLUME_DOWN, POWER, CAMERA, CLEAR, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, COMMA, PERIOD, ALT_LEFT, ALT_RIGHT, SHIFT_LEFT, SHIFT_RIGHT, TAB, SPACE, SYM, EXPLORER, ENVELOPE, ENTER, DEL, GRAVE, MINUS, EQUALS, LEFT_BRACKET, RIGHT_BRACKET, BACKSLASH, SEMICOLON, APOSTROPHE, SLASH, AT, NUM, HEADSETHOOK, FOCUS, PLUS, MENU, NOTIFICATION, SEARCH, MEDIA_PLAY_PAUSE, MEDIA_STOP, MEDIA_NEXT, MEDIA_PREVIOUS, MEDIA_REWIND, MEDIA_FAST_FORWARD, MUTE, PAGE_UP, PAGE_DOWN, PICTSYMBOLS, SWITCH_CHARSET, BUTTON_A, BUTTON_B, BUTTON_C, BUTTON_X, BUTTON_Y, BUTTON_Z, BUTTON_L1, BUTTON_R1, BUTTON_L2, BUTTON_R2, BUTTON_THUMBL, BUTTON_THUMBR, BUTTON_START, BUTTON_SELECT, BUTTON_MODE, ESCAPE, FORWARD_DEL, CTRL_LEFT, CTRL_RIGHT, CAPS_LOCK, SCROLL_LOCK, META_LEFT, META_RIGHT, FUNCTION, SYSRQ, BREAK, MOVE_HOME, MOVE_END, INSERT, FORWARD, MEDIA_PLAY, MEDIA_PAUSE, MEDIA_CLOSE, MEDIA_EJECT, MEDIA_RECORD, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, NUM_LOCK, NUMPAD_0, NUMPAD_1, NUMPAD_2, NUMPAD_3, NUMPAD_4, NUMPAD_5, NUMPAD_6, NUMPAD_7, NUMPAD_8, NUMPAD_9, NUMPAD_DIVIDE, NUMPAD_MULTIPLY, NUMPAD_SUBTRACT, NUMPAD_ADD, NUMPAD_DOT, NUMPAD_COMMA, NUMPAD_ENTER, NUMPAD_EQUALS, NUMPAD_LEFT_PAREN, NUMPAD_RIGHT_PAREN, VOLUME_MUTE, INFO, CHANNEL_UP, CHANNEL_DOWN, KEYCODE_ZOOM_IN, KEYCODE_ZOOM_OUT, TV, WINDOW, GUIDE, DVR, BOOKMARK, CAPTIONS, SETTINGS, TV_POWER, TV_INPUT, STB_POWER, STB_INPUT, AVR_POWER, AVR_INPUT, PROG_RED, PROG_GREEN, PROG_YELLOW, PROG_BLUE, APP_SWITCH, BUTTON_1, BUTTON_2, BUTTON_3, BUTTON_4, BUTTON_5, BUTTON_6, BUTTON_7, BUTTON_8, BUTTON_9, BUTTON_10, BUTTON_11, BUTTON_12, BUTTON_13, BUTTON_14, BUTTON_15, BUTTON_16, LANGUAGE_SWITCH, MANNER_MODE, MODE_3D, CONTACTS, CALENDAR, MUSIC, CALCULATOR, ZENKAKU_HANKAKU, EISU, MUHENKAN, HENKAN, KATAKANA_HIRAGANA, YEN, RO, KANA, ASSIST, BRIGHTNESS_DOWN, BRIGHTNESS_UP, MEDIA_AUDIO_TRACK, SLEEP, WAKEUP, PAIRING, _MEDIA_TOP_MENU, KEY_11, KEY_12, LAST_CHANNEL, TV_DATA_SERVICE, VOICE_ASSIST, TV_RADIO_SERVICE, TV_TELETEXT, TV_NUMBER_ENTRY, TV_TERRESTRIAL_ANALOG, TV_TERRESTRIAL_DIGITAL, TV_SATELLITE, TV_SATELLITE_BS, TV_SATELLITE_CS, TV_SATELLITE_SERVICE, TV_NETWORK, TV_ANTENNA_CABLE, TV_INPUT_HDMI_1, TV_INPUT_HDMI_2, TV_INPUT_HDMI_3, TV_INPUT_HDMI_4, TV_INPUT_COMPOSITE_1, TV_INPUT_COMPOSITE_2, TV_INPUT_COMPONENT_1, TV_INPUT_COMPONENT_2, TV_INPUT_VGA_1, TV_AUDIO_DESCRIPTION, TV_AUDIO_DESCRIPTION_MIX_UP, TV_AUDIO_DESCRIPTION_MIX_DOWN, TV_ZOOM_MODE, TV_CONTENTS_MENU, _TV_MEDIA_CONTEXT_MENU, TV_TIMER_PROGRAMMING, HELP, NAVIGATE_PREVIOUS, NAVIGATE_NEXT, NAVIGATE_IN, NAVIGATE_OUT, STEM_PRIMARY, STEM_1, STEM_2, STEM_3, DPAD_UP_LEFT, DPAD_DOWN_LEFT, DPAD_UP_RIGHT, DPAD_DOWN_RIGHT, MEDIA_SKIP_FORWARD, MEDIA_SKIP_BACKWARD, MEDIA_STEP_FORWARD, MEDIA_STEP_BACKWARD, SOFT_SLEEP, CUT, COPY, PASTE
+
+- for IPA : `KEYNAME`
+
+Following Appium IOS `KEYNAME` can be used : RETURN, ENTER, SEARCH, BACKSPACE
+
+- for FAT : `Key.KEYNAME`
+
+Following KEYNAME values can be used : ENTER, TAB, ESC, BACKSPACE, DELETE, INSERT, SPACE, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14, F15, HOME, END, LEFT, RIGHT, DOWN, UP, PAGE_DOWN, PAGE_UP, PRINTSCREEN, PAUSE, CAPS_LOCK, SCROLL_LOCK, NUM_LOCK, NUM0, NUM1, NUM2, NUM3, NUM4, NUM5, NUM6, NUM7, NUM8, NUM9, SEPARATOR, ADD, MINUS, MULTIPLY, DIVIDE, ALT, CMD, CTRL, META, SHIFT, WIN
+
+
+==== type
+Type a data in an Element.
+
+*[blue]#Value1#* : Identifier and name of the element where the data is entered in the form of : identifier=html_reference.
+
+*[blue]#Value2#* : data to enter in the field.
+
+==== clearField
+Clear (Empty) an Element.
+
+*[blue]#Value1#* : Identifier and name of the element to be cleared in the form of : identifier=html_reference.
+
+==== hidekeyboard
+Hide the currently visible keyboard
+
+==== swipe
+The action simulates a user pressing down on the screen, sliding to another position, and removing their finger from the screen. Swipe action can be used neither with unique parameter *[red]#UP#*, *[red]#DOWN#*, *[red]#LEFT#* or *[red]#RIGHT#* or with combination of parameter *[red]#CUSTOM#* and *[red]#x1;y1;x2;y2#*, which are coordinates of origin point (x1;y1) and *relatives* coordinates of destination point (x2;y2)
+
+*[blue]#Value1#* : *[red]#UP#*, *[red]#DOWN#*, *[red]#LEFT#*, *[red]#RIGHT#* or *[red]#CUSTOM#*.
+
+*[blue]#Value2#* : *[red]#x1;y1;x2;y2#* (only used if *Value1* is *[red]#CUSTOM#*)
+
+.Swipe Up
+====
+*[blue]#Value1#* UP
+
+*[blue]#Value2#* 
+
+will swipe from the 2/3 to the 1/3 of the screen.
+====
+
+
+.Custom Swipe
+====
+*[blue]#Value1#* CUSTOM
+
+*[blue]#Value2#* 100;100;0;100
+
+Will swipe from the point (100;100) to the point (100;200)
+====
+
+==== scrollTo
+Scroll to either an element or a text.
+
+*[blue]#Value1#* : Identifier and name of the element where the scroll will move the screen to in the form of : identifier=html_reference.
+
+*[blue]#Value2#* : text in the screen where the scroll will move.
+[NOTE]
+====
+Use either Value1 or Value2. If both are feed, the Value2 scroll will be used first.
+====
+
+==== installApp
+Install an application on the mobile.
+
+*[blue]#Value1#* : Path to the application to install.
+
+.Title
+====
+/root/toto.apk
+====
+
+==== removeApp
+Remove an application from the mobile.
+
+*[blue]#Value1#* : Application package name to remove.
+
+.Title
+====
+com.cerberus.appmobile
+====
+
+
+==== wait
+Wait for a certain amount of time Feed a number (ms) or wait for element present feed an element (xpath)
+
+*[blue]#Value1#* : Either an interger that represent a duration in ms, either an Element that we will wait to exist in the form of : identifier=html_reference.
+
+.Title
+====
+10000
+
+Will wait 10 seconds
+====
+
+.Title
+====
+id=userName
+
+Will that element with id equal to userName is loaded on the current screen.
+====
+
+
+==== waitVanish
+Wait that an element is removed from the page.
+
+*[blue]#Value1#* : Element that we will wait to be removed from the screen in the form of : identifier=html_reference.
+
+.Title
+====
+id=userName
+
+Will that Element with id equal to userName is removed from the current screen.
+====
+
+
+==== callService
+Call a service (REST, FTP, KAFKA,...) defined the Service Library and provide the output within the execution.
+
+*[blue]#Value1#* : Name of the service to call.
+
+*[blue]#Value2#* : Nb of Event until the action finish. It is only used if the Service is a KAFKA service with a SEARCH method.
+
+*[blue]#Value3#* : Time in second until the action finish.It is only used if the Service is a KAFKA service with a SEARCH method.
+
+==== executeSqlUpdate
+Will allow you to execute SQL update (insert,delete,update).
+
+*[blue]#Value1#* : Name of the database where the SQL will be executed. Database needs to be created into the invariant `PROPERTYDATABASE` and configured on the corresponding environment.
+
+*[blue]#Value2#* : SQL to be executed.
+
+==== executeSqlStoredProcedure
+Will allow you to execute SQL stored procedure.
+
+*[blue]#Value1#* : Name of the database where the SQL will be executed. Database needs to be created into the invariant `PROPERTYDATABASE` and configured on the corresponding environment.
+
+*[blue]#Value2#* : SQL to be executed.
+
+==== calculateProperty
+
+Will allow you to calculate a *[red]#Property#* defined in the property section of the test case and optionaly update the content with another property.
+
+*[blue]#Value1#* : Name of the property to calculate. If the property is already calculated, it will be forced to be calculated again.
+
+*[blue]#Value2#* : [Optional] Name of a second property that will affect the property in *Value1*.
+
+
+==== setNetworkTrafficContent
+Retrieve the network traffic from Cerberus Executor (when activated at robot level) and calculate a json message that can be used for direct controls on all attached controls. If Robot Executor is not activated, Action will end in NA Status and all attached controls ignored.
+
+*[blue]#Value1#* : URL to filter.
+
+
+==== doNothing
+Just perform no action. No action will be executed and engine will go to the next action or control
+
+==== removeDifference
+DEPRECATED Action that should no longuer used.
+
+
+=== TestCase Action Global Informations
+
+==== Global Identifiers Definition
+
+Syntax in order to identify a field or element inside a page. Syntax has the form :
+
+identifier=html_reference
+
+.by Id
+====
+id=html_reference
+====
+
+.by Path
+====
+xpath=//*[@id='html_reference']
+====
+
+.by Picture for FAT Applications (Sikuli)
+====
+picture=%object.NameOfYourObject.pictureurl%
+====
+
+==== FAT client Applications
 
 In order to perform any action/control (e.g. 'click', 'verifyElementPresent'), Application Object must be used to reference picture. 
 Keep in mind that for click action, it will be performed in the center of the picture:
 image:sikuliclick1.png[SikuliClick1]
 
-The keycodes (see. keypress action) also changes depending on the application type (GUI, IPA, APK or FAT). The syntaxes are:
+==== Network Traffic JSON format
 
-- `KEYNAME` for GUI, ex : `ENTER`
+Standard JSON format can by found in  https://w3c.github.io/web-performance/specs/HAR/Overview.html[w3c repo].
 
-Following Selenium Keys can be used : NULL, CANCEL, HELP, BACK_SPACE, TAB, CLEAR, RETURN, ENTER, SHIFT, LEFT_SHIFT, CONTROL, LEFT_CONTROL, ALT, LEFT_ALT, PAUSE, ESCAPE, SPACE, PAGE_UP, PAGE_DOWN, END, HOME, LEFT, ARROW_LEFT, UP, ARROW_UP, RIGHT, ARROW_RIGHT, DOWN, ARROW_DOWN, INSERT, DELETE, SEMICOLON, EQUALS, NUMPAD0, NUMPAD1, NUMPAD2, NUMPAD3, NUMPAD4, NUMPAD5, NUMPAD6, NUMPAD7, NUMPAD8, NUMPAD9, MULTIPLY, ADD, SEPARATOR, SUBTRACT, DECIMAL, DIVIDE, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, META, COMMAND, ZENKAKU_HANKAKU
+Aditionaly, Cerberus will add a `stat` json entry with the following format. That section will be feed by checking every hit performed by the application. Every hit will enrish the `total` section but also one of the following section : either `INTERNAL`, one `ThridPartyN` or `UNKNOWN` if the hit cannot match one of the application domain or one of the Third Party domain.
 
-- `KEYNAME` for APK, ex : `HOME`
+    "stat": {
+        "total":{
+            "size":{
+                "max": 125109,
+                "sum": 2286467,
+                "urlMax": "https://www.laredoute.com/mar/toto.jpg"
+            },
+            "httpReq":{
+                "nbRequests": 117,
+                "urlError": [ "https://www.laredoute.com/mar/to.jpg"],
+                "nbError": 1,
+                "nb200": 111,
+                "nb300": 0,
+                "nb301": 2,
+                "nb302": 2,
+                "nb307": 0,
+                "nb400": 0,
+                "nb403": 0,
+                "nb404": 1,
+                "nb500": 0
+            },
+            "time":{
+                "totalDuration": 18062,
+                "max": 4512,
+                "urlMax": "https://latem.commander1.com/dc3/?chn=D",
+                "avg": 455,
+                "sum": 53249,
+                "firstDuration": 47,
+                "firstStart": "2020-02-25T20:15:16.048Z",
+                "firstEnd": "20-02-25T20:15:16.95Z",
+                "firstURL": "http://www.laredoute.fr/",
+                "lastDuration": 4455,
+                "lastStart": "2020-02-25T20:15:29.655Z",
+                "lastEnd": "20-02-25T20:15:34.110Z",
+                "lastURL": "https://p.trust.net/p-c/?id=1&site=12"
+            },
+            "type":{
+                "css":{
+                    "sizeSum": 125109,
+                    "sizeMax": 2286467,
+                    "urlMax": "https://www.laredoute.com/mar/12.css"
+                    "url": [ "https://www.laredoute.com/mar/13.css" ]
+                },
+                "img":{...},
+                "other":{...},
+                "js":{...},
+                "html":{...},
+                "content":{...},
+                "font":{...}
+            }
+        },
+        "ThirdParty1":{...},
+        "ThirdParty2":{...},
+        "INTERNAL":{...},
+        "UNKNOWN":{...}
+    }
 
-Following Appium Android Keys can be used : UNKNOWN, SOFT_LEFT, SOFT_RIGHT, HOME, BACK, CALL, ENDCALL, DIGIT_0, DIGIT_1, DIGIT_2, DIGIT_3, DIGIT_4, DIGIT_5, DIGIT_6, DIGIT_7, DIGIT_8, DIGIT_9, STAR, POUND, DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAD_RIGHT, DPAD_CENTER, VOLUME_UP, VOLUME_DOWN, POWER, CAMERA, CLEAR, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, COMMA, PERIOD, ALT_LEFT, ALT_RIGHT, SHIFT_LEFT, SHIFT_RIGHT, TAB, SPACE, SYM, EXPLORER, ENVELOPE, ENTER, DEL, GRAVE, MINUS, EQUALS, LEFT_BRACKET, RIGHT_BRACKET, BACKSLASH, SEMICOLON, APOSTROPHE, SLASH, AT, NUM, HEADSETHOOK, FOCUS, PLUS, MENU, NOTIFICATION, SEARCH, MEDIA_PLAY_PAUSE, MEDIA_STOP, MEDIA_NEXT, MEDIA_PREVIOUS, MEDIA_REWIND, MEDIA_FAST_FORWARD, MUTE, PAGE_UP, PAGE_DOWN, PICTSYMBOLS, SWITCH_CHARSET, BUTTON_A, BUTTON_B, BUTTON_C, BUTTON_X, BUTTON_Y, BUTTON_Z, BUTTON_L1, BUTTON_R1, BUTTON_L2, BUTTON_R2, BUTTON_THUMBL, BUTTON_THUMBR, BUTTON_START, BUTTON_SELECT, BUTTON_MODE, ESCAPE, FORWARD_DEL, CTRL_LEFT, CTRL_RIGHT, CAPS_LOCK, SCROLL_LOCK, META_LEFT, META_RIGHT, FUNCTION, SYSRQ, BREAK, MOVE_HOME, MOVE_END, INSERT, FORWARD, MEDIA_PLAY, MEDIA_PAUSE, MEDIA_CLOSE, MEDIA_EJECT, MEDIA_RECORD, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, NUM_LOCK, NUMPAD_0, NUMPAD_1, NUMPAD_2, NUMPAD_3, NUMPAD_4, NUMPAD_5, NUMPAD_6, NUMPAD_7, NUMPAD_8, NUMPAD_9, NUMPAD_DIVIDE, NUMPAD_MULTIPLY, NUMPAD_SUBTRACT, NUMPAD_ADD, NUMPAD_DOT, NUMPAD_COMMA, NUMPAD_ENTER, NUMPAD_EQUALS, NUMPAD_LEFT_PAREN, NUMPAD_RIGHT_PAREN, VOLUME_MUTE, INFO, CHANNEL_UP, CHANNEL_DOWN, KEYCODE_ZOOM_IN, KEYCODE_ZOOM_OUT, TV, WINDOW, GUIDE, DVR, BOOKMARK, CAPTIONS, SETTINGS, TV_POWER, TV_INPUT, STB_POWER, STB_INPUT, AVR_POWER, AVR_INPUT, PROG_RED, PROG_GREEN, PROG_YELLOW, PROG_BLUE, APP_SWITCH, BUTTON_1, BUTTON_2, BUTTON_3, BUTTON_4, BUTTON_5, BUTTON_6, BUTTON_7, BUTTON_8, BUTTON_9, BUTTON_10, BUTTON_11, BUTTON_12, BUTTON_13, BUTTON_14, BUTTON_15, BUTTON_16, LANGUAGE_SWITCH, MANNER_MODE, MODE_3D, CONTACTS, CALENDAR, MUSIC, CALCULATOR, ZENKAKU_HANKAKU, EISU, MUHENKAN, HENKAN, KATAKANA_HIRAGANA, YEN, RO, KANA, ASSIST, BRIGHTNESS_DOWN, BRIGHTNESS_UP, MEDIA_AUDIO_TRACK, SLEEP, WAKEUP, PAIRING, _MEDIA_TOP_MENU, KEY_11, KEY_12, LAST_CHANNEL, TV_DATA_SERVICE, VOICE_ASSIST, TV_RADIO_SERVICE, TV_TELETEXT, TV_NUMBER_ENTRY, TV_TERRESTRIAL_ANALOG, TV_TERRESTRIAL_DIGITAL, TV_SATELLITE, TV_SATELLITE_BS, TV_SATELLITE_CS, TV_SATELLITE_SERVICE, TV_NETWORK, TV_ANTENNA_CABLE, TV_INPUT_HDMI_1, TV_INPUT_HDMI_2, TV_INPUT_HDMI_3, TV_INPUT_HDMI_4, TV_INPUT_COMPOSITE_1, TV_INPUT_COMPOSITE_2, TV_INPUT_COMPONENT_1, TV_INPUT_COMPONENT_2, TV_INPUT_VGA_1, TV_AUDIO_DESCRIPTION, TV_AUDIO_DESCRIPTION_MIX_UP, TV_AUDIO_DESCRIPTION_MIX_DOWN, TV_ZOOM_MODE, TV_CONTENTS_MENU, _TV_MEDIA_CONTEXT_MENU, TV_TIMER_PROGRAMMING, HELP, NAVIGATE_PREVIOUS, NAVIGATE_NEXT, NAVIGATE_IN, NAVIGATE_OUT, STEM_PRIMARY, STEM_1, STEM_2, STEM_3, DPAD_UP_LEFT, DPAD_DOWN_LEFT, DPAD_UP_RIGHT, DPAD_DOWN_RIGHT, MEDIA_SKIP_FORWARD, MEDIA_SKIP_BACKWARD, MEDIA_STEP_FORWARD, MEDIA_STEP_BACKWARD, SOFT_SLEEP, CUT, COPY, PASTE
+Cerberus will get and guess the `ThirdPartyN` from a json file that can be retreive from the following https://github.com/patrickhulce/third-party-web/blob/master/data/entities.json5[repo].
 
-- `KEYNAME` for IPA, ex : `ENTER`
+The file should be available from Cerberus from the location provided by the parameter `cerberus_webperf_thirdpartyfilepath`.
 
-Following Appium IOS Keys can be used : RETURN, ENTER, SEARCH, BACKSPACE
+If parameter is empty or file not found by Cerberus, no third party will be guess.
 
-- `Key.KEYNAME` for FAT, ex `Key.ENTER`
+INTERNAL is determined from the URL provided by the corresponding domain list defined on the corresponding application / environment. all hosts should be defined on the domain field with coma separated format.
 
-Following KEYNAME values can be used : ENTER, TAB, ESC, BACKSPACE, DELETE, INSERT, SPACE, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14, F15, HOME, END, LEFT, RIGHT, DOWN, UP, PAGE_DOWN, PAGE_UP, PRINTSCREEN, PAUSE, CAPS_LOCK, SCROLL_LOCK, NUM_LOCK, NUM0, NUM1, NUM2, NUM3, NUM4, NUM5, NUM6, NUM7, NUM8, NUM9, SEPARATOR, ADD, MINUS, MULTIPLY, DIVIDE, ALT, CMD, CTRL, META, SHIFT, WIN
+Any host url that does not patch either the ThirdParty definition file or list of application domain will appear in UNKNOWN section.
 
 === Test Case Control
 
