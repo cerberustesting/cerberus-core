@@ -482,7 +482,7 @@ image:sikuliclick1.png[SikuliClick1]
 
 Standard JSON format can by found in  https://w3c.github.io/web-performance/specs/HAR/Overview.html[w3c repo].
 
-Aditionaly, Cerberus will add a `stat` json entry with the following format. That section will be feed by checking every hit performed by the application. Every hit will enrish the `total` section but also one of the following section : either `INTERNAL`, one `ThridPartyN` or `UNKNOWN` if the hit cannot match one of the application domain or one of the Third Party domain.
+Additionally, Cerberus will add a `stat` json entry with the following format. That section will be feed by checking every hit performed by the application. Every hit will enrish the `total` section but also one of the following section : either `internal`, either one of `ThirdPartyN` inside `thirdparty` or `unknown` if the hit cannot match one of the application domain or one of the Third Party domain.
 
     "stat": {
         "total":{
@@ -535,21 +535,23 @@ Aditionaly, Cerberus will add a `stat` json entry with the following format. Tha
                 "font":{...}
             }
         },
-        "ThirdParty1":{...},
-        "ThirdParty2":{...},
-        "INTERNAL":{...},
-        "UNKNOWN":{...}
+        "internal":{...},
+        "unknown":{...},
+        "thirdparty":{
+            "ThirdParty1":{...},
+            "ThirdParty2":{...}
+        }
     }
 
-Cerberus will get and guess the `ThirdPartyN` from a json file that can be retreive from the following https://github.com/patrickhulce/third-party-web/blob/master/data/entities.json5[repo].
+Cerberus will get and guess the `ThirdPartyN` from a json file that can be retrieve from the following https://github.com/patrickhulce/third-party-web/blob/master/data/entities.json5[repo].
 
 The file should be available from Cerberus from the location provided by the parameter `cerberus_webperf_thirdpartyfilepath`.
 
 If parameter is empty or file not found by Cerberus, no third party will be guess.
 
-INTERNAL is determined from the URL provided by the corresponding domain list defined on the corresponding application / environment. all hosts should be defined on the domain field with coma separated format.
+`internal` is determined from the URL provided by the corresponding domain list defined on the corresponding application / environment. all hosts should be defined on the domain field with coma separated format.
 
-Any host url that does not patch either the ThirdParty definition file or list of application domain will appear in UNKNOWN section.
+Any host URL that does not patch either the ThirdParty definition file or list of application domain will appear in `unknown` section.
 
 === Test Case Control
 

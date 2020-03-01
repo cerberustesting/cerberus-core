@@ -23,7 +23,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,7 +56,9 @@ public class HarService implements IHarService {
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(HarService.class);
 
     private static final String DATE_FORMAT = "yy-MM-dd'T'HH:mm:ss.S'Z'";
-    private static final String PROVIDER_INTERNAL = "INTERNAL";
+    private static final String PROVIDER_INTERNAL = "internal";
+    private static final String PROVIDER_UNKNOWN = "unknown";
+    private static final String PROVIDER_THIRDPARTY = "thirdparty";
 
     @Override
     public JSONObject enrichWithStats(JSONObject har, String domains) {
@@ -101,6 +102,7 @@ public class HarService implements IHarService {
             harTotalStat = processRecap(harTotalStat);
 
             JSONObject stat = new JSONObject();
+            JSONObject thirdPartyStat = new JSONObject();
             // Adding total to HAR JSON.
             stat = addStat("total", harTotalStat, stat);
             // Adding all providers to HAR JSON.
@@ -109,8 +111,13 @@ public class HarService implements IHarService {
                 HarStat val = entry.getValue();
                 val = processRecap(val);
 
-                stat = addStat(key, val, stat);
+                if (key.equals(PROVIDER_INTERNAL) || key.equals(PROVIDER_UNKNOWN)) {
+                    stat = addStat(key, val, stat);
+                } else {
+                    thirdPartyStat = addStat(key, val, thirdPartyStat);
+                }
             }
+            stat.put(PROVIDER_THIRDPARTY, thirdPartyStat);
 
             har.put("stat", stat);
             return har;
@@ -191,11 +198,11 @@ public class HarService implements IHarService {
                     }
                 }
             }
-            return "UNKNOWN";
+            return PROVIDER_UNKNOWN;
         } catch (MalformedURLException ex) {
             Logger.getLogger(HarService.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "UNKNOWN";
+        return PROVIDER_UNKNOWN;
     }
 
     private HarStat processRecap(HarStat harStat) {
