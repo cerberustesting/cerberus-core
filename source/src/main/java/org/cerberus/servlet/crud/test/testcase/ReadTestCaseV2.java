@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -164,7 +165,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject JsonResponse = new JSONObject();
-        JSONObject jsonTcHeader = new JSONObject();
+        JSONObject jsonTestCaseHeader = new JSONObject();
         JSONObject jsonTestCase = new JSONObject();
         JSONArray jsonContentTable = new JSONArray();
 
@@ -175,39 +176,18 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             TestCase tc = (TestCase) answerTestCase.getItem();
             LOG.debug(tc.getBugID().toString());
-            jsonTcHeader = convertToJSONObject(tc);
-            jsonTcHeader.put("bugID", tc.getBugID());
+            jsonTestCaseHeader = convertToJSONObject(tc);
+            jsonTestCaseHeader.put("bugID", tc.getBugID());
 
-            // Country List feed.
-            JSONArray countryArray = new JSONArray();
-            AnswerList<TestCaseCountry> answerTestCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
-            for (TestCaseCountry country : (List<TestCaseCountry>) answerTestCaseCountryList.getDataList()) {
-                countryArray.put(convertToJSONObject(invariantService.readByKey("COUNTRY", country.getCountry()).getItem()));
-            }
-            jsonTcHeader.put("countries", countryArray);
+            jsonTestCaseHeader.put("countries", getTestCaseCountries(test, testCase));
+            jsonTestCaseHeader.put("dependencies", getTestCaseDependencies(test, testCase));
+            jsonTestCaseHeader.put("labels", getTestCaseLabels(test, testCase));
 
-            // list of dependencies
-            JSONArray testCaseWithDep = new JSONArray();
-            List<TestCaseDep> testCaseDepList = testCaseDepService.readByTestAndTestCase(test, testCase);
-            for (TestCaseDep testCaseDep : testCaseDepList) {
-                testCaseWithDep.put(convertToJSONObject(testCaseDep));
-            }
-            jsonTcHeader.put("dependencies", testCaseWithDep);
-
-            // Label List feed.
-            JSONArray labelArray = new JSONArray();
-            AnswerList<TestCaseLabel> answerTestCaseLabelList = testCaseLabelService.readByTestTestCase(test, testCase, null);
-            for (TestCaseLabel label : (List<TestCaseLabel>) answerTestCaseLabelList.getDataList()) {
-                labelArray.put(convertToJSONObject(labelService.readByKey(label.getLabelId()).getItem()));
-            }
-            jsonTcHeader.put("labels", labelArray);
-
-            jsonTestCase.put("header", jsonTcHeader);
+            jsonTestCase.put("header", jsonTestCaseHeader);
             jsonContentTable.put(jsonTestCase);
 
             JsonResponse.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
             JsonResponse.put("contentTable", jsonContentTable);
-
         }
 
         item.setItem(JsonResponse);
@@ -225,7 +205,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         HashMap<String, JSONObject> hashProp = new HashMap<>();
         JSONObject jsonResponse = new JSONObject();
 
-        JSONObject jsonTcHeader = new JSONObject();
+        JSONObject jsonTestCaseHeader = new JSONObject();
         JSONObject jsonProperties = new JSONObject();
         JSONObject jsonTestCase = new JSONObject();
         JSONArray jsonContentTable = new JSONArray();
@@ -238,7 +218,6 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
             return item;
         }
 
-        AnswerList<TestCaseCountry> answerTestCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
         AnswerList<TestCaseStep> testCaseStepList = testCaseStepService.readByTestTestCase(test, testCase);
         AnswerList<TestCaseStepAction> testCaseStepActionList = testCaseStepActionService.readByTestTestCase(test, testCase);
         AnswerList<TestCaseStepActionControl> testCaseStepActionControlList = testCaseStepActionControlService.readByTestTestCase(test, testCase);
@@ -246,36 +225,17 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         if (answerTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             TestCase tc = (TestCase) answerTestCase.getItem();
-            jsonTcHeader = convertToJSONObject(tc);
-            jsonTcHeader.put("bugID", tc.getBugID());
+            jsonTestCaseHeader = convertToJSONObject(tc);
+            jsonTestCaseHeader.put("bugID", tc.getBugID());
 
             jsonResponse.put("hasPermissionsDelete", testCaseService.hasPermissionsDelete(tc, request));
             jsonResponse.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
             jsonResponse.put("hasPermissionsStepLibrary", (request.isUserInRole("TestStepLibrary")));
         }
 
-        // Country List feed.
-        JSONArray countryArray = new JSONArray();
-        for (TestCaseCountry country : (List<TestCaseCountry>) answerTestCaseCountryList.getDataList()) {
-            countryArray.put(convertToJSONObject(invariantService.readByKey("COUNTRY", country.getCountry()).getItem()));
-        }
-        jsonTcHeader.put("countries", countryArray);
-
-        // list of dependencies
-        JSONArray testCaseWithDep = new JSONArray();
-        List<TestCaseDep> testCaseDepList = testCaseDepService.readByTestAndTestCase(test, testCase);
-        for (TestCaseDep testCaseDep : testCaseDepList) {
-            testCaseWithDep.put(convertToJSONObject(testCaseDep));
-        }
-        jsonTcHeader.put("dependencies", testCaseWithDep);
-
-        // Label List feed.
-        JSONArray labelArray = new JSONArray();
-        AnswerList<TestCaseLabel> answerTestCaseLabelList = testCaseLabelService.readByTestTestCase(test, testCase, null);
-        for (TestCaseLabel label : (List<TestCaseLabel>) answerTestCaseLabelList.getDataList()) {
-            labelArray.put(convertToJSONObject(labelService.readByKey(label.getLabelId()).getItem()));
-        }
-        jsonTcHeader.put("labels", labelArray);
+        jsonTestCaseHeader.put("countries", getTestCaseCountries(test, testCase));
+        jsonTestCaseHeader.put("dependencies", getTestCaseDependencies(test, testCase));
+        jsonTestCaseHeader.put("labels", getTestCaseLabels(test, testCase));
 
         JSONArray stepList = new JSONArray();
         Gson gson = new Gson();
@@ -294,36 +254,10 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                 TestCaseStep usedStep = testCaseStepService.findTestCaseStep(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
                 List<TestCaseStepAction> actionList = testCaseStepActionService.getListOfAction(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
                 List<TestCaseStepActionControl> controlList = testCaseStepActionControlService.findControlByTestTestCaseStep(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
-                List<TestCaseCountryProperties> properties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(step.getUseStepTest(), step.getUseStepTestCase());
 
                 // Get the used step sort
                 jsonStep.put("useStepStepSort", usedStep.getSort());
-
-                //retrieve the inherited properties
-                for (TestCaseCountryProperties prop : properties) {
-                    JSONObject propertyFound = new JSONObject();
-
-                    propertyFound.put("fromTest", prop.getTest());
-                    propertyFound.put("fromTestCase", prop.getTestCase());
-                    propertyFound.put("property", prop.getProperty());
-                    propertyFound.put("description", prop.getDescription());
-                    propertyFound.put("type", prop.getType());
-                    propertyFound.put("database", prop.getDatabase());
-                    propertyFound.put("value1", prop.getValue1());
-                    propertyFound.put("value2", prop.getValue2());
-                    propertyFound.put("length", prop.getLength());
-                    propertyFound.put("rowLimit", prop.getRowLimit());
-                    propertyFound.put("nature", prop.getNature());
-                    propertyFound.put("rank", prop.getRank());
-                    List<String> countriesSelected = testCaseCountryPropertiesService.findCountryByProperty(prop);
-                    JSONArray countries = new JSONArray();
-                    for (String country : countriesSelected) {
-                        countries.put(country);
-                    }
-                    propertyFound.put("country", countries);
-
-                    hashInheritedProp.put(prop.getTest() + "_" + prop.getTestCase() + "_" + prop.getProperty(), propertyFound);
-                }
+                jsonProperties.put("inheritedproperties", getTestCaseCountryProperties(step.getUseStepTest(), step.getUseStepTestCase()));
 
                 for (TestCaseStepAction action : actionList) {
 
@@ -351,32 +285,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                 }
             } else {
 
-                List<TestCaseCountryProperties> properties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(step.getTest(), step.getTestCase());
-
-                for (TestCaseCountryProperties prop : properties) {
-                    JSONObject propertyFound = new JSONObject();
-
-                    propertyFound.put("fromTest", prop.getTest());
-                    propertyFound.put("fromTestCase", prop.getTestCase());
-                    propertyFound.put("property", prop.getProperty());
-                    propertyFound.put("description", prop.getDescription());
-                    propertyFound.put("type", prop.getType());
-                    propertyFound.put("database", prop.getDatabase());
-                    propertyFound.put("value1", prop.getValue1());
-                    propertyFound.put("value2", prop.getValue2());
-                    propertyFound.put("length", prop.getLength());
-                    propertyFound.put("rowLimit", prop.getRowLimit());
-                    propertyFound.put("nature", prop.getNature());
-                    propertyFound.put("rank", prop.getRank());
-                    List<String> countriesSelected = testCaseCountryPropertiesService.findCountryByProperty(prop);
-                    JSONArray countries = new JSONArray();
-                    for (String country : countriesSelected) {
-                        countries.put(country);
-                    }
-                    propertyFound.put("country", countries);
-
-                    hashProp.put(prop.getTest() + "_" + prop.getTestCase() + "_" + prop.getProperty(), propertyFound);
-                }
+                jsonProperties.put("testcaseproperties", getTestCaseCountryProperties(step.getTest(), step.getTestCase()));
 
                 //else, we fill the actionList with the action from this step
                 for (TestCaseStepAction action : (List<TestCaseStepAction>) testCaseStepActionList.getDataList()) {
@@ -405,11 +314,9 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
             stepList.put(jsonStep);
         }
 
-        jsonTestCase.put("header", jsonTcHeader);
+        jsonTestCase.put("header", jsonTestCaseHeader);
         jsonTestCase.put("steps", stepList);
 
-        jsonProperties.put("inheritedproperties", hashInheritedProp.values());
-        jsonProperties.put("testcaseproperties", hashProp.values());
         jsonTestCase.put("properties", jsonProperties);
 
         jsonContentTable.put(jsonTestCase);
@@ -419,6 +326,64 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         item.setResultMessage(answerTestCase.getResultMessage());
 
         return item;
+    }
+
+    private Collection<JSONObject> getTestCaseCountryProperties(String test, String testCase) throws JSONException {
+        List<TestCaseCountryProperties> properties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(test, testCase);
+        HashMap<String, JSONObject> hashProp = new HashMap<>();
+
+        for (TestCaseCountryProperties prop : properties) {
+            JSONObject propertyFound = new JSONObject();
+
+            propertyFound.put("fromTest", prop.getTest());
+            propertyFound.put("fromTestCase", prop.getTestCase());
+            propertyFound.put("property", prop.getProperty());
+            propertyFound.put("description", prop.getDescription());
+            propertyFound.put("type", prop.getType());
+            propertyFound.put("database", prop.getDatabase());
+            propertyFound.put("value1", prop.getValue1());
+            propertyFound.put("value2", prop.getValue2());
+            propertyFound.put("length", prop.getLength());
+            propertyFound.put("rowLimit", prop.getRowLimit());
+            propertyFound.put("nature", prop.getNature());
+            propertyFound.put("rank", prop.getRank());
+            List<String> countriesSelected = testCaseCountryPropertiesService.findCountryByProperty(prop);
+            JSONArray countries = new JSONArray();
+            for (String country : countriesSelected) {
+                countries.put(country);
+            }
+            propertyFound.put("country", countries);
+
+            hashProp.put(prop.getTest() + "_" + prop.getTestCase() + "_" + prop.getProperty(), propertyFound);
+        }
+        return hashProp.values();
+    }
+
+    private JSONArray getTestCaseCountries(String test, String testCase) throws JSONException {
+        JSONArray countries = new JSONArray();
+        AnswerList<TestCaseCountry> answerTestCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
+        for (TestCaseCountry country : (List<TestCaseCountry>) answerTestCaseCountryList.getDataList()) {
+            countries.put(convertToJSONObject(invariantService.readByKey("COUNTRY", country.getCountry()).getItem()));
+        }
+        return countries;
+    }
+
+    private JSONArray getTestCaseDependencies(String test, String testCase) throws CerberusException, JSONException {
+        JSONArray dependencies = new JSONArray();
+        List<TestCaseDep> testCaseDepList = testCaseDepService.readByTestAndTestCase(test, testCase);
+        for (TestCaseDep testCaseDep : testCaseDepList) {
+            dependencies.put(convertToJSONObject(testCaseDep));
+        }
+        return dependencies;
+    }
+
+    private JSONArray getTestCaseLabels(String test, String testCase) throws JSONException {
+        JSONArray labels = new JSONArray();
+        AnswerList<TestCaseLabel> answerTestCaseLabelList = testCaseLabelService.readByTestTestCase(test, testCase, null);
+        for (TestCaseLabel label : (List<TestCaseLabel>) answerTestCaseLabelList.getDataList()) {
+            labels.put(convertToJSONObject(labelService.readByKey(label.getLabelId()).getItem()));
+        }
+        return labels;
     }
 
     private JSONObject convertToJSONObject(TestCase object) throws JSONException {
