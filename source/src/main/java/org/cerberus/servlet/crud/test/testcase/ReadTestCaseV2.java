@@ -23,6 +23,8 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,8 +36,12 @@ import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.Label;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseDep;
 import org.cerberus.crud.entity.TestCaseLabel;
+import org.cerberus.crud.entity.TestCaseStep;
+import org.cerberus.crud.entity.TestCaseStepAction;
+import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILabelService;
@@ -123,17 +129,15 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
         List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
         String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), null);
-        boolean withStep = ParameterParserUtil.parseBooleanParam(request.getParameter("withStep"), false);
+        boolean withSteps = ParameterParserUtil.parseBooleanParam(request.getParameter("withSteps"), false);
 
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem<>(msg);
         JSONObject jsonResponse = new JSONObject();
 
         try {
-            if (!Strings.isNullOrEmpty(test) && testCase != null && !withStep) {
-                answer = findTestCaseByTestTestCase(test, testCase, request);
-            } else if (!Strings.isNullOrEmpty(test) && testCase != null && withStep) { // TestCaseScript
-                //answer = findTestCaseWithStep(request, test, testCase);
+            if (!Strings.isNullOrEmpty(test) && testCase != null) {
+                answer = findTestCaseByTestTestCase(test, testCase, request, withSteps);
             }
 
             jsonResponse = answer.getItem() == null ? new JSONObject() : (JSONObject) answer.getItem();
@@ -155,11 +159,12 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         }
     }
 
-    private AnswerItem<JSONObject> findTestCaseByTestTestCase(String test, String testCase, HttpServletRequest request) throws JSONException, CerberusException {
+    private AnswerItem<JSONObject> findTestCaseByTestTestCase(String test, String testCase, HttpServletRequest request, boolean withSteps) throws JSONException, CerberusException {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
-        JSONObject object = new JSONObject();
         JSONObject jsonResponse = new JSONObject();
+        JSONObject jsonTestCase = new JSONObject();
+        JSONArray jsonContentTable = new JSONArray();
 
         //finds the project
         AnswerItem answerTestCase = testCaseService.readByKey(test, testCase);
@@ -168,49 +173,239 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             TestCase tc = (TestCase) answerTestCase.getItem();
             LOG.debug(tc.getBugID().toString());
-            jsonResponse = convertToJSONObject(tc);
-            jsonResponse.put("bugID", tc.getBugID());
 
-            // Country List feed.
-            JSONArray countryArray = new JSONArray();
-            AnswerList<TestCaseCountry> answerTestCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
-            for (TestCaseCountry country : (List<TestCaseCountry>) answerTestCaseCountryList.getDataList()) {
-                countryArray.put(convertToJSONObject(invariantService.readByKey("COUNTRY", country.getCountry()).getItem()));
+            jsonTestCase.put("header", getTestCaseHeader(test, testCase, tc));
+
+            //Get steps if withSteps param is set on true
+            if (withSteps) {
+                jsonTestCase = findTestCaseSteps(test, testCase, jsonTestCase);
+                jsonResponse.put("hasPermissionsStepLibrary", (request.isUserInRole("TestStepLibrary")));
             }
-            jsonResponse.put("countries", countryArray);
 
-            // list of dependencies
-            List<TestCaseDep> testCaseDepList = testCaseDepService.readByTestAndTestCase(test, testCase);
-            JSONArray testCaseWithDep = new JSONArray();
-            for (TestCaseDep testCaseDep : testCaseDepList) {
-                testCaseWithDep.put(convertToJSONObject(testCaseDep));
-            }
-            jsonResponse.put("dependencies", testCaseWithDep);
+            jsonContentTable.put(jsonTestCase);
 
-            // Label List feed.
-            JSONArray labelArray = new JSONArray();
-            AnswerList<TestCaseLabel> answerTestCaseLabelList = testCaseLabelService.readByTestTestCase(test, testCase, null);
-            for (TestCaseLabel label : (List<TestCaseLabel>) answerTestCaseLabelList.getDataList()) {
-                labelArray.put(convertToJSONObject(labelService.readByKey(label.getLabelId()).getItem()));
-            }
-            jsonResponse.put("labels", labelArray);
+            jsonResponse.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
+            jsonResponse.put("hasPermissionsDelete", testCaseService.hasPermissionsDelete(tc, request));
+            jsonResponse.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
+            jsonResponse.put("contentTable", jsonContentTable);
 
-            object.put("header", jsonResponse);
-
-            object.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
-
+        } else {
+            item.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_NOT_FOUND_OR_NOT_AUTHORIZE));
+            return item;
         }
 
-        item.setItem(object);
+        item.setItem(jsonResponse);
         item.setResultMessage(answerTestCase.getResultMessage());
 
         return item;
     }
 
-    private JSONObject convertToJSONObject(TestCase object) throws JSONException {
+    private JSONObject findTestCaseSteps(String test, String testCase, JSONObject jsonTestCase) throws JSONException, CerberusException {
+
+        JSONObject jsonProperties = new JSONObject();
+        JSONArray stepList = new JSONArray();
         Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(object));
-        return result;
+
+        AnswerList<TestCaseStep> testCaseStepList = testCaseStepService.readByTestTestCase(test, testCase);
+        AnswerList<TestCaseStepAction> testCaseStepActionList = testCaseStepActionService.readByTestTestCase(test, testCase);
+        AnswerList<TestCaseStepActionControl> testCaseStepActionControlList = testCaseStepActionControlService.readByTestTestCase(test, testCase);
+
+        for (TestCaseStep step : (List<TestCaseStep>) testCaseStepList.getDataList()) {
+            step = testCaseStepService.modifyTestCaseStepDataFromUsedStep(step);
+            JSONObject jsonStep = new JSONObject(gson.toJson(step));
+
+            //Fill JSON with step info
+            jsonStep.put("objType", "step");
+            //Add a JSON array for Action List from this step
+            jsonStep.put("actions", new JSONArray());
+            //Fill action List
+
+            if (step.getUseStep().equals("Y")) {
+                //If this step is imported from library, we call the service to retrieve actions
+                TestCaseStep usedStep = testCaseStepService.findTestCaseStep(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
+                List<TestCaseStepAction> actionList = testCaseStepActionService.getListOfAction(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
+                List<TestCaseStepActionControl> controlList = testCaseStepActionControlService.findControlByTestTestCaseStep(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
+
+                // Get the used step sort
+                jsonStep.put("useStepStepSort", usedStep.getSort());
+                jsonProperties.put("inheritedProperties", getTestCaseCountryProperties(step.getUseStepTest(), step.getUseStepTestCase()));
+
+                for (TestCaseStepAction action : actionList) {
+
+                    if (action.getStep() == step.getUseStepStep()) {
+                        JSONObject jsonAction = new JSONObject(gson.toJson(action));
+
+                        jsonAction.put("objType", "action");
+
+                        jsonAction.put("controls", new JSONArray());
+                        //We fill the action with the corresponding controls
+                        for (TestCaseStepActionControl control : controlList) {
+
+                            if (control.getStep() == step.getUseStepStep()
+                                    && control.getSequence() == action.getSequence()) {
+                                JSONObject jsonControl = new JSONObject(gson.toJson(control));
+
+                                jsonControl.put("objType", "control");
+
+                                jsonAction.getJSONArray("controls").put(jsonControl);
+                            }
+                        }
+                        //we put the action in the actionList for the corresponding step
+                        jsonStep.getJSONArray("actions").put(jsonAction);
+                    }
+                }
+            } else {
+
+                jsonProperties.put("testCaseProperties", getTestCaseCountryProperties(step.getTest(), step.getTestCase()));
+
+                //else, we fill the actionList with the action from this step
+                for (TestCaseStepAction action : (List<TestCaseStepAction>) testCaseStepActionList.getDataList()) {
+
+                    if (action.getStep() == step.getStep()) {
+                        JSONObject jsonAction = new JSONObject(gson.toJson(action));
+
+                        jsonAction.put("objType", "action");
+                        jsonAction.put("controls", new JSONArray());
+                        //We fill the action with the corresponding controls
+                        for (TestCaseStepActionControl control : (List<TestCaseStepActionControl>) testCaseStepActionControlList.getDataList()) {
+
+                            if (control.getStep() == step.getStep()
+                                    && control.getSequence() == action.getSequence()) {
+                                JSONObject jsonControl = new JSONObject(gson.toJson(control));
+                                jsonControl.put("objType", "control");
+
+                                jsonAction.getJSONArray("controls").put(jsonControl);
+                            }
+                        }
+                        //we put the action in the actionList for the corresponding step
+                        jsonStep.getJSONArray("actions").put(jsonAction);
+                    }
+                }
+            }
+            stepList.put(jsonStep);
+        }
+
+        jsonTestCase.put("properties", jsonProperties);
+        jsonTestCase.put("steps", stepList);
+
+        return jsonTestCase;
+    }
+
+    private JSONObject getTestCaseHeader(String test, String testCase, TestCase tc) throws JSONException, CerberusException {
+
+        JSONObject jsonTestCaseHeader = new JSONObject();
+        jsonTestCaseHeader = convertToJSONObject(tc);
+        jsonTestCaseHeader.put("bugs", tc.getBugID());
+        jsonTestCaseHeader.put("countries", getTestCaseCountries(test, testCase));
+        jsonTestCaseHeader.put("dependencies", getTestCaseDependencies(test, testCase));
+        jsonTestCaseHeader.put("labels", getTestCaseLabels(test, testCase));
+
+        return jsonTestCaseHeader;
+    }
+
+    private Collection<JSONObject> getTestCaseCountryProperties(String test, String testCase) throws JSONException {
+        List<TestCaseCountryProperties> properties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(test, testCase);
+        HashMap<String, JSONObject> hashProp = new HashMap<>();
+        JSONObject propertyFound = new JSONObject();
+
+        for (TestCaseCountryProperties prop : properties) {
+            propertyFound = convertToJSONObject(prop);
+            propertyFound.put("countries", getPropertyCountries(testCaseCountryPropertiesService.findCountryByProperty(prop)));
+            hashProp.put(prop.getTest() + "_" + prop.getTestCase() + "_" + prop.getProperty(), propertyFound);
+        }
+        return hashProp.values();
+    }
+
+    private JSONArray getPropertyCountries(List<String> countriesSelected) throws JSONException {
+
+        JSONArray countries = new JSONArray();
+        for (String country : countriesSelected) {
+            countries.put(convertToJSONObject(invariantService.readByKey("COUNTRY", country).getItem()));
+        }
+        return countries;
+    }
+
+    private JSONArray getTestCaseCountries(String test, String testCase) throws JSONException {
+        JSONArray countries = new JSONArray();
+        AnswerList<TestCaseCountry> answerTestCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
+        for (TestCaseCountry country : (List<TestCaseCountry>) answerTestCaseCountryList.getDataList()) {
+            countries.put(convertToJSONObject(invariantService.readByKey("COUNTRY", country.getCountry()).getItem()));
+        }
+        return countries;
+    }
+
+    private JSONArray getTestCaseDependencies(String test, String testCase) throws CerberusException, JSONException {
+        JSONArray dependencies = new JSONArray();
+        List<TestCaseDep> testCaseDepList = testCaseDepService.readByTestAndTestCase(test, testCase);
+        for (TestCaseDep testCaseDep : testCaseDepList) {
+            dependencies.put(convertToJSONObject(testCaseDep));
+        }
+        return dependencies;
+    }
+
+    private JSONArray getTestCaseLabels(String test, String testCase) throws JSONException {
+        JSONArray labels = new JSONArray();
+        AnswerList<TestCaseLabel> answerTestCaseLabelList = testCaseLabelService.readByTestTestCase(test, testCase, null);
+        for (TestCaseLabel label : (List<TestCaseLabel>) answerTestCaseLabelList.getDataList()) {
+            labels.put(convertToJSONObject(labelService.readByKey(label.getLabelId()).getItem()));
+        }
+        return labels;
+    }
+
+    private JSONObject convertToJSONObject(TestCase testCase) throws JSONException {
+        return new JSONObject()
+                .put("test", testCase.getTest())
+                .put("testCase", testCase.getTestCase())
+                .put("application", testCase.getApplication())
+                .put("description", testCase.getDescription())
+                .put("behaviourOrValueExpected", testCase.getBehaviorOrValueExpected())
+                .put("priority", testCase.getPriority())
+                .put("status", testCase.getStatus())
+                .put("tcActive", testCase.getTcActive())
+                .put("conditionOper", testCase.getConditionOper())
+                .put("conditionValue1", testCase.getConditionVal1())
+                .put("conditionValue2", testCase.getConditionVal2())
+                .put("conditionValue3", testCase.getConditionVal3())
+                .put("group", testCase.getGroup())
+                .put("origine", testCase.getOrigine())
+                .put("refOrigine", testCase.getRefOrigine())
+                .put("howTo", testCase.getHowTo())
+                .put("comment", testCase.getComment())
+                .put("fromBuild", testCase.getFromBuild())
+                .put("fromRev", testCase.getFromRev())
+                .put("toBuild", testCase.getToBuild())
+                .put("toRev", testCase.getToRev())
+                .put("targetBuild", testCase.getTargetBuild())
+                .put("targetRev", testCase.getTargetRev())
+                .put("implementer", testCase.getImplementer())
+                .put("executor", testCase.getExecutor())
+                .put("activeQA", testCase.getActiveQA())
+                .put("activeUAT", testCase.getActiveUAT())
+                .put("activePROD", testCase.getActivePROD())
+                .put("function", testCase.getFunction())
+                .put("usrAgent", testCase.getUserAgent())
+                .put("screenSize", testCase.getScreenSize())
+                .put("usrCreated", testCase.getUsrCreated())
+                .put("dateCreated", testCase.getDateCreated())
+                .put("usrModif", testCase.getUsrModif())
+                .put("dateModif", testCase.getDateModif())
+                .put("testCaseVersion", testCase.getTestCaseVersion());
+    }
+
+    private JSONObject convertToJSONObject(TestCaseCountryProperties prop) throws JSONException {
+        return new JSONObject()
+                .put("fromTest", prop.getTest())
+                .put("fromTestCase", prop.getTestCase())
+                .put("property", prop.getProperty())
+                .put("description", prop.getDescription())
+                .put("type", prop.getType())
+                .put("database", prop.getDatabase())
+                .put("value1", prop.getValue1())
+                .put("value2", prop.getValue2())
+                .put("length", prop.getLength())
+                .put("rowLimit", prop.getRowLimit())
+                .put("nature", prop.getNature())
+                .put("rank", prop.getRank());
     }
 
     private JSONObject convertToJSONObject(Invariant countryInvariant) throws JSONException {
@@ -226,11 +421,11 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         return new JSONObject()
                 .put("id", testCaseDep.getId())
                 .put("test", testCaseDep.getDepTest())
-                .put("testcase", testCaseDep.getDepTestCase())
+                .put("testCase", testCaseDep.getDepTestCase())
                 .put("type", testCaseDep.getType())
                 .put("active", "Y".equals(testCaseDep.getActive()))
-                .put("depDescription", testCaseDep.getDepDescription())
-                .put("depEvent", testCaseDep.getDepEvent());
+                .put("description", testCaseDep.getDepDescription())
+                .put("event", testCaseDep.getDepEvent());
     }
 
     private JSONObject convertToJSONObject(Label label) throws JSONException {
