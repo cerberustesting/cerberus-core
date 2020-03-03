@@ -49,58 +49,59 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class HarService implements IHarService {
-
+    
     @Autowired
     IParameterService parameterService;
-
+    
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(HarService.class);
-
+    
     private static final String DATE_FORMAT = "yy-MM-dd'T'HH:mm:ss.S'Z'";
     private static final String PROVIDER_INTERNAL = "internal";
     private static final String PROVIDER_UNKNOWN = "unknown";
     private static final String PROVIDER_THIRDPARTY = "thirdparty";
-
+    
     @Override
     public JSONObject enrichWithStats(JSONObject har, String domains) {
         LOG.debug("Enriching HAR file with stats.");
         try {
             JSONArray harEntries = har.getJSONObject("log").getJSONArray("entries");
-
+            
             HashMap<String, HarStat> target = new HashMap<>();
             HarStat harTotalStat = new HarStat();
             HarStat harProviderStat = new HarStat();
-
+            
             String url = null;
             String provider = null;
-
+            
             HashMap<String, List<String>> providersRules = loadProviders();
-
+            
             List<String> internalRules = new ArrayList<>();
             String[] dList = domains.split(",");
             for (String domain : dList) {
                 internalRules.add(domain.trim());
             }
-
+            
             for (int i = 0; i < harEntries.length(); i++) {
-
+                
                 url = harEntries.getJSONObject(i).getJSONObject("request").getString("url");
-
+                
+                LOG.debug("Process hit " + i + " URL : " + url);    
                 harTotalStat = processEntry(harTotalStat, harEntries.getJSONObject(i), url);
-
+                
                 provider = getProvider(url, internalRules, providersRules);
                 if (!target.containsKey(provider)) {
                     harProviderStat = new HarStat();
                 } else {
                     harProviderStat = target.get(provider);
                 }
-
+                
                 harProviderStat = processEntry(harProviderStat, harEntries.getJSONObject(i), url);
                 target.put(provider, harProviderStat);
-
+                
             }
-
+            
             harTotalStat = processRecap(harTotalStat);
-
+            
             JSONObject stat = new JSONObject();
             JSONObject thirdPartyStat = new JSONObject();
             // Adding total to HAR JSON.
@@ -110,7 +111,7 @@ public class HarService implements IHarService {
                 String key = entry.getKey();
                 HarStat val = entry.getValue();
                 val = processRecap(val);
-
+                
                 if (key.equals(PROVIDER_INTERNAL) || key.equals(PROVIDER_UNKNOWN)) {
                     stat = addStat(key, val, stat);
                 } else {
@@ -118,10 +119,10 @@ public class HarService implements IHarService {
                 }
             }
             stat.put(PROVIDER_THIRDPARTY, thirdPartyStat);
-
+            
             har.put("stat", stat);
             return har;
-
+            
         } catch (JSONException ex) {
             LOG.error("Exception when trying to enrich har file.", ex);
         } catch (Exception ex) {
@@ -129,22 +130,22 @@ public class HarService implements IHarService {
         }
         return har;
     }
-
+    
     private HashMap<String, List<String>> loadProviders() {
         HashMap<String, List<String>> rules = new HashMap<>();
         try {
-
+            
             String configFile = parameterService.getParameterStringByKey("cerberus_webperf_thirdpartyfilepath", "", "");
             if (StringUtil.isNullOrEmpty(configFile)) {
                 LOG.warn("Could not load config file of Web Third Party. Please define a valid parameter for cerberus_webperf_thirdpartyfilepath.");
                 return rules;
             }
-
+            
             if (!Files.exists(Paths.get(configFile))) {
                 LOG.error("Could not load config file of Web Third Party. File " + configFile + " does not exist. Please define a valid parameter for cerberus_webperf_thirdpartyfilepath.");
                 return rules;
             }
-
+            
             StringBuilder fileContent = new StringBuilder();
             try (Stream<String> stream = Files.lines(Paths.get(configFile), StandardCharsets.UTF_8)) {
                 stream.forEach(s -> fileContent.append(s).append("\n"));
@@ -155,7 +156,7 @@ public class HarService implements IHarService {
 
 //            LOG.debug(thirdPartyList);
             JSONArray json = new JSONArray(thirdPartyList);
-
+            
             for (int i = 0; i < json.length(); i++) {
                 List<String> tmpList = new ArrayList<>();
                 JSONObject thirdParty = json.getJSONObject(i);
@@ -164,15 +165,15 @@ public class HarService implements IHarService {
                 }
                 rules.put(thirdParty.getString("name"), tmpList);
             }
-
+            
             return rules;
-
+            
         } catch (JSONException ex) {
             LOG.error("JSON Exception during loading of Third Party config.", ex);
         }
         return rules;
     }
-
+    
     private String getProvider(String url, List<String> internalRules, HashMap<String, List<String>> providersRules) {
         try {
             URL myURL = new URL(url);
@@ -204,20 +205,24 @@ public class HarService implements IHarService {
         }
         return PROVIDER_UNKNOWN;
     }
-
+    
     private HarStat processRecap(HarStat harStat) {
-        long totDur = harStat.getLastEnd().getTime() - harStat.getFirstStart().getTime();
-        harStat.setTimeTotalDuration(Integer.valueOf(String.valueOf(totDur)));
-        harStat.setTimeAvg(harStat.getTimeSum() / harStat.getNbRequests());
+        if (harStat.getLastEnd() != null && harStat.getFirstStart() != null) {
+            long totDur = harStat.getLastEnd().getTime() - harStat.getFirstStart().getTime();
+            harStat.setTimeTotalDuration(Integer.valueOf(String.valueOf(totDur)));
+        }
+        if (harStat.getNbRequests() != 0) {
+            harStat.setTimeAvg(harStat.getTimeSum() / harStat.getNbRequests());
+        }
         return harStat;
     }
-
+    
     private HarStat processEntry(HarStat harStat, JSONObject entry, String url) {
-
+        
         try {
             String responseType = guessType(entry);
             List<String> tempList;
-
+            
             int reqSize = entry.getJSONObject("response").getInt("headersSize") + entry.getJSONObject("response").getInt("bodySize");
             int reqTime = entry.getInt("time");
             //2020-02-18T20:53:11.118Z
@@ -239,7 +244,7 @@ public class HarService implements IHarService {
                     harStat.setLastDuration(reqTime);
                 }
             }
-
+            
             switch (responseType) {
                 case "js":
                     if (reqSize > 0) {
@@ -326,7 +331,7 @@ public class HarService implements IHarService {
                     harStat.setOtherList(tempList);
                     break;
             }
-
+            
             switch (entry.getJSONObject("response").getInt("status")) {
                 case 200:
                     harStat.setNb200(harStat.getNb200() + 1);
@@ -376,7 +381,7 @@ public class HarService implements IHarService {
                 harStat.setUrlTimeMax(url);
             }
             return harStat;
-
+            
         } catch (JSONException ex) {
             LOG.error("Exception when trying to process entry and enrich HarStat.", ex);
         } catch (Exception ex) {
@@ -385,65 +390,65 @@ public class HarService implements IHarService {
         }
         return harStat;
     }
-
+    
     private JSONObject addStat(String statKey, HarStat harStat, JSONObject stat) {
-
+        
         try {
             JSONObject total = new JSONObject();
-
+            
             JSONObject type = new JSONObject();
-
+            
             JSONObject js = new JSONObject();
             js.put("sizeSum", harStat.getJsSizeSum());
             js.put("sizeMax", harStat.getJsSizeMax());
             js.put("urlMax", harStat.getUrlJsSizeMax());
             js.put("url", harStat.getJsList());
             type.put("js", js);
-
+            
             JSONObject css = new JSONObject();
             css.put("sizeSum", harStat.getCssSizeSum());
             css.put("sizeMax", harStat.getCssSizeMax());
             css.put("urlMax", harStat.getUrlCssSizeMax());
             css.put("url", harStat.getCssList());
             type.put("css", css);
-
+            
             JSONObject html = new JSONObject();
             html.put("sizeSum", harStat.getHtmlSizeSum());
             html.put("sizeMax", harStat.getHtmlSizeMax());
             html.put("urlMax", harStat.getUrlHtmlSizeMax());
             html.put("url", harStat.getHtmlList());
             type.put("html", html);
-
+            
             JSONObject img = new JSONObject();
             img.put("sizeSum", harStat.getImgSizeSum());
             img.put("sizeMax", harStat.getImgSizeMax());
             img.put("urlMax", harStat.getUrlImgSizeMax());
             img.put("url", harStat.getImgList());
             type.put("img", img);
-
+            
             JSONObject other = new JSONObject();
             other.put("sizeSum", harStat.getOtherSizeSum());
             other.put("sizeMax", harStat.getOtherSizeMax());
             other.put("urlMax", harStat.getUrlOtherSizeMax());
             other.put("url", harStat.getOtherList());
             type.put("other", other);
-
+            
             JSONObject content = new JSONObject();
             content.put("sizeSum", harStat.getContentSizeSum());
             content.put("sizeMax", harStat.getContentSizeMax());
             content.put("urlMax", harStat.getUrlContentSizeMax());
             content.put("url", harStat.getContentList());
             type.put("content", content);
-
+            
             JSONObject font = new JSONObject();
             font.put("sizeSum", harStat.getFontSizeSum());
             font.put("sizeMax", harStat.getFontSizeMax());
             font.put("urlMax", harStat.getUrlFontSizeMax());
             font.put("url", harStat.getFontList());
             type.put("font", font);
-
+            
             total.put("type", type);
-
+            
             JSONObject httpReq = new JSONObject();
             httpReq.put("nbRequests", harStat.getNbRequests());
             httpReq.put("nbError", harStat.getNbError());
@@ -458,34 +463,38 @@ public class HarService implements IHarService {
             httpReq.put("nb404", harStat.getNb404());
             httpReq.put("nb500", harStat.getNb500());
             total.put("httpReq", httpReq);
-
+            
             JSONObject size = new JSONObject();
             size.put("sum", harStat.getSizeSum());
             size.put("max", harStat.getSizeMax());
             size.put("urlMax", harStat.getUrlSizeMax());
             total.put("size", size);
-
+            
             JSONObject time = new JSONObject();
             time.put("sum", harStat.getTimeSum());
             time.put("max", harStat.getTimeMax());
             time.put("avg", harStat.getTimeAvg());
             time.put("urlMax", harStat.getUrlTimeMax());
             time.put("firstStart", harStat.getFirstStartS());
-            time.put("firstEnd", new SimpleDateFormat(DATE_FORMAT).format(harStat.getFirstEnd()));
+            if (harStat.getFirstEnd() != null) {
+                time.put("firstEnd", new SimpleDateFormat(DATE_FORMAT).format(harStat.getFirstEnd()));
+            }
             time.put("firstDuration", harStat.getFirstDuration());
             time.put("firstURL", harStat.getFirstURL());
             time.put("lastStart", harStat.getLastStartS());
-            time.put("lastEnd", new SimpleDateFormat(DATE_FORMAT).format(harStat.getLastEnd()));
+            if (harStat.getLastEnd() != null) {
+                time.put("lastEnd", new SimpleDateFormat(DATE_FORMAT).format(harStat.getLastEnd()));
+            }
             time.put("lastDuration", harStat.getLastDuration());
             time.put("lastURL", harStat.getLastURL());
             time.put("totalDuration", harStat.getTimeTotalDuration());
-
+            
             total.put("time", time);
-
+            
             stat.put(statKey, total);
-
+            
             return stat;
-
+            
         } catch (JSONException ex) {
             LOG.error("Exception when trying to convert HarStat to JSONObject.", ex);
         } catch (Exception ex) {
@@ -493,7 +502,7 @@ public class HarService implements IHarService {
         }
         return stat;
     }
-
+    
     private String guessType(JSONObject entry) {
         try {
             JSONArray header = entry.getJSONObject("response").getJSONArray("headers");
@@ -524,8 +533,8 @@ public class HarService implements IHarService {
         } catch (JSONException ex) {
             LOG.error("Exception when trying to guess response type.", ex);
         }
-
+        
         return "other";
     }
-
+    
 }
