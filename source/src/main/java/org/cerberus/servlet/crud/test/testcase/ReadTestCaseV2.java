@@ -163,7 +163,6 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
-        JSONObject jsonTestCaseHeader = new JSONObject();
         JSONObject jsonTestCase = new JSONObject();
         JSONArray jsonContentTable = new JSONArray();
 
@@ -174,18 +173,15 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             TestCase tc = (TestCase) answerTestCase.getItem();
             LOG.debug(tc.getBugID().toString());
-            jsonTestCaseHeader = convertToJSONObject(tc);
-            jsonTestCaseHeader.put("bugs", tc.getBugID());
 
-            jsonTestCaseHeader.put("countries", getTestCaseCountries(test, testCase));
-            jsonTestCaseHeader.put("dependencies", getTestCaseDependencies(test, testCase));
-            jsonTestCaseHeader.put("labels", getTestCaseLabels(test, testCase));
+            jsonTestCase.put("header", getTestCaseHeader(test, testCase, tc));
 
-            jsonTestCase.put("header", jsonTestCaseHeader);
+            //Get steps if withSteps param is set on true
             if (withSteps) {
                 jsonTestCase = findTestCaseSteps(test, testCase, jsonTestCase);
                 jsonResponse.put("hasPermissionsStepLibrary", (request.isUserInRole("TestStepLibrary")));
             }
+
             jsonContentTable.put(jsonTestCase);
 
             jsonResponse.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
@@ -232,7 +228,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
 
                 // Get the used step sort
                 jsonStep.put("useStepStepSort", usedStep.getSort());
-                jsonProperties.put("inheritedproperties", getTestCaseCountryProperties(step.getUseStepTest(), step.getUseStepTestCase()));
+                jsonProperties.put("inheritedProperties", getTestCaseCountryProperties(step.getUseStepTest(), step.getUseStepTestCase()));
 
                 for (TestCaseStepAction action : actionList) {
 
@@ -260,7 +256,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                 }
             } else {
 
-                jsonProperties.put("testcaseproperties", getTestCaseCountryProperties(step.getTest(), step.getTestCase()));
+                jsonProperties.put("testCaseProperties", getTestCaseCountryProperties(step.getTest(), step.getTestCase()));
 
                 //else, we fill the actionList with the action from this step
                 for (TestCaseStepAction action : (List<TestCaseStepAction>) testCaseStepActionList.getDataList()) {
@@ -293,6 +289,18 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         jsonTestCase.put("steps", stepList);
 
         return jsonTestCase;
+    }
+
+    private JSONObject getTestCaseHeader(String test, String testCase, TestCase tc) throws JSONException, CerberusException {
+
+        JSONObject jsonTestCaseHeader = new JSONObject();
+        jsonTestCaseHeader = convertToJSONObject(tc);
+        jsonTestCaseHeader.put("bugs", tc.getBugID());
+        jsonTestCaseHeader.put("countries", getTestCaseCountries(test, testCase));
+        jsonTestCaseHeader.put("dependencies", getTestCaseDependencies(test, testCase));
+        jsonTestCaseHeader.put("labels", getTestCaseLabels(test, testCase));
+
+        return jsonTestCaseHeader;
     }
 
     private Collection<JSONObject> getTestCaseCountryProperties(String test, String testCase) throws JSONException {
@@ -347,7 +355,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
     private JSONObject convertToJSONObject(TestCase testCase) throws JSONException {
         return new JSONObject()
                 .put("test", testCase.getTest())
-                .put("testcase", testCase.getTestCase())
+                .put("testCase", testCase.getTestCase())
                 .put("application", testCase.getApplication())
                 .put("description", testCase.getDescription())
                 .put("behaviourOrValueExpected", testCase.getBehaviorOrValueExpected())
@@ -413,7 +421,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         return new JSONObject()
                 .put("id", testCaseDep.getId())
                 .put("test", testCaseDep.getDepTest())
-                .put("testcase", testCaseDep.getDepTestCase())
+                .put("testCase", testCaseDep.getDepTestCase())
                 .put("type", testCaseDep.getType())
                 .put("active", "Y".equals(testCaseDep.getActive()))
                 .put("description", testCaseDep.getDepDescription())
