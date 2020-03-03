@@ -1252,12 +1252,13 @@ function renderOptionsForExeList(selectTag, fullListSelected) {
         var doc = new Doc();
         var contentToAdd = "<div class='marginBottom10'>";
         contentToAdd += "<label class='marginRight10'>Select all/none :</label>";
-        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueQEERROR' type='checkbox'></input>QE (ERROR)</label>";
-        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueFA' type='checkbox'></input>FA</label>";
-        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueFAManual' type='checkbox'></input>FA (Manual)</label>";
-        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKO' type='checkbox'></input>KO</label>";
-        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKOManual' type='checkbox'></input>KO (Manual)</label>";
-        contentToAdd += "<label class='checkbox-inline marginRight10'><input id='selectAllQueueNA' type='checkbox'></input>NA</label>";
+        contentToAdd += "<label class='checkbox-inline fontOK'><input id='selectAllQueueOK' type='checkbox'></input>OK</label>";
+        contentToAdd += "<label class='checkbox-inline fontQE'><input id='selectAllQueueQEERROR' type='checkbox'></input>QE (ERROR)</label>";
+        contentToAdd += "<label class='checkbox-inline fontFA'><input id='selectAllQueueFA' type='checkbox'></input>FA</label>";
+        contentToAdd += "<label class='checkbox-inline fontKO'><input id='selectAllQueueKO' type='checkbox'></input>KO</label>";
+        contentToAdd += "<label class='checkbox-inline fontFA'><input id='selectAllQueueFAManual' type='checkbox'></input>FA (Manual)</label>";
+        contentToAdd += "<label class='checkbox-inline fontKO'><input id='selectAllQueueKOManual' type='checkbox'></input>KO (Manual)</label>";
+        contentToAdd += "<label class='checkbox-inline marginRight10 fontNA'><input id='selectAllQueueNA' type='checkbox'></input>NA</label>";
         contentToAdd += "<div class='btn-group marginRight20'>";
         contentToAdd += "<button id='submitExe' type='button' disabled='disabled' title='Submit again the selected executions.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again</button>";
         contentToAdd += "<button id='btnGroupDrop4' type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
@@ -1287,6 +1288,9 @@ function renderOptionsForExeList(selectTag, fullListSelected) {
         });
         $('#selectAllQueueNA').click(function () {
             selectAllQueue("selectAllQueueNA", "", "NA");
+        });
+        $('#selectAllQueueOK').click(function () {
+            selectAllQueue("selectAllQueueOK", "N", "OK");
         });
         $('#submitExe').click(massAction_copyQueueWithoutDep);
         $('#submitExewithDep').click(massAction_copyQueueWithDep);
