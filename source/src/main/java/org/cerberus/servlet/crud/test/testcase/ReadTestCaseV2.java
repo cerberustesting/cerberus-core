@@ -129,17 +129,15 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
         List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
         String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), null);
-        boolean withStep = ParameterParserUtil.parseBooleanParam(request.getParameter("withStep"), false);
+        boolean withSteps = ParameterParserUtil.parseBooleanParam(request.getParameter("withSteps"), false);
 
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem<>(msg);
         JSONObject jsonResponse = new JSONObject();
 
         try {
-            if (!Strings.isNullOrEmpty(test) && testCase != null && !withStep) {
-                answer = findTestCaseByTestTestCase(test, testCase, request);
-            } else if (!Strings.isNullOrEmpty(test) && testCase != null && withStep) { // TestCaseScript
-                answer = findTestCaseWithStep(request, test, testCase);
+            if (!Strings.isNullOrEmpty(test) && testCase != null) {
+                answer = findTestCaseByTestTestCase(test, testCase, request, withSteps);
             }
 
             jsonResponse = answer.getItem() == null ? new JSONObject() : (JSONObject) answer.getItem();
@@ -161,10 +159,10 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         }
     }
 
-    private AnswerItem<JSONObject> findTestCaseByTestTestCase(String test, String testCase, HttpServletRequest request) throws JSONException, CerberusException {
+    private AnswerItem<JSONObject> findTestCaseByTestTestCase(String test, String testCase, HttpServletRequest request, boolean withSteps) throws JSONException, CerberusException {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
-        JSONObject JsonResponse = new JSONObject();
+        JSONObject jsonResponse = new JSONObject();
         JSONObject jsonTestCaseHeader = new JSONObject();
         JSONObject jsonTestCase = new JSONObject();
         JSONArray jsonContentTable = new JSONArray();
@@ -177,68 +175,45 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
             TestCase tc = (TestCase) answerTestCase.getItem();
             LOG.debug(tc.getBugID().toString());
             jsonTestCaseHeader = convertToJSONObject(tc);
-            jsonTestCaseHeader.put("bugID", tc.getBugID());
+            jsonTestCaseHeader.put("bugs", tc.getBugID());
 
             jsonTestCaseHeader.put("countries", getTestCaseCountries(test, testCase));
             jsonTestCaseHeader.put("dependencies", getTestCaseDependencies(test, testCase));
             jsonTestCaseHeader.put("labels", getTestCaseLabels(test, testCase));
 
             jsonTestCase.put("header", jsonTestCaseHeader);
+            if (withSteps) {
+                jsonTestCase = findTestCaseSteps(test, testCase, jsonTestCase);
+                jsonResponse.put("hasPermissionsStepLibrary", (request.isUserInRole("TestStepLibrary")));
+            }
             jsonContentTable.put(jsonTestCase);
 
-            JsonResponse.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
-            JsonResponse.put("contentTable", jsonContentTable);
+            jsonResponse.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
+            jsonResponse.put("hasPermissionsDelete", testCaseService.hasPermissionsDelete(tc, request));
+            jsonResponse.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
+            jsonResponse.put("contentTable", jsonContentTable);
+
+        } else {
+            item.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_NOT_FOUND_OR_NOT_AUTHORIZE));
+            return item;
         }
 
-        item.setItem(JsonResponse);
+        item.setItem(jsonResponse);
         item.setResultMessage(answerTestCase.getResultMessage());
 
         return item;
     }
 
-    private AnswerItem<JSONObject> findTestCaseWithStep(HttpServletRequest request, String test, String testCase) throws JSONException, CerberusException {
+    private JSONObject findTestCaseSteps(String test, String testCase, JSONObject jsonTestCase) throws JSONException, CerberusException {
 
-        LOG.debug("PASSAGE PAR findTestCaseWithStep");
-
-        AnswerItem<JSONObject> item = new AnswerItem<>();
-        HashMap<String, JSONObject> hashInheritedProp = new HashMap<>();
-        HashMap<String, JSONObject> hashProp = new HashMap<>();
-        JSONObject jsonResponse = new JSONObject();
-
-        JSONObject jsonTestCaseHeader = new JSONObject();
         JSONObject jsonProperties = new JSONObject();
-        JSONObject jsonTestCase = new JSONObject();
-        JSONArray jsonContentTable = new JSONArray();
-
-        //finds the testcase
-        AnswerItem answerTestCase = testCaseService.readByKey(test, testCase);
-
-        if (answerTestCase.getItem() == null) {
-            item.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_NOT_FOUND_OR_NOT_AUTHORIZE));
-            return item;
-        }
+        JSONArray stepList = new JSONArray();
+        Gson gson = new Gson();
 
         AnswerList<TestCaseStep> testCaseStepList = testCaseStepService.readByTestTestCase(test, testCase);
         AnswerList<TestCaseStepAction> testCaseStepActionList = testCaseStepActionService.readByTestTestCase(test, testCase);
         AnswerList<TestCaseStepActionControl> testCaseStepActionControlList = testCaseStepActionControlService.readByTestTestCase(test, testCase);
 
-        if (answerTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            //if the service returns an OK message then we can get the item and convert it to JSONformat
-            TestCase tc = (TestCase) answerTestCase.getItem();
-            jsonTestCaseHeader = convertToJSONObject(tc);
-            jsonTestCaseHeader.put("bugID", tc.getBugID());
-
-            jsonResponse.put("hasPermissionsDelete", testCaseService.hasPermissionsDelete(tc, request));
-            jsonResponse.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
-            jsonResponse.put("hasPermissionsStepLibrary", (request.isUserInRole("TestStepLibrary")));
-        }
-
-        jsonTestCaseHeader.put("countries", getTestCaseCountries(test, testCase));
-        jsonTestCaseHeader.put("dependencies", getTestCaseDependencies(test, testCase));
-        jsonTestCaseHeader.put("labels", getTestCaseLabels(test, testCase));
-
-        JSONArray stepList = new JSONArray();
-        Gson gson = new Gson();
         for (TestCaseStep step : (List<TestCaseStep>) testCaseStepList.getDataList()) {
             step = testCaseStepService.modifyTestCaseStepDataFromUsedStep(step);
             JSONObject jsonStep = new JSONObject(gson.toJson(step));
@@ -246,7 +221,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
             //Fill JSON with step info
             jsonStep.put("objType", "step");
             //Add a JSON array for Action List from this step
-            jsonStep.put("actionList", new JSONArray());
+            jsonStep.put("actions", new JSONArray());
             //Fill action List
 
             if (step.getUseStep().equals("Y")) {
@@ -266,7 +241,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
 
                         jsonAction.put("objType", "action");
 
-                        jsonAction.put("controlList", new JSONArray());
+                        jsonAction.put("controls", new JSONArray());
                         //We fill the action with the corresponding controls
                         for (TestCaseStepActionControl control : controlList) {
 
@@ -276,11 +251,11 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
 
                                 jsonControl.put("objType", "control");
 
-                                jsonAction.getJSONArray("controlList").put(jsonControl);
+                                jsonAction.getJSONArray("controls").put(jsonControl);
                             }
                         }
                         //we put the action in the actionList for the corresponding step
-                        jsonStep.getJSONArray("actionList").put(jsonAction);
+                        jsonStep.getJSONArray("actions").put(jsonAction);
                     }
                 }
             } else {
@@ -294,7 +269,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                         JSONObject jsonAction = new JSONObject(gson.toJson(action));
 
                         jsonAction.put("objType", "action");
-                        jsonAction.put("controlList", new JSONArray());
+                        jsonAction.put("controls", new JSONArray());
                         //We fill the action with the corresponding controls
                         for (TestCaseStepActionControl control : (List<TestCaseStepActionControl>) testCaseStepActionControlList.getDataList()) {
 
@@ -303,60 +278,43 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                                 JSONObject jsonControl = new JSONObject(gson.toJson(control));
                                 jsonControl.put("objType", "control");
 
-                                jsonAction.getJSONArray("controlList").put(jsonControl);
+                                jsonAction.getJSONArray("controls").put(jsonControl);
                             }
                         }
                         //we put the action in the actionList for the corresponding step
-                        jsonStep.getJSONArray("actionList").put(jsonAction);
+                        jsonStep.getJSONArray("actions").put(jsonAction);
                     }
                 }
             }
             stepList.put(jsonStep);
         }
 
-        jsonTestCase.put("header", jsonTestCaseHeader);
+        jsonTestCase.put("properties", jsonProperties);
         jsonTestCase.put("steps", stepList);
 
-        jsonTestCase.put("properties", jsonProperties);
-
-        jsonContentTable.put(jsonTestCase);
-        jsonResponse.put("contentTable", jsonContentTable);
-
-        item.setItem(jsonResponse);
-        item.setResultMessage(answerTestCase.getResultMessage());
-
-        return item;
+        return jsonTestCase;
     }
 
     private Collection<JSONObject> getTestCaseCountryProperties(String test, String testCase) throws JSONException {
         List<TestCaseCountryProperties> properties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(test, testCase);
         HashMap<String, JSONObject> hashProp = new HashMap<>();
+        JSONObject propertyFound = new JSONObject();
 
         for (TestCaseCountryProperties prop : properties) {
-            JSONObject propertyFound = new JSONObject();
-
-            propertyFound.put("fromTest", prop.getTest());
-            propertyFound.put("fromTestCase", prop.getTestCase());
-            propertyFound.put("property", prop.getProperty());
-            propertyFound.put("description", prop.getDescription());
-            propertyFound.put("type", prop.getType());
-            propertyFound.put("database", prop.getDatabase());
-            propertyFound.put("value1", prop.getValue1());
-            propertyFound.put("value2", prop.getValue2());
-            propertyFound.put("length", prop.getLength());
-            propertyFound.put("rowLimit", prop.getRowLimit());
-            propertyFound.put("nature", prop.getNature());
-            propertyFound.put("rank", prop.getRank());
-            List<String> countriesSelected = testCaseCountryPropertiesService.findCountryByProperty(prop);
-            JSONArray countries = new JSONArray();
-            for (String country : countriesSelected) {
-                countries.put(country);
-            }
-            propertyFound.put("country", countries);
-
+            propertyFound = convertToJSONObject(prop);
+            propertyFound.put("countries", getPropertyCountries(testCaseCountryPropertiesService.findCountryByProperty(prop)));
             hashProp.put(prop.getTest() + "_" + prop.getTestCase() + "_" + prop.getProperty(), propertyFound);
         }
         return hashProp.values();
+    }
+
+    private JSONArray getPropertyCountries(List<String> countriesSelected) throws JSONException {
+
+        JSONArray countries = new JSONArray();
+        for (String country : countriesSelected) {
+            countries.put(convertToJSONObject(invariantService.readByKey("COUNTRY", country).getItem()));
+        }
+        return countries;
     }
 
     private JSONArray getTestCaseCountries(String test, String testCase) throws JSONException {
@@ -386,10 +344,60 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         return labels;
     }
 
-    private JSONObject convertToJSONObject(TestCase object) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(object));
-        return result;
+    private JSONObject convertToJSONObject(TestCase testCase) throws JSONException {
+        return new JSONObject()
+                .put("test", testCase.getTest())
+                .put("testcase", testCase.getTestCase())
+                .put("application", testCase.getApplication())
+                .put("description", testCase.getDescription())
+                .put("behaviourOrValueExpected", testCase.getBehaviorOrValueExpected())
+                .put("priority", testCase.getPriority())
+                .put("status", testCase.getStatus())
+                .put("tcActive", testCase.getTcActive())
+                .put("conditionOper", testCase.getConditionOper())
+                .put("conditionValue1", testCase.getConditionVal1())
+                .put("conditionValue2", testCase.getConditionVal2())
+                .put("conditionValue3", testCase.getConditionVal3())
+                .put("group", testCase.getGroup())
+                .put("origine", testCase.getOrigine())
+                .put("refOrigine", testCase.getRefOrigine())
+                .put("howTo", testCase.getHowTo())
+                .put("comment", testCase.getComment())
+                .put("fromBuild", testCase.getFromBuild())
+                .put("fromRev", testCase.getFromRev())
+                .put("toBuild", testCase.getToBuild())
+                .put("toRev", testCase.getToRev())
+                .put("targetBuild", testCase.getTargetBuild())
+                .put("targetRev", testCase.getTargetRev())
+                .put("implementer", testCase.getImplementer())
+                .put("executor", testCase.getExecutor())
+                .put("activeQA", testCase.getActiveQA())
+                .put("activeUAT", testCase.getActiveUAT())
+                .put("activePROD", testCase.getActivePROD())
+                .put("function", testCase.getFunction())
+                .put("usrAgent", testCase.getUserAgent())
+                .put("screenSize", testCase.getScreenSize())
+                .put("usrCreated", testCase.getUsrCreated())
+                .put("dateCreated", testCase.getDateCreated())
+                .put("usrModif", testCase.getUsrModif())
+                .put("dateModif", testCase.getDateModif())
+                .put("testCaseVersion", testCase.getTestCaseVersion());
+    }
+
+    private JSONObject convertToJSONObject(TestCaseCountryProperties prop) throws JSONException {
+        return new JSONObject()
+                .put("fromTest", prop.getTest())
+                .put("fromTestCase", prop.getTestCase())
+                .put("property", prop.getProperty())
+                .put("description", prop.getDescription())
+                .put("type", prop.getType())
+                .put("database", prop.getDatabase())
+                .put("value1", prop.getValue1())
+                .put("value2", prop.getValue2())
+                .put("length", prop.getLength())
+                .put("rowLimit", prop.getRowLimit())
+                .put("nature", prop.getNature())
+                .put("rank", prop.getRank());
     }
 
     private JSONObject convertToJSONObject(Invariant countryInvariant) throws JSONException {
