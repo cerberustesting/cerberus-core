@@ -19,4 +19,4 @@
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* REST call engine has been modified, make sure to test the new implementation before upgrade
+* REST call engine has been modified, make sure to test your testcases using REST.POST,PUT,PATCH,DELETE callService action
