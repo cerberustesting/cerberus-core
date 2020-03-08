@@ -457,6 +457,7 @@ public class ParameterService implements IParameterService {
             case "cerberus_notification_newchain_to":
             case "cerberus_loopstep_max":
             case "cerberus_url":
+            case "cerberus_webperf_ignoredomainlist":
                 return true;
             // any other parameters are not managed at system level.
             default:

@@ -8435,6 +8435,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("('CONTROLCONDITIONOPER', 'ifElementNotVisible', 265, 'Only execute if Element is not visible.', '')");
         a.add(b.toString());
 
+        // ADD parameters to define third party definition file.
+        // 1481-1482
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_webperf_ignoredomainlist', '', 'coma separated domain that should be ignored when building webperf stats from Network Traffic. ex : gvt1.com,domain.fr,toto.com')");
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `gp1`, `sort`, `description`, `VeryShortDesc`) VALUES "
+                + " ('WEBPERFTHIRDPARTY', 'TrustCommander', 'trustcommander.net,privacy.trustcommander.net', 100, 'Trustcommander third party.', ''),"
+                + " ('INVARIANTPUBLIC','WEBPERFTHIRDPARTY', '', '850','Webperf ThirdParty.', '')");
+
         return a;
     }
 

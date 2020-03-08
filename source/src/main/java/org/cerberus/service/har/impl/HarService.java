@@ -33,10 +33,14 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.service.har.IHarService;
 import org.cerberus.service.har.entity.HarStat;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,80 +53,103 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class HarService implements IHarService {
-    
+
     @Autowired
-    IParameterService parameterService;
-    
+    private IParameterService parameterService;
+    @Autowired
+    private IInvariantService invariantService;
+
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(HarService.class);
-    
+
     private static final String DATE_FORMAT = "yy-MM-dd'T'HH:mm:ss.S'Z'";
     private static final String PROVIDER_INTERNAL = "internal";
     private static final String PROVIDER_UNKNOWN = "unknown";
     private static final String PROVIDER_THIRDPARTY = "thirdparty";
-    
+    private static final String PROVIDER_IGNORE = "ignore";
+
     @Override
-    public JSONObject enrichWithStats(JSONObject har, String domains) {
+    public JSONObject enrichWithStats(JSONObject har, String domains, String system) {
         LOG.debug("Enriching HAR file with stats.");
         try {
             JSONArray harEntries = har.getJSONObject("log").getJSONArray("entries");
-            
+
             HashMap<String, HarStat> target = new HashMap<>();
             HarStat harTotalStat = new HarStat();
             HarStat harProviderStat = new HarStat();
-            
+
             String url = null;
             String provider = null;
-            
-            HashMap<String, List<String>> providersRules = loadProviders();
-            
+
+            // Load third party from json file.
+            HashMap<String, List<String>> providersRules = loadProvidersExternal();
+            // Load third party from invariant WEBPERFTHRIDPARTY.
+            providersRules = loadProvidersInternal(providersRules);
+
             List<String> internalRules = new ArrayList<>();
             String[] dList = domains.split(",");
             for (String domain : dList) {
                 internalRules.add(domain.trim());
             }
-            
+
+            String ignore = parameterService.getParameterStringByKey("cerberus_webperf_ignoredomainlist", system, "");
+            List<String> ignoreRules = new ArrayList<>();
+            dList = ignore.split(",");
+            for (String domain : dList) {
+                ignoreRules.add(domain.trim());
+            }
+
             for (int i = 0; i < harEntries.length(); i++) {
-                
+
                 url = harEntries.getJSONObject(i).getJSONObject("request").getString("url");
-                
-                LOG.debug("Process hit " + i + " URL : " + url);    
-                harTotalStat = processEntry(harTotalStat, harEntries.getJSONObject(i), url);
-                
-                provider = getProvider(url, internalRules, providersRules);
+
+                LOG.debug("Process hit " + i + " URL : " + url);
+                // Getting provider from the url called.
+                provider = getProvider(url, internalRules, ignoreRules, providersRules);
+
+                // If we don't IGNORE, we add it to total.
+                if (!provider.equalsIgnoreCase(PROVIDER_IGNORE)) {
+                    harTotalStat = processEntry(harTotalStat, harEntries.getJSONObject(i), url);
+                }
+
+                // In all cases, we enrish the stat of the HasMap (if it exist) and put it back.
                 if (!target.containsKey(provider)) {
                     harProviderStat = new HarStat();
                 } else {
                     harProviderStat = target.get(provider);
                 }
-                
                 harProviderStat = processEntry(harProviderStat, harEntries.getJSONObject(i), url);
                 target.put(provider, harProviderStat);
-                
+
             }
-            
+
+            // Build Recap of the total
             harTotalStat = processRecap(harTotalStat);
-            
+
             JSONObject stat = new JSONObject();
             JSONObject thirdPartyStat = new JSONObject();
             // Adding total to HAR JSON.
             stat = addStat("total", harTotalStat, stat);
             // Adding all providers to HAR JSON.
+            int nbTP = 0;
             for (Map.Entry<String, HarStat> entry : target.entrySet()) {
                 String key = entry.getKey();
                 HarStat val = entry.getValue();
+                // Build Recap of the provider
                 val = processRecap(val);
-                
-                if (key.equals(PROVIDER_INTERNAL) || key.equals(PROVIDER_UNKNOWN)) {
+
+                if (key.equals(PROVIDER_INTERNAL) || key.equals(PROVIDER_UNKNOWN) || key.equals(PROVIDER_IGNORE)) {
                     stat = addStat(key, val, stat);
                 } else {
+                    nbTP++;
                     thirdPartyStat = addStat(key, val, thirdPartyStat);
                 }
             }
+            thirdPartyStat.put("nb", nbTP);
             stat.put(PROVIDER_THIRDPARTY, thirdPartyStat);
-            
+
             har.put("stat", stat);
             return har;
-            
+
         } catch (JSONException ex) {
             LOG.error("Exception when trying to enrich har file.", ex);
         } catch (Exception ex) {
@@ -130,22 +157,22 @@ public class HarService implements IHarService {
         }
         return har;
     }
-    
-    private HashMap<String, List<String>> loadProviders() {
+
+    private HashMap<String, List<String>> loadProvidersExternal() {
         HashMap<String, List<String>> rules = new HashMap<>();
         try {
-            
+
             String configFile = parameterService.getParameterStringByKey("cerberus_webperf_thirdpartyfilepath", "", "");
             if (StringUtil.isNullOrEmpty(configFile)) {
                 LOG.warn("Could not load config file of Web Third Party. Please define a valid parameter for cerberus_webperf_thirdpartyfilepath.");
                 return rules;
             }
-            
+
             if (!Files.exists(Paths.get(configFile))) {
                 LOG.error("Could not load config file of Web Third Party. File " + configFile + " does not exist. Please define a valid parameter for cerberus_webperf_thirdpartyfilepath.");
                 return rules;
             }
-            
+
             StringBuilder fileContent = new StringBuilder();
             try (Stream<String> stream = Files.lines(Paths.get(configFile), StandardCharsets.UTF_8)) {
                 stream.forEach(s -> fileContent.append(s).append("\n"));
@@ -156,7 +183,7 @@ public class HarService implements IHarService {
 
 //            LOG.debug(thirdPartyList);
             JSONArray json = new JSONArray(thirdPartyList);
-            
+
             for (int i = 0; i < json.length(); i++) {
                 List<String> tmpList = new ArrayList<>();
                 JSONObject thirdParty = json.getJSONObject(i);
@@ -165,16 +192,39 @@ public class HarService implements IHarService {
                 }
                 rules.put(thirdParty.getString("name"), tmpList);
             }
-            
+
             return rules;
-            
+
         } catch (JSONException ex) {
             LOG.error("JSON Exception during loading of Third Party config.", ex);
         }
         return rules;
     }
-    
-    private String getProvider(String url, List<String> internalRules, HashMap<String, List<String>> providersRules) {
+
+    private HashMap<String, List<String>> loadProvidersInternal(HashMap<String, List<String>> list) {
+        try {
+
+            List<Invariant> invList = new ArrayList<>();
+            invList = invariantService.readByIdName("WEBPERFTHIRDPARTY");
+
+            for (Invariant invariant : invList) {
+                List<String> provInterRules = new ArrayList<>();
+                String[] dList = invariant.getGp1().split(",");
+                for (String domain : dList) {
+                    provInterRules.add(domain.trim());
+                }
+                list.put(invariant.getValue(), provInterRules);
+            }
+
+            return list;
+
+        } catch (CerberusException ex) {
+            LOG.error(ex, ex);
+        }
+        return list;
+    }
+
+    private String getProvider(String url, List<String> internalRules, List<String> ingoreRules, HashMap<String, List<String>> providersRules) {
         try {
             URL myURL = new URL(url);
 
@@ -184,6 +234,13 @@ public class HarService implements IHarService {
 //                LOG.debug("urlHost : " + myURL.getHost() + " domain : " + string + " URL : " + url);
                 if (myURL.getHost().toLowerCase().endsWith(string.toLowerCase())) {
                     return PROVIDER_INTERNAL;
+                }
+            }
+
+            // We ignore some requests.
+            for (String string : ingoreRules) {
+                if (myURL.getHost().toLowerCase().endsWith(string.toLowerCase())) {
+                    return PROVIDER_IGNORE;
                 }
             }
 
@@ -199,13 +256,15 @@ public class HarService implements IHarService {
                     }
                 }
             }
+
             return PROVIDER_UNKNOWN;
+
         } catch (MalformedURLException ex) {
             Logger.getLogger(HarService.class.getName()).log(Level.SEVERE, null, ex);
         }
         return PROVIDER_UNKNOWN;
     }
-    
+
     private HarStat processRecap(HarStat harStat) {
         if (harStat.getLastEnd() != null && harStat.getFirstStart() != null) {
             long totDur = harStat.getLastEnd().getTime() - harStat.getFirstStart().getTime();
@@ -216,13 +275,13 @@ public class HarService implements IHarService {
         }
         return harStat;
     }
-    
+
     private HarStat processEntry(HarStat harStat, JSONObject entry, String url) {
-        
+
         try {
             String responseType = guessType(entry);
             List<String> tempList;
-            
+
             int reqSize = entry.getJSONObject("response").getInt("headersSize") + entry.getJSONObject("response").getInt("bodySize");
             int reqTime = entry.getInt("time");
             //2020-02-18T20:53:11.118Z
@@ -244,7 +303,7 @@ public class HarService implements IHarService {
                     harStat.setLastDuration(reqTime);
                 }
             }
-            
+
             switch (responseType) {
                 case "js":
                     if (reqSize > 0) {
@@ -331,7 +390,7 @@ public class HarService implements IHarService {
                     harStat.setOtherList(tempList);
                     break;
             }
-            
+
             switch (entry.getJSONObject("response").getInt("status")) {
                 case 200:
                     harStat.setNb200(harStat.getNb200() + 1);
@@ -381,7 +440,7 @@ public class HarService implements IHarService {
                 harStat.setUrlTimeMax(url);
             }
             return harStat;
-            
+
         } catch (JSONException ex) {
             LOG.error("Exception when trying to process entry and enrich HarStat.", ex);
         } catch (Exception ex) {
@@ -390,65 +449,65 @@ public class HarService implements IHarService {
         }
         return harStat;
     }
-    
+
     private JSONObject addStat(String statKey, HarStat harStat, JSONObject stat) {
-        
+
         try {
             JSONObject total = new JSONObject();
-            
+
             JSONObject type = new JSONObject();
-            
+
             JSONObject js = new JSONObject();
             js.put("sizeSum", harStat.getJsSizeSum());
             js.put("sizeMax", harStat.getJsSizeMax());
             js.put("urlMax", harStat.getUrlJsSizeMax());
             js.put("url", harStat.getJsList());
             type.put("js", js);
-            
+
             JSONObject css = new JSONObject();
             css.put("sizeSum", harStat.getCssSizeSum());
             css.put("sizeMax", harStat.getCssSizeMax());
             css.put("urlMax", harStat.getUrlCssSizeMax());
             css.put("url", harStat.getCssList());
             type.put("css", css);
-            
+
             JSONObject html = new JSONObject();
             html.put("sizeSum", harStat.getHtmlSizeSum());
             html.put("sizeMax", harStat.getHtmlSizeMax());
             html.put("urlMax", harStat.getUrlHtmlSizeMax());
             html.put("url", harStat.getHtmlList());
             type.put("html", html);
-            
+
             JSONObject img = new JSONObject();
             img.put("sizeSum", harStat.getImgSizeSum());
             img.put("sizeMax", harStat.getImgSizeMax());
             img.put("urlMax", harStat.getUrlImgSizeMax());
             img.put("url", harStat.getImgList());
             type.put("img", img);
-            
+
             JSONObject other = new JSONObject();
             other.put("sizeSum", harStat.getOtherSizeSum());
             other.put("sizeMax", harStat.getOtherSizeMax());
             other.put("urlMax", harStat.getUrlOtherSizeMax());
             other.put("url", harStat.getOtherList());
             type.put("other", other);
-            
+
             JSONObject content = new JSONObject();
             content.put("sizeSum", harStat.getContentSizeSum());
             content.put("sizeMax", harStat.getContentSizeMax());
             content.put("urlMax", harStat.getUrlContentSizeMax());
             content.put("url", harStat.getContentList());
             type.put("content", content);
-            
+
             JSONObject font = new JSONObject();
             font.put("sizeSum", harStat.getFontSizeSum());
             font.put("sizeMax", harStat.getFontSizeMax());
             font.put("urlMax", harStat.getUrlFontSizeMax());
             font.put("url", harStat.getFontList());
             type.put("font", font);
-            
+
             total.put("type", type);
-            
+
             JSONObject httpReq = new JSONObject();
             httpReq.put("nbRequests", harStat.getNbRequests());
             httpReq.put("nbError", harStat.getNbError());
@@ -463,13 +522,13 @@ public class HarService implements IHarService {
             httpReq.put("nb404", harStat.getNb404());
             httpReq.put("nb500", harStat.getNb500());
             total.put("httpReq", httpReq);
-            
+
             JSONObject size = new JSONObject();
             size.put("sum", harStat.getSizeSum());
             size.put("max", harStat.getSizeMax());
             size.put("urlMax", harStat.getUrlSizeMax());
             total.put("size", size);
-            
+
             JSONObject time = new JSONObject();
             time.put("sum", harStat.getTimeSum());
             time.put("max", harStat.getTimeMax());
@@ -488,13 +547,13 @@ public class HarService implements IHarService {
             time.put("lastDuration", harStat.getLastDuration());
             time.put("lastURL", harStat.getLastURL());
             time.put("totalDuration", harStat.getTimeTotalDuration());
-            
+
             total.put("time", time);
-            
+
             stat.put(statKey, total);
-            
+
             return stat;
-            
+
         } catch (JSONException ex) {
             LOG.error("Exception when trying to convert HarStat to JSONObject.", ex);
         } catch (Exception ex) {
@@ -502,7 +561,7 @@ public class HarService implements IHarService {
         }
         return stat;
     }
-    
+
     private String guessType(JSONObject entry) {
         try {
             JSONArray header = entry.getJSONObject("response").getJSONArray("headers");
@@ -533,8 +592,8 @@ public class HarService implements IHarService {
         } catch (JSONException ex) {
             LOG.error("Exception when trying to guess response type.", ex);
         }
-        
+
         return "other";
     }
-    
+
 }

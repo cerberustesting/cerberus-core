@@ -1517,7 +1517,7 @@ public class ActionService implements IActionService {
             AppService appSrv = result.getItem();
             JSONObject har = new JSONObject(appSrv.getResponseHTTPBody());
 
-            har = harService.enrichWithStats(har, exe.getCountryEnvironmentParameters().getDomain());
+            har = harService.enrichWithStats(har, exe.getCountryEnvironmentParameters().getDomain(), exe.getSystem());
             appSrv.setResponseHTTPBody(har.toString());
             appSrv.setRecordTraceFile(false);
 

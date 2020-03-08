@@ -31,8 +31,9 @@ public interface IHarService {
      *
      * @param har
      * @param domains
+     * @param system
      * @return
      */
-    JSONObject enrichWithStats(JSONObject har, String domains);
+    JSONObject enrichWithStats(JSONObject har, String domains, String system);
 
 }
