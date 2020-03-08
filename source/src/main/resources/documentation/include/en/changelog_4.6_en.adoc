@@ -1,6 +1,7 @@
 *Bug fixes*
 [square]
 * added link on bug on reportbytag page.
+* No payload sent in REST call (all method except GET)
 
 *Improvements / New features*
 [square]
@@ -18,4 +19,4 @@
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* REST call engine has been modified, make sure to test your testcases using REST.POST,PUT,PATCH,DELETE callService action

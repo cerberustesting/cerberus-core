@@ -52,6 +52,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -341,10 +342,7 @@ public class RestService implements IRestService {
                     // Content
                     if (!(StringUtil.isNullOrEmpty(requestString))) {
                         // If requestString is defined, we POST it.
-                        InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
-                        InputStreamEntity reqEntity = new InputStreamEntity(stream);
-                        reqEntity.setChunked(true);
-                        httpPost.setEntity(reqEntity);
+                        httpPost.setEntity(new StringEntity(requestString));
                         serviceREST.setServiceRequest(requestString);
                     } else {
                         // If requestString is not defined, we POST the list of key/value request.
@@ -398,10 +396,7 @@ public class RestService implements IRestService {
                     // Content
                     if (!(StringUtil.isNullOrEmpty(requestString))) {
                         // If requestString is defined, we POST it.
-                        InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
-                        InputStreamEntity reqEntity = new InputStreamEntity(stream);
-                        reqEntity.setChunked(true);
-                        httpDelete.setEntity(reqEntity);
+                        httpDelete.setEntity(new StringEntity(requestString));
                         serviceREST.setServiceRequest(requestString);
                     } else {
                         // If requestString is not defined, we POST the list of key/value request.
@@ -445,11 +440,8 @@ public class RestService implements IRestService {
 
                     // Content
                     if (!(StringUtil.isNullOrEmpty(requestString))) {
-                        // If requestString is defined, we POST it.
-                        InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
-                        InputStreamEntity reqEntity = new InputStreamEntity(stream);
-                        reqEntity.setChunked(true);
-                        httpPut.setEntity(reqEntity);
+                        // If requestString is defined, we PUT it.
+                        httpPut.setEntity(new StringEntity(requestString));
                         serviceREST.setServiceRequest(requestString);
                     } else {
                         // If requestString is not defined, we PUT the list of key/value request.
@@ -501,14 +493,11 @@ public class RestService implements IRestService {
 
                     // Content
                     if (!(StringUtil.isNullOrEmpty(requestString))) {
-                        // If requestString is defined, we POST it.
-                        InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
-                        InputStreamEntity reqEntity = new InputStreamEntity(stream);
-                        reqEntity.setChunked(true);
-                        httpPatch.setEntity(reqEntity);
+                        // If requestString is defined, we PATCH it.
+                        httpPatch.setEntity(new StringEntity(requestString));
                         serviceREST.setServiceRequest(requestString);
                     } else {
-                        // If requestString is not defined, we PUT the list of key/value request.
+                        // If requestString is not defined, we PATCH the list of key/value request.
                         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
                         for (AppServiceContent contentVal : contentList) {
                             nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
