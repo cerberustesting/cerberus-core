@@ -1,7 +1,7 @@
 *Bug fixes*
 [square]
-* added link on bug on reportbytag page.
-* No payload sent in REST call (all method except GET)
+* added links on bug on reportbytag page.
+* Issues when sending message content when making REST calls for POST,PUT,PATCH,DELETE methods.
 
 *Improvements / New features*
 [square]
@@ -19,4 +19,4 @@
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* REST call engine has been modified, make sure to test your testcases using REST.POST,PUT,PATCH,DELETE callService action
+* REST call engine has been modified. Make sure to test your testcases that have callService actions using REST services with POST,PUT,PATCH,DELETE methods.
