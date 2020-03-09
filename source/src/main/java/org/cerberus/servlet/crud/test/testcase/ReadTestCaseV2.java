@@ -45,6 +45,7 @@ import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
+import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILabelService;
@@ -100,6 +101,8 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
     private ILabelService labelService;
     @Autowired
     private IInvariantService invariantService;
+    @Autowired
+    private IApplicationService applicationService;
 
     private static final Logger LOG = LogManager.getLogger(ReadTestCase.class);
 
@@ -511,6 +514,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                 .put("test", testCase.getTest())
                 .put("testCase", testCase.getTestCase())
                 .put("application", testCase.getApplication())
+                .put("system", applicationService.readByKey(testCase.getApplication()).getItem().getSystem())
                 .put("description", testCase.getDescription())
                 .put("behaviourOrValueExpected", testCase.getBehaviorOrValueExpected())
                 .put("priority", testCase.getPriority())
