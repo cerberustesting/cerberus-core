@@ -239,7 +239,7 @@ public class HarService implements IHarService {
 
             // We ignore some requests.
             for (String string : ingoreRules) {
-                if (myURL.getHost().toLowerCase().endsWith(string.toLowerCase())) {
+                if ((!StringUtil.isNullOrEmpty(string)) && (myURL.getHost().toLowerCase().endsWith(string.toLowerCase()))) {
                     return PROVIDER_IGNORE;
                 }
             }
