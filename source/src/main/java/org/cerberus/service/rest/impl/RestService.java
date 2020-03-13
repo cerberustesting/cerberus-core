@@ -342,7 +342,7 @@ public class RestService implements IRestService {
                     // Content
                     if (!(StringUtil.isNullOrEmpty(requestString))) {
                         // If requestString is defined, we POST it.
-                        httpPost.setEntity(new StringEntity(requestString));
+                        httpPost.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
                         serviceREST.setServiceRequest(requestString);
                     } else {
                         // If requestString is not defined, we POST the list of key/value request.
@@ -396,7 +396,7 @@ public class RestService implements IRestService {
                     // Content
                     if (!(StringUtil.isNullOrEmpty(requestString))) {
                         // If requestString is defined, we POST it.
-                        httpDelete.setEntity(new StringEntity(requestString));
+                        httpDelete.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
                         serviceREST.setServiceRequest(requestString);
                     } else {
                         // If requestString is not defined, we POST the list of key/value request.
@@ -441,7 +441,7 @@ public class RestService implements IRestService {
                     // Content
                     if (!(StringUtil.isNullOrEmpty(requestString))) {
                         // If requestString is defined, we PUT it.
-                        httpPut.setEntity(new StringEntity(requestString));
+                        httpPut.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
                         serviceREST.setServiceRequest(requestString);
                     } else {
                         // If requestString is not defined, we PUT the list of key/value request.
@@ -494,7 +494,7 @@ public class RestService implements IRestService {
                     // Content
                     if (!(StringUtil.isNullOrEmpty(requestString))) {
                         // If requestString is defined, we PATCH it.
-                        httpPatch.setEntity(new StringEntity(requestString));
+                        httpPatch.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
                         serviceREST.setServiceRequest(requestString);
                     } else {
                         // If requestString is not defined, we PATCH the list of key/value request.
