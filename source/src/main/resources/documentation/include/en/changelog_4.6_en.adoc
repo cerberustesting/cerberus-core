@@ -20,3 +20,4 @@
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * REST call engine has been modified. Make sure to test your testcases that have callService actions using REST services with POST,PUT,PATCH,DELETE methods.
+* Make sure to clean your browser cache before editing a script that contains any renamed control
