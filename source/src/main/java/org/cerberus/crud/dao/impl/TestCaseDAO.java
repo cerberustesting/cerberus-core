@@ -1987,7 +1987,11 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromRev(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToBuild(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToRev(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getBugID().toString(), ""));
+                if (testCase.getBugID() != null) {
+                    preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getBugID().toString(), ""));
+                } else {
+                    preStat.setString(i++, "[]");
+                }
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetBuild(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetRev(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrCreated(), ""));

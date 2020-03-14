@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
@@ -195,10 +196,12 @@ public class TestCase {
         this.executor = executor;
     }
 
+    @JsonIgnore
     public JSONArray getBugID() {
         return bugID;
     }
 
+    @JsonIgnore
     public JSONArray getBugIDActive() {
         JSONArray res = new JSONArray();
         for (int i = 0; i < bugID.length(); i++) {

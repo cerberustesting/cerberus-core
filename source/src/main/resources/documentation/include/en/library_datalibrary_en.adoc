@@ -15,7 +15,7 @@ Cerberus allows the definition of 4 types : INTERNAL, SQL, CSV and SERVICE
 
 | *TYPE* | *Description*  
 
-| Database | Static test data - in each execution the values used by the test cases are statically definied directly in Cerberus.
+| INTERNAL | Static test data - in each execution the values used by the test cases are statically definied directly in Cerberus.
 
 | SQL | Test data obtained from a SQL execution – values depend on what the SQL return on the corresponding environment.
 

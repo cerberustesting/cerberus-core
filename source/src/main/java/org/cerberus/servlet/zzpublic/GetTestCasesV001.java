@@ -35,8 +35,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.service.ITestCaseService;
-import org.cerberus.servlet.api.SinglePointHttpServlet;
-import org.springframework.http.HttpStatus;
 import org.cerberus.util.StringUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -118,7 +116,7 @@ public class GetTestCasesV001 {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getTestCaseByApplication(@QueryParam("application") String application, @Context ServletContext servletContext) throws SinglePointHttpServlet.RequestProcessException {
+    public Response getTestCaseByApplication(@QueryParam("application") String application, @Context ServletContext servletContext) {
         LOG.info("Webservice GetTestCasesV001 called by GET Request");
         Map<String, Object> mapResponse = new HashMap<>();
         try {
@@ -149,7 +147,7 @@ public class GetTestCasesV001 {
      * @Param ServletContext : using to call getTestCaseServiceFromSpring, to get testcase service spring bean
      * @Return testCases : list of response
      */
-    private List<ResponseTC.TestCase> findTestCasesByApplication(final String application, ServletContext servletContext) throws SinglePointHttpServlet.RequestProcessException {
+    private List<ResponseTC.TestCase> findTestCasesByApplication(final String application, ServletContext servletContext) {
         //Process to get testCase by application
         getTestCaseServiceFromSpring(servletContext);
         List<ResponseTC.TestCase> response = new ArrayList<>();
@@ -157,7 +155,6 @@ public class GetTestCasesV001 {
 
         if (testCases == null) {
             LOG.error("TestCase list for application {} is null", application);
-            throw new SinglePointHttpServlet.RequestProcessException(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Unable to find test cases for application '%s'. Contact your administrator", application));
         } else {
             //Called conversion from testcase to Response.testcase
             response = testCaseListConversionToResponse(testCases);

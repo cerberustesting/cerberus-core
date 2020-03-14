@@ -69,7 +69,8 @@ image:runexecutionsettings_en.png[RunExecutionSettings, 500, 500]
 | Chrome & Firefox display | no (headless) | yes | yes
 | JSON INFO on Cerberus Application Server logs | no | yes | yes
 | Save Selenium log | no | only when result <> OK | yes
-| HAR file (when using Cerberus proxy executor) | no | yes | yes
+| Full HAR file (when using Cerberus proxy executor) | no | no | yes
+| HAR summarized stat file (when using Cerberus proxy executor) | no | yes | yes
 | Browserstack log activation | no | no | yes
 | Browserstack Save HAR and Selenium log | no | no | yes
 

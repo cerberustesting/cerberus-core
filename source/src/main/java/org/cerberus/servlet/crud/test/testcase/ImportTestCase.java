@@ -49,6 +49,7 @@ import org.cerberus.util.VersionComparator;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.version.Infos;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -96,14 +97,17 @@ public class ImportTestCase extends HttpServlet {
                     JSONObject json = new JSONObject(fileContent);
 
                     if (isCompatible(json)) {
-                        
+
                         //Remove attribute not in the Object
                         json.remove("cerberus_version");
                         json.remove("user");
+                        JSONArray bugIds = json.getJSONArray("bugIds");
+                        json.remove("bugIds");
 
                         ObjectMapper mapper = new ObjectMapper();
 
                         TestCase tcInfo = mapper.readValue(json.toString(), TestCase.class);
+                        tcInfo.setBugID(bugIds);
                         try {
                             tcService.importWithDependency(tcInfo);
 
@@ -113,6 +117,7 @@ public class ImportTestCase extends HttpServlet {
                             ans.setResultMessage(msg);
                             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                         } catch (CerberusException ex) {
+                            LOG.error("Cerberus Exception during testcase import.", ex);
                             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                             msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase " + tcInfo.getTest() + " - " + tcInfo.getTestCase())
                                     .replace("%OPERATION%", "Import")
@@ -124,7 +129,7 @@ public class ImportTestCase extends HttpServlet {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase ")
                                 .replace("%OPERATION%", "Import")
-                                .replace("%REASON%", "File you're trying to import is not supported or in a compatible version."));
+                                .replace("%REASON%", "The file you're trying to import is not supported or is not in a compatible version format."));
                         ans.setResultMessage(msg);
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                     }
@@ -133,12 +138,13 @@ public class ImportTestCase extends HttpServlet {
                 jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
                 jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
 
-            } catch (JSONException ex) {
+            } catch (Exception ex) {
                 jsonResponse.put("messageType", MessageEventEnum.GENERIC_ERROR.getCodeString());
-                jsonResponse.put("message", MessageEventEnum.GENERIC_ERROR.getDescription());
+                jsonResponse.put("message", MessageEventEnum.GENERIC_ERROR.getDescription().replace("%REASON%", ex.toString()));
+                LOG.error("General Exception during testcase import.", ex);
             }
         } catch (JSONException e) {
-            LOG.warn(e);
+            LOG.error("JSONException during testcase import.", e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             httpServletResponse.setContentType("application/json");
             httpServletResponse.getWriter().print(AnswerUtil.createGenericErrorAnswer());
@@ -204,12 +210,15 @@ public class ImportTestCase extends HttpServlet {
                 ServletFileUpload upload = new ServletFileUpload(factory);
 
                 List<FileItem> formItems = upload.parseRequest(httpServletRequest);
-                System.out.println(formItems.size());
-                if (formItems != null && formItems.size() > 0) {
-                    System.out.println(formItems.toString());
-                    for (FileItem item : formItems) {
-                        if (!item.isFormField()) {
-                            result.add(item.getString());
+                if (formItems != null) {
+                    LOG.debug("Nb of Files to import : " + formItems.size());
+                    if (formItems.size() > 0) {
+                        int i = 1;
+                        for (FileItem item : formItems) {
+                            LOG.debug("File to import (" + i++ + ") : " + item.toString());
+                            if (!item.isFormField()) {
+                                result.add(item.getString());
+                            }
                         }
                     }
                 }
@@ -225,32 +234,30 @@ public class ImportTestCase extends HttpServlet {
         try {
             String fileVersion = json.getString("cerberus_version");
             String projectVersion = Infos.getInstance().getProjectVersion();
-            LOG.info(fileVersion);
-            LOG.info(projectVersion);
-            
+            LOG.debug("Version from import file : " + fileVersion);
+            LOG.debug("Current Version of Cerberus : " + projectVersion);
+
             //Compatibility Matrix. To update if testcase (including dependencies) model change.
             Map<String, String> compatibilityMatrix = new HashMap<>();
             compatibilityMatrix.put("1.0", "4.0");
             compatibilityMatrix.put("4.1", "100.0");
-            
+
             //Check fileVersion and projectVersion are in the same rank in the compatibility Matrix
-            for (Map.Entry<String,String> entry : compatibilityMatrix.entrySet()){  
-                LOG.info("File - Key : " + VersionComparator.compare(fileVersion, entry.getKey()));
-                LOG.info("File - Value : " + VersionComparator.compare(fileVersion, entry.getValue()));
-                LOG.info("Project - Key : " + VersionComparator.compare(projectVersion, entry.getKey()));
-                LOG.info("Project - Value : " + VersionComparator.compare(projectVersion, entry.getValue()));
-                if(VersionComparator.compare(fileVersion, entry.getKey())*VersionComparator.compare(fileVersion, entry.getValue())<0){
-                    return VersionComparator.compare(projectVersion, entry.getKey())*VersionComparator.compare(projectVersion, entry.getValue())<0;
+            for (Map.Entry<String, String> entry : compatibilityMatrix.entrySet()) {
+//                LOG.debug("File - Key : " + VersionComparator.compare(fileVersion, entry.getKey()));
+//                LOG.debug("File - Value : " + VersionComparator.compare(fileVersion, entry.getValue()));
+//                LOG.debug("Project - Key : " + VersionComparator.compare(projectVersion, entry.getKey()));
+//                LOG.debug("Project - Value : " + VersionComparator.compare(projectVersion, entry.getValue()));
+                if (VersionComparator.compare(fileVersion, entry.getKey()) * VersionComparator.compare(fileVersion, entry.getValue()) < 0) {
+                    return VersionComparator.compare(projectVersion, entry.getKey()) * VersionComparator.compare(projectVersion, entry.getValue()) < 0;
                 }
             }
             return false;
-            
+
         } catch (JSONException ex) {
             LOG.warn(ex);
             return false;
         }
     }
-    
-    
 
 }

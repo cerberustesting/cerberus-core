@@ -1509,7 +1509,7 @@ public class ActionService implements IActionService {
                 url += "&requestUrl=" + urlToFilter;
             }
 
-            LOG.debug("Getting HAR content from URL : " + url);
+            LOG.debug("Getting Network Traffic content from URL : " + url);
 
             AnswerItem<AppService> result = new AnswerItem<>();
             result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", exe);
@@ -1526,7 +1526,7 @@ public class ActionService implements IActionService {
             /**
              * Record the Request and Response in file system.
              */
-            exe.addFileList(recorderService.recordHarContent(exe, actionexe, 0, null, result.getItem()));
+            actionexe.addFileList(recorderService.recordNetworkTrafficContent(exe, actionexe, 0, null, result.getItem(), true));
 
             // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
             exe.setAppTypeEngine(Application.TYPE_SRV);

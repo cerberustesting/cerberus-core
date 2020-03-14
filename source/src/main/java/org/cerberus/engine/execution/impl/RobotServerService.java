@@ -52,6 +52,7 @@ import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.RobotCapability;
@@ -66,9 +67,12 @@ import org.cerberus.engine.execution.IRobotServerService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.har.IHarService;
 import org.cerberus.service.proxy.IProxyService;
+import org.cerberus.service.rest.IRestService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.Capabilities;
@@ -101,7 +105,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class RobotServerService implements IRobotServerService {
-    
+
     @Autowired
     private IParameterService parameterService;
     @Autowired
@@ -110,17 +114,21 @@ public class RobotServerService implements IRobotServerService {
     private ISikuliService sikuliService;
     @Autowired
     IProxyService proxyService;
-    
+
     @Autowired
     private IExecutionThreadPoolService executionThreadPoolService;
     @Autowired
     private IRecorderService recorderService;
     @Autowired
     private IFactoryRobotCapability factoryRobotCapability;
-    
+    @Autowired
+    private IRestService restService;
+    @Autowired
+    private IHarService harService;
+
     private static Map<String, Boolean> apkAlreadyPrepare = new HashMap<>();
     private static int totocpt = 0;
-    
+
     private static final Logger LOG = LogManager.getLogger(RobotServerService.class);
     /**
      * Proxy default config. (Should never be used as default config is inserted
@@ -132,12 +140,12 @@ public class RobotServerService implements IRobotServerService {
     private static final boolean DEFAULT_PROXYAUTHENT_ACTIVATE = false;
     private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
-    
+
     @Override
     public void startServer(TestCaseExecution tCExecution) throws CerberusException {
-        
+
         try {
-            
+
             LOG.info("Start Robot Server (Selenium, Appium or Sikuli)");
 
             /**
@@ -156,7 +164,7 @@ public class RobotServerService implements IRobotServerService {
                     cerberus_selenium_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout,
                     cerberus_appium_action_longpress_wait, cerberus_selenium_autoscroll_vertical_offset, cerberus_selenium_autoscroll_horizontal_offset;
             boolean cerberus_selenium_autoscroll;
-            
+
             if (!tCExecution.getTimeout().isEmpty()) {
                 cerberus_selenium_wait_element = Integer.valueOf(tCExecution.getTimeout());
                 cerberus_appium_wait_element = Integer.valueOf(tCExecution.getTimeout());
@@ -164,7 +172,7 @@ public class RobotServerService implements IRobotServerService {
                 cerberus_selenium_wait_element = parameterService.getParameterIntegerByKey("cerberus_selenium_wait_element", system, 90000);
                 cerberus_appium_wait_element = parameterService.getParameterIntegerByKey("cerberus_appium_wait_element", system, 90000);
             }
-            
+
             cerberus_selenium_pageLoadTimeout = parameterService.getParameterIntegerByKey("cerberus_selenium_pageLoadTimeout", system, 90000);
             cerberus_selenium_implicitlyWait = parameterService.getParameterIntegerByKey("cerberus_selenium_implicitlyWait", system, 0);
             cerberus_selenium_setScriptTimeout = parameterService.getParameterIntegerByKey("cerberus_selenium_setScriptTimeout", system, 90000);
@@ -174,7 +182,7 @@ public class RobotServerService implements IRobotServerService {
             cerberus_selenium_autoscroll_horizontal_offset = parameterService.getParameterIntegerByKey("cerberus_selenium_autoscroll_horizontal_offset", system, 0);
             cerberus_appium_action_longpress_wait = parameterService.getParameterIntegerByKey("cerberus_appium_action_longpress_wait", system, 8000);
             LOG.debug("TimeOut defined on session : " + cerberus_selenium_wait_element);
-            
+
             Session session = new Session();
             session.setCerberus_selenium_implicitlyWait(cerberus_selenium_implicitlyWait);
             session.setCerberus_selenium_pageLoadTimeout(cerberus_selenium_pageLoadTimeout);
@@ -228,7 +236,7 @@ public class RobotServerService implements IRobotServerService {
                 if (tCExecution.getRobotObj() != null) {
                     inputCapabilities = tCExecution.getRobotObj().getCapabilities();
                 }
-                
+
                 tCExecution.addFileList(recorderService.recordCapabilities(tCExecution, inputCapabilities, additionalFinalCapabilities));
             } catch (Exception ex) {
                 LOG.error("Exception Saving Robot Caps " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
@@ -244,7 +252,7 @@ public class RobotServerService implements IRobotServerService {
             LOG.debug("Hub URL :" + hubUrl);
             URL url = new URL(hubUrl);
             HttpCommandExecutor executor = null;
-            
+
             boolean isProxy = proxyService.useProxy(hubUrl, system);
 
 //            HttpClientBuilder builder = HttpClientBuilder.create();
@@ -273,10 +281,10 @@ public class RobotServerService implements IRobotServerService {
 //                Proxy proxy = new Proxy(Proxy.Type.SOCKS, proxyAddr);
 //                builder.setProxy(proxy);
                 if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system, DEFAULT_PROXYAUTHENT_ACTIVATE)) {
-                    
+
                     String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", system, DEFAULT_PROXYAUTHENT_USER);
                     String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", system, DEFAULT_PROXYAUTHENT_PASSWORD);
-                    
+
                     Authenticator proxyAuthenticator = new Authenticator() {
                         public Request authenticate(Route route, Response response) throws IOException {
                             String credential = Credentials.basic(proxyUser, proxyPassword);
@@ -285,7 +293,7 @@ public class RobotServerService implements IRobotServerService {
                                     .build();
                         }
                     };
-                    
+
                     factory.builder().proxy(myproxy);
 
 //                    CredentialsProvider credsProvider = new BasicCredentialsProvider();
@@ -300,17 +308,17 @@ public class RobotServerService implements IRobotServerService {
 //                    }
 //                    builder.setDefaultCredentialsProvider(credsProvider);
                 } else {
-                    
+
                     factory.builder().proxy(myproxy);
-                    
+
                 }
-                
+
             } else {
-                
+
                 factory.builder().proxy(java.net.Proxy.NO_PROXY);
-                
+
             }
-            
+
             executor = new HttpCommandExecutor(new HashMap<>(), url, factory);
 //            executor = new HttpCommandExecutor(new HashMap<>(), url);
 
@@ -340,7 +348,7 @@ public class RobotServerService implements IRobotServerService {
                     if (caps.getCapability("app") != null) {
                         appUrl = caps.getCapability("app").toString();
                     }
-                    
+
                     int toto = totocpt++;
                     if (appUrl != null) { // FIX : appium can't install 2 apk simultaneously, so implement a litle latency between execution
                         synchronized (this) {
@@ -357,11 +365,11 @@ public class RobotServerService implements IRobotServerService {
                     if (apkAlreadyPrepare.containsKey(appUrl)) {
                         apkAlreadyPrepare.put(appUrl, true);
                     }
-                    
+
                     driver = (WebDriver) appiumDriver;
                     tCExecution.setRobotSessionID(getSession(driver, tCExecution.getRobotProvider()));
                     break;
-                
+
                 case Application.TYPE_IPA:
                     appiumDriver = new IOSDriver(url, caps);
                     driver = (WebDriver) appiumDriver;
@@ -397,7 +405,7 @@ public class RobotServerService implements IRobotServerService {
                     for (Map.Entry cap : ((RemoteWebDriver) driver).getCapabilities().asMap().entrySet()) {
                         serverCapabilities.add(factoryRobotCapability.create(0, "", cap.getKey().toString(), cap.getValue().toString()));
                     }
-                    
+
                     tCExecution.addFileList(recorderService.recordServerCapabilities(tCExecution, serverCapabilities));
                 } catch (Exception ex) {
                     LOG.error("Exception Saving Server Robot Caps " + tCExecution.getId(), ex);
@@ -435,7 +443,7 @@ public class RobotServerService implements IRobotServerService {
                  */
                 String targetScreensize = getScreenSizeToUse(tCExecution.getTestCaseObj().getScreenSize(), tCExecution.getScreenSize());
                 LOG.debug("Selenium resolution : " + targetScreensize);
-                
+
                 if (!tCExecution.getBrowser().equalsIgnoreCase(BrowserType.CHROME)) {
                     // For chrome the resolution has already been defined at capabilities level.
                     if ((!StringUtil.isNullOrEmpty(targetScreensize)) && targetScreensize.contains("*")) {
@@ -447,10 +455,10 @@ public class RobotServerService implements IRobotServerService {
                 }
                 tCExecution.setScreenSize(getScreenSize(driver));
                 tCExecution.setRobotDecli(tCExecution.getRobotDecli().replace("%SCREENSIZE%", tCExecution.getScreenSize()));
-                
+
                 String userAgent = (String) ((JavascriptExecutor) driver).executeScript("return navigator.userAgent;");
                 tCExecution.setUserAgent(userAgent);
-                
+
             }
 
             // unlock device if deviceLockUnlock is active
@@ -458,9 +466,9 @@ public class RobotServerService implements IRobotServerService {
                     && "Y".equals(tCExecution.getRobotExecutorObj().getDeviceLockUnlock())) {
                 ((LocksDevice) appiumDriver).unlockDevice();
             }
-            
+
             tCExecution.getSession().setStarted(true);
-            
+
         } catch (CerberusException exception) {
             LOG.error(exception.toString(), exception);
             throw new CerberusException(exception.getMessageError(), exception);
@@ -487,7 +495,7 @@ public class RobotServerService implements IRobotServerService {
             executionThreadPoolService.executeNextInQueueAsynchroneously(false);
         }
     }
-    
+
     private String getSession(WebDriver driver, String robotProvider) {
         String session = "";
         switch (robotProvider) {
@@ -504,7 +512,7 @@ public class RobotServerService implements IRobotServerService {
         }
         return session;
     }
-    
+
     private String guessRobotProvider(String host) {
         if (host.contains("browserstack")) {
             return TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK;
@@ -526,7 +534,7 @@ public class RobotServerService implements IRobotServerService {
         /**
          * Instanciate DesiredCapabilities
          */
-        
+
         MutableCapabilities caps = new MutableCapabilities();
         // In case browser is not defined at that level, we force it to firefox.
         if (StringUtil.isNullOrEmpty(tCExecution.getBrowser())) {
@@ -579,7 +587,7 @@ public class RobotServerService implements IRobotServerService {
                 caps.setCapability("version", tCExecution.getVersion());
             }
         }
-        
+
         if (tCExecution.getRobotExecutorObj() != null) {
             // Setting deviceUdid and device name from executor.
             if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceUuid())) {
@@ -630,7 +638,7 @@ public class RobotServerService implements IRobotServerService {
                     caps.setCapability("appWaitActivity", tCExecution.getCountryEnvironmentParameters().getMobileActivity());
                 }
             }
-            
+
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 if (isNotAlreadyDefined(caps, "automationName")) {
                     caps.setCapability("automationName", "UIAutomator2"); // use UIAutomator2 by default
@@ -695,10 +703,10 @@ public class RobotServerService implements IRobotServerService {
                 break;
             default:
         }
-        
+
         return caps;
     }
-    
+
     private boolean isNotAlreadyDefined(MutableCapabilities caps, String capability) {
         return ((caps.getCapability(capability) == null)
                 || ((caps.getCapability(capability) != null) && (caps.getCapability(capability).toString().equals(""))));
@@ -753,12 +761,12 @@ public class RobotServerService implements IRobotServerService {
                     LOG.debug("Setting Firefox proxy to : " + proxy.toString());
                     options.setProxy(proxy);
                 }
-                
+
                 options.setProfile(profile);
 
                 // Accept Insecure Certificates.
                 options.setAcceptInsecureCerts(true);
-                
+
                 return options;
 //                capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, options);
 
@@ -792,7 +800,7 @@ public class RobotServerService implements IRobotServerService {
                     String sizeOpts = "--window-size=" + screenWidth + "," + screenLength;
                     options.addArguments(sizeOpts);
                     LOG.debug("Selenium resolution (for Chrome) Activated : " + screenWidth + "*" + screenLength);
-                    
+
                 }
                 options.addArguments("start-maximized");
                 if (tCExecution.getVerbose() <= 0) {
@@ -817,39 +825,39 @@ public class RobotServerService implements IRobotServerService {
 
                 // Accept Insecure Certificates.
                 options.setAcceptInsecureCerts(true);
-                
+
                 return options;
 //                capabilities.setCapability(ChromeOptions.CAPABILITY, options);
 //                additionalCapabilities.add(factoryRobotCapability.create(0, "", ChromeOptions.CAPABILITY, options.toString()));
 
             } else if (browser.contains("android")) {
-                
+
                 if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
                     Proxy proxy = new Proxy();
                     proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                     proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                 }
-                
+
                 capabilities = DesiredCapabilities.android();
-                
+
             } else if (browser.contains("ipad")) {
                 capabilities = DesiredCapabilities.ipad();
-                
+
             } else if (browser.contains("iphone")) {
                 capabilities = DesiredCapabilities.iphone();
-                
+
             } else if (browser.contains("safari")) {
                 SafariOptions options = new SafariOptions();
-                
+
                 if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
                     Proxy proxy = new Proxy();
                     proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                     proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                     options.setProxy(proxy);
                 }
-                
+
                 return options;
-                
+
             } else {
                 LOG.warn("Not supported Browser : " + browser);
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
@@ -894,7 +902,7 @@ public class RobotServerService implements IRobotServerService {
             return StringUtil.isNullOrEmpty(screenSizeTestCase) ? screenSizeRobot : screenSizeTestCase;
         }
     }
-    
+
     @Override
     public boolean stopServer(TestCaseExecution tce) {
         Session session = tce.getSession();
@@ -970,10 +978,33 @@ public class RobotServerService implements IRobotServerService {
                 // If proxy started and parameter verbose >= 1 activated
                 if ("Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())
                         && tce.getVerbose() >= 1) {
+
                     String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + tce.getRemoteProxyUUID();
-                    LOG.debug("Url to get HAR : " + url);
-                    tce.addFileList(recorderService.recordHarLog(tce, url));
-                    LOG.debug("Retrieved Har file by calling : " + url);
+
+                    AnswerItem<AppService> result = new AnswerItem<>();
+                    result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", tce);
+
+                    AppService appSrv = result.getItem();
+                    JSONObject har = new JSONObject(appSrv.getResponseHTTPBody());
+
+                    har = harService.enrichWithStats(har, tce.getCountryEnvironmentParameters().getDomain(), tce.getSystem());
+                    appSrv.setResponseHTTPBody(har.toString());
+                    appSrv.setRecordTraceFile(false);
+
+                    tce.setLastServiceCalled(appSrv);
+
+                    /**
+                     * Record the Request and Response in file system.
+                     */
+                    boolean withDetail = false;
+                    if (tce.getVerbose() >= 2) {
+                        withDetail = true;
+                    }
+                    tce.addFileList(recorderService.recordNetworkTrafficContent(tce, null, 0, null, result.getItem(), withDetail));
+
+//                    LOG.debug("Url to get HAR : " + url);
+//                    tce.addFileList(recorderService.recordHarLog(tce, url));
+//                    LOG.debug("Retrieved Har file by calling : " + url);
                 }
             } catch (Exception ex) {
                 LOG.error("Exception Getting Har File from Cerberus Executor " + tce.getId(), ex);
@@ -994,12 +1025,12 @@ public class RobotServerService implements IRobotServerService {
             } else {
                 session.quit();
             }
-            
+
             return true;
         }
         return false;
     }
-    
+
     private static void getIPOfNode(TestCaseExecution tCExecution) {
         try {
             Session session = tCExecution.getSession();
@@ -1008,11 +1039,11 @@ public class RobotServerService implements IRobotServerService {
             String hostName = ce.getAddressOfRemoteServer().getHost();
             int port = ce.getAddressOfRemoteServer().getPort();
             HttpHost host = new HttpHost(hostName, port);
-            
+
             HttpClient client = HttpClientBuilder.create().setRedirectStrategy(new LaxRedirectStrategy()).build();
-            
+
             URL sessionURL = new URL(RobotServerService.getBaseUrl(session.getHost(), session.getPort()) + "/grid/api/testsession?session=" + sessionId);
-            
+
             BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("POST", sessionURL.toExternalForm());
             HttpResponse response = client.execute(host, r);
             if (!response.getStatusLine().toString().contains("403")
@@ -1031,51 +1062,51 @@ public class RobotServerService implements IRobotServerService {
                     LOG.debug("'proxyId' json data not available from remote Selenium Server request : " + writer.toString());
                 }
             }
-            
+
         } catch (IOException | JSONException ex) {
             LOG.error(ex.toString(), ex);
         }
     }
-    
+
     @Override
     public Capabilities getUsedCapabilities(Session session) {
         Capabilities caps = ((RemoteWebDriver) session.getDriver()).getCapabilities();
         return caps;
     }
-    
+
     private void setScreenSize(WebDriver driver, Integer width, Integer length) {
         driver.manage().window().setPosition(new Point(0, 0));
         driver.manage().window().setSize(new Dimension(width, length));
     }
-    
+
     private String getScreenSize(WebDriver driver) {
         return driver.manage().window().getSize().width + "*" + driver.manage().window().getSize().height;
     }
-    
+
     private static String getBaseUrl(String host, String port) {
         String baseurl = "";
-        
+
         if (!StringUtil.isNullOrEmpty(host) && (host.contains("https://") || host.contains("http://"))) {
             baseurl = host;
         } else {
             baseurl = "http://" + host;
         }
-        
+
         if (!StringUtil.isNullOrEmpty(port) && Integer.valueOf(port) > 0) {
             baseurl += ":" + port;
         }
-        
+
         return baseurl;
     }
-    
+
     private void startRemoteProxy(TestCaseExecution tce) {
-        
+
         String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/startProxy";
         if (tce.getRobotExecutorObj().getExecutorProxyPort() != 0) {
             url += "?port=" + tce.getRobotExecutorObj().getExecutorProxyPort();
         }
         LOG.debug("Starting Proxy on Cerberus Executor calling : " + url);
-        
+
         try (InputStream is = new URL(url).openStream()) {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
             StringBuilder sb = new StringBuilder();
@@ -1084,23 +1115,23 @@ public class RobotServerService implements IRobotServerService {
                 sb.append((char) cp);
             }
             String jsonText = sb.toString();
-            
+
             JSONObject json = new JSONObject(jsonText);
             tce.setRemoteProxyPort(json.getInt("port"));
             tce.setRemoteProxyUUID(json.getString("uuid"));
             tce.setRemoteProxyStarted(true);
-            
+
             LOG.debug("Cerberus Executor Proxy extention started on port : " + tce.getRemoteProxyPort() + " (uuid : " + tce.getRemoteProxyUUID() + ")");
-            
+
         } catch (Exception ex) {
             LOG.error("Exception Starting Remote Proxy " + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString(), ex);
         }
-        
+
     }
-    
+
     @Override
     public void stopRemoteProxy(TestCaseExecution tce) {
-        
+
         if (tce.isRemoteProxyStarted()) {
             tce.setRemoteProxyStarted(false);
             /**
@@ -1109,23 +1140,23 @@ public class RobotServerService implements IRobotServerService {
             try {
                 // Ask the Proxy to stop.
                 if (tce.getRobotExecutorObj() != null && "Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())) {
-                    
+
                     String urlStop = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/stopProxy?uuid=" + tce.getRemoteProxyUUID();
-                    
+
                     LOG.debug("Shutting down of Proxy on Cerberus Executor calling : " + urlStop);
-                    
+
                     InputStream is = new URL(urlStop).openStream();
                     is.close();
-                    
+
                     LOG.debug("Cerberus Executor Proxy extention shutdown done (uuid : " + tce.getRemoteProxyUUID() + ").");
-                    
+
                 }
-                
+
             } catch (Exception ex) {
                 LOG.error("Exception when asking Cerberus Executor proxy to stop " + tce.getId(), ex);
             }
         }
-        
+
     }
-    
+
 }

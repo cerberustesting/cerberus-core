@@ -624,11 +624,6 @@
         <servlet-class>org.cerberus.servlet.administration.GetExecutionsInQueue</servlet-class>
     </servlet>
     <servlet>
-        <description>Get a list of test cases based on criteria.</description>
-        <servlet-name>GetTestCasesV000</servlet-name>
-        <servlet-class>org.cerberus.servlet.zzpublic.GetTestCasesV000</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>DeleteBuildRevisionParameters</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.DeleteBuildRevisionParameters</servlet-class>
     </servlet>
@@ -1395,10 +1390,6 @@
     <servlet-mapping>
         <servlet-name>GetExecutionsInQueue</servlet-name>
         <url-pattern>/GetExecutionsInQueue</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetTestCasesV000</servlet-name>
-        <url-pattern>/GetTestCasesV000</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GeneratePerformanceString</servlet-name>

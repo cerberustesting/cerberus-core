@@ -45,7 +45,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ExportTestCase extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ExportTestCase.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -66,17 +66,19 @@ public class ExportTestCase extends HttpServlet {
             String testcase = policy.sanitize(httpServletRequest.getParameter("testcase"));
 
             TestCase tcInfo = testService.findTestCaseByKeyWithDependency(test, testcase);
-            
+
             // Java object to JSON string
             ObjectMapper mapper = new ObjectMapper();
             JSONObject jo = new JSONObject(mapper.writeValueAsString(tcInfo));
             jo.put("cerberus_version", Infos.getInstance().getProjectVersion());
             jo.put("user", httpServletRequest.getUserPrincipal());
-            
-        httpServletResponse.setContentType("application/json");
-        httpServletResponse.setHeader("Content-Disposition", "attachment; filename="+test+testcase+".json");
-        httpServletResponse.getOutputStream().print(jo.toString());
-        
+            jo.put("bugIds", tcInfo.getBugID());
+
+            httpServletResponse.setContentType("application/json");
+            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=" + test + "-" + testcase + ".json");
+            // Nice formating the json result by putting indent 4 parameter.
+            httpServletResponse.getOutputStream().print(jo.toString(4));
+
         } catch (CerberusException | JSONException ex) {
             LOG.warn(ex);
         }

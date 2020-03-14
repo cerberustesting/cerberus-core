@@ -2,6 +2,7 @@
 [square]
 * added links on bug on reportbytag page.
 * Issues when sending message content when making REST calls for POST,PUT,PATCH,DELETE methods.
+* Fixed Export/Import feature.
 
 *Improvements / New features*
 [square]
@@ -21,3 +22,4 @@
 [square]
 * REST call engine has been modified. Make sure to test your testcases that have callService actions using REST services with POST,PUT,PATCH,DELETE methods.
 * Make sure to clean your browser cache before editing a script that contains any renamed control
+* Removed public API GetTestCasesV000
