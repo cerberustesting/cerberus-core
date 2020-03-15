@@ -181,7 +181,7 @@ function initModalDataLib() {
     $("[name='parsingAnswerHeader']").html(doc.getDocOnline("testdatalibdata", "parsingAnswer"));
     $("[name='columnPositionHeader']").html(doc.getDocOnline("testdatalibdata", "columnPosition"));
     $("[name='descriptionHeader']").html(doc.getDocOnline("testdatalibdata", "description"));
-    // Tracability
+    // Traceability
     $("[name='lbl_created']").html(doc.getDocOnline("transversal", "DateCreated"));
     $("[name='lbl_creator']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_lastModified']").html(doc.getDocOnline("transversal", "DateModif"));

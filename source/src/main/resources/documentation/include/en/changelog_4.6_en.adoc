@@ -17,6 +17,7 @@
 * Various documentation improvements.
 * By default Cerberus now allow untrusted certificates. #2069
 * Add ExecutorExtensionHost parameter in RobotExecutor in order to run extension in other server than Robot Executor (Selenium or Appium). If not defined, value default to Robot Executor (Selenium or Appium) host.
+* Added New Network tab on execution detail with nice charts on Network Traffic.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

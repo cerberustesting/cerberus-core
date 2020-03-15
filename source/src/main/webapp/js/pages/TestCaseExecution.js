@@ -324,7 +324,7 @@ function displayPageLabel(doc) {
     $("#editTcStepInfo").html("<span class='glyphicon glyphicon-new-window'></span> " + doc.getDocLabel("page_executiondetail", "edittcstep"));
     $("#saveTestCaseExecution").html("<span class='glyphicon glyphicon-save'></span> " + doc.getDocLabel("page_executiondetail", "save"));
 
-    // Tracability
+    // Traceability
     $("[name='lbl_datecreated']").html(doc.getDocOnline("transversal", "DateCreated"));
     $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
@@ -458,8 +458,285 @@ function updatePage(data, stepList) {
     createVideo(data.videos);
     setUpClickFunctionToSaveTestCaseExecutionButton(data);
     drawDependencies(data.testCaseExecutionQueueDepList, "depTableBody", "editTabDep");
+
+    drawNetworkCharts(data.fileList);
 }
 
+
+function drawNetworkCharts(filelist) {
+
+    // Get Network Traffic data structure.
+    var ntPath = undefined;
+    var ntType = undefined;
+
+    for (var index = 0; index < filelist.length; index++) {
+        if (filelist[index].fileDesc === "Network Stat") {
+            ntPath = filelist[index].fileName;
+            ntType = filelist[index].fileType;
+        }
+    }
+
+    if (ntPath !== undefined) {
+
+        $.ajax({
+            url: "ReadTestCaseExecutionMedia",
+            async: true,
+            method: "GET",
+            data: {
+                filename: ntPath,
+                filetype: ntType
+            },
+            success: function (data) {
+
+                $("#editTabNetwork").show();
+
+                var title = ['Hits per http status', 'total : ' + data.total.httpReq.nbALL];
+                drawChart_HttpStatus(data, title, 'myChart1');
+
+                var title = ['Size per type', 'total : ' + formatNumber(Math.round(data.total.size.sum / 1024)) + ' Kb'];
+                drawChart_SizePerType(data, title, 'myChart2');
+
+                var title = ['Size/Hits/Time per Third Party', 'total : ' + data.nbThirdParty];
+                drawChart_PerThirdParty(data, title, 'myChart3');
+            },
+            error: showUnexpectedError
+        });
+
+
+
+    }
+}
+
+function drawChart_HttpStatus(data, titletext, target) {
+
+    var dataArray = [];
+    var labelArray = [];
+    var bgColorArray = [];
+
+    for (var key in data.total.httpReq) {
+        if (!key.includes("XX") && key.includes("nb") && !key.includes("ALL")) {
+            drawChart_HttpStatus_Data(data, dataArray, labelArray, bgColorArray, key, "http " + key.substring(2));
+        }
+    }
+
+    var config = {
+        type: 'pie',
+        data: {
+            datasets: [{
+                    data: dataArray,
+                    backgroundColor: bgColorArray,
+                    label: 'Http Return Code'
+                }],
+            labels: labelArray
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: titletext
+            }
+        }
+    };
+
+    var ctx = document.getElementById(target).getContext('2d');
+    let chart = new Chart(ctx, config);
+
+}
+
+function drawChart_HttpStatus_Data(data, dataArray, labelArray, bgColorArray, item, label) {
+    if (data.total.httpReq[item] > 0) {
+        dataArray.push(data.total.httpReq[item]);
+        labelArray.push(label);
+        bgColorArray.push(drawChart_HttpStatus_Color(item));
+    }
+}
+
+function drawChart_HttpStatus_Color(i) {
+    if (i !== undefined) {
+        if (i.includes("nbE")) {
+            return "purple";
+        } else if (i.includes("nb2")) {
+            return "green";
+        } else if (i.includes("nb3")) {
+            return "lightgreen";
+        } else if (i.includes("nb4")) {
+            return "orange";
+        } else if (i.includes("nb5")) {
+            return "red";
+        }
+    }
+    return "grey";
+}
+
+function drawChart_SizePerType(data, titletext, target) {
+
+    var dataArray = [];
+    var labelArray = [];
+    var bgColorArray = [];
+
+    drawChart_SizePerType_Data(data, dataArray, labelArray, bgColorArray, "html", "html");
+    drawChart_SizePerType_Data(data, dataArray, labelArray, bgColorArray, "img", "img");
+    drawChart_SizePerType_Data(data, dataArray, labelArray, bgColorArray, "js", "js");
+    drawChart_SizePerType_Data(data, dataArray, labelArray, bgColorArray, "css", "css");
+    drawChart_SizePerType_Data(data, dataArray, labelArray, bgColorArray, "content", "content");
+    drawChart_SizePerType_Data(data, dataArray, labelArray, bgColorArray, "font", "font");
+    drawChart_SizePerType_Data(data, dataArray, labelArray, bgColorArray, "other", "other");
+
+    var config = {
+        type: 'pie',
+        data: {
+            datasets: [{
+                    data: dataArray,
+                    backgroundColor: bgColorArray,
+                    label: 'Hits per content type'
+                }],
+            labels: labelArray
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: titletext
+            }
+        }
+    };
+
+    var ctx = document.getElementById(target).getContext('2d');
+    let chart = new Chart(ctx, config);
+
+}
+
+function drawChart_SizePerType_Data(data, dataArray, labelArray, bgColorArray, item, label) {
+    if (data.total.type[item].sizeSum > 0) {
+        dataArray.push(data.total.type[item].sizeSum);
+        labelArray.push(label);
+        bgColorArray.push(drawChart_SizePerType_Color(item));
+    }
+}
+
+function drawChart_SizePerType_Color(i) {
+    if (i !== undefined) {
+        if (i.includes("img")) {
+            return "purple";
+        } else if (i.includes("html")) {
+            return "green";
+        } else if (i.includes("content")) {
+            return "lightgreen";
+        } else if (i.includes("js")) {
+            return "orange";
+        } else if (i.includes("css")) {
+            return "blue";
+        } else if (i.includes("font")) {
+            return "lightblue";
+        } else if (i.includes("other")) {
+            return "grey";
+        }
+    }
+    return "black";
+}
+
+function drawChart_PerThirdParty(data, titletext, target) {
+
+    var dataArray1 = [];
+    var dataArray2 = [];
+    var dataArray3 = [];
+    var labelArray = [];
+    var bgColorArray = [];
+
+    // Internal stat.
+    dataArray1.push(data.internal.size.sum);
+    dataArray2.push(data.internal.httpReq.nbALL);
+    dataArray3.push(data.internal.time.max);
+    labelArray.push("INTERNAL");
+    bgColorArray.push("blue");
+
+    for (var key in data.thirdparty) {
+        drawChart_SizePerThirdParty_Data(data, dataArray1, labelArray, bgColorArray, key, key);
+        drawChart_HitsPerThirdParty_Data(data, dataArray2, labelArray, bgColorArray, key, key);
+        drawChart_TimePerThirdParty_Data(data, dataArray3, labelArray, bgColorArray, key, key);
+    }
+
+    // Unknown stat.
+    dataArray1.push(data.unknown.size.sum);
+    dataArray2.push(data.unknown.httpReq.nbALL);
+    dataArray3.push(data.unknown.time.max);
+    labelArray.push("UNKNOWN");
+    bgColorArray.push("black");
+
+    var config = {
+        type: 'pie',
+        data: {
+            datasets: [{
+                    data: dataArray1,
+                    backgroundColor: bgColorArray,
+                    label: 'Size',
+                    labels: labelArray
+                }, {
+                    data: dataArray2,
+                    backgroundColor: bgColorArray,
+                    label: 'Hits'
+                }, {
+                    data: dataArray3,
+                    backgroundColor: bgColorArray,
+                    label: 'Max Time'
+                }],
+            labels: labelArray
+        },
+        options: {
+            circumference: Math.PI,
+            rotation: Math.PI,
+            responsive: true,
+            tooltips: {
+                enabled: true,
+                titleFontSize: 30,
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        console.info(data);
+                        var label = data.datasets[0].labels[tooltipItem.index] + " " + data.datasets[tooltipItem.datasetIndex].label;
+                        label += ': ';
+                        if (tooltipItem.datasetIndex === 0) {
+                            let tmp = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            label += formatNumber(Math.round(tmp / 1024)) + " Kb";
+                        } else {
+                            label += formatNumber(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
+                        }
+                        return label;
+                    }
+                }},
+            title: {
+                display: true,
+                text: titletext
+            }
+        }
+    };
+
+    var ctx = document.getElementById(target).getContext('2d');
+    let chart = new Chart(ctx, config);
+
+}
+
+function formatNumber(num) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+}
+
+function drawChart_SizePerThirdParty_Data(data, dataArray, labelArray, bgColorArray, item, label) {
+    dataArray.push(data.thirdparty[item].size.sum);
+    labelArray.push(label);
+    bgColorArray.push(drawChart_Random_Color(bgColorArray.length));
+}
+
+function drawChart_HitsPerThirdParty_Data(data, dataArray, labelArray, bgColorArray, item, label) {
+    dataArray.push(data.thirdparty[item].httpReq.nbALL);
+}
+
+function drawChart_TimePerThirdParty_Data(data, dataArray, labelArray, bgColorArray, item, label) {
+    dataArray.push(data.thirdparty[item].time.max);
+}
+
+function drawChart_Random_Color(maxcol) {
+    var colors = ['red', 'green', 'grey', 'orange', 'yellow', 'lightred', 'lightgreen', 'lightgrey', 'lightorange', 'lightyellow'];
+    return colors[maxcol % colors.length];
+}
 
 function createVideo(videos) {
 

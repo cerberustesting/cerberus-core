@@ -99,14 +99,13 @@ public class ImportTestCase extends HttpServlet {
                     if (isCompatible(json)) {
 
                         //Remove attribute not in the Object
-                        json.remove("cerberus_version");
-                        json.remove("user");
-                        JSONArray bugIds = json.getJSONArray("bugIds");
-                        json.remove("bugIds");
+                        JSONObject tcJson = json.getJSONObject("testCase");
+                        JSONArray bugIds = tcJson.getJSONArray("bugIds");
+                        tcJson.remove("bugIds");
 
                         ObjectMapper mapper = new ObjectMapper();
 
-                        TestCase tcInfo = mapper.readValue(json.toString(), TestCase.class);
+                        TestCase tcInfo = mapper.readValue(tcJson.toString(), TestCase.class);
                         tcInfo.setBugID(bugIds);
                         try {
                             tcService.importWithDependency(tcInfo);
@@ -232,7 +231,7 @@ public class ImportTestCase extends HttpServlet {
     private boolean isCompatible(JSONObject json) {
 
         try {
-            String fileVersion = json.getString("cerberus_version");
+            String fileVersion = json.getString("version");
             String projectVersion = Infos.getInstance().getProjectVersion();
             LOG.debug("Version from import file : " + fileVersion);
             LOG.debug("Current Version of Cerberus : " + projectVersion);

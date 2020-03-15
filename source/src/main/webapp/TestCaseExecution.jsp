@@ -28,6 +28,7 @@
         <title id="pageTitle">Execution Detail</title>
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
+        <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseExecution.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
@@ -149,13 +150,15 @@
                                 <li><a data-toggle="tab" href="#tabEnv" id="editTabEnv" name="tabEnv">Environment</a></li>
                                 <li><a data-toggle="tab" href="#tabRobot" id="editTabRobot" name="tabRobot">Robot</a></li>
                                 <li><a data-toggle="tab" href="#tabDep" id="editTabDep" name="tabDep">Dependencies</a></li>
-                                <li><a data-toggle="tab" href="#tabTraca" id="editTabTraca" name="tabTraca">Tracability</a></li>
+                                <li><a data-toggle="tab" href="#tabTraca" id="editTabTraca" name="tabTraca">Traceability</a></li>
+                                <li><a data-toggle="tab" href="#tabNetwork" id="editTabNetwork" name="tabNetwork" style="display: none;">Network</a></li>
                             </ul>
                         </div>
                     </div>
                 </div>
                 <div class="panel-body" id="testCaseDetails">
                     <div class="tab-content">
+
                         <div class="center marginTop25 tab-pane fade in active" id="tabSteps">
                             <div id="handler" class="row" style="margin: 0px; margin-top: 10px;">
                                 <nav class="col-lg-3" id="nav-execution" style="z-index:1;">
@@ -250,6 +253,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="center marginTop25 tab-pane fade" id="tabProperties">
                             <div id="propertiesModal">
                                 <div class="property-table">
@@ -272,6 +276,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="center marginTop25 tab-pane fade" id="tabDetail">
                             <div class="row">
                                 <div class="col-sm-2">
@@ -428,6 +433,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="center marginTop25 tab-pane fade" id="tabRobot">
                             <div class="row">
                                 <div class="col-sm-3">
@@ -578,6 +584,24 @@
                                             <tbody id="depTableBody">
                                             </tbody>
                                         </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="center marginTop25 tab-pane fade" id="tabNetwork">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <canvas id="myChart1"></canvas>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <canvas id="myChart2"></canvas>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <canvas id="myChart3"></canvas>
                                     </div>
                                 </div>
                             </div>

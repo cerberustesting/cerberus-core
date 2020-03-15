@@ -120,7 +120,7 @@ function initModalTestCase() {
     $("[name='testCaseInfoField']").html(doc.getDocLabel("page_testcaselist", "testCaseInfo"));
     $("[name='testCaseParameterField']").html(doc.getDocLabel("page_testcaselist", "testCaseParameter"));
     $("[name='activationCriteriaField']").html(doc.getDocLabel("page_testcaselist", "activationCriteria"));
-    // Tracability
+    // Traceability
     $("[name='lbl_datecreated']").html(doc.getDocOnline("transversal", "DateCreated"));
     $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));

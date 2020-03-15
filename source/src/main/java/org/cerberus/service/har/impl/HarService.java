@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -144,8 +145,10 @@ public class HarService implements IHarService {
                     thirdPartyStat = addStat(key, val, thirdPartyStat);
                 }
             }
-            thirdPartyStat.put("nb", nbTP);
             stat.put(PROVIDER_THIRDPARTY, thirdPartyStat);
+
+            // Adding total ThirdParty nb to root level
+            stat.put("nbThirdParty", nbTP);
 
             har.put("stat", stat);
             return har;
@@ -313,6 +316,7 @@ public class HarService implements IHarService {
                         harStat.setJsSizeMax(reqSize);
                         harStat.setUrlJsSizeMax(url);
                     }
+                    harStat.setJsHitNb(harStat.getJsHitNb() + 1);
                     tempList = harStat.getJsList();
                     tempList.add(url);
                     harStat.setJsList(tempList);
@@ -325,6 +329,7 @@ public class HarService implements IHarService {
                         harStat.setCssSizeMax(reqSize);
                         harStat.setUrlCssSizeMax(url);
                     }
+                    harStat.setCssHitNb(harStat.getCssHitNb() + 1);
                     tempList = harStat.getCssList();
                     tempList.add(url);
                     harStat.setCssList(tempList);
@@ -337,6 +342,7 @@ public class HarService implements IHarService {
                         harStat.setHtmlSizeMax(reqSize);
                         harStat.setUrlHtmlSizeMax(url);
                     }
+                    harStat.setHtmlHitNb(harStat.getHtmlHitNb() + 1);
                     tempList = harStat.getHtmlList();
                     tempList.add(url);
                     harStat.setHtmlList(tempList);
@@ -349,6 +355,7 @@ public class HarService implements IHarService {
                         harStat.setImgSizeMax(reqSize);
                         harStat.setUrlImgSizeMax(url);
                     }
+                    harStat.setImgHitNb(harStat.getImgHitNb() + 1);
                     tempList = harStat.getImgList();
                     tempList.add(url);
                     harStat.setImgList(tempList);
@@ -361,6 +368,7 @@ public class HarService implements IHarService {
                         harStat.setContentSizeMax(reqSize);
                         harStat.setUrlContentSizeMax(url);
                     }
+                    harStat.setContentHitNb(harStat.getContentHitNb() + 1);
                     tempList = harStat.getContentList();
                     tempList.add(url);
                     harStat.setContentList(tempList);
@@ -373,6 +381,7 @@ public class HarService implements IHarService {
                         harStat.setFontSizeMax(reqSize);
                         harStat.setUrlFontSizeMax(url);
                     }
+                    harStat.setFontHitNb(harStat.getFontHitNb() + 1);
                     tempList = harStat.getFontList();
                     tempList.add(url);
                     harStat.setFontList(tempList);
@@ -385,47 +394,23 @@ public class HarService implements IHarService {
                         harStat.setOtherSizeMax(reqSize);
                         harStat.setUrlOtherSizeMax(url);
                     }
+                    harStat.setOtherHitNb(harStat.getOtherHitNb() + 1);
                     tempList = harStat.getOtherList();
                     tempList.add(url);
                     harStat.setOtherList(tempList);
                     break;
             }
 
-            switch (entry.getJSONObject("response").getInt("status")) {
-                case 200:
-                    harStat.setNb200(harStat.getNb200() + 1);
-                    break;
-                case 300:
-                    harStat.setNb300(harStat.getNb300() + 1);
-                    break;
-                case 301:
-                    harStat.setNb301(harStat.getNb301() + 1);
-                    break;
-                case 302:
-                    harStat.setNb302(harStat.getNb302() + 1);
-                    break;
-                case 307:
-                    harStat.setNb307(harStat.getNb307() + 1);
-                    break;
-                case 400:
-                    harStat.setNb400(harStat.getNb400() + 1);
-                    break;
-                case 403:
-                    harStat.setNb403(harStat.getNb403() + 1);
-                    break;
-                case 404:
-                    harStat.setNb404(harStat.getNb404() + 1);
-                    break;
-                case 500:
-                    harStat.setNb500(harStat.getNb500() + 1);
-                    break;
-                case 0:
-                    harStat.setNbError(harStat.getNbError() + 1);
-                    tempList = harStat.getUrlError();
-                    tempList.add(url);
-                    harStat.setUrlError(tempList);
-                    break;
+            int httpS = entry.getJSONObject("response").getInt("status");
+            HashMap<Integer, Integer> tmpStat = harStat.getHttpRetCode();
+
+            if (tmpStat.containsKey(httpS)) {
+                tmpStat.put(httpS, tmpStat.get(httpS) + 1);
+            } else {
+                tmpStat.put(httpS, 1);
             }
+            harStat.setHttpRetCode(tmpStat);
+
             harStat.setNbRequests(harStat.getNbRequests() + 1);
             if (reqSize > 0) {
                 harStat.setSizeSum(harStat.getSizeSum() + reqSize);
@@ -450,6 +435,15 @@ public class HarService implements IHarService {
         return harStat;
     }
 
+    /**
+     * Transform the HarStat Object to a JSONObject and add it to stat Object
+     * under statKey value.
+     *
+     * @param har
+     * @param domains
+     * @param system
+     * @return
+     */
     private JSONObject addStat(String statKey, HarStat harStat, JSONObject stat) {
 
         try {
@@ -460,6 +454,7 @@ public class HarService implements IHarService {
             JSONObject js = new JSONObject();
             js.put("sizeSum", harStat.getJsSizeSum());
             js.put("sizeMax", harStat.getJsSizeMax());
+            js.put("nbHits", harStat.getJsHitNb());
             js.put("urlMax", harStat.getUrlJsSizeMax());
             js.put("url", harStat.getJsList());
             type.put("js", js);
@@ -467,6 +462,7 @@ public class HarService implements IHarService {
             JSONObject css = new JSONObject();
             css.put("sizeSum", harStat.getCssSizeSum());
             css.put("sizeMax", harStat.getCssSizeMax());
+            css.put("nbHits", harStat.getCssHitNb());
             css.put("urlMax", harStat.getUrlCssSizeMax());
             css.put("url", harStat.getCssList());
             type.put("css", css);
@@ -474,6 +470,7 @@ public class HarService implements IHarService {
             JSONObject html = new JSONObject();
             html.put("sizeSum", harStat.getHtmlSizeSum());
             html.put("sizeMax", harStat.getHtmlSizeMax());
+            html.put("nbHits", harStat.getHtmlHitNb());
             html.put("urlMax", harStat.getUrlHtmlSizeMax());
             html.put("url", harStat.getHtmlList());
             type.put("html", html);
@@ -481,6 +478,7 @@ public class HarService implements IHarService {
             JSONObject img = new JSONObject();
             img.put("sizeSum", harStat.getImgSizeSum());
             img.put("sizeMax", harStat.getImgSizeMax());
+            img.put("nbHits", harStat.getImgHitNb());
             img.put("urlMax", harStat.getUrlImgSizeMax());
             img.put("url", harStat.getImgList());
             type.put("img", img);
@@ -488,6 +486,7 @@ public class HarService implements IHarService {
             JSONObject other = new JSONObject();
             other.put("sizeSum", harStat.getOtherSizeSum());
             other.put("sizeMax", harStat.getOtherSizeMax());
+            other.put("nbHits", harStat.getOtherHitNb());
             other.put("urlMax", harStat.getUrlOtherSizeMax());
             other.put("url", harStat.getOtherList());
             type.put("other", other);
@@ -495,6 +494,7 @@ public class HarService implements IHarService {
             JSONObject content = new JSONObject();
             content.put("sizeSum", harStat.getContentSizeSum());
             content.put("sizeMax", harStat.getContentSizeMax());
+            content.put("nbHits", harStat.getContentHitNb());
             content.put("urlMax", harStat.getUrlContentSizeMax());
             content.put("url", harStat.getContentList());
             type.put("content", content);
@@ -502,26 +502,46 @@ public class HarService implements IHarService {
             JSONObject font = new JSONObject();
             font.put("sizeSum", harStat.getFontSizeSum());
             font.put("sizeMax", harStat.getFontSizeMax());
+            font.put("nbHits", harStat.getFontHitNb());
             font.put("urlMax", harStat.getUrlFontSizeMax());
             font.put("url", harStat.getFontList());
             type.put("font", font);
 
             total.put("type", type);
 
-            JSONObject httpReq = new JSONObject();
-            httpReq.put("nbRequests", harStat.getNbRequests());
-            httpReq.put("nbError", harStat.getNbError());
-            httpReq.put("urlError", harStat.getUrlError());
-            httpReq.put("nb200", harStat.getNb200());
-            httpReq.put("nb300", harStat.getNb300());
-            httpReq.put("nb301", harStat.getNb301());
-            httpReq.put("nb302", harStat.getNb302());
-            httpReq.put("nb307", harStat.getNb307());
-            httpReq.put("nb400", harStat.getNb400());
-            httpReq.put("nb403", harStat.getNb403());
-            httpReq.put("nb404", harStat.getNb404());
-            httpReq.put("nb500", harStat.getNb500());
-            total.put("httpReq", httpReq);
+            int nb1XX = 0;
+            int nb2XX = 0;
+            int nb3XX = 0;
+            int nb4XX = 0;
+            int nb5XX = 0;
+
+            JSONObject httpReqA = new JSONObject();
+            HashMap<Integer, Integer> httpStatList = harStat.getHttpRetCode();
+            for (Map.Entry<Integer, Integer> entry : httpStatList.entrySet()) {
+                Integer key = entry.getKey();
+                Integer val = entry.getValue();
+                httpReqA.put("nb" + key, val);
+                if (key < 200) {
+                    nb1XX += val;
+                } else if (key < 300) {
+                    nb2XX += val;
+                } else if (key < 400) {
+                    nb3XX += val;
+                } else if (key < 500) {
+                    nb4XX += val;
+                } else {
+                    nb5XX += val;
+                }
+            }
+            httpReqA.put("nbALL", harStat.getNbRequests());
+            httpReqA.put("nbError", harStat.getNbError());
+            httpReqA.put("urlError", harStat.getUrlError());
+            httpReqA.put("nb1XX", nb1XX);
+            httpReqA.put("nb2XX", nb2XX);
+            httpReqA.put("nb3XX", nb3XX);
+            httpReqA.put("nb4XX", nb4XX);
+            httpReqA.put("nb5XX", nb5XX);
+            total.put("httpReq", httpReqA);
 
             JSONObject size = new JSONObject();
             size.put("sum", harStat.getSizeSum());

@@ -21,6 +21,8 @@ package org.cerberus.servlet.crud.test.testcase;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -70,14 +72,19 @@ public class ExportTestCase extends HttpServlet {
             // Java object to JSON string
             ObjectMapper mapper = new ObjectMapper();
             JSONObject jo = new JSONObject(mapper.writeValueAsString(tcInfo));
-            jo.put("cerberus_version", Infos.getInstance().getProjectVersion());
-            jo.put("user", httpServletRequest.getUserPrincipal());
             jo.put("bugIds", tcInfo.getBugID());
+
+            JSONObject export = new JSONObject();
+            export.put("version", Infos.getInstance().getProjectVersion());
+            export.put("user", httpServletRequest.getUserPrincipal());
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+            export.put("date", formatter.format(new Date()));
+            export.put("testCase", jo);
 
             httpServletResponse.setContentType("application/json");
             httpServletResponse.setHeader("Content-Disposition", "attachment; filename=" + test + "-" + testcase + ".json");
             // Nice formating the json result by putting indent 4 parameter.
-            httpServletResponse.getOutputStream().print(jo.toString(4));
+            httpServletResponse.getOutputStream().print(export.toString(4));
 
         } catch (CerberusException | JSONException ex) {
             LOG.warn(ex);

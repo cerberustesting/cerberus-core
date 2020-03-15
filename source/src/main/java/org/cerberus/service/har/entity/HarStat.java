@@ -21,6 +21,7 @@ package org.cerberus.service.har.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -31,15 +32,7 @@ public class HarStat {
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(HarStat.class);
 
     private int nbRequests;
-    private int nb200;
-    private int nb300;
-    private int nb301;
-    private int nb302;
-    private int nb307;
-    private int nb400;
-    private int nb403;
-    private int nb404;
-    private int nb500;
+    private HashMap<Integer, Integer> httpRetCode;
     private int nbError;
     private List<String> urlError;
 
@@ -47,6 +40,7 @@ public class HarStat {
     private int sizeSum;
     private int sizeMax;
     private String urlSizeMax;
+
     // timing requests.
     private Date firstStart;
     private String firstStartS;
@@ -67,42 +61,49 @@ public class HarStat {
     // per type.
     private int jsSizeSum;
     private int jsSizeMax;
+    private int jsHitNb;
     private String urlJsSizeMax;
     private List<String> jsList;
 
     private int cssSizeSum;
     private int cssSizeMax;
+    private int cssHitNb;
     private String urlCssSizeMax;
     private List<String> cssList;
 
     private int htmlSizeSum;
     private int htmlSizeMax;
+    private int htmlHitNb;
     private String urlHtmlSizeMax;
     private List<String> htmlList;
 
     private int imgSizeSum;
     private int imgSizeMax;
+    private int imgHitNb;
     private String urlImgSizeMax;
     private List<String> imgList;
 
     private int contentSizeSum;
     private int contentSizeMax;
+    private int contentHitNb;
     private String urlContentSizeMax;
     private List<String> contentList;
 
     private int fontSizeSum;
     private int fontSizeMax;
+    private int fontHitNb;
     private String urlFontSizeMax;
     private List<String> fontList;
 
     private int otherSizeSum;
     private int otherSizeMax;
+    private int otherHitNb;
     private String urlOtherSizeMax;
     private List<String> otherList;
 
     public HarStat() {
         LOG.debug("Init HarStat Object.");
-        urlError = new ArrayList<>();
+
         jsList = new ArrayList<>();
         cssList = new ArrayList<>();
         htmlList = new ArrayList<>();
@@ -110,20 +111,16 @@ public class HarStat {
         contentList = new ArrayList<>();
         fontList = new ArrayList<>();
         otherList = new ArrayList<>();
+
+        httpRetCode = new HashMap<>();
         nbRequests = 0;
-        nb200 = 0;
-        nb300 = 0;
-        nb301 = 0;
-        nb302 = 0;
-        nb307 = 0;
-        nb400 = 0;
-        nb403 = 0;
-        nb404 = 0;
-        nb500 = 0;
         nbError = 0;
+        urlError = new ArrayList<>();
+
         sizeSum = 0;
         sizeMax = 0;
         urlSizeMax = null;
+
         timeSum = 0;
         timeAvg = 0;
         timeMax = 0;
@@ -135,28 +132,106 @@ public class HarStat {
         lastStartS = null;
         lastDuration = 0;
         lastURL = null;
+
         jsSizeSum = 0;
         jsSizeMax = 0;
+        jsHitNb = 0;
         urlJsSizeMax = null;
+
         cssSizeSum = 0;
         cssSizeMax = 0;
+        cssHitNb = 0;
         urlCssSizeMax = null;
+
         htmlSizeSum = 0;
         htmlSizeMax = 0;
+        htmlHitNb = 0;
         urlHtmlSizeMax = null;
+
         imgSizeSum = 0;
         imgSizeMax = 0;
+        imgHitNb = 0;
         urlImgSizeMax = null;
+
         contentSizeSum = 0;
         contentSizeMax = 0;
+        contentHitNb = 0;
         urlContentSizeMax = null;
+
         fontSizeSum = 0;
         fontSizeMax = 0;
+        fontHitNb = 0;
         urlFontSizeMax = null;
+
         otherSizeSum = 0;
         otherSizeMax = 0;
+        otherHitNb = 0;
         urlOtherSizeMax = null;
 
+    }
+
+    public int getJsHitNb() {
+        return jsHitNb;
+    }
+
+    public void setJsHitNb(int jsHitNb) {
+        this.jsHitNb = jsHitNb;
+    }
+
+    public int getCssHitNb() {
+        return cssHitNb;
+    }
+
+    public void setCssHitNb(int cssHitNb) {
+        this.cssHitNb = cssHitNb;
+    }
+
+    public int getHtmlHitNb() {
+        return htmlHitNb;
+    }
+
+    public void setHtmlHitNb(int htmlHitNb) {
+        this.htmlHitNb = htmlHitNb;
+    }
+
+    public int getImgHitNb() {
+        return imgHitNb;
+    }
+
+    public void setImgHitNb(int imgHitNb) {
+        this.imgHitNb = imgHitNb;
+    }
+
+    public int getContentHitNb() {
+        return contentHitNb;
+    }
+
+    public void setContentHitNb(int contentHitNb) {
+        this.contentHitNb = contentHitNb;
+    }
+
+    public int getFontHitNb() {
+        return fontHitNb;
+    }
+
+    public void setFontHitNb(int fontHitNb) {
+        this.fontHitNb = fontHitNb;
+    }
+
+    public int getOtherHitNb() {
+        return otherHitNb;
+    }
+
+    public void setOtherHitNb(int otherHitNb) {
+        this.otherHitNb = otherHitNb;
+    }
+
+    public HashMap<Integer, Integer> getHttpRetCode() {
+        return httpRetCode;
+    }
+
+    public void setHttpRetCode(HashMap<Integer, Integer> httpRetCode) {
+        this.httpRetCode = httpRetCode;
     }
 
     public int getNbRequests() {
@@ -165,78 +240,6 @@ public class HarStat {
 
     public void setNbRequests(int nbRequests) {
         this.nbRequests = nbRequests;
-    }
-
-    public int getNb200() {
-        return nb200;
-    }
-
-    public void setNb200(int nb200) {
-        this.nb200 = nb200;
-    }
-
-    public int getNb300() {
-        return nb300;
-    }
-
-    public int getNb307() {
-        return nb307;
-    }
-
-    public void setNb307(int nb307) {
-        this.nb307 = nb307;
-    }
-
-    public int getNb403() {
-        return nb403;
-    }
-
-    public void setNb403(int nb403) {
-        this.nb403 = nb403;
-    }
-
-    public void setNb300(int nb300) {
-        this.nb300 = nb300;
-    }
-
-    public int getNb301() {
-        return nb301;
-    }
-
-    public void setNb301(int nb301) {
-        this.nb301 = nb301;
-    }
-
-    public int getNb302() {
-        return nb302;
-    }
-
-    public void setNb302(int nb302) {
-        this.nb302 = nb302;
-    }
-
-    public int getNb400() {
-        return nb400;
-    }
-
-    public void setNb400(int nb400) {
-        this.nb400 = nb400;
-    }
-
-    public int getNb404() {
-        return nb404;
-    }
-
-    public void setNb404(int nb404) {
-        this.nb404 = nb404;
-    }
-
-    public int getNb500() {
-        return nb500;
-    }
-
-    public void setNb500(int nb500) {
-        this.nb500 = nb500;
     }
 
     public int getNbError() {

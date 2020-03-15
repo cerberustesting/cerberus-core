@@ -44,7 +44,7 @@ function initModalTestcaseExecutionQueue() {
     var doc = new Doc();
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
-    // Tracability
+    // Traceability
     $("[name='lbl_created']").html(doc.getDocOnline("transversal", "DateCreated"));
     $("[name='lbl_creator']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_lastModified']").html(doc.getDocOnline("transversal", "DateModif"));

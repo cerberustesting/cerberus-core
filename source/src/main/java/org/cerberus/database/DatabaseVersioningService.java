@@ -1150,7 +1150,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
 
-//-- Test and TestCase information inside the execution tables. That will allow to have the full tracability on the pretestcase executed.
+//-- Test and TestCase information inside the execution tables. That will allow to have the full traceability on the pretestcase executed.
 //--------------------------
         b = new StringBuilder();
         b.append("ALTER TABLE `testcasestepexecution` ADD COLUMN `Test` VARCHAR(45) NULL DEFAULT NULL  AFTER `Step` , ADD COLUMN `TestCase` VARCHAR(45) NULL DEFAULT NULL  AFTER `Test` ;");
@@ -4229,7 +4229,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
 
-        // Tracability on Testdatalib object.
+        // Traceability on Testdatalib object.
         // 668
         b = new StringBuilder();
         b.append("ALTER TABLE `testdatalib` ");
@@ -5687,7 +5687,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("INSERT INTO `parameter` VALUES ('','cerberus_executiondetail_use','Y','Do you want to use the new Execution Detail Page (Y or N)')");
         a.add(b.toString());
 
-        // Add tracability fields in testcasestep table.
+        // Add traceability fields in testcasestep table.
         // 964
         b = new StringBuilder();
         b.append("ALTER TABLE `testcasestep` ");
@@ -6273,7 +6273,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("  ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `Active`;");
         a.add(b.toString());
 
-        // Added tracability on application table.
+        // Added traceability on application table.
         // 1071
         b = new StringBuilder();
         b.append("ALTER TABLE `application` ");
@@ -6631,7 +6631,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("UPDATE `parameter` SET `param`='cerberus_proxyauthentification_user' WHERE `param`='cerberus_callservicerest_proxyuser';");
         a.add(b.toString());
 
-        // Add tracability fields in campaignlabel table.
+        // Add traceability fields in campaignlabel table.
         // 1145
         b = new StringBuilder();
         b.append("ALTER TABLE `campaignlabel` ");

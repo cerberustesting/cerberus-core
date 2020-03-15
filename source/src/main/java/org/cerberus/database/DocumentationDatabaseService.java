@@ -599,10 +599,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcaseexecution','Build','','en','Sprint','Name of the Build/sprint.',NULL)");
         b.append(",('testcaseexecution','ControlMessage','','en','ControlMessage','This is the message reported by Cerberus on the execution of the <code class=\\'doc-crbvvoca\\'>test case</code>.',NULL)");
         b.append(",('testcaseexecution','controlstatus','','en','RC','This is the return code of the Execution. It can take the following values :<br><br><b>OK</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> has been executed and everything happened as expected.<br><b>KO</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> has been executed and reported an error that will create a bug.<br><b>NA</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> has been executed but some data to perform the test could not be collected (SQL returning empty resultset).<br><b>FA</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> failed to execute because there were an error inside the test such as an SQL error. The <code class=\\'doc-crbvvoca\\'>test case</code> needs to be corrected.<br><b>CA</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> has been cancelled. It failed during the execution because of technical issues (ex. Lost of connection issue to selenium during the execution)<br><b>PE</b> : The execution is still running and not finished yet or has been interupted.',NULL)");
-        b.append(",('testcaseexecution','crbversion','','en','Cerberus Version','This is the version of the Cerberus Engine that executed the <code class=\\'doc-crbvvoca\\'>test case</code>.<br>This data has been created for tracability purpose as the behavious of Cerberus could varry from one version to another.',NULL)");
+        b.append(",('testcaseexecution','crbversion','','en','Cerberus Version','This is the version of the Cerberus Engine that executed the <code class=\\'doc-crbvvoca\\'>test case</code>.<br>This data has been created for traceability purpose as the behavious of Cerberus could varry from one version to another.',NULL)");
         b.append(",('testcaseexecution','crbversion','','fr','Version de Cerberus',NULL,NULL)");
         b.append(",('testcaseexecution','end','','en','End',' ',NULL)");
-        b.append(",('testcaseexecution','executor','','en','Executor user','This is the name of the executor user that executed the <code class=\\'doc-crbvvoca\\'>test case</code>.<br>This data has been created for tracability purpose as the result of Cerberus Test could varry between human and selenium test.',NULL)");
+        b.append(",('testcaseexecution','executor','','en','Executor user','This is the name of the executor user that executed the <code class=\\'doc-crbvvoca\\'>test case</code>.<br>This data has been created for traceability purpose as the result of Cerberus Test could varry between human and selenium test.',NULL)");
         b.append(",('testcaseexecution','id','','en','Execution ID',' ',NULL)");
         b.append(",('testcaseexecution','IP','','en','IP','This is the ip of the machine of the Selenium Server where the <code class=\\'doc-crbvvoca\\'>test case</code> executed.',NULL)");
         b.append(",('testcaseexecution','Port','','en','Port','This is the port used to contact the Selenium Server where the <code class=\\'doc-crbvvoca\\'>test case</code> executed.',NULL)");
@@ -2260,8 +2260,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testdatalib','m_tab1_text','','fr','Defintion','',NULL)");
         b.append(",('page_testdatalib','m_tab2_text','','en','SubData','',NULL)");
         b.append(",('page_testdatalib','m_tab2_text','','fr','SubData','',NULL)");
-        b.append(",('page_testdatalib','m_tab3_text','','en','Tracability','',NULL)");
-        b.append(",('page_testdatalib','m_tab3_text','','fr','Traçabité','',NULL)");
+        b.append(",('page_testdatalib','m_tab3_text','','en','Traceability','',NULL)");
+        b.append(",('page_testdatalib','m_tab3_text','','fr','Traçabilité','',NULL)");
         b.append(",('page_testdatalib','page_title','','en','Test Data Library','',NULL)");
         b.append(",('page_testdatalib','page_title','','fr','Librairie de données de tests',NULL,NULL)");
         b.append(",('page_testdatalib','table_testdatalib','','en','Test Data List',NULL,NULL)");
