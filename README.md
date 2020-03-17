@@ -23,6 +23,7 @@ A Slack channel is available [here](https://cerberustesting.slack.com)
 
 Cerberus Production is available [here](http://prod.cerberus-testing.org)
 
+Snapshot releases are available [here](http://vm.cerberus-testing.org/delivery/)
 
 # License
 
