@@ -408,3 +408,7 @@ include::include/en/{file-to-include}[]
 === 4.6
 :file-to-include: changelog_4.6_en.adoc
 include::include/en/{file-to-include}[]
+ 
+=== 4.7
+:file-to-include: changelog_4.7_en.adoc
+include::include/en/{file-to-include}[]
