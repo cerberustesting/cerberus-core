@@ -114,7 +114,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 }
             }
 
-
         }).fail(handleErrorAjaxAfterTimeout);
 
         loadTagExec();

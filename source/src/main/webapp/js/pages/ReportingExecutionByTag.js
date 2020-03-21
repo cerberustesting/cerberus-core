@@ -530,7 +530,7 @@ function loadReportList(data2, selectTag, fullListSelected) {
                                             </table></form><div class="marginBottom20"></div>');
             }
 
-            var config = new TableConfigurationsClientSide("listTable", data2.tableContent, aoColumnsFunc(data2.tableColumns), [2, 'asc']);
+            var config = new TableConfigurationsClientSide("listTable", data2.tableContent, aoColumnsFunc(data2.tableColumns), true, [0, 'asc']);
             customConfig(config);
 
             var table = createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);

@@ -150,8 +150,8 @@
                                 <li><a data-toggle="tab" href="#tabEnv" id="editTabEnv" name="tabEnv">Environment</a></li>
                                 <li><a data-toggle="tab" href="#tabRobot" id="editTabRobot" name="tabRobot">Robot</a></li>
                                 <li><a data-toggle="tab" href="#tabDep" id="editTabDep" name="tabDep">Dependencies</a></li>
-                                <li><a data-toggle="tab" href="#tabTraca" id="editTabTraca" name="tabTraca">Traceability</a></li>
                                 <li><a data-toggle="tab" href="#tabNetwork" id="editTabNetwork" name="tabNetwork" style="display: none;">Network</a></li>
+                                <li><a data-toggle="tab" href="#tabTraca" id="editTabTraca" name="tabTraca">Traceability</a></li>
                             </ul>
                         </div>
                     </div>
@@ -591,19 +591,60 @@
 
                         <div class="center marginTop25 tab-pane fade" id="tabNetwork">
                             <div class="container">
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <canvas id="myChart1"></canvas>
+
+                                <div class="panel panel-default" id="NS1Panel">
+                                    <div class="panel-heading card" data-toggle="collapse" data-target="#NS1">
+                                        <span class="fa fa-pie-chart fa-fw"></span>
+                                        <label id="ns1Label">Global Statistics</label>
+                                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                     </div>
-                                    <div class="col-sm-6">
-                                        <canvas id="myChart2"></canvas>
+                                    <div class="panel-body collapse in" id="NS1">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <canvas id="myChart1"></canvas>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <canvas id="myChart2"></canvas>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <canvas id="myChart3"></canvas>
+
+                                <div class="panel panel-default" id="NS2Panel">
+                                    <div class="panel-heading card" data-toggle="collapse" data-target="#NS2">
+                                        <span class="fa fa-pie-chart fa-fw"></span>
+                                        <label id="ns2Label">Statistics Per Third Party</label>
+                                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                    </div>
+                                    <div class="panel-body collapse in" id="NS2">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <canvas id="myChart3"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="row" id="detailUnknown">
+                                            <ul class="list-group marginTop25" id="detailUnknownList">
+                                            </ul>                                    
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <canvas id="myChart4"></canvas>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+
+                                <div class="panel panel-default" id="NS3Panel">
+                                    <div class="panel-heading card" data-toggle="collapse" data-target="#NS3">
+                                        <span class="fa fa-pie-chart fa-fw"></span>
+                                        <label id="ns3Label">Requests List</label>
+                                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                    </div>
+                                    <div class="panel-body collapse in" id="NS3">
+                                        <table id="requestTable" class="table table-bordered table-hover display" name="requestTable"></table>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
 

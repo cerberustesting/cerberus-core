@@ -20,9 +20,11 @@
 package org.cerberus.service.har.entity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import org.json.JSONObject;
 
 /**
  * @author vertigo17
@@ -30,6 +32,9 @@ import java.util.List;
 public class HarStat {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(HarStat.class);
+
+    private HashMap<String, String> hosts;
+    private List<JSONObject> urlList;
 
     private int nbRequests;
     private HashMap<Integer, Integer> httpRetCode;
@@ -47,11 +52,13 @@ public class HarStat {
     private Date firstEnd;
     private int firstDuration;
     private String firstURL;
+
     private Date lastStart;
     private String lastStartS;
     private Date lastEnd;
     private int lastDuration;
     private String lastURL;
+
     private int timeSum;
     private int timeAvg;
     private int timeMax;
@@ -104,6 +111,9 @@ public class HarStat {
     public HarStat() {
         LOG.debug("Init HarStat Object.");
 
+        hosts = new HashMap<>();
+        urlList = new ArrayList<>();
+
         jsList = new ArrayList<>();
         cssList = new ArrayList<>();
         htmlList = new ArrayList<>();
@@ -112,7 +122,12 @@ public class HarStat {
         fontList = new ArrayList<>();
         otherList = new ArrayList<>();
 
+        List<Integer> httpRetList = Arrays.asList(100, 101, 102, 103, 200, 201, 202, 203, 204, 300, 301, 302, 303, 304, 400, 401, 402, 403, 404, 500);
+
         httpRetCode = new HashMap<>();
+        for (Integer tmpInteger : httpRetList) {
+            httpRetCode.put(tmpInteger, 0);
+        }
         nbRequests = 0;
         nbError = 0;
         urlError = new ArrayList<>();
@@ -126,9 +141,11 @@ public class HarStat {
         timeMax = 0;
         timeTotalDuration = 0;
         urlTimeMax = null;
+
         firstStartS = null;
         firstDuration = 0;
         firstURL = null;
+
         lastStartS = null;
         lastDuration = 0;
         lastURL = null;
@@ -168,6 +185,26 @@ public class HarStat {
         otherHitNb = 0;
         urlOtherSizeMax = null;
 
+    }
+
+    public List<JSONObject> getUrlList() {
+        return urlList;
+    }
+
+    public void setUrlList(List<JSONObject> urlList) {
+        this.urlList = urlList;
+    }
+
+    public void appendUrlList(JSONObject urlEntry) {
+        this.urlList.add(urlEntry);
+    }
+
+    public HashMap<String, String> getHosts() {
+        return hosts;
+    }
+
+    public void setHosts(HashMap<String, String> domains) {
+        this.hosts = domains;
     }
 
     public int getJsHitNb() {

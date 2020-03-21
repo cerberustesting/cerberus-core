@@ -486,24 +486,38 @@ In addition to standard HAR structure, Cerberus will add a `stat` json entry in 
 
     "stat": {
         "total":{
+            "hosts": [
+                "www.laredoute.fr",
+                "fonts.googleapis.com",
+                "laredoutemobile.commander1.com",
+                "privacy.trustcommander.net"
+            ],
             "size":{
                 "max": 125109,
                 "sum": 2286467,
                 "urlMax": "https://www.laredoute.com/mar/toto.jpg"
             },
             "httpReq":{
-                "nbRequests": 117,
-                "urlError": [ "https://www.laredoute.com/mar/to.jpg"],
+                "nbALL": 117,
                 "nbError": 1,
+                "urlError": [ "https://www.lrd.co/mar/to.jpg"],
+                "nb100": 0,
+                "nb101": 0,
+                "nb1xx": 0,
                 "nb200": 111,
+                "nb201": 0,
+                "nb2xx": 111,
                 "nb300": 0,
                 "nb301": 2,
                 "nb302": 2,
                 "nb307": 0,
+                "nb3xx": 4,
                 "nb400": 0,
                 "nb403": 0,
                 "nb404": 1,
-                "nb500": 0
+                "nb4xx": 1,
+                "nb500": 0,
+                "nb5xx": 0
             },
             "time":{
                 "totalDuration": 18062,
@@ -511,21 +525,27 @@ In addition to standard HAR structure, Cerberus will add a `stat` json entry in 
                 "urlMax": "https://latem.commander1.com/dc3/?chn=D",
                 "avg": 455,
                 "sum": 53249,
-                "firstDuration": 47,
-                "firstStart": "2020-02-25T20:15:16.048Z",
-                "firstEnd": "20-02-25T20:15:16.95Z",
                 "firstURL": "http://www.laredoute.fr/",
-                "lastDuration": 4455,
+                "firstStart": "2020-02-25T20:15:16.048Z",
+                "firstStartR": 0,
+                "firstEnd": "20-02-25T20:15:16.95Z",
+                "firstEndR": 47,
+                "firstDuration": 47,
+                "lastURL": "https://p.trust.net/p-c/?id=1&site=12",
                 "lastStart": "2020-02-25T20:15:29.655Z",
+                "lastStartR": 13607,
                 "lastEnd": "20-02-25T20:15:34.110Z",
-                "lastURL": "https://p.trust.net/p-c/?id=1&site=12"
+                "lastEndR": 18062,
+                "lastDuration": 4455
             },
             "type":{
                 "css":{
+                    "nbHits": 2,
                     "sizeSum": 125109,
                     "sizeMax": 2286467,
                     "urlMax": "https://www.laredoute.com/mar/12.css"
-                    "url": [ "https://www.laredoute.com/mar/13.css" ]
+                    "url": [ "https://www.laredoute.com/mar/12.css",
+                            "https://www.laredoute.com/mar/13.css" ]
                 },
                 "img":{...},
                 "other":{...},
@@ -538,11 +558,11 @@ In addition to standard HAR structure, Cerberus will add a `stat` json entry in 
         "internal":{...},
         "unknown":{...},
         "thirdparty":{
-            "nb":2,
             "ThirdParty1":{...},
             "ThirdParty2":{...}
         },
-        "ignore":{...}
+        "ignore":{...},
+        "nbThirdParty":2
     }
 
 Cerberus will determine if a hit must be ignored (and appear in *[blue]`ignore`* section) by feeding parameter `cerberus_webperf_ignoredomainlist` with coma seperated domains to ignore.

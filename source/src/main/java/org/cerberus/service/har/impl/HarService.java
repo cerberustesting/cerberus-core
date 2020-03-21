@@ -28,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -41,7 +40,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.service.har.IHarService;
 import org.cerberus.service.har.entity.HarStat;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -109,7 +107,7 @@ public class HarService implements IHarService {
 
                 // If we don't IGNORE, we add it to total.
                 if (!provider.equalsIgnoreCase(PROVIDER_IGNORE)) {
-                    harTotalStat = processEntry(harTotalStat, harEntries.getJSONObject(i), url);
+                    harTotalStat = processEntry(harTotalStat, harEntries.getJSONObject(i), url, provider);
                 }
 
                 // In all cases, we enrish the stat of the HasMap (if it exist) and put it back.
@@ -118,18 +116,30 @@ public class HarService implements IHarService {
                 } else {
                     harProviderStat = target.get(provider);
                 }
-                harProviderStat = processEntry(harProviderStat, harEntries.getJSONObject(i), url);
+                harProviderStat = processEntry(harProviderStat, harEntries.getJSONObject(i), url, provider);
                 target.put(provider, harProviderStat);
 
+            }
+
+            if (!target.containsKey(PROVIDER_IGNORE)) {
+                target.put(PROVIDER_IGNORE, new HarStat());
+            }
+            if (!target.containsKey(PROVIDER_INTERNAL)) {
+                target.put(PROVIDER_INTERNAL, new HarStat());
+            }
+            if (!target.containsKey(PROVIDER_UNKNOWN)) {
+                target.put(PROVIDER_UNKNOWN, new HarStat());
             }
 
             // Build Recap of the total
             harTotalStat = processRecap(harTotalStat);
 
+            Date firstEver = new Date(harTotalStat.getFirstStart().getTime());
+
             JSONObject stat = new JSONObject();
             JSONObject thirdPartyStat = new JSONObject();
             // Adding total to HAR JSON.
-            stat = addStat("total", harTotalStat, stat);
+            stat = addStat("total", harTotalStat, stat, firstEver);
             // Adding all providers to HAR JSON.
             int nbTP = 0;
             for (Map.Entry<String, HarStat> entry : target.entrySet()) {
@@ -139,10 +149,10 @@ public class HarService implements IHarService {
                 val = processRecap(val);
 
                 if (key.equals(PROVIDER_INTERNAL) || key.equals(PROVIDER_UNKNOWN) || key.equals(PROVIDER_IGNORE)) {
-                    stat = addStat(key, val, stat);
+                    stat = addStat(key, val, stat, firstEver);
                 } else {
                     nbTP++;
-                    thirdPartyStat = addStat(key, val, thirdPartyStat);
+                    thirdPartyStat = addStat(key, val, thirdPartyStat, firstEver);
                 }
             }
             stat.put(PROVIDER_THIRDPARTY, thirdPartyStat);
@@ -279,16 +289,24 @@ public class HarService implements IHarService {
         return harStat;
     }
 
-    private HarStat processEntry(HarStat harStat, JSONObject entry, String url) {
+    private HarStat processEntry(HarStat harStat, JSONObject entry, String url, String provider) {
 
         try {
             String responseType = guessType(entry);
             List<String> tempList;
+            int httpS = entry.getJSONObject("response").getInt("status");
 
             int reqSize = entry.getJSONObject("response").getInt("headersSize") + entry.getJSONObject("response").getInt("bodySize");
             int reqTime = entry.getInt("time");
-            //2020-02-18T20:53:11.118Z
+            URL curUrl = new URL(url);
+
+            HashMap<String, String> tmpHost = harStat.getHosts();
+            tmpHost.put(curUrl.getHost(), "");
+            harStat.setHosts(tmpHost);
+
+            // Dates are in javascript format : 2020-02-18T20:53:11.118Z
             String startD = entry.getString("startedDateTime");
+            long startL = new SimpleDateFormat(DATE_FORMAT).parse(startD).getTime();
             if (startD != null) {
                 long endDate = new SimpleDateFormat(DATE_FORMAT).parse(startD).getTime() + reqTime;
                 if (harStat.getFirstStartS() == null || startD.compareTo(harStat.getFirstStartS()) < 0) {
@@ -306,6 +324,17 @@ public class HarService implements IHarService {
                     harStat.setLastDuration(reqTime);
                 }
             }
+
+            JSONObject urlEntry = new JSONObject();
+            urlEntry.put("domain", curUrl.getHost());
+            urlEntry.put("size", reqSize);
+            urlEntry.put("start", startL);
+            urlEntry.put("time", reqTime);
+            urlEntry.put("url", url);
+            urlEntry.put("contentType", responseType);
+            urlEntry.put("httpStatus", httpS);
+            urlEntry.put("provider", provider);
+            harStat.appendUrlList(urlEntry);
 
             switch (responseType) {
                 case "js":
@@ -401,9 +430,7 @@ public class HarService implements IHarService {
                     break;
             }
 
-            int httpS = entry.getJSONObject("response").getInt("status");
             HashMap<Integer, Integer> tmpStat = harStat.getHttpRetCode();
-
             if (tmpStat.containsKey(httpS)) {
                 tmpStat.put(httpS, tmpStat.get(httpS) + 1);
             } else {
@@ -444,7 +471,7 @@ public class HarService implements IHarService {
      * @param system
      * @return
      */
-    private JSONObject addStat(String statKey, HarStat harStat, JSONObject stat) {
+    private JSONObject addStat(String statKey, HarStat harStat, JSONObject stat, Date firstEver) {
 
         try {
             JSONObject total = new JSONObject();
@@ -541,6 +568,15 @@ public class HarService implements IHarService {
             httpReqA.put("nb3XX", nb3XX);
             httpReqA.put("nb4XX", nb4XX);
             httpReqA.put("nb5XX", nb5XX);
+
+            if (statKey.equals("total")) {
+                JSONArray req = new JSONArray();
+                for (JSONObject jSONObject : harStat.getUrlList()) {
+                    jSONObject.put("start", jSONObject.getLong("start") - firstEver.getTime());
+                    req.put(jSONObject);
+                }
+                httpReqA.put("list", req);
+            }
             total.put("httpReq", httpReqA);
 
             JSONObject size = new JSONObject();
@@ -555,20 +591,31 @@ public class HarService implements IHarService {
             time.put("avg", harStat.getTimeAvg());
             time.put("urlMax", harStat.getUrlTimeMax());
             time.put("firstStart", harStat.getFirstStartS());
+            time.put("firstStartR", harStat.getFirstStart().getTime() - firstEver.getTime());
             if (harStat.getFirstEnd() != null) {
                 time.put("firstEnd", new SimpleDateFormat(DATE_FORMAT).format(harStat.getFirstEnd()));
+                time.put("firstEndR", harStat.getFirstEnd().getTime() - firstEver.getTime());
             }
             time.put("firstDuration", harStat.getFirstDuration());
             time.put("firstURL", harStat.getFirstURL());
             time.put("lastStart", harStat.getLastStartS());
+            time.put("lastStartR", harStat.getLastStart().getTime() - firstEver.getTime());
             if (harStat.getLastEnd() != null) {
                 time.put("lastEnd", new SimpleDateFormat(DATE_FORMAT).format(harStat.getLastEnd()));
+                time.put("lastEndR", harStat.getLastEnd().getTime() - firstEver.getTime());
             }
             time.put("lastDuration", harStat.getLastDuration());
             time.put("lastURL", harStat.getLastURL());
             time.put("totalDuration", harStat.getTimeTotalDuration());
 
             total.put("time", time);
+
+            JSONArray hostsA = new JSONArray();
+            for (Map.Entry<String, String> entry : harStat.getHosts().entrySet()) {
+                Object key = entry.getKey();
+                hostsA.put(key);
+            }
+            total.put("hosts", hostsA);
 
             stat.put(statKey, total);
 
