@@ -37,7 +37,7 @@ public class HarStat {
     private List<JSONObject> urlList;
 
     private int nbRequests;
-    private HashMap<Integer, Integer> httpRetCode;
+    private HashMap<Integer, Integer> httpStatusCode;
     private int nbError;
     private List<String> urlError;
 
@@ -68,43 +68,43 @@ public class HarStat {
     // per type.
     private int jsSizeSum;
     private int jsSizeMax;
-    private int jsHitNb;
+    private int jsRequests;
     private String urlJsSizeMax;
     private List<String> jsList;
 
     private int cssSizeSum;
     private int cssSizeMax;
-    private int cssHitNb;
+    private int cssRequests;
     private String urlCssSizeMax;
     private List<String> cssList;
 
     private int htmlSizeSum;
     private int htmlSizeMax;
-    private int htmlHitNb;
+    private int htmlRequests;
     private String urlHtmlSizeMax;
     private List<String> htmlList;
 
     private int imgSizeSum;
     private int imgSizeMax;
-    private int imgHitNb;
+    private int imgRequests;
     private String urlImgSizeMax;
     private List<String> imgList;
 
     private int contentSizeSum;
     private int contentSizeMax;
-    private int contentHitNb;
+    private int contentRequests;
     private String urlContentSizeMax;
     private List<String> contentList;
 
     private int fontSizeSum;
     private int fontSizeMax;
-    private int fontHitNb;
+    private int fontRequests;
     private String urlFontSizeMax;
     private List<String> fontList;
 
     private int otherSizeSum;
     private int otherSizeMax;
-    private int otherHitNb;
+    private int otherRequests;
     private String urlOtherSizeMax;
     private List<String> otherList;
 
@@ -122,11 +122,11 @@ public class HarStat {
         fontList = new ArrayList<>();
         otherList = new ArrayList<>();
 
-        List<Integer> httpRetList = Arrays.asList(100, 101, 102, 103, 200, 201, 202, 203, 204, 300, 301, 302, 303, 304, 400, 401, 402, 403, 404, 500);
+        List<Integer> httpRetList = Arrays.asList(200, 300, 301, 302, 303, 304, 400, 401, 402, 403, 404, 500);
 
-        httpRetCode = new HashMap<>();
+        httpStatusCode = new HashMap<>();
         for (Integer tmpInteger : httpRetList) {
-            httpRetCode.put(tmpInteger, 0);
+            httpStatusCode.put(tmpInteger, 0);
         }
         nbRequests = 0;
         nbError = 0;
@@ -152,37 +152,37 @@ public class HarStat {
 
         jsSizeSum = 0;
         jsSizeMax = 0;
-        jsHitNb = 0;
+        jsRequests = 0;
         urlJsSizeMax = null;
 
         cssSizeSum = 0;
         cssSizeMax = 0;
-        cssHitNb = 0;
+        cssRequests = 0;
         urlCssSizeMax = null;
 
         htmlSizeSum = 0;
         htmlSizeMax = 0;
-        htmlHitNb = 0;
+        htmlRequests = 0;
         urlHtmlSizeMax = null;
 
         imgSizeSum = 0;
         imgSizeMax = 0;
-        imgHitNb = 0;
+        imgRequests = 0;
         urlImgSizeMax = null;
 
         contentSizeSum = 0;
         contentSizeMax = 0;
-        contentHitNb = 0;
+        contentRequests = 0;
         urlContentSizeMax = null;
 
         fontSizeSum = 0;
         fontSizeMax = 0;
-        fontHitNb = 0;
+        fontRequests = 0;
         urlFontSizeMax = null;
 
         otherSizeSum = 0;
         otherSizeMax = 0;
-        otherHitNb = 0;
+        otherRequests = 0;
         urlOtherSizeMax = null;
 
     }
@@ -207,68 +207,68 @@ public class HarStat {
         this.hosts = domains;
     }
 
-    public int getJsHitNb() {
-        return jsHitNb;
+    public int getJsRequests() {
+        return jsRequests;
     }
 
-    public void setJsHitNb(int jsHitNb) {
-        this.jsHitNb = jsHitNb;
+    public void setJsRequests(int jssRequests) {
+        this.jsRequests = jssRequests;
     }
 
-    public int getCssHitNb() {
-        return cssHitNb;
+    public int getCssRequests() {
+        return cssRequests;
     }
 
-    public void setCssHitNb(int cssHitNb) {
-        this.cssHitNb = cssHitNb;
+    public void setCssRequests(int cssRequests) {
+        this.cssRequests = cssRequests;
     }
 
-    public int getHtmlHitNb() {
-        return htmlHitNb;
+    public int getHtmlRequests() {
+        return htmlRequests;
     }
 
-    public void setHtmlHitNb(int htmlHitNb) {
-        this.htmlHitNb = htmlHitNb;
+    public void setHtmlRequests(int htmlRequests) {
+        this.htmlRequests = htmlRequests;
     }
 
-    public int getImgHitNb() {
-        return imgHitNb;
+    public int getImgRequests() {
+        return imgRequests;
     }
 
-    public void setImgHitNb(int imgHitNb) {
-        this.imgHitNb = imgHitNb;
+    public void setImgRequests(int imgRequests) {
+        this.imgRequests = imgRequests;
     }
 
-    public int getContentHitNb() {
-        return contentHitNb;
+    public int getContentRequests() {
+        return contentRequests;
     }
 
-    public void setContentHitNb(int contentHitNb) {
-        this.contentHitNb = contentHitNb;
+    public void setContentRequests(int contentRequests) {
+        this.contentRequests = contentRequests;
     }
 
-    public int getFontHitNb() {
-        return fontHitNb;
+    public int getFontRequests() {
+        return fontRequests;
     }
 
-    public void setFontHitNb(int fontHitNb) {
-        this.fontHitNb = fontHitNb;
+    public void setFontRequests(int fontRequests) {
+        this.fontRequests = fontRequests;
     }
 
-    public int getOtherHitNb() {
-        return otherHitNb;
+    public int getOtherRequests() {
+        return otherRequests;
     }
 
-    public void setOtherHitNb(int otherHitNb) {
-        this.otherHitNb = otherHitNb;
+    public void setOtherRequests(int otherRequests) {
+        this.otherRequests = otherRequests;
     }
 
-    public HashMap<Integer, Integer> getHttpRetCode() {
-        return httpRetCode;
+    public HashMap<Integer, Integer> getHttpStatusCode() {
+        return httpStatusCode;
     }
 
-    public void setHttpRetCode(HashMap<Integer, Integer> httpRetCode) {
-        this.httpRetCode = httpRetCode;
+    public void setHttpStatusCode(HashMap<Integer, Integer> httpStatusCode) {
+        this.httpStatusCode = httpStatusCode;
     }
 
     public int getNbRequests() {

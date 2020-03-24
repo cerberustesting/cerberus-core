@@ -1249,12 +1249,12 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','t_size','','fr','Taille','',NULL)");
         b.append(",('page_executiondetail','t_time','','en','Time','',NULL)");
         b.append(",('page_executiondetail','t_time','','fr','Durée','',NULL)");
-        b.append(",('page_executiondetail','hits','','en','Hits per http status','',NULL)");
-        b.append(",('page_executiondetail','hits','','fr','Hits par code http','',NULL)");
+        b.append(",('page_executiondetail','hits','','en','Requests per http status','',NULL)");
+        b.append(",('page_executiondetail','hits','','fr','Requêtes par code http','',NULL)");
         b.append(",('page_executiondetail','size','','en','Size per type','',NULL)");
         b.append(",('page_executiondetail','size','','fr','Taille par type','',NULL)");
-        b.append(",('page_executiondetail','thirdPartychart','','en','Size/Hits/Time per Third Party','',NULL)");
-        b.append(",('page_executiondetail','thirdPartychart','','fr','Taille/Hits/Temps par Tier','',NULL)");
+        b.append(",('page_executiondetail','thirdPartychart','','en','Size/Requests/Time per Third Party','',NULL)");
+        b.append(",('page_executiondetail','thirdPartychart','','fr','Taille/Requêtes/Temps par Tier','',NULL)");
         b.append(",('page_executiondetail','thirdPartygantt','','en','Third Party gantt','',NULL)");
         b.append(",('page_executiondetail','thirdPartygantt','','fr','Diagramme de chargement des tiers','',NULL)");
         b.append(",('page_executiondetail','ns1','','en','Global Statistics','',NULL)");
