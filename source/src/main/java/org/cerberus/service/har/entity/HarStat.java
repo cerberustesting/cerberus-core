@@ -102,6 +102,12 @@ public class HarStat {
     private String urlFontSizeMax;
     private List<String> fontList;
 
+    private int mediaSizeSum;
+    private int mediaSizeMax;
+    private int mediaRequests;
+    private String urlMediaSizeMax;
+    private List<String> mediaList;
+
     private int otherSizeSum;
     private int otherSizeMax;
     private int otherRequests;
@@ -179,6 +185,11 @@ public class HarStat {
         fontSizeMax = 0;
         fontRequests = 0;
         urlFontSizeMax = null;
+
+        mediaSizeSum = 0;
+        mediaSizeMax = 0;
+        mediaRequests = 0;
+        urlMediaSizeMax = null;
 
         otherSizeSum = 0;
         otherSizeMax = 0;
@@ -661,6 +672,46 @@ public class HarStat {
 
     public void setOtherList(List<String> otherList) {
         this.otherList = otherList;
+    }
+
+    public int getMediaSizeSum() {
+        return mediaSizeSum;
+    }
+
+    public void setMediaSizeSum(int mediaSizeSum) {
+        this.mediaSizeSum = mediaSizeSum;
+    }
+
+    public int getMediaSizeMax() {
+        return mediaSizeMax;
+    }
+
+    public void setMediaSizeMax(int mediaSizeMax) {
+        this.mediaSizeMax = mediaSizeMax;
+    }
+
+    public int getMediaRequests() {
+        return mediaRequests;
+    }
+
+    public void setMediaRequests(int mediaRequests) {
+        this.mediaRequests = mediaRequests;
+    }
+
+    public String getUrlMediaSizeMax() {
+        return urlMediaSizeMax;
+    }
+
+    public void setUrlMediaSizeMax(String urlMediaSizeMax) {
+        this.urlMediaSizeMax = urlMediaSizeMax;
+    }
+
+    public List<String> getMediaList() {
+        return mediaList;
+    }
+
+    public void setMediaList(List<String> mediaList) {
+        this.mediaList = mediaList;
     }
 
 }

@@ -60,7 +60,7 @@ public class HarService implements IHarService {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(HarService.class);
 
-    private static final String DATE_FORMAT = "yy-MM-dd'T'HH:mm:ss.S'Z'";
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S'Z'";
     private static final String PROVIDER_INTERNAL = "internal";
     private static final String PROVIDER_UNKNOWN = "unknown";
     private static final String PROVIDER_THIRDPARTY = "thirdparty";
@@ -421,6 +421,19 @@ public class HarService implements IHarService {
                     tempList.add(url);
                     harStat.setFontList(tempList);
                     break;
+                case "media":
+                    if (reqSize > 0) {
+                        harStat.setMediaSizeSum(harStat.getMediaSizeSum() + reqSize);
+                    }
+                    if (reqSize > harStat.getMediaSizeMax()) {
+                        harStat.setMediaSizeMax(reqSize);
+                        harStat.setUrlMediaSizeMax(url);
+                    }
+                    harStat.setMediaRequests(harStat.getMediaRequests() + 1);
+                    tempList = harStat.getMediaList();
+                    tempList.add(url);
+                    harStat.setMediaList(tempList);
+                    break;
                 case "other":
                     if (reqSize > 0) {
                         harStat.setOtherSizeSum(harStat.getOtherSizeSum() + reqSize);
@@ -493,7 +506,7 @@ public class HarService implements IHarService {
             js.put("sizeMax", harStat.getJsSizeMax());
             js.put("requests", harStat.getJsRequests());
             js.put("urlMax", harStat.getUrlJsSizeMax());
-            js.put("url", harStat.getJsList());
+//            js.put("url", harStat.getJsList());
             type.put("js", js);
 
             JSONObject css = new JSONObject();
@@ -501,7 +514,7 @@ public class HarService implements IHarService {
             css.put("sizeMax", harStat.getCssSizeMax());
             css.put("requests", harStat.getCssRequests());
             css.put("urlMax", harStat.getUrlCssSizeMax());
-            css.put("url", harStat.getCssList());
+//            css.put("url", harStat.getCssList());
             type.put("css", css);
 
             JSONObject html = new JSONObject();
@@ -509,7 +522,7 @@ public class HarService implements IHarService {
             html.put("sizeMax", harStat.getHtmlSizeMax());
             html.put("requests", harStat.getHtmlRequests());
             html.put("urlMax", harStat.getUrlHtmlSizeMax());
-            html.put("url", harStat.getHtmlList());
+//            html.put("url", harStat.getHtmlList());
             type.put("html", html);
 
             JSONObject img = new JSONObject();
@@ -517,7 +530,7 @@ public class HarService implements IHarService {
             img.put("sizeMax", harStat.getImgSizeMax());
             img.put("requests", harStat.getImgRequests());
             img.put("urlMax", harStat.getUrlImgSizeMax());
-            img.put("url", harStat.getImgList());
+//            img.put("url", harStat.getImgList());
             type.put("img", img);
 
             JSONObject other = new JSONObject();
@@ -525,7 +538,7 @@ public class HarService implements IHarService {
             other.put("sizeMax", harStat.getOtherSizeMax());
             other.put("requests", harStat.getOtherRequests());
             other.put("urlMax", harStat.getUrlOtherSizeMax());
-            other.put("url", harStat.getOtherList());
+//            other.put("url", harStat.getOtherList());
             type.put("other", other);
 
             JSONObject content = new JSONObject();
@@ -533,7 +546,7 @@ public class HarService implements IHarService {
             content.put("sizeMax", harStat.getContentSizeMax());
             content.put("requests", harStat.getContentRequests());
             content.put("urlMax", harStat.getUrlContentSizeMax());
-            content.put("url", harStat.getContentList());
+//            content.put("url", harStat.getContentList());
             type.put("content", content);
 
             JSONObject font = new JSONObject();
@@ -541,8 +554,16 @@ public class HarService implements IHarService {
             font.put("sizeMax", harStat.getFontSizeMax());
             font.put("requests", harStat.getFontRequests());
             font.put("urlMax", harStat.getUrlFontSizeMax());
-            font.put("url", harStat.getFontList());
+//            font.put("url", harStat.getFontList());
             type.put("font", font);
+
+            JSONObject media = new JSONObject();
+            media.put("sizeSum", harStat.getMediaSizeSum());
+            media.put("sizeMax", harStat.getMediaSizeMax());
+            media.put("requests", harStat.getMediaRequests());
+            media.put("urlMax", harStat.getUrlMediaSizeMax());
+//            media.put("url", harStat.getMediaList());
+            type.put("media", media);
 
             total.put("type", type);
 
@@ -662,6 +683,9 @@ public class HarService implements IHarService {
                     }
                     if (val.toLowerCase().contains("font/")) {
                         return "font";
+                    }
+                    if (val.toLowerCase().contains("video/") || val.toLowerCase().contains("audio/")) {
+                        return "media";
                     }
                     break;
                 }

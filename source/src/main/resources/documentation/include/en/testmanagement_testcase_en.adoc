@@ -497,7 +497,7 @@ In addition to standard HAR structure, Cerberus will add a `stat` json entry in 
                 "sum": 2286467,
                 "urlMax": "https://www.laredoute.com/mar/toto.jpg"
             },
-            "httpReq":{
+            "requests":{
                 "nbALL": 117,
                 "nbError": 1,
                 "urlError": [ "https://www.lrd.co/mar/to.jpg"],
@@ -517,7 +517,20 @@ In addition to standard HAR structure, Cerberus will add a `stat` json entry in 
                 "nb404": 1,
                 "nb4xx": 1,
                 "nb500": 0,
-                "nb5xx": 0
+                "nb5xx": 0,
+                "list": [
+                    {
+                        "size": 79565,
+                        "provider": "internal",
+                        "domain": "www.domain.com",
+                        "httpStatus": 200,
+                        "start": 0,
+                        "time": 325,
+                        "contentType": "html",
+                        "url": "https://www.domain.com/"
+                    },
+                    {...}
+                ]
             },
             "time":{
                 "totalDuration": 18062,
@@ -528,30 +541,29 @@ In addition to standard HAR structure, Cerberus will add a `stat` json entry in 
                 "firstURL": "http://www.laredoute.fr/",
                 "firstStart": "2020-02-25T20:15:16.048Z",
                 "firstStartR": 0,
-                "firstEnd": "20-02-25T20:15:16.95Z",
+                "firstEnd": "2020-02-25T20:15:16.95Z",
                 "firstEndR": 47,
                 "firstDuration": 47,
                 "lastURL": "https://p.trust.net/p-c/?id=1&site=12",
                 "lastStart": "2020-02-25T20:15:29.655Z",
                 "lastStartR": 13607,
-                "lastEnd": "20-02-25T20:15:34.110Z",
+                "lastEnd": "2020-02-25T20:15:34.110Z",
                 "lastEndR": 18062,
                 "lastDuration": 4455
             },
             "type":{
                 "css":{
-                    "nbHits": 2,
+                    "requests": 2,
                     "sizeSum": 125109,
                     "sizeMax": 2286467,
                     "urlMax": "https://www.laredoute.com/mar/12.css"
-                    "url": [ "https://www.laredoute.com/mar/12.css",
-                            "https://www.laredoute.com/mar/13.css" ]
                 },
                 "img":{...},
                 "other":{...},
                 "js":{...},
                 "html":{...},
                 "content":{...},
+                "media":{...},
                 "font":{...}
             }
         },
