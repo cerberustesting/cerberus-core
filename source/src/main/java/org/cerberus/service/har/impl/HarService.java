@@ -164,7 +164,7 @@ public class HarService implements IHarService {
             return har;
 
         } catch (JSONException ex) {
-            LOG.error("Exception when trying to enrich har file.", ex);
+            LOG.error("Exception when trying to enrich har file : " + ex.toString());
         } catch (Exception ex) {
             LOG.error("Exception when trying to enrich har file.", ex);
         }

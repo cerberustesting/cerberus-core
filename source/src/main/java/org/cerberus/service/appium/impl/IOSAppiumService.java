@@ -64,7 +64,8 @@ public class IOSAppiumService extends AppiumService {
 
     /**
      * The default Appium swipe duration if no
-     * {@link AppiumService#CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER} has been defined
+     * {@link AppiumService#CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER} has been
+     * defined
      */
     private static final int DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION = 2000;
 
@@ -171,7 +172,6 @@ public class IOSAppiumService extends AppiumService {
 //            swipeObject.put("endY", direction.getY2());
 //            swipeObject.put("duration", myduration);
 //            js.executeScript("mobile: swipe", swipeObject);
-
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE).resolveDescription("DIRECTION", action.getActionType().name());
         } catch (IllegalArgumentException e) {
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
@@ -202,6 +202,18 @@ public class IOSAppiumService extends AppiumService {
 
     @Override
     public MessageEvent openApp(Session session, String appPackage, String appActivity) {
-        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+        try {
+
+            session.getAppiumDriver().activateApp(appPackage);
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENAPP).resolveDescription("APP", appPackage);
+
+        } catch (Exception e) {
+            LOG.warn("Unable to open app " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", "Unable to open app " + e.getMessage());
+        }
+
+//        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
     }
 }

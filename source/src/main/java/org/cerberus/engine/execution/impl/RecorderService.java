@@ -591,13 +591,17 @@ public class RecorderService implements IRecorderService {
             if (!(StringUtil.isNullOrEmpty(se.getResponseHTTPBody()))) {
                 JSONObject stat = new JSONObject(se.getResponseHTTPBody());
                 Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "networktraffic_stat", "json", false);
-                JSONObject statToRecord = stat.getJSONObject("stat");
-                recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), statToRecord.toString(4));
+                if (stat.has("stat")) {
+                    JSONObject statToRecord = stat.getJSONObject("stat");
+                    recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), statToRecord.toString(4));
 
-                // Index file created to database.
-                object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "Network Stat", recorderResponse.getRelativeFilenameURL(), TestCaseExecutionFile.FILETYPE_JSON, "", null, "", null);
-                testCaseExecutionFileService.save(object);
-                objectFileList.add(object);
+                    // Index file created to database.
+                    object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "Network Stat", recorderResponse.getRelativeFilenameURL(), TestCaseExecutionFile.FILETYPE_JSON, "", null, "", null);
+                    testCaseExecutionFileService.save(object);
+                    objectFileList.add(object);
+                } else {
+                    LOG.warn("Could not write stat entry of JSON HAR for execution :" + runId);
+                }
 
             }
 

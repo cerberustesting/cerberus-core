@@ -1119,8 +1119,13 @@ public class ActionService implements IActionService {
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
             return sikuliService.doSikuliActionOpenApp(tCExecution.getSession(), value1);
+
         } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
             return androidAppiumService.openApp(tCExecution.getSession(), value1, value2);
+
+        } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+            return iosAppiumService.openApp(tCExecution.getSession(), value1, value2);
+
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replace("%ACTION%", "OpenApp"));
