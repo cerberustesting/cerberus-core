@@ -622,7 +622,11 @@ public class HarService implements IHarService {
             time.put("avg", harStat.getTimeAvg());
             time.put("urlMax", harStat.getUrlTimeMax());
             time.put("firstStart", harStat.getFirstStartS());
-            time.put("firstStartR", harStat.getFirstStart().getTime() - firstEver.getTime());
+            if (harStat.getFirstStart() != null) {
+                time.put("firstStartR", harStat.getFirstStart().getTime() - firstEver.getTime());
+            } else {
+                LOG.warn("Null FirstStart for har stat entry : " + statKey);
+            }
             if (harStat.getFirstEnd() != null) {
                 time.put("firstEnd", new SimpleDateFormat(DATE_FORMAT).format(harStat.getFirstEnd()));
                 time.put("firstEndR", harStat.getFirstEnd().getTime() - firstEver.getTime());
@@ -630,7 +634,9 @@ public class HarService implements IHarService {
             time.put("firstDuration", harStat.getFirstDuration());
             time.put("firstURL", harStat.getFirstURL());
             time.put("lastStart", harStat.getLastStartS());
-            time.put("lastStartR", harStat.getLastStart().getTime() - firstEver.getTime());
+            if (harStat.getLastStart() != null) {
+                time.put("lastStartR", harStat.getLastStart().getTime() - firstEver.getTime());
+            }
             if (harStat.getLastEnd() != null) {
                 time.put("lastEnd", new SimpleDateFormat(DATE_FORMAT).format(harStat.getLastEnd()));
                 time.put("lastEndR", harStat.getLastEnd().getTime() - firstEver.getTime());
@@ -655,7 +661,7 @@ public class HarService implements IHarService {
         } catch (JSONException ex) {
             LOG.error("Exception when trying to convert HarStat to JSONObject.", ex);
         } catch (Exception ex) {
-            LOG.error("Exception when trying to convert HarStat to JSONObject.", ex);
+            LOG.error("Exception when trying to convert HarStat to JSONObject." + harStat.toString(), ex);
         }
         return stat;
     }

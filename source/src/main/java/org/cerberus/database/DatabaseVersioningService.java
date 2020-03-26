@@ -8443,6 +8443,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + " ('WEBPERFTHIRDPARTY', 'TrustCommander', 'trustcommander.net,privacy.trustcommander.net', 100, 'Trustcommander third party.', ''),"
                 + " ('INVARIANTPUBLIC','WEBPERFTHIRDPARTY', '', '850','Webperf ThirdParty.', '')");
 
+        // ADD parameters to define third party definition file.
+        // 1483
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_networkstatsave_active', 'N', 'Boolean in order to activate the saving of the file at execution level.')");
+
         return a;
     }
 

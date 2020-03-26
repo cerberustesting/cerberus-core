@@ -979,32 +979,36 @@ public class RobotServerService implements IRobotServerService {
                 if ("Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())
                         && tce.getVerbose() >= 1) {
 
-                    String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + tce.getRemoteProxyUUID();
+                    if (parameterService.getParameterBooleanByKey("cerberus_networkstatsave_active", tce.getSystem(), false)) {
 
-                    AnswerItem<AppService> result = new AnswerItem<>();
-                    result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", tce);
+                        String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + tce.getRemoteProxyUUID();
 
-                    AppService appSrv = result.getItem();
-                    JSONObject har = new JSONObject(appSrv.getResponseHTTPBody());
+                        AnswerItem<AppService> result = new AnswerItem<>();
+                        result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", tce);
 
-                    har = harService.enrichWithStats(har, tce.getCountryEnvironmentParameters().getDomain(), tce.getSystem());
-                    appSrv.setResponseHTTPBody(har.toString());
-                    appSrv.setRecordTraceFile(false);
+                        AppService appSrv = result.getItem();
+                        JSONObject har = new JSONObject(appSrv.getResponseHTTPBody());
 
-                    tce.setLastServiceCalled(appSrv);
+                        har = harService.enrichWithStats(har, tce.getCountryEnvironmentParameters().getDomain(), tce.getSystem());
+                        appSrv.setResponseHTTPBody(har.toString());
+                        appSrv.setRecordTraceFile(false);
 
-                    /**
-                     * Record the Request and Response in file system.
-                     */
-                    boolean withDetail = false;
-                    if (tce.getVerbose() >= 2) {
-                        withDetail = true;
-                    }
-                    tce.addFileList(recorderService.recordNetworkTrafficContent(tce, null, 0, null, result.getItem(), withDetail));
+                        tce.setLastServiceCalled(appSrv);
+
+                        /**
+                         * Record the Request and Response in file system.
+                         */
+                        boolean withDetail = false;
+                        if (tce.getVerbose() >= 2) {
+                            withDetail = true;
+                        }
+                        tce.addFileList(recorderService.recordNetworkTrafficContent(tce, null, 0, null, result.getItem(), withDetail));
 
 //                    LOG.debug("Url to get HAR : " + url);
 //                    tce.addFileList(recorderService.recordHarLog(tce, url));
 //                    LOG.debug("Retrieved Har file by calling : " + url);
+                    }
+
                 }
             } catch (Exception ex) {
                 LOG.error("Exception Getting Har File from Cerberus Executor " + tce.getId(), ex);
