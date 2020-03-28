@@ -66,7 +66,7 @@ public enum MessageGeneralEnum {
     VALIDATION_FAILED_TEST_NOTACTIVE(88, "FA", "The test '%TEST%' isn't active."),
     VALIDATION_FAILED_USERAGENTDIFFERENT(90, "FA", "User Agent has been specified at robot and TestCase level with different values. TestCase : '%UATESTCASE%' Robot : '%UAROBOT%'"),
     VALIDATION_FAILED_CERBERUSEXECUTORNOTAVAILABLE(90, "FA", "Could not connect to Cerberus Executor host %HOST% on port %PORT%. Check the Cerberus Executor is up and running, or unselect the Proxy flag at robot executor level (robot : %ROBOT%, executor : %ROBOTEXE%)."),
-    VALIDATION_FAILED_KAFKACONSUMERSEEK(90, "FA", "Could not start execution because failed on Kafka consume step. %DETAIL%"),
+    VALIDATION_FAILED_KAFKACONSUMERSEEK(90, "FA", "Could not start execution because failed when trying to retreive Kafka topics latest offsets on Service %SERVICE%. %DETAIL%"),
     VALIDATION_SUCCEEDED(89, "PE", "The validation succeeded"),
     EXECUTION_PE_TESTSTARTED(5, "PE", "Test started..."),
     EXECUTION_PE_CHECKINGPARAMETERS(5, "PE", "Checking parameters..."),

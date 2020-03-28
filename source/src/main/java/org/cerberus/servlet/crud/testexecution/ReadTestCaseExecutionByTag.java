@@ -231,37 +231,6 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             result.put("QueueState", JavaScriptUtils.javaScriptEscape(testCaseExecution.getQueueState()));
         }
 
-//        if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
-//                && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugID() != null) {
-//            result.put("AppBugURL", testCaseExecution.getApplicationObj().getBugTrackerUrl());
-//                bugId = testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID());
-//                bugId = new StringBuffer("<a href='")
-//                        .append(bugId)
-//                        .append("' target='reportBugID'>")
-//                        .append(testCaseExecution.getTestCaseObj().getBugID())
-//                        .append("</a>")
-//                        .toString();
-//        }
-//        String comment;
-//        String function;
-//        String shortDesc;
-//        JSONArray bugId = new JSONArray();
-//        if ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getTest() != null)) {
-//            bugId = testCaseExecution.getTestCaseObj().getBugID();
-//            comment = JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getComment());
-//            function = JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getFunction());
-//            shortDesc = testCaseExecution.getTestCaseObj().getDescription();
-//        } else {
-//            comment = "";
-//            function = "";
-//            shortDesc = "";
-//        }
-//        result.put("BugID", bugId);
-//        result.put("Priority", JavaScriptUtils.javaScriptEscape(String.valueOf(testCaseExecution.getTestCaseObj().getPriority())));
-//        result.put("Comment", comment);
-//        result.put("Function", function);
-//        result.put("ShortDescription", shortDesc);
-//        result.put("Application", JavaScriptUtils.javaScriptEscape(testCaseExecution.getApplication()));
         List<JSONObject> testCaseDep = new ArrayList<>();
 
         if (testCaseExecution.getTestCaseExecutionQueueDepList() != null) {
@@ -320,6 +289,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             try {
                 String controlStatus = testCaseExecution.getControlStatus();
+                String previousControlStatus = testCaseExecution.getPreviousExeStatus();
 
                 // We check is Country and status is inside the fitered values.
                 if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseExecution.getCountry()).equals("on")) {
@@ -350,7 +320,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         ttcObject.put("NbExeUsefull", nbExeUsefullTot);
                         // Nb Total Usefull Executions in QU or OK status
                         Integer nbExeTmp;
-                        if (isToHide(controlStatus)) {
+                        if (isToHide(controlStatus, previousControlStatus)) {
                             nbExeTmp = (Integer) ttcObject.get("NbExeUsefullToHide");
                             ttcObject.put("NbExeUsefullToHide", ++nbExeTmp);
                         }
@@ -407,7 +377,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         ttcObject.put("NbExeUsefull", 1);
 
                         // Nb Total Usefull Executions in QU or OK status
-                        if (isToHide(controlStatus)) {
+                        if (isToHide(controlStatus, previousControlStatus)) {
                             ttcObject.put("NbExeUsefullToHide", 1);
                         } else {
                             ttcObject.put("NbExeUsefullToHide", 0);
@@ -560,8 +530,10 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         return testCaseExecutionTable;
     }
 
-    private boolean isToHide(String controlStatus) {
-        return (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_QU) || controlStatus.equals(TestCaseExecution.CONTROLSTATUS_OK));
+    // We hide is status is QU of OK and there were no previous execution.
+    private boolean isToHide(String controlStatus, String previousControlStatus) {
+        return (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_QU) && (StringUtil.isNullOrEmpty(previousControlStatus))
+                || controlStatus.equals(TestCaseExecution.CONTROLSTATUS_OK));
     }
 
     private boolean isPending(String controlStatus) {

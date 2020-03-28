@@ -22,6 +22,7 @@ package org.cerberus.service.kafka.impl;
 import com.jayway.jsonpath.PathNotFoundException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import org.apache.kafka.common.errors.WakeupException;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceHeader;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.factory.IFactoryAppService;
@@ -49,8 +51,10 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.execution.IRecorderService;
+import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.json.IJsonService;
 import org.cerberus.service.kafka.IKafkaService;
@@ -85,6 +89,8 @@ public class KafkaService implements IKafkaService {
     IProxyService proxyService;
     @Autowired
     IJsonService jsonService;
+    @Autowired
+    private IVariableService variableService;
 
     protected final Logger LOG = org.apache.logging.log4j.LogManager.getLogger(getClass());
 
@@ -186,20 +192,30 @@ public class KafkaService implements IKafkaService {
 
             //Get a list of the topics' partitions
             List<PartitionInfo> partitionList = consumer.partitionsFor(topic);
-            List<TopicPartition> topicPartitionList = partitionList.stream().map(info -> new TopicPartition(topic, info.partition())).collect(Collectors.toList());
-            //Assign all the partitions to this consumer
-            consumer.assign(topicPartitionList);
-            consumer.seekToEnd(topicPartitionList); //default to latest offset for all partitions
 
-            HashMap<TopicPartition, Long> valueResult = new HashMap<>();
+            if (partitionList == null) {
 
-            Map<TopicPartition, Long> partitionOffset = consumer.endOffsets(topicPartitionList);
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKKAFKA);
+                message.setDescription(message.getDescription().replace("%EX%", "Maybe Topic does not exist.").replace("%TOPIC%", topic).replace("%HOSTS%", bootstrapServers));
 
-            result.setItem(partitionOffset);
+            } else {
+
+                List<TopicPartition> topicPartitionList = partitionList.stream().map(info -> new TopicPartition(topic, info.partition())).collect(Collectors.toList());
+                //Assign all the partitions to this consumer
+                consumer.assign(topicPartitionList);
+                consumer.seekToEnd(topicPartitionList); //default to latest offset for all partitions
+
+                HashMap<TopicPartition, Long> valueResult = new HashMap<>();
+
+                Map<TopicPartition, Long> partitionOffset = consumer.endOffsets(topicPartitionList);
+
+                result.setItem(partitionOffset);
+
+            }
 
         } catch (Exception ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKKAFKA);
-            message.setDescription(message.getDescription().replace("%EX%", ex.toString()).replace("%TOPIC%", topic));
+            message.setDescription(message.getDescription().replace("%EX%", ex.toString()).replace("%TOPIC%", topic).replace("%HOSTS%", bootstrapServers));
             LOG.debug(ex, ex);
         } finally {
             consumer.close();
@@ -355,9 +371,11 @@ public class KafkaService implements IKafkaService {
     }
 
     @Override
-    public HashMap<String, Map<TopicPartition, Long>> getAllConsumers(List<TestCaseStep> mainExecutionTestCaseStepList) throws CerberusException, InterruptedException, ExecutionException {
+    public HashMap<String, Map<TopicPartition, Long>> getAllConsumers(List<TestCaseStep> mainExecutionTestCaseStepList, TestCaseExecution tCExecution) throws CerberusException, InterruptedException, ExecutionException {
         HashMap<String, Map<TopicPartition, Long>> tempKafka = new HashMap<>();
         AnswerItem<Map<TopicPartition, Long>> resultConsume = new AnswerItem<>();
+        MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+
         for (TestCaseStep testCaseStep : mainExecutionTestCaseStepList) {
             for (TestCaseStepAction testCaseStepAction : testCaseStep.getTestCaseStepAction()) {
                 if (testCaseStepAction.getAction().equals(TestCaseStepAction.ACTION_CALLSERVICE)
@@ -366,13 +384,80 @@ public class KafkaService implements IKafkaService {
                     AnswerItem<AppService> localService = appServiceService.readByKeyWithDependency(testCaseStepAction.getValue1(), "Y");
                     if (localService.getItem() != null) {
                         if (localService.getItem().getType().equals(AppService.TYPE_KAFKA) && localService.getItem().getMethod().equals(AppService.METHOD_KAFKASEARCH)) {
-                            resultConsume = seekEvent(localService.getItem().getKafkaTopic(), localService.getItem().getServicePath(), localService.getItem().getHeaderList());
-                            if (!(resultConsume.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEARCHKAFKA.getCode()))) {
-                                LOG.debug("TestCase interupted due to error when opening Kafka consume. " + resultConsume.getMessageDescription());
-                                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_KAFKACONSUMERSEEK)
-                                        .resolveDescription("DETAIL", resultConsume.getMessageDescription()));
+
+                            try {
+
+                                // TODO : Decode Header.
+                                String decodedTopic = localService.getItem().getKafkaTopic();
+                                AnswerItem<String> answerDecode = variableService.decodeStringCompletly(decodedTopic, tCExecution, null, false);
+                                decodedTopic = (String) answerDecode.getItem();
+                                if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                    // If anything wrong with the decode --> we stop here with decode message in the action result.
+                                    String field = "Kafka topic";
+                                    message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                                    LOG.debug("Getting all consumers interupted due to decode '" + field + "'.");
+                                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND);
+                                    mes.setDescription(message.getDescription());
+                                    throw new CerberusException(mes);
+                                }
+
+                                String decodedServicePath = localService.getItem().getServicePath();
+                                answerDecode = variableService.decodeStringCompletly(decodedServicePath, tCExecution, null, false);
+                                decodedServicePath = (String) answerDecode.getItem();
+                                if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                    // If anything wrong with the decode --> we stop here with decode message in the action result.
+                                    String field = "Kafka Service Path";
+                                    message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                                    LOG.debug("Getting all consumers interupted due to decode '" + field + "'.");
+                                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND);
+                                    mes.setDescription(message.getDescription());
+                                    throw new CerberusException(mes);
+                                }
+
+                                List<AppServiceHeader> headers = localService.getItem().getHeaderList();
+                                // Decode Header List
+                                List<AppServiceHeader> decodedHeaders = new ArrayList<>();
+                                for (AppServiceHeader object : headers) {
+                                    answerDecode = variableService.decodeStringCompletly(object.getKey(), tCExecution, null, false);
+                                    object.setKey((String) answerDecode.getItem());
+                                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                                        String field = "Header Key " + object.getKey();
+                                        message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                                        LOG.debug("Getting all consumers interupted due to decode '" + field + "'.");
+                                        MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND);
+                                        mes.setDescription(message.getDescription());
+                                        throw new CerberusException(mes);
+                                    }
+
+                                    answerDecode = variableService.decodeStringCompletly(object.getValue(), tCExecution, null, false);
+                                    object.setValue((String) answerDecode.getItem());
+                                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                                        String field = "Header Value " + object.getKey();
+                                        message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                                        LOG.debug("Getting all consumers interupted due to decode '" + field + "'.");
+                                        MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND);
+                                        mes.setDescription(message.getDescription());
+                                        throw new CerberusException(mes);
+                                    }
+
+                                    decodedHeaders.add(object);
+                                }
+
+                                resultConsume = seekEvent(decodedTopic, decodedServicePath, decodedHeaders);
+
+                                if (!(resultConsume.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEARCHKAFKA.getCode()))) {
+                                    LOG.debug("TestCase interupted due to error when opening Kafka consume. " + resultConsume.getMessageDescription());
+                                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_KAFKACONSUMERSEEK).resolveDescription("SERVICE", localService.getItem().getService())
+                                            .resolveDescription("DETAIL", resultConsume.getMessageDescription()));
+                                }
+                                tempKafka.put(getKafkaConsumerKey(localService.getItem().getKafkaTopic(), localService.getItem().getServicePath()), resultConsume.getItem());
+
+                            } catch (CerberusEventException ex) {
+                                LOG.error(ex);
                             }
-                            tempKafka.put(getKafkaConsumerKey(localService.getItem().getKafkaTopic(), localService.getItem().getServicePath()), resultConsume.getItem());
+
                         }
                     }
 

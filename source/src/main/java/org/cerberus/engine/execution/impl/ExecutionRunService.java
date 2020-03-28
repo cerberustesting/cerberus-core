@@ -463,7 +463,7 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Open Kafka Consumers
              */
-            tCExecution.setKafkaLatestOffset(kafkaService.getAllConsumers(mainExecutionTestCaseStepList));
+            tCExecution.setKafkaLatestOffset(kafkaService.getAllConsumers(mainExecutionTestCaseStepList, tCExecution));
 
             /**
              * Initialize the global TestCaseExecution Data List.

@@ -4,8 +4,9 @@
 
 *Improvements / New features*
 [square]
-* none
+* Rows with previous execution status are not displayed by default.
+* manage API now also clean Quartz scheduled entries.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* removed deprecated tables 'testcaseexecutionwwwdet' and 'testcaseexecutionwwwsum'.

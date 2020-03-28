@@ -79,6 +79,10 @@ public class SchedulerInit {
         return instanceSchedulerVersion;
     }
 
+    public void setInstanceSchedulerVersion(String version) {
+        this.instanceSchedulerVersion = version;
+    }
+
     public boolean isIsRunning() {
         return isRunning;
     }
@@ -117,7 +121,7 @@ public class SchedulerInit {
                                     String cron = sched.getCronDefinition();
                                     String name = sched.getName();
                                     String type = sched.getType();
-                                    String id = String.valueOf(sched.getID()); 
+                                    String id = String.valueOf(sched.getID());
                                     long schedulerId = sched.getID();
 
                                     String user = "";
@@ -178,15 +182,16 @@ public class SchedulerInit {
     @PreDestroy
     public void closeScheduler() {
         try {
-            LOG.debug("Removing all Schedule entries.");
+            LOG.info("Removing all Schedule entries.");
             Collection<Scheduler> myCollectionScheduller = schFactory.getAllSchedulers();
             Iterator it = myCollectionScheduller.iterator();
             for (Scheduler mySched : myCollectionScheduller) {
+                mySched.shutdown(true);
                 mySched.clear();
             }
-            LOG.debug("end of Removing all Schedule entries.");
+            LOG.info("end of Removing all Schedule entries.");
         } catch (Exception e) {
-            LOG.error("Failed to clear");
+            LOG.error("Failed to clear Scheduler entries.");
             LOG.error(e);
         }
     }

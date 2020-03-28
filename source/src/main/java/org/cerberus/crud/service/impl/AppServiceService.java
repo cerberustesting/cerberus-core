@@ -159,7 +159,7 @@ public class AppServiceService implements IAppServiceService {
                 if (service.getResponseHTTPBody().startsWith("<")) { // TODO find a better solution to guess the format of the request.
                     LOG.debug("XML format guessed from 1st caracter of body.");
                     return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
-                } else if (service.getResponseHTTPBody().startsWith("{")) {
+                } else if (service.getResponseHTTPBody().startsWith("{") || service.getResponseHTTPBody().startsWith("[")) {
                     LOG.debug("JSON format guessed from 1st caracter of body.");
                     return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
                 }

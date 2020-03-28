@@ -8448,6 +8448,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
                 + " ('', 'cerberus_networkstatsave_active', 'N', 'Boolean in order to activate the saving of the file at execution level.')");
 
+        // Remove deprecated tables.
+        // 1484
+        a.add("DROP TABLE `testcaseexecutionwwwdet`, `testcaseexecutionwwwsum`");
+
         return a;
     }
 

@@ -145,10 +145,6 @@
         <servlet-class>org.cerberus.servlet.crud.usermanagement.ChangeUserPasswordAdmin</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>TCEwwwDetail</servlet-name>
-        <servlet-class>org.cerberus.servlet.reporting.TCEwwwDetail</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>GetReportData</servlet-name>
         <servlet-class>org.cerberus.servlet.reporting.GetReportData</servlet-class>
     </servlet>
@@ -934,10 +930,6 @@
     <servlet-mapping>
         <servlet-name>ReadTestCaseV2</servlet-name>
         <url-pattern>/ReadTestCaseV2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>TCEwwwDetail</servlet-name>
-        <url-pattern>/TCEwwwDetail</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetReportData</servlet-name>

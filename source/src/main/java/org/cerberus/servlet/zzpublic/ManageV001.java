@@ -37,6 +37,7 @@ import org.cerberus.database.IDatabaseVersioningService;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
+import org.cerberus.engine.scheduler.SchedulerInit;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONException;
@@ -56,6 +57,7 @@ public class ManageV001 extends HttpServlet {
     private IExecutionThreadPoolService executionThreadPoolService;
     private IParameterService parameterService;
     private ITestCaseExecutionQueueService tceiqService;
+    private SchedulerInit cerberusScheduler;
 
     private IDatabaseVersioningService databaseVersionService;
     private IMyVersionService myVersionService;
@@ -83,6 +85,7 @@ public class ManageV001 extends HttpServlet {
 
             executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
             parameterService = appContext.getBean(IParameterService.class);
+            cerberusScheduler = appContext.getBean(SchedulerInit.class);
 
             String token = parameterService.getParameterStringByKey("cerberus_manage_token", "", UUID.randomUUID().toString());
             String message = "";
@@ -101,6 +104,10 @@ public class ManageV001 extends HttpServlet {
                          * We desactivate the instance to process new execution.
                          */
                         executionThreadPoolService.setInstanceActive(false);
+                        /**
+                         * We clean all scheduler entries.
+                         */
+                        cerberusScheduler.closeScheduler();
                         /**
                          * We loop every second until maxIteration session in
                          * order to wait until no more executions are running on
@@ -144,8 +151,15 @@ public class ManageV001 extends HttpServlet {
                          * new executions.
                          */
                         executionThreadPoolService.setInstanceActive(true);
+                        /**
+                         * We reactivate and force reload all scheduler entries.
+                         */
+                        cerberusScheduler.setInstanceSchedulerVersion("INIT");
+                        cerberusScheduler.init();
+                        /**
+                         * We run the execution pool.
+                         */
                         try {
-                            // Run the Execution pool Job.
                             executionThreadPoolService.executeNextInQueueAsynchroneously(false);
                         } catch (CerberusException ex) {
                             LOG.error("Exception triggering the ThreadPool job.", ex);

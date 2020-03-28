@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 import org.apache.kafka.common.TopicPartition;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceHeader;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerItem;
@@ -90,11 +91,12 @@ public interface IKafkaService {
     /**
      *
      * @param mainExecutionTestCaseStepList
+     * @param tCExecution
      * @return
      * @throws CerberusException
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    public HashMap<String, Map<TopicPartition, Long>> getAllConsumers(List<TestCaseStep> mainExecutionTestCaseStepList) throws CerberusException, InterruptedException, ExecutionException;
+    public HashMap<String, Map<TopicPartition, Long>> getAllConsumers(List<TestCaseStep> mainExecutionTestCaseStepList, TestCaseExecution tCExecution) throws CerberusException, InterruptedException, ExecutionException;
 
 }
