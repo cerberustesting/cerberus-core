@@ -498,7 +498,7 @@ function drawNetworkCharts(filelist) {
 
                 $("#editTabNetwork").show();
 
-                var title = [doc.getDocLabel("page_executiondetail", "hits"), 'total : ' + data.total.requests.nbALL];
+                var title = [doc.getDocLabel("page_executiondetail", "hits"), 'total : ' + data.total.requests.nb];
                 drawChart_HttpStatus(data, title, 'myChart1');
 
                 var title = [doc.getDocLabel("page_executiondetail", "size"), 'total : ' + formatNumber(Math.round(data.total.size.sum / 1024)) + ' Kb'];
@@ -522,7 +522,7 @@ function drawNetworkCharts(filelist) {
 }
 
 function drawTable_Requests(data, targetTable, targetPanel) {
-    var configurations = new TableConfigurationsClientSide(targetTable, data.total.requests.list, aoColumnsFunc(), true, [0, 'asc']);
+    var configurations = new TableConfigurationsClientSide(targetTable, data.requests, aoColumnsFunc(), true, [0, 'asc']);
 
     if ($('#' + targetTable).hasClass('dataTable') === false) {
         createDataTableWithPermissions(configurations, undefined, targetPanel);
@@ -530,8 +530,8 @@ function drawTable_Requests(data, targetTable, targetPanel) {
     } else {
         var oTable = $("#requestTable").dataTable();
         oTable.fnClearTable();
-        if (data.total.requests.list.length > 0) {
-            oTable.fnAddData(data.total.requests.list);
+        if (data.requests.length > 0) {
+            oTable.fnAddData(data.requests);
         }
     }
 }
@@ -564,7 +564,7 @@ function drawChart_HttpStatus(data, titletext, target) {
     if (data.hasOwnProperty("total")) {
 
         for (var key in data.total.requests) {
-            if (!key.includes("XX") && key.includes("nb") && !key.includes("ALL")) {
+            if (!key.includes("XX") && key.includes("nb") && (key !== "nb")) {
                 drawChart_HttpStatus_Data(data, dataArray, labelArray, bgColorArray, key, "http " + key.substring(2));
             }
         }
@@ -713,7 +713,7 @@ function drawChart_PerThirdParty(data, titletext, target) {
     // Internal stat.
     if (data.hasOwnProperty("internal")) {
         dataArray1.push(data.internal.size.sum);
-        dataArray2.push(data.internal.requests.nbALL);
+        dataArray2.push(data.internal.requests.nb);
         dataArray3.push(data.internal.time.max);
         labelArray.push("INTERNAL");
         bgColorArray.push("blue");
@@ -723,7 +723,7 @@ function drawChart_PerThirdParty(data, titletext, target) {
     if (data.hasOwnProperty("thirdparty")) {
         for (var key in data.thirdparty) {
             dataArray1.push(data.thirdparty[key].size.sum);
-            dataArray2.push(data.thirdparty[key].requests.nbALL);
+            dataArray2.push(data.thirdparty[key].requests.nb);
             dataArray3.push(data.thirdparty[key].time.max);
             labelArray.push(key);
             bgColorArray.push(drawChart_Random_Color(bgColorArray.length));
@@ -731,9 +731,9 @@ function drawChart_PerThirdParty(data, titletext, target) {
     }
 
     // Unknown stat.
-    if (data.hasOwnProperty("unknown")) {
+    if (data.hasOwnProperty("unknown") && data.unknown.requests.nb > 0) {
         dataArray1.push(data.unknown.size.sum);
-        dataArray2.push(data.unknown.requests.nbALL);
+        dataArray2.push(data.unknown.requests.nb);
         dataArray3.push(data.unknown.time.max);
         labelArray.push("UNKNOWN");
         bgColorArray.push("black");
@@ -832,7 +832,7 @@ function drawChart_GanttPerThirdParty(data, titletext, target) {
     }
 
     // Unknown stat.
-    if (data.hasOwnProperty("unknown")) {
+    if (data.hasOwnProperty("unknown") && data.unknown.requests.nb > 0) {
         dataArray1.push(data.unknown.time.firstStartR);
         dataArray2.push(data.unknown.time.lastEndR - data.unknown.time.firstStartR);
         labelArray.push("UNKNOWN");

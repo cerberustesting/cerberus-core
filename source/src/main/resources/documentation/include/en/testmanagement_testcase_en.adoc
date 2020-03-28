@@ -493,14 +493,12 @@ In addition to standard HAR structure, Cerberus will add a `stat` json entry in 
                 "privacy.trustcommander.net"
             ],
             "size":{
-                "max": 125109,
                 "sum": 2286467,
+                "max": 125109,
                 "urlMax": "https://www.laredoute.com/mar/toto.jpg"
             },
             "requests":{
-                "nbALL": 117,
-                "nbError": 1,
-                "urlError": [ "https://www.lrd.co/mar/to.jpg"],
+                "nb": 117,
                 "nb100": 0,
                 "nb101": 0,
                 "nb1xx": 0,
@@ -518,19 +516,8 @@ In addition to standard HAR structure, Cerberus will add a `stat` json entry in 
                 "nb4xx": 1,
                 "nb500": 0,
                 "nb5xx": 0,
-                "list": [
-                    {
-                        "size": 79565,
-                        "provider": "internal",
-                        "domain": "www.domain.com",
-                        "httpStatus": 200,
-                        "start": 0,
-                        "time": 325,
-                        "contentType": "html",
-                        "url": "https://www.domain.com/"
-                    },
-                    {...}
-                ]
+                "nbError": 1,
+                "urlError": [ "https://www.lrd.co/mar/to.jpg"]
             },
             "time":{
                 "totalDuration": 18062,
@@ -568,13 +555,26 @@ In addition to standard HAR structure, Cerberus will add a `stat` json entry in 
             }
         },
         "internal":{...},
-        "unknown":{...},
+        "nbThirdParty":2,
         "thirdparty":{
             "ThirdParty1":{...},
             "ThirdParty2":{...}
         },
         "ignore":{...},
-        "nbThirdParty":2
+        "unknown":{...},
+        "requests": [
+            {
+                "size": 79565,
+                "provider": "internal",
+                "domain": "www.domain.com",
+                "httpStatus": 200,
+                "start": 0,
+                "time": 325,
+                "contentType": "html",
+                "url": "https://www.domain.com/"
+            },
+            {...}
+        ]
     }
 
 Cerberus will determine if a hit must be ignored (and appear in *[blue]`ignore`* section) by feeding parameter `cerberus_webperf_ignoredomainlist` with coma seperated domains to ignore.

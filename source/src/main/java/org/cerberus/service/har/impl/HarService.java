@@ -107,7 +107,7 @@ public class HarService implements IHarService {
 
                 // If we don't IGNORE, we add it to total.
                 if (!provider.equalsIgnoreCase(PROVIDER_IGNORE)) {
-                    harTotalStat = processEntry(harTotalStat, harEntries.getJSONObject(i), url, provider);
+                    harTotalStat = processEntry(harTotalStat, harEntries.getJSONObject(i), url, provider, true);
                 }
 
                 // In all cases, we enrish the stat of the HasMap (if it exist) and put it back.
@@ -116,7 +116,7 @@ public class HarService implements IHarService {
                 } else {
                     harProviderStat = target.get(provider);
                 }
-                harProviderStat = processEntry(harProviderStat, harEntries.getJSONObject(i), url, provider);
+                harProviderStat = processEntry(harProviderStat, harEntries.getJSONObject(i), url, provider, false);
                 target.put(provider, harProviderStat);
 
             }
@@ -159,6 +159,13 @@ public class HarService implements IHarService {
 
             // Adding total ThirdParty nb to root level
             stat.put("nbThirdParty", nbTP);
+
+            JSONArray req = new JSONArray();
+            for (JSONObject jSONObject : harTotalStat.getUrlList()) {
+                jSONObject.put("start", jSONObject.getLong("start") - firstEver.getTime());
+                req.put(jSONObject);
+            }
+            stat.put("requests", req);
 
             har.put("stat", stat);
             return har;
@@ -289,7 +296,7 @@ public class HarService implements IHarService {
         return harStat;
     }
 
-    private HarStat processEntry(HarStat harStat, JSONObject entry, String url, String provider) {
+    private HarStat processEntry(HarStat harStat, JSONObject entry, String url, String provider, boolean isTotal) {
 
         try {
             String responseType = guessType(entry);
@@ -331,16 +338,18 @@ public class HarService implements IHarService {
                 }
             }
 
-            JSONObject urlEntry = new JSONObject();
-            urlEntry.put("domain", curUrl.getHost());
-            urlEntry.put("size", reqSize);
-            urlEntry.put("start", startL);
-            urlEntry.put("time", reqTime);
-            urlEntry.put("url", url);
-            urlEntry.put("contentType", responseType);
-            urlEntry.put("httpStatus", httpS);
-            urlEntry.put("provider", provider);
-            harStat.appendUrlList(urlEntry);
+            if (isTotal) {
+                JSONObject urlEntry = new JSONObject();
+                urlEntry.put("domain", curUrl.getHost());
+                urlEntry.put("size", reqSize);
+                urlEntry.put("start", startL);
+                urlEntry.put("time", reqTime);
+                urlEntry.put("url", url);
+                urlEntry.put("contentType", responseType);
+                urlEntry.put("httpStatus", httpS);
+                urlEntry.put("provider", provider);
+                harStat.appendUrlList(urlEntry);
+            }
 
             switch (responseType) {
                 case "js":
@@ -591,7 +600,7 @@ public class HarService implements IHarService {
                     nb5XX += val;
                 }
             }
-            httpReqA.put("nbALL", harStat.getNbRequests());
+            httpReqA.put("nb", harStat.getNbRequests());
             httpReqA.put("nbError", harStat.getNbError());
             httpReqA.put("urlError", harStat.getUrlError());
             httpReqA.put("nb1XX", nb1XX);
@@ -600,14 +609,6 @@ public class HarService implements IHarService {
             httpReqA.put("nb4XX", nb4XX);
             httpReqA.put("nb5XX", nb5XX);
 
-            if (statKey.equals("total")) {
-                JSONArray req = new JSONArray();
-                for (JSONObject jSONObject : harStat.getUrlList()) {
-                    jSONObject.put("start", jSONObject.getLong("start") - firstEver.getTime());
-                    req.put(jSONObject);
-                }
-                httpReqA.put("list", req);
-            }
             total.put("requests", httpReqA);
 
             JSONObject size = new JSONObject();
