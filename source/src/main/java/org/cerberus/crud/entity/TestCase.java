@@ -37,7 +37,6 @@ public class TestCase {
     private String test;
     private String testCase;
     private String application;
-    private String project;
     private String ticket;
     private String description;
     private String behaviorOrValueExpected;
@@ -315,14 +314,6 @@ public class TestCase {
 
     public void setPriority(int priority) {
         this.priority = priority;
-    }
-
-    public String getProject() {
-        return project;
-    }
-
-    public void setProject(String project) {
-        this.project = project;
     }
 
     public String getRefOrigine() {

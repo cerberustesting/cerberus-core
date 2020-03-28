@@ -42,12 +42,12 @@
 
 
         <div id="runTestCaseBlockSticky" class="btn-group btn-group-lg" role="group">
-<!--            <div class="col-lg-4">-->
-                <button type="button" class="feedback btn btn-secondary " id="runTestCase">Run TestCase</button>
-<!--            </div>
-            <div class="col-lg-8">-->
-                <button type="button" class="feedback btn btn-primary " id="runTestCaseAndSee">Run TestCase (and See Result)</button>
-<!--            </div>-->
+            <!--            <div class="col-lg-4">-->
+            <button type="button" class="feedback btn btn-secondary " id="runTestCase">Run TestCase</button>
+            <!--            </div>
+                        <div class="col-lg-8">-->
+            <button type="button" class="feedback btn btn-primary " id="runTestCaseAndSee">Run TestCase (and See Result)</button>
+            <!--            </div>-->
         </div>
 
         <div class="container-fluid center" id="page-layout">
@@ -107,7 +107,7 @@
                                     <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                     <span id="FilterHeader">Extended Test Case Filters</span>
                                 </div>
-                                <div class="panel-body collapse" id="filtersPanel">
+                                <div class="panel-body collapse defaultNotExpanded" id="filtersPanel">
                                     <form id="filters">
                                         <div class="row">                                    
                                             <div class="form-group col-xs-2">
@@ -115,8 +115,8 @@
                                                 <select class="multiselectelement form-control" multiple="multiple" id="testFilter"></select>
                                             </div>
                                             <div class="form-group col-xs-2">
-                                                <label id="lbl_project" for="projectFilter">Project</label>
-                                                <select class="multiselectelement form-control" multiple="multiple" id="projectFilter"></select>
+                                                <i><label id="lbl_label" for="labelFilter">Label</label></i>
+                                                <select class="multiselectelement form-control" multiple="multiple" id="labelidFilter"></select>
                                             </div>
                                             <div class="form-group col-xs-2">
                                                 <label id="lbl_status" for="statusFilter">Status</label>                                     
@@ -163,15 +163,11 @@
                                                 <select class="multiselectelement form-control" multiple="multiple" id="campaignFilter"></select>
                                             </div>
                                             <div class="form-group col-xs-2">
-                                                <i><label id="lbl_label" for="labelFilter">Label</label></i>
-                                                <select class="multiselectelement form-control" multiple="multiple" id="labelidFilter"></select>
-                                            </div>
-                                            <div class="form-group col-xs-2">
                                                 <label id="lbl_size" for="lengthFilter">Result size</label>
                                                 <select class="form-control" id="lengthFilter"></select>
                                             </div>
-                                            <div class="form-group col-xs-2">
-                                                <button type="button" class="btn btn-primary" id="loadFiltersBtn">Search</button>
+                                            <div class="form-group col-xs-8">
+                                                <button type="button" class="btn btn-primary btn-lg btn-block" id="loadFiltersBtn">Search</button>
                                             </div>
                                         </div>
                                     </form>
@@ -245,23 +241,6 @@
                                 </div>
                             </div>
 
-                            <!--                            <div class="row" id="runCampaignUpBlock" style="display: none;">
-                                                            <div class="col-lg-6">
-                                                                <button type="button" class="btn btn-primary btn-lg btn-block"  id="runCampaignUp">Run Campaign</button>
-                                                            </div>
-                                                            <div class="col-lg-6">
-                                                                <button type="button" class="btn btn-primary btn-lg btn-block" id="runCampaignAndSeeUp">Run Campaign (and See Result)</button>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row" id="runTestCaseUpBlock">
-                                                            <div class="col-lg-6">
-                                                                <button type="button" class="btn btn-primary btn-lg btn-block" id="runTestCaseUp">Run Test Case</button>
-                                                            </div>
-                                                            <div class="col-lg-6">
-                                                                <button type="button" class="btn btn-primary btn-lg btn-block" id="runTestCaseAndSeeUp">Run Test Case (and See Result)</button>
-                                                            </div>
-                                                        </div>-->
-
                         </div>
                     </div>
 
@@ -274,9 +253,10 @@
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="panel panel-default" id="RobotPanel">
+
                                 <div class="panel-heading card" data-toggle="collapse" data-target="#robotSettings">
+                                    <label id="rbtLabel">Robot settings</label>
                                     <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                    <span>Robot settings</span>
                                 </div>
                                 <div class="panel-body collapse in" id="robotSettings">
                                     <form class="form-horizontal" id="robotSettingsForm">
@@ -315,13 +295,14 @@
                                         <button class="btn btn-default btn-sm pull-right" id="saveRobotPreferences">Record my Robot Preferences</button>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="panel panel-default" id="executionPanel">
                                 <div class="panel-heading card" data-toggle="collapse" data-target="#executionSettings">
+                                    <label id="exeLabel">Execution settings</label>
                                     <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                    <span>Execution settings</span>
                                 </div>
                                 <div class="panel-body collapse in" id="executionSettings">
                                     <form class="form-horizontal"id="executionSettingsForm">

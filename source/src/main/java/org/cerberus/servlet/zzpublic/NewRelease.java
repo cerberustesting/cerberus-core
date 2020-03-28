@@ -36,11 +36,9 @@ import org.cerberus.crud.factory.IFactoryBuildRevisionParameters;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IBuildRevisionParametersService;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.IProjectService;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.impl.ApplicationService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.crud.service.impl.ProjectService;
 import org.cerberus.crud.service.impl.UserService;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
@@ -84,7 +82,6 @@ public class NewRelease extends HttpServlet {
 
         IApplicationService MyApplicationService = appContext.getBean(ApplicationService.class);
         IUserService MyUserService = appContext.getBean(UserService.class);
-        IProjectService MyProjectService = appContext.getBean(ProjectService.class);
         IBuildRevisionParametersService buildRevisionParametersService = appContext.getBean(IBuildRevisionParametersService.class);
         IFactoryBuildRevisionParameters factoryBuildRevisionParameters = appContext.getBean(IFactoryBuildRevisionParameters.class);
 
@@ -146,10 +143,6 @@ public class NewRelease extends HttpServlet {
                 }
             }
 
-            // Checking the parameter validity. If project has been entered, does it exist ?
-            if (!project.equalsIgnoreCase("") && !MyProjectService.exist(project)) {
-                out.println("Warning - Project does not exist : " + project);
-            }
 
             // Starting the database update only when no blocking error has been detected.
             if (error == false) {

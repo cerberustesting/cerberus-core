@@ -419,22 +419,6 @@
         <servlet-class>org.cerberus.servlet.crud.transversaltables.DeleteInvariant</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ReadProject</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.ReadProject</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CreateProject</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.CreateProject</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DeleteProject</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.DeleteProject</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateProject</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.UpdateProject</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>CreateApplication</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateApplication</servlet-class>
     </servlet>
@@ -1210,22 +1194,6 @@
     <servlet-mapping>
         <servlet-name>DeleteInvariant</servlet-name>
         <url-pattern>/DeleteInvariant</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ReadProject</servlet-name>
-        <url-pattern>/ReadProject</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CreateProject</servlet-name>
-        <url-pattern>/CreateProject</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteProject</servlet-name>
-        <url-pattern>/DeleteProject</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateProject</servlet-name>
-        <url-pattern>/UpdateProject</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateApplication</servlet-name>

@@ -8451,6 +8451,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Remove deprecated tables.
         // 1484
         a.add("DROP TABLE `testcaseexecutionwwwdet`, `testcaseexecutionwwwsum`");
+        a.add("DROP TABLE `project`");
 
         return a;
     }
