@@ -101,13 +101,22 @@ public class ManageV001 extends HttpServlet {
                 if (request.getParameter("action") != null && request.getParameter("action").equals("stop")) {
                     if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
                         /**
-                         * We desactivate the instance to process new execution.
+                         * We deactivate the instance to process new execution.
                          */
                         executionThreadPoolService.setInstanceActive(false);
                         /**
                          * We clean all scheduler entries.
                          */
                         cerberusScheduler.closeScheduler();
+                        /**
+                         * Now that we stopped the submissions of new executions
+                         * and also stopped the scheduler, no more executions
+                         * should be triggered on that instance. We now wait a
+                         * bit until we check the pending executions. Some
+                         * executions could be submitted but not yet visible
+                         * from the instance yet.
+                         */
+                        Thread.sleep(10000);
                         /**
                          * We loop every second until maxIteration session in
                          * order to wait until no more executions are running on
