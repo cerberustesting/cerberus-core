@@ -209,6 +209,8 @@ function feedContent() {
             row.append(cel1);
             var cel1 = $("<td></td>").append(obj.triggerName);
             row.append(cel1);
+            var cel1 = $("<td></td>").append(obj.triggerCronDefinition);
+            row.append(cel1);
             var cel1 = $("<td></td>").append(obj.triggerNextFiretime);
             row.append(cel1);
             var cel1 = $("<td></td>").append(obj.triggerUserCreated);

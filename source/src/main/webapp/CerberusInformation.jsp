@@ -313,6 +313,7 @@
                                                 <tr>
                                                     <th class="text-center" id="systemHeader" name="systemHeader">Type</th>
                                                     <th class="text-center" id="systemHeader" name="systemHeader">Name</th>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Cron definition</th>
                                                     <th class="text-center" id="systemHeader" name="systemHeader">Next Fire Time</th>
                                                     <th class="text-center" id="systemHeader" name="systemHeader">User Created</th>
                                                 </tr>

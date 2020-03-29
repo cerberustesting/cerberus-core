@@ -4,13 +4,14 @@
 
 *Improvements / New features*
 [square]
-* Inside resportbytag page, rows that are in QUEUED state but with a previous execution are now displayed by default.
-* manage API now also clean Quartz scheduled entries when scope=instance and action=stop.
+* Inside ReportByTag page, rows that are in QUEUED state but with a previous execution are now also displayed by default.
+* ManageV001 API now also clean Quartz scheduled entries when scope=instance and action=stop.
 * New parameter : 'cerberus_networkstatsave_active' in order to activate the automatic saving of network stat at the end of each execution.
-* Better message with Kafka topic is not found.
-* Service responses that have no Content-Type header defined and start by [ are considered as JSON
 * Added decode on topic, header and hosts for KAFKA SEARCH service #2119
+* Better message when Kafka topic is not found.
+* Service responses that have no Content-Type header defined and start by [ are now also considered as JSON
 * TestCase filters are now hidden by default (that speedup the page loading for new users).
+* Campaign Scheduler definition is now immediately reloaded.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

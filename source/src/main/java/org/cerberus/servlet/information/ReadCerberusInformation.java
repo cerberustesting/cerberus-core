@@ -20,6 +20,8 @@
 package org.cerberus.servlet.information;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -43,10 +45,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadCerberusInformation extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ReadCerberusInformation.class);
-    
+
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S'Z'";
+
     private IDatabaseVersioningService databaseVersionService;
     private IMyVersionService myVersionService;
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -71,6 +75,8 @@ public class ReadCerberusInformation extends HttpServlet {
             data.put("environment", System.getProperty("org.cerberus.environment"));
             databaseVersionService = appContext.getBean(IDatabaseVersioningService.class);
             data.put("databaseCerberusTargetVersion", databaseVersionService.getSQLScript().size());
+            Date now = new Date();
+            data.put("serverDate", new SimpleDateFormat(DATE_FORMAT).format(now));
 
             myVersionService = appContext.getBean(IMyVersionService.class);
             if (myVersionService.findMyVersionByKey("database") != null) {

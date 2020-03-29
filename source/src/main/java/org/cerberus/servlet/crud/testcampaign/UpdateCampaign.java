@@ -183,10 +183,6 @@ public class UpdateCampaign extends HttpServlet {
 
                 IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
                 schedAns = scheduleentryservice.compareSchedListAndUpdateInsertDeleteElements(c, schList);
-                if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
-                    myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
-                }
 
                 if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     finalAnswer = campaignService.update(camp);

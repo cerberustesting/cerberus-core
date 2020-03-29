@@ -162,16 +162,8 @@ public class CreateCampaign extends HttpServlet {
                     if (!schList.isEmpty()) {
                         IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
                         schedAns = scheduleentryservice.createListSched(schList);
-                        if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                            /**
-                             * Updating Scheduler Version.
-                             */
-                            IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
-                            myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
-                        }
                     }
-                    if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    } else {
+                    if (!schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         finalAnswer = schedAns;
                     }
                 }

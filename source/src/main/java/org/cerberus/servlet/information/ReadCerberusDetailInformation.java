@@ -127,6 +127,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
                     objectTrig.put("triggerType", triggerSet.getJobDataMap().getString("type"));
                     objectTrig.put("triggerUserCreated", triggerSet.getJobDataMap().getString("user"));
                     objectTrig.put("triggerNextFiretime", triggerSet.getNextFireTime());
+                    objectTrig.put("triggerCronDefinition", triggerSet.getJobDataMap().getString("cronDefinition"));
                     triggerList.add(objectTrig);
                 }
                 Collections.sort(triggerList, new SortTriggers());
