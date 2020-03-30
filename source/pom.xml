@@ -56,6 +56,8 @@
         <appium.version>7.2.0</appium.version>
         <selenium.version>3.141.59</selenium.version>
         <jna.version>4.1.0</jna.version>
+        <!-- quaartz -->
+        <quartz.version>2.3.2</quartz.version>
         <!-- Log4J Version -->
         <log4j.version>2.9.1</log4j.version>
         <!-- jsonpath -->
@@ -99,8 +101,6 @@
         <asciidoctor-maven-plugin.version>1.6.0</asciidoctor-maven-plugin.version>
         <license-maven-plugin.version>2.0</license-maven-plugin.version>
         
-        <!-- Quartz version -->
-        <quartz.version>2.3.2</quartz.version>
         <!-- Sonar Exclusion -->
         <sonar.exclusions>src/main/webapp/dependencies/Ace-1.2.6/worker-xquery.js</sonar.exclusions>
         

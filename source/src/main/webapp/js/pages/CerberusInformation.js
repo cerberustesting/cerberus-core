@@ -28,7 +28,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
 });
 
 function initPage() {
+
     displayPageLabel();
+
+    bindToggleCollapse();
+
 }
 
 function displayPageLabel() {
@@ -209,7 +213,7 @@ function feedContent() {
         row.append(cel1);
         row.append(cel2);
         table.append(row);
-        
+
         var table = $("#schDetTableBody");
         table.empty();
         $.each(data.scheduler["schedulerTriggers"], function (idx, obj) {

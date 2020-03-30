@@ -96,7 +96,7 @@ public class KafkaService implements IKafkaService {
 
     @Override
     public String getKafkaConsumerKey(String topic, String bootstrapServers) {
-        return topic + "|" + bootstrapServers;
+        return bootstrapServers + "|" + topic;
     }
 
     @Override
@@ -261,89 +261,100 @@ public class KafkaService implements IKafkaService {
 
             //Get a list of the topics' partitions
             List<PartitionInfo> partitionList = consumer.partitionsFor(topic);
-            List<TopicPartition> topicPartitionList = partitionList.stream().map(info -> new TopicPartition(topic, info.partition())).collect(Collectors.toList());
-            //Assign all the partitions to this consumer
-            consumer.assign(topicPartitionList);
-            // Setting each partition to correct Offset.
-            for (Map.Entry<TopicPartition, Long> entry : mapOffsetPosition.entrySet()) {
-                consumer.seek(entry.getKey(), entry.getValue());
-                LOG.debug("Partition : " + entry.getKey().partition() + " set to offset : " + entry.getValue());
-            }
 
-            boolean consume = true;
-            long timeoutTime = Instant.now().plusSeconds(targetNbSecInt).toEpochMilli(); //default to 30 seconds
-            int pollDurationSec = 5;
-            if (targetNbSecInt < pollDurationSec) {
-                pollDurationSec = targetNbSecInt;
-            }
+            if (partitionList == null) {
 
-            while (consume) {
-                LOG.debug("Start Poll.");
-                @SuppressWarnings("unchecked")
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(pollDurationSec));
-                LOG.debug("End Poll.");
-                if (Instant.now().toEpochMilli() > timeoutTime) {
-                    LOG.debug("Timed out searching for record");
-                    consumer.wakeup(); //exit
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKKAFKA);
+                message.setDescription(message.getDescription().replace("%EX%", "Maybe Topic does not exist.").replace("%TOPIC%", topic).replace("%HOSTS%", bootstrapServers));
+
+            } else {
+
+                List<TopicPartition> topicPartitionList = partitionList.stream().map(info -> new TopicPartition(topic, info.partition())).collect(Collectors.toList());
+                //Assign all the partitions to this consumer
+                consumer.assign(topicPartitionList);
+                // Setting each partition to correct Offset.
+                for (Map.Entry<TopicPartition, Long> entry : mapOffsetPosition.entrySet()) {
+                    consumer.seek(entry.getKey(), entry.getValue());
+                    LOG.debug("Partition : " + entry.getKey().partition() + " set to offset : " + entry.getValue());
                 }
-                //Now for each record in the batch of records we got from Kafka
-                for (ConsumerRecord<String, String> record : records) {
-                    try {
-                        LOG.debug("New record " + record.topic() + " " + record.partition() + " " + record.offset());
-                        LOG.debug("  " + record.key() + " | " + record.value());
-                        JSONObject recordJSON = new JSONObject(record.value());
-                        nbEvents++;
 
-                        boolean match = true;
+                boolean consume = true;
+                long timeoutTime = Instant.now().plusSeconds(targetNbSecInt).toEpochMilli(); //default to 30 seconds
+                int pollDurationSec = 5;
+                if (targetNbSecInt < pollDurationSec) {
+                    pollDurationSec = targetNbSecInt;
+                }
 
-                        if (!StringUtil.isNullOrEmpty(filterPath)) {
-                            String recordJSONfiltered = "";
-                            try {
-                                recordJSONfiltered = jsonService.getStringFromJson(record.value(), filterPath);
-                            } catch (PathNotFoundException ex) {
-                                //Catch any exceptions thrown from message processing/testing as they should have already been reported/dealt with
-                                //but we don't want to trigger the catch block for Kafka consumption
-                                match = false;
-                                LOG.debug("Record discarded - Path not found.");
-                            } catch (Exception ex) {
-                                LOG.error(ex, ex);
+                while (consume) {
+                    LOG.debug("Start Poll.");
+                    @SuppressWarnings("unchecked")
+                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(pollDurationSec));
+                    LOG.debug("End Poll.");
+                    if (Instant.now().toEpochMilli() > timeoutTime) {
+                        LOG.debug("Timed out searching for record");
+                        consumer.wakeup(); //exit
+                    }
+                    //Now for each record in the batch of records we got from Kafka
+                    for (ConsumerRecord<String, String> record : records) {
+                        try {
+                            LOG.debug("New record " + record.topic() + " " + record.partition() + " " + record.offset());
+                            LOG.debug("  " + record.key() + " | " + record.value());
+                            JSONObject recordJSON = new JSONObject(record.value());
+                            nbEvents++;
+
+                            boolean match = true;
+
+                            if (!StringUtil.isNullOrEmpty(filterPath)) {
+                                String recordJSONfiltered = "";
+                                try {
+                                    recordJSONfiltered = jsonService.getStringFromJson(record.value(), filterPath);
+                                } catch (PathNotFoundException ex) {
+                                    //Catch any exceptions thrown from message processing/testing as they should have already been reported/dealt with
+                                    //but we don't want to trigger the catch block for Kafka consumption
+                                    match = false;
+                                    LOG.debug("Record discarded - Path not found.");
+                                } catch (Exception ex) {
+                                    LOG.error(ex, ex);
+                                }
+                                LOG.debug("Filtered value : " + recordJSONfiltered);
+                                if (!recordJSONfiltered.equals(filterValue)) {
+                                    match = false;
+                                    LOG.debug("Record discarded - Value different.");
+                                }
                             }
-                            LOG.debug("Filtered value : " + recordJSONfiltered);
-                            if (!recordJSONfiltered.equals(filterValue)) {
-                                match = false;
-                                LOG.debug("Record discarded - Value different.");
+
+                            if (match) {
+                                JSONObject messageJSON = new JSONObject();
+                                messageJSON.put("key", record.key());
+                                messageJSON.put("value", recordJSON);
+                                messageJSON.put("offset", record.offset());
+                                messageJSON.put("partition", record.partition());
+                                resultJSON.put(messageJSON);
+                                nbFound++;
+                                if (nbFound >= targetNbEventsInt) {
+                                    consume = false;  //exit the consume loop
+                                    consumer.wakeup(); //takes effect on the next poll loop so need to break.
+                                    break; //if we've found a match, stop looping through the current record batch
+                                }
                             }
+
+                        } catch (Exception ex) {
+                            //Catch any exceptions thrown from message processing/testing as they should have already been reported/dealt with
+                            //but we don't want to trigger the catch block for Kafka consumption
+                            LOG.error(ex, ex);
                         }
-
-                        if (match) {
-                            JSONObject messageJSON = new JSONObject();
-                            messageJSON.put("key", record.key());
-                            messageJSON.put("value", recordJSON);
-                            messageJSON.put("offset", record.offset());
-                            messageJSON.put("partition", record.partition());
-                            resultJSON.put(messageJSON);
-                            nbFound++;
-                            if (nbFound >= targetNbEventsInt) {
-                                consume = false;  //exit the consume loop
-                                consumer.wakeup(); //takes effect on the next poll loop so need to break.
-                                break; //if we've found a match, stop looping through the current record batch
-                            }
-                        }
-
-                    } catch (Exception ex) {
-                        //Catch any exceptions thrown from message processing/testing as they should have already been reported/dealt with
-                        //but we don't want to trigger the catch block for Kafka consumption
-                        LOG.error(ex, ex);
                     }
                 }
+                result.setItem(resultJSON.toString());
+                Instant date2 = Instant.now();
+                Duration duration = Duration.between(date1, date2);
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEARCHKAFKA)
+                        .resolveDescription("NBEVENT", String.valueOf(nbFound))
+                        .resolveDescription("NBTOT", String.valueOf(nbEvents))
+                        .resolveDescription("NBSEC", String.valueOf(duration.getSeconds()));
+
             }
-            result.setItem(resultJSON.toString());
-            Instant date2 = Instant.now();
-            Duration duration = Duration.between(date1, date2);
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEARCHKAFKA)
-                    .resolveDescription("NBEVENT", String.valueOf(nbFound))
-                    .resolveDescription("NBTOT", String.valueOf(nbEvents))
-                    .resolveDescription("NBSEC", String.valueOf(duration.getSeconds()));
+
         } catch (WakeupException e) {
             result.setItem(resultJSON.toString());
             Instant date2 = Instant.now();
