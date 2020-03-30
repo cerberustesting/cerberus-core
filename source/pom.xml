@@ -31,6 +31,7 @@
     <name>Cerberus</name>
 
     <properties>
+        
         <!-- Project properties -->
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -99,11 +100,10 @@
         <license-maven-plugin.version>2.0</license-maven-plugin.version>
         
         <!-- Quartz version -->
-        <quartz.version>2.3.0</quartz.version>
-        <quartzSecond.version>2.1.7</quartzSecond.version>
-        <c3p0.version>0.9.1.2</c3p0.version>
+        <quartz.version>2.3.2</quartz.version>
         <!-- Sonar Exclusion -->
         <sonar.exclusions>src/main/webapp/dependencies/Ace-1.2.6/worker-xquery.js</sonar.exclusions>
+        
     </properties>
 
     <dependencies>
@@ -140,10 +140,10 @@
             <version>${spring.version}</version>
         </dependency>
         <dependency>
-        <groupId>org.springframework.security</groupId>
-        <artifactId>spring-security-config</artifactId>
-        <version>${spring.version}</version>
-    </dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
@@ -172,7 +172,8 @@
             <artifactId>jackson-databind</artifactId>
             <version>${jackson-databind.version}</version>
         </dependency>
-<!--        <dependency>
+        <!--
+        <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-core-asl</artifactId>
             <version>${jackson-core-asl.version}</version>
@@ -181,7 +182,8 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
             <version>${jackson-mapper-asl.version}</version>
-        </dependency>-->
+        </dependency>
+        -->
         
         <!-- Groovy -->
         <dependency>
@@ -377,12 +379,14 @@
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj</artifactId>
             <version>${asciidoctor.version}</version>
-            <!--            <exclusions>
+            <!--            
+            <exclusions>
                 <exclusion>
                     <groupId>org.jruby</groupId>
                     <artifactId>jruby-complete</artifactId>
                 </exclusion>
-            </exclusions>-->
+            </exclusions>
+            -->
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
@@ -401,6 +405,7 @@
             <artifactId>quartz</artifactId>
             <version>${quartz.version}</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz-jobs</artifactId>
@@ -442,6 +447,7 @@
             <artifactId>c3p0</artifactId>
             <version>${c3p0.version}</version>
         </dependency>
+        -->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
@@ -506,6 +512,7 @@
         <version>2.28</version>
     </dependency>
         --> 
+        
     </dependencies>
 
     <build>

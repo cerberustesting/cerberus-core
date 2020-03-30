@@ -201,6 +201,15 @@ function feedContent() {
         row.append(cel2);
         table.append(row);
 
+        var table = $("#schedulerDateTableBody");
+        table.empty();
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.scheduler.serverDate);
+        var cel2 = $("<td></td>").append(data.scheduler.serverTimeZone);
+        row.append(cel1);
+        row.append(cel2);
+        table.append(row);
+        
         var table = $("#schDetTableBody");
         table.empty();
         $.each(data.scheduler["schedulerTriggers"], function (idx, obj) {

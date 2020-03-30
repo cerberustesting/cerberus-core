@@ -308,6 +308,20 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-xs-12">
+                                        <table class="table table-bordered table-hover nomarginbottom dataTable" id="schedulerDateTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Server Date</th>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Server Timezone</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="schedulerDateTableBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
                                         <table class="table table-bordered table-hover nomarginbottom dataTable" id="schDetTable">
                                             <thead>
                                                 <tr>

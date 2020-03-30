@@ -130,7 +130,17 @@ public class SchedulerInit {
                                         user = sched.getUsrCreated();
                                     }
                                     //Build trigger with cron settings name and type
-                                    Trigger myTrigger = TriggerBuilder.newTrigger().withIdentity(id, "group1").usingJobData("schedulerId", schedulerId).usingJobData("name", name).usingJobData("type", type).usingJobData("user", user).usingJobData("cronDefinition", cron).withSchedule(CronScheduleBuilder.cronSchedule(cron).inTimeZone(TimeZone.getTimeZone("UTC+2"))).forJob(scheduledJob).build();
+                                    Trigger myTrigger = TriggerBuilder.newTrigger()
+                                            .withIdentity(id, "group1")
+                                            .usingJobData("schedulerId", schedulerId)
+                                            .usingJobData("name", name)
+                                            .usingJobData("type", type)
+                                            .usingJobData("user", user)
+                                            .usingJobData("cronDefinition", cron)
+                                            .withSchedule(CronScheduleBuilder.cronSchedule(cron)
+                                            //                                                    .inTimeZone(TimeZone.getTimeZone("UTC+2"))
+                                            )
+                                            .forJob(scheduledJob).build();
 
                                     //Add trigger to list of trigger
                                     myTriggersSetList.add(myTrigger);
