@@ -315,7 +315,10 @@ public class ReadAppService extends HttpServlet {
     private JSONObject convertAppServiceToJSONObject(AppService appservice) throws JSONException {
 
         Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(appservice));
+        JSONObject result = new JSONObject();
+        if (appservice != null) {
+            result = new JSONObject(gson.toJson(appservice));
+        }
         return result;
     }
 

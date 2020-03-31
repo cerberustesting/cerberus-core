@@ -214,7 +214,8 @@ public class ServiceService implements IServiceService {
                     decodedServicePath = (String) answerDecode.getItem();
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                        message = answerDecode.getResultMessage().resolveDescription("FIELD", "Service Path");
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", "Service Path").getDescription());
                         LOG.debug("Service Call interupted due to decode 'Service Path'.");
                         result.setResultMessage(message);
                         return result;
@@ -225,7 +226,8 @@ public class ServiceService implements IServiceService {
                     decodedRequest = (String) answerDecode.getItem();
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                        message = answerDecode.getResultMessage().resolveDescription("FIELD", "Service Request");
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", "Service Request").getDescription());
                         LOG.debug("Service Call interupted due to decode 'Service Request'.");
                         result.setResultMessage(message);
                         return result;
@@ -239,7 +241,8 @@ public class ServiceService implements IServiceService {
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
                             String field = "Header Key " + object.getKey();
-                            message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                    .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                             LOG.debug("Service Call interupted due to decode '" + field + "'.");
                             result.setResultMessage(message);
                             return result;
@@ -250,7 +253,8 @@ public class ServiceService implements IServiceService {
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
                             String field = "Header Value " + object.getKey();
-                            message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                    .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                             LOG.debug("Service Call interupted due to decode '" + field + "'.");
                             result.setResultMessage(message);
                             return result;
@@ -268,7 +272,8 @@ public class ServiceService implements IServiceService {
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
                             String field = "Content Key " + object.getKey();
-                            message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                    .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                             LOG.debug("Service Call interupted due to decode '" + field + "'.");
                             result.setResultMessage(message);
                             return result;
@@ -279,7 +284,8 @@ public class ServiceService implements IServiceService {
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
                             String field = "Content Value " + object.getKey();
-                            message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                    .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                             LOG.debug("Service Call interupted due to decode '" + field + "'.");
                             result.setResultMessage(message);
                             return result;
@@ -323,7 +329,8 @@ public class ServiceService implements IServiceService {
                             if (!(answerDecode.isCodeStringEquals("OK"))) {
                                 // If anything wrong with the decode --> we stop here with decode message in the action result.
                                 String field = "Operation";
-                                message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                        .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                                 LOG.debug("Service Call interupted due to decode '" + field + "'.");
                                 result.setResultMessage(message);
                                 return result;
@@ -334,7 +341,8 @@ public class ServiceService implements IServiceService {
                             if (!(answerDecode.isCodeStringEquals("OK"))) {
                                 // If anything wrong with the decode --> we stop here with decode message in the action result.
                                 String field = "Attachement URL";
-                                message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                        .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                                 LOG.debug("Service Call interupted due to decode '" + field + "'.");
                                 result.setResultMessage(message);
                                 return result;
@@ -400,7 +408,8 @@ public class ServiceService implements IServiceService {
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
                             String field = "Kafka Key";
-                            message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                    .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                             LOG.debug("Service Call interupted due to decode '" + field + "'.");
                             result.setResultMessage(message);
                             return result;
@@ -412,7 +421,8 @@ public class ServiceService implements IServiceService {
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
                             String field = "Kafka topic";
-                            message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                    .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                             LOG.debug("Service Call interupted due to decode '" + field + "'.");
                             result.setResultMessage(message);
                             return result;
@@ -439,7 +449,8 @@ public class ServiceService implements IServiceService {
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                                         String field = "Filter Path";
-                                        message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                                .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                                         LOG.debug("Service Call interupted due to decode '" + field + "'.");
                                         result.setResultMessage(message);
                                         return result;
@@ -450,7 +461,8 @@ public class ServiceService implements IServiceService {
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                                         String field = "Filter Value";
-                                        message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                                .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                                         LOG.debug("Service Call interupted due to decode '" + field + "'.");
                                         result.setResultMessage(message);
                                         return result;

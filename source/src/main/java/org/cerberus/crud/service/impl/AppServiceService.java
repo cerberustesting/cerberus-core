@@ -82,13 +82,19 @@ public class AppServiceService implements IAppServiceService {
         AnswerItem<AppService> answerAppService = this.readByKey(key);
         AppService appService = (AppService) answerAppService.getItem();
         try {
-            AnswerList<AppServiceContent> content = appServiceContentService.readByVarious(key, activedetail);
-            appService.setContentList((List<AppServiceContent>) content.getDataList());
-            AnswerList<AppServiceHeader> header = appServiceHeaderService.readByVarious(key, activedetail);
-            appService.setHeaderList((List<AppServiceHeader>) header.getDataList());
-            answerAppService.setItem(appService);
+            if (appService != null) {
+                AnswerList<AppServiceContent> content = appServiceContentService.readByVarious(key, activedetail);
+                if (content != null) {
+                    appService.setContentList((List<AppServiceContent>) content.getDataList());
+                }
+                AnswerList<AppServiceHeader> header = appServiceHeaderService.readByVarious(key, activedetail);
+                if (header != null) {
+                    appService.setHeaderList((List<AppServiceHeader>) header.getDataList());
+                }
+                answerAppService.setItem(appService);
+            }
         } catch (Exception e) {
-            LOG.error(e,e);
+            LOG.error(e, e);
         }
         return answerAppService;
     }
@@ -196,7 +202,7 @@ public class AppServiceService implements IAppServiceService {
         result = StringUtil.removeLastChar(result, 1);
         return result;
     }
-    
+
     @Override
     public Answer uploadFile(String service, FileItem file) {
         return appServiceDao.uploadFile(service, file);

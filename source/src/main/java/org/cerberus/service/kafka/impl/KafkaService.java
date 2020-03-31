@@ -218,8 +218,12 @@ public class KafkaService implements IKafkaService {
             message.setDescription(message.getDescription().replace("%EX%", ex.toString()).replace("%TOPIC%", topic).replace("%HOSTS%", bootstrapServers));
             LOG.debug(ex, ex);
         } finally {
-            consumer.close();
-            LOG.info("Closed Consumer : " + getKafkaConsumerKey(topic, bootstrapServers));
+            if (consumer != null) {
+                consumer.close();
+                LOG.info("Closed Consumer : " + getKafkaConsumerKey(topic, bootstrapServers));
+            } else {
+                LOG.info("Consumer not openned : " + getKafkaConsumerKey(topic, bootstrapServers));
+            }
         }
         result.setResultMessage(message);
         return result;
@@ -385,7 +389,7 @@ public class KafkaService implements IKafkaService {
     public HashMap<String, Map<TopicPartition, Long>> getAllConsumers(List<TestCaseStep> mainExecutionTestCaseStepList, TestCaseExecution tCExecution) throws CerberusException, InterruptedException, ExecutionException {
         HashMap<String, Map<TopicPartition, Long>> tempKafka = new HashMap<>();
         AnswerItem<Map<TopicPartition, Long>> resultConsume = new AnswerItem<>();
-        MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+        MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKALLTOPICS);
 
         for (TestCaseStep testCaseStep : mainExecutionTestCaseStepList) {
             for (TestCaseStepAction testCaseStepAction : testCaseStep.getTestCaseStepAction()) {
@@ -404,8 +408,9 @@ public class KafkaService implements IKafkaService {
                                 decodedTopic = (String) answerDecode.getItem();
                                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                                     // If anything wrong with the decode --> we stop here with decode message in the action result.
-                                    String field = "Kafka topic";
-                                    message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                                    String field = "Kafka Topic of Service '" + localService.getItem().getService() + "'";
+                                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKALLTOPICS)
+                                            .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                                     LOG.debug("Getting all consumers interupted due to decode '" + field + "'.");
                                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND);
                                     mes.setDescription(message.getDescription());
@@ -417,8 +422,9 @@ public class KafkaService implements IKafkaService {
                                 decodedServicePath = (String) answerDecode.getItem();
                                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                                     // If anything wrong with the decode --> we stop here with decode message in the action result.
-                                    String field = "Kafka Service Path";
-                                    message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                                    String field = "Kafka Service Path of Service '" + localService.getItem().getService() + "'";
+                                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKALLTOPICS)
+                                            .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                                     LOG.debug("Getting all consumers interupted due to decode '" + field + "'.");
                                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND);
                                     mes.setDescription(message.getDescription());
@@ -433,8 +439,9 @@ public class KafkaService implements IKafkaService {
                                     object.setKey((String) answerDecode.getItem());
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                                        String field = "Header Key " + object.getKey();
-                                        message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                                        String field = "Header Key " + object.getKey() + "of Service '" + localService.getItem().getService() + "'";
+                                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKALLTOPICS)
+                                                .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                                         LOG.debug("Getting all consumers interupted due to decode '" + field + "'.");
                                         MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND);
                                         mes.setDescription(message.getDescription());
@@ -445,8 +452,9 @@ public class KafkaService implements IKafkaService {
                                     object.setValue((String) answerDecode.getItem());
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                                        String field = "Header Value " + object.getKey();
-                                        message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                                        String field = "Header Value " + object.getKey() + "of Service '" + localService.getItem().getService() + "'";
+                                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKALLTOPICS)
+                                                .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                                         LOG.debug("Getting all consumers interupted due to decode '" + field + "'.");
                                         MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND);
                                         mes.setDescription(message.getDescription());
