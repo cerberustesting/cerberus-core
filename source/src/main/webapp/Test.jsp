@@ -44,10 +44,6 @@
 
             <h1 class="page-title-line" id="title">Test</h1>
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-list"></span>
-                    <label id="testListLabel">Test List</label>
-                </div>
                 <div class="panel-body" id="testList">
                     <table id="testTable" class="table table-bordered table-hover display" name="testTable">
                     </table>

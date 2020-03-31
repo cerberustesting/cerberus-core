@@ -38,10 +38,6 @@
 
             <h1 class="page-title-line" id="title">Robot</h1>
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-list"></span>
-                    <label id="robotListLabel">Robot List</label>
-                </div>
                 <div class="panel-body" id="robotList">
                     <table id="robotsTable" class="table table-bordered table-hover display" name="robotsTable">
                     </table>

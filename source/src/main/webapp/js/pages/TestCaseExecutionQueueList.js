@@ -71,7 +71,7 @@ function initPage() {
     $('#massActionExeQModal').on('hidden.bs.modal', massActionModalCloseHandler);
 
     // React on tab changes
-    $('#executionList a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    $('#tabsScriptEdit a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         switch ($(e.target).attr("href")) {
             case "#tabDetails":
                 refreshTable();

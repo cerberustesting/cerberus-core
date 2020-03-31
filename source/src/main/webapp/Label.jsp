@@ -43,10 +43,6 @@
 
             <h1 class="page-title-line" id="title">Label</h1>
             <div class="panel panel-default">
-                <div class="panel-heading" id="labelListLabel">
-                    <span class="glyphicon glyphicon-list"></span>
-                    Label List
-                </div>
                 <div class="panel-body" id="labelList">
                     <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
                         <li class="active"><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">List</a></li>

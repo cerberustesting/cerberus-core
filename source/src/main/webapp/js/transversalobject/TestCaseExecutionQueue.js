@@ -330,7 +330,6 @@ function feedTestCase(test, selectElement, defaultTestCase) {
 function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) {
 
     // Message on entry to go.
-    console.info(exeQ.nbEntryInQueueToGo);
     var target = $("#messageArea2");
     if (exeQ.nbEntryInQueueToGo > 0) {
         target.empty();

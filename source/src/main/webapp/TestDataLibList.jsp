@@ -44,10 +44,6 @@
             <%@ include file="include/transversalobject/AppService.html"%>      
             <h1 class="page-title-line" id="title">Test Data Library</h1>
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-list"></span>
-                    <label id="testListLabel">Test Data List</label>
-                </div>
                 <div class="panel-body" id="testDataLibList">
                     <table id="listOfTestDataLib" class="table table-bordered table-hover display" name="listOfTestDataLib"></table>
                     <div class="marginBottom20"></div>

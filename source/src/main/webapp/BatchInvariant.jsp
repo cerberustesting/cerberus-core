@@ -37,11 +37,8 @@
             <%@ include file="include/pages/batchinvariant/editBatchInvariant.html"%> 
 
             <h1 class="page-title-line" id="title">Deploy Type</h1>
+
             <div class="panel panel-default">
-                <div class="panel-heading" id="batchinvariantListLabel">
-                    <span class="glyphicon glyphicon-list"></span>
-                    Application List
-                </div>
                 <div class="panel-body" id="batchinvariantList">
                     <table id="batchinvariantsTable" class="table table-bordered table-hover display" name="batchinvariantsTable"></table>
                     <div class="marginBottom20"></div>

@@ -45,24 +45,30 @@
             <%@ include file="include/transversalobject/Invariant.html"%>
 
             <h1 class="page-title-line" id="title">Executions in Queue</h1>
-            <div class="panel panel-default">
-                <div class="panel-heading" id="executionListLabel">
-                    <span class="glyphicon glyphicon-list"></span>
-                    Executions in Queue
-                </div>
-                <div class="panel-body" id="executionList">
-                    <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
-                        <li class="active"><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">Executions in queue</a></li>
-                        <li><a data-toggle="tab" href="#tabFollowUp" id="editTabFollowUp" name="tabFollowUp">Pools Follow Up</a></li>
-                        <li><a data-toggle="tab" href="#tabJobStatus" id="editTabJobStatus" name="tabJobStatus">Queue Job Status</a></li>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="center marginTop25 tab-pane fade in active" id="tabDetails">
+
+            <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
+                <li class="active"><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">Executions in queue</a></li>
+                <li><a data-toggle="tab" href="#tabFollowUp" id="editTabFollowUp" name="tabFollowUp">Pools Follow Up</a></li>
+                <li><a data-toggle="tab" href="#tabJobStatus" id="editTabJobStatus" name="tabJobStatus">Queue Job Status</a></li>
+            </ul>
+
+
+            <div class="tab-content">
+
+                <div class="center marginTop25 tab-pane fade in active" id="tabDetails">
+                    <div class="panel panel-default">
+                        <div class="panel-body" id="executionList">
                             <form id="massActionForm" name="massActionForm"  title="" role="form">
                                 <table id="executionsTable" class="table table-bordered table-hover display" name="executionsTable"></table>
                             </form>
+                            <div class="marginBottom20"></div>
                         </div>
-                        <div class="center marginTop25 tab-pane fade" id="tabFollowUp">
+                    </div>
+                </div>
+
+                <div class="center marginTop25 tab-pane fade" id="tabFollowUp">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
                             <div class='marginBottom10'>
                                 <button type="button" class="btn btn-default" style="margin-left: 10px;" id="refreshFollowUpbutton" onclick="displayAndRefresh_followup()"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
                             </div>
@@ -71,7 +77,12 @@
                                 <div class="marginBottom20"></div>
                             </div>
                         </div>
-                        <div class="center marginTop25 tab-pane fade" id="tabJobStatus">
+                    </div>
+                </div>
+
+                <div class="center marginTop25 tab-pane fade" id="tabJobStatus">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
                             <div class='marginBottom10'>
                                 <button type="button" class="btn btn-default" style="margin-left: 10px;" id="refreshJobStatusbutton" onclick="displayAndRefresh_jobStatus()"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
                             </div>
@@ -117,12 +128,12 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
-                    <div class="marginBottom20"></div>
                 </div>
+
             </div>
+
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>

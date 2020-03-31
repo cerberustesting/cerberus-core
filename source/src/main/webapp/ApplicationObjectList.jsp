@@ -40,10 +40,6 @@
 
             <h1 class="page-title-line" id="title">Application Object</h1>
             <div class="panel panel-default">
-                <div class="panel-heading" id="applicationObjectListLabel">
-                    <span class="glyphicon glyphicon-list"></span>
-                    Application Object List
-                </div>
                 <div class="panel-body" id="applicationObjectList">
                     <table id="applicationObjectsTable" class="table table-bordered table-hover display" name="applicationObjectsTable"></table>
                     <div class="marginBottom20"></div>

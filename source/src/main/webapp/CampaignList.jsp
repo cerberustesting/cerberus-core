@@ -41,10 +41,6 @@
 
             <h1 class="page-title-line" id="title">Test Campaigns</h1>
             <div class="panel panel-default">
-                <div class="panel-heading" id="testcampaignListLabel">
-                    <span class="glyphicon glyphicon-list"></span>
-                    Test Campaigns
-                </div>
                 <div class="panel-body" id="testcampaignList">
                     <table id="testcampaignsTable" class="table table-bordered table-hover display" name="testcampaignsTable"></table>
                     <div class="marginBottom20"></div>
