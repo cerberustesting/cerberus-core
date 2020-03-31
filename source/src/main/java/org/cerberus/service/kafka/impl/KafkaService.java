@@ -127,6 +127,7 @@ public class KafkaService implements IKafkaService {
         serviceREST.setServiceRequest(eventMessage);
         serviceREST.setHeaderList(serviceHeader);
 
+        LOG.info("Open Producer : " + getKafkaConsumerKey(topic, bootstrapServers));
         KafkaProducer<String, String> producer = new KafkaProducer<>(props);
         int partition = -1;
         long offset = -1;
@@ -143,9 +144,13 @@ public class KafkaService implements IKafkaService {
             message.setDescription(message.getDescription().replace("%EX%", ex.toString()));
             LOG.debug(ex, ex);
         } finally {
-            producer.flush();
-            producer.close();
-            LOG.info("Closed producer");
+            if (producer != null) {
+                producer.flush();
+                producer.close();
+                LOG.info("Closed Producer : " + getKafkaConsumerKey(topic, bootstrapServers));
+            } else {
+                LOG.info("Producer not opened : " + getKafkaConsumerKey(topic, bootstrapServers));
+            }
         }
 
         serviceREST.setKafkaResponseOffset(offset);
@@ -222,7 +227,7 @@ public class KafkaService implements IKafkaService {
                 consumer.close();
                 LOG.info("Closed Consumer : " + getKafkaConsumerKey(topic, bootstrapServers));
             } else {
-                LOG.info("Consumer not openned : " + getKafkaConsumerKey(topic, bootstrapServers));
+                LOG.info("Consumer not opened : " + getKafkaConsumerKey(topic, bootstrapServers));
             }
         }
         result.setResultMessage(message);
@@ -257,6 +262,7 @@ public class KafkaService implements IKafkaService {
             for (AppServiceHeader object : serviceHeader) {
                 if (StringUtil.parseBoolean(object.getActive())) {
                     props.put(object.getKey(), object.getValue());
+                    LOG.info(object.getKey() + " - " + object.getValue());
                 }
             }
 
@@ -268,7 +274,7 @@ public class KafkaService implements IKafkaService {
 
             if (partitionList == null) {
 
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKKAFKA);
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEARCHKAFKA);
                 message.setDescription(message.getDescription().replace("%EX%", "Maybe Topic does not exist.").replace("%TOPIC%", topic).replace("%HOSTS%", bootstrapServers));
 
             } else {
@@ -279,7 +285,7 @@ public class KafkaService implements IKafkaService {
                 // Setting each partition to correct Offset.
                 for (Map.Entry<TopicPartition, Long> entry : mapOffsetPosition.entrySet()) {
                     consumer.seek(entry.getKey(), entry.getValue());
-                    LOG.debug("Partition : " + entry.getKey().partition() + " set to offset : " + entry.getValue());
+                    LOG.info("Partition : " + entry.getKey().partition() + " set to offset : " + entry.getValue());
                 }
 
                 boolean consume = true;
@@ -368,14 +374,20 @@ public class KafkaService implements IKafkaService {
                     .resolveDescription("NBTOT", String.valueOf(nbEvents))
                     .resolveDescription("NBSEC", String.valueOf(duration.getSeconds()));
             //Ignore
+        } catch (NullPointerException ex) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEARCHKAFKA);
+            message.setDescription(message.getDescription().replace("%EX%", ex.toString()).replace("%TOPIC%", topic).replace("%HOSTS%", bootstrapServers));
+            LOG.error(ex, ex);
         } catch (Exception ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEARCHKAFKA);
-            message.setDescription(message.getDescription().replace("%EX%", ex.toString()));
+            message.setDescription(message.getDescription().replace("%EX%", ex.toString()).replace("%TOPIC%", topic).replace("%HOSTS%", bootstrapServers));
             LOG.debug(ex, ex);
         } finally {
             if (consumer != null) {
                 LOG.info("Closed Consumer : " + getKafkaConsumerKey(topic, bootstrapServers));
                 consumer.close();
+            } else {
+                LOG.info("Consumer not opened : " + getKafkaConsumerKey(topic, bootstrapServers));
             }
         }
 
@@ -439,7 +451,7 @@ public class KafkaService implements IKafkaService {
                                     object.setKey((String) answerDecode.getItem());
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                                        String field = "Header Key " + object.getKey() + "of Service '" + localService.getItem().getService() + "'";
+                                        String field = "Header Key " + object.getKey() + " of Service '" + localService.getItem().getService() + "'";
                                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKALLTOPICS)
                                                 .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                                         LOG.debug("Getting all consumers interupted due to decode '" + field + "'.");

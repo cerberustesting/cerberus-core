@@ -471,6 +471,7 @@ public class ServiceService implements IServiceService {
                                 } catch (CerberusEventException cee) {
                                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEARCHKAFKA);
                                     message.setDescription(message.getDescription().replace("%TOPIC%", decodedTopic));
+                                    message.setDescription(message.getDescription().replace("%HOSTS%", decodedServicePath));
                                     message.setDescription(message.getDescription().replace("%EX%", cee.getMessageError().getDescription()));
                                     result.setResultMessage(message);
                                     return result;
@@ -543,6 +544,7 @@ public class ServiceService implements IServiceService {
                         result.setResultMessage(message);
                 }
                 message.setDescription(message.getDescription().replace("%TOPIC%", appService.getKafkaTopic()));
+                message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", appService.getType()));
 
             }
 
@@ -561,7 +563,6 @@ public class ServiceService implements IServiceService {
         }
 
         message.setDescription(message.getDescription().replace("%SERVICENAME%", service));
-        message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", AppService.METHOD_KAFKASEARCH));
         result.setResultMessage(message);
         LOG.debug("Ended callService : " + service + " with database : " + database + " Result : " + message.getDescription());
         return result;
