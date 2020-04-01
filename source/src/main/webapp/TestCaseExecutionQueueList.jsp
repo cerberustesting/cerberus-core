@@ -55,7 +55,7 @@
 
             <div class="tab-content">
 
-                <div class="center marginTop25 tab-pane fade in active" id="tabDetails">
+                <div class="center tab-pane fade in active" id="tabDetails">
                     <div class="panel panel-default">
                         <div class="panel-body" id="executionList">
                             <form id="massActionForm" name="massActionForm"  title="" role="form">
@@ -66,7 +66,7 @@
                     </div>
                 </div>
 
-                <div class="center marginTop25 tab-pane fade" id="tabFollowUp">
+                <div class="center tab-pane fade" id="tabFollowUp">
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <div class='marginBottom10'>
@@ -80,7 +80,7 @@
                     </div>
                 </div>
 
-                <div class="center marginTop25 tab-pane fade" id="tabJobStatus">
+                <div class="center tab-pane fade" id="tabJobStatus">
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <div class='marginBottom10'>

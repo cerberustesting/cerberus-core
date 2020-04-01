@@ -1325,11 +1325,7 @@ public class ActionService implements IActionService {
         AnswerItem lastServiceCalledAnswer;
 
         lastServiceCalledAnswer = serviceService.callService(value1, value2, value3, null, null, null, null, tCExecution);
-        if (!(lastServiceCalledAnswer.isCodeStringEquals("OK"))) {
-            message = message.resolveDescription("DESCRIPTION", lastServiceCalledAnswer.getMessageDescription());
-        } else {
-            message = lastServiceCalledAnswer.getResultMessage();
-        }
+        message = lastServiceCalledAnswer.getResultMessage();
 
         if (lastServiceCalledAnswer.getItem() != null) {
             AppService lastServiceCalled = (AppService) lastServiceCalledAnswer.getItem();

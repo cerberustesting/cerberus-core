@@ -483,7 +483,8 @@ public class KafkaService implements IKafkaService {
                                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_KAFKACONSUMERSEEK).resolveDescription("SERVICE", localService.getItem().getService())
                                             .resolveDescription("DETAIL", resultConsume.getMessageDescription()));
                                 }
-                                tempKafka.put(getKafkaConsumerKey(localService.getItem().getKafkaTopic(), localService.getItem().getServicePath()), resultConsume.getItem());
+                                LOG.debug("Saving Map to key : " + getKafkaConsumerKey(localService.getItem().getKafkaTopic(), localService.getItem().getServicePath()));
+                                tempKafka.put(getKafkaConsumerKey(decodedTopic, decodedServicePath), resultConsume.getItem());
 
                             } catch (CerberusEventException ex) {
                                 LOG.error(ex);

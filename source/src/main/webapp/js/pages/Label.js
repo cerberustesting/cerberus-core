@@ -38,50 +38,50 @@ $.when($.getScript("js/global/global.js")).then(function () {
         generateLabelTree();
 
         // Tree Requirements butons
-        $('#labelList #createLabelButtonTreeR').click(function () {
+        $('#createLabelButtonTreeR').click(function () {
             addEntryClick("REQUIREMENT");
 //            refreshParentLabelCombo("REQUIREMENT", "editLabelModalForm");
             showHideRequirementPanelAdd();
         });
-        $('#labelList #expandAllTreeR').click(function () {
+        $('#expandAllTreeR').click(function () {
             $('#mainTreeR').treeview('expandAll', {levels: 20, silent: true});
         });
-        $('#labelList #collapseAllTreeR').click(function () {
+        $('#collapseAllTreeR').click(function () {
             $('#mainTreeR').treeview('collapseAll', {levels: 20, silent: true});
         });
-        $('#labelList #refreshButtonTreeR').click(function () {
+        $('#refreshButtonTreeR').click(function () {
             generateLabelTree();
         });
 
         // Tree Sticker butons
-        $('#labelList #createLabelButtonTreeS').click(function () {
+        $('#createLabelButtonTreeS').click(function () {
             addEntryClick("STICKER");
 //            refreshParentLabelCombo("STICKER","editLabelModalForm");
             showHideRequirementPanelAdd();
         });
-        $('#labelList #expandAllTreeS').click(function () {
+        $('#expandAllTreeS').click(function () {
             $('#mainTreeS').treeview('expandAll', {levels: 20, silent: true});
         });
-        $('#labelList #collapseAllTreeS').click(function () {
+        $('#collapseAllTreeS').click(function () {
             $('#mainTreeS').treeview('collapseAll', {levels: 20, silent: true});
         });
-        $('#labelList #refreshButtonTreeS').click(function () {
+        $('#refreshButtonTreeS').click(function () {
             generateLabelTree();
         });
 
         // Tree Battery butons
-        $('#labelList #createLabelButtonTreeB').click(function () {
+        $('#createLabelButtonTreeB').click(function () {
             addEntryClick("BATTERY");
 //            refreshParentLabelCombo("BATTERY","editLabelModalForm");
             showHideRequirementPanelAdd();
         });
-        $('#labelList #expandAllTreeB').click(function () {
+        $('#expandAllTreeB').click(function () {
             $('#mainTreeB').treeview('expandAll', {levels: 20, silent: true});
         });
-        $('#labelList #collapseAllTreeB').click(function () {
+        $('#collapseAllTreeB').click(function () {
             $('#mainTreeB').treeview('collapseAll', {levels: 20, silent: true});
         });
-        $('#labelList #refreshButtonTreeB').click(function () {
+        $('#refreshButtonTreeB').click(function () {
             generateLabelTree();
         });
 

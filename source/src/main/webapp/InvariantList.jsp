@@ -61,9 +61,11 @@
                     </div>
                 </div>
             </div>
+            
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
+            
         </div>
     </body>
 </html>

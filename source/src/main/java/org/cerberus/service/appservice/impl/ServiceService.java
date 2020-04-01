@@ -501,7 +501,11 @@ public class ServiceService implements IServiceService {
 
                                 String kafkaKey = kafkaService.getKafkaConsumerKey(decodedTopic, decodedServicePath);
                                 AnswerItem<String> resultSearch = kafkaService.searchEvent(tCExecution.getKafkaLatestOffset().get(kafkaKey), decodedTopic, decodedServicePath, appService.getHeaderList(), decodedFilterPath, decodedFilterValue, targetNbEventsInt, targetNbSecInt);
-                                message = resultSearch.getResultMessage();
+
+                                if (!(resultSearch.isCodeStringEquals("OK"))) {
+                                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                                    message = message.resolveDescription("DESCRIPTION", resultSearch.getMessageDescription());
+                                }
 
                                 appService.setResponseHTTPBody(resultSearch.getItem());
                                 appService.setResponseHTTPBodyContentType(appServiceService.guessContentType(appService, AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON));

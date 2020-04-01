@@ -184,7 +184,7 @@ function getInvariantArray(idName, forceReload, addValue1, asyn) {
         async = asyn;
     }
 
-    var cacheEntryName = "INVARIANT_" + idName ;
+    var cacheEntryName = "INVARIANT_" + idName;
     if (forceReload) {
         sessionStorage.removeItem(cacheEntryName);
     }
