@@ -505,6 +505,8 @@ public class ServiceService implements IServiceService {
                                 if (!(resultSearch.isCodeStringEquals("OK"))) {
                                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
                                     message = message.resolveDescription("DESCRIPTION", resultSearch.getMessageDescription());
+                                } else {
+                                    message = resultSearch.getResultMessage();
                                 }
 
                                 appService.setResponseHTTPBody(resultSearch.getItem());
