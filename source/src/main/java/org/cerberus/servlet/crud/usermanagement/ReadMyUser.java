@@ -37,6 +37,7 @@ import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.crud.factory.IFactoryUser;
 import org.cerberus.crud.service.*;
+import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.impl.UserGroupService;
 import org.cerberus.crud.service.impl.UserService;
@@ -59,6 +60,7 @@ public class ReadMyUser extends HttpServlet {
     private IFactoryUser userFactory;
     private IUserSystemService userSystemService;
     private IUserGroupService userGroupService;
+    private ILogEventService logEventService;
 
     private static final Logger LOG = LogManager.getLogger(ReadMyUser.class);
 
@@ -79,6 +81,7 @@ public class ReadMyUser extends HttpServlet {
         invariantService = appContext.getBean(IInvariantService.class);
         userSystemService = appContext.getBean(IUserSystemService.class);
         userGroupService = appContext.getBean(UserGroupService.class);
+        logEventService = appContext.getBean(ILogEventService.class);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
@@ -101,6 +104,8 @@ public class ReadMyUser extends HttpServlet {
                         LOG.debug("Create User.");
                         userService.insertUserNoAuth(myUser);
                         userSystemService.createSystemAutomatic(user);
+                        logEventService.createForPrivateCalls("/ReadMyUser", "CREATE", "Create User automaticaly: ['" + user + "']", request);
+
                     }
                 }
             }

@@ -60,6 +60,7 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.factory.IFactoryRobotCapability;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITestCaseExecutionHttpStatService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.execution.IRecorderService;
@@ -114,6 +115,8 @@ public class RobotServerService implements IRobotServerService {
     private ISikuliService sikuliService;
     @Autowired
     IProxyService proxyService;
+    @Autowired
+    ITestCaseExecutionHttpStatService testCaseExecutionHttpStatService;
 
     @Autowired
     private IExecutionThreadPoolService executionThreadPoolService;
@@ -981,7 +984,11 @@ public class RobotServerService implements IRobotServerService {
 
                     if (parameterService.getParameterBooleanByKey("cerberus_networkstatsave_active", tce.getSystem(), false)) {
 
-                        String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + tce.getRemoteProxyUUID();
+                        // Generate URL to Cerberus executor with parameter to reduce the answer size by removing response content.
+                        String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort()
+                                + "/getHar?uuid=" + tce.getRemoteProxyUUID() + "&emptyResponseContentText=true";
+
+                        LOG.debug("Getting Network Traffic content from URL : " + url);
 
                         AnswerItem<AppService> result = new AnswerItem<>();
                         result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", tce);
@@ -990,6 +997,16 @@ public class RobotServerService implements IRobotServerService {
                         JSONObject har = new JSONObject(appSrv.getResponseHTTPBody());
 
                         har = harService.enrichWithStats(har, tce.getCountryEnvironmentParameters().getDomain(), tce.getSystem());
+
+                        /**
+                         * Collecting and calculating Statistics.
+                         */
+                        try {
+                            testCaseExecutionHttpStatService.saveStat(tce, har);
+                        } catch (Exception ex) {
+                            LOG.warn("Exception collecting and saving stats for execution " + tce.getId() + " Exception : " + ex.toString());
+                        }
+
                         appSrv.setResponseHTTPBody(har.toString());
                         appSrv.setRecordTraceFile(false);
 
@@ -1105,7 +1122,8 @@ public class RobotServerService implements IRobotServerService {
 
     private void startRemoteProxy(TestCaseExecution tce) {
 
-        String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/startProxy";
+        String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort()
+                + "/startProxy?timeout=" + String.valueOf(parameterService.getParameterIntegerByKey("cerberus_executorproxy_timeoutms", tce.getSystem(), 3600000));
         if (tce.getRobotExecutorObj().getExecutorProxyPort() != 0) {
             url += "?port=" + tce.getRobotExecutorObj().getExecutorProxyPort();
         }

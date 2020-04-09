@@ -8449,9 +8449,64 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + " ('', 'cerberus_networkstatsave_active', 'N', 'Boolean in order to activate the saving of the file at execution level.')");
 
         // Remove deprecated tables.
-        // 1484
+        // 1484-85
         a.add("DROP TABLE `testcaseexecutionwwwdet`, `testcaseexecutionwwwsum`");
         a.add("DROP TABLE `project`");
+
+        // create table testcaseexecutionhttpstat, store http statistics details
+        //1486
+        a.add("CREATE TABLE `testcaseexecutionhttpstat` ("
+                + "`ID` bigint(20) unsigned,"
+                + "`Start` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',"
+                + "`ControlStatus` varchar(2) NOT NULL,"
+                + "`System` varchar(45) NOT NULL,"
+                + "`Application` varchar(200) DEFAULT NULL,"
+                + "`Test` varchar(45) NULL,"
+                + "`TestCase` varchar(45) NULL,"
+                + "`Country` varchar(45) NOT NULL,"
+                + "`Environment` varchar(45) NOT NULL,"
+                + "`RobotDecli` varchar(100) NOT NULL,"
+                + "`total_hits` int(10) DEFAULT 0,"
+                + "`total_size` int(10) DEFAULT 0,"
+                + "`total_time` int(10) DEFAULT 0,"
+                + "`internal_hits` int(10) DEFAULT 0,"
+                + "`internal_size` int(10) DEFAULT 0,"
+                + "`internal_time` int(10) DEFAULT 0,"
+                + "`img_size` int(10) DEFAULT 0,"
+                + "`img_size_max` int(10) DEFAULT 0,"
+                + "`img_hits` int(10) DEFAULT 0,"
+                + "`js_size` int(10) DEFAULT 0,"
+                + "`js_size_max` int(10) DEFAULT 0,"
+                + "`js_hits` int(10) DEFAULT 0,"
+                + "`css_size` int(10) DEFAULT 0,"
+                + "`css_size_max` int(10) DEFAULT 0,"
+                + "`css_hits` int(10) DEFAULT 0,"
+                + "`html_size` int(10) DEFAULT 0,"
+                + "`html_size_max` int(10) DEFAULT 0,"
+                + "`html_hits` int(10) DEFAULT 0,"
+                + "`media_size` int(10) DEFAULT 0,"
+                + "`media_size_max` int(10) DEFAULT 0,"
+                + "`media_hits` int(10) DEFAULT 0,"
+                + "`nb_thirdparty` int(10) DEFAULT 0,"
+                + "`CrbVersion` varchar(45) ,"
+                + "`statdetail` MEDIUMTEXT ,"
+                + "`UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',"
+                + "`DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+                + "`UsrModif` VARCHAR(45) NOT NULL DEFAULT '',"
+                + "`DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01', "
+                + " PRIMARY KEY (`id`),"
+                + " KEY `IX_testcaseexecutionhttpstat_01` (`ControlStatus`, `Test`,`TestCase`,`Environment`,`Country`,`RobotDecli` ),"
+                + " KEY `IX_testcaseexecutionhttpstat_02` (`Start`),"
+                + " INDEX `IX_testcaseexecutionhttpstat_03` (`Application`),"
+                + " INDEX `IX_testcaseexecutionhttpstat_04` (`Test`,`TestCase`),"
+                + " CONSTRAINT `FK_testcaseexecutionhttpstat_03` FOREIGN KEY (`Application`) REFERENCES `application` (`Application`) ON DELETE SET NULL ON UPDATE CASCADE,"
+                + " CONSTRAINT `FK_testcaseexecutionhttpstat_04` FOREIGN KEY (`Test` , `TestCase`) REFERENCES `testcase` (`Test` , `TestCase`) ON DELETE SET NULL ON UPDATE CASCADE"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // ADD parameters to define third party definition file.
+        // 1487
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_executorproxy_timeoutms', '3600000', 'Timeout in ms second used for Cerberus Executor proxy session.')");
 
         return a;
     }

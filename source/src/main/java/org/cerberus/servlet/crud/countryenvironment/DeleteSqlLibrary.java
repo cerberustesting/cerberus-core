@@ -112,7 +112,7 @@ public class DeleteSqlLibrary extends HttpServlet {
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/DeleteSqlLibrary", "DELETE", "Delete SQLLibrary : " + name, request);
+                    logEventService.createForPrivateCalls("/DeleteSqlLibrary", "DELETE", "Delete SQLLibrary : ['" + name + "']", request);
                 }
             }
         }

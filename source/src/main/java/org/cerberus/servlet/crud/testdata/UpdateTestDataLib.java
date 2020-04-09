@@ -136,7 +136,7 @@ public class UpdateTestDataLib extends HttpServlet {
         String databaseCsv = policy.sanitize(fileData.get("databaseCsv"));
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String name = fileData.get("name"); //this is mandatory
-        String privateData = "true".equals(fileData.get("privateData"))?"Y":"N";
+        String privateData = "true".equals(fileData.get("privateData")) ? "Y" : "N";
         String group = fileData.get("group");
         String description = fileData.get("libdescription");
         String service = fileData.get("service");
@@ -247,8 +247,8 @@ public class UpdateTestDataLib extends HttpServlet {
                          * logging entry must be added.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createForPrivateCalls("/UpdateTestDataLib", "UPDATE", "Update TestDataLib - id: " + testdatalibid + " name: " + name + " system: "
-                                + system + " environment: " + environment + " country: " + country, request);
+                        logEventService.createForPrivateCalls("/UpdateTestDataLib", "UPDATE", "Update TestDataLib : ['" + testdatalibid + "'] - name: '" + name + "' system: '"
+                                + system + "' environment: '" + environment + "' country: '" + country + "'", request);
                     }
 
                     List<TestDataLibData> tdldList = new ArrayList<>();

@@ -53,6 +53,7 @@ import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.engine.execution.IRobotServerService;
+import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 
 /**
  *
@@ -91,6 +92,8 @@ public class ExecutionStartService implements IExecutionStartService {
     private IRobotService robotService;
     @Autowired
     private IRobotExecutorService robotExecutorService;
+    @Autowired
+    private IExecutionThreadPoolService executionThreadPoolService;
 
     private static final Logger LOG = LogManager.getLogger(ExecutionStartService.class);
 
@@ -102,6 +105,13 @@ public class ExecutionStartService implements IExecutionStartService {
         long executionStart = new Date().getTime();
         LOG.debug("Initializing Start Timestamp : " + executionStart);
         tCExecution.setStart(executionStart);
+
+        // Checking is the instance allow to open a new execution. It may be in the process to restart.
+        if (!executionThreadPoolService.isInstanceActive()) {
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_INSTANCE_INACTIVE);
+            LOG.debug(mes.getDescription());
+            throw new CerberusException(mes);
+        }
 
         /**
          * Checking the parameters.

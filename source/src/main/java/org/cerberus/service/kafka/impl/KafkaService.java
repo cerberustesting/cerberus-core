@@ -262,7 +262,7 @@ public class KafkaService implements IKafkaService {
             for (AppServiceHeader object : serviceHeader) {
                 if (StringUtil.parseBoolean(object.getActive())) {
                     props.put(object.getKey(), object.getValue());
-                    LOG.info(object.getKey() + " - " + object.getValue());
+//                    LOG.debug(object.getKey() + " - " + object.getValue());
                 }
             }
 
@@ -285,7 +285,7 @@ public class KafkaService implements IKafkaService {
                 // Setting each partition to correct Offset.
                 for (Map.Entry<TopicPartition, Long> entry : mapOffsetPosition.entrySet()) {
                     consumer.seek(entry.getKey(), entry.getValue());
-                    LOG.info("Partition : " + entry.getKey().partition() + " set to offset : " + entry.getValue());
+                    LOG.debug("Partition : " + entry.getKey().partition() + " set to offset : " + entry.getValue());
                 }
 
                 boolean consume = true;
@@ -464,7 +464,7 @@ public class KafkaService implements IKafkaService {
                                     object.setValue((String) answerDecode.getItem());
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                                        String field = "Header Value " + object.getKey() + "of Service '" + localService.getItem().getService() + "'";
+                                        String field = "Header Value " + object.getKey() + " of Service '" + localService.getItem().getService() + "'";
                                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKALLTOPICS)
                                                 .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                                         LOG.debug("Getting all consumers interupted due to decode '" + field + "'.");

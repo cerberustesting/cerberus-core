@@ -53,7 +53,7 @@ public class CreateTestCase extends AbstractCreateUpdateTestCase {
     }
 
     @Override
-    protected TestCase getTestCaseBeforeTraitment (String keyTest, String keyTestCase) {
+    protected TestCase getTestCaseBeforeTraitment(String keyTest, String keyTestCase) {
         return new TestCase();
     }
 
@@ -63,8 +63,8 @@ public class CreateTestCase extends AbstractCreateUpdateTestCase {
     }
 
     @Override
-    protected void fireLogEvent (String keyTest, String keyTestCase, TestCase tc, HttpServletRequest request, HttpServletResponse response) {
-        logEventService.createForPrivateCalls("/CreateTestCase", "CREATE", "Create testcase : ['" + keyTest + "'|'" + keyTestCase + "'] " + "version : "+tc.getTestCaseVersion(), request);
+    protected void fireLogEvent(String keyTest, String keyTestCase, TestCase tc, HttpServletRequest request, HttpServletResponse response) {
+        logEventService.createForPrivateCalls("/CreateTestCase", "CREATE", "Create TestCase : ['" + keyTest + "'|'" + keyTestCase + "'] " + "version : " + tc.getTestCaseVersion(), request);
     }
 
 }

@@ -990,15 +990,6 @@ public class ExecutionRunService implements IExecutionRunService {
         }
 
         /**
-         * Collecting and calculating Statistics.
-         */
-        try {
-//            this.collectExecutionStats(tCExecution);
-        } catch (Exception ex) {
-            LOG.warn("Exception collecting stats for execution " + tCExecution.getId() + " Exception:" + ex.toString());
-        }
-
-        /**
          * Saving TestCaseExecution object.
          */
         tCExecution.setEnd(new Date().getTime());

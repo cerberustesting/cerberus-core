@@ -218,15 +218,18 @@ function feedContent() {
         table.empty();
         $.each(data.scheduler["schedulerTriggers"], function (idx, obj) {
             var row = $("<tr></tr>");
-            var cel1 = $("<td></td>").append(obj.triggerType);
+            var cel1 = $("<td rowspan='2'></td>").append(obj.triggerType);
             row.append(cel1);
-            var cel1 = $("<td></td>").append(obj.triggerName);
-            row.append(cel1);
-            var cel1 = $("<td></td>").append(obj.triggerCronDefinition);
+            var cel1 = $("<td rowspan='2'></td>").append(obj.triggerName);
             row.append(cel1);
             var cel1 = $("<td></td>").append(obj.triggerNextFiretime);
+            console.info(obj.triggerNextFiretime);
             row.append(cel1);
             var cel1 = $("<td></td>").append(obj.triggerUserCreated);
+            row.append(cel1);
+            table.append(row);
+            var row = $("<tr></tr>");
+            var cel1 = $("<td colspan='2'></td>").append(obj.triggerCronDefinition);
             row.append(cel1);
             table.append(row);
         });

@@ -60,6 +60,7 @@ import org.cerberus.service.soap.ISoapService;
 import org.cerberus.service.sql.ISQLService;
 import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONObject;
@@ -338,7 +339,7 @@ public class ActionService implements IActionService {
                     res = this.doActionCalculateProperty(testCaseStepActionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT:
-                    res = this.doActionSetNetworkTrafficContent(tCExecution, testCaseStepActionExecution, value1);
+                    res = this.doActionSetNetworkTrafficContent(tCExecution, testCaseStepActionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_DONOTHING:
                     res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
@@ -1496,7 +1497,7 @@ public class ActionService implements IActionService {
         return message;
     }
 
-    public MessageEvent doActionSetNetworkTrafficContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String urlToFilter) throws IOException {
+    public MessageEvent doActionSetNetworkTrafficContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String urlToFilter, String withResponseContent) throws IOException {
         MessageEvent message;
         try {
             // Check that robot has executor activated
@@ -1509,7 +1510,11 @@ public class ActionService implements IActionService {
             /**
              * Building the url to get the Har file from cerberus-executor
              */
-            String url = "http://" + exe.getRobotExecutorObj().getExecutorExtensionHost() + ":" + exe.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + exe.getRemoteProxyUUID();
+            String url = "http://" + exe.getRobotExecutorObj().getExecutorExtensionHost() + ":" + exe.getRobotExecutorObj().getExecutorExtensionPort()
+                    + "/getHar?uuid=" + exe.getRemoteProxyUUID();
+            if (!ParameterParserUtil.parseBooleanParam(withResponseContent, false)) {
+                url += "&emptyResponseContentText=true";
+            }
             if (!StringUtil.isNullOrEmpty(urlToFilter)) {
                 url += "&requestUrl=" + urlToFilter;
             }

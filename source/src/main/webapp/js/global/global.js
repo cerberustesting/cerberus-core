@@ -2743,3 +2743,7 @@ function getBugIdList(data, appurl) {
     return link;
 }
 
+function get_Color_fromindex(index) {
+    var colors = ['red', 'green', 'grey', 'orange', 'yellow', 'magenta', 'lightgreen', 'lightgrey', 'coral', 'violet', 'olive'];
+    return colors[index % colors.length];
+}

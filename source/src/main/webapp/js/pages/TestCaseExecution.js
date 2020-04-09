@@ -521,6 +521,7 @@ function drawNetworkCharts(filelist) {
     }
 }
 
+
 function drawTable_Requests(data, targetTable, targetPanel) {
     var configurations = new TableConfigurationsClientSide(targetTable, data.requests, aoColumnsFunc(), true, [0, 'asc']);
 
@@ -535,7 +536,6 @@ function drawTable_Requests(data, targetTable, targetPanel) {
         }
     }
 }
-
 
 function aoColumnsFunc() {
     var doc = new Doc();
@@ -563,11 +563,27 @@ function drawChart_HttpStatus(data, titletext, target) {
 
     if (data.hasOwnProperty("total")) {
 
+        var newDataArray = [];
         for (var key in data.total.requests) {
-            if (!key.includes("XX") && key.includes("nb") && (key !== "nb")) {
-                drawChart_HttpStatus_Data(data, dataArray, labelArray, bgColorArray, key, "http " + key.substring(2));
+            if ((!key.includes("XX") && key.includes("nb") && (key !== "nb")) && (data.total.requests[key] > 0)) {
+                var entry = {
+                    nb: data.total.requests[key],
+                    name: key,
+                    color: drawChart_HttpStatus_Color(key)
+                };
+                newDataArray.push(entry);
             }
         }
+        // Sorting values by nb of requests.
+        sortedArrayOfObj = newDataArray.sort(function (a, b) {
+            return b.nb - a.nb;
+        });
+
+        sortedArrayOfObj.forEach(function (d) {
+            dataArray.push(d.nb);
+            labelArray.push(d.name);
+            bgColorArray.push(d.color);
+        });
 
         var config = {
             type: 'pie',
@@ -595,14 +611,6 @@ function drawChart_HttpStatus(data, titletext, target) {
 
 }
 
-function drawChart_HttpStatus_Data(data, dataArray, labelArray, bgColorArray, item, label) {
-    if (data.total.requests[item] > 0) {
-        dataArray.push(data.total.requests[item]);
-        labelArray.push(label);
-        bgColorArray.push(drawChart_HttpStatus_Color(item));
-    }
-}
-
 function drawChart_HttpStatus_Color(i) {
     if (i !== undefined) {
         if (i.includes("nbE")) {
@@ -620,6 +628,7 @@ function drawChart_HttpStatus_Color(i) {
     return "grey";
 }
 
+
 function drawChart_SizePerType(data, titletext, target) {
 
     if (data.hasOwnProperty("total")) {
@@ -628,13 +637,26 @@ function drawChart_SizePerType(data, titletext, target) {
         var labelArray = [];
         var bgColorArray = [];
 
-        drawChart_SizePerType_Data(data, dataArray, labelArray, bgColorArray, "html", "html");
-        drawChart_SizePerType_Data(data, dataArray, labelArray, bgColorArray, "img", "img");
-        drawChart_SizePerType_Data(data, dataArray, labelArray, bgColorArray, "js", "js");
-        drawChart_SizePerType_Data(data, dataArray, labelArray, bgColorArray, "css", "css");
-        drawChart_SizePerType_Data(data, dataArray, labelArray, bgColorArray, "content", "content");
-        drawChart_SizePerType_Data(data, dataArray, labelArray, bgColorArray, "font", "font");
-        drawChart_SizePerType_Data(data, dataArray, labelArray, bgColorArray, "other", "other");
+        var newDataArray = [];
+        drawChart_SizePerType_Data(data.total.type.html.sizeSum, "html", newDataArray, "html");
+        drawChart_SizePerType_Data(data.total.type.img.sizeSum, "img", newDataArray, "img");
+        drawChart_SizePerType_Data(data.total.type.js.sizeSum, "js", newDataArray, "js");
+        drawChart_SizePerType_Data(data.total.type.css.sizeSum, "css", newDataArray, "css");
+        drawChart_SizePerType_Data(data.total.type.content.sizeSum, "content", newDataArray, "content");
+        drawChart_SizePerType_Data(data.total.type.font.sizeSum, "font", newDataArray, "font");
+        drawChart_SizePerType_Data(data.total.type.other.sizeSum, "other", newDataArray, "other");
+        drawChart_SizePerType_Data(data.total.type.media.sizeSum, "media", newDataArray, "media");
+
+        // Sorting values by nb of requests.
+        sortedArrayOfObj = newDataArray.sort(function (a, b) {
+            return b.nb - a.nb;
+        });
+
+        sortedArrayOfObj.forEach(function (d) {
+            dataArray.push(d.nb);
+            labelArray.push(d.name);
+            bgColorArray.push(d.color);
+        });
 
         var config = {
             type: 'pie',
@@ -673,11 +695,14 @@ function drawChart_SizePerType(data, titletext, target) {
 
 }
 
-function drawChart_SizePerType_Data(data, dataArray, labelArray, bgColorArray, item, label) {
-    if (data.total.type[item].sizeSum > 0) {
-        dataArray.push(data.total.type[item].sizeSum);
-        labelArray.push(label);
-        bgColorArray.push(drawChart_SizePerType_Color(item));
+function drawChart_SizePerType_Data(nb, key, newDataArray, label) {
+    if (nb > 0) {
+        var entry = {
+            nb: nb,
+            name: label,
+            color: drawChart_SizePerType_Color(key)
+        };
+        newDataArray.push(entry);
     }
 }
 
@@ -701,6 +726,7 @@ function drawChart_SizePerType_Color(i) {
     }
     return "black";
 }
+
 
 function drawChart_PerThirdParty(data, titletext, target) {
 
@@ -726,7 +752,7 @@ function drawChart_PerThirdParty(data, titletext, target) {
             dataArray2.push(data.thirdparty[key].requests.nb);
             dataArray3.push(data.thirdparty[key].time.max);
             labelArray.push(key);
-            bgColorArray.push(drawChart_Random_Color(bgColorArray.length));
+            bgColorArray.push(get_Color_fromindex(bgColorArray.length));
         }
     }
 
@@ -801,11 +827,6 @@ function formatNumber(num) {
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
 }
 
-function drawChart_Random_Color(maxcol) {
-    var colors = ['red', 'green', 'grey', 'orange', 'yellow', 'magenta', 'lightgreen', 'lightgrey', 'coral', 'lightyellow'];
-    return colors[maxcol % colors.length];
-}
-
 function drawChart_GanttPerThirdParty(data, titletext, target) {
 
     var dataArray1 = [];
@@ -824,7 +845,7 @@ function drawChart_GanttPerThirdParty(data, titletext, target) {
     // ThirdParty stat.
     if (data.hasOwnProperty("thirdparty")) {
         for (var key in data.thirdparty) {
-            bgColorArray.push(drawChart_Random_Color(bgColorArray.length));
+            bgColorArray.push(get_Color_fromindex(bgColorArray.length));
             labelArray.push(key);
             dataArray1.push(data.thirdparty[key].time.firstStartR);
             dataArray2.push(data.thirdparty[key].time.lastEndR - data.thirdparty[key].time.firstStartR);
@@ -913,6 +934,7 @@ function drawChart_GanttPerThirdParty(data, titletext, target) {
         });
     }
 }
+
 
 function createVideo(videos) {
 
@@ -2600,12 +2622,14 @@ Action.prototype.generateContent = function () {
 
     var actionGroup = $("<div class='form-group'></div>").append($("<label for='action'>" + doc.getDocLabel("page_executiondetail", "action") + "</label>")).append(actionList);
     var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
-    var objectGroup = $("<div class='form-group'></div>").append($("<label for='value1'>" + doc.getDocLabel("page_executiondetail", "value1") + "</label>")).append(value1Field);
-    var objectGroupInit = $("<div class='form-group'></div>").append($("<label for='value1init'>" + doc.getDocLabel("page_executiondetail", "value1init") + "</label>")).append(value1InitField);
+    var value1Group = $("<div class='form-group'></div>").append($("<label for='value1'>" + doc.getDocLabel("page_executiondetail", "value1") + "</label>")).append(value1Field);
+    var value1GroupInit = $("<div class='form-group'></div>").append($("<label for='value1init'>" + doc.getDocLabel("page_executiondetail", "value1init") + "</label>")).append(value1InitField);
     var timeGroup = $("<div class='form-group'></div>").append($("<label for='time'>" + doc.getDocLabel("page_executiondetail", "time") + "</label>")).append(timeField);
     var forceexecGroup = $("<div class='form-group'></div>").append($("<label for='forceexec'>" + doc.getDocLabel("page_executiondetail", "forceexec") + "</label>")).append(forceexecField);
-    var propertyGroup = $("<div class='form-group'></div>").append($("<label for='value2'>" + doc.getDocLabel("page_executiondetail", "value2") + "</label>")).append(value2Field);
-    var propertyGroupInit = $("<div class='form-group'></div>").append($("<label for='value2init'>" + doc.getDocLabel("page_executiondetail", "value2init") + "</label>")).append(value2InitField);
+    var value2Group = $("<div class='form-group'></div>").append($("<label for='value2'>" + doc.getDocLabel("page_executiondetail", "value2") + "</label>")).append(value2Field);
+    var value2GroupInit = $("<div class='form-group'></div>").append($("<label for='value2init'>" + doc.getDocLabel("page_executiondetail", "value2init") + "</label>")).append(value2InitField);
+    var value3Group = $("<div class='form-group'></div>").append($("<label for='value3'>" + doc.getDocLabel("page_executiondetail", "value3") + "</label>")).append(value3Field);
+    var value3GroupInit = $("<div class='form-group'></div>").append($("<label for='value3init'>" + doc.getDocLabel("page_executiondetail", "value3init") + "</label>")).append(value3InitField);
     var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>" + doc.getDocLabel("page_executiondetail", "return_code") + "</label>")).append(returnCodeField);
     var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>" + doc.getDocLabel("page_executiondetail", "return_message") + "</label>")).append(returnMessageField);
     var sortGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("page_executiondetail", "sort") + "</label>")).append(sortField);
@@ -2645,11 +2669,21 @@ Action.prototype.generateContent = function () {
     row1.append($("<div></div>").addClass("col-sm-2").append(returncodeGroup));
     row1.append($("<div></div>").addClass("col-sm-10").append(descGroup));
     row2.append($("<div></div>").addClass("col-sm-2"));
-    row2.append($("<div></div>").addClass("col-sm-5").append(objectGroupInit));
-    row2.append($("<div></div>").addClass("col-sm-5").append(propertyGroupInit));
+    row2.append($("<div></div>").addClass("col-sm-5").append(value1GroupInit));
+    if (this.value3 === "") {
+        row2.append($("<div></div>").addClass("col-sm-5").append(value2GroupInit));
+    } else {
+        row2.append($("<div></div>").addClass("col-sm-3").append(value2GroupInit));
+        row2.append($("<div></div>").addClass("col-sm-2").append(value3GroupInit));
+    }
     row3.append($("<div></div>").addClass("col-sm-2").append(actionGroup));
-    row3.append($("<div></div>").addClass("col-sm-5").append(objectGroup));
-    row3.append($("<div></div>").addClass("col-sm-5").append(propertyGroup));
+    row3.append($("<div></div>").addClass("col-sm-5").append(value1Group));
+    if (this.value3 === "") {
+        row3.append($("<div></div>").addClass("col-sm-5").append(value2Group));
+    } else {
+        row3.append($("<div></div>").addClass("col-sm-3").append(value2Group));
+        row3.append($("<div></div>").addClass("col-sm-2").append(value3Group));
+    }
     row4.append($("<div></div>").addClass("col-sm-2").append(sortGroup));
     row4.append($("<div></div>").addClass("col-sm-5").append(forceexecGroup));
     row4.append($("<div></div>").addClass("col-sm-5").append(timeGroup));

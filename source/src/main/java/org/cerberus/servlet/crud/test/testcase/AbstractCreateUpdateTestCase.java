@@ -122,7 +122,11 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
                 TestCase tc = getTestCaseFromRequest(request, getTestCaseBeforeTraitment(originalTest, originalTestCase));
                 updateTestCase(originalTest, originalTestCase, tc);
 
-                fireLogEvent(originalTest, originalTestCase, tc, request, response);
+                if (StringUtil.isNullOrEmpty(originalTest)) {
+                    fireLogEvent(test, testcase, tc, request, response);
+                } else {
+                    fireLogEvent(originalTest, originalTestCase, tc, request, response);
+                }
 
                 // Update labels
                 if (request.getParameter("labelList") != null) {

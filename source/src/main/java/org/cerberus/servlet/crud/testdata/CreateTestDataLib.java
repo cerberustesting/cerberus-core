@@ -186,7 +186,7 @@ public class CreateTestDataLib extends HttpServlet {
                  */
                 if (ansItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("name"), request);
+                    logEventService.createForPrivateCalls("/CreateTestDataLib", "CREATE", "Create TestDataLib  : ['" + name + "']", request);
                 }
 
                 List<TestDataLibData> tdldList = new ArrayList<>();

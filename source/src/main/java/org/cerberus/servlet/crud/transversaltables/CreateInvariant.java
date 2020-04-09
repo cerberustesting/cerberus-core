@@ -127,7 +127,7 @@ public class CreateInvariant extends HttpServlet {
                      * Object updated. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/CreateInvariant2", "CREATE", "Create Invariant : ['" + id + "']", request);
+                    logEventService.createForPrivateCalls("/CreateInvariant", "CREATE", "Create Invariant : ['" + id + "']", request);
                 }
             } else {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);

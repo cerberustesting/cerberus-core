@@ -30,13 +30,14 @@ public class TestCaseExecutionHttpStat {
 
     private long id;
     private Timestamp start;
+    private String controlStatus;
     private String system;
     private String application;
     private String test;
     private String testCase;
     private String country;
     private String environment;
-    private String robot;
+    private String robotDecli;
     private int total_hits;
     private int total_size;
     private int total_time;
@@ -59,6 +60,7 @@ public class TestCaseExecutionHttpStat {
     private int media_size_max;
     private int media_hits;
     private int nb_thirdparty;
+    private String crbVersion;
     private JSONObject statDetail;
     private String UsrCreated;
     private Timestamp DateCreated;
@@ -79,6 +81,14 @@ public class TestCaseExecutionHttpStat {
 
     public void setStart(Timestamp start) {
         this.start = start;
+    }
+
+    public String getControlStatus() {
+        return controlStatus;
+    }
+
+    public void setControlStatus(String controlStatus) {
+        this.controlStatus = controlStatus;
     }
 
     public String getSystem() {
@@ -129,12 +139,12 @@ public class TestCaseExecutionHttpStat {
         this.environment = environment;
     }
 
-    public String getRobot() {
-        return robot;
+    public String getRobotDecli() {
+        return robotDecli;
     }
 
-    public void setRobot(String robot) {
-        this.robot = robot;
+    public void setRobotDecli(String robot) {
+        this.robotDecli = robot;
     }
 
     public int getTotal_hits() {
@@ -313,6 +323,14 @@ public class TestCaseExecutionHttpStat {
         this.nb_thirdparty = nb_thirdparty;
     }
 
+    public String getCrbVersion() {
+        return crbVersion;
+    }
+
+    public void setCrbVersion(String crbVersion) {
+        this.crbVersion = crbVersion;
+    }
+
     public JSONObject getStatDetail() {
         return statDetail;
     }
@@ -352,7 +370,5 @@ public class TestCaseExecutionHttpStat {
     public void setDateModif(Timestamp DateModif) {
         this.DateModif = DateModif;
     }
-
-
 
 }

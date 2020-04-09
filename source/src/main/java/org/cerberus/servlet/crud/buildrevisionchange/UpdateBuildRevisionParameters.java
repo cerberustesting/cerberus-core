@@ -80,7 +80,7 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         /**
          * Parsing and securing all required parameters.
          */
@@ -90,7 +90,7 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
         String revision = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("revision"), "", charset);
         String release = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("release"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
-        
+
         Integer brpid = 0;
 
         String[] myId = request.getParameterValues("id");
@@ -127,7 +127,7 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
                 IBuildRevisionParametersService brpService = appContext.getBean(IBuildRevisionParametersService.class);
 
                 AnswerItem resp = brpService.readByKeyTech(brpid);
-                if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
+                if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                     /**
                      * Object could not be found. We stop here and report the
                      * error.
@@ -183,7 +183,7 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
                             /**
                              * Update was successful. Adding Log entry.
                              */
-                            logEventService.createForPrivateCalls("/UpdateBuildRevisionParameters", "UPDATE", "Updated BuildRevisionParameters : ['" + brpid + "'|'" + build + "'|'" + revision + "'|'" + release + "']", request);
+                            logEventService.createForPrivateCalls("/UpdateBuildRevisionParameters", "UPDATE", "Updated BuildRevisionParameters : ['" + brpid + "'|'" + brpData.getApplication() + "'|'" + build + "'|'" + revision + "'|'" + release + "']", request);
                         } else {
                             massErrorCounter++;
                             output_message.append("<br>id : ").append(myId1).append(" - ").append(ans.getResultMessage().getDescription());

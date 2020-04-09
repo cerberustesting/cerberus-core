@@ -137,7 +137,7 @@ public class DeleteTestCase extends AbstractCrudTestCase {
                      * Delete was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/DeleteTestCase", "DELETE", "Delete TestCase : ['" + testCase + "']", request);
+                    logEventService.createForPrivateCalls("/DeleteTestCase", "DELETE", "Delete TestCase : ['" + test + "'|'" + testCase + "']", request);
                 }
             }
         }

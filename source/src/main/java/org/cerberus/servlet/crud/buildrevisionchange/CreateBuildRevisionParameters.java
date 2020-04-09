@@ -124,7 +124,7 @@ public class CreateBuildRevisionParameters extends HttpServlet {
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createForPrivateCalls("/CreateBuildRevisionParameters", "CREATE", "Create BuildRevisionParameters : ['" + build + "']", request);
+                logEventService.createForPrivateCalls("/CreateBuildRevisionParameters", "CREATE", "Create BuildRevisionParameters : ['" + application + "'|'" + build + "'|'" + revision + "']", request);
             }
         }
 

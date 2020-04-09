@@ -6,12 +6,17 @@
 [square]
 * Inside ReportByTag page, rows that are in QUEUED state but with a previous execution are now also displayed by default.
 * ManageV001 API now also clean Quartz scheduled entries when scope=instance and action=stop.
+* ManageV001 API now also stop any executions requested directly calling RunTestCase servlets.
 * New parameter : 'cerberus_networkstatsave_active' in order to activate the automatic saving of network stat at the end of each execution.
 * Added decode on topic, header and hosts for KAFKA SEARCH service #2119
 * Better message when Kafka topic is not found.
 * Service responses that have no Content-Type header defined and start by [ are now also considered as JSON
 * TestCase filters are now hidden by default (that speedup the page loading for new users).
 * Campaign Scheduler definition is now immediately reloaded.
+* Support cerberus-executor 1.1 new feature of timeout of proxy session (with new parameter 'cerberus_executorproxy_timeoutms') but also filtering out the response content of every http request. That optimize a lot the size of har produced.
+* setNetworkTrafficContent action now take a new parameter in order to get the response content (by default it not longuer take it).
+* Improved and clean lots of logevent creation (adding logs to manage API).
+* http calls stats are now saved into database in order to allow building of graph of performance over time.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

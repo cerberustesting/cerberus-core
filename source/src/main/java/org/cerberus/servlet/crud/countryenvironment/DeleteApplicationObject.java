@@ -50,7 +50,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author bcivel
  */
-@WebServlet(name = "DeleteApplication", urlPatterns = {"/DeleteApplication"})
+@WebServlet(name = "DeleteApplicationObject", urlPatterns = {"/DeleteApplicationObject"})
 public class DeleteApplicationObject extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(DeleteApplicationObject.class);
@@ -129,7 +129,7 @@ public class DeleteApplicationObject extends HttpServlet {
                      * Delete was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/DeleteApplication", "DELETE", "Delete Application Object: ['" + application + "','" + object + "']", request);
+                    logEventService.createForPrivateCalls("/DeleteApplicationObject", "DELETE", "Delete Application Object: ['" + application + "'|'" + object + "']", request);
                 }
             }
         }

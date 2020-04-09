@@ -30,9 +30,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.database.IDatabaseVersioningService;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
@@ -53,11 +55,14 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ManageV001 extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ManageV001.class);
+    
+    private static final String SERVLETNAME = "ManageV001";
 
     private IExecutionThreadPoolService executionThreadPoolService;
     private IParameterService parameterService;
     private ITestCaseExecutionQueueService tceiqService;
     private SchedulerInit cerberusScheduler;
+    private ILogEventService logEventService;
 
     private IDatabaseVersioningService databaseVersionService;
     private IMyVersionService myVersionService;
@@ -78,6 +83,7 @@ public class ManageV001 extends HttpServlet {
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
+        String resultS = "";
 
         try {
 
@@ -86,6 +92,7 @@ public class ManageV001 extends HttpServlet {
             executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
             parameterService = appContext.getBean(IParameterService.class);
             cerberusScheduler = appContext.getBean(SchedulerInit.class);
+            logEventService = appContext.getBean(ILogEventService.class);
 
             String token = parameterService.getParameterStringByKey("cerberus_manage_token", "", UUID.randomUUID().toString());
             String message = "";
@@ -100,6 +107,7 @@ public class ManageV001 extends HttpServlet {
 
                 if (request.getParameter("action") != null && request.getParameter("action").equals("stop")) {
                     if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
+                        logEventService.createForPublicCalls(SERVLETNAME, "STOP", "Cerberus Instance requested to stop.", request);
                         /**
                          * We deactivate the instance to process new execution.
                          */
@@ -131,8 +139,9 @@ public class ManageV001 extends HttpServlet {
                         data.put("waitedIterations", cntIteration);
 
                     } else if (request.getParameter("scope") != null && request.getParameter("scope").equals("global")) {
+                        logEventService.createForPublicCalls(SERVLETNAME, "STOP", "Cerberus (global system) requested to stop.", request);
                         /**
-                         * We desactivate globally the queue processing accross
+                         * We deactivate globally the queue processing accross
                          * all instances.
                          */
                         parameterService.setParameter("cerberus_queueexecution_enable", "", "N");
@@ -155,6 +164,7 @@ public class ManageV001 extends HttpServlet {
                 }
                 if (request.getParameter("action") != null && request.getParameter("action").equals("start")) {
                     if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
+                        logEventService.createForPublicCalls(SERVLETNAME, "START", "Instance requested to start.", request);
                         /**
                          * We activate the instance to process queue and start
                          * new executions.
@@ -174,6 +184,7 @@ public class ManageV001 extends HttpServlet {
                             LOG.error("Exception triggering the ThreadPool job.", ex);
                         }
                     } else if (request.getParameter("scope") != null && request.getParameter("scope").equals("global")) {
+                        logEventService.createForPublicCalls(SERVLETNAME, "START", "Cerberus (global system)  requested to start.", request);
                         /**
                          * We activate the parameter to process queue (that will
                          * start new executions).
@@ -211,11 +222,12 @@ public class ManageV001 extends HttpServlet {
             }
 
             data.put("message", message);
+            resultS = data.toString(1);
 
         } catch (JSONException | InterruptedException ex) {
             LOG.error(ex);
         }
-        response.getWriter().print(data.toString());
+        response.getWriter().print(resultS);
     }
 
     private int getNbPendingExecutions(ApplicationContext appContext) {

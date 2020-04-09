@@ -31,6 +31,8 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
+        <script type="text/javascript" src="dependencies/Moment-2.24.0/moment.min.js"></script>
+        <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
         <script type="text/javascript" src="js/pages/ReportingExecutionOverTime.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
@@ -45,7 +47,7 @@
             <%@ include file="include/pages/testcampaign/viewStatcampaign.html"%>
 
             <h1 class="page-title-line" id="title">Execution Over Time</h1>
-            
+
             <div class="" id="FiltersPanel">
                 <div class="panel panel-default">
                     <div class="panel-heading card">
@@ -75,7 +77,19 @@
                         </div>
                         <div class="panel-body collapse in" id="perfChart">
                             <div class="row">
-                                <div class="col-xs-12" id="ReportByfunctionChart"></div>
+                                <div class="col-xs-12" id="ChartRequests">
+                                    <canvas id="canvasRequests" style="display: block;" class=""></canvas>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12" id="ChartSize">
+                                    <canvas id="canvasSize" style="display: block; width: 1121px; height: 560px;" width="1121" height="560" class=""></canvas>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12" id="ChartTime">
+                                    <canvas id="canvasTime" style="display: block; width: 1121px; height: 560px;" width="1121" height="560" class=""></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>

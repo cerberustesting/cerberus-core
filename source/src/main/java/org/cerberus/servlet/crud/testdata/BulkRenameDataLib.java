@@ -31,7 +31,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataLibService;
+import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.answer.Answer;
@@ -44,85 +46,94 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "BulkRenameDataLib", urlPatterns = {"/BulkRenameDataLib"})
 public class BulkRenameDataLib extends HttpServlet {
 
-	private static final Logger LOG = LogManager.getLogger(CreateTestDataLib.class);
+    private static final Logger LOG = LogManager.getLogger(CreateTestDataLib.class);
 
-	/**
-	 * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-	 * methods.
-	 *
-	 * @param request servlet request
-	 * @param response servlet response
-	 * @throws ServletException if a servlet-specific error occurs
-	 * @throws IOException if an I/O error occurs
-	 */
-	protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
-		ITestDataLibService tdls = appContext.getBean(ITestDataLibService.class);
+        ITestDataLibService tdls = appContext.getBean(ITestDataLibService.class);
 
-		JSONObject jsonResponse = new JSONObject();
-		response.setContentType("application/json");
-		response.setCharacterEncoding("utf8");
+        JSONObject jsonResponse = new JSONObject();
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
 
-		Answer ans = new Answer();
-		List<Answer> ansList = new ArrayList<Answer>();
+        Answer ans = new Answer();
+        List<Answer> ansList = new ArrayList<Answer>();
 
-		boolean error = true;
+        boolean error = true;
 
-		try {
-			/**
-			 * Parsing and securing all required parameters.
-			 */
-			if ( (request.getParameter("oldname") != null && !request.getParameter("oldname").isEmpty()) && (request.getParameter("newname") != null && !request.getParameter("newname").isEmpty())) {				
-				error = false;
-			} 
-		} finally {
-			if (error) {
-				MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR);
-				msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "at least one of the two required parameter is empty"));
-				ans.setResultMessage(msg);
-			} else {
-				ansList = tdls.bulkRename(request.getParameter("oldname"), request.getParameter("newname"));
-				MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
-				ans.setResultMessage(msg);
-			}
-			try {
-				//sets the message returned by the operations
-				jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-				jsonResponse.put("message", ans.getResultMessage().getDescription());
-				if (!error) {
-				// Datalib answer management
-				String DataLibAnswer = ansList.get(0).getResultMessage().getDescription();
-				jsonResponse.put("DataLibAnswer", DataLibAnswer);
-				// Testcase Country Properties answer management
-				String TestCaseCountryPropertiesAnswer = ansList.get(1).getResultMessage().getDescription();
-				jsonResponse.put("TestCasePropertiesAnswer", TestCaseCountryPropertiesAnswer);			
-				}
-				response.getWriter().print(jsonResponse);
-				response.getWriter().flush();
-			} catch (JSONException ex) {
-				LOG.warn(ex);
-				response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
-				response.getWriter().flush();
-			}
-		}
-	} 
+        try {
+            /**
+             * Parsing and securing all required parameters.
+             */
+            if ((request.getParameter("oldname") != null && !request.getParameter("oldname").isEmpty()) && (request.getParameter("newname") != null && !request.getParameter("newname").isEmpty())) {
+                error = false;
+            }
+        } finally {
+            if (error) {
+                MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "at least one of the two required parameter is empty"));
+                ans.setResultMessage(msg);
+            } else {
+                String oldname = request.getParameter("oldname");
+                String newname = request.getParameter("newname");
+                ansList = tdls.bulkRename(oldname, newname);
+                /**
+                 * Update operation finished with success, then the logging
+                 * entry must be added.
+                 */
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                logEventService.createForPrivateCalls("/BulkRenameDataLib", "UPDATE", "Rename TestDataLib : ['" + oldname + "'] - new name: '" + newname + "'", request);
 
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		processRequest(request, response);
-	}
+                MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
+                ans.setResultMessage(msg);
+            }
+            try {
+                //sets the message returned by the operations
+                jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+                jsonResponse.put("message", ans.getResultMessage().getDescription());
+                if (!error) {
+                    // Datalib answer management
+                    String DataLibAnswer = ansList.get(0).getResultMessage().getDescription();
+                    jsonResponse.put("DataLibAnswer", DataLibAnswer);
+                    // Testcase Country Properties answer management
+                    String TestCaseCountryPropertiesAnswer = ansList.get(1).getResultMessage().getDescription();
+                    jsonResponse.put("TestCasePropertiesAnswer", TestCaseCountryPropertiesAnswer);
+                }
+                response.getWriter().print(jsonResponse);
+                response.getWriter().flush();
+            } catch (JSONException ex) {
+                LOG.warn(ex);
+                response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+                response.getWriter().flush();
+            }
+        }
+    }
 
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		processRequest(request, response);
-	}
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
 
-	@Override
-	public String getServletInfo() {
-		return "Process a bulk rename for a Datalib name in the Datalib and TestCaseCountryProperties";
-	}
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    @Override
+    public String getServletInfo() {
+        return "Process a bulk rename for a Datalib name in the Datalib and TestCaseCountryProperties";
+    }
 }

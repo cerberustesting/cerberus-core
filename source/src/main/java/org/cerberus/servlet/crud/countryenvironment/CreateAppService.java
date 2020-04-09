@@ -176,7 +176,7 @@ public class CreateAppService extends HttpServlet {
                  * Adding Log entry.
                  */
                 logEventService = appContext.getBean(ILogEventService.class);
-                logEventService.createForPrivateCalls("/CreateAppService", "CREATE", "Create AppService : " + service, request);
+                logEventService.createForPrivateCalls("/CreateAppService", "CREATE", "Create AppService : ['" + service + "']", request);
 
                 if (file != null) {
                     AppService an = appServiceService.findAppServiceByKey(service);

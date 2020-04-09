@@ -191,7 +191,7 @@ public class UpdateCampaign extends HttpServlet {
                          * Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign : " + c, request);
+                        logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign : ['" + c + "']", request);
                     }
 
                     if (parameter != null) {
@@ -206,13 +206,6 @@ public class UpdateCampaign extends HttpServlet {
                         }
 
                         finalAnswer = campaignParameterService.compareListAndUpdateInsertDeleteElements(c, arr);
-                        if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                            /**
-                             * Adding Log entry.
-                             */
-                            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                            logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign Parameter : " + camp.getCampaign(), request);
-                        }
                     }
 
                     if (label != null) {
@@ -227,13 +220,6 @@ public class UpdateCampaign extends HttpServlet {
                         }
 
                         finalAnswer = campaignLabelService.compareListAndUpdateInsertDeleteElements(c, arr);
-                        if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                            /**
-                             * Adding Log entry.
-                             */
-                            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                            logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign Label : " + camp.getCampaign(), request);
-                        }
                     }
 
                 } else {

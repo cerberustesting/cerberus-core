@@ -57,7 +57,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author vertigo
  */
-@WebServlet(name = "ReadTag1", urlPatterns = {"/ReadTag1"})
+@WebServlet(name = "ReadTag", urlPatterns = {"/ReadTag"})
 public class ReadTag extends HttpServlet {
 
     private ITagService tagService;
