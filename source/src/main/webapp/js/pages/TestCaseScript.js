@@ -1046,6 +1046,8 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
         var stepList = [];
 
         // Load invariant list into local storage.
+        getSelectInvariant("SRVTYPE", false, true);
+        getSelectInvariant("SRVMETHOD", false, true);
         getSelectInvariant("ACTION", false, true);
         getSelectInvariant("CONTROL", false, true);
         getSelectInvariant("CTRLFATAL", false, true);

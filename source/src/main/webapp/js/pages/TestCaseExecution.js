@@ -19,6 +19,8 @@
  */
 var paramActivatewebsocketpush = "N";
 var paramWebsocketpushperiod = 5000;
+var networkStat = {};
+var configDo = {};
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -29,6 +31,17 @@ $.when($.getScript("js/global/global.js")).then(function () {
         displayPageLabel(doc);
 
         bindToggleCollapse();
+
+        $("#sortSize").click(function () {
+            update_thirdParty_Chart(1);
+        });
+        $("#sortRequest").click(function () {
+            update_thirdParty_Chart(2);
+        });
+        $("#sortTime").click(function () {
+            update_thirdParty_Chart(3);
+        });
+
 
         var availableUsers = getUserArray(true);
         $("#tabDetail input#executor").autocomplete({
@@ -498,14 +511,15 @@ function drawNetworkCharts(filelist) {
 
                 $("#editTabNetwork").show();
 
+                networkStat = data;
+
                 var title = [doc.getDocLabel("page_executiondetail", "hits"), 'total : ' + data.total.requests.nb];
                 drawChart_HttpStatus(data, title, 'myChart1');
 
                 var title = [doc.getDocLabel("page_executiondetail", "size"), 'total : ' + formatNumber(Math.round(data.total.size.sum / 1024)) + ' Kb'];
                 drawChart_SizePerType(data, title, 'myChart2');
 
-                var title = [doc.getDocLabel("page_executiondetail", "thirdPartychart"), 'total : ' + data.nbThirdParty];
-                drawChart_PerThirdParty(data, title, 'myChart3');
+                drawChart_PerThirdParty(networkStat, 'myChart3');
 
                 var title = [doc.getDocLabel("page_executiondetail", "thirdPartygantt")];
                 drawChart_GanttPerThirdParty(data, title, 'myChart4');
@@ -728,68 +742,17 @@ function drawChart_SizePerType_Color(i) {
 }
 
 
-function drawChart_PerThirdParty(data, titletext, target) {
+function drawChart_PerThirdParty(data, target) {
+    var doc = new Doc();
 
-    var dataArray1 = [];
-    var dataArray2 = [];
-    var dataArray3 = [];
+    var titletext = [doc.getDocLabel("page_executiondetail", "thirdPartychart"), 'total : ' + data.nbThirdParty];
+
     var labelArray = [];
-    var bgColorArray = [];
 
-    // Internal stat.
-    if (data.hasOwnProperty("internal")) {
-        dataArray1.push(data.internal.size.sum);
-        dataArray2.push(data.internal.requests.nb);
-        dataArray3.push(data.internal.time.max);
-        labelArray.push("INTERNAL");
-        bgColorArray.push("blue");
-    }
-
-    // ThirdParty stat.
-    if (data.hasOwnProperty("thirdparty")) {
-        for (var key in data.thirdparty) {
-            dataArray1.push(data.thirdparty[key].size.sum);
-            dataArray2.push(data.thirdparty[key].requests.nb);
-            dataArray3.push(data.thirdparty[key].time.max);
-            labelArray.push(key);
-            bgColorArray.push(get_Color_fromindex(bgColorArray.length));
-        }
-    }
-
-    // Unknown stat.
-    if (data.hasOwnProperty("unknown") && data.unknown.requests.nb > 0) {
-        dataArray1.push(data.unknown.size.sum);
-        dataArray2.push(data.unknown.requests.nb);
-        dataArray3.push(data.unknown.time.max);
-        labelArray.push("UNKNOWN");
-        bgColorArray.push("black");
-        $("#detailUnknownList").empty();
-        let entryUnknown = $('<li class="list-group-item">').text("Unknown Hosts/Domains:");
-        $("#detailUnknownList").append(entryUnknown);
-        for (var key in data.unknown.hosts) {
-            let entryUnknown = $('<li class="list-group-item list-group-item-danger">').text(data.unknown.hosts[key]);
-            $("#detailUnknownList").append(entryUnknown);
-        }
-
-    }
-
-    var config = {
+    configDo = {
         type: 'pie',
         data: {
-            datasets: [{
-                    data: dataArray1,
-                    backgroundColor: bgColorArray,
-                    label: 'Size',
-                    labels: labelArray
-                }, {
-                    data: dataArray2,
-                    backgroundColor: bgColorArray,
-                    label: 'Requests'
-                }, {
-                    data: dataArray3,
-                    backgroundColor: bgColorArray,
-                    label: 'Max Time'
-                }],
+            datasets: [],
             labels: labelArray
         },
         options: {
@@ -819,12 +782,135 @@ function drawChart_PerThirdParty(data, titletext, target) {
     };
 
     var ctx = document.getElementById(target).getContext('2d');
-    let chart = new Chart(ctx, config);
+    window.graph1 = new Chart(ctx, configDo);
+
+    update_thirdParty_Chart(1);
+}
+
+function update_thirdParty_Chart(sortCol) {
+
+    var newDataArray = [];
+    var dataArray1 = [];
+    var dataArray2 = [];
+    var dataArray3 = [];
+    var labelArray = [];
+    var bgColorArray = [];
+
+    $("#sortSize").removeClass("btn-default");
+    $("#sortRequest").removeClass("btn-default");
+    $("#sortTime").removeClass("btn-default");
+    $("#sortSize").removeClass("btn-primary");
+    $("#sortRequest").removeClass("btn-primary");
+    $("#sortTime").removeClass("btn-primary");
+
+    drawChart_GetThirdPartyDataset(networkStat, newDataArray);
+
+    // Sorting values by nb of requests.
+    if (sortCol === 2) {
+        sortedArrayOfObj = newDataArray.sort(function (a, b) {
+            return b.nb2 - a.nb2;
+        });
+        $("#sortSize").addClass("btn-default");
+        $("#sortRequest").addClass("btn-primary");
+        $("#sortTime").addClass("btn-default");
+    } else if (sortCol === 3) {
+        sortedArrayOfObj = newDataArray.sort(function (a, b) {
+            return b.nb3 - a.nb3;
+        });
+        $("#sortSize").addClass("btn-default");
+        $("#sortRequest").addClass("btn-default");
+        $("#sortTime").addClass("btn-primary");
+    } else {
+        sortedArrayOfObj = newDataArray.sort(function (a, b) {
+            return b.nb1 - a.nb1;
+        });
+        $("#sortSize").addClass("btn-primary");
+        $("#sortRequest").addClass("btn-default");
+        $("#sortTime").addClass("btn-default");
+    }
+    sortedArrayOfObj.forEach(function (d) {
+        dataArray1.push(d.nb1);
+        dataArray2.push(d.nb2);
+        dataArray3.push(d.nb3);
+        labelArray.push(d.name);
+        bgColorArray.push(d.color);
+    });
+
+    configDo.data.datasets = [];
+    configDo.data.datasets.push({
+        data: dataArray1,
+        backgroundColor: bgColorArray,
+        label: 'Size',
+        labels: labelArray
+    });
+    configDo.data.datasets.push({
+        data: dataArray2,
+        backgroundColor: bgColorArray,
+        label: 'Request',
+        labels: labelArray
+    });
+    configDo.data.datasets.push({
+        data: dataArray3,
+        backgroundColor: bgColorArray,
+        label: 'Max Time',
+        labels: labelArray
+    });
+
+    configDo.data.labels = labelArray;
+
+    window.graph1.update();
+}
+
+function drawChart_GetThirdPartyDataset(data, newDataArray) {
+
+    // Internal stat.
+    if (data.hasOwnProperty("internal")) {
+        drawChart_PerThirdParty_data(data.internal.size.sum, data.internal.requests.nb, data.internal.time.max, "internal", newDataArray, "INTERNAL", "blue")
+    }
+
+    // ThirdParty stat.
+    if (data.hasOwnProperty("thirdparty")) {
+        for (var key in data.thirdparty) {
+            drawChart_PerThirdParty_data(data.thirdparty[key].size.sum, data.thirdparty[key].requests.nb, data.thirdparty[key].time.max, key, newDataArray, key, get_Color_fromindex(newDataArray.length))
+        }
+    }
+
+    // Unknown stat.
+    if (data.hasOwnProperty("unknown") && data.unknown.requests.nb > 0) {
+        drawChart_PerThirdParty_data(data.unknown.size.sum, data.unknown.requests.nb, data.unknown.time.max, "unknown", newDataArray, "UNKNOWN", "black")
+        $("#detailUnknownList").empty();
+        let entryUnknown = $('<li class="list-group-item">').text("Unknown Hosts/Domains:");
+        $("#detailUnknownList").append(entryUnknown);
+        for (var key in data.unknown.hosts) {
+            let entryUnknown = $('<li class="list-group-item list-group-item-danger">').text(data.unknown.hosts[key]);
+            $("#detailUnknownList").append(entryUnknown);
+        }
+
+    }
 
 }
 
-function formatNumber(num) {
-    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+function drawChart_PerThirdParty_data(nb1, nb2, nb3, key, newDataArray, label, color) {
+    if (nb1 > 0) {
+        var entry = {
+            nb1: nb1,
+            nb2: nb2,
+            nb3: nb3,
+            name: label,
+            color: color
+        };
+        newDataArray.push(entry);
+    }
+}
+
+function drawChart_GanttPerThirdParty_data(start, end, key, newDataArray, label, color) {
+    var entry = {
+        start: start,
+        end: end,
+        name: label,
+        color: color
+    };
+    newDataArray.push(entry);
 }
 
 function drawChart_GanttPerThirdParty(data, titletext, target) {
@@ -834,31 +920,41 @@ function drawChart_GanttPerThirdParty(data, titletext, target) {
     var labelArray = [];
     var bgColorArray = [];
 
+    var newDataArray = [];
+
+
+
+
+
     // Internal stat.
     if (data.hasOwnProperty("internal")) {
-        dataArray1.push(data.internal.time.firstStartR);
-        dataArray2.push(data.internal.time.lastEndR - data.internal.time.firstStartR);
-        labelArray.push("INTERNAL");
-        bgColorArray.push("blue");
+        drawChart_GanttPerThirdParty_data(data.internal.time.firstStartR, data.internal.time.lastEndR - data.internal.time.firstStartR, "internal", newDataArray, "INTERNAL", "blue");
     }
 
     // ThirdParty stat.
     if (data.hasOwnProperty("thirdparty")) {
         for (var key in data.thirdparty) {
-            bgColorArray.push(get_Color_fromindex(bgColorArray.length));
-            labelArray.push(key);
-            dataArray1.push(data.thirdparty[key].time.firstStartR);
-            dataArray2.push(data.thirdparty[key].time.lastEndR - data.thirdparty[key].time.firstStartR);
+            drawChart_GanttPerThirdParty_data(data.thirdparty[key].time.firstStartR, data.thirdparty[key].time.lastEndR - data.thirdparty[key].time.firstStartR, key, newDataArray, key, get_Color_fromindex(newDataArray.length));
         }
     }
 
     // Unknown stat.
     if (data.hasOwnProperty("unknown") && data.unknown.requests.nb > 0) {
-        dataArray1.push(data.unknown.time.firstStartR);
-        dataArray2.push(data.unknown.time.lastEndR - data.unknown.time.firstStartR);
-        labelArray.push("UNKNOWN");
-        bgColorArray.push("black");
+        drawChart_GanttPerThirdParty_data(data.unknown.time.firstStartR, data.unknown.time.lastEndR - data.unknown.time.firstStartR, "unknown", newDataArray, "UNKNOWN", "black");
     }
+
+
+    // Sorting values by nb of requests.
+    sortedArrayOfObj = newDataArray.sort(function (a, b) {
+        return a.start - b.start;
+    });
+
+    sortedArrayOfObj.forEach(function (d) {
+        dataArray1.push(d.start);
+        dataArray2.push(d.end);
+        labelArray.push(d.name);
+        bgColorArray.push(d.color);
+    });
 
     var barOptions_stacked = {
         hover: {
@@ -933,6 +1029,11 @@ function drawChart_GanttPerThirdParty(data, titletext, target) {
             return e._datasetIndex === 1;
         });
     }
+}
+
+
+function formatNumber(num) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
 }
 
 

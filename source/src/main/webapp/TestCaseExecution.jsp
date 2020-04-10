@@ -617,11 +617,19 @@
                                         <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                     </div>
                                     <div class="panel-body collapse in" id="NS2">
-                                        <div class="row">
-                                            <div class="col-sm-12">
+
+                                        <div class="row" >
+                                            <div class="col-sm-1" id="radioSort">
+                                                <label id="ns2Label"><span class="glyphicon glyphicon-sort"></span> Sort Third Party</label>
+                                                <button class="btn btn-default pull-left" id="sortSize" style="margin-left: 5px; margin-right: 5px;">by Size</button>
+                                                <button class="btn btn-default pull-left" id="sortRequest" style="margin-left: 5px; margin-right: 5px;">by Request</button>
+                                                <button class="btn btn-default pull-left" id="sortTime" style="margin-left: 5px; margin-right: 5px;">by Max Time</button>
+                                            </div>
+                                            <div class="col-sm-11">
                                                 <canvas id="myChart3"></canvas>
                                             </div>
                                         </div>
+
                                         <div class="row" id="detailUnknown">
                                             <ul class="list-group marginTop25" id="detailUnknownList">
                                             </ul>                                    
