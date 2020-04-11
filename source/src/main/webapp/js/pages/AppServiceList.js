@@ -43,7 +43,8 @@ function initPage() {
 function displayPageLabel() {
     var doc = new Doc();
 
-    $("#title").html(doc.getDocLabel("appservice", "service"));
+    $("#title").html(doc.getDocLabel("page_appservice", "title"));
+    $("#pageTitle").html(doc.getDocLabel("page_appservice", "title"));
     displayHeaderLabel(doc);
     displayFooter(doc);
     displayGlobalLabel(doc);

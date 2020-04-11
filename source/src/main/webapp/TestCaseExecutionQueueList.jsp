@@ -25,7 +25,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <title>Executions in Queue</title>
+        <title id="pageTitle">Executions in Queue</title>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecutionQueue.css"/>
         <script type="text/javascript" src="dependencies/D3js-3.x.x/js/d3.min.js"></script>
         <script type="text/javascript" src="dependencies/D3-tip-0.6.7/js/index.js"></script>

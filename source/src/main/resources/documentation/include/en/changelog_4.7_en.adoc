@@ -17,6 +17,7 @@
 * setNetworkTrafficContent action now take a new parameter in order to get the response content (by default it not longuer take it).
 * Improved and clean lots of logevent creation (adding logs to manage API).
 * http calls stats are now saved into database in order to allow building of graph of performance over time.
+* Domain is automatically guess from url when empty.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

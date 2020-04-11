@@ -140,7 +140,7 @@ function displayAndRefresh_jobStatus() {
             $("#jobActiveStatus").removeClass("glyphicon-refresh spin");
             $("#jobActiveStatus").addClass("glyphicon-pause blink");
             $("#modifyParambutton").html("<span class='glyphicon glyphicon-play'></span> Start Queue Job");
-            
+
         }
 
         if (data["jobActiveHasPermissionsUpdate"]) {
@@ -206,6 +206,8 @@ function displayPageLabel() {
     var doc = new Doc();
 
     $("#title").html(doc.getDocLabel("page_testcaseexecutionqueue", "allExecution"));
+    $("#pageTitle").html(doc.getDocLabel("page_testcaseexecutionqueue", "allExecution"));
+
 
     displayHeaderLabel(doc);
 

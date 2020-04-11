@@ -112,6 +112,8 @@ function displayPageLabel() {
     displayHeaderLabel(doc);
     displayGlobalLabel(doc);
     $("#testCaseListLabel").html(doc.getDocOnline("page_testcaselist", "testcaselist"));
+    $("#pageTitle").html(doc.getDocOnline("page_testcaselist", "title"));
+    $("#title").html(doc.getDocOnline("page_testcaselist", "title"));
     displayFooter(doc);
 
 }

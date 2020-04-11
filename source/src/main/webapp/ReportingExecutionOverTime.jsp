@@ -70,25 +70,43 @@
             <div class="row" id="ReportByFunctionPanel">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart1">
                             <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="reportFunction">Performance Graph</label>
+                            <label id="lblPerfRequests">Performance Graph - Requests</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body collapse in" id="perfChart">
+                        <div class="panel-body collapse in" id="perfChart1">
                             <div class="row">
                                 <div class="col-xs-12" id="ChartRequests">
                                     <canvas id="canvasRequests" style="display: block;" class=""></canvas>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart2">
+                            <span class="fa fa-bar-chart fa-fw"></span>
+                            <label id="lblPerfSize">Performance Graph - Size</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        </div>
+                        <div class="panel-body collapse in" id="perfChart2">
                             <div class="row">
                                 <div class="col-xs-12" id="ChartSize">
                                     <canvas id="canvasSize" style="display: block; width: 1121px; height: 560px;" width="1121" height="560" class=""></canvas>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart3">
+                            <span class="fa fa-bar-chart fa-fw"></span>
+                            <label id="lblPerfTime">Performance Graph - Max Time</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        </div>
+                        <div class="panel-body collapse in" id="perfChart3">
                             <div class="row">
                                 <div class="col-xs-12" id="ChartTime">
-                                    <canvas id="canvasTime" style="display: block; width: 1121px; height: 560px;" width="1121" height="560" class=""></canvas>
+                                    <canvas id="canvasTime" class=""></canvas>
                                 </div>
                             </div>
                         </div>

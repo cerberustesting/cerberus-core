@@ -18,6 +18,9 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 /* global handleErrorAjaxAfterTimeout */
+var configRequests = {};
+var configSize = {};
+var configTime = {};
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -43,32 +46,58 @@ function initPage() {
     displayHeaderLabel(doc);
     displayPageLabel(doc);
     displayFooter(doc);
-    loadPerfGraph();
+    initGraph();
 }
 
 function displayPageLabel(doc) {
     $("#pageTitle").html(doc.getDocLabel("page_reportovertime", "title"));
     $("#title").html(doc.getDocOnline("page_reportovertime", "title"));
-    $("#loadbutton").html(doc.getDocLabel("page_reportovertime", "button_load"));
-    $("#reloadbutton").html(doc.getDocLabel("page_reportovertime", "button_reload"));
-    $("#filters").html(doc.getDocOnline("page_reportovertime", "filters"));
+    $("#loadbutton").html(doc.getDocLabel("page_global", "buttonLoad"));
+    $("#filters").html(doc.getDocOnline("page_global", "filters"));
+    $("#lblPerfRequests").html(doc.getDocLabel("page_reportovertime", "lblPerfRequests"));
+    $("#lblPerfSize").html(doc.getDocLabel("page_reportovertime", "lblPerfSize"));
+    $("#lblPerfTime").html(doc.getDocLabel("page_reportovertime", "lblPerfTime"));
+
+
+
 }
 
 function loadPerfGraph() {
+    let tcs = [];
+    let tc = {
+        test: "BenoitWP",
+        testCase: "0001A"
+    }
+    tcs.push(tc);
+    tc = {
+        test: "BenoitWP",
+        testCase: "0002A"
+    }
+    tcs.push(tc);
+    let from = "";
+    let to = "";
+    let parties = ['internal', 'total'];
+    let units = ['request', 'size', 'time'];
+    let types = ['img', 'css', 'js', 'total'];
 
-
-    $.ajax({url: "ReadExecutionStat",
-        data: {idName: "COUNTRY"},
+    $.ajax({
+        url: "ReadExecutionStat",
+        method: "POST",
+        data: {
+            testCases: tcs,
+            from: from,
+            to: to,
+            parties: parties,
+            units: units,
+            types: types
+        },
         async: false,
         dataType: 'json',
         success: function (data) {
             buildGraphs(data);
         }
     });
-    console.info("Load Graph.");
 }
-
-
 
 function getOptions(title) {
     let option = {
@@ -95,21 +124,16 @@ function getOptions(title) {
         }
     };
     return option;
-
 }
 
 function buildGraphs(data) {
     var len = data.curves.length;
-    var reqoption = getOptions("Requests");
-    var sizeoption = getOptions("Size in b");
-    var timeoption = getOptions("Time in ms");
 
     let reqdatasets = [];
     let sizedatasets = [];
     let timedatasets = [];
-    for (var i = 0; i < len; i++) {
 
-//        console.info(data.curves[i]);
+    for (var i = 0; i < len; i++) {
 
         let c = data.curves[i];
         let d = [];
@@ -148,29 +172,46 @@ function buildGraphs(data) {
         }
     }
 
+    configRequests.data.datasets = reqdatasets;
+    configSize.data.datasets = sizedatasets;
+    configTime.data.datasets = timedatasets;
 
-    var configRequests = {
+    window.myLineReq.update();
+    window.myLineSize.update();
+    window.myLineTime.update();
+}
+
+function initGraph() {
+
+    var reqoption = getOptions("Requests");
+    var sizeoption = getOptions("Size in b");
+    var timeoption = getOptions("Time in ms");
+
+    let reqdatasets = [];
+    let sizedatasets = [];
+    let timedatasets = [];
+
+    configRequests = {
         type: 'line',
         data: {
             datasets: reqdatasets
         },
         options: reqoption
     };
-    var configSize = {
+    configSize = {
         type: 'line',
         data: {
             datasets: sizedatasets
         },
         options: sizeoption
     };
-    var configTime = {
+    configTime = {
         type: 'line',
         data: {
             datasets: timedatasets
         },
         options: timeoption
     };
-//    console.info(configRequets);
 
     var ctx = document.getElementById('canvasRequests').getContext('2d');
     window.myLineReq = new Chart(ctx, configRequests);
@@ -181,4 +222,3 @@ function buildGraphs(data) {
     var ctx = document.getElementById('canvasTime').getContext('2d');
     window.myLineTime = new Chart(ctx, configTime);
 }
-

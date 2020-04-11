@@ -162,6 +162,8 @@ function loadRequestContext() {
 
 function displayPageLabel() {
     var doc = new Doc();
+    $("#pageTitle").html(doc.getDocLabel("page_runtest", "title"));
+    $("#title").html(doc.getDocOnline("page_runtest", "title"));
     $("h1.page-title-line").text(doc.getDocLabel("page_runtest", "title"));
     $("#selectionPanel div.panel-heading").text(doc.getDocLabel("page_runtest", "selection_type"));
     $("#selectionPanel input[value='filters']").next().text(doc.getDocLabel("page_runtest", "select_list_test"));

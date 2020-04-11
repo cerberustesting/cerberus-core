@@ -66,6 +66,7 @@ function displayPageLabel() {
     var doc = new Doc();
 
     $("#title").html(doc.getDocLabel("page_user", "allUsers"));
+    $("#pageTitle").html(doc.getDocLabel("page_user", "allUsers"));
     $("[name='editUserField']").html(doc.getDocLabel("page_user", "edituser_field"));
     $("[name='addUserField']").html(doc.getDocLabel("page_user", "adduser_field"));
     $("[name='loginField']").html(doc.getDocLabel("page_user", "login_field"));

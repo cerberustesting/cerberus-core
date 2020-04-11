@@ -1350,6 +1350,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
 
 function displayPageLabel(doc) {
     $("h1.page-title-line").html(doc.getDocLabel("page_testcasescript", "testcasescript_title"));
+    $("#pageTitle").html(doc.getDocLabel("page_testcasescript", "testcasescript_title"));
     $("#nav-execution #list-wrapper #stepListWrapper h3").html(doc.getDocLabel("page_testcasescript", "steps_title"));
     $("#nav-execution #list-wrapper #tcButton h3").html(doc.getDocLabel("page_global", "columnAction"));
     $("#nav-execution #list-wrapper #deleteButton h3").html(doc.getDocLabel("page_global", "columnAction") + " " + doc.getDocLabel("page_header", "menuTestCase"));

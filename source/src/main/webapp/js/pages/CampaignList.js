@@ -87,6 +87,7 @@ function initPage() {
 function displayPageLabel() {
     var doc = new Doc();
 
+    $("#pageTitle").html(doc.getDocLabel("page_testcampaign", "title"));
     $("#title").html(doc.getDocLabel("page_testcampaign", "allTestcampaigns"));
     $("[name='editTestcampaignField']").html(doc.getDocLabel("page_testcampaign", "edittestcampaign_field"));
     $("[name='addTestcampaignField']").html(doc.getDocLabel("page_testcampaign", "addtestcampaign_field"));

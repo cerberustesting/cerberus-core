@@ -211,7 +211,7 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%SYS_ROBOT%", tCExecution.getRobot());
             stringToDecode = stringToDecode.replace("%SYS_ROBOTDECLI%", tCExecution.getRobotDecli());
             stringToDecode = stringToDecode.replace("%SYS_SCREENSIZE%", tCExecution.getScreenSize());
-            stringToDecode = stringToDecode.replace("%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
+            stringToDecode = stringToDecode.replace("%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain().split(",")[0].trim());
             stringToDecode = stringToDecode.replace("%SYS_APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
             stringToDecode = stringToDecode.replace("%SYS_APP_CONTEXTROOT%", tCExecution.getCountryEnvironmentParameters().getUrl());
             stringToDecode = stringToDecode.replace("%SYS_APP_VAR1%", tCExecution.getCountryEnvironmentParameters().getVar1());
@@ -248,11 +248,12 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%system.BROWSER%", tCExecution.getBrowser());
             stringToDecode = stringToDecode.replace("%system.ROBOT%", tCExecution.getRobot());
             stringToDecode = stringToDecode.replace("%system.ROBOTDECLI%", tCExecution.getRobotDecli());
-            if(tCExecution.getRobotExecutorObj() != null)
+            if (tCExecution.getRobotExecutorObj() != null) {
                 stringToDecode = stringToDecode.replace("%system.ROBOTHOST%", tCExecution.getRobotExecutorObj().getHost());
+            }
 
             stringToDecode = stringToDecode.replace("%system.SCREENSIZE%", tCExecution.getScreenSize());
-            stringToDecode = stringToDecode.replace("%system.APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
+            stringToDecode = stringToDecode.replace("%system.APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain().split(",")[0].trim());
             stringToDecode = stringToDecode.replace("%system.APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
             stringToDecode = stringToDecode.replace("%system.APP_CONTEXTROOT%", tCExecution.getCountryEnvironmentParameters().getUrl());
             stringToDecode = stringToDecode.replace("%system.APP_VAR1%", tCExecution.getCountryEnvironmentParameters().getVar1());
@@ -283,11 +284,11 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%system.EXESTORAGEURL%", recorderService.getStorageSubFolderURL(tCExecution.getId()));
             nowInMS = new Date().getTime();
             stringToDecode = stringToDecode.replace("%system.EXEELAPSEDMS%", String.valueOf(nowInMS - tCExecution.getStart()));
-            if (tCExecution.getRemoteProxyUUID() != null){
+            if (tCExecution.getRemoteProxyUUID() != null) {
                 stringToDecode = stringToDecode.replace("%system.REMOTEPROXYUUID%", tCExecution.getRemoteProxyUUID());
             }
-            if (tCExecution.getRobotExecutorObj() != null){
-                stringToDecode = stringToDecode.replace("%system.REMOTEPROXY_HAR_URL%", "http://" + tCExecution.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid="+tCExecution.getRemoteProxyUUID());
+            if (tCExecution.getRobotExecutorObj() != null) {
+                stringToDecode = stringToDecode.replace("%system.REMOTEPROXY_HAR_URL%", "http://" + tCExecution.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + tCExecution.getRemoteProxyUUID());
             }
             /**
              * Trying to replace by system environment variables from Step

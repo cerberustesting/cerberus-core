@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -107,11 +106,13 @@ public class ReadExecutionStat extends HttpServlet {
         List<String> system = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("system"), new ArrayList<String>(), "UTF8");
         String from = "";
         String to = "";
+        
         List<TestCase> ltc = new ArrayList<>();
         ltc.add(factoryTestCase.create("BenoitWP", "0001A"));
 //        ltc.add(factoryTestCase.create("BenoitWP", "0001A-I"));
         ltc.add(factoryTestCase.create("BenoitWP", "0002A"));
 //        ltc.add(factoryTestCase.create("BenoitWP", "0002A-I"));
+
         List<String> parties = new ArrayList<>();
         parties.add("internal");
         parties.add("total");

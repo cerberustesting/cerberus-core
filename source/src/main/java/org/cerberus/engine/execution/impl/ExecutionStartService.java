@@ -19,7 +19,10 @@
  */
 package org.cerberus.engine.execution.impl;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
+import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
@@ -266,10 +269,16 @@ public class ExecutionStartService implements IExecutionStartService {
                 cea = this.factorycountryEnvironmentParameters.create(tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication(), tCExecution.getMyHost(), "", tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL(), "", "", "", "", CountryEnvironmentParameters.DEFAULT_POOLSIZE, "", "");
                 cea.setIp(tCExecution.getMyHost());
                 cea.setUrl(tCExecution.getMyContextRoot());
-                tCExecution.setUrl(StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", ""));
+                String appURL = StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", "");
+                tCExecution.setUrl(appURL);
+                // If domain is empty we guess it from URL.
+                if (StringUtil.isNullOrEmpty(cea.getDomain())) {
+                    cea.setDomain(StringUtil.getDomainFromUrl(appURL));
+                }
                 cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
                 tCExecution.setCountryEnvironmentParameters(cea);
                 LOG.debug(" -> Execution will be done with manual application connectivity setting. IP/URL/LOGIN : " + cea.getIp() + "-" + cea.getUrl() + "-" + cea.getUrlLogin());
+                LOG.debug(" Domain : " + cea.getDomain());
             }
             /**
              * If execution is manual, we force the env at 'MANUAL-ENVDATA'
@@ -292,9 +301,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 cea = this.countryEnvironmentParametersService.convert(this.countryEnvironmentParametersService.readByKey(
                         tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication()));
                 if (cea != null) {
-                    tCExecution.setCountryEnvironmentParameters(cea);
                     tCExecution.setUrl(StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", ""));
-
                     // add possibility to override URL with MyHost if MyHost is available
                     if (!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
                         String contextRoot = !StringUtil.isNullOrEmpty(tCExecution.getMyContextRoot()) ? tCExecution.getMyContextRoot() : "";
@@ -303,6 +310,11 @@ public class ExecutionStartService implements IExecutionStartService {
                     if (!StringUtil.isNullOrEmpty(tCExecution.getMyLoginRelativeURL())) {
                         cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
                     }
+                    // If domain is empty we guess it from URL.
+                    if (StringUtil.isNullOrEmpty(cea.getDomain())) {
+                        cea.setDomain(StringUtil.getDomainFromUrl(tCExecution.getUrl()));
+                    }
+                    tCExecution.setCountryEnvironmentParameters(cea);
                 } else {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND);
                     mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
@@ -325,6 +337,7 @@ public class ExecutionStartService implements IExecutionStartService {
             }
             LOG.debug("Country/Environment/Application Information Loaded. " + tCExecution.getCountry() + " - " + tCExecution.getEnvironment() + " - " + tCExecution.getApplicationObj().getApplication());
             LOG.debug(" -> Execution will be done with automatic application connectivity setting. IP/URL/LOGIN : " + cea.getIp() + "-" + cea.getUrl() + "-" + cea.getUrlLogin());
+            LOG.debug(" Domain : " + cea.getDomain());
             tCExecution.setEnvironmentData(tCExecution.getEnvironment());
         }
 

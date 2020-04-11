@@ -19,6 +19,8 @@
  */
 package org.cerberus.util;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -417,7 +419,7 @@ public final class StringUtil {
             }
             result += uri;
         }
-        if (!(StringUtil.isURL(result))) { // If still does not look lke an URL, we add protocol string ( ex : http://) by default.
+        if (!(StringUtil.isURL(result))) { // If still does not look like an URL, we add protocol string ( ex : http://) by default.
             result = protocol + result;
         }
         return result;
@@ -545,4 +547,23 @@ public final class StringUtil {
         return result;
     }
 
+    public static String getDomainFromUrl(String appURL) {
+        URL appMyURL = null;
+        try {
+            appMyURL = new URL(StringUtil.getURLFromString(appURL, "", "", "http://"));
+        } catch (MalformedURLException ex) {
+            LOG.warn("Exception when parsing Application URL.", ex);
+        }
+        if (appMyURL != null) {
+            String[] sURL = appMyURL.getHost().split("\\.");
+            if (sURL.length > 2) {
+                String fURL;
+                fURL = sURL[sURL.length - 2] + "." + sURL[sURL.length - 1];
+                return fURL;
+            } else {
+                return appMyURL.getHost();
+            }
+        }
+        return "";
+    }
 }

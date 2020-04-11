@@ -34,7 +34,7 @@
         <link rel="stylesheet" type="text/css" href="css/pages/RunTests.css"/>
         <script type="text/javascript" src="js/pages/RunTest.js"></script>
         <script type="text/javascript" src="js/transversalobject/Robot.js"></script>
-        <title>Run Test</title>
+        <title id="pageTitle">Run Test</title>
     </head>
     <body>
         <%@ include file="include/global/header.html"%>
