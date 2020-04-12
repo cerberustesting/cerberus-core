@@ -254,106 +254,109 @@ public class ReadTestCase extends AbstractCrudTestCase {
             }
         }
         AnswerList<TestCase> testCaseList = testCaseService.readByTestByCriteria(system, test, startPosition, length, sortInformation.toString(), searchParameter, individualSearch);
-
-        /**
-         * Find the list of countries
-         */
-        AnswerList<TestCaseCountry> testCaseCountryList = testCaseCountryService.readByTestTestCase(system, test, null, testCaseList.getDataList());
-        /**
-         * Iterate on the country retrieved and generate HashMap based on the
-         * key Test_TestCase
-         */
-        LinkedHashMap<String, JSONArray> testCaseWithCountry = new LinkedHashMap<>();
-        for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountryList.getDataList()) {
-            String key = country.getTest() + "_" + country.getTestCase();
-
-            if (testCaseWithCountry.containsKey(key)) {
-                testCaseWithCountry.get(key).put(convertToJSONObject(country));
-            } else {
-                testCaseWithCountry.put(key, new JSONArray().put(convertToJSONObject(country)));
-            }
-        }
-
-        /**
-         * find the list of dependencies
-         */
-        List<TestCaseDep> testCaseDepList = testCaseDepService.readByTestAndTestCase(testCaseList.getDataList());
-        LinkedHashMap<String, JSONArray> testCaseWithDep = new LinkedHashMap<>();
-        for (TestCaseDep testCaseDep : testCaseDepList) {
-            String key = testCaseDep.getTest() + "_" + testCaseDep.getTestCase();
-
-            JSONObject jo = convertToJSONObject(testCaseDep);
-
-            if (testCaseWithDep.containsKey(key)) {
-                testCaseWithDep.get(key).put(jo);
-            } else {
-                testCaseWithDep.put(key, new JSONArray().put(jo));
-            }
-        }
-
-        /**
-         * Find the list of labels
-         */
-        AnswerList<TestCaseLabel> testCaseLabelList = testCaseLabelService.readByTestTestCase(test, null, testCaseList.getDataList());
-        /**
-         * Iterate on the label retrieved and generate HashMap based on the key
-         * Test_TestCase
-         */
-        LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap<>();
-        LinkedHashMap<String, JSONArray> testCaseWithLabelSticker = new LinkedHashMap<>();
-        LinkedHashMap<String, JSONArray> testCaseWithLabelRequirement = new LinkedHashMap<>();
-        LinkedHashMap<String, JSONArray> testCaseWithLabelBattery = new LinkedHashMap<>();
-        for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
-            String key = label.getTest() + "_" + label.getTestcase();
-
-            JSONObject jo = new JSONObject().put("name", label.getLabel().getLabel()).put("color", label.getLabel().getColor()).put("description", label.getLabel().getDescription());
-            switch (label.getLabel().getType()) {
-                case Label.TYPE_STICKER:
-                    if (testCaseWithLabelSticker.containsKey(key)) {
-                        testCaseWithLabelSticker.get(key).put(jo);
-                    } else {
-                        testCaseWithLabelSticker.put(key, new JSONArray().put(jo));
-                    }
-                    break;
-                case Label.TYPE_REQUIREMENT:
-                    if (testCaseWithLabelRequirement.containsKey(key)) {
-                        testCaseWithLabelRequirement.get(key).put(jo);
-                    } else {
-                        testCaseWithLabelRequirement.put(key, new JSONArray().put(jo));
-                    }
-                    break;
-                case Label.TYPE_BATTERY:
-                    if (testCaseWithLabelBattery.containsKey(key)) {
-                        testCaseWithLabelBattery.get(key).put(jo);
-                    } else {
-                        testCaseWithLabelBattery.put(key, new JSONArray().put(jo));
-                    }
-                    break;
-                default:
-            }
-            if (testCaseWithLabel.containsKey(key)) {
-                testCaseWithLabel.get(key).put(jo);
-            } else {
-                testCaseWithLabel.put(key, new JSONArray().put(jo));
-            }
-        }
-
         JSONArray jsonArray = new JSONArray();
         if (testCaseList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (TestCase testCase : (List<TestCase>) testCaseList.getDataList()) {
-                String key = testCase.getTest() + "_" + testCase.getTestCase();
-                JSONObject value = convertToJSONObject(testCase);
-                value.put("bugID", testCase.getBugID());
-                value.put("hasPermissionsDelete", testCaseService.hasPermissionsDelete(testCase, request));
-                value.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(testCase, request));
-                value.put("hasPermissionsCreate", testCaseService.hasPermissionsCreate(testCase, request));
-                value.put("countryList", testCaseWithCountry.get(key));
-                value.put("labels", testCaseWithLabel.get(key));
-                value.put("labelsSTICKER", testCaseWithLabelSticker.get(key));
-                value.put("labelsREQUIREMENT", testCaseWithLabelRequirement.get(key));
-                value.put("labelsBATTERY", testCaseWithLabelBattery.get(key));
-                value.put("dependencyList", testCaseWithDep.get(key));
-                jsonArray.put(value);
+
+            if (testCaseList.getDataList().size() > 0) {
+
+                /**
+                 * Find the list of countries
+                 */
+                AnswerList<TestCaseCountry> testCaseCountryList = testCaseCountryService.readByTestTestCase(system, test, null, testCaseList.getDataList());
+                /**
+                 * Iterate on the country retrieved and generate HashMap based
+                 * on the key Test_TestCase
+                 */
+                LinkedHashMap<String, JSONArray> testCaseWithCountry = new LinkedHashMap<>();
+                for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountryList.getDataList()) {
+                    String key = country.getTest() + "_" + country.getTestCase();
+
+                    if (testCaseWithCountry.containsKey(key)) {
+                        testCaseWithCountry.get(key).put(convertToJSONObject(country));
+                    } else {
+                        testCaseWithCountry.put(key, new JSONArray().put(convertToJSONObject(country)));
+                    }
+                }
+
+                /**
+                 * find the list of dependencies
+                 */
+                List<TestCaseDep> testCaseDepList = testCaseDepService.readByTestAndTestCase(testCaseList.getDataList());
+                LinkedHashMap<String, JSONArray> testCaseWithDep = new LinkedHashMap<>();
+                for (TestCaseDep testCaseDep : testCaseDepList) {
+                    String key = testCaseDep.getTest() + "_" + testCaseDep.getTestCase();
+
+                    JSONObject jo = convertToJSONObject(testCaseDep);
+
+                    if (testCaseWithDep.containsKey(key)) {
+                        testCaseWithDep.get(key).put(jo);
+                    } else {
+                        testCaseWithDep.put(key, new JSONArray().put(jo));
+                    }
+                }
+
+                /**
+                 * Find the list of labels
+                 */
+                AnswerList<TestCaseLabel> testCaseLabelList = testCaseLabelService.readByTestTestCase(test, null, testCaseList.getDataList());
+                /**
+                 * Iterate on the label retrieved and generate HashMap based on
+                 * the key Test_TestCase
+                 */
+                LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap<>();
+                LinkedHashMap<String, JSONArray> testCaseWithLabelSticker = new LinkedHashMap<>();
+                LinkedHashMap<String, JSONArray> testCaseWithLabelRequirement = new LinkedHashMap<>();
+                LinkedHashMap<String, JSONArray> testCaseWithLabelBattery = new LinkedHashMap<>();
+                for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
+                    String key = label.getTest() + "_" + label.getTestcase();
+
+                    JSONObject jo = new JSONObject().put("name", label.getLabel().getLabel()).put("color", label.getLabel().getColor()).put("description", label.getLabel().getDescription());
+                    switch (label.getLabel().getType()) {
+                        case Label.TYPE_STICKER:
+                            if (testCaseWithLabelSticker.containsKey(key)) {
+                                testCaseWithLabelSticker.get(key).put(jo);
+                            } else {
+                                testCaseWithLabelSticker.put(key, new JSONArray().put(jo));
+                            }
+                            break;
+                        case Label.TYPE_REQUIREMENT:
+                            if (testCaseWithLabelRequirement.containsKey(key)) {
+                                testCaseWithLabelRequirement.get(key).put(jo);
+                            } else {
+                                testCaseWithLabelRequirement.put(key, new JSONArray().put(jo));
+                            }
+                            break;
+                        case Label.TYPE_BATTERY:
+                            if (testCaseWithLabelBattery.containsKey(key)) {
+                                testCaseWithLabelBattery.get(key).put(jo);
+                            } else {
+                                testCaseWithLabelBattery.put(key, new JSONArray().put(jo));
+                            }
+                            break;
+                        default:
+                    }
+                    if (testCaseWithLabel.containsKey(key)) {
+                        testCaseWithLabel.get(key).put(jo);
+                    } else {
+                        testCaseWithLabel.put(key, new JSONArray().put(jo));
+                    }
+                }
+
+                for (TestCase testCase : (List<TestCase>) testCaseList.getDataList()) {
+                    String key = testCase.getTest() + "_" + testCase.getTestCase();
+                    JSONObject value = convertToJSONObject(testCase);
+                    value.put("bugID", testCase.getBugID());
+                    value.put("hasPermissionsDelete", testCaseService.hasPermissionsDelete(testCase, request));
+                    value.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(testCase, request));
+                    value.put("hasPermissionsCreate", testCaseService.hasPermissionsCreate(testCase, request));
+                    value.put("countryList", testCaseWithCountry.get(key));
+                    value.put("labels", testCaseWithLabel.get(key));
+                    value.put("labelsSTICKER", testCaseWithLabelSticker.get(key));
+                    value.put("labelsREQUIREMENT", testCaseWithLabelRequirement.get(key));
+                    value.put("labelsBATTERY", testCaseWithLabelBattery.get(key));
+                    value.put("dependencyList", testCaseWithDep.get(key));
+                    jsonArray.put(value);
+                }
             }
         }
 
