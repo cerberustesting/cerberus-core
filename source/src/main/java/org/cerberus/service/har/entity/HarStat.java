@@ -33,6 +33,17 @@ public class HarStat {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(HarStat.class);
 
+    public enum Types {
+        TOTAL, JS, CSS, HTML, IMG, CONTENT, FONT, MEDIA, OTHER
+    };
+
+    public enum Parties {
+        TOTAL, INTERNAL
+    };
+    public enum Units {
+        REQUEST, SIZE, SIZEMAX, TIME
+    };
+
     private HashMap<String, String> hosts;
     private List<JSONObject> urlList;
 

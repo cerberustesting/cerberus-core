@@ -320,18 +320,18 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
         int imghits = rs.getInt("ehs.img_hits");
         int imgsize = rs.getInt("ehs.img_size");
         int imgsizem = rs.getInt("ehs.img_size_max");
-        int jshits = rs.getInt("ehs.img_hits");
-        int jssize = rs.getInt("ehs.img_size");
-        int jssizem = rs.getInt("ehs.img_size_max");
-        int csshits = rs.getInt("ehs.img_hits");
-        int csssize = rs.getInt("ehs.img_size");
-        int csssizem = rs.getInt("ehs.img_size_max");
-        int htmlhits = rs.getInt("ehs.img_hits");
-        int htmlsize = rs.getInt("ehs.img_size");
-        int htmlsizem = rs.getInt("ehs.img_size_max");
-        int mediahits = rs.getInt("ehs.img_hits");
-        int mediasize = rs.getInt("ehs.img_size");
-        int mediasizem = rs.getInt("ehs.img_size_max");
+        int jshits = rs.getInt("ehs.js_hits");
+        int jssize = rs.getInt("ehs.js_size");
+        int jssizem = rs.getInt("ehs.js_size_max");
+        int csshits = rs.getInt("ehs.css_hits");
+        int csssize = rs.getInt("ehs.css_size");
+        int csssizem = rs.getInt("ehs.css_size_max");
+        int htmlhits = rs.getInt("ehs.html_hits");
+        int htmlsize = rs.getInt("ehs.html_size");
+        int htmlsizem = rs.getInt("ehs.html_size_max");
+        int mediahits = rs.getInt("ehs.media_hits");
+        int mediasize = rs.getInt("ehs.media_size");
+        int mediasizem = rs.getInt("ehs.media_size_max");
         int nbt = rs.getInt("ehs.nb_thirdparty");
 
         //TODO remove when working in test with mockito and autowired

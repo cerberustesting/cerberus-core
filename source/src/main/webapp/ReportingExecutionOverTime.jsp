@@ -32,11 +32,11 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Moment-2.24.0/moment.min.js"></script>
+        <script type="text/javascript" src="dependencies/Moment-2.24.0/locale/fr.js"></script>
         <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
+        <script type="text/javascript" src="dependencies/Bootstrap-datetimepicker-4.17.47/bootstrap-datetimepicker.min.js"></script>
         <script type="text/javascript" src="js/pages/ReportingExecutionOverTime.js"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
-        <title id="pageTitle">Campaign Reporting</title>
+        <title id="pageTitle">Execution Over Time</title>
     </head>
     <body>
         <%@ include file="include/global/header.html" %>
@@ -55,21 +55,85 @@
                         <label id="filters">Filters</label>
                     </div>
                     <div class="panel-body">
-                        <label for="selectTest">Test Folder :</label>
-                        <div class="row" id="tagFilter">
-                            <div class="input-group">
-                                <select class="form-control col-lg-7" name="Tag" id="selectTag"></select>
-                                <div class="input-group-btn">
-                                    <button type="button" class="btn btn-default" style="margin-left: 10px;min-height: " id="loadbutton" onclick="loadPerfGraph()">Load</button>
+                        <div class="input-group">
+
+                            <div class="container">
+
+                                <div class="row">
+                                    <div class='col-md-6'>
+                                        <div class="form-group">
+                                            <label for="selectTest">Test Folder</label>
+                                            <select class="form-control" id="testSelect"></select>
+                                        </div>
+                                    </div>
+                                    <div class='col-md-6'>
+                                        <div class="form-group">
+                                            <label for="selectTest">Test Case</label>
+                                            <select class="form-control" id="testCaseSelect"></select>
+                                        </div>
+                                    </div>
                                 </div>
+
+                                <div class="row marginTop15">
+                                    <div class='col-md-4'>
+                                        <div class="form-group">
+                                            <label for="frompicker">From</label>
+                                            <div class='input-group date' id='frompicker'>
+                                                <input type='text' class="form-control" />
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-md-4'>
+                                        <div class="form-group">
+                                            <label for="topicker">To</label>
+                                            <div class='input-group date' id='topicker'>
+                                                <input type='text' class="form-control" />
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-md-4'>
+                                        <div class="form-group">
+                                            <label for="units">Units</label>
+                                            <select class="multiselectelement form-control" multiple="multiple" id="units"></select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row marginTop15">
+                                    <div class='col-md-6'>
+                                        <div class="form-group">
+                                            <label for="parties">Third Parties</label>
+                                            <select class="multiselectelement form-control" multiple="multiple" id="parties"></select>
+                                        </div>
+                                    </div>
+                                    <div class='col-md-5'>
+                                        <div class="form-group">
+                                            <label for="types">Media Types</label>
+                                            <select class="multiselectelement form-control" multiple="multiple" id="types"></select>
+                                        </div>
+                                    </div>
+                                    <div class='col-md-1'>
+                                        <div class="input-group-btn ">
+                                            <button type="button" class="btn btn-default marginTop20" style="margin-left: 10px;min-height: " id="loadbutton" onclick="loadPerfGraph()">Load</button>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
             <div class="row" id="ReportByFunctionPanel">
                 <div class="col-lg-12">
-                    <div class="panel panel-default">
+                    <div id="panelPerfRequests" class="panel panel-default">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart1">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="lblPerfRequests">Performance Graph - Requests</label>
@@ -83,7 +147,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="panel panel-default">
+                    <div id="panelPerfSize" class="panel panel-default">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart2">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="lblPerfSize">Performance Graph - Size</label>
@@ -97,7 +161,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="panel panel-default">
+                    <div id="panelPerfTime" class="panel panel-default">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart3">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="lblPerfTime">Performance Graph - Max Time</label>

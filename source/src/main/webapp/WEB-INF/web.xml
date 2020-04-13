@@ -744,6 +744,10 @@
         <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTestCaseExecutionByTag</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadExecutionStat</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadExecutionStat</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateTestCaseExecution</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.UpdateTestCaseExecution</servlet-class>
     </servlet>
@@ -1480,6 +1484,10 @@
         <url-pattern>/ReadTestCaseExecutionByTag</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadExecutionStat</servlet-name>
+        <url-pattern>/ReadExecutionStat</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateTestCaseExecution</servlet-name>
         <url-pattern>/UpdateTestCaseExecution</url-pattern>
     </servlet-mapping>
@@ -1612,6 +1620,7 @@
             <url-pattern>/TestCaseExecution.jsp</url-pattern>
             <url-pattern>/TestCaseExecutionList.jsp</url-pattern>
             <url-pattern>/ReportingExecutionByTag.jsp</url-pattern>
+            <url-pattern>/ReportingExecutionOverTime.jsp</url-pattern>
             <url-pattern>/TestCaseExecutionQueueList.jsp</url-pattern>
             <url-pattern>/Test.jsp</url-pattern>
             <url-pattern>/TestCaseScript.jsp</url-pattern>
@@ -1647,6 +1656,7 @@
             <url-pattern>/ReadTestCaseStep</url-pattern>
             <url-pattern>/GetReportTest</url-pattern>
             <url-pattern>/ReadTestCaseExecutionByTag</url-pattern>
+            <url-pattern>/ReadExecutionStat</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestRO</description>

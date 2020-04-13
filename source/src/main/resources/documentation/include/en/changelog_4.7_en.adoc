@@ -18,6 +18,7 @@
 * Improved and clean lots of logevent creation (adding logs to manage API).
 * http calls stats are now saved into database in order to allow building of graph of performance over time.
 * Domain is automatically guess from url when empty.
+* New Report page over Time (in reporting menu). That page display http stats history of an execution.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
