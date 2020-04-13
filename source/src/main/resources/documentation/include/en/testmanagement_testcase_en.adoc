@@ -577,7 +577,7 @@ In addition to standard HAR structure, Cerberus will add a `stat` json entry in 
         ]
     }
 
-Cerberus will determine if a hit must be ignored (and appear in *[blue]`ignore`* section) by feeding parameter `cerberus_webperf_ignoredomainlist` with coma seperated domains to ignore.
+Cerberus will determine if a hit must be ignored (and appear in *[blue]`ignore`* section) by feeding parameter `cerberus_webperf_ignoredomainlist` with coma separated domains to ignore.
 
 Cerberus will get and guess the `ThirdPartyN` from *[blue]`thirdparty`* section from a json file that can be retrieve from the following https://github.com/patrickhulce/third-party-web/blob/master/data/entities.json5[repo].
 
@@ -587,9 +587,13 @@ If parameter is empty or file not found by Cerberus, no third party will be gues
 
 You can also add extra third party from the Cerberus GUI by adding a public invariant `WEBPERFTHIRDPARTY` with first attribute with the list of domain with coma separated format.
 
-*[blue]`internal`* section is populated from the URL domain list defined on the corresponding application / environment. all hosts should be defined on the domain field with coma separated format.
+*[blue]`internal`* section is populated from the URL domain list defined on the corresponding application / environment. all hosts should be defined on the domain field with coma separated format. In case the domain field is empty, Cerberus will guess it from the application URL.
 
 Any host URL that does not match either the `cerberus_webperf_ignoredomainlist` parameter, the ThirdParty definition file from parameter `cerberus_webperf_thirdpartyfilepath`, the `WEBPERFTHIRDPARTY` public invariant or list of application domain will appear in the *[blue]`unknown`* section.
+
+Cerberus has a mechanism that detect when requests are no longer performed. This is used in order to secure that the collected stats are complete and does not miss some important hits. In order to do so, Cerberus will check periodically the number of hits generated from the application. When the number of hits stops to grow during that period, Cerberus will stop the test and start to collect the stats.
+
+Parameter 'cerberus_networkstatsave_idleperiod_ms' can be used to change the period in millisecond and 'cerberus_networkstatsave_idlemaxloop_nb' can be used in order to limit those checks after a maximum of iteration.
 
 === Test Case Control
 

@@ -984,6 +984,9 @@ public class RobotServerService implements IRobotServerService {
 
                     if (parameterService.getParameterBooleanByKey("cerberus_networkstatsave_active", tce.getSystem(), false)) {
 
+                        // Before collecting the stats, we wait the network idles for few minutes
+                        waitForIdleNetwork(tce.getRobotExecutorObj().getExecutorExtensionHost(), tce.getRobotExecutorObj().getExecutorExtensionPort(), tce.getRemoteProxyUUID(), tce.getSystem());
+
                         // Generate URL to Cerberus executor with parameter to reduce the answer size by removing response content.
                         String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort()
                                 + "/getHar?uuid=" + tce.getRemoteProxyUUID() + "&emptyResponseContentText=true";
@@ -1021,9 +1024,6 @@ public class RobotServerService implements IRobotServerService {
                         }
                         tce.addFileList(recorderService.recordNetworkTrafficContent(tce, null, 0, null, result.getItem(), withDetail));
 
-//                    LOG.debug("Url to get HAR : " + url);
-//                    tce.addFileList(recorderService.recordHarLog(tce, url));
-//                    LOG.debug("Retrieved Har file by calling : " + url);
                     }
 
                 }
@@ -1050,6 +1050,51 @@ public class RobotServerService implements IRobotServerService {
             return true;
         }
         return false;
+    }
+
+    private void waitForIdleNetwork(String exHost, Integer exPort, String exUuid, String system) {
+        // Generate URL to Cerberus executor with parameter to get the nb of hits so far.
+        String url = "http://" + exHost + ":" + exPort + "/getStats?uuid=" + exUuid;
+
+        try {
+
+            Integer nbHits = 0;
+            Integer nbHitsPrev = 0;
+            Integer sleepPeriod = parameterService.getParameterIntegerByKey("cerberus_networkstatsave_idleperiod_ms", system, 5000);
+            Integer maxLoop = parameterService.getParameterIntegerByKey("cerberus_networkstatsave_idlemaxloop_nb", system, 10);
+
+            LOG.debug("Getting nb of Hits so far from URL : " + url);
+
+            for (int i = 0; i < maxLoop; i++) {
+                AnswerItem<AppService> result = new AnswerItem<>();
+                result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", null);
+
+                if (result.isCodeStringEquals("OK")) {
+
+                    AppService appSrv = result.getItem();
+                    JSONObject stats = new JSONObject(appSrv.getResponseHTTPBody());
+                    nbHitsPrev = nbHits;
+                    nbHits = stats.getInt("hits");
+
+                    LOG.debug("Nb Hits so far : " + nbHits);
+
+                    if (nbHits.equals(nbHitsPrev)) {
+                        LOG.debug("Nb of hits (" + nbHits + ") is the same as before (" + nbHitsPrev + ") --> so network is idle.");
+                        break;
+                    }
+                    Thread.sleep(sleepPeriod);
+
+                } else {
+                    LOG.warn("Failed getting nb of Hits from URL (Maybe cerberus-executor is not at the correct version) : '" + url + "'");
+                    break;
+                }
+            }
+
+        } catch (InterruptedException ex) {
+            LOG.warn("Exception when waiting for idle.", ex);
+        } catch (JSONException ex) {
+            LOG.warn("Exception when waiting for idle (interpreting JSON answer from URL : '" + url + "').", ex);
+        }
     }
 
     private static void getIPOfNode(TestCaseExecution tCExecution) {

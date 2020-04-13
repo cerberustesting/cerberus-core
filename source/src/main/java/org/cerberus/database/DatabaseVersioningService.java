@@ -8504,9 +8504,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
 
         // ADD parameters to define third party definition file.
-        // 1487
+        // 1487-1488
         a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
                 + " ('', 'cerberus_executorproxy_timeoutms', '3600000', 'Timeout in ms second used for Cerberus Executor proxy session.')");
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_networkstatsave_idleperiod_ms', '5000', 'Period between every checks in ms (default to 5000). No network requests withing that period means that Network is idle and stats can be saved.'),"
+                + " ('', 'cerberus_networkstatsave_idlemaxloop_nb', '20', 'Maximum nb of loop before idle checks stops. After that max amount of checks, stats will be saved even if hits are still detected.')");
 
         return a;
     }
