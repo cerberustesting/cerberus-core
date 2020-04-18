@@ -40,8 +40,9 @@ public class HarStat {
     public enum Parties {
         TOTAL, INTERNAL
     };
+
     public enum Units {
-        REQUEST, SIZE, SIZEMAX, TIME
+        REQUEST, TOTALSIZE, SIZEMAX, TOTALTIME, TIMEMAX, NBTHIRDPARTY
     };
 
     private HashMap<String, String> hosts;

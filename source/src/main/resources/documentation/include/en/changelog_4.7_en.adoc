@@ -11,15 +11,16 @@
 * Added decode on topic, header and hosts for KAFKA SEARCH service #2119
 * Better message when Kafka topic is not found.
 * Service responses that have no Content-Type header defined and start by [ are now also considered as JSON
-* TestCase filters are now hidden by default (that speedup the page loading for new users).
+* On RunTest page, TestCase filters are now hidden by default (that speedup the page loading for new users).
 * Campaign Scheduler definition is now immediately reloaded.
 * Support cerberus-executor 1.1 new feature of timeout of proxy session (with new parameter 'cerberus_executorproxy_timeoutms') but also filtering out the response content of every http request. That optimize a lot the size of har produced.
 * setNetworkTrafficContent action now take a new parameter in order to get the response content (by default it not longer take it).
 * Improved and clean lots of logevent creation (adding logs to manage API).
 * http calls stats are now saved into database in order to allow building of graph of performance over time.
 * New Report page over Time (in reporting menu). That page display http stats history of an execution.
-* Domain is automatically guess from url when empty.
+* Domain is automatically guess from application url when empty (Domain is used in order to qualify the http requests as internal requests).
 * Implemented idle detection mechanism in order to secure collected http stats are complete vs async http calls. parameters 'cerberus_networkstatsave_idleperiod_ms' and 'cerberus_networkstatsave_idlemaxloop_nb' can be used to tune the behavior.
+* Support for OpenApp action for IOS.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

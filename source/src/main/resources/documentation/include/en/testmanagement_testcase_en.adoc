@@ -453,9 +453,33 @@ DEPRECATED Action that should no longuer used.
 
 ==== Global Identifiers Definition
 
-Syntax in order to identify a field or element inside a page. Syntax has the form :
+Syntax in order to identify a field or element inside a page has the form :
 
 identifier=html_reference
+
+identifier can take the various values :
+
+ - id= 
+
+id of the field will be used.
+
+ - name=
+ 
+ - class=
+ 
+ - css=
+ 
+ - xpath= 
+ 
+You can specify and xpath value. Addition documentation on xpath definition can be found https://www.w3schools.com/xml/xpath_syntax.asp[here].
+
+ - link=
+ 
+ - data-cerberus=
+
+ - coord=
+ 
+ - picture=
 
 .by Id
 ====

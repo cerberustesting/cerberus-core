@@ -50,15 +50,23 @@ $.when($.getScript("js/global/global.js")).then(function () {
             $('#frompicker').data("DateTimePicker").maxDate(e.date);
         });
 
-        let from = new Date();
-        from.setMonth(from.getMonth() - 1);
-        $('#frompicker').data("DateTimePicker").date(moment(from));
-        let to = new Date();
-        $('#topicker').data("DateTimePicker").date(moment(to));
+        let fromD = new Date();
+        fromD.setMonth(fromD.getMonth() - 1);
+        $('#frompicker').data("DateTimePicker").date(moment(fromD));
+        let toD = new Date();
+        $('#topicker').data("DateTimePicker").date(moment(toD));
 
-        var test = GetURLParameter("test");
-        var testcase = GetURLParameter("testcase");
-
+        var tests = GetURLParameters("tests");
+        var testcases = GetURLParameters("testcases");
+        var from = GetURLParameter("from");
+        var to = GetURLParameter("to");
+        var parties = GetURLParameters("parties");
+        var types = GetURLParameters("types");
+        var units = GetURLParameters("units");
+        var environments = GetURLParameters("environments");
+        var countries = GetURLParameters("countries");
+        var robotdeclis = GetURLParameters("robotdeclies");
+        console.info(units);
         $("#testSelect").empty();
         $("#testCaseSelect").empty();
 
@@ -76,11 +84,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
             for (var index = 0; index < data.contentTable.length; index++) {
                 testList.append($('<option></option>').text(data.contentTable[index].test).val(data.contentTable[index].test));
             }
-            $("#testSelect").prop("value", test);
+            $("#testSelect").prop("value", tests[0]);
 
             $("#testSelect").select2({width: "100%"});
 
-            feedPerfTestCase(test, "#testCaseSelect", testcase);
+            feedPerfTestCase(tests[0], "#testCaseSelect", testcases[0], parties, types, units);
 
         });
 
@@ -106,7 +114,7 @@ function multiSelectConfPerf(name) {
     this.enableCaseInsensitiveFiltering = true;
     this.includeSelectAllOption = true;
     this.includeSelectAllIfMoreThan = 4;
-    this.numberDisplayed = 8;
+    this.numberDisplayed = 10;
 }
 
 
@@ -117,7 +125,7 @@ function multiSelectConfPerf(name) {
  * @param {String} defaultTestCase - id of testcase to select.
  * @returns {null}
  */
-function feedPerfTestCase(test, selectElement, defaultTestCase) {
+function feedPerfTestCase(test, selectElement, defaultTestCase, parties, types, units) {
 
     var testCList = $(selectElement);
     testCList.empty();
@@ -131,7 +139,7 @@ function feedPerfTestCase(test, selectElement, defaultTestCase) {
         if (!isEmpty(defaultTestCase)) {
             testCList.prop("value", defaultTestCase);
         }
-        loadPerfGraph();
+        loadPerfGraph(false, parties, types, units);
     });
 }
 
@@ -158,79 +166,63 @@ function displayPageLabel(doc) {
     $("#lblPerfTime").html(doc.getDocLabel("page_reportovertime", "lblPerfTime"));
 }
 
-function loadPerfGraph() {
+function loadPerfGraph(saveURLtoHistory, parties, types, units) {
 
-    let tcs = [];
-    let tc = {
-        test: "BenoitWP",
-        testCase: "0001A"
+    if (parties === null || parties === undefined) {
+        parties = [];
     }
-    tcs.push(tc);
-    tc = {
-        test: "BenoitWP",
-        testCase: "0002A"
+    if (types === null || types === undefined) {
+        types = [];
     }
-    tcs.push(tc);
+    if (units === null || units === undefined) {
+        units = [];
+    }
 
     let from = new Date($('#frompicker').data("DateTimePicker").date());
 
     let to = new Date($('#topicker').data("DateTimePicker").date());
 
-    let parties = [];
     if ($("#parties").val() !== null) {
-        if ($("#parties").val().length > 0) {
-            parties = $("#parties").val();
-        }
-    } else {
-        parties = ['total', 'internal'];
+        parties = $("#parties").val();
     }
 
-    let types = [];
     if ($("#types").val() !== null) {
-        if ($("#types").val().length > 0) {
-            types = $("#types").val();
-        }
-    } else {
-        types = ['total'];
+        types = $("#types").val();
     }
 
-    let units = [];
     if ($("#units").val() !== null) {
-        if ($("#units").val().length > 0) {
-            units = $("#units").val();
-        }
-    } else {
-        units = ['request', 'size', 'sizemax', 'time'];
+        units = $("#units").val();
     }
 
     let len = parties.length;
     var partiQ = "";
     for (var i = 0; i < len; i++) {
-        partiQ += "&parties=" + parties[i]
+        partiQ += "&parties=" + encodeURI(parties[i]);
     }
 
     len = types.length;
     var typeQ = "";
     for (var i = 0; i < len; i++) {
-        typeQ += "&types=" + types[i]
+        typeQ += "&types=" + encodeURI(types[i]);
     }
 
     len = units.length;
     var unitQ = "";
     for (var i = 0; i < len; i++) {
-        unitQ += "&units=" + units[i]
+        unitQ += "&units=" + encodeURI(units[i]);
     }
 
     let test = $("#testSelect").val();
     let testcase = $("#testCaseSelect").val();
 
+    let qS = partiQ + typeQ + unitQ + "&from=" + from.toISOString() + "&to=" + to.toISOString() + "&tests=" + encodeURI(test) + "&testcases=" + encodeURI(testcase);
+    if (saveURLtoHistory) {
+        InsertURLInHistory("./ReportingExecutionOverTime.jsp?" + qS);
+    }
+
     $.ajax({
-        url: "ReadExecutionStat?e=1" + partiQ + typeQ + unitQ + "&from=" + from.toISOString() + "&to=" + to.toISOString(),
+        url: "ReadExecutionStat?e=1" + qS,
         method: "GET",
-        data: {
-            test: test,
-            testcase: testcase
-        },
         async: false,
         dataType: 'json',
         success: function (data) {
@@ -247,11 +239,10 @@ function loadCombos(data) {
     var array = data.distinct.parties;
     $("#parties option").remove();
     for (var i = 0; i < array.length; i++) {
-        console.info(array[i].name);
         $("#parties").append($('<option></option>').text(array[i].name).val(array[i].name));
     }
     for (var i = 0; i < array.length; i++) {
-        if (array[i].isUsed) {
+        if (array[i].isRequested) {
             $("#parties option[value='" + array[i].name + "']").attr("selected", "selected");
         }
     }
@@ -266,7 +257,7 @@ function loadCombos(data) {
         $("#types").append($('<option></option>').text(array[i].name).val(array[i].name));
     }
     for (var i = 0; i < array.length; i++) {
-        if (array[i].isUsed) {
+        if (array[i].isRequested) {
             $("#types option[value='" + array[i].name + "']").attr("selected", "selected");
         }
     }
@@ -281,7 +272,7 @@ function loadCombos(data) {
         $("#units").append($('<option></option>').text(array[i].name).val(array[i].name));
     }
     for (var i = 0; i < array.length; i++) {
-        if (array[i].isUsed) {
+        if (array[i].isRequested) {
             $("#units option[value='" + array[i].name + "']").attr("selected", "selected");
         }
     }
@@ -292,8 +283,22 @@ function loadCombos(data) {
 }
 
 
-function getOptions(title) {
+function getOptions(title, unit) {
     let option = {
+        tooltips: {
+            callbacks: {
+                label: function (t, d) {
+                    var xLabel = d.datasets[t.datasetIndex].label;
+                    if (unit === "size") {
+                        return xLabel + ': ' + formatNumber(Math.round(t.yLabel / 1024)) + " kb";
+                    } else if (unit === "time") {
+                        return xLabel + ': ' + t.yLabel.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1 ") + " ms";
+                    } else {
+                        return xLabel + ': ' + t.yLabel;
+                    }
+                }
+            }
+        },
         title: {
             text: title
         },
@@ -312,12 +317,29 @@ function getOptions(title) {
                     scaleLabel: {
                         display: true,
                         labelString: title
-                    }
+                    },
+                    ticks: {
+                        callback: function (value, index, values) {
+                            if (unit === "size") {
+                                return formatNumber(Math.round(value / 1024));
+                            } else if (unit === "time") {
+                                return value.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1 ");
+                            } else {
+                                return value;
+                            }
+                        }}
+
                 }]
         }
     };
     return option;
 }
+
+function formatNumber(num) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+}
+
+
 
 function buildGraphs(data) {
 
@@ -325,8 +347,8 @@ function buildGraphs(data) {
 
     // Sorting values by nb of requests.
     sortedCurves = curves.sort(function (a, b) {
-        let a1 = a.key.testcase.testcase + "-" + a.key.party + "-" + a.key.type;
-        let b1 = b.key.testcase.testcase + "-" + b.key.party + "-" + b.key.type;
+        let a1 = a.key.testcase.test + "-" + a.key.testcase.testcase + "-" + a.key.unit + "-" + a.key.party + "-" + a.key.type;
+        let b1 = b.key.testcase.test + "-" + b.key.testcase.testcase + "-" + b.key.unit + "-" + b.key.party + "-" + b.key.type;
         return b1.localeCompare(a1);
     });
 
@@ -335,6 +357,7 @@ function buildGraphs(data) {
     let reqdatasets = [];
     let sizedatasets = [];
     let timedatasets = [];
+    let partydatasets = [];
 
     for (var i = 0; i < len; i++) {
 
@@ -342,10 +365,10 @@ function buildGraphs(data) {
         let d = [];
         lend = c.points.length;
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].y};
+            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe};
             d.push(p);
         }
-        let lab = getLabel(c.key.party, c.key.type, c.key.testcase.description);
+        let lab = getLabel(c.key.party, c.key.type, c.key.testcase.description, c.key.unit);
         var dataset = {
             label: lab,
             backgroundColor: get_Color_fromindex(i),
@@ -355,10 +378,12 @@ function buildGraphs(data) {
             fill: false,
             data: d
         };
-        if ((c.key.unit === "size") || (c.key.unit === "sizemax")) {
+        if ((c.key.unit === "totalsize") || (c.key.unit === "sizemax")) {
             sizedatasets.push(dataset);
-        } else if (c.key.unit === "time") {
+        } else if ((c.key.unit === "totaltime") || (c.key.unit === "timemax")) {
             timedatasets.push(dataset);
+        } else if (c.key.unit === "nbthirdparty") {
+            partydatasets.push(dataset);
         } else {
             reqdatasets.push(dataset);
         }
@@ -379,16 +404,23 @@ function buildGraphs(data) {
     } else {
         $("#panelPerfTime").hide();
     }
+    if (partydatasets.length > 0) {
+        $("#panelPerfParty").show();
+    } else {
+        $("#panelPerfParty").hide();
+    }
     configRequests.data.datasets = reqdatasets;
     configSize.data.datasets = sizedatasets;
     configTime.data.datasets = timedatasets;
+    configParty.data.datasets = partydatasets;
 
     window.myLineReq.update();
     window.myLineSize.update();
     window.myLineTime.update();
+    window.myLineParty.update();
 }
 
-function getLabel(party, type, tcDesc) {
+function getLabel(party, type, tcDesc, unit) {
     let lab = tcDesc;
     if (party !== "total") {
         lab += " - " + party;
@@ -399,19 +431,28 @@ function getLabel(party, type, tcDesc) {
         }
         lab += type;
     }
+    if ((unit === "totalsize") || (unit === "sizemax") || (unit === "totaltime") || (unit === "timemax")) {
+        if (lab !== "") {
+            lab += " [";
+        }
+        lab += unit + "]";
+    }
+
 //    lab += " " + tcDesc;
     return lab;
 }
 
 function initGraph() {
 
-    var reqoption = getOptions("Requests");
-    var sizeoption = getOptions("Size in b");
-    var timeoption = getOptions("Time in ms");
+    var reqoption = getOptions("Requests", "request");
+    var sizeoption = getOptions("Size in kb", "size");
+    var timeoption = getOptions("Time in ms", "time");
+    var partyoption = getOptions("nb Third Party", "nbthirdparty");
 
     let reqdatasets = [];
     let sizedatasets = [];
     let timedatasets = [];
+    let partydatasets = [];
 
     configRequests = {
         type: 'line',
@@ -434,6 +475,13 @@ function initGraph() {
         },
         options: timeoption
     };
+    configParty = {
+        type: 'line',
+        data: {
+            datasets: partydatasets
+        },
+        options: partyoption
+    };
 
     var ctx = document.getElementById('canvasRequests').getContext('2d');
     window.myLineReq = new Chart(ctx, configRequests);
@@ -443,4 +491,45 @@ function initGraph() {
 
     var ctx = document.getElementById('canvasTime').getContext('2d');
     window.myLineTime = new Chart(ctx, configTime);
+
+    var ctx = document.getElementById('canvasParty').getContext('2d');
+    window.myLineParty = new Chart(ctx, configParty);
+
+
+    document.getElementById('canvasRequests').onclick = function (evt) {
+        var activePoints = window.myLineReq.getElementAtEvent(event);
+        // make sure click was on an actual point
+        if (activePoints.length > 0) {
+            let exe = window.myLineReq.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
+            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
+        }
+    };
+
+    document.getElementById('canvasSize').onclick = function (evt) {
+        var activePoints = window.myLineSize.getElementAtEvent(event);
+        // make sure click was on an actual point
+        if (activePoints.length > 0) {
+            let exe = window.myLineSize.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
+            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
+        }
+    };
+
+    document.getElementById('canvasTime').onclick = function (evt) {
+        var activePoints = window.myLineTime.getElementAtEvent(event);
+        // make sure click was on an actual point
+        if (activePoints.length > 0) {
+            let exe = window.myLineTime.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
+            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
+        }
+    };
+
+    document.getElementById('canvasParty').onclick = function (evt) {
+        var activePoints = window.myLineParty.getElementAtEvent(event);
+        // make sure click was on an actual point
+        if (activePoints.length > 0) {
+            let exe = window.myLineParty.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
+            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
+        }
+    };
+
 }

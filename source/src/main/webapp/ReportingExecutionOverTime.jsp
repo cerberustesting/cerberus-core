@@ -55,77 +55,75 @@
                         <label id="filters">Filters</label>
                     </div>
                     <div class="panel-body">
-                        <div class="input-group">
 
-                            <div class="container">
+                        <div class="">
 
-                                <div class="row">
-                                    <div class='col-md-6'>
-                                        <div class="form-group">
-                                            <label for="selectTest">Test Folder</label>
-                                            <select class="form-control" id="testSelect"></select>
-                                        </div>
-                                    </div>
-                                    <div class='col-md-6'>
-                                        <div class="form-group">
-                                            <label for="selectTest">Test Case</label>
-                                            <select class="form-control" id="testCaseSelect"></select>
-                                        </div>
+                            <div class="row">
+                                <div class='col-md-6'>
+                                    <div class="form-group">
+                                        <label for="selectTest">Test Folder</label>
+                                        <select class="form-control" id="testSelect"></select>
                                     </div>
                                 </div>
-
-                                <div class="row marginTop15">
-                                    <div class='col-md-4'>
-                                        <div class="form-group">
-                                            <label for="frompicker">From</label>
-                                            <div class='input-group date' id='frompicker'>
-                                                <input type='text' class="form-control" />
-                                                <span class="input-group-addon">
-                                                    <span class="glyphicon glyphicon-calendar"></span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class='col-md-4'>
-                                        <div class="form-group">
-                                            <label for="topicker">To</label>
-                                            <div class='input-group date' id='topicker'>
-                                                <input type='text' class="form-control" />
-                                                <span class="input-group-addon">
-                                                    <span class="glyphicon glyphicon-calendar"></span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class='col-md-4'>
-                                        <div class="form-group">
-                                            <label for="units">Units</label>
-                                            <select class="multiselectelement form-control" multiple="multiple" id="units"></select>
-                                        </div>
+                                <div class='col-md-6'>
+                                    <div class="form-group">
+                                        <label for="selectTest">Test Case</label>
+                                        <select class="form-control" id="testCaseSelect"></select>
                                     </div>
                                 </div>
-
-                                <div class="row marginTop15">
-                                    <div class='col-md-6'>
-                                        <div class="form-group">
-                                            <label for="parties">Third Parties</label>
-                                            <select class="multiselectelement form-control" multiple="multiple" id="parties"></select>
-                                        </div>
-                                    </div>
-                                    <div class='col-md-5'>
-                                        <div class="form-group">
-                                            <label for="types">Media Types</label>
-                                            <select class="multiselectelement form-control" multiple="multiple" id="types"></select>
-                                        </div>
-                                    </div>
-                                    <div class='col-md-1'>
-                                        <div class="input-group-btn ">
-                                            <button type="button" class="btn btn-default marginTop20" style="margin-left: 10px;min-height: " id="loadbutton" onclick="loadPerfGraph()">Load</button>
-                                        </div>
-                                    </div>
-                                </div>
-
                             </div>
+
+                            <div class="row marginTop15">
+                                <div class='col-md-4'>
+                                    <div class="form-group">
+                                        <label for="frompicker">From</label>
+                                        <div class='input-group date' id='frompicker'>
+                                            <input type='text' class="form-control" />
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='col-md-4'>
+                                    <div class="form-group">
+                                        <label for="topicker">To</label>
+                                        <div class='input-group date' id='topicker'>
+                                            <input type='text' class="form-control" />
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='col-md-4'>
+                                    <div class="form-group">
+                                        <label for="units">Units</label>
+                                        <select class="multiselectelement form-control" multiple="multiple" id="units"></select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row marginTop15">
+                                <div class='col-md-5'>
+                                    <div class="form-group">
+                                        <label for="parties">Third Parties</label>
+                                        <select class="multiselectelement form-control" multiple="multiple" id="parties"></select>
+                                    </div>
+                                </div>
+                                <div class='col-md-5'>
+                                    <div class="form-group">
+                                        <label for="types">Media Types</label>
+                                        <select class="multiselectelement form-control" multiple="multiple" id="types"></select>
+                                    </div>
+                                </div>
+                                <div class='col-md-2'>
+                                    <div class="input-group-btn ">
+                                        <button type="button" class="btn btn-default marginTop20" style="margin-left: 10px;min-height: " id="loadbutton" onclick="loadPerfGraph(true)">Load</button>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
                     </div>
@@ -164,13 +162,27 @@
                     <div id="panelPerfTime" class="panel panel-default">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart3">
                             <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblPerfTime">Performance Graph - Max Time</label>
+                            <label id="lblPerfTime">Performance Graph - Time</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
                         <div class="panel-body collapse in" id="perfChart3">
                             <div class="row">
                                 <div class="col-xs-12" id="ChartTime">
                                     <canvas id="canvasTime" class=""></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="panelPerfParty" class="panel panel-default">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart4">
+                            <span class="fa fa-bar-chart fa-fw"></span>
+                            <label id="lblPerfParty">Performance Graph - nb Third Parties</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        </div>
+                        <div class="panel-body collapse in" id="perfChart4">
+                            <div class="row">
+                                <div class="col-xs-12" id="ChartParty">
+                                    <canvas id="canvasParty" class=""></canvas>
                                 </div>
                             </div>
                         </div>

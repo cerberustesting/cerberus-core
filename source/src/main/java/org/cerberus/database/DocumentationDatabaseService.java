@@ -1164,6 +1164,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','lastexecution','','fr','Liste d\\'Executions','',NULL)");
         b.append(",('page_executiondetail','lastexecutionwithenvcountry','','en','Executions List (same Environment & Country)','',NULL)");
         b.append(",('page_executiondetail','lastexecutionwithenvcountry','','fr','Liste d\\'Executions (même Environnement & Pays)','',NULL)");
+        b.append(",('page_executiondetail','lastexecutionoT','','en','Report over Time','',NULL)");
+        b.append(",('page_executiondetail','lastexecutionoT','','fr','Rapport dans le temps','',NULL)");
+        b.append(",('page_executiondetail','lastexecutionoTwithenvcountry','','en','Report over Time (same Environment & Country)','',NULL)");
+        b.append(",('page_executiondetail','lastexecutionoTwithenvcountry','','fr','Rapport dans le temps (même Environnement & Pays)','',NULL)");
         b.append(",('page_executiondetail','more_detail','','en','More details','',NULL)");
         b.append(",('page_executiondetail','more_detail','','fr','Plus de détails','',NULL)");
         b.append(",('page_executiondetail','platform','','en','Platform','',NULL)");
@@ -1616,10 +1620,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_reportovertime','title','','fr','Rapport d\\'execution dans le temps','Cette page génère des rapports d\\'evolution de compteurs d\\'execution sur la durée',NULL)");
         b.append(",('page_reportovertime','lblPerfRequests','','en','Performance Graph - Requests','',NULL)");
         b.append(",('page_reportovertime','lblPerfRequests','','fr','Graph de performance - nb de requêtes','',NULL)");
-        b.append(",('page_reportovertime','lblPerfSize','','en','Performance Graph - Size','',NULL)");
+        b.append(",('page_reportovertime','lblPerfSize','','en','Performance Graph - Size (max or total)','',NULL)");
         b.append(",('page_reportovertime','lblPerfSize','','fr','Graph de performance - Volume de data','',NULL)");
-        b.append(",('page_reportovertime','lblPerfTime','','en','Performance Graph - Longuest resquets time','',NULL)");
-        b.append(",('page_reportovertime','lblPerfTime','','fr','Graph de performance - durée d\\'execution de requêtes les plus longues','',NULL)");
+        b.append(",('page_reportovertime','lblPerfTime','','en','Performance Graph - resquets time (longuest or total)','','<b>totaltime</b> Represent the time from the first request till the last.<br><b>maxtime</b> represent the longuest request time.')");
+        b.append(",('page_reportovertime','lblPerfTime','','fr','Graph de performance - durée d\\'execution de requêtes (les plus longues ou totales)','','<b>totaltime</b> Represente le temps pris entre la première requette et la dernière.<br><b>maxtime</b> represente le temps de la requete la plus longue.')");
         b.append(",('page_robot','button_create','','en','Create new Robot','',NULL)");
         b.append(",('page_robot','button_create','','fr','Créer un nouveau Robot','',NULL)");
         b.append(",('page_robot','button_delete','','en','Delete Robot','',NULL)");

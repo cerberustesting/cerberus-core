@@ -27,6 +27,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
@@ -44,6 +45,7 @@ import org.cerberus.crud.entity.TestCase;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerList;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -337,6 +339,13 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
         //TODO remove when working in test with mockito and autowired
         factoryTestCaseExecutionHttpStat = new FactoryTestCaseExecutionHttpStat();
 
+        JSONObject statJS = new JSONObject();
+        try {
+            statJS = new JSONObject(stat);
+        } catch (JSONException ex) {
+            LOG.warn("Exception when parsing statdetail column to JSON.", ex);
+        }
+
         return factoryTestCaseExecutionHttpStat.create(id, time, controlStatus, system, application, test, testCase, country, environment, robotdecli,
                 tothits, totsize, tottime,
                 inthits, intsize, inttime,
@@ -345,7 +354,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
                 csssize, csssizem, csshits,
                 htmlsize, htmlsizem, htmlhits,
                 mediasize, mediasizem, mediahits,
-                nbt, crbVersion, new JSONObject(), testCase, time, system, time);
+                nbt, crbVersion, statJS, testCase, time, system, time);
     }
 
 }

@@ -240,6 +240,7 @@ function initPage(id) {
     $("#runTestCase").attr("disabled", true);
     $("#rerunTestCase").attr("disabled", true);
     $("#lastExecution").attr("disabled", true);
+    $("#lastExecutionoT").attr("disabled", true);
 
     $("#runOld").click(function () {
         window.location = "TestCaseExecution.jsp?executionId=" + id;
@@ -325,6 +326,8 @@ function displayPageLabel(doc) {
     $("#btnGroupDrop1").html(doc.getDocLabel("page_executiondetail", "goto") + " <span class='caret'></span>");
     $("#lastExecution").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_executiondetail", "lastexecution"));
     $("#lastExecutionwithEnvCountry").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_executiondetail", "lastexecutionwithenvcountry"));
+    $("#lastExecutionoT").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_executiondetail", "lastexecutionoT"));
+    $("#lastExecutionoTwithEnvCountry").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_executiondetail", "lastexecutionoTwithenvcountry"));
     $("#ExecutionByTag").html("<span class='glyphicon glyphicon-tag'></span> " + doc.getDocLabel("page_executiondetail", "see_execution_tag"));
     $("#ExecutionQueue").html("<span class='glyphicon glyphicon-eye-open'></span> " + doc.getDocLabel("page_executiondetail", "see_executionq"));
     $("#ExecutionQueueByTag").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_executiondetail", "see_executionq_tag"));
@@ -386,6 +389,10 @@ function updatePage(data, stepList) {
     $("#lastExecution").parent().attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase);
     $("#lastExecutionwithEnvCountry").attr("disabled", false);
     $("#lastExecutionwithEnvCountry").parent().attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application);
+    $("#lastExecutionoT").attr("disabled", false);
+    $("#lastExecutionoT").parent().attr("href", "ReportingExecutionOverTime.jsp?tests=" + data.test + "&testcases=" + data.testcase);
+    $("#lastExecutionoTwithEnvCountry").attr("disabled", false);
+    $("#lastExecutionoTwithEnvCountry").parent().attr("href", "ReportingExecutionOverTime.jsp?tests=" + data.test + "&testcases=" + data.testcase + "&countrys=" + data.country + "&environments=" + data.environment);
     if (!isEmpty(data.tag)) {
         $("#ExecutionByTag").parent().attr("href", "ReportingExecutionByTag.jsp?Tag=" + data.tag);
         $("#ExecutionQueueByTag").parent().attr("href", "TestCaseExecutionQueueList.jsp?tag=" + data.tag);
