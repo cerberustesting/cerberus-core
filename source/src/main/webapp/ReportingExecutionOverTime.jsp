@@ -54,27 +54,27 @@
                         <span class="fa fa-tag fa-fw"></span>
                         <label id="filters">Filters</label>
                     </div>
-                    <div class="panel-body">
+                    <div class="panel-body" id="otFilterPanel">
 
                         <div class="">
 
                             <div class="row">
                                 <div class='col-md-6'>
                                     <div class="form-group">
-                                        <label for="selectTest">Test Folder</label>
+                                        <label for="testSelect">Test Folder</label>
                                         <select class="form-control" id="testSelect"></select>
                                     </div>
                                 </div>
                                 <div class='col-md-6'>
                                     <div class="form-group">
-                                        <label for="selectTest">Test Case</label>
+                                        <label for="testCaseSelect">Test Case</label>
                                         <select class="form-control" id="testCaseSelect"></select>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="row marginTop15">
-                                <div class='col-md-4'>
+                            <div class="row">
+                                <div class='col-sm-6 col-md-4'>
                                     <div class="form-group">
                                         <label for="frompicker">From</label>
                                         <div class='input-group date' id='frompicker'>
@@ -85,7 +85,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class='col-md-4'>
+                                <div class='col-sm-6 col-md-4'>
                                     <div class="form-group">
                                         <label for="topicker">To</label>
                                         <div class='input-group date' id='topicker'>
@@ -96,22 +96,43 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="row">
                                 <div class='col-md-4'>
+                                    <div class="form-group">
+                                        <label for="countrySelect">Country</label>
+                                        <select class="multiselectelement form-control" multiple="multiple" id="countrySelect"></select>
+                                    </div>
+                                </div>
+                                <div class='col-md-4'>
+                                    <div class="form-group">
+                                        <label for="envSelect">Environment</label>
+                                        <select class="multiselectelement form-control" multiple="multiple" id="envSelect"></select>
+                                    </div>
+                                </div>
+                                <div class='col-md-4'>
+                                    <div class="form-group">
+                                        <label for="robotSelect">Robot Decli</label>
+                                        <select class="multiselectelement form-control" multiple="multiple" id="robotSelect"></select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class='col-md-3'>
                                     <div class="form-group">
                                         <label for="units">Units</label>
                                         <select class="multiselectelement form-control" multiple="multiple" id="units"></select>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="row marginTop15">
-                                <div class='col-md-5'>
+                                <div class='col-md-4'>
                                     <div class="form-group">
                                         <label for="parties">Third Parties</label>
                                         <select class="multiselectelement form-control" multiple="multiple" id="parties"></select>
                                     </div>
                                 </div>
-                                <div class='col-md-5'>
+                                <div class='col-md-3'>
                                     <div class="form-group">
                                         <label for="types">Media Types</label>
                                         <select class="multiselectelement form-control" multiple="multiple" id="types"></select>
@@ -131,7 +152,21 @@
             </div>
             <div class="row" id="ReportByFunctionPanel">
                 <div class="col-lg-12">
-                    <div id="panelPerfRequests" class="panel panel-default">
+                    <div id="panelTestStat" class="panel panel-default" style="display: none">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart0">
+                            <span class="fa fa-bar-chart fa-fw"></span>
+                            <label id="lblTestStat">TestCase Stats</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        </div>
+                        <div class="panel-body collapse in" id="perfChart0">
+                            <div class="row">
+                                <div class="col-xs-12" id="ChartTestStat">
+                                    <canvas id="canvasTestStat" style="display: block;" class=""></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="panelPerfRequests" class="panel panel-default" style="display: none">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart1">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="lblPerfRequests">Performance Graph - Requests</label>
@@ -145,7 +180,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="panelPerfSize" class="panel panel-default">
+                    <div id="panelPerfSize" class="panel panel-default" style="display: none">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart2">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="lblPerfSize">Performance Graph - Size</label>
@@ -159,7 +194,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="panelPerfTime" class="panel panel-default">
+                    <div id="panelPerfTime" class="panel panel-default" style="display: none">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart3">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="lblPerfTime">Performance Graph - Time</label>
@@ -173,7 +208,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="panelPerfParty" class="panel panel-default">
+                    <div id="panelPerfParty" class="panel panel-default" style="display: none">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart4">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="lblPerfParty">Performance Graph - nb Third Parties</label>

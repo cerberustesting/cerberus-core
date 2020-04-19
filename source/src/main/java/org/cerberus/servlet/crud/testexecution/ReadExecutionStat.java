@@ -42,10 +42,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ITestCaseExecutionHttpStatService;
+import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -77,6 +79,7 @@ public class ReadExecutionStat extends HttpServlet {
     private IFactoryTestCase factoryTestCase;
     private IApplicationService applicationService;
     private ITestCaseService testCaseService;
+    private ITestCaseExecutionService testCaseExecutionService;
 
     private static final Logger LOG = LogManager.getLogger(ReadExecutionStat.class);
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S'Z'";
@@ -151,18 +154,49 @@ public class ReadExecutionStat extends HttpServlet {
 
         List<String> units = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("units"), Arrays.asList("request", "totalsize"), "UTF8");
 
-        // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem<>(msg);
+        List<String> countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("countries"), new ArrayList<String>(), "UTF8");
+        Boolean countriesDefined = (request.getParameterValues("countries") != null);
 
-//        Date toD = new Date();
+        List<String> environments = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("environments"), new ArrayList<String>(), "UTF8");
+        Boolean environmentsDefined = (request.getParameterValues("environments") != null);
+
+        List<String> robotDeclis = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("robotDeclis"), new ArrayList<String>(), "UTF8");
+        Boolean robotDeclisDefined = (request.getParameterValues("robotDeclis") != null);
+
+        // Init Answer with potencial error from Parsing parameter.
+        AnswerItem<JSONObject> answer = new AnswerItem<>(msg);
+
+        // get all TestCase Execution Data.
+        HashMap<String, Boolean> countryMap = new HashMap<>();
+        HashMap<String, Boolean> environmentMap = new HashMap<>();
+        HashMap<String, Boolean> robotDecliMap = new HashMap<>();
+        testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
+
+        List<TestCaseExecution> exeL = testCaseExecutionService.readByCriteria(null, null, null, null, ltc, fromD, toD);
+        for (TestCaseExecution exe : exeL) {
+            countryMap.put(exe.getCountry(), false);
+            environmentMap.put(exe.getEnvironment(), false);
+            robotDecliMap.put(exe.getRobotDecli(), false);
+        }
+        LOG.debug(countryMap);
+        LOG.debug(environmentMap);
+        LOG.debug(robotDecliMap);
+
         try {
+
+            JSONObject jsonResponse1 = new JSONObject();
+            answer = findExeStatList(appContext, request, exeL, countries, environments, robotDeclis);
+            jsonResponse1 = (JSONObject) answer.getItem();
+
             JSONObject jsonResponse = new JSONObject();
-            answer = findStatList(appContext, request, system, ltc, fromD, toD, parties, types, units);
+            answer = findStatList(appContext, request, system, ltc, fromD, toD, parties, types, units, countryMap, countries, countriesDefined, environmentMap, environments, environmentsDefined, robotDecliMap, robotDeclis, robotDeclisDefined);
             jsonResponse = (JSONObject) answer.getItem();
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
             jsonResponse.put("sEcho", echo);
+
+            jsonResponse.put("exeCurves", jsonResponse1.getJSONArray("curves"));
 
             response.getWriter().print(jsonResponse.toString());
 
@@ -173,54 +207,9 @@ public class ReadExecutionStat extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (CerberusException ex) {
-            LOG.warn(ex);
-        }
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (CerberusException ex) {
-            LOG.warn(ex);
-        }
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
-    private AnswerItem<JSONObject> findStatList(ApplicationContext appContext, HttpServletRequest request, List<String> system, List<TestCase> ltc, Date from, Date to, List<String> parties, List<String> types, List<String> units) throws JSONException {
+    private AnswerItem<JSONObject> findExeStatList(ApplicationContext appContext, HttpServletRequest request,
+            List<TestCaseExecution> exeList,
+            List<String> countries, List<String> environments, List<String> robotDeclis) throws JSONException {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -232,25 +221,126 @@ public class ReadExecutionStat extends HttpServlet {
         HashMap<String, JSONArray> curveMap = new HashMap<>();
         HashMap<String, JSONObject> curveObjMap = new HashMap<>();
 
-        HashMap<String, Boolean> countryMap = new HashMap<>();
-        HashMap<String, Boolean> systemMap = new HashMap<>();
+        // Filter Map
         HashMap<String, TestCase> testCaseMap = new HashMap<>();
+        HashMap<String, Boolean> systemMap = new HashMap<>();
         HashMap<String, Boolean> applicationMap = new HashMap<>();
-        HashMap<String, Boolean> environmentMap = new HashMap<>();
-        HashMap<String, Boolean> robotDecliMap = new HashMap<>();
+        // Indicator Map
         HashMap<String, Boolean> partyMap = new HashMap<>();
         partyMap.put("total", false);
         partyMap.put("internal", false);
         HashMap<String, Boolean> typeMap = new HashMap<>();
         HashMap<String, Boolean> unitMap = new HashMap<>();
 
-        String graphKey = "";
         String curveKey = "";
         JSONArray curArray = new JSONArray();
         JSONObject curveObj = new JSONObject();
-        JSONObject point = new JSONObject();
+        JSONObject pointObj = new JSONObject();
 
-        AnswerList<TestCaseExecutionHttpStat> resp = testCaseExecutionHttpStatService.readByCriteria("OK", ltc, from, to, system, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        for (TestCaseExecution exeCur : exeList) {
+
+            if ((countries.isEmpty() || countries.contains(exeCur.getCountry()))
+                    && (environments.isEmpty() || environments.contains(exeCur.getEnvironment()))
+                    && (robotDeclis.isEmpty() || robotDeclis.contains(exeCur.getRobotDecli()))) {
+
+                curveKey = exeCur.getTest() + "|" + exeCur.getTestCase() + "|" + exeCur.getCountry() + "|" + exeCur.getEnvironment() + "|" + exeCur.getRobotDecli() + "|";
+
+                long x = 0;
+                if (!exeCur.getControlStatus().equalsIgnoreCase("PE")) {
+                    x = exeCur.getEnd() - exeCur.getStart();
+
+                    pointObj = new JSONObject();
+                    Date d = new Date(exeCur.getStart());
+//                                TimeZone tz = TimeZone.getTimeZone("UTC");
+                    DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+//                                df.setTimeZone(tz);
+                    pointObj.put("x", df.format(d));
+
+                    pointObj.put("y", x);
+                    pointObj.put("exe", exeCur.getId());
+                    pointObj.put("exeControlStatus", exeCur.getControlStatus());
+
+                    if (curveMap.containsKey(curveKey)) {
+                        curArray = curveMap.get(curveKey);
+                    } else {
+                        curArray = new JSONArray();
+
+                        curveObj = new JSONObject();
+                        curveObj.put("key", curveKey);
+                        TestCase a = factoryTestCase.create(exeCur.getTest(), exeCur.getTestCase());
+                        try {
+                            a = testCaseService.convert(testCaseService.readByKey(exeCur.getTest(), exeCur.getTestCase()));
+                        } catch (CerberusException ex) {
+                            LOG.error("Exception when getting TestCase details", ex);
+                        }
+                        curveObj.put("testcase", a.toJson());
+
+                        curveObj.put("country", exeCur.getCountry());
+                        curveObj.put("environment", exeCur.getEnvironment());
+                        curveObj.put("robotdecli", exeCur.getRobotDecli());
+                        curveObj.put("system", exeCur.getSystem());
+                        curveObj.put("application", exeCur.getApplication());
+                        curveObj.put("unit", "testduration");
+
+                        curveObjMap.put(curveKey, curveObj);
+                    }
+                    curArray.put(pointObj);
+                    curveMap.put(curveKey, curArray);
+                }
+            }
+
+        }
+
+        JSONArray curvesArray = new JSONArray();
+        for (Map.Entry<String, JSONObject> entry : curveObjMap.entrySet()) {
+            String key = entry.getKey();
+            JSONObject val = entry.getValue();
+            JSONObject localcur = new JSONObject();
+            localcur.put("key", val);
+            localcur.put("points", curveMap.get(key));
+            curvesArray.put(localcur);
+        }
+        object.put("curves", curvesArray);
+
+        item.setItem(object);
+        return item;
+    }
+
+    private AnswerItem<JSONObject> findStatList(ApplicationContext appContext, HttpServletRequest request,
+            List<String> system, List<TestCase> ltc, Date from, Date to,
+            List<String> parties, List<String> types, List<String> units,
+            HashMap<String, Boolean> countryMap, List<String> countries, Boolean countriesDefined,
+            HashMap<String, Boolean> environmentMap, List<String> environments, Boolean environmentsDefined,
+            HashMap<String, Boolean> robotDecliMap, List<String> robotDeclis, Boolean robotDeclisDefined
+    ) throws JSONException {
+
+        AnswerItem<JSONObject> item = new AnswerItem<>();
+        JSONObject object = new JSONObject();
+        testCaseExecutionHttpStatService = appContext.getBean(ITestCaseExecutionHttpStatService.class);
+        applicationService = appContext.getBean(IApplicationService.class);
+        testCaseService = appContext.getBean(ITestCaseService.class);
+        factoryTestCase = appContext.getBean(IFactoryTestCase.class);
+
+        HashMap<String, JSONArray> curveMap = new HashMap<>();
+        HashMap<String, JSONObject> curveObjMap = new HashMap<>();
+
+        // Filter Map
+        HashMap<String, TestCase> testCaseMap = new HashMap<>();
+        HashMap<String, Boolean> systemMap = new HashMap<>();
+        HashMap<String, Boolean> applicationMap = new HashMap<>();
+        // Indicator Map
+        HashMap<String, Boolean> partyMap = new HashMap<>();
+        partyMap.put("total", false);
+        partyMap.put("internal", false);
+        HashMap<String, Boolean> typeMap = new HashMap<>();
+        HashMap<String, Boolean> unitMap = new HashMap<>();
+
+        String curveKey;
+        JSONArray curArray = new JSONArray();
+        JSONObject curveObj = new JSONObject();
+        JSONObject pointObj = new JSONObject();
+
+        AnswerList<TestCaseExecutionHttpStat> resp = testCaseExecutionHttpStatService.readByCriteria("OK", ltc, from, to, system, countries, environments, robotDeclis);
 
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (TestCaseExecutionHttpStat statCur : (List<TestCaseExecutionHttpStat>) resp.getDataList()) {
@@ -262,6 +352,22 @@ public class ReadExecutionStat extends HttpServlet {
                     partyMap.put(key, false);
                 });
 
+                if (!countryMap.containsKey(statCur.getCountry())) {
+                    countryMap.put(statCur.getCountry(), false);
+                }
+                if (!systemMap.containsKey(statCur.getSystem())) {
+                    systemMap.put(statCur.getSystem(), false);
+                }
+                if (!applicationMap.containsKey(statCur.getApplication())) {
+                    applicationMap.put(statCur.getApplication(), false);
+                }
+                if (!environmentMap.containsKey(statCur.getEnvironment())) {
+                    environmentMap.put(statCur.getEnvironment(), false);
+                }
+                if (!robotDecliMap.containsKey(statCur.getRobotDecli())) {
+                    robotDecliMap.put(statCur.getRobotDecli(), false);
+                }
+
                 for (String party : parties) {
                     for (String type : types) {
                         for (String unit : units) {
@@ -269,9 +375,9 @@ public class ReadExecutionStat extends HttpServlet {
                             int x = getValue(statCur, party, type, unit);
 //                            LOG.debug("return : " + x);
                             if (x != -1) {
+                                testCaseMap.put(statCur.getTest() + "/\\" + statCur.getTestCase(), factoryTestCase.create(statCur.getTest(), statCur.getTestCase()));
                                 countryMap.put(statCur.getCountry(), true);
                                 systemMap.put(statCur.getSystem(), true);
-                                testCaseMap.put(statCur.getTest() + "/\\" + statCur.getTestCase(), factoryTestCase.create(statCur.getTest(), statCur.getTestCase()));
                                 applicationMap.put(statCur.getApplication(), true);
                                 environmentMap.put(statCur.getEnvironment(), true);
                                 robotDecliMap.put(statCur.getRobotDecli(), true);
@@ -279,15 +385,16 @@ public class ReadExecutionStat extends HttpServlet {
                                 typeMap.put(type, true);
                                 unitMap.put(unit, true);
 
-                                point = new JSONObject();
+                                pointObj = new JSONObject();
                                 Date d = new Date(statCur.getStart().getTime());
                                 TimeZone tz = TimeZone.getTimeZone("UTC");
                                 DateFormat df = new SimpleDateFormat(DATE_FORMAT);
                                 df.setTimeZone(tz);
-                                point.put("x", df.format(d));
+                                pointObj.put("x", df.format(d));
 
-                                point.put("y", x);
-                                point.put("exe", statCur.getId());
+                                pointObj.put("y", x);
+                                pointObj.put("exe", statCur.getId());
+                                pointObj.put("exeControlStatus", statCur.getControlStatus());
 
                                 if (curveMap.containsKey(curveKey)) {
                                     curArray = curveMap.get(curveKey);
@@ -305,7 +412,7 @@ public class ReadExecutionStat extends HttpServlet {
                                     curveObj.put("testcase", a.toJson());
 
                                     curveObj.put("country", statCur.getCountry());
-                                    curveObj.put("environement", statCur.getEnvironment());
+                                    curveObj.put("environment", statCur.getEnvironment());
                                     curveObj.put("robotdecli", statCur.getRobotDecli());
                                     curveObj.put("system", statCur.getSystem());
                                     curveObj.put("application", statCur.getApplication());
@@ -315,7 +422,7 @@ public class ReadExecutionStat extends HttpServlet {
 
                                     curveObjMap.put(curveKey, curveObj);
                                 }
-                                curArray.put(point);
+                                curArray.put(pointObj);
                                 curveMap.put(curveKey, curArray);
 
                             }
@@ -339,7 +446,7 @@ public class ReadExecutionStat extends HttpServlet {
         }
         object.put("curves", curvesArray);
 
-        JSONObject objectdist = getAllDistinct(countryMap, systemMap, testCaseMap, applicationMap, environmentMap, robotDecliMap, partyMap, typeMap, unitMap, parties, types, units);
+        JSONObject objectdist = getAllDistinct(countryMap, systemMap, testCaseMap, applicationMap, environmentMap, robotDecliMap, partyMap, typeMap, unitMap, parties, types, units, countriesDefined, environmentsDefined, robotDeclisDefined);
         object.put("distinct", objectdist);
 
         object.put("iTotalRecords", resp.getTotalRows());
@@ -350,7 +457,8 @@ public class ReadExecutionStat extends HttpServlet {
         return item;
     }
 
-    private JSONObject getAllDistinct(HashMap<String, Boolean> countryMap,
+    private JSONObject getAllDistinct(
+            HashMap<String, Boolean> countryMap,
             HashMap<String, Boolean> systemMap,
             HashMap<String, TestCase> testCaseMap,
             HashMap<String, Boolean> applicationMap,
@@ -361,24 +469,19 @@ public class ReadExecutionStat extends HttpServlet {
             HashMap<String, Boolean> unitMap,
             List<String> parties,
             List<String> types,
-            List<String> units) throws JSONException {
+            List<String> units,
+            Boolean countriesDefined,
+            Boolean environmentsDefined,
+            Boolean robotDeclisDefined) throws JSONException {
 
         JSONObject objectdist = new JSONObject();
-
-        JSONArray objectCdinst = new JSONArray();
-        for (Map.Entry<String, Boolean> country : countryMap.entrySet()) {
-            String key = country.getKey();
-            JSONObject objectcount = new JSONObject();
-            objectcount.put("name", key);
-            objectCdinst.put(objectcount);
-        }
-        objectdist.put("countries", objectCdinst);
 
         JSONArray objectSdinst = new JSONArray();
         for (Map.Entry<String, Boolean> sys : systemMap.entrySet()) {
             String key = sys.getKey();
             JSONObject objectcount = new JSONObject();
             objectcount.put("name", key);
+            objectcount.put("hasData", systemMap.containsKey(key));
             objectSdinst.put(objectcount);
         }
         objectdist.put("systems", objectSdinst);
@@ -388,9 +491,7 @@ public class ReadExecutionStat extends HttpServlet {
             try {
                 String key = env.getKey();
                 TestCase tc = env.getValue();
-//                JSONObject objectcount = new JSONObject();
                 TestCase a = testCaseService.convert(testCaseService.readByKey(tc.getTest(), tc.getTestCase()));
-//                objectcount.put("testCase", a.toJson());
                 objectTCdinst.put(a.toJson());
             } catch (CerberusException ex) {
                 LOG.error("Exception when getting TestCase.", ex);
@@ -402,9 +503,7 @@ public class ReadExecutionStat extends HttpServlet {
         for (Map.Entry<String, Boolean> app : applicationMap.entrySet()) {
             try {
                 String key = app.getKey();
-//                JSONObject objectcount = new JSONObject();
                 Application a = applicationService.convert(applicationService.readByKey(key));
-//                objectcount.put("application", convertApplicationToJSONObject(a));
                 objectAdinst.put(convertApplicationToJSONObject(a));
             } catch (CerberusException ex) {
                 LOG.error("Exception when getting Application.", ex);
@@ -412,11 +511,32 @@ public class ReadExecutionStat extends HttpServlet {
         }
         objectdist.put("applications", objectAdinst);
 
+        JSONArray objectCdinst = new JSONArray();
+        for (Map.Entry<String, Boolean> country : countryMap.entrySet()) {
+            String key = country.getKey();
+            JSONObject objectcount = new JSONObject();
+            objectcount.put("name", key);
+            objectcount.put("hasData", countryMap.containsKey(key));
+            if (countriesDefined) {
+                objectcount.put("isRequested", countryMap.get(key));
+            } else {
+                objectcount.put("isRequested", true);
+            }
+            objectCdinst.put(objectcount);
+        }
+        objectdist.put("countries", objectCdinst);
+
         JSONArray objectdinst = new JSONArray();
         for (Map.Entry<String, Boolean> env : environmentMap.entrySet()) {
             String key = env.getKey();
             JSONObject objectcount = new JSONObject();
             objectcount.put("name", key);
+            objectcount.put("hasData", environmentMap.containsKey(key));
+            if (environmentsDefined) {
+                objectcount.put("isRequested", environmentMap.get(key));
+            } else {
+                objectcount.put("isRequested", true);
+            }
             objectdinst.put(objectcount);
         }
         objectdist.put("environments", objectdinst);
@@ -426,6 +546,12 @@ public class ReadExecutionStat extends HttpServlet {
             String key = env.getKey();
             JSONObject objectcount = new JSONObject();
             objectcount.put("name", key);
+            objectcount.put("hasData", robotDecliMap.containsKey(key));
+            if (robotDeclisDefined) {
+                objectcount.put("isRequested", robotDecliMap.get(key));
+            } else {
+                objectcount.put("isRequested", true);
+            }
             objectdinst.put(objectcount);
         }
         objectdist.put("robotDeclis", objectdinst);
@@ -463,13 +589,6 @@ public class ReadExecutionStat extends HttpServlet {
         objectdist.put("parties", objectdinst);
 
         return objectdist;
-    }
-
-    private JSONObject convertStatToJSONObject(TestCaseExecutionHttpStat stat) throws JSONException {
-
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(stat));
-        return result;
     }
 
     private int getValue(TestCaseExecutionHttpStat stat, String party, String type, String unit) {
@@ -671,4 +790,52 @@ public class ReadExecutionStat extends HttpServlet {
     private String getKeyCurve(TestCaseExecutionHttpStat stat, String party, String type, String unit) {
         return type + "/" + party + "/" + unit + "/" + stat.getTest() + "/" + stat.getTestCase() + "/" + stat.getCountry() + "/" + stat.getEnvironment() + "/" + stat.getRobotDecli() + "/" + stat.getSystem() + "/" + stat.getApplication();
     }
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            processRequest(request, response);
+        } catch (CerberusException ex) {
+            LOG.warn(ex);
+        }
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            processRequest(request, response);
+        } catch (CerberusException ex) {
+            LOG.warn(ex);
+        }
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
 }

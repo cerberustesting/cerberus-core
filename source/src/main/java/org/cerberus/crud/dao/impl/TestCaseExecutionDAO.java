@@ -791,6 +791,166 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
+    public AnswerList<TestCaseExecution> readByCriteria(List<String> system,List<String> countries,List<String> environments,List<String> robotDecli,  List<TestCase> testcases, Date from, Date to) {
+        AnswerList<TestCaseExecution> response = new AnswerList<>();
+        List<TestCaseExecution> objectList = new ArrayList<>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        StringBuilder searchSQL = new StringBuilder();
+        Timestamp t1;
+
+        StringBuilder query = new StringBuilder();
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+        //were applied -- used for pagination p
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcaseexecution exe ");
+
+        searchSQL.append(" where 1=1 ");
+
+        // System
+        if (system != null && !system.isEmpty()) {
+            searchSQL.append(" and ");
+            searchSQL.append(SqlUtil.generateInClause("`System`", system));
+        }
+        // Country
+        if (countries != null && !countries.isEmpty()) {
+            searchSQL.append(" and ");
+            searchSQL.append(SqlUtil.generateInClause("`Country`", countries));
+        }
+        // System
+        if (environments != null && !environments.isEmpty()) {
+            searchSQL.append(" and ");
+            searchSQL.append(SqlUtil.generateInClause("`Environment`", environments));
+        }
+        // System
+        if (robotDecli != null && !robotDecli.isEmpty()) {
+            searchSQL.append(" and ");
+            searchSQL.append(SqlUtil.generateInClause("`RobotDecli`", robotDecli));
+        }
+        // from and to
+        searchSQL.append(" and start >= ? and start <= ? ");
+        // testCase
+        StringBuilder testcaseSQL = new StringBuilder();
+        for (TestCase testcase : testcases) {
+            testcaseSQL.append(" (test = ? and testcase = ?) or ");
+        }
+        if (!StringUtil.isNullOrEmpty(testcaseSQL.toString())) {
+            searchSQL.append("and (").append(testcaseSQL).append(" (0=1) ").append(")");
+        }
+
+        query.append(searchSQL);
+
+        query.append(" limit ").append(MAX_ROW_SELECTED);
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                int i = 1;
+                if (system != null && !system.isEmpty()) {
+                    for (String syst : system) {
+                        preStat.setString(i++, syst);
+                    }
+                }
+                if (countries != null && !countries.isEmpty()) {
+                    for (String val : countries) {
+                        preStat.setString(i++, val);
+                    }
+                }
+                if (environments != null && !environments.isEmpty()) {
+                    for (String val : environments) {
+                        preStat.setString(i++, val);
+                    }
+                }
+                if (robotDecli != null && !robotDecli.isEmpty()) {
+                    for (String val : robotDecli) {
+                        preStat.setString(i++, val);
+                    }
+                }
+                t1 = new Timestamp(from.getTime());
+                preStat.setTimestamp(i++, t1);
+                t1 = new Timestamp(to.getTime());
+                preStat.setTimestamp(i++, t1);
+                for (TestCase testcase : testcases) {
+                    preStat.setString(i++, testcase.getTest());
+                    preStat.setString(i++, testcase.getTestCase());
+                }
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    //gets the data
+                    while (resultSet.next()) {
+                        objectList.add(this.loadFromResultSet(resultSet));
+                    }
+
+                    //get the total number of rows
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                    int nrTotalRows = 0;
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
+                    }
+
+                    if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                        LOG.error("Partial Result in the query.");
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList<>(objectList, nrTotalRows);
+                    } else if (objectList.size() <= 0) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                        response = new AnswerList<>(objectList, nrTotalRows);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        response = new AnswerList<>(objectList, nrTotalRows);
+                    }
+
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        response.setResultMessage(msg);
+        response.setDataList(objectList);
+        return response;
+    }
+
+    @Override
     public AnswerList<TestCaseExecution> readByTag(String tag) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList<TestCaseExecution> answer = new AnswerList<>();

@@ -1038,11 +1038,9 @@ function drawChart_GanttPerThirdParty(data, titletext, target) {
     }
 }
 
-
 function formatNumber(num) {
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
 }
-
 
 function createVideo(videos) {
 

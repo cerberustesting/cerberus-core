@@ -163,7 +163,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
     }
 
     @Override
-    public AnswerList<TestCaseExecutionHttpStat> readByCriteria(String controlStatus, List<TestCase> testcases, Date from, Date to, List<String> system, List<String> countries, List<String> environments, List<String> robotDecli, List<String> thirdparties) {
+    public AnswerList<TestCaseExecutionHttpStat> readByCriteria(String controlStatus, List<TestCase> testcases, Date from, Date to, List<String> system, List<String> countries, List<String> environments, List<String> robotDecli) {
         AnswerList<TestCaseExecutionHttpStat> response = new AnswerList<>();
         List<TestCaseExecutionHttpStat> objectList = new ArrayList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -182,6 +182,21 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
         if (system != null && !system.isEmpty()) {
             searchSQL.append(" and ");
             searchSQL.append(SqlUtil.generateInClause("`System`", system));
+        }
+        // Country
+        if (countries != null && !countries.isEmpty()) {
+            searchSQL.append(" and ");
+            searchSQL.append(SqlUtil.generateInClause("`Country`", countries));
+        }
+        // System
+        if (environments != null && !environments.isEmpty()) {
+            searchSQL.append(" and ");
+            searchSQL.append(SqlUtil.generateInClause("`Environment`", environments));
+        }
+        // System
+        if (robotDecli != null && !robotDecli.isEmpty()) {
+            searchSQL.append(" and ");
+            searchSQL.append(SqlUtil.generateInClause("`RobotDecli`", robotDecli));
         }
         // from and to
         searchSQL.append(" and start >= ? and start <= ? ");
@@ -214,6 +229,21 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
                 if (system != null && !system.isEmpty()) {
                     for (String syst : system) {
                         preStat.setString(i++, syst);
+                    }
+                }
+                if (countries != null && !countries.isEmpty()) {
+                    for (String val : countries) {
+                        preStat.setString(i++, val);
+                    }
+                }
+                if (environments != null && !environments.isEmpty()) {
+                    for (String val : environments) {
+                        preStat.setString(i++, val);
+                    }
+                }
+                if (robotDecli != null && !robotDecli.isEmpty()) {
+                    for (String val : robotDecli) {
+                        preStat.setString(i++, val);
                     }
                 }
                 t1 = new Timestamp(from.getTime());

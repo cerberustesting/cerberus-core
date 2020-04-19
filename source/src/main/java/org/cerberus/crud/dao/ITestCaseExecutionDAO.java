@@ -21,8 +21,10 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerItem;
@@ -184,6 +186,19 @@ public interface ITestCaseExecutionDAO {
      * @throws CerberusException
      */
     public List<TestCaseExecution> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+
+    /**
+     *
+     * @param system
+     * @param countries
+     * @param environments
+     * @param from
+     * @param robotDecli
+     * @param testcases
+     * @param to
+     * @return
+     */
+    public AnswerList<TestCaseExecution> readByCriteria(List<String> system, List<String> countries, List<String> environments, List<String> robotDecli, List<TestCase> testcases, Date from, Date to);
 
     /**
      * Read TestCaseExecution By Tag

@@ -66,8 +66,8 @@ public class TestCaseExecutionHttpStatService implements ITestCaseExecutionHttpS
     }
 
     @Override
-    public AnswerList<TestCaseExecutionHttpStat> readByCriteria(String controlStatus, List<TestCase> testcases, Date from, Date to, List<String> system, List<String> countries, List<String> environments, List<String> robotDecli, List<String> thirdparties) {
-        return testCaseExecutionHttpStatDAO.readByCriteria(controlStatus, testcases, from, to, system, countries, environments, robotDecli, thirdparties);
+    public AnswerList<TestCaseExecutionHttpStat> readByCriteria(String controlStatus, List<TestCase> testcases, Date from, Date to, List<String> system, List<String> countries, List<String> environments, List<String> robotDecli) {
+        return testCaseExecutionHttpStatDAO.readByCriteria(controlStatus, testcases, from, to, system, countries, environments, robotDecli);
     }
 
     @Override

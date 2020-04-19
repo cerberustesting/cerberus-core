@@ -130,6 +130,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
+    public List<TestCaseExecution> readByCriteria(List<String> system, List<String> countries, List<String> environments, List<String> robotDecli, List<TestCase> testcases, Date from, Date to) throws CerberusException {
+        return this.convert(testCaseExecutionDao.readByCriteria(system, countries, environments, robotDecli, testcases, from, to));
+    }
+
+    @Override
     public long registerRunID(TestCaseExecution tCExecution) throws CerberusException {
 
         /**

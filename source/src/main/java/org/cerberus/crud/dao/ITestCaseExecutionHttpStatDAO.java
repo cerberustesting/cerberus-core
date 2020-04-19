@@ -57,10 +57,9 @@ public interface ITestCaseExecutionHttpStatDAO {
      * @param countries
      * @param environments
      * @param robotDecli
-     * @param thirdparties
      * @return
      */
-    AnswerList<TestCaseExecutionHttpStat> readByCriteria(String controlStatus, List<TestCase> testcases, Date from, Date to, List<String> system, List<String> countries, List<String> environments, List<String> robotDecli, List<String> thirdparties);
+    AnswerList<TestCaseExecutionHttpStat> readByCriteria(String controlStatus, List<TestCase> testcases, Date from, Date to, List<String> system, List<String> countries, List<String> environments, List<String> robotDecli);
 
     /**
      * Uses data of ResultSet to create object {@link Application}
