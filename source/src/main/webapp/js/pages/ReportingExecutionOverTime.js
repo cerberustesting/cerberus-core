@@ -18,11 +18,14 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 /* global handleErrorAjaxAfterTimeout */
+// ChartJS Config Graphs
 var configRequests = {};
 var configSize = {};
 var configTime = {};
 var configParty = {};
 var configTcTime = {};
+var configTcBar = {};
+// Counters of different countries, env and robotdecli (used to shorten the labels)
 var nbCountries = 0;
 var nbEnv = 0;
 var nbRobot = 0;
@@ -55,11 +58,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
             $('#frompicker').data("DateTimePicker").maxDate(e.date);
         });
 
-        let fromD = new Date();
-        fromD.setMonth(fromD.getMonth() - 1);
-        $('#frompicker').data("DateTimePicker").date(moment(fromD));
-        let toD = new Date();
-        $('#topicker').data("DateTimePicker").date(moment(toD));
 
         var tests = GetURLParameters("tests");
         var testcases = GetURLParameters("testcases");
@@ -71,6 +69,24 @@ $.when($.getScript("js/global/global.js")).then(function () {
         var environments = GetURLParameters("environments");
         var countries = GetURLParameters("countries");
         var robotDeclis = GetURLParameters("robotDeclis");
+
+        let fromD;
+        let toD;
+        if (from === null) {
+            fromD = new Date();
+            fromD.setMonth(fromD.getMonth() - 1);
+        } else {
+            fromD = new Date(from);
+        }
+        if (to === null) {
+            toD = new Date();
+        } else {
+            toD = new Date(to);
+        }
+        $('#frompicker').data("DateTimePicker").date(moment(fromD));
+        $('#topicker').data("DateTimePicker").date(moment(toD));
+
+
 
         $("#testSelect").empty();
         $("#testCaseSelect").empty();
@@ -271,6 +287,7 @@ function loadPerfGraph(saveURLtoHistory, parties, types, units, countries, envir
             updateNbDistinct(data.distinct);
             buildGraphs(data);
             buildExeGraphs(data);
+            buildExeBarGraphs(data);
             loadCombos(data);
             hideLoader($("#otFilterPanel"));
         }
@@ -378,7 +395,11 @@ function loadCombos(data) {
     var array = data.distinct.robotDeclis;
     $("#robotSelect option").remove();
     for (var i = 0; i < array.length; i++) {
-        $("#robotSelect").append($('<option></option>').text(array[i].name).val(array[i].name));
+        let n = array[i].name;
+        if (isEmpty(n)) {
+            n = "[Empty]";
+        }
+        $("#robotSelect").append($('<option></option>').text(n).val(array[i].name));
     }
     for (var i = 0; i < array.length; i++) {
         if (array[i].isRequested) {
@@ -441,13 +462,45 @@ function getOptions(title, unit) {
     return option;
 }
 
+function getOptionsBar(title, unit) {
+    let option = {
+        title: {
+            text: title
+        },
+        scales: {
+            xAxes: [{
+                    type: 'time',
+                    stacked: true,
+                    time: {
+                        tooltipFormat: 'll HH:mm',
+                        unit: 'day',
+                        round: 'day',
+                        displayFormats: {
+                            day: 'MMM D'
+                        }},
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Date'
+                    }
+                }],
+            yAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+        }
+    };
+    return option;
+}
+
 function formatNumber(num) {
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
 }
 
 function buildGraphs(data) {
 
-    curves = data.curves;
+    let curves = data.datasetPerf;
 
     // Sorting values by nb of requests.
     sortedCurves = curves.sort(function (a, b) {
@@ -526,7 +579,7 @@ function buildGraphs(data) {
 
 function buildExeGraphs(data) {
 
-    curves = data.exeCurves;
+    let curves = data.datasetExeTime;
 
     // Sorting values by nb of requests.
     sortedCurves = curves.sort(function (a, b) {
@@ -549,12 +602,19 @@ function buildExeGraphs(data) {
             d.push(p);
         }
         let lab = getLabel(c.key.testcase.description, c.key.country, c.key.environment, c.key.robotdecli);
-//        let lab = c.key.key;
         var dataset = {
             label: lab,
-            backgroundColor: get_Color_fromindex(i),
+            backgroundColor: "white",
+            borderColor: "white",
             borderColor: get_Color_fromindex(i),
-            pointBorderWidth: 10,
+            pointBackgroundColor: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                return getExeStatusRowColor(value.controlStatus);
+            },
+            pointBorderWidth: 0,
+            pointRadius: 10,
+            pointHoverRadius: 5,
             hitRadius: 15,
             fill: false,
             data: d
@@ -570,6 +630,54 @@ function buildExeGraphs(data) {
     configTcTime.data.datasets = timedatasets;
 
     window.myLineTcTime.update();
+}
+
+function buildExeBarGraphs(data) {
+
+    let curves = data.datasetExeStatusNb;
+
+    // Sorting values by nb of requests.
+    sortedCurves = curves.sort(function (a, b) {
+        let a1 = a.key.key;
+        let b1 = b.key.key;
+        return b1.localeCompare(a1);
+    });
+
+
+    var len = sortedCurves.length;
+
+    let timedatasets = [];
+
+    for (var i = 0; i < len; i++) {
+
+        let c = sortedCurves[i];
+        let d = [];
+        lend = c.points.length;
+        for (var j = 0; j < lend; j++) {
+            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus};
+            d.push(p);
+        }
+        let lab = c.key.key;
+        var dataset = {
+            label: lab,
+            barPercentage: 1,
+            backgroundColor: getExeStatusRowColor(c.key.key),
+            borderColor: getExeStatusRowColor(c.key.key),
+            data: c.points
+        };
+        timedatasets.push(dataset);
+    }
+
+    if (timedatasets.length > 0) {
+        $("#panelTestStatBar").show();
+    } else {
+        $("#panelTestStatBar").hide();
+    }
+    configTcBar.data.datasets = timedatasets;
+    configTcBar.data.labels = data.datasetExeStatusNbDates;
+
+//    console.info(configTcBar);
+    window.myLineTcBar.update();
 }
 
 
@@ -611,12 +719,14 @@ function initGraph() {
     var timeoption = getOptions("Time in ms", "time");
     var partyoption = getOptions("nb Third Party", "nbthirdparty");
     var tctimeoption = getOptions("Test Case Duration", "time");
+    var tcbaroption = getOptionsBar("Test Case Duration", "nb");
 
     let reqdatasets = [];
     let sizedatasets = [];
     let timedatasets = [];
     let partydatasets = [];
     let tctimedatasets = [];
+    let tcbardatasets = [];
 
     configRequests = {
         type: 'line',
@@ -653,6 +763,13 @@ function initGraph() {
         },
         options: tctimeoption
     };
+    configTcBar = {
+        type: 'bar',
+        data: {
+            datasets: tcbardatasets
+        },
+        options: tcbaroption
+    };
 
     var ctx = document.getElementById('canvasRequests').getContext('2d');
     window.myLineReq = new Chart(ctx, configRequests);
@@ -668,6 +785,9 @@ function initGraph() {
 
     var ctx = document.getElementById('canvasTestStat').getContext('2d');
     window.myLineTcTime = new Chart(ctx, configTcTime);
+
+    var ctx = document.getElementById('canvasTestStatBar').getContext('2d');
+    window.myLineTcBar = new Chart(ctx, configTcBar);
 
 
     document.getElementById('canvasRequests').onclick = function (evt) {

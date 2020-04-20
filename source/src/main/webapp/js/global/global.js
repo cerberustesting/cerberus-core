@@ -2117,6 +2117,32 @@ function getRowClass(status) {
     return rowClass;
 }
 
+function getExeStatusRowColor(status) {
+    if (status === "OK") {
+        return '#5CB85C';
+    } else if (status === "KO") {
+        return '#D9534F';
+    } else if (status === "FA") {
+        return '#F0AD4E';
+    } else if (status === "CA") {
+        return '#F0AD4E';
+    } else if (status === "PE") {
+        return '#3498DB';
+    } else if (status === "NE") {
+        return '#aaa';
+    } else if (status === "WE") {
+        return '#34495E';
+    } else if (status === "NA") {
+        return '#F1C40F';
+    } else if (status === "QU") {
+        return '#BF00BF';
+    } else if (status === "QE") {
+        return '#5C025C';
+    } else {
+        return 'lightgrey';
+    }
+}
+
 /**
  * Method that return true if val is null, undefined or empty
  * @param {String} val value to test

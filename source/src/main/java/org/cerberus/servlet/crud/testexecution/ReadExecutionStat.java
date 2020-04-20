@@ -83,6 +83,7 @@ public class ReadExecutionStat extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ReadExecutionStat.class);
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S'Z'";
+    private static final String DATE_FORMAT_DAY = "yyyy-MM-dd";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -174,9 +175,9 @@ public class ReadExecutionStat extends HttpServlet {
 
         List<TestCaseExecution> exeL = testCaseExecutionService.readByCriteria(null, null, null, null, ltc, fromD, toD);
         for (TestCaseExecution exe : exeL) {
-            countryMap.put(exe.getCountry(), false);
-            environmentMap.put(exe.getEnvironment(), false);
-            robotDecliMap.put(exe.getRobotDecli(), false);
+            countryMap.put(exe.getCountry(), countries.contains(exe.getCountry()));
+            environmentMap.put(exe.getEnvironment(), environments.contains(exe.getEnvironment()));
+            robotDecliMap.put(exe.getRobotDecli(), robotDeclis.contains(exe.getRobotDecli()));
         }
         LOG.debug(countryMap);
         LOG.debug(environmentMap);
@@ -196,7 +197,9 @@ public class ReadExecutionStat extends HttpServlet {
             jsonResponse.put("message", answer.getResultMessage().getDescription());
             jsonResponse.put("sEcho", echo);
 
-            jsonResponse.put("exeCurves", jsonResponse1.getJSONArray("curves"));
+            jsonResponse.put("datasetExeTime", jsonResponse1.getJSONArray("curvesTime"));
+            jsonResponse.put("datasetExeStatusNb", jsonResponse1.getJSONArray("curvesNb"));
+            jsonResponse.put("datasetExeStatusNbDates", jsonResponse1.getJSONArray("curvesDatesNb"));
 
             response.getWriter().print(jsonResponse.toString());
 
@@ -221,21 +224,17 @@ public class ReadExecutionStat extends HttpServlet {
         HashMap<String, JSONArray> curveMap = new HashMap<>();
         HashMap<String, JSONObject> curveObjMap = new HashMap<>();
 
-        // Filter Map
-        HashMap<String, TestCase> testCaseMap = new HashMap<>();
-        HashMap<String, Boolean> systemMap = new HashMap<>();
-        HashMap<String, Boolean> applicationMap = new HashMap<>();
-        // Indicator Map
-        HashMap<String, Boolean> partyMap = new HashMap<>();
-        partyMap.put("total", false);
-        partyMap.put("internal", false);
-        HashMap<String, Boolean> typeMap = new HashMap<>();
-        HashMap<String, Boolean> unitMap = new HashMap<>();
-
         String curveKey = "";
         JSONArray curArray = new JSONArray();
         JSONObject curveObj = new JSONObject();
         JSONObject pointObj = new JSONObject();
+
+        HashMap<String, JSONObject> curveStatusObjMap = new HashMap<>();
+        HashMap<String, Boolean> curveDateMap = new HashMap<>();
+        HashMap<String, Integer> curveDateStatusMap = new HashMap<>();
+
+        String curveKeyStatus = "";
+        JSONObject curveStatObj = new JSONObject();
 
         for (TestCaseExecution exeCur : exeList) {
 
@@ -243,20 +242,23 @@ public class ReadExecutionStat extends HttpServlet {
                     && (environments.isEmpty() || environments.contains(exeCur.getEnvironment()))
                     && (robotDeclis.isEmpty() || robotDeclis.contains(exeCur.getRobotDecli()))) {
 
+                /**
+                 * Curves of testcase response time.
+                 */
                 curveKey = exeCur.getTest() + "|" + exeCur.getTestCase() + "|" + exeCur.getCountry() + "|" + exeCur.getEnvironment() + "|" + exeCur.getRobotDecli() + "|";
 
-                long x = 0;
+                long y = 0;
                 if (!exeCur.getControlStatus().equalsIgnoreCase("PE")) {
-                    x = exeCur.getEnd() - exeCur.getStart();
+                    y = exeCur.getEnd() - exeCur.getStart();
 
                     pointObj = new JSONObject();
                     Date d = new Date(exeCur.getStart());
-//                                TimeZone tz = TimeZone.getTimeZone("UTC");
+                    TimeZone tz = TimeZone.getTimeZone("UTC");
                     DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-//                                df.setTimeZone(tz);
+                    df.setTimeZone(tz);
                     pointObj.put("x", df.format(d));
 
-                    pointObj.put("y", x);
+                    pointObj.put("y", y);
                     pointObj.put("exe", exeCur.getId());
                     pointObj.put("exeControlStatus", exeCur.getControlStatus());
 
@@ -287,10 +289,43 @@ public class ReadExecutionStat extends HttpServlet {
                     curArray.put(pointObj);
                     curveMap.put(curveKey, curArray);
                 }
+
+                /**
+                 * Bar Charts per control status.
+                 */
+                curveKeyStatus = exeCur.getControlStatus();
+
+                Date d = new Date(exeCur.getStart());
+                TimeZone tz = TimeZone.getTimeZone("UTC");
+                DateFormat df = new SimpleDateFormat(DATE_FORMAT_DAY);
+                df.setTimeZone(tz);
+                String dday = df.format(d);
+
+                curveDateMap.put(dday, false);
+
+                String keyDateStatus = curveKeyStatus + "-" + dday;
+                if (curveDateStatusMap.containsKey(keyDateStatus)) {
+                    curveDateStatusMap.put(keyDateStatus, curveDateStatusMap.get(keyDateStatus) + 1);
+                } else {
+                    curveDateStatusMap.put(keyDateStatus, 1);
+                }
+
+                if (!curveStatusObjMap.containsKey(curveKeyStatus)) {
+
+                    curveStatObj = new JSONObject();
+                    curveStatObj.put("key", curveKeyStatus);
+                    curveStatObj.put("unit", "nbExe");
+
+                    curveStatusObjMap.put(curveKeyStatus, curveStatObj);
+                }
+                
             }
 
         }
 
+        /**
+         * Feed Curves of testcase response time to JSON.
+         */
         JSONArray curvesArray = new JSONArray();
         for (Map.Entry<String, JSONObject> entry : curveObjMap.entrySet()) {
             String key = entry.getKey();
@@ -300,7 +335,39 @@ public class ReadExecutionStat extends HttpServlet {
             localcur.put("points", curveMap.get(key));
             curvesArray.put(localcur);
         }
-        object.put("curves", curvesArray);
+        object.put("curvesTime", curvesArray);
+
+        /**
+         * Bar Charts per control status to JSON.
+         */
+        curvesArray = new JSONArray();
+        for (Map.Entry<String, Boolean> entry : curveDateMap.entrySet()) {
+            curvesArray.put(entry.getKey());
+        }
+        object.put("curvesDatesNb", curvesArray);
+
+        curvesArray = new JSONArray();
+        for (Map.Entry<String, JSONObject> entry : curveStatusObjMap.entrySet()) {
+            String key = entry.getKey();
+            JSONObject val = entry.getValue();
+
+            JSONArray valArray = new JSONArray();
+
+            for (Map.Entry<String, Boolean> entry1 : curveDateMap.entrySet()) {
+                String key1 = entry1.getKey(); // Date
+                if (curveDateStatusMap.containsKey(key + "-" + key1)) {
+                    valArray.put(curveDateStatusMap.get(key + "-" + key1));
+                } else {
+                    valArray.put(0);
+                }
+            }
+
+            JSONObject localcur = new JSONObject();
+            localcur.put("key", val);
+            localcur.put("points", valArray);
+            curvesArray.put(localcur);
+        }
+        object.put("curvesNb", curvesArray);
 
         item.setItem(object);
         return item;
@@ -444,7 +511,7 @@ public class ReadExecutionStat extends HttpServlet {
             localcur.put("points", curveMap.get(key));
             curvesArray.put(localcur);
         }
-        object.put("curves", curvesArray);
+        object.put("datasetPerf", curvesArray);
 
         JSONObject objectdist = getAllDistinct(countryMap, systemMap, testCaseMap, applicationMap, environmentMap, robotDecliMap, partyMap, typeMap, unitMap, parties, types, units, countriesDefined, environmentsDefined, robotDeclisDefined);
         object.put("distinct", objectdist);

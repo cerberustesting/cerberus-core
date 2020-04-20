@@ -153,15 +153,29 @@
             <div class="row" id="ReportByFunctionPanel">
                 <div class="col-lg-12">
                     <div id="panelTestStat" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart0">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart0a">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="lblTestStat">TestCase Stats</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body collapse in" id="perfChart0">
+                        <div class="panel-body collapse in" id="perfChart0a">
                             <div class="row">
                                 <div class="col-xs-12" id="ChartTestStat">
                                     <canvas id="canvasTestStat" style="display: block;" class=""></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="panelTestStatBar" class="panel panel-default" style="display: none">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart0b">
+                            <span class="fa fa-bar-chart fa-fw"></span>
+                            <label id="lblTestStatBar">TestCase Stats Bar</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        </div>
+                        <div class="panel-body collapse in" id="perfChart0b">
+                            <div class="row">
+                                <div class="col-xs-12" id="ChartTestStatBar">
+                                    <canvas id="canvasTestStatBar" style="display: block;" class=""></canvas>
                                 </div>
                             </div>
                         </div>
