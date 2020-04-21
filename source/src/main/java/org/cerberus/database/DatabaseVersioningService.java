@@ -8511,6 +8511,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + " ('', 'cerberus_networkstatsave_idleperiod_ms', '5000', 'Period between every checks in ms (default to 5000). No network requests withing that period means that Network is idle and stats can be saved.'),"
                 + " ('', 'cerberus_networkstatsave_idlemaxloop_nb', '20', 'Maximum nb of loop before idle checks stops. After that max amount of checks, stats will be saved even if hits are still detected.')");
 
+        // 1489
+        a.add("ALTER TABLE `tag` ADD INDEX `IX_tag_03` (`DateCreated` ASC) ;");
+
         return a;
     }
 
