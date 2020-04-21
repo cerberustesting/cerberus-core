@@ -1093,7 +1093,7 @@ public class RobotServerService implements IRobotServerService {
         } catch (InterruptedException ex) {
             LOG.warn("Exception when waiting for idle.", ex);
         } catch (JSONException ex) {
-            LOG.warn("Exception when waiting for idle (interpreting JSON answer from URL : '" + url + "').", ex);
+            LOG.warn("Exception when waiting for idle (interpreting JSON answer from URL : '" + url + "').");
         }
     }
 

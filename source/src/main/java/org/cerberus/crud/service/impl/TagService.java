@@ -54,7 +54,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TagService implements ITagService {
-    
+
     @Autowired
     private ITagDAO tagDAO;
     @Autowired
@@ -69,65 +69,70 @@ public class TagService implements ITagService {
     private IBrowserstackService browserstackService;
     @Autowired
     private ITestCaseExecutionQueueService executionQueueService;
-    
+
     private static final Logger LOG = LogManager.getLogger("TagService");
-    
+
     private final String OBJECT_NAME = "Tag";
-    
+
     @Override
     public AnswerItem<Tag> readByKey(String tag) {
         return tagDAO.readByKey(tag);
     }
-    
+
     @Override
     public AnswerItem<Tag> readByKeyTech(long tag) {
         return tagDAO.readByKeyTech(tag);
     }
-    
+
     @Override
     public AnswerList<Tag> readAll() {
         return tagDAO.readByVariousByCriteria(null, 0, 0, "id", "desc", null, null, null);
     }
-    
+
     @Override
     public AnswerList<Tag> readByCampaign(String campaign) {
         return tagDAO.readByVariousByCriteria(campaign, 0, 0, "id", "desc", null, null, null);
     }
-    
+
+    @Override
+    public AnswerList<Tag> readByVarious(List<String> systems, Date from, Date to) {
+        return tagDAO.readByVarious(systems, from, to);
+    }
+
     @Override
     public AnswerList<Tag> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems) {
         return tagDAO.readByVariousByCriteria(null, startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
     }
-    
+
     @Override
     public AnswerList<Tag> readByVariousByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return tagDAO.readByVariousByCriteria(campaign, startPosition, length, columnName, sort, searchParameter, individualSearch, null);
     }
-    
+
     @Override
     public boolean exist(String object) {
         AnswerItem objectAnswer = readByKey(object);
         return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
     }
-    
+
     @Override
     public Answer create(Tag object) {
         return tagDAO.create(object);
     }
-    
+
     @Override
     public Answer delete(Tag object) {
         return tagDAO.delete(object);
     }
-    
+
     @Override
     public Answer update(String tag, Tag object) {
         return tagDAO.update(tag, object);
     }
-    
+
     @Override
     public Answer updateEndOfQueueData(String tag) {
-        
+
         try {
             Tag mytag = convert(readByKey(tag));
 
@@ -141,20 +146,20 @@ public class TagService implements ITagService {
             JSONObject jsonResponse = ciService.getCIResult(tag, mytag.getCampaign());
             mytag.setCiScore(jsonResponse.getInt("CI_finalResult"));
             mytag.setCiScoreThreshold(jsonResponse.getInt("CI_finalResultThreshold"));
-            
+
             if (jsonResponse.getString("result").equalsIgnoreCase("PE")) {
                 // If result is PE that probably means that another execution was manually inserted in the queue or started after the end of last execution. It should not be considered.
                 mytag.setCiResult(ciService.getFinalResult(jsonResponse.getInt("CI_finalResult"), jsonResponse.getInt("CI_finalResultThreshold"), jsonResponse.getInt("TOTAL_nbOfExecution"), jsonResponse.getInt("status_OK_nbOfExecution")));
             } else {
                 mytag.setCiResult(jsonResponse.getString("result"));
             }
-            
+
             mytag.setEnvironmentList(jsonResponse.getJSONArray("environment_List").toString());
             mytag.setCountryList(jsonResponse.getJSONArray("country_list").toString());
             mytag.setRobotDecliList(jsonResponse.getJSONArray("robotdecli_list").toString());
             mytag.setSystemList(jsonResponse.getJSONArray("system_list").toString());
             mytag.setApplicationList(jsonResponse.getJSONArray("application_list").toString());
-            
+
             mytag.setNbOK(jsonResponse.getInt("status_OK_nbOfExecution"));
             mytag.setNbKO(jsonResponse.getInt("status_KO_nbOfExecution"));
             mytag.setNbFA(jsonResponse.getInt("status_FA_nbOfExecution"));
@@ -166,20 +171,20 @@ public class TagService implements ITagService {
             mytag.setNbQE(jsonResponse.getInt("status_QE_nbOfExecution"));
             mytag.setNbCA(jsonResponse.getInt("status_CA_nbOfExecution"));
             mytag.setNbExeUsefull(jsonResponse.getInt("TOTAL_nbOfExecution"));
-            
+
             return tagDAO.updateDateEndQueue(mytag);
-            
+
         } catch (CerberusException ex) {
             java.util.logging.Logger.getLogger(TagService.class.getName()).log(Level.SEVERE, null, ex);
             return null;
-            
+
         } catch (Exception ex) {
             java.util.logging.Logger.getLogger(TagService.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-        
+
     }
-    
+
     @Override
     public Answer createAuto(String tagS, String campaign, String user, JSONArray reqEnvironmentList, JSONArray reqCountryList) {
         AnswerItem answerTag;
@@ -202,7 +207,7 @@ public class TagService implements ITagService {
             return null;
         }
     }
-    
+
     @Override
     public String enrichTagWithBrowserStackBuild(String system, String tagS, String user, String pass) {
         if (!StringUtil.isNullOrEmpty(tagS)) {
@@ -219,7 +224,7 @@ public class TagService implements ITagService {
         }
         return null;
     }
-    
+
     @Override
     public Tag convert(AnswerItem<Tag> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -228,7 +233,7 @@ public class TagService implements ITagService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
-    
+
     @Override
     public List<Tag> convert(AnswerList<Tag> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -237,7 +242,7 @@ public class TagService implements ITagService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
-    
+
     @Override
     public void convert(Answer answer) throws CerberusException {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -246,15 +251,15 @@ public class TagService implements ITagService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
-    
+
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return tagDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
-    
+
     @Override
     public void manageCampaignEndOfExecution(String tag) throws CerberusException {
-        
+
         try {
             if (!StringUtil.isNullOrEmpty(tag)) {
                 Tag currentTag = this.convert(this.readByKey(tag));
@@ -275,13 +280,13 @@ public class TagService implements ITagService {
                     } else {
                         LOG.debug("Tag is already flaged with recent timestamp. " + currentTag.getDateEndQueue());
                     }
-                    
+
                 }
             }
         } catch (Exception e) {
             LOG.error(e, e);
         }
-        
+
     }
-    
+
 }

@@ -74,7 +74,7 @@
                             </div>
 
                             <div class="row">
-                                <div class='col-sm-6 col-md-4'>
+                                <div class='col-sm-4 col-md-4'>
                                     <div class="form-group">
                                         <label for="frompicker">From</label>
                                         <div class='input-group date' id='frompicker'>
@@ -85,7 +85,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class='col-sm-6 col-md-4'>
+                                <div class='col-sm-4 col-md-4'>
                                     <div class="form-group">
                                         <label for="topicker">To</label>
                                         <div class='input-group date' id='topicker'>
@@ -94,6 +94,23 @@
                                                 <span class="glyphicon glyphicon-calendar"></span>
                                             </span>
                                         </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-2 col-md-2 btn-group marginTop20">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Preselect Range<span class="caret"></span>
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                        <button class="btn btn-default pull-left" id="last3Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(1)"><span class=""></span> Last Month</button>
+                                        <button class="btn btn-default pull-left" id="last3Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(2)"><span class=""></span> Last 3 Months</button>
+                                        <button class="btn btn-default pull-left" id="last3Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(3)"><span class=""></span> Last 6 Months</button>
+                                    </div>
+                                </div>
+
+                                <div class='col-sm-2 col-md-2'>
+                                    <div class="input-group-btn ">
+                                        <button type="button" class="btn btn-info btn-default marginTop20" style="margin-left: 10px;min-height: " id="loadbutton" onclick="loadPerfGraph(true);">Load</button>
                                     </div>
                                 </div>
                             </div>
@@ -119,8 +136,8 @@
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class='col-md-3'>
+                            <div id="perfFilters" style="display: none;" class="row">
+                                <div class='col-md-4'>
                                     <div class="form-group">
                                         <label for="units">Units</label>
                                         <select class="multiselectelement form-control" multiple="multiple" id="units"></select>
@@ -132,15 +149,10 @@
                                         <select class="multiselectelement form-control" multiple="multiple" id="parties"></select>
                                     </div>
                                 </div>
-                                <div class='col-md-3'>
+                                <div class='col-md-4'>
                                     <div class="form-group">
                                         <label for="types">Media Types</label>
                                         <select class="multiselectelement form-control" multiple="multiple" id="types"></select>
-                                    </div>
-                                </div>
-                                <div class='col-md-2'>
-                                    <div class="input-group-btn ">
-                                        <button type="button" class="btn btn-default marginTop20" style="margin-left: 10px;min-height: " id="loadbutton" onclick="loadPerfGraph(true)">Load</button>
                                     </div>
                                 </div>
                             </div>

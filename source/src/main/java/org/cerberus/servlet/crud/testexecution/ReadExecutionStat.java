@@ -190,7 +190,7 @@ public class ReadExecutionStat extends HttpServlet {
             jsonResponse1 = (JSONObject) answer.getItem();
 
             JSONObject jsonResponse = new JSONObject();
-            answer = findStatList(appContext, request, system, ltc, fromD, toD, parties, types, units, countryMap, countries, countriesDefined, environmentMap, environments, environmentsDefined, robotDecliMap, robotDeclis, robotDeclisDefined);
+            answer = findPerfStatList(appContext, request, system, ltc, fromD, toD, parties, types, units, countryMap, countries, countriesDefined, environmentMap, environments, environmentsDefined, robotDecliMap, robotDeclis, robotDeclisDefined);
             jsonResponse = (JSONObject) answer.getItem();
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -318,7 +318,7 @@ public class ReadExecutionStat extends HttpServlet {
 
                     curveStatusObjMap.put(curveKeyStatus, curveStatObj);
                 }
-                
+
             }
 
         }
@@ -373,7 +373,7 @@ public class ReadExecutionStat extends HttpServlet {
         return item;
     }
 
-    private AnswerItem<JSONObject> findStatList(ApplicationContext appContext, HttpServletRequest request,
+    private AnswerItem<JSONObject> findPerfStatList(ApplicationContext appContext, HttpServletRequest request,
             List<String> system, List<TestCase> ltc, Date from, Date to,
             List<String> parties, List<String> types, List<String> units,
             HashMap<String, Boolean> countryMap, List<String> countries, Boolean countriesDefined,
@@ -410,7 +410,8 @@ public class ReadExecutionStat extends HttpServlet {
         AnswerList<TestCaseExecutionHttpStat> resp = testCaseExecutionHttpStatService.readByCriteria("OK", ltc, from, to, system, countries, environments, robotDeclis);
 
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (TestCaseExecutionHttpStat statCur : (List<TestCaseExecutionHttpStat>) resp.getDataList()) {
+            List<TestCaseExecutionHttpStat> tcList = (List<TestCaseExecutionHttpStat>) resp.getDataList();
+            for (TestCaseExecutionHttpStat statCur : tcList) {
 
                 // Get List of Third Party
                 JSONObject partiesA = statCur.getStatDetail().getJSONObject("thirdparty");
@@ -500,6 +501,7 @@ public class ReadExecutionStat extends HttpServlet {
                 }
 
             }
+            object.put("hasPerfdata", (tcList.size() > 0));
         }
 
         JSONArray curvesArray = new JSONArray();

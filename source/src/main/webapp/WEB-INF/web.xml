@@ -748,6 +748,10 @@
         <servlet-class>org.cerberus.servlet.crud.testexecution.ReadExecutionStat</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadExecutionTagHistory</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadExecutionTagHistory</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateTestCaseExecution</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.UpdateTestCaseExecution</servlet-class>
     </servlet>
@@ -1488,6 +1492,10 @@
         <url-pattern>/ReadExecutionStat</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadExecutionTagHistory</servlet-name>
+        <url-pattern>/ReadExecutionTagHistory</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateTestCaseExecution</servlet-name>
         <url-pattern>/UpdateTestCaseExecution</url-pattern>
     </servlet-mapping>
@@ -2026,6 +2034,7 @@
             <description>servlet</description>
             <url-pattern>/Homepage</url-pattern>
             <url-pattern>/ReadMyUser</url-pattern>
+            <url-pattern>/ReadExecutionTagHistory</url-pattern>
             <url-pattern>/GetInvariantList</url-pattern>
             <url-pattern>/ReadCerberusInformation</url-pattern>
             <url-pattern>/GeneratePerformanceString</url-pattern>

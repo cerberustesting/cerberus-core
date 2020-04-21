@@ -213,9 +213,12 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-12">
+                                <div class="col-xs-8">
                                     <label for="endLastExe">Last Execution :</label>
                                     <input type="text" class="form-control" name="endLastExe" id="endLastExe" readonly aria-describedby="basic-addon1" >
+                                </div>
+                                <div class="input-group-btn col-xs-4" id="TagcampaignCel2">
+                                    <a id="buttonSeeStatsCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;margin-top: 20px;">See Stats</button></a>
                                 </div>
                             </div>
                             <div class="row">
@@ -229,7 +232,6 @@
                                 </div>
                                 <div class="input-group-btn col-sm-4" id="TagcampaignCel2">
                                     <a id="buttonRunCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;margin-top: 20px;">Run Campaign</button></a>
-                                    <a id="buttonSeeStatsCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;margin-top: 20px;">See Stats</button></a>
                                 </div>
                             </div>
                         </div>

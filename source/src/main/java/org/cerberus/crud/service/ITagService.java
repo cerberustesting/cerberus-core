@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.Tag;
@@ -60,6 +61,15 @@ public interface ITagService {
      * @return
      */
     AnswerList<Tag> readByCampaign(String campaign);
+
+    /**
+     *
+     * @param systems
+     * @param from
+     * @param to
+     * @return
+     */
+    AnswerList<Tag> readByVarious(List<String> systems, Date from, Date to);
 
     /**
      *

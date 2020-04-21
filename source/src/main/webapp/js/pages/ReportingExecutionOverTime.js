@@ -281,7 +281,7 @@ function loadPerfGraph(saveURLtoHistory, parties, types, units, countries, envir
     $.ajax({
         url: "ReadExecutionStat?e=1" + qS,
         method: "GET",
-        async: false,
+        async: true,
         dataType: 'json',
         success: function (data) {
             updateNbDistinct(data.distinct);
@@ -315,9 +315,30 @@ function updateNbDistinct(data) {
         }
     }
 }
+function setTimeRange(id) {
+    let fromD;
+    let toD = new Date();
+    if (id === 1) {
+        fromD = new Date();
+        fromD.setMonth(fromD.getMonth() - 1);
+    } else if (id === 2) {
+        fromD = new Date();
+        fromD.setMonth(fromD.getMonth() - 3);
+    } else if (id === 3) {
+        fromD = new Date();
+        fromD.setMonth(fromD.getMonth() - 6);
+    }
+    $('#frompicker').data("DateTimePicker").date(moment(fromD));
+    $('#topicker').data("DateTimePicker").date(moment(toD));
+}
 
 function loadCombos(data) {
 
+    if (data.hasPerfdata) {
+        $("#perfFilters").show();
+    } else {
+        $("#perfFilters").hide();
+    }
     var select = $("#parties");
     select.multiselect('destroy');
     var array = data.distinct.parties;
@@ -469,10 +490,11 @@ function getOptionsBar(title, unit) {
         },
         scales: {
             xAxes: [{
+                    offset:true,
                     type: 'time',
                     stacked: true,
                     time: {
-                        tooltipFormat: 'll HH:mm',
+                        tooltipFormat: 'll',
                         unit: 'day',
                         round: 'day',
                         displayFormats: {
@@ -660,7 +682,8 @@ function buildExeBarGraphs(data) {
         let lab = c.key.key;
         var dataset = {
             label: lab,
-            barPercentage: 1,
+            categoryPercentage: 1.0,
+            barPercentage: 1.0,
             backgroundColor: getExeStatusRowColor(c.key.key),
             borderColor: getExeStatusRowColor(c.key.key),
             data: c.points

@@ -60,7 +60,7 @@ public final class ServletUtil {
                     case "/FindInvariantByID":
                         timeToWait = 30;
                         break;
-                    case "/ReadAppService":
+                    case "/ReadExecutionStat":
                         timeToWait = 30;
                         break;
                     default:

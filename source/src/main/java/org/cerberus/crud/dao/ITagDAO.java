@@ -21,6 +21,7 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.Tag;
@@ -66,6 +67,15 @@ public interface ITagDAO {
      */
     AnswerList<Tag> readByVariousByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> system);
 
+    /**
+     *
+     * @param systems
+     * @param from
+     * @param to
+     * @return
+     */
+    AnswerList<Tag> readByVarious(List<String> systems, Date from, Date to);
+    
     /**
      *
      * @param object

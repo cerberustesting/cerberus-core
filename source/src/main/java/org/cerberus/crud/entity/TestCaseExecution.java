@@ -185,6 +185,10 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_QE = "QE"; // Test is stuck in Queue.
     public static final String CONTROLSTATUS_QE_COL = "#5C025C"; // Test is stuck in Queue.
 
+    public enum ControlStatus {
+        OK, KO, FA, NA, NE, WE, PE, CA, QU, QE
+    };
+
     public static final String MANUAL_Y = "Y";
     public static final String MANUAL_N = "N";
     public static final String MANUAL_A = "A";

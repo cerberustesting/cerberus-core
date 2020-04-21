@@ -19,12 +19,16 @@
  */
 
 var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"];
+var configTcBar = {};
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         displayPageLabel();
 
         bindToggleCollapse();
+
+        initHPGraph();
+        loadTagHistoBar();
 
         $('body').tooltip({
             selector: '[data-toggle="tooltip"]'
@@ -189,6 +193,124 @@ function generateTagLink(tagName) {
 
     return link;
 }
+
+
+function loadTagHistoBar() {
+    showLoader($("#panelHistory"));
+
+    fromD = new Date();
+    fromD.setMonth(fromD.getMonth() - 3);
+    toD = new Date();
+
+    $.ajax({
+        url: "ReadExecutionTagHistory?from=" + fromD.toISOString() + "&to=" + toD.toISOString() + getUser().systemQuery,
+        method: "GET",
+        async: true,
+        dataType: 'json',
+        success: function (data) {
+            buildExeBar(data);
+            hideLoader($("#panelHistory"));
+        }
+    });
+}
+
+function buildExeBar(data) {
+
+    let curves = data.curvesNb;
+
+    // Sorting values by nb of requests.
+    sortedCurves = curves.sort(function (a, b) {
+        let a1 = a.key.nbExe;
+        let b1 = b.key.nbExe;
+        return b1 - a1;
+    });
+
+
+    var len = sortedCurves.length;
+
+    let timedatasets = [];
+
+    for (var i = 0; i < len; i++) {
+
+        let c = sortedCurves[i];
+        let d = [];
+        lend = c.points.length;
+        for (var j = 0; j < lend; j++) {
+            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus};
+            d.push(p);
+        }
+        let lab = c.key.key;
+        var dataset = {
+            label: lab,
+            categoryPercentage: 1.0,
+            barPercentage: 1.0,
+            backgroundColor: getExeStatusRowColor(c.key.key),
+            borderColor: getExeStatusRowColor(c.key.key),
+            data: c.points
+        };
+        timedatasets.push(dataset);
+    }
+
+    configHistoTcBar.data.datasets = timedatasets;
+    configHistoTcBar.data.labels = data.curvesDatesNb;
+
+    window.myLineTcHistoBar.update();
+}
+
+
+function initHPGraph() {
+
+    var tcbaroption = getHPOptionsBar("Executions", "nb");
+
+    let tcbardatasets = [];
+
+    configHistoTcBar = {
+        type: 'bar',
+        data: {
+            datasets: tcbardatasets
+        },
+        options: tcbaroption
+    };
+
+    var ctx = document.getElementById('canvasHistPerStatus').getContext('2d');
+    window.myLineTcHistoBar = new Chart(ctx, configHistoTcBar);
+
+}
+
+function getHPOptionsBar(title, unit) {
+    let option = {
+        title: {
+            text: title
+        },
+        scales: {
+            xAxes: [{
+                    offset:true,
+                    type: 'time',
+                    stacked: true,
+                    time: {
+                        tooltipFormat: 'll',
+                        unit: 'day',
+                        round: 'day',
+                        displayFormats: {
+                            day: 'MMM D'
+                        }},
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Date'
+                    }
+                }],
+            yAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+        }
+    };
+    return option;
+}
+
+
 
 function generateTooltip(data, tag) {
     var htmlRes;

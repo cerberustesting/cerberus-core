@@ -36,6 +36,9 @@
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>Cerberus Homepage</title>
         <%@ include file="include/global/dependenciesInclusions.html" %>
+        <script type="text/javascript" src="dependencies/Moment-2.24.0/moment.min.js"></script>
+        <script type="text/javascript" src="dependencies/Moment-2.24.0/locale/fr.js"></script>
+        <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
         <link rel="stylesheet" href="css/pages/Homepage.css" type="text/css"/>
         <link rel="stylesheet" href="css/pages/ReportingExecutionByTag.css" type="text/css"/>
         <script type="text/javascript" src="js/pages/Homepage.js"></script>
@@ -69,6 +72,40 @@
             <%@ include file="include/global/messagesArea.html"%>
             <h1 class="page-title-line" id="title">Welcome to Cerberus Application</h1>
 
+            <div class="row">
+                <div class="col-lg-6" id="LastTagExecPanel">
+                    <div class="panel panel-default">
+                        <div class="panel-heading card clearfix" data-toggle="collapse" data-target="#tagExecStatus">
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                            <div class="btn-group pull-right">
+                                <button id="refreshTags" class="btn btn-default btn-xs marginRight10" onclick="stopPropagation(event); loadTagExec();"><span class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
+                                <button id="tagSettings" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-cog"></span> <label id="tagSettingsLabel">Settings</label></button>
+                            </div>
+                            <span class="fa fa-tag fa-fw"></span>
+                            <label id="lastTagExec">Last tag executions</label>
+                        </div>
+                        <div class="panel-body collapse in" id="tagExecStatus">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6" id="LastTagExecPanel">
+                    <div id="panelHistory" class="panel panel-default" style="display: block;">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#histoChart1">
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                            <div class="btn-group pull-right">
+                                <button id="refreshTags" class="btn btn-default btn-xs marginRight10" onclick="stopPropagation(event); loadTagHistoBar();"><span class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
+                            </div>
+                            <span class="fa fa-bar-chart fa-fw"></span>
+                            <label id="lblPerfParty">Execution History</label>
+                        </div>
+                        <div class="panel-body collapse in" id="histoChart1">
+                            <canvas id="canvasHistPerStatus" class=""></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="homeTableDiv" class="panel panel-default">
                 <div class="panel-heading card" data-toggle="collapse" data-target="#applicationPanel">
                     <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
@@ -82,18 +119,18 @@
             </div>
 
             <div class="row">
-                <div class="col-lg-6" id="LastTagExecPanel">
-                    <div class="panel panel-default">
-                        <div class="panel-heading card clearfix" data-toggle="collapse" data-target="#tagExecStatus">
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                            <div class="btn-group pull-right">
-                                <button id="tagSettings" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-cog"></span> <label id="tagSettingsLabel">Settings</label></button>
+                <div class="col-lg-6">
+                    <div id="ChangelogPanel">
+                        <div class="panel panel-default">
+                            <div class="panel-heading card" data-toggle="collapse" data-target="#Changelog470">
+                                <span class="fa fa-pie-chart fa-fw"></span>
+                                <label id="changelogLabel">Changelog</label>
+                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                             </div>
-                            <span class="fa fa-tag fa-fw"></span>
-                            <label id="lastTagExec">Last tag executions</label>
-                        </div>
-                        <div class="panel-body collapse in" id="tagExecStatus">
-
+                            <div class="panel-body collapse in" id="Changelog470">
+                                <iframe id="documentationFrame" style="width:100%" frameborder="0" scrolling="yes"/>
+                                </iframe>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -128,21 +165,10 @@
                             </div>
                         </div>
                     </div>
-                    <div id="ChangelogPanel">
-                        <div class="panel panel-default">
-                            <div class="panel-heading card" data-toggle="collapse" data-target="#Changelog470">
-                                <span class="fa fa-pie-chart fa-fw"></span>
-                                <label id="changelogLabel">Changelog</label>
-                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                            </div>
-                            <div class="panel-body collapse in" id="Changelog470">
-                                <iframe id="documentationFrame" style="width:100%" frameborder="0" scrolling="yes"/>
-                                </iframe>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
+
+
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
