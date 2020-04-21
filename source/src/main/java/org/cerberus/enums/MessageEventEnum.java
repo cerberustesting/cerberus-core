@@ -165,6 +165,7 @@ public enum MessageEventEnum {
     ACTION_SUCCESS(200, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_OPENAPP(200, "OK", "Application '%APP%' opened.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLOSEAPP(200, "OK", "Application '%APP%' closed.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_CLOSEAPP_GENERIC(200, "OK", "Application closed.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLICK(200, "OK", "Element '%ELEMENT%' clicked.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLICKANDWAIT(200, "OK", "Element '%ELEMENT%' clicked and waited %TIME% ms.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLICKANDNOWAIT(200, "OK", "Element '%ELEMENT%' clicked and waited for page to load", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),

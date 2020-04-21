@@ -213,7 +213,21 @@ public class IOSAppiumService extends AppiumService {
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
                     .resolveDescription("DETAIL", "Unable to open app " + e.getMessage());
         }
-
-//        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
     }
+
+    @Override
+    public MessageEvent closeApp(Session session) {
+        try {
+
+            session.getAppiumDriver().closeApp();
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSEAPP_GENERIC);
+
+        } catch (Exception e) {
+            LOG.warn("Unable to close app " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", "Unable to close app : " + e.getMessage());
+        }
+    }
+
 }

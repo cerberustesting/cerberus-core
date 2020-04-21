@@ -1140,14 +1140,20 @@ public class ActionService implements IActionService {
         /**
          * Check value1 is not null or empty
          */
-        if (value1 == null || "".equals(value1)) {
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSEAPP);
-        }
-
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+            if (value1 == null || "".equals(value1)) {
+                return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSEAPP);
+            }
             return sikuliService.doSikuliActionCloseApp(tCExecution.getSession(), value1);
+
+        } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+            return androidAppiumService.closeApp(tCExecution.getSession());
+
+        } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+            return iosAppiumService.closeApp(tCExecution.getSession());
         }
+
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replace("%ACTION%", "CloseApp"));
         message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));

@@ -138,6 +138,13 @@ public interface IAppiumService {
     MessageEvent openApp(Session session, String appPackage, String appActivity);
 
     /**
+     * Open application
+     * @param session
+     * @return
+     */
+    MessageEvent closeApp(Session session);
+
+    /**
      *
      * @param session
      * @param identifier
