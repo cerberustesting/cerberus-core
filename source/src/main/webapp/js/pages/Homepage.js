@@ -203,7 +203,7 @@ function loadTagHistoBar() {
     toD = new Date();
 
     $.ajax({
-        url: "ReadExecutionTagHistory?from=" + fromD.toISOString() + "&to=" + toD.toISOString() + getUser().systemQuery,
+        url: "ReadExecutionTagHistory?from=" + fromD.toISOString() + "&to=" + toD.toISOString() + getUser().defaultSystemsQuery,
         method: "GET",
         async: true,
         dataType: 'json',
@@ -337,7 +337,7 @@ function generateTagReport(data, tag, rowId) {
     var tooltip = generateTooltip(data, tag);
     var len = statusOrder.length;
 
-    buildBar = '<div>' + generateTagLink(tag) + '</div><div class="xs-only" style="display: inline;">Total executions : ' + data.total + '</div>\n\
+    buildBar = '<div><table style="width: 100%"><tr><td><div>' + generateTagLink(tag) + '</div></td><td style="text-align:right;"><div class="xs-only" style="display: inline;align-text:right;">Total executions : ' + data.total + '</td></tr></table></div></div>\n\
                                                         <div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
     for (var index = 0; index < len; index++) {
         var status = statusOrder[index];

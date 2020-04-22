@@ -172,8 +172,8 @@
                         </div>
                         <div class="panel-body collapse in" id="perfChart0a">
                             <div class="row">
-                                <div class="col-xs-12" id="ChartTestStat">
-                                    <canvas id="canvasTestStat" style="display: block;" class=""></canvas>
+                                <div class="col-xs-12" id="ChartTestStat" style="height: 400px">
+                                    <canvas id="canvasTestStat"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -186,8 +186,8 @@
                         </div>
                         <div class="panel-body collapse in" id="perfChart0b">
                             <div class="row">
-                                <div class="col-xs-12" id="ChartTestStatBar">
-                                    <canvas id="canvasTestStatBar" style="display: block;" class=""></canvas>
+                                <div class="col-xs-12" id="ChartTestStatBar" style="height: 400px">
+                                    <canvas id="canvasTestStatBar"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -200,8 +200,8 @@
                         </div>
                         <div class="panel-body collapse in" id="perfChart1">
                             <div class="row">
-                                <div class="col-xs-12" id="ChartRequests">
-                                    <canvas id="canvasRequests" style="display: block;" class=""></canvas>
+                                <div class="col-xs-12" id="ChartRequests" style="height: 400px">
+                                    <canvas id="canvasRequests"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -214,8 +214,8 @@
                         </div>
                         <div class="panel-body collapse in" id="perfChart2">
                             <div class="row">
-                                <div class="col-xs-12" id="ChartSize">
-                                    <canvas id="canvasSize" style="display: block; width: 1121px; height: 560px;" width="1121" height="560" class=""></canvas>
+                                <div class="col-xs-12" id="ChartSize" style="height: 400px">
+                                    <canvas id="canvasSize"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -228,8 +228,8 @@
                         </div>
                         <div class="panel-body collapse in" id="perfChart3">
                             <div class="row">
-                                <div class="col-xs-12" id="ChartTime">
-                                    <canvas id="canvasTime" class=""></canvas>
+                                <div class="col-xs-12" id="ChartTime" style="height: 400px">
+                                    <canvas id="canvasTime"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -242,8 +242,8 @@
                         </div>
                         <div class="panel-body collapse in" id="perfChart4">
                             <div class="row">
-                                <div class="col-xs-12" id="ChartParty">
-                                    <canvas id="canvasParty" class=""></canvas>
+                                <div class="col-xs-12" id="ChartParty" style="height: 400px">
+                                    <canvas id="canvasParty"></canvas>
                                 </div>
                             </div>
                         </div>

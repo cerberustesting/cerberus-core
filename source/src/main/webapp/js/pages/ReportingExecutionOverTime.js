@@ -433,6 +433,8 @@ function loadCombos(data) {
 
 function getOptions(title, unit) {
     let option = {
+        responsive: true,
+        maintainAspectRatio: false,
         tooltips: {
             callbacks: {
                 label: function (t, d) {
@@ -485,12 +487,14 @@ function getOptions(title, unit) {
 
 function getOptionsBar(title, unit) {
     let option = {
+        responsive: true,
+        maintainAspectRatio: false,
         title: {
             text: title
         },
         scales: {
             xAxes: [{
-                    offset:true,
+                    offset: true,
                     type: 'time',
                     stacked: true,
                     time: {
