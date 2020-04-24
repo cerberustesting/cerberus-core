@@ -1243,7 +1243,7 @@ function refreshNbChecked() {
         $('#submitExe').prop("disabled", true);
         $('#submitExe').html("<span class='glyphicon glyphicon-play'></span> Submit Again");
         $('#submitExewithDep').prop("disabled", true);
-        $('#submsubmitExewithDepitExe').html("<span class='glyphicon glyphicon-play'></span> Submit Again with Dep");
+        $('#submitExewithDep').html("<span class='glyphicon glyphicon-play'></span> Submit Again with Dep");
     }
 }
 
@@ -1316,6 +1316,14 @@ function massAction_copyQueue(option) {
                 if (data.addedEntries === 1) {
                     data.message = data.message + "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
                 }
+                let formA = $('#massActionForm :input#selectLine');
+                for (var i = 0; i < formA.length; i++) {
+                    if (formA[i].checked) {
+                        $('[data-id="' + formA[i].value + '"]').prop("checked", false);
+                    }
+                }
+                $('[data-id="201811"]').prop("checked", false);
+                refreshNbChecked();
                 showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
             } else {
                 showMessage(data);
