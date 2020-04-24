@@ -1624,6 +1624,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_reportovertime','lblPerfSize','','fr','Graph de performance - Volume de data','',NULL)");
         b.append(",('page_reportovertime','lblPerfTime','','en','Performance Graph - resquets time (longuest or total)','','<b>totaltime</b> Represent the time from the first request till the last.<br><b>maxtime</b> represent the longuest request time.')");
         b.append(",('page_reportovertime','lblPerfTime','','fr','Graph de performance - durée d\\'execution de requêtes (les plus longues ou totales)','','<b>totaltime</b> Represente le temps pris entre la première requette et la dernière.<br><b>maxtime</b> represente le temps de la requete la plus longue.')");
+        b.append(",('page_reportovertime','lblTestStat','','en','Test Case Duration and status','',NULL)");
+        b.append(",('page_reportovertime','lblTestStat','','fr','Durée et status de cas de test','',NULL)");
+        b.append(",('page_reportovertime','lblTestStatBar','','en','Executions per day and status','',NULL)");
+        b.append(",('page_reportovertime','lblTestStatBar','','fr','Nombre d\\'Execution par jour et status','',NULL)");
         b.append(",('page_robot','button_create','','en','Create new Robot','',NULL)");
         b.append(",('page_robot','button_create','','fr','Créer un nouveau Robot','',NULL)");
         b.append(",('page_robot','button_delete','','en','Delete Robot','',NULL)");

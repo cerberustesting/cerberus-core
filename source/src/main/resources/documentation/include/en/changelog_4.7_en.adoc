@@ -10,6 +10,7 @@
 * [GUI] On RunTest page, TestCase filters are now hidden by default (that speedup the page loading for new users).
 * [GUI] We can now add an environment at application level without being forced to create it before (it will be created automatically).
 * [GUI] Control layout improvement on test case script page.
+* [GUI] Secure next Fire Time of scheduled campaign in 'Monitoring Page' is in the future.
 * [ENGINE] Added decode on topic, header and hosts for KAFKA SEARCH service #2119
 * [ENGINE] Better message when Kafka topic is not found.
 * [ENGINE] Service responses that have no Content-Type header defined and start by [ are now also considered as JSON

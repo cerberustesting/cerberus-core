@@ -68,7 +68,7 @@
                                 <div class='col-md-6'>
                                     <div class="form-group">
                                         <label for="testCaseSelect">Test Case</label>
-                                        <select class="form-control" id="testCaseSelect"></select>
+                                        <select multiple="multiple" class="form-control" id="testCaseSelect"></select>
                                     </div>
                                 </div>
                             </div>

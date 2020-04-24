@@ -109,7 +109,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
             $("#testSelect").select2({width: "100%"});
 
-            feedPerfTestCase(tests[0], "#testCaseSelect", testcases[0], parties, types, units, countries, environments, robotDeclis);
+            feedPerfTestCase(tests[0], "#testCaseSelect", testcases, parties, types, units, countries, environments, robotDeclis);
 
         });
 
@@ -143,10 +143,16 @@ function multiSelectConfPerf(name) {
  * Feed the TestCase select with all the testcase from test defined.
  * @param {String} test - test in order to filter the testcase values.
  * @param {String} selectElement - id of select to refresh.
- * @param {String} defaultTestCase - id of testcase to select.
+ * @param {String} defaultTestCases - id of testcase to select.
+ * @param {String} types 
+ * @param {String} units 
+ * @param {String} countries 
+ * @param {String} environments 
+ * @param {String} robotDeclis 
+ * @param {String} parties 
  * @returns {null}
  */
-function feedPerfTestCase(test, selectElement, defaultTestCase, parties, types, units, countries, environments, robotDeclis) {
+function feedPerfTestCase(test, selectElement, defaultTestCases, parties, types, units, countries, environments, robotDeclis) {
 
     var testCList = $(selectElement);
     testCList.empty();
@@ -157,9 +163,8 @@ function feedPerfTestCase(test, selectElement, defaultTestCase, parties, types, 
         for (var index = 0; index < data.contentTable.length; index++) {
             testCList.append($('<option></option>').text(data.contentTable[index].testCase + " - " + data.contentTable[index].description).val(data.contentTable[index].testCase));
         }
-        if (!isEmpty(defaultTestCase)) {
-            testCList.prop("value", defaultTestCase);
-        }
+        $('#testCaseSelect').val(defaultTestCases);
+        $('#testCaseSelect').trigger('change');
         loadPerfGraph(false, parties, types, units, countries, environments, robotDeclis);
     });
 }
@@ -185,6 +190,8 @@ function displayPageLabel(doc) {
     $("#lblPerfRequests").html(doc.getDocLabel("page_reportovertime", "lblPerfRequests"));
     $("#lblPerfSize").html(doc.getDocLabel("page_reportovertime", "lblPerfSize"));
     $("#lblPerfTime").html(doc.getDocLabel("page_reportovertime", "lblPerfTime"));
+    $("#lblTestStat").html(doc.getDocLabel("page_reportovertime", "lblTestStat"));
+    $("#lblTestStatBar").html(doc.getDocLabel("page_reportovertime", "lblTestStatBar"));
 }
 
 function loadPerfGraph(saveURLtoHistory, parties, types, units, countries, environments, robotDeclis) {
@@ -272,14 +279,20 @@ function loadPerfGraph(saveURLtoHistory, parties, types, units, countries, envir
 
     let test = $("#testSelect").val();
     let testcase = $("#testCaseSelect").val();
+    var tcString = "";
+    if ($("#testCaseSelect").val() !== null) {
+        for (var i = 0; i < $("#testCaseSelect").val().length; i++) {
+            var tcString = tcString + "&tests=" + encodeURI(test) + "&testcases=" + encodeURI($("#testCaseSelect").val()[i]);
+        }
+    }
 
-    let qS = countriesQ + environmentsQ + robotDeclisQ + partiQ + typeQ + unitQ + "&from=" + from.toISOString() + "&to=" + to.toISOString() + "&tests=" + encodeURI(test) + "&testcases=" + encodeURI(testcase);
+    let qS = "from=" + from.toISOString() + "&to=" + to.toISOString() + countriesQ + environmentsQ + robotDeclisQ + partiQ + typeQ + unitQ + tcString;
     if (saveURLtoHistory) {
         InsertURLInHistory("./ReportingExecutionOverTime.jsp?" + qS);
     }
 
     $.ajax({
-        url: "ReadExecutionStat?e=1" + qS,
+        url: "ReadExecutionStat?" + qS,
         method: "GET",
         async: true,
         dataType: 'json',

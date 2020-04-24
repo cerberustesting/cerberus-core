@@ -145,9 +145,12 @@ public class ReadExecutionStat extends HttpServlet {
         LOG.debug("to : " + toD);
 
         List<TestCase> ltc = new ArrayList<>();
-        String test = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("tests"), null, "UTF8");
-        String testCase = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("testcases"), null, "UTF8");
-        ltc.add(factoryTestCase.create(test, testCase));
+        List<String> test = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("tests"), new ArrayList<String>(), "UTF8");
+        List<String> testCase = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("testcases"), new ArrayList<String>(), "UTF8");
+        int i = 0;
+        for (String string : test) {
+            ltc.add(factoryTestCase.create(string, testCase.get(i++)));
+        }
 
         List<String> parties = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("parties"), Arrays.asList("total"), "UTF8");
 
