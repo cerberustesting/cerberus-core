@@ -665,347 +665,347 @@ var controlUIList = {
     "fr": [
         {
             "type": "Unknown",
-            "controlValue": null,
-            "controlProp": null,
-            "value3": null,
+            "value1": null, 
+            "value2": null, 
+            "value3": null, 
             "fatal": null
         },
         {
             "type": "verifyStringEqual",
-            "controlValue": "String2",
-            "controlProp": "String1",
-            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "value1": "String1","acol1": "col-lg-3",
+            "value2": "String2","acol2": "col-lg-3",
+            "value3": "[opt] Sensible à la Casse (Y/N)","acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyStringDifferent",
-            "controlValue": "String2",
-            "controlProp": "String1",
-            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "value1": "String1","acol1": "col-lg-3",
+            "value2": "String2","acol2": "col-lg-3",
+            "value3": "[opt] Sensible à la Casse (Y/N)","acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyStringGreater",
-            "controlValue": "String2 (ex : AAA)",
-            "controlProp": "String1 (ex: ZZZ)",
-            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "value1": "String1 (ex: ZZZ)","acol1": "col-lg-3",
+            "value2": "String2 (ex: AAA)","acol2": "col-lg-3",
+            "value3": "[opt] Sensible à la Casse (Y/N)","acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyStringMinor",
-            "controlValue": "String2 (ex : ZZZ)",
-            "controlProp": "String1 (ex: AAA)",
+            "value1": "String1 (ex: AAA)","acol1": "col-lg-4",
+            "value2": "String2 (ex : ZZZ)","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyStringContains",
-            "controlValue": "String2 (ex : ot)",
-            "controlProp": "String1 (ex : toto)",
-            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "value1": "String1 (ex : toto)","acol1": "col-lg-4",
+            "value2": "String2 (ex : ot)","acol2": "col-lg-2",
+            "value3": "[opt] Sensible à la Casse (Y/N)","acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyStringNotContains",
-            "controlValue": "String2 (ex : zot)",
-            "controlProp": "String1 (ex : toto)",
-            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "value1": "String1 (ex : toto)","acol1": "col-lg-4",
+            "value2": "String2 (ex : zot)","acol2": "col-lg-2",
+            "value3": "[opt] Sensible à la Casse (Y/N)","acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyNumericEquals",
-            "controlValue": "Integer2",
-            "controlProp": "Integer1",
+            "value1": "Integer1","acol1": "col-lg-3",
+            "value2": "Integer2","acol2": "col-lg-3",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericDifferent",
-            "controlValue": "Integer2",
-            "controlProp": "Integer1",
+            "value1": "Integer1","acol1": "col-lg-4",
+            "value2": "Integer2","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericGreater",
-            "controlValue": "Integer2 (ex : 10)",
-            "controlProp": "Integer1 (ex : 20)",
+            "value1": "Integer1 (ex : 20)","acol1": "col-lg-4",
+            "value2": "Integer2 (ex : 10)","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericGreaterOrEqual",
-            "controlValue": "Integer2 (ex : 10)",
-            "controlProp": "Integer1 (ex : 20)",
+            "value1": "Integer1 (ex : 20)","acol1": "col-lg-4",
+            "value2": "Integer2 (ex : 10)","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericMinor",
-            "controlValue": "Integer2 (ex : 20)",
-            "controlProp": "Integer1 (ex : 10)",
+            "value1": "Integer1 (ex : 10)","acol1": "col-lg-4",
+            "value2": "Integer2 (ex : 20)","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericMinorOrEqual",
-            "controlValue": "Integer2 (ex : 20)",
-            "controlProp": "Integer1 (ex : 10)",
+            "value1": "Integer1 (ex : 10)","acol1": "col-lg-4",
+            "value2": "Integer2 (ex : 20)","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementPresent",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)","acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementNotPresent",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)","acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementVisible",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)","acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementNotVisible",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)","acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementEquals",
-            "controlValue": "Expected element",
-            "controlProp": "XPath of the element",
-            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "value1": "XPath of the element","acol1": "col-lg-3",
+            "value2": "Expected element","acol2": "col-lg-3",
+            "value3": "[opt] Sensible à la Casse (Y/N)","acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyElementDifferent",
-            "controlValue": "Not Expected element",
-            "controlProp": "XPath of the element",
-            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "value1": "XPath of the element","acol1": "col-lg-3",
+            "value2": "Not Expected element","acol2": "col-lg-3",
+            "value3": "[opt] Sensible à la Casse (Y/N)","acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyElementInElement",
-            "controlValue": "Sub Element",
-            "controlProp": "Master Element",
+            "value1": "Master Element","acol1": "col-lg-4",
+            "value2": "Sub Element","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementClickable",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)","acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementNotClickable",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)","acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
-        {"type": "verifyElementTextEqual", "controlValue": "Texte", "controlProp": "Chemin vers l'Element", "value3": "[opt] Sensible à la Casse (Y/N)", "fatal": ""},
-        {"type": "verifyElementTextDifferent", "controlValue": "Texte", "controlProp": "Chemin vers l'Element", "value3": "[opt] Sensible à la Casse (Y/N)", "fatal": ""},
-        {"type": "verifyElementTextMatchRegex", "controlValue": "Regex", "controlProp": "Chemin vers l'Element", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericEqual", "controlValue": "Valeur numerique", "controlProp": "Chemin vers l'Element", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericDifferent", "controlValue": "Valeur numerique", "controlProp": "Chemin vers l'Element", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericGreater", "controlValue": "Valeur numerique", "controlProp": "Chemin vers l'Element", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericGreaterOrEqual", "controlValue": "Valeur numerique", "controlProp": "Chemin vers l'Element", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericMinor", "controlValue": "Valeur numerique", "controlProp": "Chemin vers l'Element", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericMinorOrEqual", "controlValue": "Valeur numerique", "controlProp": "Chemin vers l'Element", "value3": null, "fatal": ""},
-        {"type": "verifyTextInPage", "controlValue": null, "controlProp": "Regex", "value3": null, "fatal": ""},
-        {"type": "verifyTextNotInPage", "controlValue": null, "controlProp": "Regex", "value3": null, "fatal": ""},
-        {"type": "verifyTitle", "controlValue": null, "controlProp": "Title", "value3": "[opt] Sensible à la Casse (Y/N)", "fatal": ""},
-        {"type": "verifyUrl", "controlValue": null, "controlProp": "URL", "value3": null, "fatal": ""},
-        {"type": "verifyTextInDialog", "controlValue": null, "controlProp": "Text", "value3": null, "fatal": ""},
-        {"type": "verifyXmlTreeStructure", "controlValue": "Tree", "controlProp": "XPath", "value3": null, "fatal": ""},
-        {"type": "takeScreenshot", "controlValue": null, "controlProp": "[opt] Cadrer en pixel (gauche,droite,haut,bas)", "value3": null, "fatal": null},
-        {"type": "getPageSource", "controlValue": null, "controlProp": null, "value3": null, "fatal": null}
+        {"type": "verifyElementTextEqual", "value2": "Texte", "acol2": "col-lg-3","value1": "Chemin vers l'Element", "acol1": "col-lg-3","value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2","fatal": ""},
+        {"type": "verifyElementTextDifferent", "value2": "Texte", "acol2": "col-lg-3","value1": "Chemin vers l'Element", "acol1": "col-lg-3","value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2","fatal": ""},
+        {"type": "verifyElementTextMatchRegex", "value2": "Regex", "acol2": "col-lg-4","value1": "Chemin vers l'Element", "acol1": "col-lg-4","value3": null, "fatal": ""},
+        {"type": "verifyElementNumericEqual", "value2": "Valeur numerique", "acol2": "col-lg-4","value1": "Chemin vers l'Element", "acol1": "col-lg-4","value3": null, "fatal": ""},
+        {"type": "verifyElementNumericDifferent", "value2": "Valeur numerique", "acol2": "col-lg-4","value1": "Chemin vers l'Element", "acol1": "col-lg-4","value3": null, "fatal": ""},
+        {"type": "verifyElementNumericGreater", "value2": "Valeur numerique", "acol2": "col-lg-4","value1": "Chemin vers l'Element", "acol1": "col-lg-4","value3": null, "fatal": ""},
+        {"type": "verifyElementNumericGreaterOrEqual", "value2": "Valeur numerique", "acol2": "col-lg-4","value1": "Chemin vers l'Element", "acol1": "col-lg-4","value3": null, "fatal": ""},
+        {"type": "verifyElementNumericMinor", "value2": "Valeur numerique", "acol2": "col-lg-4","value1": "Chemin vers l'Element", "acol1": "col-lg-4","value3": null, "fatal": ""},
+        {"type": "verifyElementNumericMinorOrEqual", "value2": "Valeur numerique", "acol2": "col-lg-4","value1": "Chemin vers l'Element", "acol1": "col-lg-4","value3": null, "fatal": ""},
+        {"type": "verifyTextInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8","value3": null, "fatal": ""},
+        {"type": "verifyTextNotInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8","value3": null, "fatal": ""},
+        {"type": "verifyTitle", "value2": null, "value1": "Title", "acol1": "col-lg-6","value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2","fatal": ""},
+        {"type": "verifyUrl", "value2": null, "value1": "URL", "acol1": "col-lg-8","value3": null, "fatal": ""},
+        {"type": "verifyTextInDialog", "value2": null, "value1": "Text", "acol1": "col-lg-8","value3": null, "fatal": ""},
+        {"type": "verifyXmlTreeStructure", "value2": "Tree", "acol2": "col-lg-4","value1": "XPath", "acol1": "col-lg-4","value3": null, "fatal": ""},
+        {"type": "takeScreenshot", "value2": null, "value1": "[opt] Cadrer en pixel (gauche,droite,haut,bas)", "acol1": "col-lg-8","value3": null, "fatal": null},
+        {"type": "getPageSource", "value2": null, "value1": null, "value3": null, "fatal": null}
     ], "en": [
         {
             "type": "Unknown",
-            "controlValue": null,
-            "controlProp": null,
-            "value3": null,
+            "value1": null, 
+            "value2": null, 
+            "value3": null, 
             "fatal": null
         },
         {
             "type": "verifyStringEqual",
-            "controlValue": "String2",
-            "controlProp": "String1",
-            "value3": "[opt] case sensitive (Y/N)",
+            "value1": "String1", "acol1": "col-lg-3",
+            "value2": "String2", "acol2": "col-lg-3",
+            "value3": "[opt] case sensitive (Y/N)", "acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyStringDifferent",
-            "controlValue": "String2",
-            "controlProp": "String1",
-            "value3": "[opt] case sensitive (Y/N)",
+            "value1": "String1", "acol1": "col-lg-3",
+            "value2": "String2", "acol2": "col-lg-3",
+            "value3": "[opt] case sensitive (Y/N)", "acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyStringGreater",
-            "controlValue": "String2 (ex : AAA)",
-            "controlProp": "String1 (ex: ZZZ)",
+            "value1": "String1 (ex: ZZZ)","acol1": "col-lg-4",
+            "value2": "String2 (ex : AAA)","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyStringMinor",
-            "controlValue": "String2 (ex : ZZZ)",
-            "controlProp": "String1 (ex: AAA)",
+            "value1": "String1 (ex: AAA)","acol1": "col-lg-4",
+            "value2": "String2 (ex : ZZZ)","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyStringContains",
-            "controlValue": "String2 (ex : ot)",
-            "controlProp": "String1 (ex : toto)",
-            "value3": "[opt] case sensitive (Y/N)",
+            "value1": "String1 (ex : toto)","acol1": "col-lg-4",
+            "value2": "String2 (ex : ot)","acol2": "col-lg-2",
+            "value3": "[opt] case sensitive (Y/N)","acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyStringNotContains",
-            "controlValue": "String2 (ex : zot)",
-            "controlProp": "String1 (ex : toto)",
-            "value3": "[opt] case sensitive (Y/N)",
+            "value1": "String1 (ex : toto)","acol1": "col-lg-4",
+            "value2": "String2 (ex : zot)","acol2": "col-lg-2",
+            "value3": "[opt] case sensitive (Y/N)","acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyNumericEquals",
-            "controlValue": "Integer2",
-            "controlProp": "Integer1",
+            "value1": "Integer1","acol1": "col-lg-4",
+            "value2": "Integer2","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericDifferent",
-            "controlValue": "Integer2",
-            "controlProp": "Integer1",
+            "value1": "Integer1","acol1": "col-lg-4",
+            "value2": "Integer2","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericGreater",
-            "controlValue": "Integer2 (ex : 10)",
-            "controlProp": "Integer1 (ex : 20)",
+            "value1": "Integer1 (ex : 20)","acol1": "col-lg-4",
+            "value2": "Integer2 (ex : 10)","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericGreaterOrEqual",
-            "controlValue": "Integer2 (ex : 10)",
-            "controlProp": "Integer1 (ex : 20)",
+            "value1": "Integer1 (ex : 20)","acol1": "col-lg-4",
+            "value2": "Integer2 (ex : 10)","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericMinor",
-            "controlValue": "Integer2 (ex : 20)",
-            "controlProp": "Integer1 (ex : 10)",
+            "value1": "Integer1 (ex : 10)","acol1": "col-lg-4",
+            "value2": "Integer2 (ex : 20)","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericMinorOrEqual",
-            "controlValue": "Integer2 (ex : 20)",
-            "controlProp": "Integer1 (ex : 10)",
+            "value1": "Integer1 (ex : 10)","acol1": "col-lg-4",
+            "value2": "Integer2 (ex : 20)","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementPresent",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementNotPresent",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementVisible",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementNotVisible",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementEquals",
-            "controlValue": "Expected element",
-            "controlProp": "XPath of the element",
+            "value1": "XPath of the element","acol1": "col-lg-4",
+            "value2": "Expected element","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementDifferent",
-            "controlValue": "Not Expected element",
-            "controlProp": "XPath of the element",
+            "value1": "XPath of the element","acol1": "col-lg-4",
+            "value2": "Not Expected element","acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementInElement",
-            "controlValue": "Sub Element",
-            "controlProp": "Master Element",
+            "value1": "Master Element", "acol1": "col-lg-4",
+            "value2": "Sub Element", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementClickable",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementNotClickable",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
-        {"type": "verifyElementTextEqual", "controlValue": "Text", "controlProp": "Element Path", "value3": "[opt] Case Sensitive (Y/N)", "fatal": ""},
-        {"type": "verifyElementTextDifferent", "controlValue": "Text", "controlProp": "Element Path", "value3": "[opt] Case Sensitive (Y/N)", "fatal": ""},
-        {"type": "verifyElementTextMatchRegex", "controlValue": "Regex", "controlProp": "Element Path", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericEqual", "controlValue": "Numeric value", "controlProp": "Element Path", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericDifferent", "controlValue": "Numeric value", "controlProp": "Element Path", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericGreater", "controlValue": "Numeric value", "controlProp": "Element Path", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericGreaterOrEqual", "controlValue": "Numeric value", "controlProp": "Element Path", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericMinor", "controlValue": "Numeric value", "controlProp": "Element Path", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericMinorOrEqual", "controlValue": "Numeric value", "controlProp": "Element Path", "value3": null, "fatal": ""},
-        {"type": "verifyTextInPage", "controlValue": null, "controlProp": "Regex", "value3": null, "fatal": ""},
-        {"type": "verifyTextNotInPage", "controlValue": null, "controlProp": "Regex", "value3": null, "fatal": ""},
-        {"type": "verifyTitle", "controlValue": null, "controlProp": "Title", "value3": "[opt] Case Sensitive (Y/N)", "fatal": ""},
-        {"type": "verifyUrl", "controlValue": null, "controlProp": "URL", "value3": null, "fatal": ""},
-        {"type": "verifyTextInDialog", "controlValue": null, "controlProp": "Text", "value3": null, "fatal": ""},
-        {"type": "verifyXmlTreeStructure", "controlValue": "Tree", "controlProp": "XPath", "value3": null, "fatal": ""},
-        {"type": "takeScreenshot", "controlValue": null, "controlProp": "[opt] Crop values in pixels (left,right,top,bottom)", "value3": null, "fatal": null},
-        {"type": "getPageSource", "controlValue": null, "controlProp": null, "value3": null, "fatal": null}
+        {"type": "verifyElementTextEqual", "value2": "Text", "acol2": "col-lg-3", "value1": "Element Path", "acol1": "col-lg-3", "value3": "[opt] Case Sensitive (Y/N)", "acol3": "col-lg-2", "fatal": ""},
+        {"type": "verifyElementTextDifferent", "value2": "Text", "acol2": "col-lg-3", "value1": "Element Path", "acol1": "col-lg-3", "value3": "[opt] Case Sensitive (Y/N)", "acol3": "col-lg-2", "fatal": ""},
+        {"type": "verifyElementTextMatchRegex", "value2": "Regex", "acol2": "col-lg-3", "value1": "Element Path", "acol1": "col-lg-5", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericEqual", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericDifferent", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericGreater", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericGreaterOrEqual", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericMinor", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericMinorOrEqual", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
+        {"type": "verifyTextInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8", "value3": null, "fatal": ""},
+        {"type": "verifyTextNotInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8", "value3": null, "fatal": ""},
+        {"type": "verifyTitle", "value2": null, "value1": "Title", "acol1": "col-lg-6", "value3": "[opt] Case Sensitive (Y/N)", "acol3": "col-lg-2", "fatal": ""},
+        {"type": "verifyUrl", "value2": null, "acol2": null,"value1": "URL", "acol1": "col-lg-8","value3": null, "acol2": null,"fatal": ""},
+        {"type": "verifyTextInDialog", "value2": null, "value1": "Text", "acol1": "col-lg-8", "value3": null, "fatal": ""},
+        {"type": "verifyXmlTreeStructure", "value2": "Tree", "acol2": "col-lg-4", "value1": "XPath", "acol1": "col-lg-4", "value3": null, "fatal": ""},
+        {"type": "takeScreenshot", "value2": null, "value1": "[opt] Crop values in pixels (left,right,top,bottom)", "acol1": "col-lg-8", "value3": null, "fatal": null},
+        {"type": "getPageSource", "value2": null, "value1": null, "value3": null, "fatal": null}
     ]
 };
 
@@ -1057,7 +1057,6 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
         getSelectInvariant("ACTIONFORCEEXESTATUS", false, true);
         getSelectInvariant("STEPLOOP", false, true);
         getSelectInvariant("STEPCONDITIONOPER", false, true);
-        loadLibraryStep();
         bindToggleCollapse();
         var test = GetURLParameter("test");
         var testcase = GetURLParameter("testcase");
@@ -1118,6 +1117,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                     }
 
                     canUpdate = data.hasPermissionsUpdate;
+                    loadLibraryStep(undefined, data.info.system);
 
                     testcaseinfo = data.info;
                     loadTestCaseInfo(data.info);
@@ -2456,7 +2456,7 @@ var getModif, setModif, initModification;
 
 /** LIBRARY STEP UTILY FUNCTIONS * */
 
-function loadLibraryStep(search) {
+function loadLibraryStep(search, system) {
     var search_lower = "";
     if (search !== undefined) {
         search_lower = search.toLowerCase();
@@ -2465,7 +2465,7 @@ function loadLibraryStep(search) {
     showLoaderInModal("#addStepModal");
     $.ajax({
         url: "GetStepInLibrary",
-        data: {system: getUser().defaultSystem},
+        data: {system: system},
         async: true,
         success: function (data) {
             var test = {};
@@ -2516,7 +2516,7 @@ function loadLibraryStep(search) {
                 // Clear any previously set timer before setting a fresh one
                 window.clearTimeout($(this).data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
-                    loadLibraryStep(search);
+                    loadLibraryStep(search, system);
                 }, 500));
             });
 
@@ -3556,7 +3556,7 @@ Control.prototype.generateContent = function () {
     var content = $("<div></div>").addClass("content col-lg-9");
     var firstRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow row form-group");
     var secondRow = $("<div></div>").addClass("fieldRow row secondRow input-group");
-    secondRow.css("width", "100%");
+    secondRow.css("width", "120%");
     var thirdRow = $("<div></div>").addClass("fieldRow row").hide();
 
     var controlList = $("<select></select>").addClass("form-control input-sm").css("width", "100%");
@@ -3655,15 +3655,15 @@ Control.prototype.generateContent = function () {
 
     firstRow.append(descContainer);
 
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "control_field"))).append(controlList));
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(controlValue1Field));
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(controlValue2Field));
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value3_field"))).append(controlValue3Field));
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "control_field"))).append(controlList));
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(controlValue1Field));
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(controlValue2Field));
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value3_field"))).append(controlValue3Field));
 
-    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval1));
-    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval2));
-    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval3));
-    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "fatal_field"))).append(fatalList));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval1));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval2));
+    thirdRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval3));
+    thirdRow.append($("<div></div>").addClass("col-lg-1 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "fatal_field"))).append(fatalList));
 
     thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(controlconditionoper));
 
@@ -4010,70 +4010,6 @@ function deleteTestCaseHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-//function editPropertiesModalSaveHandler() {
-//    clearResponseMessage($('#propertiesModal'));
-//    var doc = new Doc();
-//
-//    var properties = $("#propTable #masterProp");
-//    var propArr = [];
-//    var propertyWithoutCountry = false;
-//    for (var i = 0; i < properties.length; i++) {
-//        if ($(properties[i]).data("property").country.length <= 0) {
-//            propertyWithoutCountry = true;
-//        }
-//        propArr.push($(properties[i]).data("property"));
-//    }
-//    var saveProp = function () {
-//        showLoaderInModal('#propertiesModal');
-//        $.ajax({
-//            url: "UpdateTestCaseProperties",
-//            async: true,
-//            method: "POST",
-//            data: {
-//                informationInitialTest: GetURLParameter("test"),
-//                informationInitialTestCase: GetURLParameter("testcase"),
-//                informationTest: GetURLParameter("test"),
-//                informationTestCase: GetURLParameter("testcase"),
-//                propArr: JSON.stringify(propArr)
-//            },
-//            success: function (data) {
-//                var Tags = getTags();
-//
-//                var array = [];
-//
-//                for (var i = 0; i < propArr.length; i++) {
-//                    array.push(propArr[i].property);
-//                }
-//
-//                for (var i = 0; i < Tags.length; i++) {
-//                    if (Tags[i].regex === "%property\\.") {
-//                        Tags[i].array = array;
-//                    }
-//                }
-//
-//                hideLoaderInModal('#propertiesModal');
-//                if (getAlertType(data.messageType) === 'success') {
-//                    $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("input");
-//                    showMessage(data);
-//                    $('#propertiesModal').modal('hide');
-//                } else {
-//                    showMessage(data, $('#propertiesModal'));
-//                }
-//            },
-//            error: showUnexpectedError
-//        });
-//    };
-//
-//    if (propertyWithoutCountry) {
-//        showModalConfirmation(function () {
-//            $('#confirmationModal').modal('hide');
-//            saveProp();
-//        }, undefined, undefined, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcasescript", "warning_no_country"), "", "", "", "");
-//    } else {
-//        saveProp();
-//    }
-//}
-
 function setPlaceholderAction(actionElement) {
 
     var user = getUser();
@@ -4201,19 +4137,22 @@ function setPlaceholderControl(controlElement) {
 
         for (var i = 0; i < placeHolders.length; i++) {
             if (placeHolders[i].type === e.value) {
-                if (placeHolders[i].controlProp !== null) {
+                if (placeHolders[i].value1 !== null) {
+                    $(e).parent().parent().next().removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders[i].acol1);
                     $(e).parent().parent().next().show();
-                    $(e).parent().parent().next().find('label').text(placeHolders[i].controlProp);
+                    $(e).parent().parent().next().find('label').text(placeHolders[i].value1);
                 } else {
                     $(e).parent().parent().next().hide();
                 }
-                if (placeHolders[i].controlValue !== null) {
+                if (placeHolders[i].value2 !== null) {
+                    $(e).parent().parent().next().next().removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders[i].acol2);
                     $(e).parent().parent().next().next().show();
-                    $(e).parent().parent().next().next().find('label').text(placeHolders[i].controlValue);
+                    $(e).parent().parent().next().next().find('label').text(placeHolders[i].value2);
                 } else {
                     $(e).parent().parent().next().next().hide();
                 }
                 if (placeHolders[i].value3 !== null) {
+                    $(e).parent().parent().next().next().next().removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders[i].acol3);
                     $(e).parent().parent().next().next().next().show();
                     $(e).parent().parent().next().next().next().find('label').text(placeHolders[i].value3);
                 } else {

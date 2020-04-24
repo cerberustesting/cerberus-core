@@ -1,6 +1,6 @@
 *Bug fixes*
 [square]
-* none
+* Fixed some issue when selecting a new step from library. (The selection of lib was not taken from the test case system from 1st system from gui header combe)
 
 *Improvements / New features*
 [square]
@@ -9,6 +9,7 @@
 * [GUI] Inside ReportByTag page, rows that are in QUEUED state but with a previous execution are now also displayed by default.
 * [GUI] On RunTest page, TestCase filters are now hidden by default (that speedup the page loading for new users).
 * [GUI] We can now add an environment at application level without being forced to create it before (it will be created automatically).
+* [GUI] Control layout improvement on test case script page.
 * [ENGINE] Added decode on topic, header and hosts for KAFKA SEARCH service #2119
 * [ENGINE] Better message when Kafka topic is not found.
 * [ENGINE] Service responses that have no Content-Type header defined and start by [ are now also considered as JSON
