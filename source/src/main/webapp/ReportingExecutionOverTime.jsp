@@ -99,18 +99,21 @@
 
                                 <div class="col-sm-2 col-md-2 btn-group marginTop20">
                                     <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Preselect Range<span class="caret"></span>
+                                        Choose Preselected Range<span class="caret"></span>
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                        <button class="btn btn-default pull-left" id="last3Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(1)"><span class=""></span> Last Month</button>
-                                        <button class="btn btn-default pull-left" id="last3Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(2)"><span class=""></span> Last 3 Months</button>
-                                        <button class="btn btn-default pull-left" id="last3Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(3)"><span class=""></span> Last 6 Months</button>
+                                        <button class="btn btn-default pull-left" id="last1Week" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(6)"><span class=""></span> Current Day</button>
+                                        <button class="btn btn-default pull-left" id="last1Week" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(5)"><span class=""></span> Previous Week</button>
+                                        <button class="btn btn-default pull-left" id="last1Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(1)"><span class=""></span> Previous Month</button>
+                                        <button class="btn btn-default pull-left" id="last3Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(2)"><span class=""></span> Previous 3 Months</button>
+                                        <button class="btn btn-default pull-left" id="last6Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(3)"><span class=""></span> Previous 6 Months</button>
+                                        <button class="btn btn-default pull-left" id="last12Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(4)"><span class=""></span> Previous Year</button>
                                     </div>
                                 </div>
 
                                 <div class='col-sm-2 col-md-2'>
                                     <div class="input-group-btn ">
-                                        <button type="button" class="btn btn-info btn-default marginTop20" style="margin-left: 10px;min-height: " id="loadbutton" onclick="loadPerfGraph(true);">Load</button>
+                                        <button type="button" class="btn btn-primary marginTop20" style="margin-left: 10px;min-height: " id="loadbutton" onclick="loadPerfGraph(true);">Load</button>
                                     </div>
                                 </div>
                             </div>

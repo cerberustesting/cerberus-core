@@ -318,15 +318,23 @@ function updateNbDistinct(data) {
 function setTimeRange(id) {
     let fromD;
     let toD = new Date();
-    if (id === 1) {
-        fromD = new Date();
+    toD.setHours(23);
+    toD.setMinutes(59);
+    fromD = new Date();
+    fromD.setHours(23);
+    fromD.setMinutes(59);
+    if (id === 1) { // 1 month
         fromD.setMonth(fromD.getMonth() - 1);
-    } else if (id === 2) {
-        fromD = new Date();
+    } else if (id === 2) { // 3 months
         fromD.setMonth(fromD.getMonth() - 3);
-    } else if (id === 3) {
-        fromD = new Date();
+    } else if (id === 3) { // 6 months
         fromD.setMonth(fromD.getMonth() - 6);
+    } else if (id === 4) { //
+        fromD.setMonth(fromD.getMonth() - 12);
+    } else if (id === 5) {
+        fromD.setHours(fromD.getHours() - 168);
+    } else if (id === 6) {
+        fromD.setHours(fromD.getHours() - 24);
     }
     $('#frompicker').data("DateTimePicker").date(moment(fromD));
     $('#topicker').data("DateTimePicker").date(moment(toD));
@@ -447,6 +455,10 @@ function getOptions(title, unit) {
                         return xLabel + ': ' + t.yLabel;
                     }
                 }
+            },
+            hover: {
+                mode: 'index',
+                intersect: false
             }
         },
         title: {
@@ -556,10 +568,17 @@ function buildGraphs(data) {
             label: lab,
             backgroundColor: get_Color_fromindex(i),
             borderColor: get_Color_fromindex(i),
-            pointBorderWidth: 10,
-            hitRadius: 15,
+//            pointBorderWidth: 0,
+            pointRadius: 10,
+            pointHoverRadius: 15,
+            hitRadius: 10,
             fill: false,
-            data: d
+            data: d,
+            hover: {
+                mode: 'index',
+                intersect: false
+            }
+
         };
         if ((c.key.unit === "totalsize") || (c.key.unit === "sizemax")) {
             sizedatasets.push(dataset);
@@ -631,19 +650,22 @@ function buildExeGraphs(data) {
         var dataset = {
             label: lab,
             backgroundColor: "white",
-            borderColor: "white",
             borderColor: get_Color_fromindex(i),
             pointBackgroundColor: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
                 return getExeStatusRowColor(value.controlStatus);
             },
-            pointBorderWidth: 0,
+//            pointBorderWidth: 0,
             pointRadius: 10,
-            pointHoverRadius: 5,
-            hitRadius: 15,
+            pointHoverRadius: 15,
+            hitRadius: 10,
             fill: false,
-            data: d
+            data: d,
+            hover: {
+                mode: 'index',
+                intersect: false
+            }
         };
         timedatasets.push(dataset);
     }
