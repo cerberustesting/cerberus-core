@@ -8514,6 +8514,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1489
         a.add("ALTER TABLE `tag` ADD INDEX `IX_tag_03` (`DateCreated` ASC) ;");
 
+        // ADD waitNetworkTrafficIdle Action.
+        // 1490
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES('ACTION', 'waitNetworkTrafficIdle', 16700, 'Wait until there are no more Network Traffic.', 'Wait Network Idle');");
+
+        
+        
         return a;
     }
 

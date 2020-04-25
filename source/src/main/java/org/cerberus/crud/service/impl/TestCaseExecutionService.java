@@ -31,6 +31,7 @@ import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
+import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.entity.TestCaseExecutionQueueDep;
 import org.cerberus.crud.entity.TestCaseStepExecution;
@@ -79,6 +80,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     private ITagService tagService;
     @Autowired
     private IFactoryTagSystem factoryTagSystem;
+    @Autowired
+    private ITestCaseExecutionHttpStatService testCaseExecutionHttpStatService;
 
     private static final Logger LOG = LogManager.getLogger(TestCaseExecutionService.class);
 
@@ -235,17 +238,21 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
 
     @Override
     public AnswerItem<TestCaseExecution> readByKeyWithDependency(long executionId) {
+        // Get Main Execution.
         AnswerItem<TestCaseExecution> tce = this.readByKey(executionId);
         TestCaseExecution testCaseExecution = (TestCaseExecution) tce.getItem();
 
+        // Get Execution Tag.
         if (!StringUtil.isNullOrEmpty(testCaseExecution.getTag())) {
             AnswerItem<Tag> ai = tagService.readByKey(testCaseExecution.getTag());
             testCaseExecution.setTagObj(ai.getItem());
         }
 
+        // Get Test Case.
         AnswerItem<TestCase> ai = testCaseService.readByKeyWithDependency(testCaseExecution.getTest(), testCaseExecution.getTestCase());
         testCaseExecution.setTestCaseObj(ai.getItem());
 
+        // Get Execution Data (Properties).
         try {
             List<TestCaseExecutionData> a = testCaseExecutionDataService.readByIdWithDependency(executionId);
             for (TestCaseExecutionData tced : a) {
@@ -257,6 +264,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
             LOG.error("An erreur occured while getting testcase execution data", e);
         }
 
+        // Get Execution Dependencies.
         if (testCaseExecution.getQueueID() > 0) {
             try {
                 List<TestCaseExecutionQueueDep> a = testCaseExecutionQueueDepService.convert(testCaseExecutionQueueDepService.readByExeQueueId(testCaseExecution.getQueueID()));
@@ -286,10 +294,17 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         AnswerList<TestCaseStepExecution> postTestCaseSteps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, Test.TEST_POSTTESTING, null);
         testCaseExecution.addTestCaseStepExecutionList(postTestCaseSteps.getDataList());
 
+        // Get Execution Files.
         AnswerList<TestCaseExecutionFile> files = testCaseExecutionFileService.readByVarious(executionId, "");
         testCaseExecution.setFileList((List<TestCaseExecutionFile>) files.getDataList());
 
+        // Get Execution Files.
+        AnswerItem<TestCaseExecutionHttpStat> httpStat = testCaseExecutionHttpStatService.readByKey(executionId);
+        testCaseExecution.setHttpStat(httpStat.getItem());
+
+        // Set Final response.
         AnswerItem<TestCaseExecution> response = new AnswerItem<>(testCaseExecution, tce.getResultMessage());
+
         return response;
     }
 

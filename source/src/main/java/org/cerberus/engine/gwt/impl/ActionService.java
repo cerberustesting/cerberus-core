@@ -52,6 +52,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.service.appium.IAppiumService;
 import org.cerberus.service.appservice.IServiceService;
 import org.cerberus.service.cerberuscommand.ICerberusCommand;
+import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.har.IHarService;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.service.sikuli.ISikuliService;
@@ -115,6 +116,8 @@ public class ActionService implements IActionService {
     private IPropertyService propertyService;
     @Autowired
     private IServiceService serviceService;
+    @Autowired
+    private IExecutorService executorService;
     @Autowired
     private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
     @Autowired
@@ -325,6 +328,9 @@ public class ActionService implements IActionService {
                     break;
                 case TestCaseStepAction.ACTION_WAITVANISH:
                     res = this.doActionWaitVanish(tCExecution, value1);
+                    break;
+                case TestCaseStepAction.ACTION_WAITNETWORKTRAFFICIDLE:
+                    res = this.doActionWaitNetworkTrafficIdle(tCExecution);
                     break;
                 case TestCaseStepAction.ACTION_CALLSERVICE:
                     res = this.doActionCallService(testCaseStepActionExecution, value1, value2, value3);
@@ -1200,6 +1206,18 @@ public class ActionService implements IActionService {
             }
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action KeyPress :" + ex);
+            return ex.getMessageError();
+        }
+    }
+
+    private MessageEvent doActionWaitNetworkTrafficIdle(TestCaseExecution tCExecution) {
+        try {
+
+            return executorService.waitForIdleNetwork(tCExecution.getRobotExecutorObj().getExecutorExtensionHost(), tCExecution.getRobotExecutorObj().getExecutorExtensionPort(),
+                     tCExecution.getRemoteProxyUUID(), tCExecution.getSystem());
+
+        } catch (CerberusEventException ex) {
+            LOG.fatal("Error doing Action WaitNetworkTrafficIdle :" + ex);
             return ex.getMessageError();
         }
     }

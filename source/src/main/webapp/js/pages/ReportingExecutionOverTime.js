@@ -581,7 +581,6 @@ function buildGraphs(data) {
             label: lab,
             backgroundColor: get_Color_fromindex(i),
             borderColor: get_Color_fromindex(i),
-//            pointBorderWidth: 0,
             pointRadius: 10,
             pointHoverRadius: 15,
             hitRadius: 10,
@@ -669,7 +668,6 @@ function buildExeGraphs(data) {
                 var value = d.dataset.data[index];
                 return getExeStatusRowColor(value.controlStatus);
             },
-//            pointBorderWidth: 0,
             pointRadius: 10,
             pointHoverRadius: 15,
             hitRadius: 10,

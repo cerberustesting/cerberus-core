@@ -486,60 +486,31 @@ function updatePage(data, stepList) {
     setUpClickFunctionToSaveTestCaseExecutionButton(data);
     drawDependencies(data.testCaseExecutionQueueDepList, "depTableBody", "editTabDep");
 
-    drawNetworkCharts(data.fileList);
+    if (data.httpStat !== undefined) {
+        drawNetworkCharts(data.httpStat.stat);
+    }
 }
 
 
-function drawNetworkCharts(filelist) {
+function drawNetworkCharts(data) {
     var doc = new Doc();
 
-    // Get Network Traffic data structure.
-    var ntPath = undefined;
-    var ntType = undefined;
+    $("#editTabNetwork").show();
 
-    for (var index = 0; index < filelist.length; index++) {
-        if (filelist[index].fileDesc === "Network Stat") {
-            ntPath = filelist[index].fileName;
-            ntType = filelist[index].fileType;
-        }
-    }
+    var title = [doc.getDocLabel("page_executiondetail", "hits"), 'total : ' + data.total.requests.nb];
+    drawChart_HttpStatus(data, title, 'myChart1');
 
-    if (ntPath !== undefined) {
+    var title = [doc.getDocLabel("page_executiondetail", "size"), 'total : ' + formatNumber(Math.round(data.total.size.sum / 1024)) + ' Kb'];
+    drawChart_SizePerType(data, title, 'myChart2');
 
-        $.ajax({
-            url: "ReadTestCaseExecutionMedia",
-            async: true,
-            method: "GET",
-            data: {
-                filename: ntPath,
-                filetype: ntType
-            },
-            success: function (data) {
+    networkStat = data;
+    drawChart_PerThirdParty(networkStat, 'myChart3');
 
-                $("#editTabNetwork").show();
+    var title = [doc.getDocLabel("page_executiondetail", "thirdPartygantt")];
+    drawChart_GanttPerThirdParty(data, title, 'myChart4');
 
-                networkStat = data;
+    drawTable_Requests(data, "requestTable", "#NS3Panel")
 
-                var title = [doc.getDocLabel("page_executiondetail", "hits"), 'total : ' + data.total.requests.nb];
-                drawChart_HttpStatus(data, title, 'myChart1');
-
-                var title = [doc.getDocLabel("page_executiondetail", "size"), 'total : ' + formatNumber(Math.round(data.total.size.sum / 1024)) + ' Kb'];
-                drawChart_SizePerType(data, title, 'myChart2');
-
-                drawChart_PerThirdParty(networkStat, 'myChart3');
-
-                var title = [doc.getDocLabel("page_executiondetail", "thirdPartygantt")];
-                drawChart_GanttPerThirdParty(data, title, 'myChart4');
-
-                drawTable_Requests(data, "requestTable", "#NS3Panel")
-
-            },
-            error: showUnexpectedError
-        });
-
-
-
-    }
 }
 
 

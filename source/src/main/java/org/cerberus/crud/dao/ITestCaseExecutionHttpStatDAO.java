@@ -28,6 +28,7 @@ import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -46,6 +47,13 @@ public interface ITestCaseExecutionHttpStatDAO {
      * @return
      */
     Answer create(TestCaseExecutionHttpStat object);
+
+    /**
+     *
+     * @param exeId
+     * @return
+     */
+    AnswerItem<TestCaseExecutionHttpStat> readByKey(long exeId);
 
     /**
      *

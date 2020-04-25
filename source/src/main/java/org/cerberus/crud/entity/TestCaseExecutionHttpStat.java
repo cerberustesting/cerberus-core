@@ -20,14 +20,22 @@
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+
 
 /**
  *
  * @author bdumont
  */
 public class TestCaseExecutionHttpStat {
+    
+    private static final Logger LOG = LogManager.getLogger(TestCaseExecutionHttpStat.class);
 
+    
     private long id;
     private Timestamp start;
     private String controlStatus;
@@ -371,4 +379,58 @@ public class TestCaseExecutionHttpStat {
         this.DateModif = DateModif;
     }
 
+    public JSONObject toJson() {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("id", this.getId());
+            result.put("test", this.getTest());
+            result.put("testcase", this.getTestCase());
+            result.put("environment", this.getEnvironment());
+            result.put("country", this.getCountry());
+            result.put("start", this.getStart());
+            result.put("controlStatus", this.getControlStatus());
+            result.put("application", this.getApplication());
+            result.put("system", this.getSystem());
+            result.put("robotDecli", this.getRobotDecli());
+
+            result.put("totalHits", this.getTotal_hits());
+            result.put("totalSize", this.getTotal_size());
+            result.put("totalTime", this.getTotal_time());
+            result.put("internalHits", this.getInternal_hits());
+            result.put("internalSize", this.getInternal_size());
+            result.put("internalTime", this.getInternal_time());
+
+            result.put("imgSize", this.getImg_size());
+            result.put("imgSizeMax", this.getImg_size_max());
+            result.put("imgHits", this.getImg_hits());
+            result.put("cssSize", this.getImg_size());
+            result.put("cssSizeMax", this.getImg_size_max());
+            result.put("cssHits", this.getImg_hits());
+            result.put("htmlSize", this.getImg_size());
+            result.put("htmlSizeMax", this.getImg_size_max());
+            result.put("htmlHits", this.getImg_hits());
+            result.put("jsSize", this.getImg_size());
+            result.put("jsSizeMax", this.getImg_size_max());
+            result.put("jsHits", this.getImg_hits());
+            result.put("mediaSize", this.getImg_size());
+            result.put("mediaSizeMax", this.getImg_size_max());
+            result.put("mediaHits", this.getImg_hits());
+            result.put("nbThirdParty", this.getNb_thirdparty());
+            result.put("crbVersion", this.getCrbVersion());
+            result.put("stat", this.getStatDetail());
+            
+            result.put("usrCreated", this.getUsrCreated());
+            result.put("dateCreated", this.getDateCreated());
+            result.put("usrModif", this.getUsrModif());
+            result.put("dateModif", this.getDateModif());
+
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        } catch (Exception ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return result;
+    }
+    
+    
 }

@@ -404,6 +404,18 @@ Will that Element with id equal to userName is removed from the current screen.
 ====
 
 
+==== waitNetworkTrafficIdle
+Wait that network traffic idle. Cerberus will wait until requests are no longer performed. That can be used in order to secure that all page components are fully loaded and does not miss some important ressource hits. In order to do so, Cerberus will check periodically the number of hits generated from the application. When the number of hits stops to grow during that period, Cerberus stop waiting and continue the test.
+
+Parameter 'cerberus_networkstatsave_idleperiod_ms' can be used to change the period in millisecond and 'cerberus_networkstatsave_idlemaxloop_nb' can be used in order to limit those checks after a maximum of iteration.
+
+[NOTE]
+====
+This action is only possible when Robot has the Cerberus executor activated and fully working.
+It also require at least version 1.1 of the executor.
+====
+
+
 ==== callService
 Call a service (REST, FTP, KAFKA,...) defined the Service Library and provide the output within the execution.
 
@@ -471,7 +483,28 @@ id of the field will be used.
  
  - xpath= 
  
-You can specify and xpath value. Addition documentation on xpath definition can be found https://www.w3schools.com/xml/xpath_syntax.asp[here].
+You can specify an xpath value. Additional documentation on xpath syntax can be found https://www.w3schools.com/xml/xpath_syntax.asp[here].
+Xpath can be tested live on Web pages from Chrome Developer extention (accessible via F12).
+
+Via Element tab, you just have to hit CTRL+F in order to find inside the DOM.
+
+image:chromeXPathElement1.png[XPath Chrome Console,align="center"] 
+
+In the search field, typing the xpath will point you to the element.
+
+image:chromeXPathElement2.png[XPath Chrome Console,align="center"]
+
+XPath can also be tested from the console tab.
+
+image:chromeXPathConsole1.png[XPath Chrome Console,align="center"]
+
+Just type 
+
+    $x("//div");
+
+And it will report the Element found. [] is returned in case no element are found.
+
+image:chromeXPathConsole2.png[XPath Chrome Console,align="center"]
 
  - link=
  
@@ -615,9 +648,7 @@ You can also add extra third party from the Cerberus GUI by adding a public inva
 
 Any host URL that does not match either the `cerberus_webperf_ignoredomainlist` parameter, the ThirdParty definition file from parameter `cerberus_webperf_thirdpartyfilepath`, the `WEBPERFTHIRDPARTY` public invariant or list of application domain will appear in the *[blue]`unknown`* section.
 
-Cerberus has a mechanism that detect when requests are no longer performed. This is used in order to secure that the collected stats are complete and does not miss some important hits. In order to do so, Cerberus will check periodically the number of hits generated from the application. When the number of hits stops to grow during that period, Cerberus will stop the test and start to collect the stats.
-
-Parameter 'cerberus_networkstatsave_idleperiod_ms' can be used to change the period in millisecond and 'cerberus_networkstatsave_idlemaxloop_nb' can be used in order to limit those checks after a maximum of iteration.
+At the end of the execution, Cerberus will automatically execute 'waitNetworkTrafficIdle' action in order to secure that requests are no longer performed. This is used in order to secure that the collected stats are complete and does not miss some important hits. 
 
 === Test Case Control
 

@@ -151,6 +151,9 @@ public class ReadExecutionStat extends HttpServlet {
         for (String string : test) {
             ltc.add(factoryTestCase.create(string, testCase.get(i++)));
         }
+        if (ltc.size() <= 0) {
+            ltc.add(factoryTestCase.create("", ""));
+        }
 
         List<String> parties = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("parties"), Arrays.asList("total"), "UTF8");
 
@@ -275,10 +278,10 @@ public class ReadExecutionStat extends HttpServlet {
                         TestCase a = factoryTestCase.create(exeCur.getTest(), exeCur.getTestCase());
                         try {
                             a = testCaseService.convert(testCaseService.readByKey(exeCur.getTest(), exeCur.getTestCase()));
+                            curveObj.put("testcase", a.toJson());
                         } catch (CerberusException ex) {
                             LOG.error("Exception when getting TestCase details", ex);
                         }
-                        curveObj.put("testcase", a.toJson());
 
                         curveObj.put("country", exeCur.getCountry());
                         curveObj.put("environment", exeCur.getEnvironment());

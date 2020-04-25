@@ -24,6 +24,7 @@ import java.util.List;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
+import org.cerberus.crud.service.impl.TestCaseExecutionHttpStatService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -49,7 +50,14 @@ public interface ITestCaseExecutionHttpStatService {
      * @param har
      * @return
      */
-    Answer saveStat(TestCaseExecution tce, JSONObject har);
+    AnswerItem<TestCaseExecutionHttpStat> convertFromHarWithStat(TestCaseExecution tce, JSONObject har);
+
+    /**
+     *
+     * @param exeId
+     * @return
+     */
+    AnswerItem<TestCaseExecutionHttpStat> readByKey(long exeId);
 
     /**
      *

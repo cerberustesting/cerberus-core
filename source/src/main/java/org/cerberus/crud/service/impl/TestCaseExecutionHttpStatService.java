@@ -32,6 +32,7 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionHttpStat;
 import org.cerberus.crud.service.ITestCaseExecutionHttpStatService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
@@ -66,13 +67,19 @@ public class TestCaseExecutionHttpStatService implements ITestCaseExecutionHttpS
     }
 
     @Override
+    public AnswerItem<TestCaseExecutionHttpStat> readByKey(long exeId) {
+        return testCaseExecutionHttpStatDAO.readByKey(exeId);
+    }
+
+    @Override
     public AnswerList<TestCaseExecutionHttpStat> readByCriteria(String controlStatus, List<TestCase> testcases, Date from, Date to, List<String> system, List<String> countries, List<String> environments, List<String> robotDecli) {
         return testCaseExecutionHttpStatDAO.readByCriteria(controlStatus, testcases, from, to, system, countries, environments, robotDecli);
     }
 
     @Override
-    public Answer saveStat(TestCaseExecution tce, JSONObject har) {
-        Answer res = new Answer();
+    public AnswerItem<TestCaseExecutionHttpStat> convertFromHarWithStat(TestCaseExecution tce, JSONObject har) {
+        AnswerItem<TestCaseExecutionHttpStat> res = new AnswerItem<>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         try {
             JSONObject s = har.getJSONObject("stat");
             int t1 = s.getJSONObject("total").getJSONObject("requests").getInt("nb");
@@ -99,9 +106,13 @@ public class TestCaseExecutionHttpStatService implements ITestCaseExecutionHttpS
             int nb3p = s.getInt("nbThirdParty");
             TestCaseExecutionHttpStat object = factoryTestCaseExecutionHttpStat.create(tce.getId(), new Timestamp(0), tce.getControlStatus(), tce.getSystem(), tce.getApplication(), tce.getTest(), tce.getTestCase(), tce.getCountry(), tce.getEnvironment(), tce.getRobotDecli(),
                     t1, t2, t3, i1, i2, i3, img1, img2, img3, js1, js2, js3, css1, css2, css3, html1, html2, html3, media1, media2, media3, nb3p, tce.getCrbVersion(), s, tce.getUsrCreated(), null, tce.getUsrModif(), null);
-            return this.create(object);
+            res.setItem(object);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            res.setResultMessage(msg);
+            return res;
         } catch (JSONException ex) {
-            LOG.error(OBJECT_NAME);
+            msg.resolveDescription("DESCRIPTION", ex.getMessage());
+            LOG.error("Exception building HttpStat from Har JSON and execution.",ex);
         }
         return res;
     }

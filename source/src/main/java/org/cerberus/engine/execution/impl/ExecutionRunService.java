@@ -81,6 +81,7 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.enums.Screenshot;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.kafka.IKafkaService;
 import org.cerberus.service.robotproviders.IBrowserstackService;
 import org.cerberus.service.robotproviders.IKobitonService;
@@ -173,6 +174,8 @@ public class ExecutionRunService implements IExecutionRunService {
     private IKafkaService kafkaService;
     @Autowired
     private IAppServiceService appServiceService;
+    @Autowired
+    private IExecutorService executorService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
@@ -567,7 +570,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                 testCaseStepExecution = factoryTestCaseStepExecution.create(
                                         runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
                                         testCaseStep.getStep(), step_index, testCaseStep.getSort(), testCaseStep.getLoop(), testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal3(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal3(), null,
-                                        startStep, 0, startStep, 0, new BigDecimal("0"), null, stepMess, testCaseStep, tCExecution,
+                                        startStep, startStep, startStep, startStep, new BigDecimal("0"), null, stepMess, testCaseStep, tCExecution,
                                         testCaseStep.getUseStep(), testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), testCaseStep.getDescription());
                                 testCaseStepExecution.setLoop(testCaseStep.getLoop());
                                 testCaseStepExecutionService.insertTestCaseStepExecution(testCaseStepExecution);
@@ -1042,7 +1045,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), testCaseStepAction.getConditionVal3(),
                     testCaseStepAction.getAction(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(), testCaseStepAction.getValue3(), testCaseStepAction.getValue1(),
                     testCaseStepAction.getValue2(), testCaseStepAction.getValue3(),
-                    testCaseStepAction.getForceExeStatus(), startAction, 0, startAction, 0, new MessageEvent(MessageEventEnum.ACTION_PENDING),
+                    testCaseStepAction.getForceExeStatus(), startAction, startAction, startAction, startAction, new MessageEvent(MessageEventEnum.ACTION_PENDING),
                     testCaseStepAction.getDescription(), testCaseStepAction, testCaseStepExecution);
             this.testCaseStepActionExecutionService.insertTestCaseStepActionExecution(testCaseStepActionExecution);
 
@@ -1570,7 +1573,7 @@ public class ExecutionRunService implements IExecutionRunService {
          * Stopping remote proxy.
          */
         try {
-            this.robotServerService.stopRemoteProxy(tCExecution);
+            this.executorService.stopRemoteProxy(tCExecution);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Stop Cerberus Executor Proxy for execution " + tCExecution.getId());
             }

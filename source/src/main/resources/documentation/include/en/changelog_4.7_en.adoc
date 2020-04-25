@@ -1,6 +1,6 @@
 *Bug fixes*
 [square]
-* Fixed some issue when selecting a new step from library. (The selection of lib was not taken from the test case system from 1st system from gui header combe)
+* Fixed some issue when selecting a new step from library. (The selection of library steps was not taken from the test case system but from the 1st system from gui header combo)
 
 *Improvements / New features*
 [square]
@@ -15,6 +15,7 @@
 * [ENGINE] Better message when Kafka topic is not found.
 * [ENGINE] Service responses that have no Content-Type header defined and start by [ are now also considered as JSON
 * [ENGINE] Support for OpenApp action for IOS.
+* [ENGINE] new action 'waitNetworkTrafficIdle' in order to wait until the nb or request on application side settle.
 * [ADMINISTRATION] ManageV001 API now also clean Quartz scheduled entries when scope=instance and action=stop.
 * [ADMINISTRATION] ManageV001 API now also stop any executions requested directly calling RunTestCase servlets.
 * [ADMINISTRATION] Campaign Scheduler definition is now immediately reloaded.

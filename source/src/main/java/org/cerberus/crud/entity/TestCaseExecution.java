@@ -160,6 +160,8 @@ public class TestCaseExecution {
     private String remoteProxyLastHarMD5;
     // Kafka Consumers
     private HashMap<String, Map<TopicPartition, Long>> kafkaLatestOffset;
+    // Http Stats
+    private TestCaseExecutionHttpStat httpStat;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -196,6 +198,14 @@ public class TestCaseExecution {
     public static final String ROBOTPROVIDER_BROWSERSTACK = "BROWSERSTACK";
     public static final String ROBOTPROVIDER_KOBITON = "KOBITON";
     public static final String ROBOTPROVIDER_NONE = "NONE";
+
+    public TestCaseExecutionHttpStat getHttpStat() {
+        return httpStat;
+    }
+
+    public void setHttpStat(TestCaseExecutionHttpStat httpStat) {
+        this.httpStat = httpStat;
+    }
 
     public String getAppTypeEngine() {
         return appTypeEngine;
@@ -1141,6 +1151,8 @@ public class TestCaseExecution {
                     }
                 }
                 result.put("fileList", array);
+
+                result.put("httpStat", this.getHttpStat().toJson());
 
             }
 

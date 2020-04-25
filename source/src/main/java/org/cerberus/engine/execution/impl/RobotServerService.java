@@ -57,6 +57,7 @@ import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.crud.factory.IFactoryRobotCapability;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
@@ -68,6 +69,7 @@ import org.cerberus.engine.execution.IRobotServerService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.har.IHarService;
 import org.cerberus.service.proxy.IProxyService;
 import org.cerberus.service.rest.IRestService;
@@ -117,7 +119,6 @@ public class RobotServerService implements IRobotServerService {
     IProxyService proxyService;
     @Autowired
     ITestCaseExecutionHttpStatService testCaseExecutionHttpStatService;
-
     @Autowired
     private IExecutionThreadPoolService executionThreadPoolService;
     @Autowired
@@ -128,6 +129,8 @@ public class RobotServerService implements IRobotServerService {
     private IRestService restService;
     @Autowired
     private IHarService harService;
+    @Autowired
+    private IExecutorService executorService;
 
     private static Map<String, Boolean> apkAlreadyPrepare = new HashMap<>();
     private static int totocpt = 0;
@@ -211,7 +214,7 @@ public class RobotServerService implements IRobotServerService {
              */
             if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
                 LOG.debug("Start Remote Proxy");
-                this.startRemoteProxy(tCExecution);
+                executorService.startRemoteProxy(tCExecution);
                 LOG.debug("Started Remote Proxy on port:" + tCExecution.getRemoteProxyPort());
             }
 
@@ -492,7 +495,7 @@ public class RobotServerService implements IRobotServerService {
             LOG.error(exception.toString(), exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
             mes.setDescription(mes.getDescription().replace("%MES%", exception.toString()));
-            this.stopRemoteProxy(tCExecution);
+            executorService.stopRemoteProxy(tCExecution);
             throw new CerberusException(mes, exception);
         } finally {
             executionThreadPoolService.executeNextInQueueAsynchroneously(false);
@@ -985,44 +988,28 @@ public class RobotServerService implements IRobotServerService {
                     if (parameterService.getParameterBooleanByKey("cerberus_networkstatsave_active", tce.getSystem(), false)) {
 
                         // Before collecting the stats, we wait the network idles for few minutes
-                        waitForIdleNetwork(tce.getRobotExecutorObj().getExecutorExtensionHost(), tce.getRobotExecutorObj().getExecutorExtensionPort(), tce.getRemoteProxyUUID(), tce.getSystem());
+                        executorService.waitForIdleNetwork(tce.getRobotExecutorObj().getExecutorExtensionHost(), tce.getRobotExecutorObj().getExecutorExtensionPort(), tce.getRemoteProxyUUID(), tce.getSystem());
 
-                        // Generate URL to Cerberus executor with parameter to reduce the answer size by removing response content.
-                        String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort()
-                                + "/getHar?uuid=" + tce.getRemoteProxyUUID() + "&emptyResponseContentText=true";
+                        // We now get the har data.
+                        JSONObject har = executorService.getHar(tce.getRobotExecutorObj().getExecutorExtensionHost(), tce.getRobotExecutorObj().getExecutorExtensionPort(), tce.getRemoteProxyUUID(), tce.getSystem());
 
-                        LOG.debug("Getting Network Traffic content from URL : " + url);
-
-                        AnswerItem<AppService> result = new AnswerItem<>();
-                        result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", tce);
-
-                        AppService appSrv = result.getItem();
-                        JSONObject har = new JSONObject(appSrv.getResponseHTTPBody());
-
+                        // and enrich it with stat entry.
                         har = harService.enrichWithStats(har, tce.getCountryEnvironmentParameters().getDomain(), tce.getSystem());
 
                         /**
-                         * Collecting and calculating Statistics.
+                         * We convert the har to database record HttpStat and
+                         * save it to database.
                          */
                         try {
-                            testCaseExecutionHttpStatService.saveStat(tce, har);
+
+                            AnswerItem<TestCaseExecutionHttpStat> answHttpStat = testCaseExecutionHttpStatService.convertFromHarWithStat(tce, har);
+                            tce.setHttpStat(answHttpStat.getItem());
+
+                            testCaseExecutionHttpStatService.create(answHttpStat.getItem());
+
                         } catch (Exception ex) {
                             LOG.warn("Exception collecting and saving stats for execution " + tce.getId() + " Exception : " + ex.toString());
                         }
-
-                        appSrv.setResponseHTTPBody(har.toString());
-                        appSrv.setRecordTraceFile(false);
-
-                        tce.setLastServiceCalled(appSrv);
-
-                        /**
-                         * Record the Request and Response in file system.
-                         */
-                        boolean withDetail = false;
-                        if (tce.getVerbose() >= 2) {
-                            withDetail = true;
-                        }
-                        tce.addFileList(recorderService.recordNetworkTrafficContent(tce, null, 0, null, result.getItem(), withDetail));
 
                     }
 
@@ -1050,51 +1037,6 @@ public class RobotServerService implements IRobotServerService {
             return true;
         }
         return false;
-    }
-
-    private void waitForIdleNetwork(String exHost, Integer exPort, String exUuid, String system) {
-        // Generate URL to Cerberus executor with parameter to get the nb of hits so far.
-        String url = "http://" + exHost + ":" + exPort + "/getStats?uuid=" + exUuid;
-
-        try {
-
-            Integer nbHits = 0;
-            Integer nbHitsPrev = 0;
-            Integer sleepPeriod = parameterService.getParameterIntegerByKey("cerberus_networkstatsave_idleperiod_ms", system, 5000);
-            Integer maxLoop = parameterService.getParameterIntegerByKey("cerberus_networkstatsave_idlemaxloop_nb", system, 10);
-
-            LOG.debug("Getting nb of Hits so far from URL : " + url);
-
-            for (int i = 0; i < maxLoop; i++) {
-                AnswerItem<AppService> result = new AnswerItem<>();
-                result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", null);
-
-                if (result.isCodeStringEquals("OK")) {
-
-                    AppService appSrv = result.getItem();
-                    JSONObject stats = new JSONObject(appSrv.getResponseHTTPBody());
-                    nbHitsPrev = nbHits;
-                    nbHits = stats.getInt("hits");
-
-                    LOG.debug("Nb Hits so far : " + nbHits);
-
-                    if (nbHits.equals(nbHitsPrev)) {
-                        LOG.debug("Nb of hits (" + nbHits + ") is the same as before (" + nbHitsPrev + ") --> so network is idle.");
-                        break;
-                    }
-                    Thread.sleep(sleepPeriod);
-
-                } else {
-                    LOG.warn("Failed getting nb of Hits from URL (Maybe cerberus-executor is not at the correct version) : '" + url + "'");
-                    break;
-                }
-            }
-
-        } catch (InterruptedException ex) {
-            LOG.warn("Exception when waiting for idle.", ex);
-        } catch (JSONException ex) {
-            LOG.warn("Exception when waiting for idle (interpreting JSON answer from URL : '" + url + "').");
-        }
     }
 
     private static void getIPOfNode(TestCaseExecution tCExecution) {
@@ -1163,67 +1105,6 @@ public class RobotServerService implements IRobotServerService {
         }
 
         return baseurl;
-    }
-
-    private void startRemoteProxy(TestCaseExecution tce) {
-
-        String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort()
-                + "/startProxy?timeout=" + String.valueOf(parameterService.getParameterIntegerByKey("cerberus_executorproxy_timeoutms", tce.getSystem(), 3600000));
-        if (tce.getRobotExecutorObj().getExecutorProxyPort() != 0) {
-            url += "?port=" + tce.getRobotExecutorObj().getExecutorProxyPort();
-        }
-        LOG.debug("Starting Proxy on Cerberus Executor calling : " + url);
-
-        try (InputStream is = new URL(url).openStream()) {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-            StringBuilder sb = new StringBuilder();
-            int cp;
-            while ((cp = rd.read()) != -1) {
-                sb.append((char) cp);
-            }
-            String jsonText = sb.toString();
-
-            JSONObject json = new JSONObject(jsonText);
-            tce.setRemoteProxyPort(json.getInt("port"));
-            tce.setRemoteProxyUUID(json.getString("uuid"));
-            tce.setRemoteProxyStarted(true);
-
-            LOG.debug("Cerberus Executor Proxy extention started on port : " + tce.getRemoteProxyPort() + " (uuid : " + tce.getRemoteProxyUUID() + ")");
-
-        } catch (Exception ex) {
-            LOG.error("Exception Starting Remote Proxy " + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString(), ex);
-        }
-
-    }
-
-    @Override
-    public void stopRemoteProxy(TestCaseExecution tce) {
-
-        if (tce.isRemoteProxyStarted()) {
-            tce.setRemoteProxyStarted(false);
-            /**
-             * We Stop the Proxy on Cerberus Executor.
-             */
-            try {
-                // Ask the Proxy to stop.
-                if (tce.getRobotExecutorObj() != null && "Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())) {
-
-                    String urlStop = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/stopProxy?uuid=" + tce.getRemoteProxyUUID();
-
-                    LOG.debug("Shutting down of Proxy on Cerberus Executor calling : " + urlStop);
-
-                    InputStream is = new URL(urlStop).openStream();
-                    is.close();
-
-                    LOG.debug("Cerberus Executor Proxy extention shutdown done (uuid : " + tce.getRemoteProxyUUID() + ").");
-
-                }
-
-            } catch (Exception ex) {
-                LOG.error("Exception when asking Cerberus Executor proxy to stop " + tce.getId(), ex);
-            }
-        }
-
     }
 
 }

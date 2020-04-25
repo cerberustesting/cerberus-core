@@ -91,6 +91,7 @@ public class TestCaseStepAction {
     public static final String ACTION_REMOVEAPP = "removeApp";
     public static final String ACTION_WAIT = "wait";
     public static final String ACTION_WAITVANISH = "waitVanish";
+    public static final String ACTION_WAITNETWORKTRAFFICIDLE = "waitNetworkTrafficIdle";
     public static final String ACTION_CALLSERVICE = "callService";
     public static final String ACTION_EXECUTESQLUPDATE = "executeSqlUpdate";
     public static final String ACTION_EXECUTESQLSTOREPROCEDURE = "executeSqlStoredProcedure";
