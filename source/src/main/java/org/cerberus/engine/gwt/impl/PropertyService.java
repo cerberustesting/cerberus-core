@@ -61,7 +61,9 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.service.appium.impl.AndroidAppiumService;
 import org.cerberus.service.appium.impl.IOSAppiumService;
 import org.cerberus.service.datalib.IDataLibService;
+import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.groovy.IGroovyService;
+import org.cerberus.service.har.IHarService;
 import org.cerberus.service.json.IJsonService;
 import org.cerberus.service.soap.ISoapService;
 import org.cerberus.service.sql.ISQLService;
@@ -130,6 +132,10 @@ public class PropertyService implements IPropertyService {
     private AndroidAppiumService androidAppiumService;
     @Autowired
     private IOSAppiumService iosAppiumService;
+    @Autowired
+    private IExecutorService executorService;
+    @Autowired
+    private IHarService harService;
 
     @Override
     public AnswerItem<String> decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution tCExecution,
@@ -946,28 +952,40 @@ public class PropertyService implements IPropertyService {
     }
 
     private TestCaseExecutionData property_getFromNetworkTraffic(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
-        if (tCExecution.getAppTypeEngine().equals(Application.TYPE_GUI)) {
+        if ("Y".equalsIgnoreCase(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
 
             try {
                 //TODO : check if HAR is the same than the last one to avoid to download same har file several times
                 // String remoteHarMD5 = "http://" + tCExecution.getRobotExecutorObj().getHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHarMD5?uuid="+tCExecution.getRemoteProxyUUID();
 
-                //getHarFile
-                String url = "http://" + tCExecution.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort()
-                        + "/getHar?uuid=" + tCExecution.getRemoteProxyUUID();
+                JSONObject harRes = executorService.getHar(testCaseExecutionData.getValue1(), false, tCExecution.getRobotExecutorObj().getExecutorExtensionHost(), tCExecution.getRobotExecutorObj().getExecutorExtensionPort(),
+                        tCExecution.getRemoteProxyUUID(), tCExecution.getSystem());
 
-                if (ParameterParserUtil.parseBooleanParam(testCaseExecutionData.getValue2(), false)) {
-                    url += "&emptyResponseContentText=true";
+                harRes = harService.enrichWithStats(harRes, tCExecution.getCountryEnvironmentParameters().getDomain(), tCExecution.getSystem());
+
+                //Record result in filessytem.
+                testCaseExecutionData.addFileList(recorderService.recordProperty(tCExecution.getId(), testCaseExecutionData.getProperty(), 1, harRes.toString(1)));
+
+                String valueFromJson = this.jsonService.getFromJson(harRes.toString(), null, testCaseExecutionData.getValue2());
+
+                if (valueFromJson != null) {
+                    testCaseExecutionData.setValue(valueFromJson);
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMNETWORKTRAFFIC);
+                    res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue2()));
+                    res.setDescription(res.getDescription().replace("%VALUE%", valueFromJson));
+                    testCaseExecutionData.setPropertyResultMessage(res);
+
+                } else {
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMNETWORKTRAFFIC_PATHNOTFOUND);
+                    res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue2()));
+                    testCaseExecutionData.setPropertyResultMessage(res);
+
                 }
 
-                //tCExecution.addFileList(recorderService.recordHarLog(tCExecution, url));
-                testCaseExecutionData.setValue2(url);
-                testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, tCExecution, forceCalculation);
-
             } catch (Exception ex) {
-                LOG.warn(ex);
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_SQLLIB_NOTEXIT);
-                res.setDescription(res.getDescription().replace("%SQLLIB%", testCaseExecutionData.getValue1()));
+                LOG.warn("Exception when getting property from Network Traffic.", ex);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMNETWORKTRAFFIC_PROXYNOTACTIVE);
+                res.setDescription(res.getDescription().replace("%DETAIL%", ex.toString()));
 
                 testCaseExecutionData.setPropertyResultMessage(res);
 
@@ -975,9 +993,9 @@ public class PropertyService implements IPropertyService {
                 return testCaseExecutionData;
             }
         } else {
-            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
-            res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getAppTypeEngine()));
-            res.setDescription(res.getDescription().replace("%PROPTYPE%", testCaseExecutionData.getType()));
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMNETWORKTRAFFIC_PROXYNOTACTIVE);
+            res.setDescription(res.getDescription().replace("%ROBOT%", tCExecution.getRobot()));
+            res.setDescription(res.getDescription().replace("%EXECUTOR%", tCExecution.getRobotExecutor()));
             testCaseExecutionData.setPropertyResultMessage(res);
 
         }

@@ -113,6 +113,7 @@ public class TestCaseExecution {
     // Objects.
     private TestCaseExecutionQueue testCaseExecutionQueue;
     private Application applicationObj;
+    // App Type that is used by the engine to interpret the context. By defaut it is linked to the Type of the application but it can be temporary switch to a different type.
     private String appTypeEngine;
     private Invariant CountryObj;
     private Test testObj;

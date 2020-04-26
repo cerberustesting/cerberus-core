@@ -1214,7 +1214,7 @@ public class ActionService implements IActionService {
         try {
 
             return executorService.waitForIdleNetwork(tCExecution.getRobotExecutorObj().getExecutorExtensionHost(), tCExecution.getRobotExecutorObj().getExecutorExtensionPort(),
-                     tCExecution.getRemoteProxyUUID(), tCExecution.getSystem());
+                    tCExecution.getRemoteProxyUUID(), tCExecution.getSystem());
 
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action WaitNetworkTrafficIdle :" + ex);
@@ -1534,14 +1534,8 @@ public class ActionService implements IActionService {
             /**
              * Building the url to get the Har file from cerberus-executor
              */
-            String url = "http://" + exe.getRobotExecutorObj().getExecutorExtensionHost() + ":" + exe.getRobotExecutorObj().getExecutorExtensionPort()
-                    + "/getHar?uuid=" + exe.getRemoteProxyUUID();
-            if (!ParameterParserUtil.parseBooleanParam(withResponseContent, false)) {
-                url += "&emptyResponseContentText=true";
-            }
-            if (!StringUtil.isNullOrEmpty(urlToFilter)) {
-                url += "&requestUrl=" + urlToFilter;
-            }
+            String url = executorService.getExecutorURL(urlToFilter, ParameterParserUtil.parseBooleanParam(withResponseContent, false),
+                     exe.getRobotExecutorObj().getExecutorExtensionHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID());
 
             LOG.debug("Getting Network Traffic content from URL : " + url);
 

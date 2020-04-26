@@ -31,9 +31,9 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.rest.IRestService;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -174,21 +174,21 @@ public class ExecutorService implements IExecutorService {
     }
 
     @Override
-    public JSONObject getHar(String exHost, Integer exPort, String exUuid, String system) {
+    public JSONObject getHar(String urlFilter, boolean withContent, String exHost, Integer exPort, String exUuid, String system) {
 
         JSONObject har = new JSONObject();
         try {
+            
             // Generate URL to Cerberus executor with parameter to reduce the answer size by removing response content.
-            String url = "http://" + exHost + ":" + exPort
-                    + "/getHar?uuid=" + exUuid + "&emptyResponseContentText=true";
+            String url = getExecutorURL(urlFilter, withContent, exHost, exPort, exUuid);
 
             LOG.debug("Getting Network Traffic content from URL : " + url);
-
             AnswerItem<AppService> result = new AnswerItem<>();
             result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", null);
 
             AppService appSrv = result.getItem();
             return new JSONObject(appSrv.getResponseHTTPBody());
+            
         } catch (JSONException ex) {
             LOG.error("Exception when parsing JSON.", ex);
         }
@@ -196,8 +196,17 @@ public class ExecutorService implements IExecutorService {
     }
 
     @Override
-    public String getExecutorURL(String session) {
-        return "";
+    public String getExecutorURL(String urlFilter, boolean withContent, String exHost, Integer exPort, String exUuid) {
+        String url = "http://" + exHost + ":" + exPort
+                + "/getHar?uuid=" + exUuid;
+        if (!StringUtil.isNullOrEmpty(urlFilter)) {
+            url += "&requestUrl=" + urlFilter;
+        }
+        if (!withContent) {
+            url += "&emptyResponseContentText=true";
+        }
+
+        return url;
     }
 
 }

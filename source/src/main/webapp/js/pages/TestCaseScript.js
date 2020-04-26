@@ -119,7 +119,7 @@ var propertyUIList = {
     "fr": [
         {
             "type": "text",
-            "value1": "Value",
+            "value1": "Valeur",
             "value1Class": "col-sm-10",
             "value1EditorMode": "ace/mode/cerberus",
             "value2": null,
@@ -133,7 +133,7 @@ var propertyUIList = {
         },
         {
             "type": "getFromSql",
-            "value1": "SQL Query",
+            "value1": "Requete SQL",
             "value1Class": "col-sm-8",
             "value1EditorMode": "ace/mode/sql",
             "value2": null,
@@ -147,7 +147,7 @@ var propertyUIList = {
         },
         {
             "type": "getFromDataLib",
-            "value1": "DataLib name",
+            "value1": "Nom de la DataLib",
             "value1Class": "col-sm-10",
             "value1EditorMode": "ace/mode/cerberus",
             "value2": null,
@@ -161,7 +161,7 @@ var propertyUIList = {
         },
         {
             "type": "getFromHtml",
-            "value1": "Element path",
+            "value1": "Chemin vers l'élément",
             "value1Class": "col-sm-10",
             "value1EditorMode": "ace/mode/xquery",
             "value2": null,
@@ -175,7 +175,7 @@ var propertyUIList = {
         },
         {
             "type": "getFromHtmlVisible",
-            "value1": "Element path",
+            "value1": "Chemin vers l'élément",
             "value1Class": "col-sm-10",
             "value1EditorMode": "ace/mode/xquery",
             "value2": null,
@@ -189,7 +189,7 @@ var propertyUIList = {
         },
         {
             "type": "getFromJS",
-            "value1": "Javascript command",
+            "value1": "Commande Javascript",
             "value1Class": "col-sm-10",
             "value1EditorMode": "ace/mode/javascript",
             "value2": null,
@@ -203,7 +203,7 @@ var propertyUIList = {
         },
         {
             "type": "getAttributeFromHtml",
-            "value1": "Element path",
+            "value1": "Chemin vers l'élément",
             "value1Class": "col-sm-8",
             "value1EditorMode": "ace/mode/xquery",
             "value2": "Attribute name",
@@ -217,7 +217,7 @@ var propertyUIList = {
         },
         {
             "type": "getFromCookie",
-            "value1": "Cookie name",
+            "value1": "Nom du Cookie",
             "value1Class": "col-sm-8",
             "value1EditorMode": "ace/mode/cerberus",
             "value2": "Cookie attribute",
@@ -234,7 +234,7 @@ var propertyUIList = {
             "value1": "Xpath",
             "value1Class": "col-sm-8",
             "value1EditorMode": "ace/mode/xquery",
-            "value2": "[opt] XML or URL to XML file",
+            "value2": "[opt] Contenu XML ou URL vers un fichier XML",
             "database": null,
             "length": null,
             "cacheExpire": "[opt] cache Expire (s)",
@@ -273,10 +273,25 @@ var propertyUIList = {
         },
         {
             "type": "getFromJson",
-            "value1": "JSONPath",
+            "value1": "JSON Path",
             "value1Class": "col-sm-8",
             "value1EditorMode": "ace/mode/json",
-            "value2": "[opt] JSON or URL to JSON file",
+            "value2": "[opt] Contenu JSON ou URL vers un fichier JSON",
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "getFromNetworkTraffic",
+            "value1": "filtre d'URL",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/json",
+            "value2": "JSON Path",
+            "value3": "Activate HTTP response content (Y/N)",
             "database": null,
             "length": null,
             "cacheExpire": "[opt] cache Expire (s)",
@@ -535,6 +550,21 @@ var propertyUIList = {
             "retry": null,
             "period": null,
             "rank": "Rank"
+        },
+        {
+            "type": "getFromNetworkTraffic",
+            "value1": "URL filter",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/json",
+            "value2": "JSON Path",
+            "value3": "Activate HTTP response content (Y/N)",
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
         },
         {
             "type": "getFromGroovy",
