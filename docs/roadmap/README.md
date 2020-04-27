@@ -1,6 +1,8 @@
 1. Move to latest MariaDb
 1. More reporting dashboard at campaign level.
 1. Add Webperf KPI (SpeedIndex)
+1. Clean the structure of API.
+1. Angular Version of the frontend.
 1. Improve requirements and test folder hierarchy
 1. Queue Dependency improvements. 
 1. Improve email notification layout
@@ -24,30 +26,44 @@ To check as well the effort of moving to flyway removing constrain of SQL Script
 ## Benefit
 * Up to date Mariadb version.
 
-# 7. More reporting and dashboard at campaign level
+# 2. More reporting and dashboard at campaign level
 
 ## Description
 
 ## Benefit
 * 
 
-# 7. Add more webperf KPI
+# 3. Add more webperf KPI
+
+## Description
+Including SpeedIndex
+
+## Benefit
+* 
+# 4. Clean API
+
+## Description
+Clean some structure (using more Array than Objects) and making some obect name less verbose and moving some String to boolean.
+
+## Benefit
+* Easier to integrate and maintain.
+
+# 5. Angular Version
+
+## Description
+Faster UI and better hergonomy
+
+## Benefit
+* Better enjoy to use the tools and improve productivity.
+
+# 6. Improve requirements and test folder hierarchy
 
 ## Description
 
 ## Benefit
 * 
 
-
-# 7. Improve requirements and test folder hierarchy
-
-## Description
-
-## Benefit
-* 
-
-
-# 2. Queue Dependency improvements.
+# 7. Queue Dependency improvements.
 
 ## Description
 
@@ -62,7 +78,7 @@ Dependency on :
 * Allow single campaign for batch executions.
 * Allow multi application tests scenarii. [DONE]
  
-# 3. Improve email notification layout
+# 8. Improve email notification layout
 
 ## Description
 
@@ -77,7 +93,7 @@ Such as Bitrise
 ## Benefit
 * 
 
-# 9. pdf connector
+# 10. pdf connector
 
 ## Description
 
