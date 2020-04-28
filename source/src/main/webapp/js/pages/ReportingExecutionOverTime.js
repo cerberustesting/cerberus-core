@@ -888,12 +888,10 @@ function initGraph() {
 
     document.getElementById('canvasTestStat').onclick = function (evt) {
         var activePoints = window.myLineTcTime.getElementAtEvent(event);
-        console.info(activePoints);
-        console.info(activePoints.length);
         // make sure click was on an actual point
         if (activePoints.length > 0) {
             let exe = window.myLineTcTime.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
-//            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
+            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
         }
     };
 

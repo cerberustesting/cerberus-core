@@ -46,9 +46,7 @@
         <!-- JSON Lib Version -->
         <json.version>20080701</json.version>
         <gson.version>2.8.0</gson.version>
-        <jackson-databind.version>2.9.10.3</jackson-databind.version>
-        <jackson-core-asl.version>1.7.1</jackson-core-asl.version>
-        <jackson-mapper-asl.version>1.7.9</jackson-mapper-asl.version>
+        <jackson-databind.version>2.9.10.4</jackson-databind.version>
         <!-- Groovy Version -->
         <groovy.version>2.4.7</groovy.version>
         <groovy-sandbox.version>1.10</groovy-sandbox.version>
@@ -172,18 +170,6 @@
             <artifactId>jackson-databind</artifactId>
             <version>${jackson-databind.version}</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-            <version>${jackson-core-asl.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>${jackson-mapper-asl.version}</version>
-        </dependency>
-        -->
         
         <!-- Groovy -->
         <dependency>
@@ -405,49 +391,6 @@
             <artifactId>quartz</artifactId>
             <version>${quartz.version}</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-jobs</artifactId>
-            <version>${quartz.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-parent</artifactId>
-            <version>2.3.0</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-backward-compat</artifactId>
-            <version>${quartzSecond.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-commonj</artifactId>
-            <version>${quartzSecond.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-weblogic</artifactId>
-            <version>${quartzSecond.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-oracle</artifactId>
-            <version>${quartzSecond.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-jboss</artifactId>
-            <version>${quartzSecond.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>c3p0</groupId>
-            <artifactId>c3p0</artifactId>
-            <version>${c3p0.version}</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
@@ -702,6 +645,7 @@
     </build>
 
     <profiles>
+        
         <!-- Disable java8 Doclint -->
         <profile>
             <id>doclint-java8-disable</id>
@@ -747,7 +691,7 @@
                         <artifactId>maven-antrun-plugin</artifactId>
                         <version>${maven-antrun-plugin.version}</version>
                         <executions>
-                            <!-- Upload built artifacts into our SourceForge account during the deploy phase -->
+                            <!-- Upload built artifacts into our infra during the deploy phase -->
                             <execution>
                                 <id>qa-demo-deploy</id>
                                 <phase>deploy</phase>
@@ -782,5 +726,6 @@
                 </plugins>
             </build>
         </profile>
+        
     </profiles>
 </project>
