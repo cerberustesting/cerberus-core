@@ -153,6 +153,7 @@ function multiSelectConfPerf(name) {
  * @returns {null}
  */
 function feedPerfTestCase(test, selectElement, defaultTestCases, parties, types, units, countries, environments, robotDeclis) {
+    showLoader($("#otFilterPanel"));
 
     var testCList = $(selectElement);
     testCList.empty();
@@ -456,6 +457,10 @@ function getOptions(title, unit) {
     let option = {
         responsive: true,
         maintainAspectRatio: false,
+        hover: {
+            mode: 'nearest',
+            intersect: true
+        },
         tooltips: {
             callbacks: {
                 label: function (t, d) {
@@ -469,10 +474,6 @@ function getOptions(title, unit) {
                     }
                 }
             },
-            hover: {
-                mode: 'index',
-                intersect: false
-            }
         },
         title: {
             text: title
@@ -576,7 +577,7 @@ function buildGraphs(data) {
             let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe};
             d.push(p);
         }
-        let lab = getLabel(c.key.testcase.description, c.key.country, c.key.environment, c.key.robotdecli, c.key.unit, c.key.party, c.key.type);
+        let lab = getLabel(c.key.testcase.description, c.key.country, c.key.environment, c.key.robotdecli, c.key.unit, c.key.party, c.key.type, c.key.testcase.testcase);
         var dataset = {
             label: lab,
             backgroundColor: get_Color_fromindex(i),
@@ -585,12 +586,7 @@ function buildGraphs(data) {
             pointHoverRadius: 15,
             hitRadius: 10,
             fill: false,
-            data: d,
-            hover: {
-                mode: 'index',
-                intersect: false
-            }
-
+            data: d
         };
         if ((c.key.unit === "totalsize") || (c.key.unit === "sizemax")) {
             sizedatasets.push(dataset);
@@ -658,7 +654,7 @@ function buildExeGraphs(data) {
             let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus};
             d.push(p);
         }
-        let lab = getLabel(c.key.testcase.description, c.key.country, c.key.environment, c.key.robotdecli);
+        let lab = getLabel(c.key.testcase.description, c.key.country, c.key.environment, c.key.robotdecli, undefined, undefined, undefined, c.key.testcase.testcase);
         var dataset = {
             label: lab,
             backgroundColor: "white",
@@ -672,11 +668,7 @@ function buildExeGraphs(data) {
             pointHoverRadius: 15,
             hitRadius: 10,
             fill: false,
-            data: d,
-            hover: {
-                mode: 'index',
-                intersect: false
-            }
+            data: d
         };
         timedatasets.push(dataset);
     }
@@ -741,8 +733,11 @@ function buildExeBarGraphs(data) {
 }
 
 
-function getLabel(tcDesc, country, env, robot, unit, party, type) {
+function getLabel(tcDesc, country, env, robot, unit, party, type, testcaseid) {
     let lab = tcDesc;
+    if (lab.length > 20) {
+        lab = testcaseid;
+    }
     if ((party !== undefined) && (party !== "total")) {
         lab += " - " + party;
     }
