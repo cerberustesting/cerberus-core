@@ -744,7 +744,7 @@ function getSelectApplication(system, forceReload) {
         $.ajax({
             url: "ReadApplication",
             data: {system: system},
-            async: true,
+            async: false,
             success: function (data) {
                 list = data.contentTable;
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(list));
