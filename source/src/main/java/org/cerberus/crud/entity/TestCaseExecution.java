@@ -1153,7 +1153,9 @@ public class TestCaseExecution {
                 }
                 result.put("fileList", array);
 
-                result.put("httpStat", this.getHttpStat().toJson());
+                if (this.getHttpStat() != null) {
+                    result.put("httpStat", this.getHttpStat().toJson());
+                }
 
             }
 
