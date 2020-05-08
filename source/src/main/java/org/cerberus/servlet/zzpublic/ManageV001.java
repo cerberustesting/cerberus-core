@@ -34,7 +34,6 @@ import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
-import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.database.IDatabaseVersioningService;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
@@ -107,7 +106,7 @@ public class ManageV001 extends HttpServlet {
 
                 if (request.getParameter("action") != null && request.getParameter("action").equals("stop")) {
                     if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
-                        logEventService.createForPublicCalls(SERVLETNAME, "STOP", "Cerberus Instance requested to stop.", request);
+                        logEventService.createForPrivateCalls(SERVLETNAME, "STOP", "Cerberus Instance requested to stop.", request);
                         /**
                          * We deactivate the instance to process new execution.
                          */
@@ -139,7 +138,7 @@ public class ManageV001 extends HttpServlet {
                         data.put("waitedIterations", cntIteration);
 
                     } else if (request.getParameter("scope") != null && request.getParameter("scope").equals("global")) {
-                        logEventService.createForPublicCalls(SERVLETNAME, "STOP", "Cerberus (global system) requested to stop.", request);
+                        logEventService.createForPrivateCalls(SERVLETNAME, "STOP", "Cerberus (global system) requested to stop.", request);
                         /**
                          * We deactivate globally the queue processing accross
                          * all instances.
@@ -164,7 +163,7 @@ public class ManageV001 extends HttpServlet {
                 }
                 if (request.getParameter("action") != null && request.getParameter("action").equals("start")) {
                     if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
-                        logEventService.createForPublicCalls(SERVLETNAME, "START", "Instance requested to start.", request);
+                        logEventService.createForPrivateCalls(SERVLETNAME, "START", "Instance requested to start.", request);
                         /**
                          * We activate the instance to process queue and start
                          * new executions.
@@ -184,7 +183,7 @@ public class ManageV001 extends HttpServlet {
                             LOG.error("Exception triggering the ThreadPool job.", ex);
                         }
                     } else if (request.getParameter("scope") != null && request.getParameter("scope").equals("global")) {
-                        logEventService.createForPublicCalls(SERVLETNAME, "START", "Cerberus (global system)  requested to start.", request);
+                        logEventService.createForPrivateCalls(SERVLETNAME, "START", "Cerberus (global system)  requested to start.", request);
                         /**
                          * We activate the parameter to process queue (that will
                          * start new executions).
