@@ -95,6 +95,7 @@ public class ManageV001 extends HttpServlet {
 
             String token = parameterService.getParameterStringByKey("cerberus_manage_token", "", UUID.randomUUID().toString());
             String message = "";
+            String returnCode = "OK";
 
             if (token.equals(request.getParameter("token"))) {
 
@@ -218,9 +219,11 @@ public class ManageV001 extends HttpServlet {
 
             } else {
                 message = "Invalid Token";
+                returnCode = "KO";
             }
 
             data.put("message", message);
+            data.put("returnCode", returnCode);
             resultS = data.toString(1);
 
         } catch (JSONException | InterruptedException ex) {
