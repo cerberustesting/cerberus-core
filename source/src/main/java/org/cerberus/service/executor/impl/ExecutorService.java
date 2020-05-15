@@ -60,7 +60,7 @@ public class ExecutorService implements IExecutorService {
         String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort()
                 + "/startProxy?timeout=" + String.valueOf(parameterService.getParameterIntegerByKey("cerberus_executorproxy_timeoutms", tce.getSystem(), 3600000));
         if (tce.getRobotExecutorObj().getExecutorProxyPort() != 0) {
-            url += "?port=" + tce.getRobotExecutorObj().getExecutorProxyPort();
+            url += "&port=" + tce.getRobotExecutorObj().getExecutorProxyPort();
         }
         LOG.debug("Starting Proxy on Cerberus Executor calling : " + url);
 
