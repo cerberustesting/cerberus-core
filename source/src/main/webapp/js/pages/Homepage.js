@@ -20,6 +20,8 @@
 
 var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"];
 var configTcBar = {};
+var nbTagLoaded = 0;
+var nbTagLoadedTarget = 0;
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -284,7 +286,7 @@ function getHPOptionsBar(title, unit) {
         },
         scales: {
             xAxes: [{
-                    offset:true,
+                    offset: true,
                     type: 'time',
                     stacked: true,
                     time: {
@@ -357,8 +359,11 @@ function generateTagReport(data, tag, rowId) {
 
 function loadTagExec() {
 
+    showLoader($("#LastTagExecPanel"));
+
     var reportArea = $("#tagExecStatus");
     reportArea.empty();
+    nbTagLoaded = 0;
 
     //Get the last tag to display
     var tagList = JSON.parse(localStorage.getItem("tagList"));
@@ -381,9 +386,17 @@ function loadTagExec() {
 
         $.when(jqxhr).then(function (data) {
             generateTagReport(data.statsChart.contentTable.total, data.tag, data.sEcho);
+            nbTagLoaded++;
+            hideLoaderTag();
         });
     }
 
+}
+
+function hideLoaderTag() {
+    if (nbTagLoaded >= nbTagLoadedTarget) {
+        hideLoader($("#LastTagExecPanel"));
+    }
 }
 
 function readLastTagExec(searchString) {
@@ -395,6 +408,7 @@ function readLastTagExec(searchString) {
     if (!((paramExe >= 0) && (paramExe <= 20))) {
         paramExe = 5;
     }
+    nbTagLoadedTarget = paramExe;
 
     var myUrl = "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=" + paramExe + getUser().defaultSystemsQuery;
     if (!isEmpty(searchString)) {

@@ -57,7 +57,7 @@ public final class ServletUtil {
                     case "/ReadCampaign":
                         timeToWait = 10;
                         break;
-                    case "/FindInvariantByID":
+                    case "/ReadTestCaseExecutionByTag":
                         timeToWait = 30;
                         break;
                     case "/ReadExecutionStat":
