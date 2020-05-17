@@ -209,7 +209,13 @@ https://github.com
 Reload the current page.
 
 ==== executeJS
-Execute a JS script (no output can be retrieved)
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Execute a JS script (no output can be retrieved).
+
 
 *[blue]#Value1#*	Javascript to execute.
 
@@ -220,6 +226,11 @@ Execute a JS script (no output can be retrieved)
 ====
 
 ==== executeCommand
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Execute a Command on the robot side.
 
 *[blue]#Value1#*	Command to execute.
@@ -227,19 +238,34 @@ Execute a Command on the robot side.
 *[blue]#Value2#*	Arguments of the command.
 
 ==== executeCerberusCommand
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
 Execute a Command from the Cerberus Server side. The command will be executed using the user defined in the parameter `cerberus_executeCerberusCommand_user`, password defined in `cerberus_executeCerberusCommand_password` and script from the path `cerberus_executeCerberusCommand_path` 
 
 *[blue]#Value1#*	Command to execute.
 
 ==== openApp
-Open an Application.
+|=== 
 
-*[blue]#Value1#*	Application to Open.
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
 
-*[blue]#Value2#*	Activity.
+|=== 
+Open an Application. For *[green]#GUI#* and *[green]#FAT#*, this action require the Cerberus Sikuli extention.
+
+*[blue]#Value1#*	Application to Open. BundleId for *[green]#IPA#* (activateApp() method is used), if empty, launchApp() method is used). App Package for *[green]#APK#* ('am start' command is used).  
+
+*[blue]#Value2#*	App Activity for *[green]#APK#*.
 
 
 ==== closeApp
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Close an application.
 
 *[blue]#Value1#*	Application to Open.

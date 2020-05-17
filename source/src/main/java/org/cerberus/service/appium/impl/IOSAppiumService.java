@@ -35,6 +35,7 @@ import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.entity.SwipeAction;
 import org.cerberus.engine.entity.SwipeAction.Direction;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.StringUtil;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -204,12 +205,16 @@ public class IOSAppiumService extends AppiumService {
     public MessageEvent openApp(Session session, String appPackage, String appActivity) {
         try {
 
-            session.getAppiumDriver().activateApp(appPackage);
+            if (StringUtil.isNullOrEmpty(appPackage)) {
+                session.getAppiumDriver().launchApp();
+            } else {
+                session.getAppiumDriver().activateApp(appPackage);
+            }
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENAPP).resolveDescription("APP", appPackage);
 
         } catch (Exception e) {
-            LOG.warn("Unable to open app " + e.getMessage(), e);
+            LOG.warn("Unable to open app. " + e.getMessage(), e);
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
                     .resolveDescription("DETAIL", "Unable to open app " + e.getMessage());
         }
