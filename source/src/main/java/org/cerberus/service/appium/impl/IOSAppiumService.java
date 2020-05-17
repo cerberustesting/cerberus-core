@@ -20,6 +20,7 @@
 package org.cerberus.service.appium.impl;
 
 import io.appium.java_client.TouchAction;
+import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.IOSTouchAction;
 import java.time.Duration;
 import java.util.HashMap;
@@ -122,11 +123,6 @@ public class IOSAppiumService extends AppiumService {
                 : MessageEventEnum.ACTION_FAILED_HIDEKEYBOARD);
     }
 
-    @Override
-    public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException {
-        return null;
-    }
-
     /**
      * The only valid IOS key codes to be able to be pressed
      * <p>
@@ -188,7 +184,31 @@ public class IOSAppiumService extends AppiumService {
 
     @Override
     public MessageEvent executeCommand(Session session, String cmd, String args) throws IllegalArgumentException {
-        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+        try {
+            String message = executeCommandString(session, cmd, args);
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTECOMMAND).resolveDescription("LOG", message);
+        } catch (Exception e) {
+            LOG.warn("Unable to execute command screen due to " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND)
+                    .resolveDescription("EXCEPTION", e.getMessage());
+        }
+    }
+
+    @Override
+    public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException {
+        IOSDriver driver = ((IOSDriver) session.getAppiumDriver());
+        String value = driver.executeScript(cmd, args).toString();
+
+        // execute Script return an \n or \r\n sometimes, so we delete the last occurence of it
+        if (value.endsWith("\r\n")) {
+            value = value.substring(0, value.lastIndexOf("\r\n"));
+        }
+        if (value.endsWith("\n")) {
+            value = value.substring(0, value.lastIndexOf("\n"));
+        }
+
+        return value;
     }
 
     @Override

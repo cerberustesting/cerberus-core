@@ -8521,8 +8521,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
                 + "VALUES('PROPERTYTYPE', 'getFromNetworkTraffic', 45, 'Get stats from Network Trafic JSON data structure.', 'Get Network Stats');");
 
-        
-        
+        // convert executeCommand Action.
+        // 1492-1493
+        a.add("UPDATE testcasestepaction set Value2=concat(\"{'command': '\", Value1, \"', 'args': ['\", Value2, \"']}\"), Value1=\"mobile: shell\" where Action='executeCommand';");
+        a.add("UPDATE testcasecountryproperties set Value2=concat(\"{'command': '\", Value1, \"', 'args': ['']}\"), Value1=\"mobile: shell\" where Type='getFromCommand';");
+
         return a;
     }
 

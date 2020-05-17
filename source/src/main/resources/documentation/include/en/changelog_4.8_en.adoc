@@ -4,8 +4,8 @@
 
 *Improvements / New features*
 [square]
-* none
+* Make 'executeCommand' actions and 'getFromCommand' properties more generic in order to trigger any Appium command. That allow for example to perform deeplink tests. #2092
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* Make sure to tests all your testcases that use 'getFromCommand' properties or 'executeCommand' action before upgrade.

@@ -730,6 +730,7 @@ public class PropertyService implements IPropertyService {
                         case TestCaseCountryProperties.TYPE_GETRAWFROMXML:
                             testCaseExecutionData = this.property_getRawFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                             break;
+
                         case TestCaseCountryProperties.TYPE_GETDIFFERENCESFROMXML:
                             testCaseExecutionData = this.property_getDifferencesFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                             break;
@@ -745,9 +746,11 @@ public class PropertyService implements IPropertyService {
                         case TestCaseCountryProperties.TYPE_GETFROMCOMMAND:
                             testCaseExecutionData = this.property_getFromCommand(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                             break;
+
                         case TestCaseCountryProperties.TYPE_GETELEMENTPOSITION:
                             testCaseExecutionData = this.property_getElementPosition(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                             break;
+
                         case TestCaseCountryProperties.TYPE_GETFROMNETWORKTRAFFIC:
                             testCaseExecutionData = this.property_getFromNetworkTraffic(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
                             break;
@@ -864,7 +867,7 @@ public class PropertyService implements IPropertyService {
         // Try to evaluate Command script
         try {
             if (tCExecution.getAppTypeEngine().equals(Application.TYPE_APK)) {
-                String message = androidAppiumService.executeCommandString(tCExecution.getSession(), script, "");
+                String message = androidAppiumService.executeCommandString(tCExecution.getSession(), script, testCaseExecutionData.getValue2());
 
                 String value = "";
                 if (!StringUtil.isNullOrEmpty(message)) {
@@ -872,6 +875,17 @@ public class PropertyService implements IPropertyService {
                 }
                 testCaseExecutionData.setValue(value);
                 testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMCOMMAND).resolveDescription("VALUE", value));
+
+            } else if (tCExecution.getAppTypeEngine().equals(Application.TYPE_IPA)) {
+                String message = iosAppiumService.executeCommandString(tCExecution.getSession(), script, testCaseExecutionData.getValue2());
+
+                String value = "";
+                if (!StringUtil.isNullOrEmpty(message)) {
+                    value = message;
+                }
+                testCaseExecutionData.setValue(value);
+                testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMCOMMAND).resolveDescription("VALUE", value));
+
             } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
                 res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getAppTypeEngine()));

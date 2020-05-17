@@ -231,11 +231,11 @@ Execute a JS script (no output can be retrieved).
 | *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
 
 |=== 
-Execute a Command on the robot side.
+Execute a Command on the robot side. You can follow the Appium instructions http://appium.io/docs/en/commands/mobile-command/[here].
 
-*[blue]#Value1#*	Command to execute.
+*[blue]#Value1#*	Command to execute. Ex : mobile:deepLink
 
-*[blue]#Value2#*	Arguments of the command.
+*[blue]#Value2#*	Arguments of the command. Ex : {url: "https://www.site.com/", package: "com.site.SomeAndroidPackage"}
 
 ==== executeCerberusCommand
 |=== 

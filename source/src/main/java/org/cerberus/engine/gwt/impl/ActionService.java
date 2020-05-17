@@ -490,7 +490,16 @@ public class ActionService implements IActionService {
         MessageEvent message;
 
         try {
-            return androidAppiumService.executeCommand(tCExecution.getSession(), command, args);
+
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                return androidAppiumService.executeCommand(tCExecution.getSession(), command, args);
+            }
+
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_EXECUTECOMMAND));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
             String messageString = e.getMessage().split("\n")[0];
@@ -1535,7 +1544,7 @@ public class ActionService implements IActionService {
              * Building the url to get the Har file from cerberus-executor
              */
             String url = executorService.getExecutorURL(urlToFilter, ParameterParserUtil.parseBooleanParam(withResponseContent, false),
-                     exe.getRobotExecutorObj().getExecutorExtensionHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID());
+                    exe.getRobotExecutorObj().getExecutorExtensionHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID());
 
             LOG.debug("Getting Network Traffic content from URL : " + url);
 

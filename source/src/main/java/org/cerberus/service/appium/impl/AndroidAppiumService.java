@@ -158,11 +158,12 @@ public class AndroidAppiumService extends AppiumService {
     public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException {
         AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
 
-        Map<String, Object> argss = new HashMap<>();
-        argss.put("command", cmd);
-        argss.put("args", Lists.newArrayList(args));
+//        Map<String, Object> argss = new HashMap<>();
+//        argss.put("command", cmd);
+//        argss.put("args", Lists.newArrayList(args));
+//        String value = driver.executeScript("mobile: shell", argss).toString();
 
-        String value = driver.executeScript("mobile: shell", argss).toString();
+        String value = driver.executeScript(cmd, args).toString();
 
         // execute Script return an \n or \r\n sometimes, so we delete the last occurence of it
         if (value.endsWith("\r\n")) {
