@@ -127,7 +127,7 @@ function initModalTestCase() {
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
     $("[name='testcaseversionField']").html(doc.getDocOnline("testcase", "TestCaseVersion"));
 
-    displayInvariantList("group", "GROUP", false);
+    displayInvariantList("type", "GROUP", false);
     displayInvariantList("status", "TCSTATUS", false);
     displayInvariantList("priority", "PRIORITY", false);
     displayInvariantList("conditionOper", "TESTCASECONDITIONOPER", false);
@@ -583,7 +583,7 @@ function confirmTestCaseModalHandler(mode) {
             comment: data.comment,
             fromRev: data.fromRev,
             fromSprint: data.fromSprint,
-            group: data.group,
+            group: data.type,
             implementer: data.implementer,
             executor: data.executor,
             origin: data.origin,
@@ -853,7 +853,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#originalTestCase").prop("value", "");
         formEdit.find("#implementer").prop("value", "");
         formEdit.find("#executor").prop("value", "");
-        formEdit.find("#group").val("AUTOMATED");
+        formEdit.find("#type").val("AUTOMATED");
         formEdit.find("#priority option:nth(0)").attr("selected", "selected");
         formEdit.find("#actQA").val("Y");
         formEdit.find("#actUAT").val("Y");
@@ -875,7 +875,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#implementer").prop("value", testCase.implementer);
         formEdit.find("#executor").prop("value", testCase.executor);
         formEdit.find("#tcDateCrea").prop("value", testCase.dateCreated);
-        formEdit.find("#group").prop("value", testCase.group);
+        formEdit.find("#type").prop("value", testCase.type);
         formEdit.find("#priority").prop("value", testCase.priority);
         formEdit.find("#actQA").prop("value", testCase.activeQA);
         formEdit.find("#actUAT").prop("value", testCase.activeUAT);
@@ -946,7 +946,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#implementer").prop("readonly", "readonly");
         formEdit.find("#application").prop("disabled", "disabled");
         formEdit.find("#status").prop("disabled", "disabled");
-        formEdit.find("#group").prop("disabled", "disabled");
+        formEdit.find("#type").prop("disabled", "disabled");
         formEdit.find("#priority").prop("disabled", "disabled");
         formEdit.find("#actQA").prop("disabled", "disabled");
         formEdit.find("#actUAT").prop("disabled", "disabled");
@@ -982,7 +982,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#implementer").removeProp("readonly");
         formEdit.find("#application").removeProp("disabled");
         formEdit.find("#status").removeProp("disabled");
-        formEdit.find("#group").removeProp("disabled");
+        formEdit.find("#type").removeProp("disabled");
         formEdit.find("#priority").removeProp("disabled");
         formEdit.find("#actQA").removeProp("disabled");
         formEdit.find("#actUAT").removeProp("disabled");
