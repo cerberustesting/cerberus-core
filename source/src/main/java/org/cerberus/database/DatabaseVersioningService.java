@@ -8526,6 +8526,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("UPDATE testcasestepaction set Value2=concat(\"{'command': '\", Value1, \"', 'args': ['\", Value2, \"']}\"), Value1=\"mobile: shell\" where Action='executeCommand';");
         a.add("UPDATE testcasecountryproperties set Value2=concat(\"{'command': '\", Value1, \"', 'args': ['']}\"), Value1=\"mobile: shell\" where Type='getFromCommand';");
 
+        // 1494
+        // Alter  TestCase Column name from group to type
+        a.add("ALTER TABLE testcase CHANGE testcase.`Group` `Type` VARCHAR(45)");
+
         return a;
     }
 
