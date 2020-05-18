@@ -156,7 +156,7 @@ public class ExportListTestCase extends HttpServlet {
         sb.append("\",\"");
         sb.append(tc.getPriority());
         sb.append("\",\"");
-        sb.append(StringUtil.getCleanCSVTextField(tc.getGroup()));
+        sb.append(StringUtil.getCleanCSVTextField(tc.getType()));
         sb.append("\",\"");
         sb.append(StringUtil.getCleanCSVTextField(tc.getStatus()));
         sb.append("\",\"");

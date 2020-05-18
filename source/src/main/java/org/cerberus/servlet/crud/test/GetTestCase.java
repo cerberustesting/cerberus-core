@@ -60,7 +60,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class GetTestCase extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(GetTestCase.class);
-    
+
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         try {
@@ -92,7 +92,7 @@ public class GetTestCase extends HttpServlet {
                 jsonObject.put("runUAT", tcInfo.getActiveUAT());
                 jsonObject.put("runPROD", tcInfo.getActivePROD());
                 jsonObject.put("priority", tcInfo.getPriority());
-                jsonObject.put("group", tcInfo.getGroup());
+                jsonObject.put("group", tcInfo.getType());
                 jsonObject.put("status", tcInfo.getStatus());
                 JSONArray countryList = new JSONArray();
                 for (TestCaseCountry tcc : tcInfo.getTestCaseCountry()) {

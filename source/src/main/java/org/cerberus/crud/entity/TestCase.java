@@ -48,7 +48,7 @@ public class TestCase {
     private String conditionVal1;
     private String conditionVal2;
     private String conditionVal3;
-    private String group;
+    private String type;
     private String origine;
     private String refOrigine;
     private String howTo;
@@ -260,12 +260,12 @@ public class TestCase {
         this.fromBuild = fromSprint;
     }
 
-    public String getGroup() {
-        return group;
+    public String getType() {
+        return type;
     }
 
-    public void setGroup(String group) {
-        this.group = group;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getHowTo() {
@@ -482,40 +482,42 @@ public class TestCase {
             result.put("test", this.getTest());
             result.put("testcase", this.getTestCase());
             result.put("application", this.getApplication());
-            result.put("description", this.getDescription());
-            result.put("behaviourOrValueExpected", this.getBehaviorOrValueExpected());
-            result.put("priority", this.getPriority());
             result.put("status", this.getStatus());
-            result.put("tcActive", this.getTcActive());
+            result.put("type", this.getType());
+            result.put("priority", this.getPriority());
+            result.put("description", this.getDescription());
+            result.put("detailledDescription", this.getBehaviorOrValueExpected());
+            result.put("howTo", this.getHowTo());
+            result.put("isActive", this.getTcActive());
+            result.put("isActiveQA", this.getActiveQA());
+            result.put("isActiveUAT", this.getActiveUAT());
+            result.put("isActivePROD", this.getActivePROD());
+            result.put("fromSprint", this.getFromBuild());
+            result.put("toSprint", this.getToBuild());
+            result.put("targetSprint", this.getTargetBuild());
+            result.put("fromRev", this.getFromRev());
+            result.put("toRev", this.getToRev());
+            result.put("targetRev", this.getTargetRev());
             result.put("conditionOper", this.getConditionOper());
             result.put("conditionValue1", this.getConditionVal1());
             result.put("conditionValue2", this.getConditionVal2());
             result.put("conditionValue3", this.getConditionVal3());
-            result.put("group", this.getGroup());
-            result.put("origine", this.getOrigine());
-            result.put("refOrigine", this.getRefOrigine());
-            result.put("howTo", this.getHowTo());
-            result.put("comment", this.getComment());
-            result.put("fromBuild", this.getFromBuild());
-            result.put("fromRev", this.getFromRev());
-            result.put("toBuild", this.getToBuild());
-            result.put("toRev", this.getToRev());
-            result.put("bugId", this.getBugID());
-            result.put("targetBuild", this.getTargetBuild());
-            result.put("targetRev", this.getTargetRev());
-            result.put("implementer", this.getImplementer());
-            result.put("executor", this.getExecutor());
-            result.put("activeQA", this.getActiveQA());
-            result.put("activeUAT", this.getActiveUAT());
-            result.put("activePROD", this.getActivePROD());
-            result.put("function", this.getFunction());
             result.put("usrAgent", this.getUserAgent());
             result.put("screenSize", this.getScreenSize());
-            result.put("usrCreated", this.getUsrCreated());
+            result.put("bugs", this.getBugID());
+            result.put("comment", this.getComment());
+            result.put("implementer", this.getImplementer());
+            result.put("executor", this.getExecutor());
+            result.put("version", this.getTestCaseVersion());
             result.put("dateCreated", this.getDateCreated());
-            result.put("usrModif", this.getUsrModif());
+            result.put("usrCreated", this.getUsrCreated());
             result.put("dateModif", this.getDateModif());
-            result.put("testCaseVersion", this.getTestCaseVersion());
+            result.put("usrModif", this.getUsrModif());
+            // [WIP] To delete ?
+            result.put("origine", this.getOrigine());
+            result.put("refOrigine", this.getRefOrigine());
+            result.put("function", this.getFunction());
+
             JSONArray array = new JSONArray();
             if (this.getTestCaseStep() != null) {
                 for (Object testCaseStepList : this.getTestCaseStep()) {

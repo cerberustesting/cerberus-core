@@ -139,7 +139,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
             LOG.debug("Checking if testcase is not MANUAL");
         }
 
-        if (!tCExecution.getManualExecution().equals("Y") && tCExecution.getTestCaseObj().getGroup().equals("MANUAL")) {
+        if (!tCExecution.getManualExecution().equals("Y") && tCExecution.getTestCaseObj().getType().equals("MANUAL")) {
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_ISMANUAL);
             return false;
         }
@@ -407,16 +407,16 @@ public class ExecutionCheckService implements IExecutionCheckService {
 
         //if executor proxy active, check cerberus-executor is available
         if (tce.getRobotExecutorObj() != null && "Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())) {
-            
+
             //If ExecutorExtensionHost is null or empty, use the Robot Host
-            if(tce.getRobotExecutorObj().getExecutorExtensionHost() == null || tce.getRobotExecutorObj().getExecutorExtensionHost().isEmpty()){
+            if (tce.getRobotExecutorObj().getExecutorExtensionHost() == null || tce.getRobotExecutorObj().getExecutorExtensionHost().isEmpty()) {
                 tce.getRobotExecutorObj().setExecutorExtensionHost(tce.getRobotExecutorObj().getHost());
             }
-            
+
             String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/check";
             LOG.debug("Url to check Proxy Executor : " + url);
 
-            try ( InputStream is = new URL(url).openStream()) {
+            try (InputStream is = new URL(url).openStream()) {
                 BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
                 StringBuilder sb = new StringBuilder();
                 int cp;

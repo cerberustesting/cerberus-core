@@ -249,7 +249,7 @@ public class TestCaseService implements ITestCaseService {
         List<String> result = new ArrayList<>();
         List<TestCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
         for (TestCase testCase : testCases) {
-            if (!testCase.getGroup().equals("PRIVATE")) {
+            if (!testCase.getType().equals("PRIVATE")) {
                 result.add(testCase.getTest());
             }
         }
@@ -269,7 +269,7 @@ public class TestCaseService implements ITestCaseService {
         List<TestCase> result = new ArrayList<>();
         List<TestCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
         for (TestCase testCase : testCases) {
-            if (!testCase.getGroup().equals("PRIVATE")) {
+            if (!testCase.getType().equals("PRIVATE")) {
                 result.add(testCase);
             }
         }

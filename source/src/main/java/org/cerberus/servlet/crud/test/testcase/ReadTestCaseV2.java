@@ -524,7 +524,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                 .put("conditionValue1", testCase.getConditionVal1())
                 .put("conditionValue2", testCase.getConditionVal2())
                 .put("conditionValue3", testCase.getConditionVal3())
-                .put("group", testCase.getGroup())
+                .put("type", testCase.getType())
                 .put("origine", testCase.getOrigine())
                 .put("refOrigine", testCase.getRefOrigine())
                 .put("howTo", testCase.getHowTo())

@@ -84,13 +84,13 @@ public interface ITestCaseDAO {
      * @param system arrays of system to filter
      * @param application arrays of application to filter
      * @param priority arrays of priority to filter
-     * @param group arrays of group to filter
+     * @param type arrays of type to filter
      * @param maxReturn nd max of records to return. (Prevent from returning too
      * large list)
      * @return the list of TCase used in the campaign
      * @since 1.0.2
      */
-    AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, List<Integer> labelIdList, String[] status, String[] system, String[] application, String[] priority, String[] group, Integer maxReturn);
+    AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, List<Integer> labelIdList, String[] status, String[] system, String[] application, String[] priority, String[] type, Integer maxReturn);
 
     public void updateTestCase(TestCase tc) throws CerberusException;
 
@@ -105,7 +105,7 @@ public interface ITestCaseDAO {
      * @param active
      * @param priority
      * @param status
-     * @param group
+     * @param type
      * @param targetBuild
      * @param targetRev
      * @param creator
@@ -114,7 +114,7 @@ public interface ITestCaseDAO {
      * @param campaign
      * @return
      */
-    List<TestCase> findTestCaseByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign);
+    List<TestCase> findTestCaseByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] type, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign);
 
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException;
 
@@ -143,13 +143,13 @@ public interface ITestCaseDAO {
      * @param campaign
      * @param labelid
      * @param priority
-     * @param group
+     * @param type
      * @param status
      * @param length
      * @return
      */
     public AnswerList<TestCase> readByVarious(String[] test, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] campaign, List<Integer> labelid, String[] priority, String[] group, String[] status, int length);
+            String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length);
 
     /**
      *
