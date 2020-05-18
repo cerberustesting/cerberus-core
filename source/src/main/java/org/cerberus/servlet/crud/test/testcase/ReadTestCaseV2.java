@@ -270,7 +270,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         String[] system = request.getParameterValues("system");
         String[] campaign = request.getParameterValues("campaign");
         String[] priority = request.getParameterValues("priority");
-        String[] group = request.getParameterValues("group");
+        String[] type = request.getParameterValues("type");
         String[] status = request.getParameterValues("status");
         String[] labelid = request.getParameterValues("labelid");
         List<Integer> labelList = new ArrayList<>();
@@ -282,7 +282,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         }
         int length = ParameterParserUtil.parseIntegerParam(request.getParameter("length"), -1);
 
-        AnswerList<TestCase> answer = testCaseService.readByVarious(test, app, creator, implementer, system, campaign, labelList, priority, group, status, length);
+        AnswerList<TestCase> answer = testCaseService.readByVarious(test, app, creator, implementer, system, campaign, labelList, priority, type, status, length);
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (TestCase tc : (List<TestCase>) answer.getDataList()) {
                 JSONObject value = convertToJSONObject(tc);
