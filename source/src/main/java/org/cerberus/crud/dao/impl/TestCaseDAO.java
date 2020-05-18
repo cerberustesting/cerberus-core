@@ -587,7 +587,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     public boolean updateTestCaseInformation(TestCase testCase) {
         boolean res = false;
         final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.BehaviorOrValueExpected = ?, tc.activeQA = ?, tc.activeUAT = ?, tc.activePROD = ?, "
-                + "tc.Priority = ?, tc.Status = ?, tc.TcActive = ?, tc.Description = ?, tc.Group = ?, tc.HowTo = ?, tc.Comment = ?, tc.FromBuild = ?, "
+                + "tc.Priority = ?, tc.Status = ?, tc.TcActive = ?, tc.Description = ?, tc.Type = ?, tc.HowTo = ?, tc.Comment = ?, tc.FromBuild = ?, "
                 + "tc.FromRev = ?, tc.ToBuild = ?, tc.ToRev = ?, tc.BugID = ?, tc.TargetBuild = ?, tc.Implementer = ?, tc.Executor = ?, tc.LastModifier = ?, tc.TargetRev = ?, tc.`function` = ?, "
                 + "tc.conditionOper = ?, tc.conditionVal1 = ?, tc.conditionVal2 = ? , tc.conditionVal3 = ? "
                 + "WHERE tc.Test = ? AND tc.Testcase = ?";
@@ -746,7 +746,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append(" ( `Test`, `TestCase`, `Application`, ")
                 .append("`Description`, `BehaviorOrValueExpected`, ")
                 .append("`Priority`, `Status`, `TcActive`, ")
-                .append("`Group`, `Origine`, `RefOrigine`, `HowTo`, `Comment`, ")
+                .append("`Type`, `Origine`, `RefOrigine`, `HowTo`, `Comment`, ")
                 .append("`FromBuild`, `FromRev`, `ToBuild`, `ToRev`, ")
                 .append("`BugID`, `TargetBuild`, `TargetRev`, `UsrCreated`, ")
                 .append("`Implementer`, `Executor`, `UsrModif`, `function`, `activeQA`, `activeUAT`, `activePROD`, `useragent`, `screensize`, ")
@@ -912,8 +912,8 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append(ParameterParserUtil.wildcardOrIsNullIfMinusOne("tec.priority", testCase.getPriority()))
                 .append(") AND (tec.status LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.status", testCase.getStatus()))
-                .append(") AND (tec.group LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.group", testCase.getType()))
+                .append(") AND (tec.Type LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.Type", testCase.getType()))
                 .append(") AND (tec.activePROD LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.activePROD", testCase.getActivePROD()))
                 .append(") AND (tec.activeUAT LIKE ")
@@ -992,7 +992,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerList<TestCase> readByVarious(String[] test, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] campaign, List<Integer> labelid, String[] priority, String[] group, String[] status, int length) {
+            String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length) {
         AnswerList<TestCase> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -1012,7 +1012,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(createInClauseFromList(creator, "tec.usrCreated", "AND ", " "));
         query.append(createInClauseFromList(implementer, "tec.implementer", "AND ", " "));
         query.append(createInClauseFromList(priority, "tec.priority", "AND ", " "));
-        query.append(createInClauseFromList(group, "tec.group", "AND ", " "));
+        query.append(createInClauseFromList(type, "tec.type", "AND ", " "));
         query.append(createInClauseFromList(status, "tec.status", "AND ", " "));
         query.append(createInClauseFromList(system, "app.system", "AND ", " "));
         query.append(SqlUtil.createWhereInClauseInteger("tel.labelid", labelid, "AND ", " "));
@@ -1165,7 +1165,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public void updateTestCase(TestCase testCase) throws CerberusException {
         final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.BehaviorOrValueExpected = ?, tc.activeQA = ?, tc.activeUAT = ?, tc.activePROD = ?, "
-                + "tc.Priority = ?, tc.Status = ?, tc.TcActive = ?, tc.Description = ?, tc.Group = ?, tc.HowTo = ?, tc.Comment = ?, tc.FromBuild = ?, "
+                + "tc.Priority = ?, tc.Status = ?, tc.TcActive = ?, tc.Description = ?, tc.Type = ?, tc.HowTo = ?, tc.Comment = ?, tc.FromBuild = ?, "
                 + "tc.FromRev = ?, tc.ToBuild = ?, tc.ToRev = ?, tc.BugID = ?, tc.TargetBuild = ?, tc.Implementer = ?, tc.Executor = ?, tc.UsrModif = ?, tc.TargetRev = ?, tc.`function` = ?,"
                 + " `conditionOper` = ?, `conditionVal1` = ?, `conditionVal2` = ?, `conditionVal3` = ?, `useragent` = ?, `screensize` = ?, `testCaseVersion` = ?, dateModif = CURRENT_TIMESTAMP "
                 + "WHERE tc.Test = ? AND tc.Testcase = ?";

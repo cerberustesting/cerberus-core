@@ -1089,7 +1089,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList<TestCaseExecutionQueue> readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
+    public AnswerList<TestCaseExecutionQueue> readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> tcstatusList, List<String> typeList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
         AnswerList<TestCaseExecutionQueue> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<TestCaseExecutionQueue> tceqList = new ArrayList<>();
@@ -1121,10 +1121,10 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             whereClauses.add(tcsClause);
         }
 
-        //group 
-        String groupClause = SqlUtil.generateInClause("tec.group", groupList);
-        if (!StringUtil.isNullOrEmpty(groupClause)) {
-            whereClauses.add(groupClause);
+        //type
+        String typeClause = SqlUtil.generateInClause("tec.type", typeList);
+        if (!StringUtil.isNullOrEmpty(typeClause)) {
+            whereClauses.add(typeClause);
         }
         //test case active
         String tcactiveClause = SqlUtil.generateInClause("tec.tcactive", tcactiveList);
@@ -1245,8 +1245,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     preStat.setString(++paramNumber, param);
                 }
             }
-            if (groupList != null) {
-                for (String param : groupList) {
+            if (typeList != null) {
+                for (String param : typeList) {
                     preStat.setString(++paramNumber, param);
                 }
             }
@@ -1303,7 +1303,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     preStat.setString(++paramNumber, param);
                 }
             }
-            //browser            
+            //browser
             if (browserList != null) {
                 for (String param : browserList) {
                     preStat.setString(++paramNumber, param);
