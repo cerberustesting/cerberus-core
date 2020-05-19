@@ -228,7 +228,7 @@ public class ReadTestDataLib extends HttpServlet {
             }
         }
 
-        //recordsFiltered do lado do servidor    
+        //recordsFiltered do lado do servidor
         jsonResponse.put("hasPermissions", userHasPermissions);
         jsonResponse.put("contentTable", jsonArray);
         jsonResponse.put("iTotalRecords", resp.getTotalRows());
@@ -256,7 +256,7 @@ public class ReadTestDataLib extends HttpServlet {
 
         testDataLibService = appContext.getBean(ITestDataLibService.class);
 
-        //finds the testdatalib        
+        //finds the testdatalib
         AnswerItem answer = testDataLibService.readByKey(testDatalib);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -301,7 +301,7 @@ public class ReadTestDataLib extends HttpServlet {
             }
         }
 
-        //recordsFiltered do lado do servidor    
+        //recordsFiltered do lado do servidor
         object.put("contentTable", jsonArray);
         object.put("iTotalRecords", ansList.getTotalRows());
         object.put("iTotalDisplayRecords", ansList.getTotalRows());
@@ -412,7 +412,7 @@ public class ReadTestDataLib extends HttpServlet {
     private JSONObject convertTestDataLibToJSONObject(TestDataLib testDataLib, boolean unescapeContent) throws JSONException {
 
         if (unescapeContent) {
-            //general            
+            //general
             testDataLib.setDescription(StringEscapeUtils.unescapeHtml4(testDataLib.getDescription()));
 
             //SQL
@@ -440,7 +440,7 @@ public class ReadTestDataLib extends HttpServlet {
         testDataLibService = appContext.getBean(ITestDataLibService.class);
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,detailledDescription,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
 
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));

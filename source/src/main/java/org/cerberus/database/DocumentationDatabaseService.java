@@ -492,8 +492,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','activeQA','','fr','Actif QA','','_cas_de_test')");
         b.append(",('testcase','activeUAT','','en','Active UAT','Define whether the <code class=\\'doc-crbvvoca\\'>test case</code> can be executed in UAT environments.<br>If the environment gp1 (attached to the invariant) is UAT and Active UAT is No, the <code class=\\'doc-crbvvoca\\'>test case</code> will never be executed.','_testcase')");
         b.append(",('testcase','activeUAT','','fr','Actif UAT','','_cas_de_test')");
-        b.append(",('testcase','BehaviorOrValueExpected','','en','Detailed Description / Value Expected','It is a full description of the <code class=\\'doc-crbvvoca\\'>application</code> feature that we expect to be tested with that <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
-        b.append(",('testcase','BehaviorOrValueExpected','','fr','Description détaillée / Valeur attendue','','_cas_de_test')");
+        b.append(",('testcase','DetailledDescription','','en','Detailed Description / Value Expected','It is a full description of the <code class=\\'doc-crbvvoca\\'>application</code> feature that we expect to be tested with that <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
+        b.append(",('testcase','DetailledDescription','','fr','Description détaillée / Valeur attendue','','_cas_de_test')");
         b.append(",('testcase','BugID','','en','Bug ID','This is the bug ID that will fix the pending KO.','_testcase')");
         b.append(",('testcase','BugID','','fr','BugID','','_cas_de_test')");
         b.append(",('testcase','Comment','','en','Comment','This is where to add any interesting comment about the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");

@@ -39,7 +39,7 @@ public class TestCase {
     private String application;
     private String ticket;
     private String description;
-    private String behaviorOrValueExpected;
+    private String detailedDescription;
     private int priority;
     private int testCaseVersion;
     private String status;
@@ -85,9 +85,9 @@ public class TestCase {
     private List<TestCaseLabel> testCaseLabel;
     private List<TestCaseDep> testCaseDep;
 
-    public static final String GROUP_MANUAL = "MANUAL";
-    public static final String GROUP_AUTOMATED = "AUTOMATED";
-    public static final String GROUP_PRIVATE = "PRIVATE";
+    public static final String TESTCASE_TYPE_MANUAL = "MANUAL";
+    public static final String TESTCASE_TYPE_AUTOMATED = "AUTOMATED";
+    public static final String TESTCASE_TYPE_PRIVATE = "PRIVATE";
 
     private static final Logger LOG = LogManager.getLogger(TestCase.class);
 
@@ -236,12 +236,12 @@ public class TestCase {
         this.usrCreated = creator;
     }
 
-    public String getBehaviorOrValueExpected() {
-        return behaviorOrValueExpected;
+    public String getDetailledDescription() {
+        return detailedDescription;
     }
 
-    public void setBehaviorOrValueExpected(String behaviorOrValuexpected) {
-        this.behaviorOrValueExpected = behaviorOrValuexpected;
+    public void setDetailedDescription(String detailedDescription) {
+        this.detailedDescription = detailedDescription;
     }
 
     public String getFromRev() {
@@ -486,7 +486,7 @@ public class TestCase {
             result.put("type", this.getType());
             result.put("priority", this.getPriority());
             result.put("description", this.getDescription());
-            result.put("detailledDescription", this.getBehaviorOrValueExpected());
+            result.put("detailledDescription", this.getDetailledDescription());
             result.put("howTo", this.getHowTo());
             result.put("isActive", this.getTcActive());
             result.put("isActiveQA", this.getActiveQA());

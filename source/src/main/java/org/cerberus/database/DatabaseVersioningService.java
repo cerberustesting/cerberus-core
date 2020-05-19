@@ -8536,6 +8536,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("UPDATE invariant SET idname='TESTCASE_TYPE', description='Type of test which cannot be automatized' WHERE idname='GROUP' AND value='MANUAL'");
         a.add("UPDATE invariant SET idname='TESTCASE_TYPE', description='Type of tests which not appear in Cerberus' WHERE idname='GROUP' AND value='PRIVATE'");
 
+        // 1498
+        //
+        a.add("ALTER TABLE TestCase CHANGE BehaviorOrValueExpected DetailedDescription TEXT");
+
         return a;
     }
 

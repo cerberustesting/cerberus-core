@@ -586,7 +586,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public boolean updateTestCaseInformation(TestCase testCase) {
         boolean res = false;
-        final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.BehaviorOrValueExpected = ?, tc.activeQA = ?, tc.activeUAT = ?, tc.activePROD = ?, "
+        final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.DetailedDescription = ?, tc.activeQA = ?, tc.activeUAT = ?, tc.activePROD = ?, "
                 + "tc.Priority = ?, tc.Status = ?, tc.TcActive = ?, tc.Description = ?, tc.Type = ?, tc.HowTo = ?, tc.Comment = ?, tc.FromBuild = ?, "
                 + "tc.FromRev = ?, tc.ToBuild = ?, tc.ToRev = ?, tc.BugID = ?, tc.TargetBuild = ?, tc.Implementer = ?, tc.Executor = ?, tc.LastModifier = ?, tc.TargetRev = ?, tc.`function` = ?, "
                 + "tc.conditionOper = ?, tc.conditionVal1 = ?, tc.conditionVal2 = ? , tc.conditionVal3 = ? "
@@ -602,7 +602,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             try {
                 int i = 1;
                 preStat.setString(i++, testCase.getApplication());
-                preStat.setString(i++, testCase.getBehaviorOrValueExpected());
+                preStat.setString(i++, testCase.getDetailledDescription());
                 preStat.setString(i++, testCase.getActiveQA());
                 preStat.setString(i++, testCase.getActiveUAT());
                 preStat.setString(i++, testCase.getActivePROD());
@@ -744,7 +744,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         final StringBuffer sql = new StringBuffer("INSERT INTO `testcase` ")
                 .append(" ( `Test`, `TestCase`, `Application`, ")
-                .append("`Description`, `BehaviorOrValueExpected`, ")
+                .append("`Description`, `DetailedDescription`, ")
                 .append("`Priority`, `Status`, `TcActive`, ")
                 .append("`Type`, `Origine`, `RefOrigine`, `HowTo`, `Comment`, ")
                 .append("`FromBuild`, `FromRev`, `ToBuild`, `ToRev`, ")
@@ -767,7 +767,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestCase(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getApplication(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getBehaviorOrValueExpected(), ""));
+                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDetailledDescription(), ""));
                 preStat.setString(i++, Integer.toString(testCase.getPriority()));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
                 preStat.setString(i++, testCase.getTcActive() != null && !testCase.getTcActive().equals("Y") ? "N" : "Y");
@@ -924,8 +924,8 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.description", text))
                 .append(" OR tec.howto LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.howto", text))
-                .append(" OR tec.behaviororvalueexpected LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.behaviororvalueexpected", text))
+                .append(" OR tec.DetailedDescription LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.DetailedDescription", text))
                 .append(" OR tec.comment LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.comment", text))
                 .append(") AND (tec.TcActive LIKE ")
@@ -1164,7 +1164,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public void updateTestCase(TestCase testCase) throws CerberusException {
-        final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.BehaviorOrValueExpected = ?, tc.activeQA = ?, tc.activeUAT = ?, tc.activePROD = ?, "
+        final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.DetailedDescription = ?, tc.activeQA = ?, tc.activeUAT = ?, tc.activePROD = ?, "
                 + "tc.Priority = ?, tc.Status = ?, tc.TcActive = ?, tc.Description = ?, tc.Type = ?, tc.HowTo = ?, tc.Comment = ?, tc.FromBuild = ?, "
                 + "tc.FromRev = ?, tc.ToBuild = ?, tc.ToRev = ?, tc.BugID = ?, tc.TargetBuild = ?, tc.Implementer = ?, tc.Executor = ?, tc.UsrModif = ?, tc.TargetRev = ?, tc.`function` = ?,"
                 + " `conditionOper` = ?, `conditionVal1` = ?, `conditionVal2` = ?, `conditionVal3` = ?, `useragent` = ?, `screensize` = ?, `testCaseVersion` = ?, dateModif = CURRENT_TIMESTAMP "
@@ -1180,7 +1180,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             try {
                 int i = 1;
                 preStat.setString(i++, testCase.getApplication());
-                preStat.setString(i++, testCase.getBehaviorOrValueExpected());
+                preStat.setString(i++, testCase.getDetailledDescription());
                 preStat.setString(i++, testCase.getActiveQA().equals("Y") ? "Y" : "N");
                 preStat.setString(i++, testCase.getActiveUAT().equals("Y") ? "Y" : "N");
                 preStat.setString(i++, testCase.getActivePROD().equals("Y") ? "Y" : "N");
@@ -1848,7 +1848,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(" activeProd = ?,");
         query.append(" status = ?,");
         query.append(" description = ?,");
-        query.append(" behaviorOrValueExpected = ?,");
+        query.append(" DetailedDescription = ?,");
         query.append(" howTo = ?,");
         query.append(" tcactive = ?,");
         query.append(" fromBuild = ?,");
@@ -1893,7 +1893,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, tc.getActivePROD());
                 preStat.setString(i++, tc.getStatus());
                 preStat.setString(i++, tc.getDescription());
-                preStat.setString(i++, tc.getBehaviorOrValueExpected());
+                preStat.setString(i++, tc.getDetailledDescription());
                 preStat.setString(i++, tc.getHowTo());
                 preStat.setString(i++, tc.getTcActive());
                 preStat.setString(i++, tc.getFromBuild());
@@ -1951,7 +1951,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         final StringBuffer sql = new StringBuffer("INSERT INTO `testcase` ")
                 .append(" ( `Test`, `TestCase`, `Application`, ")
-                .append("`Description`, `BehaviorOrValueExpected`, ")
+                .append("`Description`, `DetailedDescription`, ")
                 .append("`Priority`, `Status`, `TcActive`, ")
                 .append("`Type`, `Origine`, `RefOrigine`, `HowTo`, `Comment`, ")
                 .append("`FromBuild`, `FromRev`, `ToBuild`, `ToRev`, ")
@@ -1974,7 +1974,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestCase(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getApplication(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getBehaviorOrValueExpected(), ""));
+                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDetailledDescription(), ""));
                 preStat.setString(i++, Integer.toString(testCase.getPriority()));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
                 preStat.setString(i++, testCase.getTcActive() != null && !testCase.getTcActive().equals("Y") ? "N" : "Y");
@@ -2090,7 +2090,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         String testCase = resultSet.getString("tec.TestCase");
         String tcapplication = resultSet.getString("tec.Application");
         String description = resultSet.getString("tec.Description");
-        String behavior = resultSet.getString("tec.BehaviorOrValueExpected");
+        String detailedDescription = resultSet.getString("tec.DetailedDescription");
         int priority = resultSet.getInt("tec.Priority");
         int testCaseVersion = resultSet.getInt("tec.TestCaseVersion");
         String status = resultSet.getString("tec.Status");
@@ -2138,7 +2138,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         TestCase newTestCase = factoryTestCase.create(test, testCase, origin, refOrigin, usrCreated, implementer, executor,
                 usrModif, function, tcapplication, runQA, runUAT, runPROD, priority, type,
-                status, description, behavior, howTo, tcactive, conditionOper, conditionVal1, conditionVal2, conditionVal3, fromSprint, fromRevision, toSprint,
+                status, description, detailedDescription, howTo, tcactive, conditionOper, conditionVal1, conditionVal2, conditionVal3, fromSprint, fromRevision, toSprint,
                 toRevision, status, bugID, targetSprint, targetRevision, comment, dateCreated, userAgent, screenSize, dateModif, testCaseVersion);
         newTestCase.setSystem(system);
         return newTestCase;

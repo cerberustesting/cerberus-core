@@ -513,8 +513,8 @@ public class ExecutionStartService implements IExecutionStartService {
          * Changing Automatic execution flag depending on test case information.
          */
         if (tCExecution.getManualExecution().equals(TestCaseExecution.MANUAL_A)) {
-            if (tCExecution.getTestCaseObj().getType().equals(TestCase.GROUP_AUTOMATED)
-                    || tCExecution.getTestCaseObj().getType().equals(TestCase.GROUP_PRIVATE)) {
+            if (tCExecution.getTestCaseObj().getType().equals(TestCase.TESTCASE_TYPE_AUTOMATED)
+                    || tCExecution.getTestCaseObj().getType().equals(TestCase.TESTCASE_TYPE_PRIVATE)) {
                 tCExecution.setManualExecution(TestCaseExecution.MANUAL_N);
 
             } else {

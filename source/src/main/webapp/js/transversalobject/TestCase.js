@@ -84,7 +84,7 @@ function initModalTestCase() {
     $("[name='actUATField']").html(doc.getDocOnline("testcase", "activeUAT"));
     $("[name='actProdField']").html(doc.getDocOnline("testcase", "activePROD"));
     $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
-    $("[name='behaviorOrValueExpectedField']").html(doc.getDocOnline("testcase", "BehaviorOrValueExpected"));
+    $("[name='detailledDescriptionField']").html(doc.getDocOnline("testcase", "detailledDescription"));
     $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
     $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
     $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
@@ -578,7 +578,7 @@ function confirmTestCaseModalHandler(mode) {
             activeQA: data.activeQA,
             activeUAT: data.activeUAT,
             application: data.application,
-            behaviorOrValueExpected: data.behaviorOrValueExpected,
+            detailledDescription: data.detailledDescription,
             bugId: JSON.stringify(table_bug),
             comment: data.comment,
             fromRev: data.fromRev,
@@ -801,12 +801,12 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
 //    $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
 
     var observer = new MutationObserver(function(mutations, me) {
-        var behaviorOrValueExpected = tinyMCE.get('behaviorOrValueExpected');
-        if (behaviorOrValueExpected !== null) {
+        var detailledDescription = tinyMCE.get('detailledDescription');
+        if (detailledDescription !== null) {
             if (isEmpty(testCase)) {
-                tinyMCE.get('behaviorOrValueExpected').setContent("");
+                tinyMCE.get('detailledDescription').setContent("");
             } else {
-                tinyMCE.get('behaviorOrValueExpected').setContent(testCase.behaviorOrValueExpected);
+                tinyMCE.get('detailledDescription').setContent(testCase.detailledDescription);
             }
 
             me.disconnect()
@@ -954,8 +954,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#userAgent").prop("disabled", "disabled");
         formEdit.find("#screenSize").prop("disabled", "disabled");
         formEdit.find("#shortDesc").prop("readonly", "readonly");
-        if (tinyMCE.get('behaviorOrValueExpected') !== null)
-            tinyMCE.get('behaviorOrValueExpected').getBody().setAttribute('contenteditable', false);
+        if (tinyMCE.get('detailledDescription') !== null)
+            tinyMCE.get('detailledDescription').getBody().setAttribute('contenteditable', false);
         formEdit.find("#active").prop("disabled", "disabled");
         formEdit.find("#fromSprint").prop("disabled", "disabled");
         formEdit.find("#fromRev").prop("disabled", "disabled");
@@ -990,8 +990,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#userAgent").removeProp("disabled");
         formEdit.find("#screenSize").removeProp("disabled");
         formEdit.find("#shortDesc").removeProp("readonly");
-        if (tinyMCE.get('behaviorOrValueExpected') !== null)
-            tinyMCE.get('behaviorOrValueExpected').getBody().setAttribute('contenteditable', true);
+        if (tinyMCE.get('DetailedDescription') !== null)
+            tinyMCE.get('DetailedDescription').getBody().setAttribute('contenteditable', true);
         formEdit.find("#active").removeProp("disabled");
         formEdit.find("#fromSprint").removeProp("disabled");
         formEdit.find("#fromRev").removeProp("disabled");
