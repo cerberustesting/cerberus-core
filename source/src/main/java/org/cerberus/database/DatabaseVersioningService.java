@@ -8538,7 +8538,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // 1498
         //
-        a.add("ALTER TABLE TestCase CHANGE BehaviorOrValueExpected DetailedDescription TEXT");
+        a.add("ALTER TABLE testcase CHANGE BehaviorOrValueExpected DetailedDescription TEXT");
 
         return a;
     }
