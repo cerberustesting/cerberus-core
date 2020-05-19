@@ -8530,7 +8530,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Alter  TestCase Column name from group to type
         a.add("ALTER TABLE testcase CHANGE testcase.`Group` `Type` VARCHAR(45)");
 
-        // 1495
+        // 1495 - 1497
         // Update invariant name GROUP to TESTCASE_TYPE
         a.add("UPDATE invariant SET idname='TESTCASE_TYPE', description='Type of interactive tests' WHERE idname='GROUP' AND value='AUTOMATED'");
         a.add("UPDATE invariant SET idname='TESTCASE_TYPE', description='Type of test which cannot be automatized' WHERE idname='GROUP' AND value='MANUAL'");
