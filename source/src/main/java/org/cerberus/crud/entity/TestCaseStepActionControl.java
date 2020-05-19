@@ -350,24 +350,24 @@ public class TestCaseStepActionControl {
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
-            result.put("test", this.getTest());
-            result.put("testcase", this.getTestCase());
-            result.put("step", this.getStep());
-            result.put("sequence", this.getSequence());
-            result.put("control", this.getControlSequence());
             result.put("sort", this.getSort());
-            result.put("conditionOper", this.getConditionOper());
-            result.put("conditionVal1", this.getConditionVal1());
-            result.put("conditionVal2", this.getConditionVal2());
-            result.put("conditionVal3", this.getConditionVal3());
-            result.put("conditionVal2AAAA", this.getConditionVal2());
+            result.put("stepId", this.getStep());
+            result.put("actionId", this.getSequence());
+            result.put("controlId", this.getControlSequence());
+            result.put("description", this.getDescription());
             result.put("control", this.getControl());
             result.put("value1", this.getValue1());
             result.put("value2", this.getValue2());
             result.put("value3", this.getValue3());
-            result.put("fatal", this.getFatal());
-            result.put("description", this.getDescription());
+            result.put("conditionOperator", this.getConditionOper());
+            result.put("conditionVal1", this.getConditionVal1());
+            result.put("conditionVal2", this.getConditionVal2());
+            result.put("conditionVal3", this.getConditionVal3());
+            result.put("isFatal", this.getFatal());
             result.put("screenshotFilename", this.getScreenshotFilename());
+            result.put("test", this.getTest());
+            result.put("testcase", this.getTestCase());
+
         } catch (JSONException ex) {
             Logger LOG = LogManager.getLogger(TestCaseStepActionControl.class);
             LOG.warn(ex);

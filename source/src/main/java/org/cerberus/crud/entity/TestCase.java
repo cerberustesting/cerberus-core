@@ -492,13 +492,13 @@ public class TestCase {
             result.put("isActiveQA", this.getActiveQA());
             result.put("isActiveUAT", this.getActiveUAT());
             result.put("isActivePROD", this.getActivePROD());
-            result.put("fromSprint", this.getFromBuild());
-            result.put("toSprint", this.getToBuild());
-            result.put("targetSprint", this.getTargetBuild());
-            result.put("fromRev", this.getFromRev());
-            result.put("toRev", this.getToRev());
-            result.put("targetRev", this.getTargetRev());
-            result.put("conditionOper", this.getConditionOper());
+            result.put("fromMajor", this.getFromBuild());
+            result.put("toMajor", this.getToBuild());
+            result.put("targetMajor", this.getTargetBuild());
+            result.put("fromMinor", this.getFromRev());
+            result.put("toMinor", this.getToRev());
+            result.put("targetMinor", this.getTargetRev());
+            result.put("conditionOperator", this.getConditionOper());
             result.put("conditionValue1", this.getConditionVal1());
             result.put("conditionValue2", this.getConditionVal2());
             result.put("conditionValue3", this.getConditionVal3());
@@ -513,9 +513,10 @@ public class TestCase {
             result.put("usrCreated", this.getUsrCreated());
             result.put("dateModif", this.getDateModif());
             result.put("usrModif", this.getUsrModif());
-            // [WIP] To delete ?
             result.put("origine", this.getOrigine());
             result.put("refOrigine", this.getRefOrigine());
+
+            // [WIP] To delete !!!
             result.put("function", this.getFunction());
 
             JSONArray array = new JSONArray();

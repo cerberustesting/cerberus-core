@@ -98,7 +98,7 @@ public class TestCaseStepAction {
     public static final String ACTION_CALCULATEPROPERTY = "calculateProperty";
     public static final String ACTION_SETNETWORKTRAFFICCONTENT = "setNetworkTrafficContent";
     public static final String ACTION_DONOTHING = "doNothing";
-    
+
     // ??? TODO. Clean this unused action.
     public static final String ACTION_PERFORMEDITORACTION = "performEditorAction";
 
@@ -384,29 +384,30 @@ public class TestCaseStepAction {
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
-            result.put("test", this.getTest());
-            result.put("testcase", this.getTestCase());
-            result.put("step", this.getStep());
-            result.put("sequence", this.getSequence());
             result.put("sort", this.getSort());
-            result.put("conditionOper", this.getConditionOper());
-            result.put("conditionVal1", this.getConditionVal1());
-            result.put("conditionVal2", this.getConditionVal2());
-            result.put("conditionVal3", this.getConditionVal3());
+            result.put("stepId", this.getStep());
+            result.put("actionId", this.getSequence());
+            result.put("description", this.getDescription());
             result.put("action", this.getAction());
             result.put("value1", this.getValue1());
             result.put("value2", this.getValue2());
             result.put("value3", this.getValue3());
-            result.put("forceExeStatus", this.getForceExeStatus());
-            result.put("description", this.getDescription());
+            result.put("conditionOperator", this.getConditionOper());
+            result.put("conditionVal1", this.getConditionVal1());
+            result.put("conditionVal2", this.getConditionVal2());
+            result.put("conditionVal3", this.getConditionVal3());
+            result.put("isFatal", this.getForceExeStatus());
             result.put("screenshotFilename", this.getScreenshotFilename());
+            result.put("test", this.getTest());
+            result.put("testcase", this.getTestCase());
+
             JSONArray array = new JSONArray();
             if (this.getTestCaseStepActionControl() != null) {
                 for (Object testCaseStepActionControlExecution : this.getTestCaseStepActionControl()) {
                     array.put(((TestCaseStepActionControl) testCaseStepActionControlExecution).toJson());
                 }
             }
-            result.put("testCaseStepActionControlList", array);
+            result.put("controls", array);
         } catch (JSONException ex) {
             Logger LOG = LogManager.getLogger(TestCaseStepAction.class);
             LOG.warn(ex);

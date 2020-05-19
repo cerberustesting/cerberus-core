@@ -1672,8 +1672,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_runtest','execution_settings','','fr','Paramètres d\\'execution','',NULL)");
         b.append(",('page_runtest','filters','','en','Extended Test Case Filters','',NULL)");
         b.append(",('page_runtest','filters','','fr','Filtres Cas de test','',NULL)");
-        b.append(",('page_runtest','group','','en','Group','',NULL)");
-        b.append(",('page_runtest','group','','fr','Groupe','',NULL)");
+        b.append(",('page_runtest','testcase_type','','en','Type','',NULL)");
+        b.append(",('page_runtest','testcase_type','','fr','Type','',NULL)");
         b.append(",('page_runtest','implementer','','en','Implementer','',NULL)");
         b.append(",('page_runtest','implementer','','fr','Implementeur','',NULL)");
         b.append(",('page_runtest','load','','en','Load','',NULL)");

@@ -372,32 +372,42 @@ public class TestCaseStep {
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
-            result.put("test", this.getTest());
-            result.put("testcase", this.getTestCase());
-            result.put("step", this.getStep());
             result.put("sort", this.getSort());
-            result.put("conditionOper", this.getConditionOper());
+            result.put("stepId", this.getStep());
+            result.put("description", this.getDescription());
+            result.put("isExecutionForced", this.getForceExe());
+            result.put("loop", this.getLoop());
+            result.put("conditionOperator", this.getConditionOper());
             result.put("conditionVal1", this.getConditionVal1());
             result.put("conditionVal2", this.getConditionVal2());
             result.put("conditionVal3", this.getConditionVal3());
-            result.put("description", this.getDescription());
-            result.put("useStep", this.getUseStep());
-            result.put("useStepTest", this.getUseStepTest());
-            result.put("useStepTestCase", this.getUseStepTestCase());
-            result.put("useStepStep", this.getUseStepStep());
-            result.put("inLibrary", this.getInLibrary());
+            result.put("isUsedStep", this.getUseStep());
+            result.put("isLibraryStep", this.getInLibrary());
+            result.put("libraryStepTest", this.getUseStepTest());
+            result.put("libraryStepTestCase", this.getUseStepTestCase());
+            result.put("libraryStepStepId", this.getUseStepStep());
+            result.put("test", this.getTest());
+            result.put("testcase", this.getTestCase());
             result.put("initialStep", this.getInitialStep());
-            result.put("loop", this.getLoop());
-            result.put("forceExe", this.getForceExe());
+            result.put("usrCreated", this.usrCreated);
+            result.put("dateCreated", this.dateCreated);
+            result.put("usrModif", this.usrModif);
+            result.put("dateModif", this.dateModif);
+
             JSONArray array = new JSONArray();
-            if (this.getTestCaseStepAction() != null) {
+
+            if (this.getTestCaseStepAction()
+                    != null) {
                 for (Object testCaseStepExecution : this.getTestCaseStepAction()) {
                     array.put(((TestCaseStepAction) testCaseStepExecution).toJson());
                 }
             }
-            result.put("testCaseStepActionList", array);
+
+            result.put(
+                    "actions", array);
         } catch (JSONException ex) {
-            Logger LOG = LogManager.getLogger(TestCaseStep.class);
+            Logger LOG = LogManager.getLogger(TestCaseStep.class
+            );
             LOG.warn(ex);
         }
         return result;
