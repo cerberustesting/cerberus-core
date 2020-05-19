@@ -79,7 +79,7 @@ public interface IFactoryTestCase {
      */
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
             String implementer, String executor, String usrModif, String function, String application,
-            String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
+            String activeQA, String activeUAT, String activePROD, int priority, String type, String status,
             String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String conditionVal3, String fromBuild,
             String fromRev, String toBuild, String toRev, String lastExecutionStatus, JSONArray bugID,
             String targetBuild, String targetRev, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry,
@@ -102,7 +102,7 @@ public interface IFactoryTestCase {
      * @param activeUAT
      * @param activePROD
      * @param priority
-     * @param group
+     * @param type
      * @param status
      * @param description
      * @param behavior
@@ -130,7 +130,7 @@ public interface IFactoryTestCase {
      */
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
             String implementer, String executor, String usrModif, String function, String application,
-            String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
+            String activeQA, String activeUAT, String activePROD, int priority, String type, String status,
             String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String conditionVal3, String fromBuild,
             String fromRev, String toBuild, String toRev, String lastExecutionStatus, JSONArray bigID,
             String targetBuild, String targetRev, String comment, String dateCreated, String userAgent, String screenSize, Timestamp dateModif, int testCaseVersion);

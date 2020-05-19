@@ -488,7 +488,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         List<TestCase> testCaseList = new ArrayList<>();
 
         final String sql = " select count(*) as total, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application,"
-                + "tc.TcActive as Active, tc.`Group`, tc.UsrCreated, tc.`Status` "
+                + "tc.TcActive as Active, tc.`Type`, tc.UsrCreated, tc.`Status` "
                 + " from testcase tc INNER JOIN test t ON t.test = tc.test"
                 + " INNER JOIN testcasecountryproperties tccp ON tccp.Test = t.Test AND tccp.TestCase = tc.TestCase"
                 + " INNER JOIN testdatalib td ON td.Name = tccp.Value1 AND (tccp.Country = td.Country or td.country='') and tccp.test = t.test and tccp.testcase = tc.testcase"
@@ -530,7 +530,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                         testCaseDTO.setCreator(resultSet.getString("tc.UsrCreated"));
                         testCaseDTO.setStatus(resultSet.getString("Status"));
 
-                        testCaseDTO.setGroup(resultSet.getString("Group"));
+                        testCaseDTO.setGroup(resultSet.getString("Type"));
                         testCaseDTO.setIsActive(resultSet.getString("Active"));
                         testList.getTestCaseList().add(testCaseDTO);
                         map.put(test, testList);
