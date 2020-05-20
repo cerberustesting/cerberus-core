@@ -183,7 +183,7 @@
                                                     </div>
                                                     <div class="col-lg-3 form-group">
                                                         <label>Step Condition Operation:</label>
-                                                        <select class="form-control input-sm" id="stepConditionOper"></select>
+                                                        <select class="form-control input-sm" id="stepConditionOperator"></select>
                                                     </div>
                                                     <div class="col-lg-3 form-group">
                                                         <label>Step Condition Parameter:</label>

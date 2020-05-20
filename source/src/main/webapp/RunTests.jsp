@@ -149,12 +149,12 @@
                                                 <select class="multiselectelement form-control" multiple="" id="applicationFilter"></select>
                                             </div>
                                             <div class="form-group col-xs-2">
-                                                <i><label id="lbl_targetSprint" for="targetSprintFilter">Target Build</label></i>
-                                                <select class="multiselectelement form-control" multiple="multiple" id="targetSprintFilter"></select>
+                                                <i><label id="lbl_targetMajor" for="targetMajorFilter">Target Major</label></i>
+                                                <select class="multiselectelement form-control" multiple="multiple" id="targetMajorFilter"></select>
                                             </div>
                                             <div class="form-group col-xs-2">
-                                                <i><label id="lbl_targetRev" for="targetRevFilter">Target Revision</label></i>
-                                                <select class="multiselectelement form-control" multiple="multiple" id="targetRevFilter"></select>
+                                                <i><label id="lbl_targetMinor" for="targetMinorFilter">Target Minor</label></i>
+                                                <select class="multiselectelement form-control" multiple="multiple" id="targetMinorFilter"></select>
                                             </div>
                                         </div>
                                         <div class="row">

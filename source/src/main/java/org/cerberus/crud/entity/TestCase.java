@@ -41,10 +41,10 @@ public class TestCase {
     private String description;
     private String detailedDescription;
     private int priority;
-    private int testCaseVersion;
+    private int version;
     private String status;
     private String tcActive;
-    private String conditionOper;
+    private String conditionOperator;
     private String conditionVal1;
     private String conditionVal2;
     private String conditionVal3;
@@ -53,13 +53,13 @@ public class TestCase {
     private String refOrigine;
     private String howTo;
     private String comment;
-    private String fromBuild;
-    private String fromRev;
-    private String toBuild;
-    private String toRev;
+    private String fromMajor;
+    private String fromMinor;
+    private String toMajor;
+    private String toMinor;
     private JSONArray bugID;
-    private String targetBuild;
-    private String targetRev;
+    private String targetMajor;
+    private String targetMinor;
     private String implementer;
     private String executor;
     private String activeQA;
@@ -147,12 +147,12 @@ public class TestCase {
         this.tcActive = active;
     }
 
-    public String getConditionOper() {
-        return conditionOper;
+    public String getConditionOperator() {
+        return conditionOperator;
     }
 
-    public void setConditionOper(String conditionOper) {
-        this.conditionOper = conditionOper;
+    public void setConditionOperator(String conditionOperator) {
+        this.conditionOperator = conditionOperator;
     }
 
     public String getConditionVal1() {
@@ -244,20 +244,20 @@ public class TestCase {
         this.detailedDescription = detailedDescription;
     }
 
-    public String getFromRev() {
-        return fromRev;
+    public String getFromMinor() {
+        return fromMinor;
     }
 
-    public void setFromRev(String fromRevision) {
-        this.fromRev = fromRevision;
+    public void setFromMinor(String fromMinor) {
+        this.fromMinor = fromMinor;
     }
 
-    public String getFromBuild() {
-        return fromBuild;
+    public String getFromMajor() {
+        return fromMajor;
     }
 
-    public void setFromBuild(String fromSprint) {
-        this.fromBuild = fromSprint;
+    public void setFromMajor(String fromMajor) {
+        this.fromMajor = fromMajor;
     }
 
     public String getType() {
@@ -364,20 +364,20 @@ public class TestCase {
         this.status = status;
     }
 
-    public String getTargetRev() {
-        return targetRev;
+    public String getTargetMinor() {
+        return targetMinor;
     }
 
-    public void setTargetRev(String targetRevision) {
-        this.targetRev = targetRevision;
+    public void setTargetMinor(String targetMinor) {
+        this.targetMinor = targetMinor;
     }
 
-    public String getTargetBuild() {
-        return targetBuild;
+    public String getTargetMajor() {
+        return targetMajor;
     }
 
-    public void setTargetBuild(String targetSprint) {
-        this.targetBuild = targetSprint;
+    public void setTargetMajor(String targetMajor) {
+        this.targetMajor = targetMajor;
     }
 
     public String getTest() {
@@ -420,20 +420,20 @@ public class TestCase {
         this.ticket = ticket;
     }
 
-    public String getToRev() {
-        return toRev;
+    public String getToMinor() {
+        return toMinor;
     }
 
-    public void setToRev(String toRevision) {
-        this.toRev = toRevision;
+    public void setToMinor(String toMinor) {
+        this.toMinor = toMinor;
     }
 
-    public String getToBuild() {
-        return toBuild;
+    public String getToMajor() {
+        return toMajor;
     }
 
-    public void setToBuild(String toSprint) {
-        this.toBuild = toSprint;
+    public void setToMajor(String toMajor) {
+        this.toMajor = toMajor;
     }
 
     public List<TestCaseLabel> getTestCaseLabel() {
@@ -468,12 +468,12 @@ public class TestCase {
         this.dateModif = dateModif;
     }
 
-    public int getTestCaseVersion() {
-        return testCaseVersion;
+    public int getVersion() {
+        return version;
     }
 
-    public void setTestCaseVersion(int testCaseVersion) {
-        this.testCaseVersion = testCaseVersion;
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     public JSONObject toJson() {
@@ -492,13 +492,13 @@ public class TestCase {
             result.put("isActiveQA", this.getActiveQA());
             result.put("isActiveUAT", this.getActiveUAT());
             result.put("isActivePROD", this.getActivePROD());
-            result.put("fromMajor", this.getFromBuild());
-            result.put("toMajor", this.getToBuild());
-            result.put("targetMajor", this.getTargetBuild());
-            result.put("fromMinor", this.getFromRev());
-            result.put("toMinor", this.getToRev());
-            result.put("targetMinor", this.getTargetRev());
-            result.put("conditionOperator", this.getConditionOper());
+            result.put("fromMajor", this.getFromMajor());
+            result.put("toMajor", this.getToMajor());
+            result.put("targetMajor", this.getTargetMajor());
+            result.put("fromMinor", this.getFromMinor());
+            result.put("toMinor", this.getToMinor());
+            result.put("targetMinor", this.getTargetMinor());
+            result.put("conditionOperator", this.getConditionOperator());
             result.put("conditionValue1", this.getConditionVal1());
             result.put("conditionValue2", this.getConditionVal2());
             result.put("conditionValue3", this.getConditionVal3());
@@ -508,7 +508,7 @@ public class TestCase {
             result.put("comment", this.getComment());
             result.put("implementer", this.getImplementer());
             result.put("executor", this.getExecutor());
-            result.put("version", this.getTestCaseVersion());
+            result.put("version", this.getVersion());
             result.put("dateCreated", this.getDateCreated());
             result.put("usrCreated", this.getUsrCreated());
             result.put("dateModif", this.getDateModif());

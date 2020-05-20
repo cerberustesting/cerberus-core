@@ -84,7 +84,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
                 if (tcsa != null) {
                     testCaseStep.setTestCaseStepAction(tcsa);
                 }
-                // Copy the usedStep property to main step. Loop and conditionoper are taken from used step.
+                // Copy the usedStep property to main step. Loop and conditionOperator are taken from used step.
                 testCaseStep = testCaseStepService.modifyTestCaseStepDataFromUsedStep(testCaseStep);
             }
             result.add(testCaseStep);

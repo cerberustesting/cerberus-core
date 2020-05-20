@@ -520,7 +520,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                 .put("priority", testCase.getPriority())
                 .put("status", testCase.getStatus())
                 .put("tcActive", testCase.getTcActive())
-                .put("conditionOper", testCase.getConditionOper())
+                .put("conditionOperator", testCase.getConditionOperator())
                 .put("conditionValue1", testCase.getConditionVal1())
                 .put("conditionValue2", testCase.getConditionVal2())
                 .put("conditionValue3", testCase.getConditionVal3())
@@ -529,12 +529,12 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                 .put("refOrigine", testCase.getRefOrigine())
                 .put("howTo", testCase.getHowTo())
                 .put("comment", testCase.getComment())
-                .put("fromBuild", testCase.getFromBuild())
-                .put("fromRev", testCase.getFromRev())
-                .put("toBuild", testCase.getToBuild())
-                .put("toRev", testCase.getToRev())
-                .put("targetBuild", testCase.getTargetBuild())
-                .put("targetRev", testCase.getTargetRev())
+                .put("fromMajor", testCase.getFromMajor())
+                .put("fromMinor", testCase.getFromMinor())
+                .put("toMajor", testCase.getToMajor())
+                .put("toMinor", testCase.getToMinor())
+                .put("targetMajor", testCase.getTargetMajor())
+                .put("targetMinor", testCase.getTargetMinor())
                 .put("implementer", testCase.getImplementer())
                 .put("executor", testCase.getExecutor())
                 .put("activeQA", testCase.getActiveQA())
@@ -547,7 +547,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                 .put("dateCreated", testCase.getDateCreated())
                 .put("usrModif", testCase.getUsrModif())
                 .put("dateModif", testCase.getDateModif())
-                .put("testCaseVersion", testCase.getTestCaseVersion());
+                .put("version", testCase.getVersion());
     }
 
     private JSONObject convertToJSONObject(TestCaseCountryProperties prop) throws JSONException {

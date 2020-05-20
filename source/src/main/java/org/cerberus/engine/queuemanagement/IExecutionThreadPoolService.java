@@ -72,4 +72,16 @@ public interface IExecutionThreadPoolService {
      * @param instanceActive
      */
     void setInstanceActive(boolean instanceActive);
+
+    /**
+     *
+     * @return
+     */
+    boolean isSplashPageActive();
+
+    /**
+     *
+     * @param instanceActive
+     */
+    void setSplashPageActive(boolean isSplashPageActive);
 }

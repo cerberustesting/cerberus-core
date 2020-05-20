@@ -180,8 +180,8 @@ function displayPageLabel() {
     $("#lbl_campaign").text(doc.getDocLabel("page_runtest", "campaign"));
     $("#lbl_priority").text(doc.getDocLabel("page_runtest", "priority"));
     $("#lbl_status").text(doc.getDocLabel("page_runtest", "status"));
-    $("#lbl_targetRev").text(doc.getDocLabel("page_runtest", "targetrev"));
-    $("#lbl_targetSprint").text(doc.getDocLabel("page_runtest", "targetsprint"));
+    $("#lbl_targetMinor").text(doc.getDocLabel("page_runtest", "targetMinor"));
+    $("#lbl_targetMajor").text(doc.getDocLabel("page_runtest", "targetMajor"));
     $("#lbl_size").text(doc.getDocLabel("page_runtest", "size"));
     $("input[name='envSettings'][value='auto']").next().text(doc.getDocLabel("page_runtest", "automatic"));
     $("input[name='envSettings'][value='manual']").next().text(doc.getDocLabel("page_runtest", "manual"));
@@ -1013,8 +1013,8 @@ function loadTestCaseFilterData(system) {
             loadMultiSelect("ReadUserPublic", "", "creator", ["login"], "login"),
             loadMultiSelect("ReadUserPublic", "", "implementer", ["login"], "login"),
             loadMultiSelect("ReadCampaign", "", "campaign", ["campaign"], "campaign"),
-            loadMultiSelect("ReadBuildRevisionInvariant", "level=1" + getUser().defaultSystemsQuery, "targetSprint", ["versionName"], "versionName"),
-            loadMultiSelect("ReadBuildRevisionInvariant", "level=2" + getUser().defaultSystemsQuery, "targetRev", ["versionName"], "versionName"),
+            loadMultiSelect("ReadBuildRevisionInvariant", "level=1" + getUser().defaultSystemsQuery, "targetMajor", ["versionName"], "versionName"),
+            loadMultiSelect("ReadBuildRevisionInvariant", "level=2" + getUser().defaultSystemsQuery, "targetMinor", ["versionName"], "versionName"),
             loadMultiSelect("ReadLabel", "e=1" + getUser().defaultSystemsQuery, "labelid", ["label"], "id"),
             loadInvariantMultiSelect("system", "SYSTEM"),
             loadInvariantMultiSelect("priority", "PRIORITY"),

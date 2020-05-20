@@ -240,7 +240,7 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
         int sort = currentControl.getInt("sort");
         int sequence = currentControl.getInt("sequence");
         int controlSequence = currentControl.getInt("control");
-        String conditionOper = currentControl.getString("conditionOper");
+        String conditionOperator = currentControl.getString("conditionOperator");
         String conditionVal1Init = currentControl.getString("conditionVal1Init");
         String conditionVal2Init = currentControl.getString("conditionVal2Init");
         String conditionVal3Init = currentControl.getString("conditionVal3Init");
@@ -270,7 +270,7 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
         long fullEnd = 0;//currentAction.getLong("fullEnd");
 
         //create this TestCaseStepActionControlExecution and update the bdd with it
-        TestCaseStepActionControlExecution currentTestCaseStepActionControlExecution = createTestCaseStepActionControlExecution(id, test, testCase, step, index, sequence, controlSequence, sort, returnCode, returnMessage, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, control, value1Init, value2Init, value3Init, value1, value2, value3, fatal, start, end, fullStart, fullEnd, description, null, null);
+        TestCaseStepActionControlExecution currentTestCaseStepActionControlExecution = createTestCaseStepActionControlExecution(id, test, testCase, step, index, sequence, controlSequence, sort, returnCode, returnMessage, conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, control, value1Init, value2Init, value3Init, value1, value2, value3, fatal, start, end, fullStart, fullEnd, description, null, null);
         return currentTestCaseStepActionControlExecution;
     }
 
@@ -294,7 +294,7 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
         int index = currentAction.getInt("index");
         int sort = currentAction.getInt("sort");
         int sequence = currentAction.getInt("sequence");
-        String conditionOper = currentAction.getString("conditionOper");
+        String conditionOperator = currentAction.getString("conditionOperator");
         String conditionVal1Init = currentAction.getString("conditionVal1Init");
         String conditionVal2Init = currentAction.getString("conditionVal2Init");
         String conditionVal3Init = currentAction.getString("conditionVal3Init");
@@ -325,14 +325,14 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
         long fullEnd = 0;//currentAction.getLong("fullEnd");
 
         //create this testCaseStepActionExecution and update the bdd with it
-        TestCaseStepActionExecution currentTestCaseStepActionExecution = createTestCaseStepActionExecution(id, test, testCase, step, index, sequence, sort, returnCode, returnMessage, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, action, value1Init, value2Init, value3Init, value1, value2, value3, forceExeStatus, start, end, fullStart, fullEnd, null, description, null, null);
+        TestCaseStepActionExecution currentTestCaseStepActionExecution = createTestCaseStepActionExecution(id, test, testCase, step, index, sequence, sort, returnCode, returnMessage, conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, action, value1Init, value2Init, value3Init, value1, value2, value3, forceExeStatus, start, end, fullStart, fullEnd, null, description, null, null);
         return currentTestCaseStepActionExecution;
     }
 
     //create a TestCaseStepActionControlExecution with the parameters
     private TestCaseStepActionControlExecution createTestCaseStepActionControlExecution(long id, String test, String testCase, int step, int index, int sequence, int controlSequence, int sort,
             String returnCode, String returnMessage,
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3,
+            String conditionOperator, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3,
             String control, String value1Init, String value2Init, String value3Init, String value1, String value2, String value3,
             String fatal, long start, long end, long startLong, long endLong,
             String description, TestCaseStepActionExecution testCaseStepActionExecution, MessageEvent resultMessage) {
@@ -348,7 +348,7 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
         testCaseStepActionControlExecution.setSort(sort);
         testCaseStepActionControlExecution.setReturnCode(returnCode);
         testCaseStepActionControlExecution.setReturnMessage(returnMessage);
-        testCaseStepActionControlExecution.setConditionOper(conditionOper);
+        testCaseStepActionControlExecution.setConditionOperator(conditionOperator);
         testCaseStepActionControlExecution.setConditionVal1Init(conditionVal1Init);
         testCaseStepActionControlExecution.setConditionVal2Init(conditionVal2Init);
         testCaseStepActionControlExecution.setConditionVal3Init(conditionVal3Init);
@@ -376,7 +376,7 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
 
     //create a TestCaseStepActionExecution with the parameters
     private TestCaseStepActionExecution createTestCaseStepActionExecution(long id, String test, String testCase, int step, int index, int sequence, int sort, String returnCode, String returnMessage,
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3, String action, String value1Init, String value2Init, String value3Init, String value1, String value2, String value3,
+            String conditionOperator, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3, String action, String value1Init, String value2Init, String value3Init, String value1, String value2, String value3,
             String forceExeStatus, long start, long end, long startLong, long endLong, MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction,
             TestCaseStepExecution testCaseStepExecution) {
 
@@ -385,7 +385,7 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
         testCaseStepActionExecution.setEnd(end);
         testCaseStepActionExecution.setEndLong(endLong);
         testCaseStepActionExecution.setId(id);
-        testCaseStepActionExecution.setConditionOper(conditionOper);
+        testCaseStepActionExecution.setConditionOperator(conditionOperator);
         testCaseStepActionExecution.setConditionVal1Init(conditionVal1Init);
         testCaseStepActionExecution.setConditionVal2Init(conditionVal2Init);
         testCaseStepActionExecution.setConditionVal3Init(conditionVal3Init);

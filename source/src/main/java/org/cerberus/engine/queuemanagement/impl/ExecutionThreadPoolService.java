@@ -63,6 +63,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     private static final String CONST_SEPARATOR = "////";
 
     private boolean instanceActive = true;
+    private boolean splashPageActive = false;
 
     @Autowired
     private ITestCaseExecutionQueueService tceiqService;
@@ -95,6 +96,16 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     @Override
     public void setInstanceActive(boolean instanceActive) {
         this.instanceActive = instanceActive;
+    }
+
+    @Override
+    public boolean isSplashPageActive() {
+        return this.splashPageActive;
+    }
+
+    @Override
+    public void setSplashPageActive(boolean splashPageActive) {
+        this.splashPageActive = splashPageActive;
     }
 
     @Override
@@ -349,7 +360,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                             // Application require a robot so we can get the list of executors.
                             if (StringUtil.isNullOrEmpty(robot)) {
                                 exelist = new ArrayList<>();
-                                exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", "", "", null, "", "",  0,  "", 0, "", "", "", null, "", null));
+                                exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
                             } else {
                                 exelist = robot_executor.get(robot);
                                 if (exelist == null || exelist.size() < 1) {
@@ -360,7 +371,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                         } else {
                             // Application does not require a robot so we create a fake one with empty data.
                             exelist = new ArrayList<>();
-                            exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "","",  0, "", 0, "", "", "", null, "", null));
+                            exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
                         }
 
                         // Looping other every potential executor on the corresponding robot.

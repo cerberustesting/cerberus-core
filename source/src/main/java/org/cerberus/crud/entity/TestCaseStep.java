@@ -38,7 +38,7 @@ public class TestCaseStep {
     private int step;
     private int sort;
     private String loop;
-    private String conditionOper;
+    private String conditionOperator;
     private String conditionVal1;
     private String conditionVal2;
     private String conditionVal3;
@@ -211,12 +211,12 @@ public class TestCaseStep {
         this.loop = loop;
     }
 
-    public String getConditionOper() {
-        return conditionOper;
+    public String getConditionOperator() {
+        return conditionOperator;
     }
 
-    public void setConditionOper(String conditionOper) {
-        this.conditionOper = conditionOper;
+    public void setConditionOperator(String conditionOperator) {
+        this.conditionOperator = conditionOperator;
     }
 
     public String getConditionVal1() {
@@ -291,7 +291,7 @@ public class TestCaseStep {
         hash = 29 * hash + this.step;
         hash = 29 * hash + this.sort;
         hash = 29 * hash + (this.loop != null ? this.loop.hashCode() : 0);
-        hash = 29 * hash + (this.conditionOper != null ? this.conditionOper.hashCode() : 0);
+        hash = 29 * hash + (this.conditionOperator != null ? this.conditionOperator.hashCode() : 0);
         hash = 29 * hash + (this.conditionVal1 != null ? this.conditionVal1.hashCode() : 0);
         hash = 29 * hash + (this.conditionVal2 != null ? this.conditionVal2.hashCode() : 0);
         hash = 29 * hash + (this.conditionVal3 != null ? this.conditionVal3.hashCode() : 0);
@@ -328,7 +328,7 @@ public class TestCaseStep {
         if (this.loop != other.loop && (this.loop == null || !this.loop.equals(other.loop))) {
             return false;
         }
-        if (this.conditionOper != other.conditionOper && (this.conditionOper == null || !this.conditionOper.equals(other.conditionOper))) {
+        if (this.conditionOperator != other.conditionOperator && (this.conditionOperator == null || !this.conditionOperator.equals(other.conditionOperator))) {
             return false;
         }
         if (this.conditionVal1 != other.conditionVal1 && (this.conditionVal1 == null || !this.conditionVal1.equals(other.conditionVal1))) {
@@ -377,7 +377,7 @@ public class TestCaseStep {
             result.put("description", this.getDescription());
             result.put("isExecutionForced", this.getForceExe());
             result.put("loop", this.getLoop());
-            result.put("conditionOperator", this.getConditionOper());
+            result.put("conditionOperator", this.getConditionOperator());
             result.put("conditionVal1", this.getConditionVal1());
             result.put("conditionVal2", this.getConditionVal2());
             result.put("conditionVal3", this.getConditionVal3());

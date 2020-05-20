@@ -919,10 +919,10 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
-            "data": "testCaseVersion",
+            "data": "version",
             "visible": false,
-            "sName": "tec.testCaseVersion",
-            "title": doc.getDocOnline("testcase", "TestCaseVersion"),
+            "sName": "tec.version",
+            "title": doc.getDocOnline("testcase", "version"),
             "sWidth": "50px",
             "sDefaultContent": ""
         },

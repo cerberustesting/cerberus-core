@@ -72,7 +72,7 @@ public class TestCaseExecution {
     private String crbVersion;
     private String executor;
     private String screenSize;
-    private String conditionOper;
+    private String conditionOperator;
     private String conditionVal1Init;
     private String conditionVal2Init;
     private String conditionVal3Init;
@@ -400,12 +400,12 @@ public class TestCaseExecution {
         this.lastWebsocketPush = lastWebsocketPush;
     }
 
-    public String getConditionOper() {
-        return conditionOper;
+    public String getConditionOperator() {
+        return conditionOperator;
     }
 
-    public void setConditionOper(String conditionOper) {
-        this.conditionOper = conditionOper;
+    public void setConditionOperator(String conditionOperator) {
+        this.conditionOperator = conditionOperator;
     }
 
     public String getConditionVal1Init() {
@@ -1082,7 +1082,7 @@ public class TestCaseExecution {
             result.put("crbVersion", this.getCrbVersion());
             result.put("executor", this.getExecutor());
             result.put("screenSize", this.getScreenSize());
-            result.put("conditionOper", this.getConditionOper());
+            result.put("conditionOperator", this.getConditionOperator());
             result.put("conditionVal1Init", this.getConditionVal1Init());
             result.put("conditionVal2Init", this.getConditionVal2Init());
             result.put("conditionVal3Init", this.getConditionVal3Init());

@@ -35,7 +35,7 @@ public class TestCaseStepActionControl {
     private int sequence;
     private int controlSequence;
     private int sort;
-    private String conditionOper;
+    private String conditionOperator;
     private String conditionVal1;
     private String conditionVal2;
     private String conditionVal3;
@@ -127,12 +127,12 @@ public class TestCaseStepActionControl {
         this.sort = sort;
     }
 
-    public String getConditionOper() {
-        return conditionOper;
+    public String getConditionOperator() {
+        return conditionOperator;
     }
 
-    public void setConditionOper(String conditionOper) {
-        this.conditionOper = conditionOper;
+    public void setConditionOperator(String conditionOperator) {
+        this.conditionOperator = conditionOperator;
     }
 
     public String getConditionVal1() {
@@ -266,7 +266,7 @@ public class TestCaseStepActionControl {
         hash = 67 * hash + this.sequence;
         hash = 67 * hash + this.controlSequence;
         hash = 67 * hash + this.sort;
-        hash = 67 * hash + (this.conditionOper != null ? this.conditionOper.hashCode() : 0);
+        hash = 67 * hash + (this.conditionOperator != null ? this.conditionOperator.hashCode() : 0);
         hash = 67 * hash + (this.conditionVal1 != null ? this.conditionVal1.hashCode() : 0);
         hash = 67 * hash + (this.conditionVal2 != null ? this.conditionVal2.hashCode() : 0);
         hash = 67 * hash + (this.conditionVal3 != null ? this.conditionVal3.hashCode() : 0);
@@ -306,7 +306,7 @@ public class TestCaseStepActionControl {
         if (this.sort != other.sort) {
             return false;
         }
-        if ((this.conditionOper == null) ? (other.conditionOper != null) : !this.conditionOper.equals(other.conditionOper)) {
+        if ((this.conditionOperator == null) ? (other.conditionOperator != null) : !this.conditionOperator.equals(other.conditionOperator)) {
             return false;
         }
         if ((this.conditionVal1 == null) ? (other.conditionVal1 != null) : !this.conditionVal1.equals(other.conditionVal1)) {
@@ -359,7 +359,7 @@ public class TestCaseStepActionControl {
             result.put("value1", this.getValue1());
             result.put("value2", this.getValue2());
             result.put("value3", this.getValue3());
-            result.put("conditionOperator", this.getConditionOper());
+            result.put("conditionOperator", this.getConditionOperator());
             result.put("conditionVal1", this.getConditionVal1());
             result.put("conditionVal2", this.getConditionVal2());
             result.put("conditionVal3", this.getConditionVal3());

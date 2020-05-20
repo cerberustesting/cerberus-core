@@ -1088,7 +1088,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
         getSelectInvariant("PROPERTYNATURE", false, true);
         getSelectInvariant("ACTIONFORCEEXESTATUS", false, true);
         getSelectInvariant("STEPLOOP", false, true);
-        getSelectInvariant("STEPCONDITIONOPER", false, true);
+        getSelectInvariant("STEPCONDITIONOPERATOR", false, true);
         bindToggleCollapse();
         var test = GetURLParameter("test");
         var testcase = GetURLParameter("testcase");
@@ -1405,7 +1405,7 @@ function displayPageLabel(doc) {
 
     $("#addStep").html(doc.getDocLabel("page_testcasescript", "add_step"));
     $("#addActionBottomBtn button").html(doc.getDocLabel("page_testcasescript", "add_action"));
-    $("#stepConditionOper").prev().html(doc.getDocLabel("page_testcasescript", "step_condition_operation"));
+    $("#stepConditionOperator").prev().html(doc.getDocLabel("page_testcasescript", "step_condition_operation"));
     $("#stepConditionVal1").prev().html(doc.getDocLabel("page_testcasescript", "step_condition_value1"));
 
     // TestCase
@@ -1436,12 +1436,12 @@ function displayPageLabel(doc) {
     $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
     $("[name='activeField']").html(doc.getDocOnline("testcase", "TcActive"));
-    $("[name='fromSprintField']").html(doc.getDocOnline("testcase", "FromBuild"));
-    $("[name='fromRevField']").html(doc.getDocOnline("testcase", "FromRev"));
-    $("[name='toSprintField']").html(doc.getDocOnline("testcase", "ToBuild"));
-    $("[name='toRevField']").html(doc.getDocOnline("testcase", "ToRev"));
-    $("[name='targetSprintField']").html(doc.getDocOnline("testcase", "TargetBuild"));
-    $("[name='targetRevField']").html(doc.getDocOnline("testcase", "TargetRev"));
+    $("[name='fromMajorField']").html(doc.getDocOnline("testcase", "FromMajor"));
+    $("[name='fromMinorField']").html(doc.getDocOnline("testcase", "FromMinor"));
+    $("[name='toMajorField']").html(doc.getDocOnline("testcase", "ToMajor"));
+    $("[name='toMinorField']").html(doc.getDocOnline("testcase", "ToMinor"));
+    $("[name='targetMajorField']").html(doc.getDocOnline("testcase", "TargetMajor"));
+    $("[name='targetMinorField']").html(doc.getDocOnline("testcase", "TargetMinor"));
     $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
     $("#filters").html(doc.getDocOnline("page_testcaselist", "filters"));
     $("#testCaseListLabel").html(doc.getDocOnline("page_testcaselist", "testcaselist"));
@@ -2358,7 +2358,7 @@ function initStep() {
         "useStepStep": -1,
         "actionList": [],
         "loop": "onceIfConditionTrue",
-        "conditionOper": "always",
+        "conditionOperator": "always",
         "conditionVal1": "",
         "conditionVal2": "",
         "conditionVal3": "",
@@ -2765,7 +2765,7 @@ function Step(json, stepList, canUpdate, hasPermissionsStepLibrary) {
     this.useStepStep = json.useStepStep;
     this.useStepStepSort = json.useStepStepSort;
     this.loop = json.loop;
-    this.conditionOper = json.conditionOper;
+    this.conditionOperator = json.conditionOperator;
     this.conditionVal1 = json.conditionVal1;
     this.conditionVal2 = json.conditionVal2;
     this.conditionVal3 = json.conditionVal3;
@@ -2930,11 +2930,11 @@ Step.prototype.show = function() {
         object.conditionVal3 = $(this).val();
     });
 
-    $("#stepConditionOper").replaceWith(getSelectInvariant("STEPCONDITIONOPER", false, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepConditionOper"));
-    $("#stepConditionOper").unbind("change").change(function() {
+    $("#stepConditionOperator").replaceWith(getSelectInvariant("STEPCONDITIONOPERATOR", false, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepConditionOperator"));
+    $("#stepConditionOperator").unbind("change").change(function() {
         setModif(true);
-        object.conditionOper = $(this).val();
-        setPlaceholderCondition($("#stepConditionOper").parent().parent(".row"));
+        object.conditionOperator = $(this).val();
+        setPlaceholderCondition($("#stepConditionOperator").parent().parent(".row"));
     });
 
 
@@ -2958,7 +2958,7 @@ Step.prototype.show = function() {
     });
 
     $("#stepLoop").val(object.loop);
-    $("#stepConditionOper").val(object.conditionOper);
+    $("#stepConditionOperator").val(object.conditionOperator);
     $("#stepConditionVal1").val(object.conditionVal1);
     $("#stepConditionVal2").val(object.conditionVal2);
     $("#stepConditionVal3").val(object.conditionVal3);
@@ -2968,7 +2968,7 @@ Step.prototype.show = function() {
     $("#stepInfo").show();
     $("#addActionContainer").show();
     $("#stepHeader").show()
-    setPlaceholderCondition($("#stepConditionOper").parent().parent(".row"));
+    setPlaceholderCondition($("#stepConditionOperator").parent().parent(".row"));
 
     // Disable fields if Permission not allowing.
     // Description and unlink the step with UseStep of the Step can be modified
@@ -2984,7 +2984,7 @@ Step.prototype.show = function() {
     // is not a useStep.
     var activateDisableWithUseStep = !(object.hasPermissionsUpdate && !(object.useStep === "Y"));
     $("#stepLoop").attr("disabled", activateDisableWithUseStep);
-    $("#stepConditionOper").attr("disabled", activateDisableWithUseStep);
+    $("#stepConditionOperator").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal1").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal2").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal3").attr("disabled", activateDisableWithUseStep);
@@ -3076,7 +3076,7 @@ Step.prototype.getJsonData = function() {
     json.useStepStep = this.useStepStep;
     json.inLibrary = this.inLibrary;
     json.loop = this.loop;
-    json.conditionOper = this.conditionOper;
+    json.conditionOperator = this.conditionOperator;
     json.conditionVal1 = this.conditionVal1;
     json.conditionVal2 = this.conditionVal2;
     json.conditionVal3 = this.conditionVal3;
@@ -3100,7 +3100,7 @@ function Action(json, parentStep, canUpdate) {
         this.object = json.object;
         this.property = json.property;
         this.forceExeStatus = json.forceExeStatus;
-        this.conditionOper = json.conditionOper;
+        this.conditionOperator = json.conditionOperator;
         this.conditionVal1 = json.conditionVal1;
         this.conditionVal2 = json.conditionVal2;
         this.conditionVal3 = json.conditionVal3;
@@ -3119,7 +3119,7 @@ function Action(json, parentStep, canUpdate) {
         this.object = "";
         this.property = "";
         this.forceExeStatus = "";
-        this.conditionOper = "always";
+        this.conditionOperator = "always";
         this.conditionVal1 = "";
         this.conditionVal2 = "";
         this.conditionVal3 = "";
@@ -3268,7 +3268,7 @@ Action.prototype.generateContent = function() {
     var value2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v2");
     var value3Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v3");
 
-    var actionconditionoper = $("<select></select>").addClass("form-control input-sm");
+    var actionconditionoperator = $("<select></select>").addClass("form-control input-sm");
     var actionconditionval1 = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
     var actionconditionval2 = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
     var actionconditionval3 = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
@@ -3282,13 +3282,13 @@ Action.prototype.generateContent = function() {
         obj.description = descriptionField.val();
     });
 
-    actionconditionoper = getSelectInvariant("ACTIONCONDITIONOPER", false, true).css("width", "100%");
-    actionconditionoper.on("change", function() {
-        if (obj.conditionOper !== actionconditionoper.val()) {
+    actionconditionoperator = getSelectInvariant("ACTIONCONDITIONOPERATOR", false, true).css("width", "100%");
+    actionconditionoperator.on("change", function() {
+        if (obj.conditionOperator !== actionconditionoperator.val()) {
             setModif(true);
         }
-        obj.conditionOper = actionconditionoper.val();
-        if ((obj.conditionOper === "always") || (obj.conditionOper === "never")) {
+        obj.conditionOperator = actionconditionoperator.val();
+        if ((obj.conditionOperator === "always") || (obj.conditionOperator === "never")) {
             actionconditionval1.parent().hide();
             actionconditionval2.parent().hide();
             actionconditionval3.parent().hide();
@@ -3299,8 +3299,8 @@ Action.prototype.generateContent = function() {
         }
         setPlaceholderCondition($(this).parents(".action"));
     });
-    actionconditionoper.val(this.conditionOper).trigger("change");
-    actionconditionoper.attr("id", "conditionSelect");
+    actionconditionoperator.val(this.conditionOperator).trigger("change");
+    actionconditionoperator.attr("id", "conditionSelect");
     actionconditionval1.css("width", "100%");
     actionconditionval1.on("change", function() {
         setModif(true);
@@ -3368,13 +3368,13 @@ Action.prototype.generateContent = function() {
      */
     secondRow.append($("<div></div>").addClass("v2 col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Field));
     secondRow.append($("<div></div>").addClass("v3 col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value3_field"))).append(value3Field));
-    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoperator));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval2));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval3));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "force_execution_field"))).append(forceExeStatusList));
 
-    actionconditionoper.trigger("change");
+    actionconditionoperator.trigger("change");
 
     if ((this.parentStep.useStep === "Y") || (!obj.hasPermissionsUpdate)) {
         descriptionField.prop("readonly", true);
@@ -3383,7 +3383,7 @@ Action.prototype.generateContent = function() {
         value3Field.prop("readonly", true);
         actionList.prop("disabled", "disabled");
         forceExeStatusList.prop("disabled", "disabled");
-        actionconditionoper.prop("disabled", "disabled");
+        actionconditionoperator.prop("disabled", "disabled");
         actionconditionval1.prop("readonly", true);
         actionconditionval2.prop("readonly", true);
         actionconditionval3.prop("readonly", true);
@@ -3412,7 +3412,7 @@ Action.prototype.getJsonData = function() {
     json.property = this.value2;
     json.value3 = this.value3;
     json.forceExeStatus = this.forceExeStatus;
-    json.conditionOper = this.conditionOper;
+    json.conditionOperator = this.conditionOperator;
     json.conditionVal1 = this.conditionVal1;
     json.conditionVal2 = this.conditionVal2;
     json.conditionVal3 = this.conditionVal3;
@@ -3436,7 +3436,7 @@ function Control(json, parentAction, canUpdate) {
         this.value2 = json.value2;
         this.value3 = json.value3;
         this.fatal = json.fatal;
-        this.conditionOper = json.conditionOper;
+        this.conditionOperator = json.conditionOperator;
         this.conditionVal1 = json.conditionVal1;
         this.conditionVal2 = json.conditionVal2;
         this.conditionVal3 = json.conditionVal3;
@@ -3453,7 +3453,7 @@ function Control(json, parentAction, canUpdate) {
         this.value2 = "";
         this.value3 = "";
         this.fatal = "N";
-        this.conditionOper = "always";
+        this.conditionOperator = "always";
         this.conditionVal1 = "";
         this.conditionVal2 = "";
         this.conditionVal3 = "";
@@ -3601,7 +3601,7 @@ Control.prototype.generateContent = function() {
     var controlValue2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
     var controlValue3Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
 
-    var controlconditionoper = $("<select></select>").addClass("form-control input-sm");
+    var controlconditionoperator = $("<select></select>").addClass("form-control input-sm");
     var controlconditionval1 = $("<input>").attr("type", "text").addClass("form-control input-sm");
     var controlconditionval2 = $("<input>").attr("type", "text").addClass("form-control input-sm");
     var controlconditionval3 = $("<input>").attr("type", "text").addClass("form-control input-sm");
@@ -3614,16 +3614,16 @@ Control.prototype.generateContent = function() {
         obj.description = descriptionField.val();
     });
 
-    controlconditionoper = getSelectInvariant("CONTROLCONDITIONOPER", false, true).css("width", "100%").attr("id", "controlConditionSelect");
-    controlconditionoper.on("change", function() {
-        if (obj.conditionOper !== controlconditionoper.val()) {
+    controlconditionoperator = getSelectInvariant("CONTROLCONDITIONOPERATOR", false, true).css("width", "100%").attr("id", "controlConditionSelect");
+    controlconditionoperator.on("change", function() {
+        if (obj.conditionOperator !== controlconditionoperator.val()) {
             setModif(true);
         }
-        obj.conditionOper = controlconditionoper.val();
+        obj.conditionOperator = controlconditionoperator.val();
         setPlaceholderCondition($(this).parents(".control"));
 
     });
-    controlconditionoper.val(this.conditionOper).trigger("change");
+    controlconditionoperator.val(this.conditionOperator).trigger("change");
 
     controlconditionval1.val(this.conditionVal1);
     controlconditionval1.css("width", "100%");
@@ -3697,7 +3697,7 @@ Control.prototype.generateContent = function() {
     thirdRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval3));
     thirdRow.append($("<div></div>").addClass("col-lg-1 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "fatal_field"))).append(fatalList));
 
-    thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(controlconditionoper));
+    thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(controlconditionoperator));
 
 
     if ((this.parentStep.useStep === "Y") || (!obj.hasPermissionsUpdate)) {
@@ -3707,7 +3707,7 @@ Control.prototype.generateContent = function() {
         controlValue3Field.prop("readonly", true);
         controlList.prop("disabled", "disabled");
         fatalList.prop("disabled", "disabled");
-        controlconditionoper.prop("disabled", "disabled");
+        controlconditionoperator.prop("disabled", "disabled");
         controlconditionval1.prop("readonly", true);
         controlconditionval2.prop("readonly", true);
         controlconditionval3.prop("readonly", true);
@@ -3737,7 +3737,7 @@ Control.prototype.getJsonData = function() {
     json.value2 = this.value2;
     json.value3 = this.value3;
     json.fatal = this.fatal;
-    json.conditionOper = this.conditionOper;
+    json.conditionOperator = this.conditionOperator;
     json.conditionVal1 = this.conditionVal1;
     json.conditionVal2 = this.conditionVal2;
     json.conditionVal3 = this.conditionVal3;
@@ -4107,8 +4107,8 @@ function setPlaceholderCondition(conditionElement) {
                 }
             }
         });
-    } else if ($(conditionElement).children().find('select#stepConditionOper option:selected').length) {
-        $(conditionElement).children().find('select#stepConditionOper option:selected').each(function(i, e) {
+    } else if ($(conditionElement).children().find('select#stepConditionOperator option:selected').length) {
+        $(conditionElement).children().find('select#stepConditionOperator option:selected').each(function(i, e) {
             for (var i = 0; i < placeHolders.length; i++) {
                 if (placeHolders[i].type === e.value) {
                     if (placeHolders[i].object !== null) {

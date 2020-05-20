@@ -8537,8 +8537,33 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("UPDATE invariant SET idname='TESTCASE_TYPE', description='Type of tests which not appear in Cerberus' WHERE idname='GROUP' AND value='PRIVATE'");
 
         // 1498
-        //
         a.add("ALTER TABLE testcase CHANGE BehaviorOrValueExpected DetailedDescription TEXT");
+
+        //1499
+        a.add("ALTER TABLE testcase "
+                + "CHANGE TestCaseVersion Version INT(10),"
+                + "CHANGE ConditionOper ConditionOperator VARCHAR(45),"
+                + "CHANGE FromBuild FromMajor VARCHAR(10),"
+                + "CHANGE ToBuild ToMajor VARCHAR(10),"
+                + "CHANGE TargetBuild TargetMajor VARCHAR(10),"
+                + "CHANGE FromRev FromMinor VARCHAR(20),"
+                + "CHANGE ToRev ToMinor VARCHAR(20),"
+                + "CHANGE TargetRev TargetMinor VARCHAR(20)");
+
+        //1500 - 1506
+        a.add("ALTER TABLE testcaseexecution CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestep CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestepexecution CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestepaction CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestepactionexecution CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestepactioncontrol CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestepactioncontrolexecution CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+
+        //1507 - 1510
+        a.add("UPDATE invariant set idname = 'TESTCASECONDITIONOPERATOR' WHERE idname = 'TESTCASECONDITIONOPER'");
+        a.add("UPDATE invariant set idname = 'STEPCONDITIONOPERATOR' WHERE idname = 'STEPCONDITIONOPER'");
+        a.add("UPDATE invariant set idname = 'ACTIONCONDITIONOPERATOR' WHERE idname = 'ACTIONCONDITIONOPER'");
+        a.add("UPDATE invariant set idname = 'CONTROLCONDITIONOPERATOR' WHERE idname = 'CONTROLCONDITIONOPER'");
 
         return a;
     }

@@ -63,7 +63,7 @@ public class ExportListTestCase extends HttpServlet {
 
         StringBuilder sb = new StringBuilder();
         sb.append("Test,TestCase,Origin,RefOrigin,Creator,Implementer,LastModifier,Project,Ticket,Function,Application,RunQA,RunUAT,RunPROD,Priority,Group,Status,");
-        sb.append("ShortDescription,Description,HowTo,Active,FromSprint,FromRevision,ToSprint,ToRevision,LastExecution,BugID,TargetSprint,TargetRevision,Comment\n");
+        sb.append("ShortDescription,Description,HowTo,Active,fromMajor,FromMinor,ToMajor,ToMinor,LastExecution,BugID,TargetMajor,TargetMinor,Comment\n");
 
         for (TestCase tc : list) {
             sb.append(this.convertTCasetoStringCSV(tc));
@@ -101,7 +101,7 @@ public class ExportListTestCase extends HttpServlet {
         String qa = this.getValue(req, "ScQA");
         String uat = this.getValue(req, "ScUAT");
         String active = this.getValue(req, "ScActive");
-        String conditionOper = this.getValue(req, "ScConditionOper");
+        String conditionOperator = this.getValue(req, "ScConditionOperator");
         String conditionVal1 = this.getValue(req, "ScConditionVal1");
         String conditionVal2 = this.getValue(req, "ScConditionVal2");
         String conditionVal3 = this.getValue(req, "ScConditionVal3");
@@ -109,13 +109,13 @@ public class ExportListTestCase extends HttpServlet {
         String fRev = this.getValue(req, "ScFRev");
         String tBuild = this.getValue(req, "ScTBuild");
         String tRev = this.getValue(req, "ScTRev");
-        String targetBuild = this.getValue(req, "ScTargetBuild");
-        String targetRev = this.getValue(req, "ScTargetRev");
+        String targetMajor = this.getValue(req, "ScTargetMajor");
+        String targetMinor = this.getValue(req, "ScTargetMinor");
         String function = this.getValue(req, "function");
 
         IFactoryTestCase factoryTCase = new FactoryTestCase();
         return factoryTCase.create(test, testCase, origine, null, creator, executor, null, null, function, application, qa, uat, prod, priority, group,
-                status, null, null, null, active, conditionOper, conditionVal1, conditionVal2, conditionVal3, fBuild, fRev, tBuild, tRev, null, bugJSON, targetBuild, targetRev, null, "", "", null, null, null, null);
+                status, null, null, null, active, conditionOperator, conditionVal1, conditionVal2, conditionVal3, fBuild, fRev, tBuild, tRev, null, bugJSON, targetMajor, targetMinor, null, "", "", null, null, null, null);
     }
 
     private String getValue(HttpServletRequest req, String valueName) {
@@ -168,21 +168,21 @@ public class ExportListTestCase extends HttpServlet {
         sb.append("\",\"");
         sb.append(StringUtil.getCleanCSVTextField(tc.getTcActive()));
         sb.append("\",\"");
-        sb.append(StringUtil.getCleanCSVTextField(tc.getFromBuild()));
+        sb.append(StringUtil.getCleanCSVTextField(tc.getFromMajor()));
         sb.append("\",\"");
-        sb.append(StringUtil.getCleanCSVTextField(tc.getFromRev()));
+        sb.append(StringUtil.getCleanCSVTextField(tc.getFromMinor()));
         sb.append("\",\"");
-        sb.append(StringUtil.getCleanCSVTextField(tc.getToBuild()));
+        sb.append(StringUtil.getCleanCSVTextField(tc.getToMajor()));
         sb.append("\",\"");
-        sb.append(StringUtil.getCleanCSVTextField(tc.getToRev()));
+        sb.append(StringUtil.getCleanCSVTextField(tc.getToMinor()));
         sb.append("\",\"");
         sb.append(StringUtil.getCleanCSVTextField(tc.getLastExecutionStatus()));
         sb.append("\",\"");
         sb.append(StringUtil.getCleanCSVTextField(tc.getBugID().toString()));
         sb.append("\",\"");
-        sb.append(StringUtil.getCleanCSVTextField(tc.getTargetBuild()));
+        sb.append(StringUtil.getCleanCSVTextField(tc.getTargetMajor()));
         sb.append("\",\"");
-        sb.append(StringUtil.getCleanCSVTextField(tc.getTargetRev()));
+        sb.append(StringUtil.getCleanCSVTextField(tc.getTargetMinor()));
         sb.append("\",\"");
         sb.append(StringUtil.getCleanCSVTextField(tc.getComment()));
         sb.append("\",\"");

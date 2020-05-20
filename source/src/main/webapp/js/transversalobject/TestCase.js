@@ -95,13 +95,13 @@ function initModalTestCase() {
     $("[name='countryListLabel']").html(doc.getDocOnline("testcase", "countryListLabel"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
     $("[name='activeField']").html(doc.getDocOnline("testcase", "TcActive"));
-    $("[name='fromSprintField']").html(doc.getDocOnline("testcase", "FromBuild"));
-    $("[name='fromRevField']").html(doc.getDocOnline("testcase", "FromRev"));
-    $("[name='toSprintField']").html(doc.getDocOnline("testcase", "ToBuild"));
-    $("[name='toRevField']").html(doc.getDocOnline("testcase", "ToRev"));
-    $("[name='targetSprintField']").html(doc.getDocOnline("testcase", "TargetBuild"));
-    $("[name='targetRevField']").html(doc.getDocOnline("testcase", "TargetRev"));
-    $("[name='conditionOperField']").html(doc.getDocOnline("testcase", "ConditionOper"));
+    $("[name='fromMajorField']").html(doc.getDocOnline("testcase", "FromMajor"));
+    $("[name='fromMinorField']").html(doc.getDocOnline("testcase", "FromMinor"));
+    $("[name='toMajorField']").html(doc.getDocOnline("testcase", "ToMajor"));
+    $("[name='toMinorField']").html(doc.getDocOnline("testcase", "ToMinor"));
+    $("[name='targetMajorField']").html(doc.getDocOnline("testcase", "TargetMajor"));
+    $("[name='targetMinorField']").html(doc.getDocOnline("testcase", "TargetMinor"));
+    $("[name='conditionOperatorField']").html(doc.getDocOnline("testcase", "conditionOperator"));
     $("[name='conditionVal1Field']").html(doc.getDocOnline("testcase", "ConditionVal1"));
     $("[name='conditionVal2Field']").html(doc.getDocOnline("testcase", "ConditionVal2"));
     $("[name='conditionVal3Field']").html(doc.getDocOnline("testcase", "ConditionVal3"));
@@ -125,12 +125,12 @@ function initModalTestCase() {
     $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
-    $("[name='testcaseversionField']").html(doc.getDocOnline("testcase", "TestCaseVersion"));
+    $("[name='versionField']").html(doc.getDocOnline("testcase", "version"));
 
     displayInvariantList("type", "TESTCASE_TYPE", false);
     displayInvariantList("status", "TCSTATUS", false);
     displayInvariantList("priority", "PRIORITY", false);
-    displayInvariantList("conditionOper", "TESTCASECONDITIONOPER", false);
+    displayInvariantList("conditionOperator", "TESTCASECONDITIONOPERATOR", false);
     $('[name="origin"]').append('<option value="All">All</option>');
     displayInvariantList("active", "TCACTIVE", false);
     displayInvariantList("activeQA", "TCACTIVE", false);
@@ -581,8 +581,8 @@ function confirmTestCaseModalHandler(mode) {
             detailledDescription: data.detailledDescription,
             bugId: JSON.stringify(table_bug),
             comment: data.comment,
-            fromRev: data.fromRev,
-            fromSprint: data.fromSprint,
+            fromMinor: data.fromMinor,
+            fromMajor: data.fromMajor,
             type: data.type,
             implementer: data.implementer,
             executor: data.executor,
@@ -592,15 +592,15 @@ function confirmTestCaseModalHandler(mode) {
             refOrigin: data.refOrigin,
             shortDesc: data.shortDesc,
             status: data.status,
-            targetRev: data.targetRev,
-            targetSprint: data.targetSprint,
-            conditionOper: data.conditionOper,
+            targetMinor: data.targetMinor,
+            targetMajor: data.targetMajor,
+            conditionOperator: data.conditionOperator,
             conditionVal1: data.conditionVal1,
             conditionVal2: data.conditionVal2,
             conditionVal3: data.conditionVal3,
             ticket: data.ticket,
-            toRev: data.toRev,
-            toSprint: data.toSprint,
+            toMinor: data.toMinor,
+            toMajor: data.toMajor,
             userAgent: data.userAgent,
             screenSize: data.screenSize,
             labelList: JSON.stringify(table_label),
@@ -862,7 +862,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#shortDesc").prop("value", "");
         formEdit.find("#active").prop("value", "Y");
         $('#bugTableBody tr').remove();
-        formEdit.find("#conditionOper").prop("value", "always");
+        formEdit.find("#conditionOperator").prop("value", "always");
         formEdit.find("#conditionVal1").prop("value", "");
         formEdit.find("#conditionVal2").prop("value", "");
         formEdit.find("#conditionVal3").prop("value", "");
@@ -920,12 +920,12 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
             appendbugRow(obj, "bugTableBody", bugTrackerUrl);
         });
 
-        formEdit.find("#conditionOper").prop("value", testCase.conditionOper);
+        formEdit.find("#conditionOperator").prop("value", testCase.conditionOperator);
         formEdit.find("#conditionVal1").prop("value", testCase.conditionVal1);
         formEdit.find("#conditionVal2").prop("value", testCase.conditionVal2);
         formEdit.find("#conditionVal3").prop("value", testCase.conditionVal3);
         formEdit.find("#comment").prop("value", testCase.comment);
-        formEdit.find("#testcaseversion").prop("value", testCase.testCaseVersion);
+        formEdit.find("#version").prop("value", testCase.version);
         appendTestCaseDepList(testCase);
     }
 
@@ -957,13 +957,13 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         if (tinyMCE.get('detailledDescription') !== null)
             tinyMCE.get('detailledDescription').getBody().setAttribute('contenteditable', false);
         formEdit.find("#active").prop("disabled", "disabled");
-        formEdit.find("#fromSprint").prop("disabled", "disabled");
-        formEdit.find("#fromRev").prop("disabled", "disabled");
-        formEdit.find("#toSprint").prop("disabled", "disabled");
-        formEdit.find("#toRev").prop("disabled", "disabled");
-        formEdit.find("#targetSprint").prop("disabled", "disabled");
-        formEdit.find("#targetRev").prop("disabled", "disabled");
-        formEdit.find("#conditionOper").prop("disabled", "disabled");
+        formEdit.find("#fromMajor").prop("disabled", "disabled");
+        formEdit.find("#fromMinor").prop("disabled", "disabled");
+        formEdit.find("#toMajor").prop("disabled", "disabled");
+        formEdit.find("#toMinor").prop("disabled", "disabled");
+        formEdit.find("#targetMajor").prop("disabled", "disabled");
+        formEdit.find("#targetMinor").prop("disabled", "disabled");
+        formEdit.find("#conditionOperator").prop("disabled", "disabled");
         formEdit.find("#conditionVal1").prop("disabled", "disabled");
         formEdit.find("#conditionVal2").prop("disabled", "disabled");
         formEdit.find("#conditionVal3").prop("disabled", "disabled");
@@ -993,13 +993,13 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         if (tinyMCE.get('DetailedDescription') !== null)
             tinyMCE.get('DetailedDescription').getBody().setAttribute('contenteditable', true);
         formEdit.find("#active").removeProp("disabled");
-        formEdit.find("#fromSprint").removeProp("disabled");
-        formEdit.find("#fromRev").removeProp("disabled");
-        formEdit.find("#toSprint").removeProp("disabled");
-        formEdit.find("#toRev").removeProp("disabled");
-        formEdit.find("#targetSprint").removeProp("disabled");
-        formEdit.find("#targetRev").removeProp("disabled");
-        formEdit.find("#conditionOper").removeProp("disabled");
+        formEdit.find("#fromMajor").removeProp("disabled");
+        formEdit.find("#fromMinor").removeProp("disabled");
+        formEdit.find("#toMajor").removeProp("disabled");
+        formEdit.find("#toMinor").removeProp("disabled");
+        formEdit.find("#targetMajor").removeProp("disabled");
+        formEdit.find("#targetMinor").removeProp("disabled");
+        formEdit.find("#conditionOperator").removeProp("disabled");
         formEdit.find("#conditionVal1").removeProp("disabled");
         formEdit.find("#conditionVal2").removeProp("disabled");
         formEdit.find("#conditionVal3").removeProp("disabled");
@@ -1101,60 +1101,60 @@ function appendBuildRevListOnTestCase(system, editData) {
 
     var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=1");
     $.when(jqxhr).then(function(data) {
-        var fromBuild = $("[name=fromSprint]");
-        var toBuild = $("[name=toSprint]");
-        var targetBuild = $("[name=targetSprint]");
+        var fromMajor = $("[name=fromMajor]");
+        var toMajor = $("[name=toMajor]");
+        var targetMajor = $("[name=targetMajor]");
 
-        fromBuild.empty();
-        toBuild.empty();
-        targetBuild.empty();
+        fromMajor.empty();
+        toMajor.empty();
+        targetMajor.empty();
 
-        fromBuild.append($('<option></option>').text("-----").val(""));
-        toBuild.append($('<option></option>').text("-----").val(""));
-        targetBuild.append($('<option></option>').text("-----").val(""));
+        fromMajor.append($('<option></option>').text("-----").val(""));
+        toMajor.append($('<option></option>').text("-----").val(""));
+        targetMajor.append($('<option></option>').text("-----").val(""));
 
         for (var index = 0; index < data.contentTable.length; index++) {
-            fromBuild.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
-            toBuild.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
-            targetBuild.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            fromMajor.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            toMajor.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            targetMajor.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
         }
 
         if (editData !== undefined) {
             var formEdit = $('#editTestCaseModal');
 
-            formEdit.find("#fromSprint").prop("value", editData.fromBuild);
-            formEdit.find("#toSprint").prop("value", editData.toBuild);
-            formEdit.find("#targetSprint").prop("value", editData.targetBuild);
+            formEdit.find("#fromMajor").prop("value", editData.fromMajor);
+            formEdit.find("#toMajor").prop("value", editData.toMajor);
+            formEdit.find("#targetMajor").prop("value", editData.targetMajor);
         }
 
     });
 
     var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=2");
     $.when(jqxhr).then(function(data) {
-        var fromRev = $("[name=fromRev]");
-        var toRev = $("[name=toRev]");
-        var targetRev = $("[name=targetRev]");
+        var fromMinor = $("[name=fromMinor]");
+        var toMinor = $("[name=toMinor]");
+        var targetMinor = $("[name=targetMinor]");
 
-        fromRev.empty();
-        toRev.empty();
-        targetRev.empty();
+        fromMinor.empty();
+        toMinor.empty();
+        targetMinor.empty();
 
-        fromRev.append($('<option></option>').text("-----").val(""));
-        toRev.append($('<option></option>').text("-----").val(""));
-        targetRev.append($('<option></option>').text("-----").val(""));
+        fromMinor.append($('<option></option>').text("-----").val(""));
+        toMinor.append($('<option></option>').text("-----").val(""));
+        targetMinor.append($('<option></option>').text("-----").val(""));
 
         for (var index = 0; index < data.contentTable.length; index++) {
-            fromRev.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
-            toRev.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
-            targetRev.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            fromMinor.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            toMinor.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            targetMinor.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
         }
 
         if (editData !== undefined) {
             var formEdit = $('#editTestCaseModal');
 
-            formEdit.find("[name=fromRev]").prop("value", editData.fromRev);
-            formEdit.find("[name=toRev]").prop("value", editData.toRev);
-            formEdit.find("[name=targetRev]").prop("value", editData.targetRev);
+            formEdit.find("[name=fromMinor]").prop("value", editData.fromMinor);
+            formEdit.find("[name=toMinor]").prop("value", editData.toMinor);
+            formEdit.find("[name=targetMinor]").prop("value", editData.targetMinor);
         }
     });
 }
