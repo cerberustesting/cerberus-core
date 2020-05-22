@@ -135,7 +135,6 @@ public class HarService implements IHarService {
             harTotalStat = processRecap(harTotalStat);
 
             Date firstEver = new Date(harTotalStat.getFirstStart().getTime());
-
             JSONObject stat = new JSONObject();
             JSONObject thirdPartyStat = new JSONObject();
             // Adding total to HAR JSON.

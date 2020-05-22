@@ -75,7 +75,22 @@ public interface ITagDAO {
      * @return
      */
     AnswerList<Tag> readByVarious(List<String> systems, Date from, Date to);
-    
+
+    /**
+     *
+     * @param campaigns
+     * @param group1s
+     * @param group2s
+     * @param group3s
+     * @param environments
+     * @param countries
+     * @param robotDeclis
+     * @param from
+     * @param to
+     * @return
+     */
+    AnswerList<Tag> readByVarious(List<String> campaigns, List<String> group1s, List<String> group2s, List<String> group3s, List<String> environments, List<String> countries, List<String> robotDeclis, Date from, Date to);
+
     /**
      *
      * @param object

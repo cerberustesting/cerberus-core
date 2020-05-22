@@ -56,18 +56,19 @@ import org.json.JSONObject;
  */
 @Repository
 public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatDAO {
-
+    
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTestCaseExecutionHttpStat factoryTestCaseExecutionHttpStat;
-
+    
     private static final Logger LOG = LogManager.getLogger(TestCaseExecutionHttpStatDAO.class);
-
+    
     private final String OBJECT_NAME = "TestCaseExecutionHttpStat";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
-
+    private final int MAX_SIZE_SELECTED = 50000000;
+    
     @Override
     public Answer create(TestCaseExecutionHttpStat object) {
         MessageEvent msg = null;
@@ -129,14 +130,14 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
                 preStat.setString(i++, object.getCrbVersion());
                 preStat.setString(i++, object.getStatDetail().toString());
                 preStat.setString(i++, object.getUsrCreated());
-
+                
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
-
+                
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-
+                
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
@@ -162,9 +163,8 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
         }
         return new Answer(msg);
     }
-
     
-        @Override
+    @Override
     public AnswerItem<TestCaseExecutionHttpStat> readByKey(long exeId) {
         AnswerItem<TestCaseExecutionHttpStat> ans = new AnswerItem<>();
         TestCaseExecutionHttpStat result = null;
@@ -177,7 +177,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
             LOG.debug("SQL : " + query);
             LOG.debug("SQL.param.id : " + exeId);
         }
-
+        
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -225,7 +225,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
         ans.setResultMessage(msg);
         return ans;
     }
-
+    
     @Override
     public AnswerList<TestCaseExecutionHttpStat> readByCriteria(String controlStatus, List<TestCase> testcases, Date from, Date to, List<String> system, List<String> countries, List<String> environments, List<String> robotDecli) {
         AnswerList<TestCaseExecutionHttpStat> response = new AnswerList<>();
@@ -234,12 +234,12 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         StringBuilder searchSQL = new StringBuilder();
         Timestamp t1;
-
+        
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcaseexecutionhttpstat ehs ");
-
+        
         searchSQL.append(" where 1=1 ");
 
         // System
@@ -276,9 +276,11 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
         if (controlStatus != null) {
             searchSQL.append(" and ControlStatus = ? ");
         }
-
+        
         query.append(searchSQL);
-
+        
+        query.append(" order by id desc ");
+        
         query.append(" limit ").append(MAX_ROW_SELECTED);
 
         // Debug message on SQL.
@@ -321,22 +323,31 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
                 if (controlStatus != null) {
                     preStat.setString(i++, controlStatus);
                 }
-
+                
                 ResultSet resultSet = preStat.executeQuery();
                 try {
+                    int currentSize = 0;
                     //gets the data
                     while (resultSet.next()) {
-                        objectList.add(this.loadFromResultSet(resultSet));
+                        TestCaseExecutionHttpStat curStat = this.loadFromResultSet(resultSet);
+                        currentSize += curStat.getStatDetail().toString().length();
+                        if (currentSize < MAX_SIZE_SELECTED) {
+                            objectList.add(curStat);
+                        } else {
+                            LOG.debug("Over Size !!! " + curStat.getDateCreated().toString());
+                            curStat.setStatDetail(new JSONObject());
+                            objectList.add(curStat);
+                        }
                     }
 
                     //get the total number of rows
                     resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
                     int nrTotalRows = 0;
-
+                    
                     if (resultSet != null && resultSet.next()) {
                         nrTotalRows = resultSet.getInt(1);
                     }
-
+                    
                     if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
@@ -350,18 +361,18 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         response = new AnswerList<>(objectList, nrTotalRows);
                     }
-
+                    
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
+                    
                 } finally {
                     if (resultSet != null) {
                         resultSet.close();
                     }
                 }
-
+                
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -371,7 +382,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
                     preStat.close();
                 }
             }
-
+            
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -387,12 +398,12 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
                 LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
-
+        
         response.setResultMessage(msg);
         response.setDataList(objectList);
         return response;
     }
-
+    
     @Override
     public TestCaseExecutionHttpStat loadFromResultSet(ResultSet rs) throws SQLException {
         long id = rs.getLong("ehs.id");
@@ -432,14 +443,14 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
 
         //TODO remove when working in test with mockito and autowired
         factoryTestCaseExecutionHttpStat = new FactoryTestCaseExecutionHttpStat();
-
+        
         JSONObject statJS = new JSONObject();
         try {
             statJS = new JSONObject(stat);
         } catch (JSONException ex) {
             LOG.warn("Exception when parsing statdetail column to JSON.", ex);
         }
-
+        
         return factoryTestCaseExecutionHttpStat.create(id, time, controlStatus, system, application, test, testCase, country, environment, robotdecli,
                 tothits, totsize, tottime,
                 inthits, intsize, inttime,
@@ -450,5 +461,5 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
                 mediasize, mediasizem, mediahits,
                 nbt, crbVersion, statJS, testCase, time, system, time);
     }
-
+    
 }

@@ -534,7 +534,8 @@ function getUserArray(forceReload, addValue1, asyn) {
                     var item = list[index].login;
                     result.push(item);
                 }
-            }
+            },
+            error: showUnexpectedError
         });
     } else {
         for (var index = 0; index < list.length; index++) {
@@ -614,7 +615,8 @@ function getSelectInvariant(idName, forceReload, notAsync, addValue) {
 
                     select.append($("<option></option>").text(item).val(item));
                 }
-            }
+            },
+            error: showUnexpectedError
         });
     } else {
         for (var index = 0; index < list.length; index++) {
@@ -670,7 +672,8 @@ function getSelectRobot(forceReload, notAsync) {
                     select.append($("<option></option>").text(text).val(item));
 //                    console.info(item + " - " + text)
                 }
-            }
+            },
+            error: showUnexpectedError
         });
     } else {
         for (var index = 0; index < list.length; index++) {
@@ -719,7 +722,8 @@ function getSelectLabel(system, forceReload, notAsync) {
                     var item = list[index].label + " - " + list[index].color;
                     select.append($("<option></option>").text(item).val(list[index].id));
                 }
-            }
+            },
+            error: showUnexpectedError
         });
     } else {
         for (var index = 0; index < list.length; index++) {
@@ -753,7 +757,8 @@ function getSelectApplication(system, forceReload) {
 
                     select.append($("<option></option>").text(item).val(item));
                 }
-            }
+            },
+            error: showUnexpectedError
         });
     } else {
         for (var index = 0; index < list.length; index++) {
@@ -781,7 +786,8 @@ function getSelectApplicationWithoutSystem() {
                 var item = list[index].application;
                 select.append($("<option></option>").text(item).val(item));
             }
-        }
+        },
+        error: showUnexpectedError
     });
 
     return select;

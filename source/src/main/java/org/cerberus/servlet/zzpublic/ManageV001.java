@@ -54,7 +54,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ManageV001 extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ManageV001.class);
-    
+
     private static final String SERVLETNAME = "ManageV001";
 
     private IExecutionThreadPoolService executionThreadPoolService;
@@ -103,7 +103,17 @@ public class ManageV001 extends HttpServlet {
                 int cntIteration = 0;
                 int instancePendingExecutionNb = euuid.size();
                 int globalPendingExecutionNb = getNbPendingExecutions(appContext);
+                int globalQueueingExecutionNb = getNbQueueingExecutions(appContext);
                 boolean globalActive = parameterService.getParameterBooleanByKey("cerberus_queueexecution_enable", "", true);
+
+                if (request.getParameter("action") != null && request.getParameter("action").equals("cleanmemory")) {
+                    if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
+                        logEventService.createForPrivateCalls(SERVLETNAME, "CLEANMEMORY", "Cerberus Instance requested to Garbage collection.", request);
+                        System.gc();
+                        message = "Memory Cleaned.";
+                        returnCode = "OK";
+                    }
+                }
 
                 if (request.getParameter("action") != null && request.getParameter("action").equals("stop")) {
                     if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
@@ -137,6 +147,8 @@ public class ManageV001 extends HttpServlet {
                             LOG.info("Stopping instance : Check " + cntIteration + "/" + maxIteration + " on pending executions on that instance. Still running : " + instancePendingExecutionNb);
                         }
                         data.put("waitedIterations", cntIteration);
+                        message = "Instance Stopped.";
+                        returnCode = "OK";
 
                     } else if (request.getParameter("scope") != null && request.getParameter("scope").equals("global")) {
                         logEventService.createForPrivateCalls(SERVLETNAME, "STOP", "Cerberus (global system) requested to stop.", request);
@@ -157,11 +169,15 @@ public class ManageV001 extends HttpServlet {
                             LOG.info("Stopping global : Check " + cntIteration + "/" + maxIteration + " on global pending executions. Still running : " + globalPendingExecutionNb);
                         }
                         data.put("waitedIterations", cntIteration);
+                        message = "Cerberus Stopped.";
+                        returnCode = "OK";
 
                     } else {
-                        message += "Scope parameter 'scope' not defined.";
+                        message += "Parameter 'scope' not defined.";
+                        returnCode = "KO";
                     }
                 }
+
                 if (request.getParameter("action") != null && request.getParameter("action").equals("start")) {
                     if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
                         logEventService.createForPrivateCalls(SERVLETNAME, "START", "Instance requested to start.", request);
@@ -183,6 +199,9 @@ public class ManageV001 extends HttpServlet {
                         } catch (CerberusException ex) {
                             LOG.error("Exception triggering the ThreadPool job.", ex);
                         }
+                        message = "Instance Started.";
+                        returnCode = "OK";
+
                     } else if (request.getParameter("scope") != null && request.getParameter("scope").equals("global")) {
                         logEventService.createForPrivateCalls(SERVLETNAME, "START", "Cerberus (global system)  requested to start.", request);
                         /**
@@ -190,8 +209,13 @@ public class ManageV001 extends HttpServlet {
                          * start new executions).
                          */
                         parameterService.setParameter("cerberus_queueexecution_enable", "", "Y");
+
+                        message = "Instance Stopped.";
+                        returnCode = "OK";
+
                     } else {
                         message += "Scope parameter 'scope' not defined.";
+                        returnCode = "KO";
                     }
 
                 }
@@ -202,11 +226,26 @@ public class ManageV001 extends HttpServlet {
                 instance.put("active", executionThreadPoolService.isInstanceActive());
                 instance.put("runningExecutions", instancePendingExecutionNb);
                 instance.put("readyToStop", (instancePendingExecutionNb <= 0));
+                JSONObject memory = new JSONObject();
+                Runtime instance1 = Runtime.getRuntime();
+                int mb = 1024 * 1024;
+                long usedMem = (instance1.totalMemory() - instance1.freeMemory()) / mb;
+                long totalMem = instance1.maxMemory() / mb;
+                memory.put("javaFreeMemory", instance1.freeMemory() / mb);
+                memory.put("javaTotalMemory", instance1.totalMemory() / mb);
+                memory.put("javaUsedMemory", usedMem);
+                memory.put("javaMaxMemory", totalMem);
+                memory.put("perUsed", usedMem * 100 / totalMem);
+
+                data.put("memory", memory);
+
                 data.put("instance", instance);
 
                 global.put("active", globalActive);
                 global.put("runningExecutions", globalPendingExecutionNb);
                 global.put("readyToStop", (globalPendingExecutionNb <= 0));
+                global.put("queuedExecutions", globalQueueingExecutionNb);
+
                 data.put("global", global);
 
                 JSONObject fsSize = new JSONObject();
@@ -238,6 +277,21 @@ public class ManageV001 extends HttpServlet {
             tceiqService = appContext.getBean(ITestCaseExecutionQueueService.class);
             // Getting all executions already running in the queue.
             AnswerList<TestCaseExecutionQueueToTreat> answer = tceiqService.readQueueRunning();
+            List<TestCaseExecutionQueueToTreat> executionsRunning = answer.getDataList();
+            return executionsRunning.size();
+
+        } catch (CerberusException ex) {
+            LOG.error(ex);
+        }
+        return 0;
+    }
+
+    private int getNbQueueingExecutions(ApplicationContext appContext) {
+        try {
+
+            tceiqService = appContext.getBean(ITestCaseExecutionQueueService.class);
+            // Getting all executions already running in the queue.
+            AnswerList<TestCaseExecutionQueueToTreat> answer = tceiqService.readQueueToTreat();
             List<TestCaseExecutionQueueToTreat> executionsRunning = answer.getDataList();
             return executionsRunning.size();
 

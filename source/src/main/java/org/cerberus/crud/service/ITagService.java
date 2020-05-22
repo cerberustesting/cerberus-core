@@ -73,6 +73,21 @@ public interface ITagService {
 
     /**
      *
+     * @param campaigns
+     * @param group1s
+     * @param from
+     * @param group2s
+     * @param environments
+     * @param group3s
+     * @param robotDeclis
+     * @param countries
+     * @param to
+     * @return
+     */
+    AnswerList<Tag> readByVarious(List<String> campaigns, List<String> group1s, List<String> group2s, List<String> group3s, List<String> environments, List<String> countries, List<String> robotDeclis, Date from, Date to);
+
+    /**
+     *
      * @param startPosition
      * @param length
      * @param columnName

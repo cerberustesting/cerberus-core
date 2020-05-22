@@ -100,6 +100,11 @@ public class TagService implements ITagService {
     }
 
     @Override
+    public AnswerList<Tag> readByVarious(List<String> campaigns, List<String> group1s, List<String> group2s, List<String> group3s, List<String> environments, List<String> countries, List<String> robotDeclis, Date from, Date to) {
+        return tagDAO.readByVarious(campaigns, group1s, group2s, group3s, environments, countries, robotDeclis, from, to);
+    }
+
+    @Override
     public AnswerList<Tag> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems) {
         return tagDAO.readByVariousByCriteria(null, startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
     }

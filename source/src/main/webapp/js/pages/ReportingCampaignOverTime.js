@@ -111,7 +111,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
             feedPerfTestCase(tests[0], "#testCaseSelect", testcases, parties, types, units, countries, environments, robotDeclis);
 
-        }).fail(handleErrorAjaxAfterTimeout);
+        });
 
 
         var select = $("#parties");
@@ -167,7 +167,7 @@ function feedPerfTestCase(test, selectElement, defaultTestCases, parties, types,
         $('#testCaseSelect').val(defaultTestCases);
         $('#testCaseSelect').trigger('change');
         loadPerfGraph(false, parties, types, units, countries, environments, robotDeclis);
-    }).fail(handleErrorAjaxAfterTimeout);
+    });
 }
 
 
@@ -287,31 +287,26 @@ function loadPerfGraph(saveURLtoHistory, parties, types, units, countries, envir
         }
     }
 
-    let qS = "from=" + from.toISOString() + "&to=" + to.toISOString() + countriesQ + environmentsQ + robotDeclisQ + partiQ + typeQ + unitQ + tcString;
+    let qS = "campaigns=WebPerf&from=" + from.toISOString() + "&to=" + to.toISOString(); //+ countriesQ + environmentsQ + robotDeclisQ + partiQ + typeQ + unitQ + tcString;
     if (saveURLtoHistory) {
-        InsertURLInHistory("./ReportingExecutionOverTime.jsp?" + qS);
+        InsertURLInHistory("./ReportingCampaignOverTime.jsp?" + qS);
     }
 
     $.ajax({
-        url: "ReadExecutionStat?" + qS,
+        url: "ReadTagStat?" + qS,
         method: "GET",
         async: true,
         dataType: 'json',
         success: function (data) {
-            var messageType = getAlertType(data.messageType);
-
             if (data.messageType === "OK") {
                 updateNbDistinct(data.distinct);
-                buildGraphs(data);
+//            buildGraphs(data);
                 buildExeGraphs(data);
-                buildExeBarGraphs(data);
+//            buildExeBarGraphs(data);
                 loadCombos(data);
-            } else {
-                showMessageMainPage(messageType, data.message, false);
             }
             hideLoader($("#otFilterPanel"));
-        },
-        error: showUnexpectedError
+        }
     });
 }
 
@@ -336,6 +331,7 @@ function updateNbDistinct(data) {
         }
     }
 }
+
 function setTimeRange(id) {
     let fromD;
     let toD = new Date();
@@ -363,61 +359,65 @@ function setTimeRange(id) {
 
 function loadCombos(data) {
 
-    if (data.hasPerfdata) {
-        $("#perfFilters").show();
-    } else {
-        $("#perfFilters").hide();
-    }
-    var select = $("#parties");
-    select.multiselect('destroy');
-    var array = data.distinct.parties;
-    $("#parties option").remove();
-    for (var i = 0; i < array.length; i++) {
-        $("#parties").append($('<option></option>').text(array[i].name).val(array[i].name));
-    }
-    for (var i = 0; i < array.length; i++) {
-        if (array[i].isRequested) {
-            $("#parties option[value='" + array[i].name + "']").attr("selected", "selected");
-        }
-    }
-    select.multiselect(new multiSelectConfPerf("parties"));
-
-
-    var select = $("#types");
-    select.multiselect('destroy');
-    var array = data.distinct.types;
-    $("#types option").remove();
-    for (var i = 0; i < array.length; i++) {
-        $("#types").append($('<option></option>').text(array[i].name).val(array[i].name));
-    }
-    for (var i = 0; i < array.length; i++) {
-        if (array[i].isRequested) {
-            $("#types option[value='" + array[i].name + "']").attr("selected", "selected");
-        }
-    }
-    select.multiselect(new multiSelectConfPerf("types"));
-
-
-    var select = $("#units");
-    select.multiselect('destroy');
-    var array = data.distinct.units;
-    $("#units option").remove();
-    for (var i = 0; i < array.length; i++) {
-        $("#units").append($('<option></option>').text(array[i].name).val(array[i].name));
-    }
-    for (var i = 0; i < array.length; i++) {
-        if (array[i].isRequested) {
-            $("#units option[value='" + array[i].name + "']").attr("selected", "selected");
-        }
-    }
-    select.multiselect(new multiSelectConfPerf("units"));
+//    if (data.hasPerfdata) {
+//        $("#perfFilters").show();
+//    } else {
+//        $("#perfFilters").hide();
+//    }
+//    var select = $("#parties");
+//    select.multiselect('destroy');
+//    var array = data.distinct.parties;
+//    $("#parties option").remove();
+//    for (var i = 0; i < array.length; i++) {
+//        $("#parties").append($('<option></option>').text(array[i].name).val(array[i].name));
+//    }
+//    for (var i = 0; i < array.length; i++) {
+//        if (array[i].isRequested) {
+//            $("#parties option[value='" + array[i].name + "']").attr("selected", "selected");
+//        }
+//    }
+//    select.multiselect(new multiSelectConfPerf("parties"));
+//
+//
+//    var select = $("#types");
+//    select.multiselect('destroy');
+//    var array = data.distinct.types;
+//    $("#types option").remove();
+//    for (var i = 0; i < array.length; i++) {
+//        $("#types").append($('<option></option>').text(array[i].name).val(array[i].name));
+//    }
+//    for (var i = 0; i < array.length; i++) {
+//        if (array[i].isRequested) {
+//            $("#types option[value='" + array[i].name + "']").attr("selected", "selected");
+//        }
+//    }
+//    select.multiselect(new multiSelectConfPerf("types"));
+//
+//
+//    var select = $("#units");
+//    select.multiselect('destroy');
+//    var array = data.distinct.units;
+//    $("#units option").remove();
+//    for (var i = 0; i < array.length; i++) {
+//        $("#units").append($('<option></option>').text(array[i].name).val(array[i].name));
+//    }
+//    for (var i = 0; i < array.length; i++) {
+//        if (array[i].isRequested) {
+//            $("#units option[value='" + array[i].name + "']").attr("selected", "selected");
+//        }
+//    }
+//    select.multiselect(new multiSelectConfPerf("units"));
 
     var select = $("#countrySelect");
     select.multiselect('destroy');
     var array = data.distinct.countries;
     $("#countrySelect option").remove();
     for (var i = 0; i < array.length; i++) {
-        $("#countrySelect").append($('<option></option>').text(array[i].name).val(array[i].name));
+        let n = array[i].name;
+        if (isEmpty(n)) {
+            n = "[Empty]";
+        }
+        $("#countrySelect").append($('<option></option>').text(n).val(array[i].name));
     }
     for (var i = 0; i < array.length; i++) {
         if (array[i].isRequested) {
@@ -431,7 +431,11 @@ function loadCombos(data) {
     var array = data.distinct.environments;
     $("#envSelect option").remove();
     for (var i = 0; i < array.length; i++) {
-        $("#envSelect").append($('<option></option>').text(array[i].name).val(array[i].name));
+        let n = array[i].name;
+        if (isEmpty(n)) {
+            n = "[Empty]";
+        }
+        $("#envSelect").append($('<option></option>').text(n).val(array[i].name));
     }
     for (var i = 0; i < array.length; i++) {
         if (array[i].isRequested) {
@@ -588,7 +592,6 @@ function buildGraphs(data) {
         var dataset = {
             label: lab,
             backgroundColor: get_Color_fromindex(i),
-            hoverBackgroundColor: get_Color_fromindex(i),
             borderColor: get_Color_fromindex(i),
             pointRadius: 10,
             pointHoverRadius: 15,
@@ -640,12 +643,12 @@ function buildGraphs(data) {
 
 function buildExeGraphs(data) {
 
-    let curves = data.datasetExeTime;
+    let curves = data.curvesTime;
 
     // Sorting values by nb of requests.
     sortedCurves = curves.sort(function (a, b) {
-        let a1 = a.key.testcase.test + "-" + a.key.testcase.testcase + "-" + a.key.unit + "-" + a.key.country + "-" + a.key.environment + "-" + a.key.robotdecli;
-        let b1 = b.key.testcase.test + "-" + b.key.testcase.testcase + "-" + b.key.unit + "-" + b.key.country + "-" + b.key.environment + "-" + a.key.robotdecli;
+        let a1 = "-" + a.key;
+        let b1 = "-" + b.key;
         return b1.localeCompare(a1);
     });
 
@@ -662,7 +665,7 @@ function buildExeGraphs(data) {
             let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus};
             d.push(p);
         }
-        let lab = getLabel(c.key.testcase.description, c.key.country, c.key.environment, c.key.robotdecli, undefined, undefined, undefined, c.key.testcase.testcase);
+        let lab = getLabel("c.key.testcase.description", c.key.country, c.key.environment, c.key.robotdecli, undefined, undefined, undefined, c.key.campaign);
         var dataset = {
             label: lab,
             backgroundColor: "white",
@@ -670,7 +673,7 @@ function buildExeGraphs(data) {
             pointBackgroundColor: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
-                return getExeStatusRowColor(value.controlStatus);
+                return getExeStatusRowColor(value.ciResult);
             },
             pointRadius: 10,
             pointHoverRadius: 15,
@@ -777,48 +780,48 @@ function getLabel(tcDesc, country, env, robot, unit, party, type, testcaseid) {
 
 function initGraph() {
 
-    var reqoption = getOptions("Requests", "request");
-    var sizeoption = getOptions("Size in kb", "size");
-    var timeoption = getOptions("Time in ms", "time");
-    var partyoption = getOptions("nb Third Party", "nbthirdparty");
-    var tctimeoption = getOptions("Test Case Duration", "time");
-    var tcbaroption = getOptionsBar("Test Case Duration", "nb");
+//    var reqoption = getOptions("Requests", "request");
+//    var sizeoption = getOptions("Size in kb", "size");
+//    var timeoption = getOptions("Time in ms", "time");
+//    var partyoption = getOptions("nb Third Party", "nbthirdparty");
+    var tctimeoption = getOptions("Campaign Duration", "time");
+//    var tcbaroption = getOptionsBar("Test Case Duration", "nb");
 
-    let reqdatasets = [];
-    let sizedatasets = [];
-    let timedatasets = [];
-    let partydatasets = [];
+//    let reqdatasets = [];
+//    let sizedatasets = [];
+//    let timedatasets = [];
+//    let partydatasets = [];
     let tctimedatasets = [];
-    let tcbardatasets = [];
+//    let tcbardatasets = [];
 
-    configRequests = {
-        type: 'line',
-        data: {
-            datasets: reqdatasets
-        },
-        options: reqoption
-    };
-    configSize = {
-        type: 'line',
-        data: {
-            datasets: sizedatasets
-        },
-        options: sizeoption
-    };
-    configTime = {
-        type: 'line',
-        data: {
-            datasets: timedatasets
-        },
-        options: timeoption
-    };
-    configParty = {
-        type: 'line',
-        data: {
-            datasets: partydatasets
-        },
-        options: partyoption
-    };
+//    configRequests = {
+//        type: 'line',
+//        data: {
+//            datasets: reqdatasets
+//        },
+//        options: reqoption
+//    };
+//    configSize = {
+//        type: 'line',
+//        data: {
+//            datasets: sizedatasets
+//        },
+//        options: sizeoption
+//    };
+//    configTime = {
+//        type: 'line',
+//        data: {
+//            datasets: timedatasets
+//        },
+//        options: timeoption
+//    };
+//    configParty = {
+//        type: 'line',
+//        data: {
+//            datasets: partydatasets
+//        },
+//        options: partyoption
+//    };
     configTcTime = {
         type: 'line',
         data: {
@@ -826,76 +829,76 @@ function initGraph() {
         },
         options: tctimeoption
     };
-    configTcBar = {
-        type: 'bar',
-        data: {
-            datasets: tcbardatasets
-        },
-        options: tcbaroption
-    };
+//    configTcBar = {
+//        type: 'bar',
+//        data: {
+//            datasets: tcbardatasets
+//        },
+//        options: tcbaroption
+//    };
 
-    var ctx = document.getElementById('canvasRequests').getContext('2d');
-    window.myLineReq = new Chart(ctx, configRequests);
-
-    var ctx = document.getElementById('canvasSize').getContext('2d');
-    window.myLineSize = new Chart(ctx, configSize);
-
-    var ctx = document.getElementById('canvasTime').getContext('2d');
-    window.myLineTime = new Chart(ctx, configTime);
-
-    var ctx = document.getElementById('canvasParty').getContext('2d');
-    window.myLineParty = new Chart(ctx, configParty);
+//    var ctx = document.getElementById('canvasRequests').getContext('2d');
+//    window.myLineReq = new Chart(ctx, configRequests);
+//
+//    var ctx = document.getElementById('canvasSize').getContext('2d');
+//    window.myLineSize = new Chart(ctx, configSize);
+//
+//    var ctx = document.getElementById('canvasTime').getContext('2d');
+//    window.myLineTime = new Chart(ctx, configTime);
+//
+//    var ctx = document.getElementById('canvasParty').getContext('2d');
+//    window.myLineParty = new Chart(ctx, configParty);
 
     var ctx = document.getElementById('canvasTestStat').getContext('2d');
     window.myLineTcTime = new Chart(ctx, configTcTime);
 
-    var ctx = document.getElementById('canvasTestStatBar').getContext('2d');
-    window.myLineTcBar = new Chart(ctx, configTcBar);
+//    var ctx = document.getElementById('canvasTestStatBar').getContext('2d');
+//    window.myLineTcBar = new Chart(ctx, configTcBar);
 
 
-    document.getElementById('canvasRequests').onclick = function (evt) {
-        var activePoints = window.myLineReq.getElementAtEvent(event);
-        // make sure click was on an actual point
-        if (activePoints.length > 0) {
-            let exe = window.myLineReq.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
-            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
-        }
-    };
-
-    document.getElementById('canvasSize').onclick = function (evt) {
-        var activePoints = window.myLineSize.getElementAtEvent(event);
-        // make sure click was on an actual point
-        if (activePoints.length > 0) {
-            let exe = window.myLineSize.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
-            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
-        }
-    };
-
-    document.getElementById('canvasTime').onclick = function (evt) {
-        var activePoints = window.myLineTime.getElementAtEvent(event);
-        // make sure click was on an actual point
-        if (activePoints.length > 0) {
-            let exe = window.myLineTime.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
-            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
-        }
-    };
-
-    document.getElementById('canvasParty').onclick = function (evt) {
-        var activePoints = window.myLineParty.getElementAtEvent(event);
-        // make sure click was on an actual point
-        if (activePoints.length > 0) {
-            let exe = window.myLineParty.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
-            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
-        }
-    };
-
-    document.getElementById('canvasTestStat').onclick = function (evt) {
-        var activePoints = window.myLineTcTime.getElementAtEvent(event);
-        // make sure click was on an actual point
-        if (activePoints.length > 0) {
-            let exe = window.myLineTcTime.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
-            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
-        }
-    };
+//    document.getElementById('canvasRequests').onclick = function (evt) {
+//        var activePoints = window.myLineReq.getElementAtEvent(event);
+//        // make sure click was on an actual point
+//        if (activePoints.length > 0) {
+//            let exe = window.myLineReq.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
+//            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
+//        }
+//    };
+//
+//    document.getElementById('canvasSize').onclick = function (evt) {
+//        var activePoints = window.myLineSize.getElementAtEvent(event);
+//        // make sure click was on an actual point
+//        if (activePoints.length > 0) {
+//            let exe = window.myLineSize.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
+//            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
+//        }
+//    };
+//
+//    document.getElementById('canvasTime').onclick = function (evt) {
+//        var activePoints = window.myLineTime.getElementAtEvent(event);
+//        // make sure click was on an actual point
+//        if (activePoints.length > 0) {
+//            let exe = window.myLineTime.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
+//            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
+//        }
+//    };
+//
+//    document.getElementById('canvasParty').onclick = function (evt) {
+//        var activePoints = window.myLineParty.getElementAtEvent(event);
+//        // make sure click was on an actual point
+//        if (activePoints.length > 0) {
+//            let exe = window.myLineParty.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
+//            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
+//        }
+//    };
+//
+//    document.getElementById('canvasTestStat').onclick = function (evt) {
+//        var activePoints = window.myLineTcTime.getElementAtEvent(event);
+//        // make sure click was on an actual point
+//        if (activePoints.length > 0) {
+//            let exe = window.myLineTcTime.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
+//            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
+//        }
+//    };
 
 }

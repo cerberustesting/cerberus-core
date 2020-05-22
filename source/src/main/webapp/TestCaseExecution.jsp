@@ -592,7 +592,6 @@
                         </div>
 
                         <div class="center marginTop25 tab-pane fade" id="tabNetwork">
-                            <div class="container">
 
                                 <div class="panel panel-default" id="NS1Panel">
                                     <div class="panel-heading card" data-toggle="collapse" data-target="#NS1">
@@ -655,7 +654,6 @@
                                     </div>
                                 </div>
 
-                            </div>
                         </div>
 
                         <div class="center marginTop25 tab-pane fade" id="tabTraca">

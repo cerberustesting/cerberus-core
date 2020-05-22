@@ -159,7 +159,8 @@ function loadCountryFilter() {
                 var obj = convertSerialToJSONObject(serial);
                 sessionStorage.setItem("countryFilter", JSON.stringify(obj));
             });
-        }
+        },
+        error: showUnexpectedError
     });
     $("#countrySelectAll").on("click", function () {
         $("#countryFilter input").prop('checked', true);

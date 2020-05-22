@@ -210,7 +210,7 @@ public class ReadExecutionStat extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            LOG.warn(e);
+            LOG.warn(e, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
@@ -419,91 +419,94 @@ public class ReadExecutionStat extends HttpServlet {
             List<TestCaseExecutionHttpStat> tcList = (List<TestCaseExecutionHttpStat>) resp.getDataList();
             for (TestCaseExecutionHttpStat statCur : tcList) {
 
-                // Get List of Third Party
-                JSONObject partiesA = statCur.getStatDetail().getJSONObject("thirdparty");
-                Iterator<String> jsonObjectIterator = partiesA.keys();
-                jsonObjectIterator.forEachRemaining(key -> {
-                    partyMap.put(key, false);
-                });
+                if (statCur.getStatDetail().has("thirdparty")) {
 
-                if (!countryMap.containsKey(statCur.getCountry())) {
-                    countryMap.put(statCur.getCountry(), false);
-                }
-                if (!systemMap.containsKey(statCur.getSystem())) {
-                    systemMap.put(statCur.getSystem(), false);
-                }
-                if (!applicationMap.containsKey(statCur.getApplication())) {
-                    applicationMap.put(statCur.getApplication(), false);
-                }
-                if (!environmentMap.containsKey(statCur.getEnvironment())) {
-                    environmentMap.put(statCur.getEnvironment(), false);
-                }
-                if (!robotDecliMap.containsKey(statCur.getRobotDecli())) {
-                    robotDecliMap.put(statCur.getRobotDecli(), false);
-                }
+                    // Get List of Third Party
+                    JSONObject partiesA = statCur.getStatDetail().getJSONObject("thirdparty");
+                    Iterator<String> jsonObjectIterator = partiesA.keys();
+                    jsonObjectIterator.forEachRemaining(key -> {
+                        partyMap.put(key, false);
+                    });
 
-                for (String party : parties) {
-                    for (String type : types) {
-                        for (String unit : units) {
-                            curveKey = getKeyCurve(statCur, party, type, unit);
-                            int x = getValue(statCur, party, type, unit);
-//                            LOG.debug("return : " + x);
-                            if (x != -1) {
-                                testCaseMap.put(statCur.getTest() + "/\\" + statCur.getTestCase(), factoryTestCase.create(statCur.getTest(), statCur.getTestCase()));
-                                countryMap.put(statCur.getCountry(), true);
-                                systemMap.put(statCur.getSystem(), true);
-                                applicationMap.put(statCur.getApplication(), true);
-                                environmentMap.put(statCur.getEnvironment(), true);
-                                robotDecliMap.put(statCur.getRobotDecli(), true);
-                                partyMap.put(party, true);
-                                typeMap.put(type, true);
-                                unitMap.put(unit, true);
-
-                                pointObj = new JSONObject();
-                                Date d = new Date(statCur.getStart().getTime());
-                                TimeZone tz = TimeZone.getTimeZone("UTC");
-                                DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-                                df.setTimeZone(tz);
-                                pointObj.put("x", df.format(d));
-
-                                pointObj.put("y", x);
-                                pointObj.put("exe", statCur.getId());
-                                pointObj.put("exeControlStatus", statCur.getControlStatus());
-
-                                if (curveMap.containsKey(curveKey)) {
-                                    curArray = curveMap.get(curveKey);
-                                } else {
-                                    curArray = new JSONArray();
-
-                                    curveObj = new JSONObject();
-                                    curveObj.put("key", curveKey);
-                                    TestCase a = factoryTestCase.create(statCur.getTest(), statCur.getTestCase());
-                                    try {
-                                        a = testCaseService.convert(testCaseService.readByKey(statCur.getTest(), statCur.getTestCase()));
-                                    } catch (CerberusException ex) {
-                                        LOG.error("Exception when getting TestCase details", ex);
-                                    }
-                                    curveObj.put("testcase", a.toJson());
-
-                                    curveObj.put("country", statCur.getCountry());
-                                    curveObj.put("environment", statCur.getEnvironment());
-                                    curveObj.put("robotdecli", statCur.getRobotDecli());
-                                    curveObj.put("system", statCur.getSystem());
-                                    curveObj.put("application", statCur.getApplication());
-                                    curveObj.put("unit", unit);
-                                    curveObj.put("party", party);
-                                    curveObj.put("type", type);
-
-                                    curveObjMap.put(curveKey, curveObj);
-                                }
-                                curArray.put(pointObj);
-                                curveMap.put(curveKey, curArray);
-
-                            }
-
-                        }
+                    if (!countryMap.containsKey(statCur.getCountry())) {
+                        countryMap.put(statCur.getCountry(), false);
+                    }
+                    if (!systemMap.containsKey(statCur.getSystem())) {
+                        systemMap.put(statCur.getSystem(), false);
+                    }
+                    if (!applicationMap.containsKey(statCur.getApplication())) {
+                        applicationMap.put(statCur.getApplication(), false);
+                    }
+                    if (!environmentMap.containsKey(statCur.getEnvironment())) {
+                        environmentMap.put(statCur.getEnvironment(), false);
+                    }
+                    if (!robotDecliMap.containsKey(statCur.getRobotDecli())) {
+                        robotDecliMap.put(statCur.getRobotDecli(), false);
                     }
 
+                    for (String party : parties) {
+                        for (String type : types) {
+                            for (String unit : units) {
+                                curveKey = getKeyCurve(statCur, party, type, unit);
+                                int x = getValue(statCur, party, type, unit);
+//                            LOG.debug("return : " + x);
+                                if (x != -1) {
+                                    testCaseMap.put(statCur.getTest() + "/\\" + statCur.getTestCase(), factoryTestCase.create(statCur.getTest(), statCur.getTestCase()));
+                                    countryMap.put(statCur.getCountry(), true);
+                                    systemMap.put(statCur.getSystem(), true);
+                                    applicationMap.put(statCur.getApplication(), true);
+                                    environmentMap.put(statCur.getEnvironment(), true);
+                                    robotDecliMap.put(statCur.getRobotDecli(), true);
+                                    partyMap.put(party, true);
+                                    typeMap.put(type, true);
+                                    unitMap.put(unit, true);
+
+                                    pointObj = new JSONObject();
+                                    Date d = new Date(statCur.getStart().getTime());
+                                    TimeZone tz = TimeZone.getTimeZone("UTC");
+                                    DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+                                    df.setTimeZone(tz);
+                                    pointObj.put("x", df.format(d));
+
+                                    pointObj.put("y", x);
+                                    pointObj.put("exe", statCur.getId());
+                                    pointObj.put("exeControlStatus", statCur.getControlStatus());
+
+                                    if (curveMap.containsKey(curveKey)) {
+                                        curArray = curveMap.get(curveKey);
+                                    } else {
+                                        curArray = new JSONArray();
+
+                                        curveObj = new JSONObject();
+                                        curveObj.put("key", curveKey);
+                                        TestCase a = factoryTestCase.create(statCur.getTest(), statCur.getTestCase());
+                                        try {
+                                            a = testCaseService.convert(testCaseService.readByKey(statCur.getTest(), statCur.getTestCase()));
+                                        } catch (CerberusException ex) {
+                                            LOG.error("Exception when getting TestCase details", ex);
+                                        }
+                                        curveObj.put("testcase", a.toJson());
+
+                                        curveObj.put("country", statCur.getCountry());
+                                        curveObj.put("environment", statCur.getEnvironment());
+                                        curveObj.put("robotdecli", statCur.getRobotDecli());
+                                        curveObj.put("system", statCur.getSystem());
+                                        curveObj.put("application", statCur.getApplication());
+                                        curveObj.put("unit", unit);
+                                        curveObj.put("party", party);
+                                        curveObj.put("type", type);
+
+                                        curveObjMap.put(curveKey, curveObj);
+                                    }
+                                    curArray.put(pointObj);
+                                    curveMap.put(curveKey, curArray);
+
+                                }
+
+                            }
+                        }
+
+                    }
                 }
 
             }
@@ -817,7 +820,6 @@ public class ReadExecutionStat extends HttpServlet {
                         case "other":
                             switch (unit) {
                                 case "request":
-                                    LOG.debug("Result.");
                                     return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("type").getJSONObject(type).getInt("requests");
                                 case "totalsize":
                                     return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("type").getJSONObject(type).getInt("sizeSum");
@@ -850,7 +852,7 @@ public class ReadExecutionStat extends HttpServlet {
             }
             return -1;
         } catch (JSONException ex) {
-            LOG.debug("Start : " + stat.getId() + " | " + party + " - " + type + " - " + unit, ex);
+            LOG.debug("Start : " + stat.getId() + " | " + party + " - " + type + " - " + unit + " - " + ex.toString());
             return -1;
         }
     }
