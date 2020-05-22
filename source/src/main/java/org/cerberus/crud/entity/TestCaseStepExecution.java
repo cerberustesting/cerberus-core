@@ -43,7 +43,7 @@ public class TestCaseStepExecution {
     private int index;
     private int sort;
     private String loop;
-    private String conditionOper;
+    private String conditionOperator;
     private String conditionVal1Init;
     private String conditionVal2Init;
     private String conditionVal3Init;
@@ -275,12 +275,12 @@ public class TestCaseStepExecution {
         this.sort = sort;
     }
 
-    public String getConditionOper() {
-        return conditionOper;
+    public String getConditionOperator() {
+        return conditionOperator;
     }
 
-    public void setConditionOper(String conditionOper) {
-        this.conditionOper = conditionOper;
+    public void setConditionOperator(String conditionOperator) {
+        this.conditionOperator = conditionOperator;
     }
 
     public String getConditionVal1Init() {
@@ -422,7 +422,7 @@ public class TestCaseStepExecution {
             result.put("useStepTestCase", this.getUseStepTestCase());
             result.put("useStepTestCaseStep", this.getUseStepTestCaseStep());
             result.put("loop", this.getLoop());
-            result.put("conditionOper", this.getConditionOper());
+            result.put("conditionOperator", this.getConditionOperator());
             result.put("conditionVal1Init", this.getConditionVal1Init());
             result.put("conditionVal2Init", this.getConditionVal2Init());
             result.put("conditionVal3Init", this.getConditionVal3Init());

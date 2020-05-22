@@ -220,7 +220,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         if (tcs.getUseStepStep() >= 0) {
             query.append(",`useStepStep`=? ");
         }
-        query.append(",`inlibrary` = ?, `Sort` = ?, `loop` = ?, `conditionOper` = ?, `conditionVal1` = ?, `conditionVal2` = ?, `conditionVal3` = ?, `forceExe` = ?, DateModif = CURRENT_TIMESTAMP, UsrModif = ? WHERE Test = ? AND TestCase = ? AND step = ?");
+        query.append(",`inlibrary` = ?, `Sort` = ?, `loop` = ?, `conditionOperator` = ?, `conditionVal1` = ?, `conditionVal2` = ?, `conditionVal3` = ?, `forceExe` = ?, DateModif = CURRENT_TIMESTAMP, UsrModif = ? WHERE Test = ? AND TestCase = ? AND step = ?");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -246,7 +246,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setString(i++, tcs.getInLibrary() == null ? "N" : tcs.getInLibrary());
                 preStat.setInt(i++, tcs.getSort());
                 preStat.setString(i++, tcs.getLoop() == null ? "" : tcs.getLoop());
-                preStat.setString(i++, tcs.getConditionOper() == null ? "" : tcs.getConditionOper());
+                preStat.setString(i++, tcs.getConditionOperator() == null ? "" : tcs.getConditionOperator());
                 preStat.setString(i++, tcs.getConditionVal1() == null ? "" : tcs.getConditionVal1());
                 preStat.setString(i++, tcs.getConditionVal2() == null ? "" : tcs.getConditionVal2());
                 preStat.setString(i++, tcs.getConditionVal3() == null ? "" : tcs.getConditionVal3());
@@ -852,7 +852,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         if (testCaseStep.getUseStepStep() >= 0) {
             query.append(",`useStepStep` ");
         }
-        query.append(", `inLibrary`, `loop`, `conditionOper`, `conditionVal1`, `conditionVal2`, `conditionVal3`, `forceExe`, `usrCreated`) ");
+        query.append(", `inLibrary`, `loop`, `conditionOperator`, `conditionVal1`, `conditionVal2`, `conditionVal3`, `forceExe`, `usrCreated`) ");
         query.append("VALUES (?,?,?,?,?,?,?");
         if (!StringUtil.isNullOrEmpty(testCaseStep.getUseStepTest())) {
             query.append(",?");
@@ -894,7 +894,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             }
             preStat.setString(i++, testCaseStep.getInLibrary() == null ? "N" : testCaseStep.getInLibrary());
             preStat.setString(i++, testCaseStep.getLoop() == null ? "" : testCaseStep.getLoop());
-            preStat.setString(i++, testCaseStep.getConditionOper() == null ? "" : testCaseStep.getConditionOper());
+            preStat.setString(i++, testCaseStep.getConditionOperator() == null ? "" : testCaseStep.getConditionOperator());
             preStat.setString(i++, testCaseStep.getConditionVal1() == null ? "" : testCaseStep.getConditionVal1());
             preStat.setString(i++, testCaseStep.getConditionVal2() == null ? "" : testCaseStep.getConditionVal2());
             preStat.setString(i++, testCaseStep.getConditionVal3() == null ? "" : testCaseStep.getConditionVal3());
@@ -926,7 +926,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         int step = resultSet.getInt("step") == 0 ? 0 : resultSet.getInt("step");
         int sort = resultSet.getInt("sort");
         String loop = resultSet.getString("loop") == null ? "" : resultSet.getString("loop");
-        String conditionOper = resultSet.getString("conditionOper") == null ? "" : resultSet.getString("conditionOper");
+        String conditionOperator = resultSet.getString("conditionOperator") == null ? "" : resultSet.getString("conditionOperator");
         String conditionVal1 = resultSet.getString("conditionVal1") == null ? "" : resultSet.getString("conditionVal1");
         String conditionVal2 = resultSet.getString("conditionVal2") == null ? "" : resultSet.getString("conditionVal2");
         String conditionVal3 = resultSet.getString("conditionVal3") == null ? "" : resultSet.getString("conditionVal3");
@@ -942,7 +942,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         String usrModif = resultSet.getString("UsrModif");
         Timestamp dateModif = resultSet.getTimestamp("DateModif");
 
-        TestCaseStep tcs = factoryTestCaseStep.create(test, testcase, step, sort, loop, conditionOper, conditionVal1, conditionVal2, conditionVal3, description, useStep, useStepTest, useStepTestCase, useStepStep,
+        TestCaseStep tcs = factoryTestCaseStep.create(test, testcase, step, sort, loop, conditionOperator, conditionVal1, conditionVal2, conditionVal3, description, useStep, useStepTest, useStepTestCase, useStepStep,
                 inLibrary, forceExe, usrCreated, dateCreated, usrModif, dateModif);
 
         try {

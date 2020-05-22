@@ -226,8 +226,8 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public AnswerList<TestCase> readByVarious(String[] test, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] campaign, List<Integer> labelid, String[] priority, String[] group, String[] status, int length) {
-        return testCaseDao.readByVarious(test, app, creator, implementer, system, campaign, labelid, priority, group, status, length);
+            String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length) {
+        return testCaseDao.readByVarious(test, app, creator, implementer, system, campaign, labelid, priority, type, status, length);
     }
 
     /**
@@ -249,7 +249,7 @@ public class TestCaseService implements ITestCaseService {
         List<String> result = new ArrayList<>();
         List<TestCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
         for (TestCase testCase : testCases) {
-            if (!testCase.getGroup().equals("PRIVATE")) {
+            if (!testCase.getType().equals("PRIVATE")) {
                 result.add(testCase.getTest());
             }
         }
@@ -269,7 +269,7 @@ public class TestCaseService implements ITestCaseService {
         List<TestCase> result = new ArrayList<>();
         List<TestCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
         for (TestCase testCase : testCases) {
-            if (!testCase.getGroup().equals("PRIVATE")) {
+            if (!testCase.getType().equals("PRIVATE")) {
                 result.add(testCase);
             }
         }
@@ -293,7 +293,7 @@ public class TestCaseService implements ITestCaseService {
         String[] system = null;
         String[] application = null;
         String[] priority = null;
-        String[] group = null;
+        String[] type = null;
 
         AnswerItem<Map<String, List<String>>> parameters = campaignParameterService.parseParametersByCampaign(campaign);
 
@@ -314,8 +314,8 @@ public class TestCaseService implements ITestCaseService {
                 case CampaignParameter.APPLICATION_PARAMETER:
                     application = valeur.toArray(new String[valeur.size()]);
                     break;
-                case CampaignParameter.GROUP_PARAMETER:
-                    group = valeur.toArray(new String[valeur.size()]);
+                case CampaignParameter.TESTCASE_TYPE_PARAMETER:
+                    type = valeur.toArray(new String[valeur.size()]);
                     break;
             }
         }
@@ -332,7 +332,7 @@ public class TestCaseService implements ITestCaseService {
 
         Integer maxReturn = parameterService.getParameterIntegerByKey("cerberus_campaign_maxtestcase", "", 1000);
 
-        result = testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, labelIdList, status, system, application, priority, group, maxReturn);
+        result = testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, labelIdList, status, system, application, priority, type, maxReturn);
 
         return result;
     }
@@ -358,8 +358,8 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public List<TestCase> findByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery) {
-        return testCaseDao.findTestCaseByCriteria(test, app, active, priority, status, group, targetBuild, targetRev, creator, implementer, function, campaign);
+    public List<TestCase> findByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] type, String[] targetMajor, String[] targetMinor, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery) {
+        return testCaseDao.findTestCaseByCriteria(test, app, active, priority, status, type, targetMajor, targetMinor, creator, implementer, function, campaign);
     }
 
     @Override

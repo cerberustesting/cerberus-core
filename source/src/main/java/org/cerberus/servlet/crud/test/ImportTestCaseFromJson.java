@@ -50,15 +50,15 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ImportTestCaseFromJson extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ImportTestCaseFromJson.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -94,7 +94,7 @@ public class ImportTestCaseFromJson extends HttpServlet {
                         StringBuilder responseStrBuilder = new StringBuilder();
 
                         String inputStr;
-                        while ((inputStr = streamReader.readLine()) != null){
+                        while ((inputStr = streamReader.readLine()) != null) {
                             responseStrBuilder.append(inputStr);
                         }
                         inputStream.close();
@@ -112,10 +112,9 @@ public class ImportTestCaseFromJson extends HttpServlet {
                 tcInfo.setTestCase(testcase);
                 tcInfo.setOrigine(jo.getString("origin") == null ? "" : jo.getString("origin"));
                 tcInfo.setImplementer(jo.getString("implementer") == null ? "123TOTO" : "1234TOTO");
-                tcInfo.setBehaviorOrValueExpected(jo.getString("description") == null ? "1293TOTO" : "12394TOTO");
+                tcInfo.setDetailedDescription(jo.getString("description") == null ? "1293TOTO" : "12394TOTO");
 
                 tcService.updateTestCaseInformation(tcInfo);
-
 
                 response.sendRedirect("TestCase.jsp");
             } catch (FileUploadException e) {
@@ -132,10 +131,10 @@ public class ImportTestCaseFromJson extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -146,10 +145,10 @@ public class ImportTestCaseFromJson extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

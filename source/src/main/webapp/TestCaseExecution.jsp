@@ -92,7 +92,7 @@
                                                 <a><button class="btn btn-default pull-left" id="lastExecution" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Last Executions</button></a>
                                                 <a><button class="btn btn-default pull-left" id="lastExecutionoT" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Reporting over Time</button></a>
                                                 <a><button class="btn btn-default pull-left" id="lastExecutionwithEnvCountry" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Last Executions With Country Env</button></a>
-<!--                                                <a><button class="btn btn-default pull-left" id="lastExecutionoTwithEnvCountry" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Reporting over time With Country Env</button></a>-->
+                                                <!--                                                <a><button class="btn btn-default pull-left" id="lastExecutionoTwithEnvCountry" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Reporting over time With Country Env</button></a>-->
                                                 <a><button class="btn btn-default pull-left" id="ExecutionByTag" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-tasks"></span> Campaign Report</button></a>
                                                 <a><button class="btn btn-default pull-left" id="ExecutionQueue" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-eye-open"></span> See Queue Parameters</button></a>
                                                 <a><button class="btn btn-default pull-left" id="ExecutionQueueByTag" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> See Queue By Tag</button></a>
@@ -208,7 +208,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="row" id="stepRow3">
-                                                        <div class="col-lg-2">                                                          
+                                                        <div class="col-lg-2">
                                                         </div>
                                                         <div class="col-lg-4 form-group">
                                                             <label>Param1 Init</label>
@@ -226,7 +226,7 @@
                                                     <div class="row" id="stepRow4">
                                                         <div class="col-lg-2 form-group">
                                                             <label>Condition Operation</label>
-                                                            <input class="form-control input-sm" readonly id="stepConditionOper">
+                                                            <input class="form-control input-sm" readonly id="stepConditionOperator">
                                                         </div>
                                                         <div class="col-lg-4 form-group">
                                                             <label>Param1</label>
@@ -378,7 +378,7 @@
                             <div class="row">
                             </div>
 
-                            <div class="row" id="condrow1"> 
+                            <div class="row" id="condrow1">
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                     </div>
@@ -405,8 +405,8 @@
                             <div class="row" id="condrow2">
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="conditionOperTC">conditionOperTC</label>
-                                        <input type="text" class="form-control" id="conditionOperTC" readonly>
+                                        <label for="conditionOperatorTC">conditionOperatorTC</label>
+                                        <input type="text" class="form-control" id="conditionOperatorTC" readonly>
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
@@ -633,7 +633,7 @@
 
                                         <div class="row" id="detailUnknown">
                                             <ul class="list-group marginTop25" id="detailUnknownList">
-                                            </ul>                                    
+                                            </ul>
                                         </div>
                                         <div class="row">
                                             <div class="col-sm-12">

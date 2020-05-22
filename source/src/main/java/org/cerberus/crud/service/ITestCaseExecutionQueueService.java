@@ -175,8 +175,8 @@ public interface ITestCaseExecutionQueueService {
      * @param groupList
      * @param tcactiveList
      * @param priorityList
-     * @param targetsprintList
-     * @param targetrevisionList
+     * @param targetMajorList
+     * @param targetMinorList
      * @param creatorList
      * @param implementerList
      * @param buildList
@@ -195,7 +195,7 @@ public interface ITestCaseExecutionQueueService {
      * @return
      */
     AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> tcstatusList, List<String> groupList,
-            List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList,
+            List<String> tcactiveList, List<String> priorityList, List<String> targetMajorList, List<String> targetMinorList, List<String> creatorList,
             List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion,
             String comment, String bugid, String ticket);
 
@@ -274,7 +274,7 @@ public interface ITestCaseExecutionQueueService {
      * @return
      */
     Answer updateAllTagToQueuedFromQuTemp(String tag, List<Long> queueIds);
-    
+
     /**
      *
      * @param id

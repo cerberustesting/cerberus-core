@@ -31,11 +31,11 @@ public interface IConditionService {
 
     /**
      *
-     * @param conditionOper
+     * @param conditionOperator
      * @param conditionValue1
      * @param conditionValue2
      * @param tCExecution
      * @return
      */
-    AnswerItem<Boolean> evaluateCondition(String conditionOper, String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution tCExecution);
+    AnswerItem<Boolean> evaluateCondition(String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution tCExecution);
 }

@@ -393,7 +393,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testcasestepaction (`test`, `testCase`, `step`, `sequence`, `sort`, ")
-                .append("`conditionOper`, `conditionVal1`, `conditionVal2`, `conditionVal3`, `action`, ")
+                .append("`conditionOperator`, `conditionVal1`, `conditionVal2`, `conditionVal3`, `action`, ")
                 .append("`value1`, `value2`, `value3`, `ForceExeStatus`, `description`, `screenshotfilename`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
@@ -407,7 +407,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                 preStat.setInt(i++, testCaseStepAction.getStep());
                 preStat.setInt(i++, testCaseStepAction.getSequence());
                 preStat.setInt(i++, testCaseStepAction.getSort());
-                preStat.setString(i++, testCaseStepAction.getConditionOper());
+                preStat.setString(i++, testCaseStepAction.getConditionOperator());
                 preStat.setString(i++, testCaseStepAction.getConditionVal1());
                 preStat.setString(i++, testCaseStepAction.getConditionVal2());
                 preStat.setString(i++, testCaseStepAction.getConditionVal3());
@@ -455,7 +455,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                 .append("`Step` = ?, ")
                 .append("`Sequence` = ?, ")
                 .append("`Sort` = ?, ")
-                .append("`ConditionOper` = ?, ")
+                .append("`conditionOperator` = ?, ")
                 .append("`ConditionVal1` = ?, ")
                 .append("`ConditionVal2` = ?, ")
                 .append("`ConditionVal3` = ?, ")
@@ -470,7 +470,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                 .toString();
 
         LOG.debug("SQL " + query);
-        LOG.debug("SQL.param.conditionOper " + testCaseStepAction.getConditionOper());
+        LOG.debug("SQL.param.conditionOperator " + testCaseStepAction.getConditionOperator());
         LOG.debug("SQL.param.conditionVal1 " + testCaseStepAction.getConditionVal1());
         LOG.debug("SQL.param.conditionVal2 " + testCaseStepAction.getConditionVal2());
         LOG.debug("SQL.param.conditionVal3 " + testCaseStepAction.getConditionVal3());
@@ -485,7 +485,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                 preStat.setInt(i++, testCaseStepAction.getStep());
                 preStat.setInt(i++, testCaseStepAction.getSequence());
                 preStat.setInt(i++, testCaseStepAction.getSort());
-                preStat.setString(i++, testCaseStepAction.getConditionOper());
+                preStat.setString(i++, testCaseStepAction.getConditionOperator());
                 preStat.setString(i++, testCaseStepAction.getConditionVal1());
                 preStat.setString(i++, testCaseStepAction.getConditionVal2());
                 preStat.setString(i++, testCaseStepAction.getConditionVal3());
@@ -610,7 +610,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testcasestepaction (`test`, `testCase`, `step`, `sequence`, `sort`, ")
-                .append("`conditionOper`, `conditionVal1`, `conditionVal2`, `conditionVal3`, `action`, `Value1`, `Value2`, `Value3`, `ForceExeStatus`, `description`, `screenshotfilename`) ");
+                .append("`conditionOperator`, `conditionVal1`, `conditionVal2`, `conditionVal3`, `action`, `Value1`, `Value2`, `Value3`, `ForceExeStatus`, `description`, `screenshotfilename`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         try (Connection connection = databaseSpring.connect();
@@ -622,7 +622,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             preStat.setInt(i++, testCaseStepAction.getStep());
             preStat.setInt(i++, testCaseStepAction.getSequence());
             preStat.setInt(i++, testCaseStepAction.getSort());
-            preStat.setString(i++, testCaseStepAction.getConditionOper());
+            preStat.setString(i++, testCaseStepAction.getConditionOperator());
             preStat.setString(i++, testCaseStepAction.getConditionVal1());
             preStat.setString(i++, testCaseStepAction.getConditionVal2());
             preStat.setString(i++, testCaseStepAction.getConditionVal3());
@@ -655,7 +655,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         Integer step = resultSet.getInt("tca.Step");
         Integer sequence = resultSet.getInt("tca.Sequence");
         Integer sort = resultSet.getInt("tca.Sort");
-        String conditionOper = resultSet.getString("tca.ConditionOper");
+        String conditionOperator = resultSet.getString("tca.conditionOperator");
         String conditionVal1 = resultSet.getString("tca.ConditionVal1");
         String conditionVal2 = resultSet.getString("tca.ConditionVal2");
         String conditionVal3 = resultSet.getString("tca.conditionVal3");
@@ -667,7 +667,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         String screenshotFilename = resultSet.getString("tca.screenshotFilename");
         String forceExeStatus = resultSet.getString("tca.forceExeStatus");
 
-        return factoryTestCaseStepAction.create(test, testCase, step, sequence, sort, conditionOper, conditionVal1, conditionVal2, conditionVal3, action, value1, value2, value3, forceExeStatus, description, screenshotFilename);
+        return factoryTestCaseStepAction.create(test, testCase, step, sequence, sort, conditionOperator, conditionVal1, conditionVal2, conditionVal3, action, value1, value2, value3, forceExeStatus, description, screenshotFilename);
     }
 
 }

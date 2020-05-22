@@ -8526,6 +8526,45 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("UPDATE testcasestepaction set Value2=concat(\"{'command': '\", Value1, \"', 'args': ['\", Value2, \"']}\"), Value1=\"mobile: shell\" where Action='executeCommand';");
         a.add("UPDATE testcasecountryproperties set Value2=concat(\"{'command': '\", Value1, \"', 'args': ['']}\"), Value1=\"mobile: shell\" where Type='getFromCommand';");
 
+        // 1494
+        // Alter  TestCase Column name from group to type
+        a.add("ALTER TABLE testcase CHANGE testcase.`Group` `Type` VARCHAR(45)");
+
+        // 1495 - 1497
+        // Update invariant name GROUP to TESTCASE_TYPE
+        a.add("UPDATE invariant SET idname='TESTCASE_TYPE', description='Type of interactive tests' WHERE idname='GROUP' AND value='AUTOMATED'");
+        a.add("UPDATE invariant SET idname='TESTCASE_TYPE', description='Type of test which cannot be automatized' WHERE idname='GROUP' AND value='MANUAL'");
+        a.add("UPDATE invariant SET idname='TESTCASE_TYPE', description='Type of tests which not appear in Cerberus' WHERE idname='GROUP' AND value='PRIVATE'");
+
+        // 1498
+        a.add("ALTER TABLE testcase CHANGE BehaviorOrValueExpected DetailedDescription TEXT");
+
+        //1499
+        a.add("ALTER TABLE testcase "
+                + "CHANGE TestCaseVersion Version INT(10),"
+                + "CHANGE ConditionOper ConditionOperator VARCHAR(45),"
+                + "CHANGE FromBuild FromMajor VARCHAR(10),"
+                + "CHANGE ToBuild ToMajor VARCHAR(10),"
+                + "CHANGE TargetBuild TargetMajor VARCHAR(10),"
+                + "CHANGE FromRev FromMinor VARCHAR(20),"
+                + "CHANGE ToRev ToMinor VARCHAR(20),"
+                + "CHANGE TargetRev TargetMinor VARCHAR(20)");
+
+        //1500 - 1506
+        a.add("ALTER TABLE testcaseexecution CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestep CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestepexecution CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestepaction CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestepactionexecution CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestepactioncontrol CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestepactioncontrolexecution CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+
+        //1507 - 1510
+        a.add("UPDATE invariant set idname = 'TESTCASECONDITIONOPERATOR' WHERE idname = 'TESTCASECONDITIONOPER'");
+        a.add("UPDATE invariant set idname = 'STEPCONDITIONOPERATOR' WHERE idname = 'STEPCONDITIONOPER'");
+        a.add("UPDATE invariant set idname = 'ACTIONCONDITIONOPERATOR' WHERE idname = 'ACTIONCONDITIONOPER'");
+        a.add("UPDATE invariant set idname = 'CONTROLCONDITIONOPERATOR' WHERE idname = 'CONTROLCONDITIONOPER'");
+
         return a;
     }
 

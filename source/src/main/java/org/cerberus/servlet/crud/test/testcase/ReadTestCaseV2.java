@@ -190,7 +190,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,tec.application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,tec.application,project,ticket,description,detailledDescription,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
@@ -270,7 +270,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         String[] system = request.getParameterValues("system");
         String[] campaign = request.getParameterValues("campaign");
         String[] priority = request.getParameterValues("priority");
-        String[] group = request.getParameterValues("group");
+        String[] type = request.getParameterValues("type");
         String[] status = request.getParameterValues("status");
         String[] labelid = request.getParameterValues("labelid");
         List<Integer> labelList = new ArrayList<>();
@@ -282,7 +282,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         }
         int length = ParameterParserUtil.parseIntegerParam(request.getParameter("length"), -1);
 
-        AnswerList<TestCase> answer = testCaseService.readByVarious(test, app, creator, implementer, system, campaign, labelList, priority, group, status, length);
+        AnswerList<TestCase> answer = testCaseService.readByVarious(test, app, creator, implementer, system, campaign, labelList, priority, type, status, length);
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (TestCase tc : (List<TestCase>) answer.getDataList()) {
                 JSONObject value = convertToJSONObject(tc);
@@ -302,7 +302,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         JSONObject jsonResponse = new JSONObject();
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,detailledDescription,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
 
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
@@ -516,25 +516,25 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                 .put("application", testCase.getApplication())
                 .put("system", applicationService.readByKey(testCase.getApplication()).getItem().getSystem())
                 .put("description", testCase.getDescription())
-                .put("behaviourOrValueExpected", testCase.getBehaviorOrValueExpected())
+                .put("behaviourOrValueExpected", testCase.getDetailledDescription())
                 .put("priority", testCase.getPriority())
                 .put("status", testCase.getStatus())
                 .put("tcActive", testCase.getTcActive())
-                .put("conditionOper", testCase.getConditionOper())
+                .put("conditionOperator", testCase.getConditionOperator())
                 .put("conditionValue1", testCase.getConditionVal1())
                 .put("conditionValue2", testCase.getConditionVal2())
                 .put("conditionValue3", testCase.getConditionVal3())
-                .put("group", testCase.getGroup())
+                .put("type", testCase.getType())
                 .put("origine", testCase.getOrigine())
                 .put("refOrigine", testCase.getRefOrigine())
                 .put("howTo", testCase.getHowTo())
                 .put("comment", testCase.getComment())
-                .put("fromBuild", testCase.getFromBuild())
-                .put("fromRev", testCase.getFromRev())
-                .put("toBuild", testCase.getToBuild())
-                .put("toRev", testCase.getToRev())
-                .put("targetBuild", testCase.getTargetBuild())
-                .put("targetRev", testCase.getTargetRev())
+                .put("fromMajor", testCase.getFromMajor())
+                .put("fromMinor", testCase.getFromMinor())
+                .put("toMajor", testCase.getToMajor())
+                .put("toMinor", testCase.getToMinor())
+                .put("targetMajor", testCase.getTargetMajor())
+                .put("targetMinor", testCase.getTargetMinor())
                 .put("implementer", testCase.getImplementer())
                 .put("executor", testCase.getExecutor())
                 .put("activeQA", testCase.getActiveQA())
@@ -547,7 +547,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                 .put("dateCreated", testCase.getDateCreated())
                 .put("usrModif", testCase.getUsrModif())
                 .put("dateModif", testCase.getDateModif())
-                .put("testCaseVersion", testCase.getTestCaseVersion());
+                .put("version", testCase.getVersion());
     }
 
     private JSONObject convertToJSONObject(TestCaseCountryProperties prop) throws JSONException {

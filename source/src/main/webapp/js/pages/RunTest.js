@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-$.when($.getScript("js/global/global.js")).then(function () {
-    $(document).ready(function () {
+$.when($.getScript("js/global/global.js")).then(function() {
+    $(document).ready(function() {
         var doc = new Doc();
 
         displayHeaderLabel(doc);
@@ -49,7 +49,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             updateUserPreferences();
         }
         //add a listenner to load the data when needed
-        $("#FilterPanelHeader").click(function () {
+        $("#FilterPanelHeader").click(function() {
             if (!filterPanelDataLoaded) {
                 loadTestCaseFilterData(system);
                 filterPanelDataLoaded = true;
@@ -57,14 +57,14 @@ $.when($.getScript("js/global/global.js")).then(function () {
             }
         });
 
-        $("#robotSettings #robot").change(function () {
+        $("#robotSettings #robot").change(function() {
             loadRobotInfo($(this).val());
         });
 
-        $("#SelectionManual").on("click", function () {
+        $("#SelectionManual").on("click", function() {
             selectionManual();
         });
-        $("#SelectionCampaign").on("click", function () {
+        $("#SelectionCampaign").on("click", function() {
             selectionCampaign();
         });
 
@@ -77,7 +77,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                     loadExecForm(tag),
                     loadRobotForm(browser),
                     loadHardDefinedSingleSelect("length", [{label: '50', value: 50}, {label: '100', value: 100}, {label: '>100', value: -1}], 0)
-                    ).then(function () {
+                    ).then(function() {
                 loadCampaign();
             });
 
@@ -87,31 +87,31 @@ $.when($.getScript("js/global/global.js")).then(function () {
         }
 
         // Run Test Case button click
-        $("#runTestCase").on("click", function () {
+        $("#runTestCase").on("click", function() {
             runTestCase(false);
         });
         // Run Test Case button click
-        $("#runTestCaseAndSee").on("click", function () {
+        $("#runTestCaseAndSee").on("click", function() {
             runTestCase(true);
         });
 
-        $("#loadFiltersBtn").click(function () {
+        $("#loadFiltersBtn").click(function() {
             loadTestCaseFromFilter(null, null);
         });
 
-        $("#loadCampaignBtn").click(function () {
+        $("#loadCampaignBtn").click(function() {
             loadCampaign();
         });
 
-        $("#testcaseSelectAll").click(function () {
+        $("#testcaseSelectAll").click(function() {
             $("#testCaseList option").prop("selected", true);
         });
 
-        $("#testcaseSelectNone").click(function () {
+        $("#testcaseSelectNone").click(function() {
             $("#testCaseList option").prop("selected", false);
         });
 
-        $('[name="envSettings"]').on("change", function () {
+        $('[name="envSettings"]').on("change", function() {
             if (this.value === "auto") {
                 $("#envSettingsMan").hide();
                 $("#envSettingsAuto").show();
@@ -125,15 +125,15 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         $("#saveExecutionParams").click(saveExecutionPreferences);
 
-        $("#robotCreate").click(function () {
+        $("#robotCreate").click(function() {
             openModalRobot_FromRunTest("", "ADD");
         });
 
 
-        $("#countrySelectAll").on("click", function () {
+        $("#countrySelectAll").on("click", function() {
             $("#countryList input").prop('checked', true);
         });
-        $("#countrySelectNone").on("click", function () {
+        $("#countrySelectNone").on("click", function() {
             $("#countryList input").prop('checked', false);
         });
 
@@ -176,12 +176,12 @@ function displayPageLabel() {
     $("#lbl_application").text(doc.getDocLabel("page_runtest", "application"));
     $("#lbl_creator").text(doc.getDocLabel("page_runtest", "creator"));
     $("#lbl_implementer").text(doc.getDocLabel("page_runtest", "implementer"));
-    $("#lbl_group").text(doc.getDocLabel("page_runtest", "group"));
+    $("#lbl_type").text(doc.getDocLabel("invariant", "Type"));
     $("#lbl_campaign").text(doc.getDocLabel("page_runtest", "campaign"));
     $("#lbl_priority").text(doc.getDocLabel("page_runtest", "priority"));
     $("#lbl_status").text(doc.getDocLabel("page_runtest", "status"));
-    $("#lbl_targetRev").text(doc.getDocLabel("page_runtest", "targetrev"));
-    $("#lbl_targetSprint").text(doc.getDocLabel("page_runtest", "targetsprint"));
+    $("#lbl_targetMinor").text(doc.getDocLabel("page_runtest", "targetMinor"));
+    $("#lbl_targetMajor").text(doc.getDocLabel("page_runtest", "targetMajor"));
     $("#lbl_size").text(doc.getDocLabel("page_runtest", "size"));
     $("input[name='envSettings'][value='auto']").next().text(doc.getDocLabel("page_runtest", "automatic"));
     $("input[name='envSettings'][value='manual']").next().text(doc.getDocLabel("page_runtest", "manual"));
@@ -253,7 +253,7 @@ function selectionManual(test, testcase, environment, country) {
 
         $("#envSettingsAuto select").prop("disabled", false).val("");
         var mysize = $("#countryList input.countrycb").length;
-        $("#countryList input.countrycb").each(function () {
+        $("#countryList input.countrycb").each(function() {
             if (($(this).attr("name") == country) || (mysize <= 1)) { // We select the the country if it is the one from the URL or if there is only 1 country.
                 $(this).prop("disabled", false).prop("checked", true);
             } else {
@@ -313,7 +313,7 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
         data: "filter=true" + getUser().defaultSystemsQuery + serialize + testURL + testCaseURL + lengthURL,
         datatype: "json",
         async: true,
-        success: function (data) {
+        success: function(data) {
 
             var testCaseList = $("#testCaseList");
             testCaseList.empty();
@@ -350,7 +350,7 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
 
 function appendCountryList(defCountry) {
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         var countryList = $("[name=countryList]");
 
         for (var index = 0; index < data.length; index++) {
@@ -381,7 +381,7 @@ function loadCampaignContent(campaign) {
             data: {campaign: campaign},
             datatype: "json",
             async: true,
-            success: function (data) {
+            success: function(data) {
 
                 var testCaseList = $("#testCaseList");
 
@@ -414,7 +414,7 @@ function loadCampaignParameter(campaign) {
             data: {campaign: campaign},
             datatype: "json",
             async: true,
-            success: function (data) {
+            success: function(data) {
                 var robot = [];
                 var env = [];
                 var countries = [];
@@ -436,7 +436,7 @@ function loadCampaignParameter(campaign) {
                 $("input[name='envSettings'][value='auto']").click();
 
                 // Country
-                $("#countryList input.countrycb").each(function () {
+                $("#countryList input.countrycb").each(function() {
                     var country = $(this).prop("name");
 
                     if (countries.indexOf(country) !== -1) {
@@ -447,7 +447,7 @@ function loadCampaignParameter(campaign) {
                 });
 
                 // Robot
-                $("#robot option").each(function () {
+                $("#robot option").each(function() {
                     var selected = false;
                     for (var index = 0; index < robot.length; index++) {
 
@@ -473,7 +473,7 @@ function loadCampaignParameter(campaign) {
             data: {campaign: campaign},
             datatype: "json",
             async: true,
-            success: function (data) {
+            success: function(data) {
                 if (data.contentTable != null) {
                     if (data.contentTable.Screenshot != null && data.contentTable.Screenshot != "") {
                         $('#screenshot option[value="' + data.contentTable.Screenshot + '"]').prop('selected', true);
@@ -548,7 +548,7 @@ function runTestCase(doRedirect) {
     var teststring = "";
     if (!fromCampaign) {
         var select = $("#testCaseList option:selected");
-        select.each(function () {
+        select.each(function() {
             var item = $(this).data("item");
             teststring += "&test=" + item.test + "&testcase=" + item.testCase;
         });
@@ -573,7 +573,7 @@ function runTestCase(doRedirect) {
     }
 
     var countriesstring = "";
-    $("#countryList .countrycb").each(function () {
+    $("#countryList .countrycb").each(function() {
         if ($(this).prop("checked")) {
             countriesstring += "&country=" + $(this).prop("name");
         }
@@ -602,8 +602,8 @@ function runTestCase(doRedirect) {
     showLoader('#page-layout');
 
     var jqxhr = $.post("AddToExecutionQueueV003", paramSerialized + teststring + environmentstring + countriesstring + robotsstring);
-    $.when(jqxhr).then(function (data) {
-        // unblock when remote call returns 
+    $.when(jqxhr).then(function(data) {
+        // unblock when remote call returns
         hideLoader('#page-layout');
         data.message = data.message.replace(/\n/g, '<br>');
         if (getAlertType(data.messageType) === "success") {
@@ -651,7 +651,7 @@ function handleAddToQueueResponse(data, doRedirect) {
 
 function appendCampaignList() {
     var jqxhr = $.getJSON("ReadCampaign");
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         var campaignList = $("#campaignSelect");
 
         campaignList.append($('<option></option>').text(""));
@@ -678,11 +678,11 @@ function loadMultiSelect(url, urlParams, selectName, textItem, valueItem) {
         data: urlParams,
         dataType: "json",
         async: true,
-        success: function (data) {
+        success: function(data) {
             var select = $("#" + selectName + "Filter");
             console.info(selectName);
             for (var index = 0; index < data.contentTable.length; index++) {
-                var text = textItem.map(function (item) {
+                var text = textItem.map(function(item) {
                     return data.contentTable[index][item];
                 }).join(" - ");
 
@@ -713,7 +713,7 @@ function loadInvariantMultiSelect(selectName, idName) {
         data: {idName: idName},
         dataType: "json",
         async: true,
-        success: function (data) {
+        success: function(data) {
             var select = $("#" + selectName + "Filter");
 
             for (var option in data) {
@@ -771,7 +771,7 @@ function loadSelect(idName, selectName, forceReload, defaultValue) {
             url: "FindInvariantByID",
             data: {idName: idName},
             async: true,
-            success: function (data) {
+            success: function(data) {
                 list = data;
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
                 for (var index = 0; index < list.length; index++) {
@@ -796,7 +796,7 @@ function loadSelect(idName, selectName, forceReload, defaultValue) {
 
 function openModalRobot_FromRunTest(robot, mode) {
     openModalRobot(robot, mode);
-    $('#editRobotModal').on("hidden.bs.modal", function (e) {
+    $('#editRobotModal').on("hidden.bs.modal", function(e) {
         $('#editRobotModal').unbind("hidden.bs.modal");
         var robotobj = $('#editRobotModal').data("robot");
         if ((!(robotobj === undefined)) && ($('#editRobotModal').data("Saved"))) {
@@ -820,7 +820,7 @@ function openModalRobot_FromRunTest(robot, mode) {
 function appendRobotList() {
     var doc = new Doc();
     var jqXHR = $.getJSON("ReadRobot");
-    $.when(jqXHR).then(function (data) {
+    $.when(jqXHR).then(function(data) {
         var robotList = $("#robotSettings #robot");
 
         robotList.append($('<option></option>').text(doc.getDocLabel("page_runtest", "custom_config")).val("CustomConfiguration"));
@@ -842,7 +842,7 @@ function loadRobotInfo(robot) {
         // We can edit Robot.
         $("#robotEdit").removeClass("disabled");
         $('#robotEdit').unbind("click");
-        $("#robotEdit").click(function (e) {
+        $("#robotEdit").click(function(e) {
             openModalRobot_FromRunTest(robot[0], "EDIT");
         });
 
@@ -852,7 +852,7 @@ function loadRobotInfo(robot) {
             data: {robot: robot[0]},
             dataType: "json",
             async: true,
-            success: function (data) {
+            success: function(data) {
                 disableRobotFields();
                 // Get Robot IP and Port from Executor.
                 var ExeHost = "No executor found...";
@@ -917,7 +917,7 @@ function loadExecForm(tag) {
             loadSelect("MANUALEXECUTION", "manualExecution", false, ""),
             loadSelect("PAGESOURCE", "PageSource", false, ""),
             loadSelect("RETRIES", "retries", false, "")
-            ).then(function () {
+            ).then(function() {
         applyExecPref(tag);
     });
 }
@@ -932,7 +932,7 @@ function loadRobotForm(browser) {
 //            $("#robotSettingsForm [name=screenSize]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default_full_screen")).val("")),
 //            loadSelect("screensize", "screenSize")
 //            $("#robotSettingsForm [name='screenSize']").autocomplete({source: getInvariantArray("SCREENSIZE", false)})
-            ).then(function () {
+            ).then(function() {
         applyRobotPref(browser);
     });
 }
@@ -1013,14 +1013,14 @@ function loadTestCaseFilterData(system) {
             loadMultiSelect("ReadUserPublic", "", "creator", ["login"], "login"),
             loadMultiSelect("ReadUserPublic", "", "implementer", ["login"], "login"),
             loadMultiSelect("ReadCampaign", "", "campaign", ["campaign"], "campaign"),
-            loadMultiSelect("ReadBuildRevisionInvariant", "level=1" + getUser().defaultSystemsQuery, "targetSprint", ["versionName"], "versionName"),
-            loadMultiSelect("ReadBuildRevisionInvariant", "level=2" + getUser().defaultSystemsQuery, "targetRev", ["versionName"], "versionName"),
+            loadMultiSelect("ReadBuildRevisionInvariant", "level=1" + getUser().defaultSystemsQuery, "targetMajor", ["versionName"], "versionName"),
+            loadMultiSelect("ReadBuildRevisionInvariant", "level=2" + getUser().defaultSystemsQuery, "targetMinor", ["versionName"], "versionName"),
             loadMultiSelect("ReadLabel", "e=1" + getUser().defaultSystemsQuery, "labelid", ["label"], "id"),
             loadInvariantMultiSelect("system", "SYSTEM"),
             loadInvariantMultiSelect("priority", "PRIORITY"),
-            loadInvariantMultiSelect("group", "GROUP"),
+            loadInvariantMultiSelect("type", "TESTCASE_TYPE"),
             loadInvariantMultiSelect("status", "TCSTATUS")
-            ).then(function () {
+            ).then(function() {
         hideLoader("#filtersPanelContainer");
     });
 }
@@ -1033,7 +1033,7 @@ function loadTestCaseEssentialData(test, testcase, environment, country, tag, br
             loadRobotForm(browser),
             loadHardDefinedSingleSelect("length", [{label: '50', value: 50}, {label: '100', value: 100}, {label: '>100', value: -1}], 0)
             )
-            .then(function () {
+            .then(function() {
                 if (doLoadManualSelection) {
                     selectionManual(test, testcase, environment, country);
                 }
@@ -1042,16 +1042,16 @@ function loadTestCaseEssentialData(test, testcase, environment, country, tag, br
 }
 //Remove the call to updateUserPreferences when no new data are loaded by the filter
 function bindToggleCollapseCustom() {
-    $(".collapse").each(function () {
+    $(".collapse").each(function() {
         if (this.id !== "sidenavbar-subnavlist") {//disable interaction with the navbar
-            $(this).on('shown.bs.collapse', function () {
+            $(this).on('shown.bs.collapse', function() {
                 localStorage.setItem(this.id, true);
                 if ($(this)[0].id != "filtersPanel")
                     updateUserPreferences();
                 $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
             });
 
-            $(this).on('hidden.bs.collapse', function () {
+            $(this).on('hidden.bs.collapse', function() {
                 localStorage.setItem(this.id, false);
                 if ($(this)[0].id != "filtersPanel")
                     updateUserPreferences();

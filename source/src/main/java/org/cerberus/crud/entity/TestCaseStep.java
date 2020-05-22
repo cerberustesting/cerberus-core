@@ -38,7 +38,7 @@ public class TestCaseStep {
     private int step;
     private int sort;
     private String loop;
-    private String conditionOper;
+    private String conditionOperator;
     private String conditionVal1;
     private String conditionVal2;
     private String conditionVal3;
@@ -211,12 +211,12 @@ public class TestCaseStep {
         this.loop = loop;
     }
 
-    public String getConditionOper() {
-        return conditionOper;
+    public String getConditionOperator() {
+        return conditionOperator;
     }
 
-    public void setConditionOper(String conditionOper) {
-        this.conditionOper = conditionOper;
+    public void setConditionOperator(String conditionOperator) {
+        this.conditionOperator = conditionOperator;
     }
 
     public String getConditionVal1() {
@@ -291,7 +291,7 @@ public class TestCaseStep {
         hash = 29 * hash + this.step;
         hash = 29 * hash + this.sort;
         hash = 29 * hash + (this.loop != null ? this.loop.hashCode() : 0);
-        hash = 29 * hash + (this.conditionOper != null ? this.conditionOper.hashCode() : 0);
+        hash = 29 * hash + (this.conditionOperator != null ? this.conditionOperator.hashCode() : 0);
         hash = 29 * hash + (this.conditionVal1 != null ? this.conditionVal1.hashCode() : 0);
         hash = 29 * hash + (this.conditionVal2 != null ? this.conditionVal2.hashCode() : 0);
         hash = 29 * hash + (this.conditionVal3 != null ? this.conditionVal3.hashCode() : 0);
@@ -328,7 +328,7 @@ public class TestCaseStep {
         if (this.loop != other.loop && (this.loop == null || !this.loop.equals(other.loop))) {
             return false;
         }
-        if (this.conditionOper != other.conditionOper && (this.conditionOper == null || !this.conditionOper.equals(other.conditionOper))) {
+        if (this.conditionOperator != other.conditionOperator && (this.conditionOperator == null || !this.conditionOperator.equals(other.conditionOperator))) {
             return false;
         }
         if (this.conditionVal1 != other.conditionVal1 && (this.conditionVal1 == null || !this.conditionVal1.equals(other.conditionVal1))) {
@@ -372,32 +372,42 @@ public class TestCaseStep {
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
-            result.put("test", this.getTest());
-            result.put("testcase", this.getTestCase());
-            result.put("step", this.getStep());
             result.put("sort", this.getSort());
-            result.put("conditionOper", this.getConditionOper());
+            result.put("stepId", this.getStep());
+            result.put("description", this.getDescription());
+            result.put("isExecutionForced", this.getForceExe());
+            result.put("loop", this.getLoop());
+            result.put("conditionOperator", this.getConditionOperator());
             result.put("conditionVal1", this.getConditionVal1());
             result.put("conditionVal2", this.getConditionVal2());
             result.put("conditionVal3", this.getConditionVal3());
-            result.put("description", this.getDescription());
-            result.put("useStep", this.getUseStep());
-            result.put("useStepTest", this.getUseStepTest());
-            result.put("useStepTestCase", this.getUseStepTestCase());
-            result.put("useStepStep", this.getUseStepStep());
-            result.put("inLibrary", this.getInLibrary());
+            result.put("isUsedStep", this.getUseStep());
+            result.put("isLibraryStep", this.getInLibrary());
+            result.put("libraryStepTest", this.getUseStepTest());
+            result.put("libraryStepTestCase", this.getUseStepTestCase());
+            result.put("libraryStepStepId", this.getUseStepStep());
+            result.put("test", this.getTest());
+            result.put("testcase", this.getTestCase());
             result.put("initialStep", this.getInitialStep());
-            result.put("loop", this.getLoop());
-            result.put("forceExe", this.getForceExe());
+            result.put("usrCreated", this.usrCreated);
+            result.put("dateCreated", this.dateCreated);
+            result.put("usrModif", this.usrModif);
+            result.put("dateModif", this.dateModif);
+
             JSONArray array = new JSONArray();
-            if (this.getTestCaseStepAction() != null) {
+
+            if (this.getTestCaseStepAction()
+                    != null) {
                 for (Object testCaseStepExecution : this.getTestCaseStepAction()) {
                     array.put(((TestCaseStepAction) testCaseStepExecution).toJson());
                 }
             }
-            result.put("testCaseStepActionList", array);
+
+            result.put(
+                    "actions", array);
         } catch (JSONException ex) {
-            Logger LOG = LogManager.getLogger(TestCaseStep.class);
+            Logger LOG = LogManager.getLogger(TestCaseStep.class
+            );
             LOG.warn(ex);
         }
         return result;

@@ -59,10 +59,10 @@ public class TestCaseStepService implements ITestCaseStepService {
     public TestCaseStep modifyTestCaseStepDataFromUsedStep(TestCaseStep masterStep) {
         if (masterStep.getUseStep().equals("Y")) {
             TestCaseStep usedStep = findTestCaseStep(masterStep.getUseStepTest(), masterStep.getUseStepTestCase(), masterStep.getUseStepStep());
-            // Copy the usedStep property to main step. Loop and conditionoper are taken from used step.
+            // Copy the usedStep property to main step. Loop and conditionOperator are taken from used step.
             if (usedStep != null) {
                 masterStep.setLoop(usedStep.getLoop());
-                masterStep.setConditionOper(usedStep.getConditionOper());
+                masterStep.setConditionOperator(usedStep.getConditionOperator());
                 masterStep.setConditionVal1(usedStep.getConditionVal1());
                 masterStep.setConditionVal2(usedStep.getConditionVal2());
                 masterStep.setConditionVal3(usedStep.getConditionVal3());

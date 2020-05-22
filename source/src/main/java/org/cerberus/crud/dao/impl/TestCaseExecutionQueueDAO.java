@@ -1089,7 +1089,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList<TestCaseExecutionQueue> readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
+    public AnswerList<TestCaseExecutionQueue> readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> tcstatusList, List<String> typeList, List<String> tcactiveList, List<String> priorityList, List<String> targetMajorList, List<String> targetMinorList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
         AnswerList<TestCaseExecutionQueue> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<TestCaseExecutionQueue> tceqList = new ArrayList<>();
@@ -1121,10 +1121,10 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             whereClauses.add(tcsClause);
         }
 
-        //group 
-        String groupClause = SqlUtil.generateInClause("tec.group", groupList);
-        if (!StringUtil.isNullOrEmpty(groupClause)) {
-            whereClauses.add(groupClause);
+        //type
+        String typeClause = SqlUtil.generateInClause("tec.type", typeList);
+        if (!StringUtil.isNullOrEmpty(typeClause)) {
+            whereClauses.add(typeClause);
         }
         //test case active
         String tcactiveClause = SqlUtil.generateInClause("tec.tcactive", tcactiveList);
@@ -1139,15 +1139,15 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         }
 
         //target sprint
-        String targetsprintClause = SqlUtil.generateInClause("tec.TargetBuild", targetsprintList);
-        if (!StringUtil.isNullOrEmpty(targetsprintClause)) {
-            whereClauses.add(targetsprintClause);
+        String targetMajorClause = SqlUtil.generateInClause("tec.TargetMajor", targetMajorList);
+        if (!StringUtil.isNullOrEmpty(targetMajorClause)) {
+            whereClauses.add(targetMajorClause);
         }
 
         //target revision
-        String targetrevisionClause = SqlUtil.generateInClause("tec.TargetRev", targetrevisionList);
-        if (!StringUtil.isNullOrEmpty(targetrevisionClause)) {
-            whereClauses.add(targetrevisionClause);
+        String targetMinorClause = SqlUtil.generateInClause("tec.TargetMinor", targetMinorList);
+        if (!StringUtil.isNullOrEmpty(targetMinorClause)) {
+            whereClauses.add(targetMinorClause);
         }
 
         //creator
@@ -1245,8 +1245,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     preStat.setString(++paramNumber, param);
                 }
             }
-            if (groupList != null) {
-                for (String param : groupList) {
+            if (typeList != null) {
+                for (String param : typeList) {
                     preStat.setString(++paramNumber, param);
                 }
             }
@@ -1261,13 +1261,13 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     preStat.setString(++paramNumber, param);
                 }
             }
-            if (targetsprintList != null) {
-                for (String param : targetsprintList) {
+            if (targetMajorList != null) {
+                for (String param : targetMajorList) {
                     preStat.setString(++paramNumber, param);
                 }
             }
-            if (targetrevisionList != null) {
-                for (String param : targetrevisionList) {
+            if (targetMinorList != null) {
+                for (String param : targetMinorList) {
                     preStat.setString(++paramNumber, param);
                 }
             }
@@ -1303,7 +1303,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     preStat.setString(++paramNumber, param);
                 }
             }
-            //browser            
+            //browser
             if (browserList != null) {
                 for (String param : browserList) {
                     preStat.setString(++paramNumber, param);

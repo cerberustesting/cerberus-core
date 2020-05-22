@@ -87,7 +87,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
          */
         if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
                 && this.checkRangeBuildRevision(tCExecution.getTestCaseObj(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision(), tCExecution.getCountryEnvParam().getSystem())
-                && this.checkTargetBuildRevision(tCExecution)
+                && this.checkTargetMajorRevision(tCExecution)
                 && this.checkActiveEnvironmentGroup(tCExecution)
                 && this.checkTestCaseActive(tCExecution.getTestCaseObj())
                 && this.checkTestActive(tCExecution.getTestObj())
@@ -139,7 +139,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
             LOG.debug("Checking if testcase is not MANUAL");
         }
 
-        if (!tCExecution.getManualExecution().equals("Y") && tCExecution.getTestCaseObj().getGroup().equals("MANUAL")) {
+        if (!tCExecution.getManualExecution().equals("Y") && tCExecution.getTestCaseObj().getType().equals("MANUAL")) {
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_ISMANUAL);
             return false;
         }
@@ -150,29 +150,29 @@ public class ExecutionCheckService implements IExecutionCheckService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if test can be executed in this build and revision");
         }
-        String tcFromSprint = ParameterParserUtil.parseStringParam(tc.getFromBuild(), "");
-        String tcToSprint = ParameterParserUtil.parseStringParam(tc.getToBuild(), "");
-        String tcFromRevision = ParameterParserUtil.parseStringParam(tc.getFromRev(), "");
-        String tcToRevision = ParameterParserUtil.parseStringParam(tc.getToRev(), "");
+        String tcFromMajor = ParameterParserUtil.parseStringParam(tc.getFromMajor(), "");
+        String tcToMajor = ParameterParserUtil.parseStringParam(tc.getToMajor(), "");
+        String tcFromMinor = ParameterParserUtil.parseStringParam(tc.getFromMinor(), "");
+        String tcToMinor = ParameterParserUtil.parseStringParam(tc.getToMinor(), "");
         String sprint = ParameterParserUtil.parseStringParam(envBuild, "");
         String revision = ParameterParserUtil.parseStringParam(envRevision, "");
         String system = envSystem;
         int dif = -1;
 
-        if (!tcFromSprint.isEmpty() && sprint != null) {
+        if (!tcFromMajor.isEmpty() && sprint != null) {
             try {
                 if (sprint.isEmpty()) {
                     message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED);
                     return false;
                 } else {
-                    dif = this.compareBuild(sprint, tcFromSprint, system);
+                    dif = this.compareBuild(sprint, tcFromMajor, system);
                 }
                 if (dif == 0) {
-                    if (!tcFromRevision.isEmpty() && revision != null) {
+                    if (!tcFromMinor.isEmpty() && revision != null) {
                         if (revision.isEmpty()) {
                             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED);
                             return false;
-                        } else if (this.compareRevision(revision, tcFromRevision, system) < 0) {
+                        } else if (this.compareRevision(revision, tcFromMinor, system) < 0) {
                             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_DIFFERENT);
                             return false;
                         }
@@ -190,20 +190,20 @@ public class ExecutionCheckService implements IExecutionCheckService {
             }
         }
 
-        if (!tcToSprint.isEmpty() && sprint != null) {
+        if (!tcToMajor.isEmpty() && sprint != null) {
             try {
                 if (sprint.isEmpty()) {
                     message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED);
                     return false;
                 } else {
-                    dif = this.compareBuild(tcToSprint, sprint, system);
+                    dif = this.compareBuild(tcToMajor, sprint, system);
                 }
                 if (dif == 0) {
-                    if (!tcToRevision.isEmpty() && revision != null) {
+                    if (!tcToMinor.isEmpty() && revision != null) {
                         if (revision.isEmpty()) {
                             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED);
                             return false;
-                        } else if (this.compareRevision(tcToRevision, revision, system) < 0) {
+                        } else if (this.compareRevision(tcToMinor, revision, system) < 0) {
                             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_DIFFERENT);
                             return false;
                         }
@@ -224,25 +224,25 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return true;
     }
 
-    private boolean checkTargetBuildRevision(TestCaseExecution tCExecution) {
+    private boolean checkTargetMajorRevision(TestCaseExecution tCExecution) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking target build");
         }
         TestCase tc = tCExecution.getTestCaseObj();
         CountryEnvParam env = tCExecution.getCountryEnvParam();
-        String tcSprint = ParameterParserUtil.parseStringParam(tc.getTargetBuild(), "");
-        String tcRevision = ParameterParserUtil.parseStringParam(tc.getTargetRev(), "");
+        String tcTargetMajor = ParameterParserUtil.parseStringParam(tc.getTargetMajor(), "");
+        String tcRevision = ParameterParserUtil.parseStringParam(tc.getTargetMinor(), "");
         String sprint = ParameterParserUtil.parseStringParam(env.getBuild(), "");
         String revision = ParameterParserUtil.parseStringParam(env.getRevision(), "");
         int dif = -1;
 
-        if (!tcSprint.isEmpty() && sprint != null) {
+        if (!tcTargetMajor.isEmpty() && sprint != null) {
             try {
                 if (sprint.isEmpty()) {
                     message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED);
                     return false;
                 } else {
-                    dif = this.compareBuild(sprint, tcSprint, env.getSystem());
+                    dif = this.compareBuild(sprint, tcTargetMajor, env.getSystem());
                 }
                 if (dif == 0) {
                     if (!tcRevision.isEmpty() && revision != null) {
@@ -407,16 +407,16 @@ public class ExecutionCheckService implements IExecutionCheckService {
 
         //if executor proxy active, check cerberus-executor is available
         if (tce.getRobotExecutorObj() != null && "Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())) {
-            
+
             //If ExecutorExtensionHost is null or empty, use the Robot Host
-            if(tce.getRobotExecutorObj().getExecutorExtensionHost() == null || tce.getRobotExecutorObj().getExecutorExtensionHost().isEmpty()){
+            if (tce.getRobotExecutorObj().getExecutorExtensionHost() == null || tce.getRobotExecutorObj().getExecutorExtensionHost().isEmpty()) {
                 tce.getRobotExecutorObj().setExecutorExtensionHost(tce.getRobotExecutorObj().getHost());
             }
-            
+
             String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/check";
             LOG.debug("Url to check Proxy Executor : " + url);
 
-            try ( InputStream is = new URL(url).openStream()) {
+            try (InputStream is = new URL(url).openStream()) {
                 BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
                 StringBuilder sb = new StringBuilder();
                 int cp;

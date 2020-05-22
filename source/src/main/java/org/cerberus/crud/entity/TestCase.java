@@ -39,27 +39,27 @@ public class TestCase {
     private String application;
     private String ticket;
     private String description;
-    private String behaviorOrValueExpected;
+    private String detailedDescription;
     private int priority;
-    private int testCaseVersion;
+    private int version;
     private String status;
     private String tcActive;
-    private String conditionOper;
+    private String conditionOperator;
     private String conditionVal1;
     private String conditionVal2;
     private String conditionVal3;
-    private String group;
+    private String type;
     private String origine;
     private String refOrigine;
     private String howTo;
     private String comment;
-    private String fromBuild;
-    private String fromRev;
-    private String toBuild;
-    private String toRev;
+    private String fromMajor;
+    private String fromMinor;
+    private String toMajor;
+    private String toMinor;
     private JSONArray bugID;
-    private String targetBuild;
-    private String targetRev;
+    private String targetMajor;
+    private String targetMinor;
     private String implementer;
     private String executor;
     private String activeQA;
@@ -85,9 +85,9 @@ public class TestCase {
     private List<TestCaseLabel> testCaseLabel;
     private List<TestCaseDep> testCaseDep;
 
-    public static final String GROUP_MANUAL = "MANUAL";
-    public static final String GROUP_AUTOMATED = "AUTOMATED";
-    public static final String GROUP_PRIVATE = "PRIVATE";
+    public static final String TESTCASE_TYPE_MANUAL = "MANUAL";
+    public static final String TESTCASE_TYPE_AUTOMATED = "AUTOMATED";
+    public static final String TESTCASE_TYPE_PRIVATE = "PRIVATE";
 
     private static final Logger LOG = LogManager.getLogger(TestCase.class);
 
@@ -147,12 +147,12 @@ public class TestCase {
         this.tcActive = active;
     }
 
-    public String getConditionOper() {
-        return conditionOper;
+    public String getConditionOperator() {
+        return conditionOperator;
     }
 
-    public void setConditionOper(String conditionOper) {
-        this.conditionOper = conditionOper;
+    public void setConditionOperator(String conditionOperator) {
+        this.conditionOperator = conditionOperator;
     }
 
     public String getConditionVal1() {
@@ -236,36 +236,36 @@ public class TestCase {
         this.usrCreated = creator;
     }
 
-    public String getBehaviorOrValueExpected() {
-        return behaviorOrValueExpected;
+    public String getDetailledDescription() {
+        return detailedDescription;
     }
 
-    public void setBehaviorOrValueExpected(String behaviorOrValuexpected) {
-        this.behaviorOrValueExpected = behaviorOrValuexpected;
+    public void setDetailedDescription(String detailedDescription) {
+        this.detailedDescription = detailedDescription;
     }
 
-    public String getFromRev() {
-        return fromRev;
+    public String getFromMinor() {
+        return fromMinor;
     }
 
-    public void setFromRev(String fromRevision) {
-        this.fromRev = fromRevision;
+    public void setFromMinor(String fromMinor) {
+        this.fromMinor = fromMinor;
     }
 
-    public String getFromBuild() {
-        return fromBuild;
+    public String getFromMajor() {
+        return fromMajor;
     }
 
-    public void setFromBuild(String fromSprint) {
-        this.fromBuild = fromSprint;
+    public void setFromMajor(String fromMajor) {
+        this.fromMajor = fromMajor;
     }
 
-    public String getGroup() {
-        return group;
+    public String getType() {
+        return type;
     }
 
-    public void setGroup(String group) {
-        this.group = group;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getHowTo() {
@@ -364,20 +364,20 @@ public class TestCase {
         this.status = status;
     }
 
-    public String getTargetRev() {
-        return targetRev;
+    public String getTargetMinor() {
+        return targetMinor;
     }
 
-    public void setTargetRev(String targetRevision) {
-        this.targetRev = targetRevision;
+    public void setTargetMinor(String targetMinor) {
+        this.targetMinor = targetMinor;
     }
 
-    public String getTargetBuild() {
-        return targetBuild;
+    public String getTargetMajor() {
+        return targetMajor;
     }
 
-    public void setTargetBuild(String targetSprint) {
-        this.targetBuild = targetSprint;
+    public void setTargetMajor(String targetMajor) {
+        this.targetMajor = targetMajor;
     }
 
     public String getTest() {
@@ -420,20 +420,20 @@ public class TestCase {
         this.ticket = ticket;
     }
 
-    public String getToRev() {
-        return toRev;
+    public String getToMinor() {
+        return toMinor;
     }
 
-    public void setToRev(String toRevision) {
-        this.toRev = toRevision;
+    public void setToMinor(String toMinor) {
+        this.toMinor = toMinor;
     }
 
-    public String getToBuild() {
-        return toBuild;
+    public String getToMajor() {
+        return toMajor;
     }
 
-    public void setToBuild(String toSprint) {
-        this.toBuild = toSprint;
+    public void setToMajor(String toMajor) {
+        this.toMajor = toMajor;
     }
 
     public List<TestCaseLabel> getTestCaseLabel() {
@@ -468,12 +468,12 @@ public class TestCase {
         this.dateModif = dateModif;
     }
 
-    public int getTestCaseVersion() {
-        return testCaseVersion;
+    public int getVersion() {
+        return version;
     }
 
-    public void setTestCaseVersion(int testCaseVersion) {
-        this.testCaseVersion = testCaseVersion;
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     public JSONObject toJson() {
@@ -482,40 +482,43 @@ public class TestCase {
             result.put("test", this.getTest());
             result.put("testcase", this.getTestCase());
             result.put("application", this.getApplication());
-            result.put("description", this.getDescription());
-            result.put("behaviourOrValueExpected", this.getBehaviorOrValueExpected());
-            result.put("priority", this.getPriority());
             result.put("status", this.getStatus());
-            result.put("tcActive", this.getTcActive());
-            result.put("conditionOper", this.getConditionOper());
+            result.put("type", this.getType());
+            result.put("priority", this.getPriority());
+            result.put("description", this.getDescription());
+            result.put("detailledDescription", this.getDetailledDescription());
+            result.put("howTo", this.getHowTo());
+            result.put("isActive", this.getTcActive());
+            result.put("isActiveQA", this.getActiveQA());
+            result.put("isActiveUAT", this.getActiveUAT());
+            result.put("isActivePROD", this.getActivePROD());
+            result.put("fromMajor", this.getFromMajor());
+            result.put("toMajor", this.getToMajor());
+            result.put("targetMajor", this.getTargetMajor());
+            result.put("fromMinor", this.getFromMinor());
+            result.put("toMinor", this.getToMinor());
+            result.put("targetMinor", this.getTargetMinor());
+            result.put("conditionOperator", this.getConditionOperator());
             result.put("conditionValue1", this.getConditionVal1());
             result.put("conditionValue2", this.getConditionVal2());
             result.put("conditionValue3", this.getConditionVal3());
-            result.put("group", this.getGroup());
-            result.put("origine", this.getOrigine());
-            result.put("refOrigine", this.getRefOrigine());
-            result.put("howTo", this.getHowTo());
-            result.put("comment", this.getComment());
-            result.put("fromBuild", this.getFromBuild());
-            result.put("fromRev", this.getFromRev());
-            result.put("toBuild", this.getToBuild());
-            result.put("toRev", this.getToRev());
-            result.put("bugId", this.getBugID());
-            result.put("targetBuild", this.getTargetBuild());
-            result.put("targetRev", this.getTargetRev());
-            result.put("implementer", this.getImplementer());
-            result.put("executor", this.getExecutor());
-            result.put("activeQA", this.getActiveQA());
-            result.put("activeUAT", this.getActiveUAT());
-            result.put("activePROD", this.getActivePROD());
-            result.put("function", this.getFunction());
             result.put("usrAgent", this.getUserAgent());
             result.put("screenSize", this.getScreenSize());
-            result.put("usrCreated", this.getUsrCreated());
+            result.put("bugs", this.getBugID());
+            result.put("comment", this.getComment());
+            result.put("implementer", this.getImplementer());
+            result.put("executor", this.getExecutor());
+            result.put("version", this.getVersion());
             result.put("dateCreated", this.getDateCreated());
-            result.put("usrModif", this.getUsrModif());
+            result.put("usrCreated", this.getUsrCreated());
             result.put("dateModif", this.getDateModif());
-            result.put("testCaseVersion", this.getTestCaseVersion());
+            result.put("usrModif", this.getUsrModif());
+            result.put("origine", this.getOrigine());
+            result.put("refOrigine", this.getRefOrigine());
+
+            // [WIP] To delete !!!
+            result.put("function", this.getFunction());
+
             JSONArray array = new JSONArray();
             if (this.getTestCaseStep() != null) {
                 for (Object testCaseStepList : this.getTestCaseStep()) {

@@ -60,7 +60,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class GetTestCase extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(GetTestCase.class);
-    
+
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         try {
@@ -92,7 +92,7 @@ public class GetTestCase extends HttpServlet {
                 jsonObject.put("runUAT", tcInfo.getActiveUAT());
                 jsonObject.put("runPROD", tcInfo.getActivePROD());
                 jsonObject.put("priority", tcInfo.getPriority());
-                jsonObject.put("group", tcInfo.getGroup());
+                jsonObject.put("group", tcInfo.getType());
                 jsonObject.put("status", tcInfo.getStatus());
                 JSONArray countryList = new JSONArray();
                 for (TestCaseCountry tcc : tcInfo.getTestCaseCountry()) {
@@ -100,17 +100,17 @@ public class GetTestCase extends HttpServlet {
                 }
                 jsonObject.put("countriesList", countryList);
                 jsonObject.put("shortDescription", tcInfo.getDescription());
-                jsonObject.put("description", tcInfo.getBehaviorOrValueExpected());
+                jsonObject.put("description", tcInfo.getDetailledDescription());
                 jsonObject.put("howTo", tcInfo.getHowTo());
                 jsonObject.put("active", tcInfo.getTcActive());
-                jsonObject.put("fromSprint", tcInfo.getFromBuild());
-                jsonObject.put("fromRevision", tcInfo.getFromRev());
-                jsonObject.put("toSprint", tcInfo.getToBuild());
-                jsonObject.put("toRevision", tcInfo.getToRev());
+                jsonObject.put("fromMajor", tcInfo.getFromMajor());
+                jsonObject.put("fromMinor", tcInfo.getFromMinor());
+                jsonObject.put("toMajor", tcInfo.getToMajor());
+                jsonObject.put("toMinor", tcInfo.getToMinor());
                 jsonObject.put("lastExecutionStatus", tcInfo.getLastExecutionStatus());
                 jsonObject.put("bugID", tcInfo.getBugID());
-                jsonObject.put("targetSprint", tcInfo.getTargetBuild());
-                jsonObject.put("targetRevision", tcInfo.getTargetRev());
+                jsonObject.put("targetMajor", tcInfo.getTargetMajor());
+                jsonObject.put("targetMinor", tcInfo.getTargetMinor());
                 jsonObject.put("comment", tcInfo.getComment());
                 jsonObject.put("test", tcInfo.getTest());
                 jsonObject.put("testcase", tcInfo.getTestCase());

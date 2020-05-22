@@ -700,7 +700,7 @@ public class ReadTestCaseExecution extends HttpServlet {
              */
             default:
                 String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-                String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+                String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,detailledDescription,readonly,bugtrackernewurl,deploytype,mavengroupid");
                 String columnToSort[] = sColumns.split(",");
 
                 List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));

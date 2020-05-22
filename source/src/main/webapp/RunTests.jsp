@@ -19,7 +19,7 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%-- 
+<%--
     Document   : RunTests1
     Created on : 14 oct. 2015, 16:07:31
     Author     : cerberus
@@ -109,9 +109,9 @@
                                 </div>
                                 <div class="panel-body collapse defaultNotExpanded" id="filtersPanel">
                                     <form id="filters">
-                                        <div class="row">                                    
+                                        <div class="row">
                                             <div class="form-group col-xs-2">
-                                                <label id="lbl_test" for="testFilter">Test</label>                                     
+                                                <label id="lbl_test" for="testFilter">Test</label>
                                                 <select class="multiselectelement form-control" multiple="multiple" id="testFilter"></select>
                                             </div>
                                             <div class="form-group col-xs-2">
@@ -119,7 +119,7 @@
                                                 <select class="multiselectelement form-control" multiple="multiple" id="labelidFilter"></select>
                                             </div>
                                             <div class="form-group col-xs-2">
-                                                <label id="lbl_status" for="statusFilter">Status</label>                                     
+                                                <label id="lbl_status" for="statusFilter">Status</label>
                                                 <select class="multiselectelement form-control" multiple="multiple" id="statusFilter"></select>
                                             </div>
                                             <div class="form-group col-xs-2">
@@ -131,8 +131,8 @@
                                                 <select class="multiselectelement form-control" multiple="" id="implementerFilter"></select>
                                             </div>
                                             <div class="form-group col-xs-2">
-                                                <label id="lbl_group" for="groupFilter">Group</label>                                     
-                                                <select class="multiselectelement form-control" multiple="multiple" id="groupFilter"></select>
+                                                <label id="lbl_type" for="typeFilter">Type</label>
+                                                <select class="multiselectelement form-control" multiple="multiple" id="typeFilter"></select>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -149,17 +149,17 @@
                                                 <select class="multiselectelement form-control" multiple="" id="applicationFilter"></select>
                                             </div>
                                             <div class="form-group col-xs-2">
-                                                <i><label id="lbl_targetSprint" for="targetSprintFilter">Target Build</label></i>                                  
-                                                <select class="multiselectelement form-control" multiple="multiple" id="targetSprintFilter"></select>
+                                                <i><label id="lbl_targetMajor" for="targetMajorFilter">Target Major</label></i>
+                                                <select class="multiselectelement form-control" multiple="multiple" id="targetMajorFilter"></select>
                                             </div>
                                             <div class="form-group col-xs-2">
-                                                <i><label id="lbl_targetRev" for="targetRevFilter">Target Revision</label></i>
-                                                <select class="multiselectelement form-control" multiple="multiple" id="targetRevFilter"></select>
+                                                <i><label id="lbl_targetMinor" for="targetMinorFilter">Target Minor</label></i>
+                                                <select class="multiselectelement form-control" multiple="multiple" id="targetMinorFilter"></select>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="form-group col-xs-2">
-                                                <label id="lbl_campaign" for="campaignFilter">Campaign</label>                                     
+                                                <label id="lbl_campaign" for="campaignFilter">Campaign</label>
                                                 <select class="multiselectelement form-control" multiple="multiple" id="campaignFilter"></select>
                                             </div>
                                             <div class="form-group col-xs-2">
