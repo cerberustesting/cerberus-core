@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -43,7 +42,6 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ITestCaseExecutionHttpStatService;
@@ -52,12 +50,8 @@ import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.har.entity.HarStat;
-import org.cerberus.service.har.entity.HarStat.Types;
-import org.cerberus.service.har.entity.HarStat.Units;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
@@ -77,8 +71,8 @@ public class ReadExecutionStat extends HttpServlet {
 
     private ITestCaseExecutionHttpStatService testCaseExecutionHttpStatService;
     private IFactoryTestCase factoryTestCase;
-    private IApplicationService applicationService;
     private ITestCaseService testCaseService;
+    private IApplicationService applicationService;
     private ITestCaseExecutionService testCaseExecutionService;
 
     private static final Logger LOG = LogManager.getLogger(ReadExecutionStat.class);
@@ -173,17 +167,25 @@ public class ReadExecutionStat extends HttpServlet {
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem<JSONObject> answer = new AnswerItem<>(msg);
 
-        // get all TestCase Execution Data.
+        // Map of countries, Environments and RobotDeclis (Boolean contains true if requested to be displayed).
         HashMap<String, Boolean> countryMap = new HashMap<>();
         HashMap<String, Boolean> environmentMap = new HashMap<>();
         HashMap<String, Boolean> robotDecliMap = new HashMap<>();
-        testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
+        HashMap<String, Boolean> systemMap = new HashMap<>();
+        HashMap<String, TestCase> testCaseMap = new HashMap<>();
+        HashMap<String, Boolean> applicationMap = new HashMap<>();
 
+        testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         List<TestCaseExecution> exeL = testCaseExecutionService.readByCriteria(null, null, null, null, ltc, fromD, toD);
         for (TestCaseExecution exe : exeL) {
             countryMap.put(exe.getCountry(), countries.contains(exe.getCountry()));
             environmentMap.put(exe.getEnvironment(), environments.contains(exe.getEnvironment()));
             robotDecliMap.put(exe.getRobotDecli(), robotDeclis.contains(exe.getRobotDecli()));
+
+            testCaseMap.put(exe.getTest() + "/\\" + exe.getTestCase(), factoryTestCase.create(exe.getTest(), exe.getTestCase()));
+            systemMap.put(exe.getSystem(), true);
+            applicationMap.put(exe.getApplication(), true);
+
         }
         LOG.debug(countryMap);
         LOG.debug(environmentMap);
@@ -191,21 +193,31 @@ public class ReadExecutionStat extends HttpServlet {
 
         try {
 
-            JSONObject jsonResponse1 = new JSONObject();
-            answer = findExeStatList(appContext, request, exeL, countries, environments, robotDeclis);
-            jsonResponse1 = (JSONObject) answer.getItem();
-
             JSONObject jsonResponse = new JSONObject();
-            answer = findPerfStatList(appContext, request, system, ltc, fromD, toD, parties, types, units, countryMap, countries, countriesDefined, environmentMap, environments, environmentsDefined, robotDecliMap, robotDeclis, robotDeclisDefined);
+            testCaseExecutionHttpStatService = appContext.getBean(ITestCaseExecutionHttpStatService.class);
+            answer = testCaseExecutionHttpStatService.readByCriteria("OK", ltc, fromD, toD, system, countries, environments, robotDeclis, parties, types, units);
             jsonResponse = (JSONObject) answer.getItem();
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
             jsonResponse.put("sEcho", echo);
 
+            JSONObject jsonResponse1 = new JSONObject();
+            answer = findExeStatList(appContext, request, exeL, countries, environments, robotDeclis);
+            jsonResponse1 = (JSONObject) answer.getItem();
+
             jsonResponse.put("datasetExeTime", jsonResponse1.getJSONArray("curvesTime"));
             jsonResponse.put("datasetExeStatusNb", jsonResponse1.getJSONArray("curvesNb"));
             jsonResponse.put("datasetExeStatusNbDates", jsonResponse1.getJSONArray("curvesDatesNb"));
+
+            JSONObject objectdist = getAllDistinct(countryMap, systemMap, testCaseMap, applicationMap, environmentMap, robotDecliMap, countriesDefined, environmentsDefined, robotDeclisDefined);
+            objectdist.put("units", jsonResponse.getJSONArray("distinctUnits"));
+            objectdist.put("types", jsonResponse.getJSONArray("distinctTypes"));
+            objectdist.put("parties", jsonResponse.getJSONArray("distinctParties"));
+            jsonResponse.remove("distinctUnits");
+            jsonResponse.remove("distinctTypes");
+            jsonResponse.remove("distinctParties");
+            jsonResponse.put("distinct", objectdist);
 
             response.getWriter().print(jsonResponse.toString());
 
@@ -379,162 +391,6 @@ public class ReadExecutionStat extends HttpServlet {
         return item;
     }
 
-    private AnswerItem<JSONObject> findPerfStatList(ApplicationContext appContext, HttpServletRequest request,
-            List<String> system, List<TestCase> ltc, Date from, Date to,
-            List<String> parties, List<String> types, List<String> units,
-            HashMap<String, Boolean> countryMap, List<String> countries, Boolean countriesDefined,
-            HashMap<String, Boolean> environmentMap, List<String> environments, Boolean environmentsDefined,
-            HashMap<String, Boolean> robotDecliMap, List<String> robotDeclis, Boolean robotDeclisDefined
-    ) throws JSONException {
-
-        AnswerItem<JSONObject> item = new AnswerItem<>();
-        JSONObject object = new JSONObject();
-        testCaseExecutionHttpStatService = appContext.getBean(ITestCaseExecutionHttpStatService.class);
-        applicationService = appContext.getBean(IApplicationService.class);
-        testCaseService = appContext.getBean(ITestCaseService.class);
-        factoryTestCase = appContext.getBean(IFactoryTestCase.class);
-
-        HashMap<String, JSONArray> curveMap = new HashMap<>();
-        HashMap<String, JSONObject> curveObjMap = new HashMap<>();
-
-        // Filter Map
-        HashMap<String, TestCase> testCaseMap = new HashMap<>();
-        HashMap<String, Boolean> systemMap = new HashMap<>();
-        HashMap<String, Boolean> applicationMap = new HashMap<>();
-        // Indicator Map
-        HashMap<String, Boolean> partyMap = new HashMap<>();
-        partyMap.put("total", false);
-        partyMap.put("internal", false);
-        HashMap<String, Boolean> typeMap = new HashMap<>();
-        HashMap<String, Boolean> unitMap = new HashMap<>();
-
-        String curveKey;
-        JSONArray curArray = new JSONArray();
-        JSONObject curveObj = new JSONObject();
-        JSONObject pointObj = new JSONObject();
-
-        AnswerList<TestCaseExecutionHttpStat> resp = testCaseExecutionHttpStatService.readByCriteria("OK", ltc, from, to, system, countries, environments, robotDeclis);
-
-        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            List<TestCaseExecutionHttpStat> tcList = (List<TestCaseExecutionHttpStat>) resp.getDataList();
-            for (TestCaseExecutionHttpStat statCur : tcList) {
-
-                if (statCur.getStatDetail().has("thirdparty")) {
-
-                    // Get List of Third Party
-                    JSONObject partiesA = statCur.getStatDetail().getJSONObject("thirdparty");
-                    Iterator<String> jsonObjectIterator = partiesA.keys();
-                    jsonObjectIterator.forEachRemaining(key -> {
-                        partyMap.put(key, false);
-                    });
-
-                    if (!countryMap.containsKey(statCur.getCountry())) {
-                        countryMap.put(statCur.getCountry(), false);
-                    }
-                    if (!systemMap.containsKey(statCur.getSystem())) {
-                        systemMap.put(statCur.getSystem(), false);
-                    }
-                    if (!applicationMap.containsKey(statCur.getApplication())) {
-                        applicationMap.put(statCur.getApplication(), false);
-                    }
-                    if (!environmentMap.containsKey(statCur.getEnvironment())) {
-                        environmentMap.put(statCur.getEnvironment(), false);
-                    }
-                    if (!robotDecliMap.containsKey(statCur.getRobotDecli())) {
-                        robotDecliMap.put(statCur.getRobotDecli(), false);
-                    }
-
-                    for (String party : parties) {
-                        for (String type : types) {
-                            for (String unit : units) {
-                                curveKey = getKeyCurve(statCur, party, type, unit);
-                                int x = getValue(statCur, party, type, unit);
-//                            LOG.debug("return : " + x);
-                                if (x != -1) {
-                                    testCaseMap.put(statCur.getTest() + "/\\" + statCur.getTestCase(), factoryTestCase.create(statCur.getTest(), statCur.getTestCase()));
-                                    countryMap.put(statCur.getCountry(), true);
-                                    systemMap.put(statCur.getSystem(), true);
-                                    applicationMap.put(statCur.getApplication(), true);
-                                    environmentMap.put(statCur.getEnvironment(), true);
-                                    robotDecliMap.put(statCur.getRobotDecli(), true);
-                                    partyMap.put(party, true);
-                                    typeMap.put(type, true);
-                                    unitMap.put(unit, true);
-
-                                    pointObj = new JSONObject();
-                                    Date d = new Date(statCur.getStart().getTime());
-                                    TimeZone tz = TimeZone.getTimeZone("UTC");
-                                    DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-                                    df.setTimeZone(tz);
-                                    pointObj.put("x", df.format(d));
-
-                                    pointObj.put("y", x);
-                                    pointObj.put("exe", statCur.getId());
-                                    pointObj.put("exeControlStatus", statCur.getControlStatus());
-
-                                    if (curveMap.containsKey(curveKey)) {
-                                        curArray = curveMap.get(curveKey);
-                                    } else {
-                                        curArray = new JSONArray();
-
-                                        curveObj = new JSONObject();
-                                        curveObj.put("key", curveKey);
-                                        TestCase a = factoryTestCase.create(statCur.getTest(), statCur.getTestCase());
-                                        try {
-                                            a = testCaseService.convert(testCaseService.readByKey(statCur.getTest(), statCur.getTestCase()));
-                                        } catch (CerberusException ex) {
-                                            LOG.error("Exception when getting TestCase details", ex);
-                                        }
-                                        curveObj.put("testcase", a.toJson());
-
-                                        curveObj.put("country", statCur.getCountry());
-                                        curveObj.put("environment", statCur.getEnvironment());
-                                        curveObj.put("robotdecli", statCur.getRobotDecli());
-                                        curveObj.put("system", statCur.getSystem());
-                                        curveObj.put("application", statCur.getApplication());
-                                        curveObj.put("unit", unit);
-                                        curveObj.put("party", party);
-                                        curveObj.put("type", type);
-
-                                        curveObjMap.put(curveKey, curveObj);
-                                    }
-                                    curArray.put(pointObj);
-                                    curveMap.put(curveKey, curArray);
-
-                                }
-
-                            }
-                        }
-
-                    }
-                }
-
-            }
-            object.put("hasPerfdata", (tcList.size() > 0));
-        }
-
-        JSONArray curvesArray = new JSONArray();
-        for (Map.Entry<String, JSONObject> entry : curveObjMap.entrySet()) {
-            String key = entry.getKey();
-            JSONObject val = entry.getValue();
-            JSONObject localcur = new JSONObject();
-            localcur.put("key", val);
-            localcur.put("points", curveMap.get(key));
-            curvesArray.put(localcur);
-        }
-        object.put("datasetPerf", curvesArray);
-
-        JSONObject objectdist = getAllDistinct(countryMap, systemMap, testCaseMap, applicationMap, environmentMap, robotDecliMap, partyMap, typeMap, unitMap, parties, types, units, countriesDefined, environmentsDefined, robotDeclisDefined);
-        object.put("distinct", objectdist);
-
-        object.put("iTotalRecords", resp.getTotalRows());
-        object.put("iTotalDisplayRecords", resp.getTotalRows());
-
-        item.setItem(object);
-        item.setResultMessage(resp.getResultMessage());
-        return item;
-    }
-
     private JSONObject getAllDistinct(
             HashMap<String, Boolean> countryMap,
             HashMap<String, Boolean> systemMap,
@@ -542,12 +398,6 @@ public class ReadExecutionStat extends HttpServlet {
             HashMap<String, Boolean> applicationMap,
             HashMap<String, Boolean> environmentMap,
             HashMap<String, Boolean> robotDecliMap,
-            HashMap<String, Boolean> partyMap,
-            HashMap<String, Boolean> typeMap,
-            HashMap<String, Boolean> unitMap,
-            List<String> parties,
-            List<String> types,
-            List<String> units,
             Boolean countriesDefined,
             Boolean environmentsDefined,
             Boolean robotDeclisDefined) throws JSONException {
@@ -634,227 +484,7 @@ public class ReadExecutionStat extends HttpServlet {
         }
         objectdist.put("robotDeclis", objectdinst);
 
-        objectdinst = new JSONArray();
-        for (Units v : HarStat.Units.values()) {
-            JSONObject objectcount = new JSONObject();
-            objectcount.put("name", v.name().toLowerCase());
-            objectcount.put("hasData", unitMap.containsKey(v.name().toLowerCase()));
-            objectcount.put("isRequested", units.contains(v.name().toLowerCase()));
-            objectdinst.put(objectcount);
-        }
-        objectdist.put("units", objectdinst);
-
-        objectdinst = new JSONArray();
-        for (Types v : HarStat.Types.values()) {
-            JSONObject objectcount = new JSONObject();
-            objectcount.put("name", v.name().toLowerCase());
-            objectcount.put("hasData", typeMap.containsKey(v.name().toLowerCase()));
-            objectcount.put("isRequested", types.contains(v.name().toLowerCase()));
-            objectdinst.put(objectcount);
-        }
-        objectdist.put("types", objectdinst);
-
-        objectdinst = new JSONArray();
-        for (Map.Entry<String, Boolean> entry : partyMap.entrySet()) {
-            String key = entry.getKey();
-            Boolean val = entry.getValue();
-            JSONObject objectcount = new JSONObject();
-            objectcount.put("name", key);
-            objectcount.put("hasData", val);
-            objectcount.put("isRequested", parties.contains(key));
-            objectdinst.put(objectcount);
-        }
-        objectdist.put("parties", objectdinst);
-
         return objectdist;
-    }
-
-    private int getValue(TestCaseExecutionHttpStat stat, String party, String type, String unit) {
-//        LOG.debug("Start : " + stat.getId() + " | " + party + " - " + type + " - " + unit);
-        try {
-            switch (party) {
-                case "internal":
-                    switch (type) {
-                        case "content":
-                        case "css":
-                        case "font":
-                        case "html":
-                        case "img":
-                        case "js":
-                        case "media":
-                        case "other":
-                            switch (unit) {
-                                case "request":
-                                    return stat.getStatDetail().getJSONObject("internal").getJSONObject("type").getJSONObject(type).getInt("requests");
-                                case "totalsize":
-                                    return stat.getStatDetail().getJSONObject("internal").getJSONObject("type").getJSONObject(type).getInt("sizeSum");
-                                case "sizemax":
-                                    return stat.getStatDetail().getJSONObject("internal").getJSONObject("type").getJSONObject(type).getInt("sizeMax");
-                                default:
-                                    break;
-                            }
-                            break;
-                        case "total":
-                            switch (unit) {
-                                case "request":
-                                    return stat.getInternal_hits();
-                                case "totalsize":
-                                    return stat.getInternal_size();
-                                case "totaltime":
-                                    return stat.getInternal_time();
-                                case "timemax":
-                                    return stat.getStatDetail().getJSONObject("internal").getJSONObject("time").getInt("max");
-                                default:
-                                    break;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case "total":
-                    switch (type) {
-                        case "content":
-                        case "font":
-                        case "other":
-                            switch (unit) {
-                                case "request":
-                                    return stat.getStatDetail().getJSONObject("total").getJSONObject("type").getJSONObject(type).getInt("requests");
-                                case "totalsize":
-                                    return stat.getStatDetail().getJSONObject("total").getJSONObject("type").getJSONObject(type).getInt("sizeSum");
-                                case "sizemax":
-                                    return stat.getStatDetail().getJSONObject("total").getJSONObject("type").getJSONObject(type).getInt("sizeMax");
-                                default:
-                                    break;
-                            }
-                            break;
-                        case "img":
-                            switch (unit) {
-                                case "request":
-                                    return stat.getImg_hits();
-                                case "totalsize":
-                                    return stat.getImg_size();
-                                case "sizemax":
-                                    return stat.getImg_size_max();
-                                default:
-                                    break;
-                            }
-                            break;
-                        case "js":
-                            switch (unit) {
-                                case "request":
-                                    return stat.getJs_hits();
-                                case "totalsize":
-                                    return stat.getJs_size();
-                                case "sizemax":
-                                    return stat.getJs_size_max();
-                                default:
-                                    break;
-                            }
-                            break;
-                        case "css":
-                            switch (unit) {
-                                case "request":
-                                    return stat.getCss_hits();
-                                case "totalsize":
-                                    return stat.getCss_size();
-                                case "sizemax":
-                                    return stat.getCss_size_max();
-                                default:
-                                    break;
-                            }
-                            break;
-                        case "html":
-                            switch (unit) {
-                                case "request":
-                                    return stat.getHtml_hits();
-                                case "totalsize":
-                                    return stat.getHtml_size();
-                                case "sizemax":
-                                    return stat.getHtml_size_max();
-                                default:
-                                    break;
-                            }
-                            break;
-                        case "media":
-                            switch (unit) {
-                                case "request":
-                                    return stat.getMedia_hits();
-                                case "totalsize":
-                                    return stat.getMedia_size();
-                                case "sizemax":
-                                    return stat.getMedia_size_max();
-                                default:
-                                    break;
-                            }
-                            break;
-                        case "total":
-                            switch (unit) {
-                                case "request":
-                                    return stat.getTotal_hits();
-                                case "totalsize":
-                                    return stat.getTotal_size();
-                                case "totaltime":
-                                    return stat.getTotal_time();
-                                case "timemax":
-                                    return stat.getStatDetail().getJSONObject("total").getJSONObject("time").getInt("max");
-                                case "nbthirdparty":
-                                    return stat.getStatDetail().getInt("nbThirdParty");
-                                default:
-                                    break;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                default: // For Third Paries.
-                    switch (type) {
-                        case "content":
-                        case "css":
-                        case "font":
-                        case "html":
-                        case "img":
-                        case "js":
-                        case "media":
-                        case "other":
-                            switch (unit) {
-                                case "request":
-                                    return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("type").getJSONObject(type).getInt("requests");
-                                case "totalsize":
-                                    return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("type").getJSONObject(type).getInt("sizeSum");
-                                case "sizemax":
-                                    return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("type").getJSONObject(type).getInt("sizeMax");
-                                default:
-                                    break;
-                            }
-                            break;
-                        case "total":
-                            switch (unit) {
-                                case "request":
-                                    return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("requests").getInt("nb");
-                                case "totalsize":
-                                    return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("size").getInt("sum");
-                                case "sizemax":
-                                    return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("size").getInt("max");
-                                case "totaltime":
-                                    return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("time").getInt("totalDuration");
-                                case "timemax":
-                                    return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("time").getInt("max");
-                                default:
-                                    break;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-            }
-            return -1;
-        } catch (JSONException ex) {
-            LOG.debug("Start : " + stat.getId() + " | " + party + " - " + type + " - " + unit + " - " + ex.toString());
-            return -1;
-        }
     }
 
     private JSONObject convertApplicationToJSONObject(Application app) throws JSONException {
@@ -862,10 +492,6 @@ public class ReadExecutionStat extends HttpServlet {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(app));
         return result;
-    }
-
-    private String getKeyCurve(TestCaseExecutionHttpStat stat, String party, String type, String unit) {
-        return type + "/" + party + "/" + unit + "/" + stat.getTest() + "/" + stat.getTestCase() + "/" + stat.getCountry() + "/" + stat.getEnvironment() + "/" + stat.getRobotDecli() + "/" + stat.getSystem() + "/" + stat.getApplication();
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

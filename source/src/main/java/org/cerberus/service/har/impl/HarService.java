@@ -34,6 +34,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.exception.CerberusException;
@@ -701,6 +702,195 @@ public class HarService implements IHarService {
         }
 
         return "other";
+    }
+
+    @Override
+    public int getValue(TestCaseExecutionHttpStat stat, String party, String type, String unit) {
+//        LOG.debug("Start : " + stat.getId() + " | " + party + " - " + type + " - " + unit);
+        try {
+            switch (party) {
+                case "internal":
+                    switch (type) {
+                        case "content":
+                        case "css":
+                        case "font":
+                        case "html":
+                        case "img":
+                        case "js":
+                        case "media":
+                        case "other":
+                            switch (unit) {
+                                case "request":
+                                    return stat.getStatDetail().getJSONObject("internal").getJSONObject("type").getJSONObject(type).getInt("requests");
+                                case "totalsize":
+                                    return stat.getStatDetail().getJSONObject("internal").getJSONObject("type").getJSONObject(type).getInt("sizeSum");
+                                case "sizemax":
+                                    return stat.getStatDetail().getJSONObject("internal").getJSONObject("type").getJSONObject(type).getInt("sizeMax");
+                                default:
+                                    break;
+                            }
+                            break;
+                        case "total":
+                            switch (unit) {
+                                case "request":
+                                    return stat.getInternal_hits();
+                                case "totalsize":
+                                    return stat.getInternal_size();
+                                case "totaltime":
+                                    return stat.getInternal_time();
+                                case "timemax":
+                                    return stat.getStatDetail().getJSONObject("internal").getJSONObject("time").getInt("max");
+                                default:
+                                    break;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "total":
+                    switch (type) {
+                        case "content":
+                        case "font":
+                        case "other":
+                            switch (unit) {
+                                case "request":
+                                    return stat.getStatDetail().getJSONObject("total").getJSONObject("type").getJSONObject(type).getInt("requests");
+                                case "totalsize":
+                                    return stat.getStatDetail().getJSONObject("total").getJSONObject("type").getJSONObject(type).getInt("sizeSum");
+                                case "sizemax":
+                                    return stat.getStatDetail().getJSONObject("total").getJSONObject("type").getJSONObject(type).getInt("sizeMax");
+                                default:
+                                    break;
+                            }
+                            break;
+                        case "img":
+                            switch (unit) {
+                                case "request":
+                                    return stat.getImg_hits();
+                                case "totalsize":
+                                    return stat.getImg_size();
+                                case "sizemax":
+                                    return stat.getImg_size_max();
+                                default:
+                                    break;
+                            }
+                            break;
+                        case "js":
+                            switch (unit) {
+                                case "request":
+                                    return stat.getJs_hits();
+                                case "totalsize":
+                                    return stat.getJs_size();
+                                case "sizemax":
+                                    return stat.getJs_size_max();
+                                default:
+                                    break;
+                            }
+                            break;
+                        case "css":
+                            switch (unit) {
+                                case "request":
+                                    return stat.getCss_hits();
+                                case "totalsize":
+                                    return stat.getCss_size();
+                                case "sizemax":
+                                    return stat.getCss_size_max();
+                                default:
+                                    break;
+                            }
+                            break;
+                        case "html":
+                            switch (unit) {
+                                case "request":
+                                    return stat.getHtml_hits();
+                                case "totalsize":
+                                    return stat.getHtml_size();
+                                case "sizemax":
+                                    return stat.getHtml_size_max();
+                                default:
+                                    break;
+                            }
+                            break;
+                        case "media":
+                            switch (unit) {
+                                case "request":
+                                    return stat.getMedia_hits();
+                                case "totalsize":
+                                    return stat.getMedia_size();
+                                case "sizemax":
+                                    return stat.getMedia_size_max();
+                                default:
+                                    break;
+                            }
+                            break;
+                        case "total":
+                            switch (unit) {
+                                case "request":
+                                    return stat.getTotal_hits();
+                                case "totalsize":
+                                    return stat.getTotal_size();
+                                case "totaltime":
+                                    return stat.getTotal_time();
+                                case "timemax":
+                                    return stat.getStatDetail().getJSONObject("total").getJSONObject("time").getInt("max");
+                                case "nbthirdparty":
+                                    return stat.getStatDetail().getInt("nbThirdParty");
+                                default:
+                                    break;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default: // For Third Paries.
+                    switch (type) {
+                        case "content":
+                        case "css":
+                        case "font":
+                        case "html":
+                        case "img":
+                        case "js":
+                        case "media":
+                        case "other":
+                            switch (unit) {
+                                case "request":
+                                    return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("type").getJSONObject(type).getInt("requests");
+                                case "totalsize":
+                                    return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("type").getJSONObject(type).getInt("sizeSum");
+                                case "sizemax":
+                                    return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("type").getJSONObject(type).getInt("sizeMax");
+                                default:
+                                    break;
+                            }
+                            break;
+                        case "total":
+                            switch (unit) {
+                                case "request":
+                                    return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("requests").getInt("nb");
+                                case "totalsize":
+                                    return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("size").getInt("sum");
+                                case "sizemax":
+                                    return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("size").getInt("max");
+                                case "totaltime":
+                                    return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("time").getInt("totalDuration");
+                                case "timemax":
+                                    return stat.getStatDetail().getJSONObject("thirdparty").getJSONObject(party).getJSONObject("time").getInt("max");
+                                default:
+                                    break;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+            }
+            return -1;
+        } catch (JSONException ex) {
+            LOG.debug("Start : " + stat.getId() + " | " + party + " - " + type + " - " + unit + " - " + ex.toString());
+            return -1;
+        }
     }
 
 }

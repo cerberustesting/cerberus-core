@@ -30,6 +30,7 @@ import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.json.JSONObject;
 
 /**
  * Interface that defines the public methods to manage Application data on table
@@ -68,6 +69,24 @@ public interface ITestCaseExecutionHttpStatDAO {
      * @return
      */
     AnswerList<TestCaseExecutionHttpStat> readByCriteria(String controlStatus, List<TestCase> testcases, Date from, Date to, List<String> system, List<String> countries, List<String> environments, List<String> robotDecli);
+
+    /**
+     *
+     * @param controlStatus
+     * @param testcases
+     * @param from
+     * @param to
+     * @param system
+     * @param countries
+     * @param environments
+     * @param robotDecli
+     * @param parties
+     * @param types
+     * @param units
+     * @return
+     */
+    AnswerItem<JSONObject> readByCriteria(String controlStatus, List<TestCase> testcases, Date from, Date to, List<String> system, List<String> countries, List<String> environments, List<String> robotDecli,
+             List<String> parties, List<String> types, List<String> units);
 
     /**
      * Uses data of ResultSet to create object {@link Application}

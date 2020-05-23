@@ -590,8 +590,8 @@ function buildGraphs(data) {
             backgroundColor: get_Color_fromindex(i),
             hoverBackgroundColor: get_Color_fromindex(i),
             borderColor: get_Color_fromindex(i),
-            pointRadius: 10,
-            pointHoverRadius: 15,
+            pointRadius: 2,
+            pointHoverRadius: 5,
             hitRadius: 10,
             fill: false,
             data: d
@@ -672,8 +672,8 @@ function buildExeGraphs(data) {
                 var value = d.dataset.data[index];
                 return getExeStatusRowColor(value.controlStatus);
             },
-            pointRadius: 10,
-            pointHoverRadius: 15,
+            pointRadius: 4,
+            pointHoverRadius: 6,
             hitRadius: 10,
             fill: false,
             data: d

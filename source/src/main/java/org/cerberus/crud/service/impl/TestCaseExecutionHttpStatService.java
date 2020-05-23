@@ -77,6 +77,12 @@ public class TestCaseExecutionHttpStatService implements ITestCaseExecutionHttpS
     }
 
     @Override
+    public AnswerItem<JSONObject> readByCriteria(String controlStatus, List<TestCase> testcases, Date from, Date to, List<String> system, List<String> countries, List<String> environments, List<String> robotDecli,
+            List<String> parties, List<String> types, List<String> units) {
+        return testCaseExecutionHttpStatDAO.readByCriteria(controlStatus, testcases, from, to, system, countries, environments, robotDecli, parties, types, units);
+    }
+
+    @Override
     public AnswerItem<TestCaseExecutionHttpStat> convertFromHarWithStat(TestCaseExecution tce, JSONObject har) {
         AnswerItem<TestCaseExecutionHttpStat> res = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -112,7 +118,7 @@ public class TestCaseExecutionHttpStatService implements ITestCaseExecutionHttpS
             return res;
         } catch (JSONException ex) {
             msg.resolveDescription("DESCRIPTION", ex.getMessage());
-            LOG.error("Exception building HttpStat from Har JSON and execution.",ex);
+            LOG.error("Exception building HttpStat from Har JSON and execution.", ex);
         }
         return res;
     }

@@ -75,6 +75,24 @@ public interface ITestCaseExecutionHttpStatService {
 
     /**
      *
+     * @param controlStatus
+     * @param testcases
+     * @param from
+     * @param to
+     * @param system
+     * @param countries
+     * @param environments
+     * @param robotDecli
+     * @param parties
+     * @param types
+     * @param units
+     * @return
+     */
+    AnswerItem<JSONObject> readByCriteria(String controlStatus, List<TestCase> testcases, Date from, Date to, List<String> system, List<String> countries, List<String> environments, List<String> robotDecli,
+            List<String> parties, List<String> types, List<String> units);
+
+    /**
+     *
      * @param answerItem
      * @return
      * @throws CerberusException
