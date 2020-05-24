@@ -19,11 +19,9 @@
  */
 /* global handleErrorAjaxAfterTimeout */
 // ChartJS Config Graphs
-var configRequests = {};
-var configSize = {};
-var configTime = {};
-var configParty = {};
-var configTcTime = {};
+var configTagDur = {};
+var configTagSco = {};
+var configTagExe = {};
 var configTcBar = {};
 // Counters of different countries, env and robotdecli (used to shorten the labels)
 var nbCountries = 0;
@@ -35,8 +33,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         initPage();
         bindToggleCollapse();
-        var urlTest = GetURLParameter('Test');
-        var urlTestCase = GetURLParameter('TestCase');
         //open Run navbar Menu
         openNavbarMenu("navMenuExecutionReporting");
         $('[data-toggle="popover"]').popover({
@@ -59,13 +55,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
         });
 
 
-        var tests = GetURLParameters("tests");
-        var testcases = GetURLParameters("testcases");
+        var campaigns = GetURLParameters("campaigns");
         var from = GetURLParameter("from");
         var to = GetURLParameter("to");
-        var parties = GetURLParameters("parties");
-        var types = GetURLParameters("types");
-        var units = GetURLParameters("units");
         var environments = GetURLParameters("environments");
         var countries = GetURLParameters("countries");
         var robotDeclis = GetURLParameters("robotDeclis");
@@ -86,43 +78,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $('#frompicker').data("DateTimePicker").date(moment(fromD));
         $('#topicker').data("DateTimePicker").date(moment(toD));
 
-
-
-        $("#testSelect").empty();
-        $("#testCaseSelect").empty();
-
-        $("#testSelect").bind("change", function (event) {
-            feedPerfTestCase($(this).val(), "#testCaseSelect");
-        });
-
-        $("#testCaseSelect").select2({width: "100%"});
-
-
-        var jqxhr = $.getJSON("ReadTest", "");
-        $.when(jqxhr).then(function (data) {
-            var testList = $("#testSelect");
-
-            for (var index = 0; index < data.contentTable.length; index++) {
-                testList.append($('<option></option>').text(data.contentTable[index].test).val(data.contentTable[index].test));
-            }
-            $("#testSelect").prop("value", tests[0]);
-
-            $("#testSelect").select2({width: "100%"});
-
-            feedPerfTestCase(tests[0], "#testCaseSelect", testcases, parties, types, units, countries, environments, robotDeclis);
-
-        });
-
-
-        var select = $("#parties");
-        select.multiselect(new multiSelectConfPerf("parties"));
-
-        var select = $("#types");
-        select.multiselect(new multiSelectConfPerf("types"));
-
-        var select = $("#units");
-        select.multiselect(new multiSelectConfPerf("units"));
-
+        $("#campaignSelect").empty();
+        $("#campaignSelect").select2({width: "100%"});
+        feedPerfCampaign("#campaignSelect", campaigns, countries, environments, robotDeclis);
 
     });
 });
@@ -141,32 +99,26 @@ function multiSelectConfPerf(name) {
 
 /***
  * Feed the TestCase select with all the testcase from test defined.
- * @param {String} test - test in order to filter the testcase values.
  * @param {String} selectElement - id of select to refresh.
- * @param {String} defaultTestCases - id of testcase to select.
- * @param {String} types 
- * @param {String} units 
- * @param {String} countries 
- * @param {String} environments 
- * @param {String} robotDeclis 
- * @param {String} parties 
+ * @param {String} defaultCampaigns - id of testcase to select.
  * @returns {null}
  */
-function feedPerfTestCase(test, selectElement, defaultTestCases, parties, types, units, countries, environments, robotDeclis) {
+function feedPerfCampaign(selectElement, defaultCampaigns, countries, environments, robotDeclis) {
     showLoader($("#otFilterPanel"));
 
-    var testCList = $(selectElement);
-    testCList.empty();
+    var campaignList = $(selectElement);
+    campaignList.empty();
 
-    var jqxhr = $.getJSON("ReadTestCase", "test=" + test);
+    var jqxhr = $.getJSON("ReadCampaign");
     $.when(jqxhr).then(function (data) {
-
         for (var index = 0; index < data.contentTable.length; index++) {
-            testCList.append($('<option></option>').text(data.contentTable[index].testCase + " - " + data.contentTable[index].description).val(data.contentTable[index].testCase));
+            campaignList.append($('<option></option>').text(data.contentTable[index].campaign + " - " + data.contentTable[index].description).val(data.contentTable[index].campaign));
         }
-        $('#testCaseSelect').val(defaultTestCases);
-        $('#testCaseSelect').trigger('change');
-        loadPerfGraph(false, parties, types, units, countries, environments, robotDeclis);
+        $('#campaignSelect').val(defaultCampaigns);
+        $('#campaignSelect').trigger('change');
+        loadPerfGraph(false, countries, environments, robotDeclis)
+        hideLoader($("#otFilterPanel"));
+
     });
 }
 
@@ -195,18 +147,9 @@ function displayPageLabel(doc) {
     $("#lblTestStatBar").html(doc.getDocLabel("page_reportovertime", "lblTestStatBar"));
 }
 
-function loadPerfGraph(saveURLtoHistory, parties, types, units, countries, environments, robotDeclis) {
+function loadPerfGraph(saveURLtoHistory, countries, environments, robotDeclis) {
     showLoader($("#otFilterPanel"));
 
-    if (parties === null || parties === undefined) {
-        parties = [];
-    }
-    if (types === null || types === undefined) {
-        types = [];
-    }
-    if (units === null || units === undefined) {
-        units = [];
-    }
     if (countries === null || countries === undefined) {
         countries = [];
     }
@@ -220,18 +163,6 @@ function loadPerfGraph(saveURLtoHistory, parties, types, units, countries, envir
     let from = new Date($('#frompicker').data("DateTimePicker").date());
 
     let to = new Date($('#topicker').data("DateTimePicker").date());
-
-    if ($("#parties").val() !== null) {
-        parties = $("#parties").val();
-    }
-
-    if ($("#types").val() !== null) {
-        types = $("#types").val();
-    }
-
-    if ($("#units").val() !== null) {
-        units = $("#units").val();
-    }
 
     if ($("#countrySelect").val() !== null) {
         countries = $("#countrySelect").val();
@@ -260,34 +191,14 @@ function loadPerfGraph(saveURLtoHistory, parties, types, units, countries, envir
         robotDeclisQ += "&robotDeclis=" + encodeURI(robotDeclis[i]);
     }
 
-    len = parties.length;
-    var partiQ = "";
-    for (var i = 0; i < len; i++) {
-        partiQ += "&parties=" + encodeURI(parties[i]);
-    }
-
-    len = types.length;
-    var typeQ = "";
-    for (var i = 0; i < len; i++) {
-        typeQ += "&types=" + encodeURI(types[i]);
-    }
-
-    len = units.length;
-    var unitQ = "";
-    for (var i = 0; i < len; i++) {
-        unitQ += "&units=" + encodeURI(units[i]);
-    }
-
-    let test = $("#testSelect").val();
-    let testcase = $("#testCaseSelect").val();
-    var tcString = "";
-    if ($("#testCaseSelect").val() !== null) {
-        for (var i = 0; i < $("#testCaseSelect").val().length; i++) {
-            var tcString = tcString + "&tests=" + encodeURI(test) + "&testcases=" + encodeURI($("#testCaseSelect").val()[i]);
+    var campaignString = "";
+    if ($("#campaignSelect").val() !== null) {
+        for (var i = 0; i < $("#campaignSelect").val().length; i++) {
+            var campaignString = campaignString + "&campaigns=" + encodeURI($("#campaignSelect").val()[i]);
         }
     }
 
-    let qS = "campaigns=WebPerf&from=" + from.toISOString() + "&to=" + to.toISOString(); //+ countriesQ + environmentsQ + robotDeclisQ + partiQ + typeQ + unitQ + tcString;
+    let qS = "from=" + from.toISOString() + "&to=" + to.toISOString() + campaignString; //+ countriesQ + environmentsQ + robotDeclisQ + partiQ + typeQ + unitQ + tcString;
     if (saveURLtoHistory) {
         InsertURLInHistory("./ReportingCampaignOverTime.jsp?" + qS);
     }
@@ -300,10 +211,9 @@ function loadPerfGraph(saveURLtoHistory, parties, types, units, countries, envir
         success: function (data) {
             if (data.messageType === "OK") {
                 updateNbDistinct(data.distinct);
-//            buildGraphs(data);
-                buildExeGraphs(data);
-//            buildExeBarGraphs(data);
                 loadCombos(data);
+                buildTagGraphs(data);
+//            buildExeBarGraphs(data);
             }
             hideLoader($("#otFilterPanel"));
         }
@@ -358,55 +268,6 @@ function setTimeRange(id) {
 }
 
 function loadCombos(data) {
-
-//    if (data.hasPerfdata) {
-//        $("#perfFilters").show();
-//    } else {
-//        $("#perfFilters").hide();
-//    }
-//    var select = $("#parties");
-//    select.multiselect('destroy');
-//    var array = data.distinct.parties;
-//    $("#parties option").remove();
-//    for (var i = 0; i < array.length; i++) {
-//        $("#parties").append($('<option></option>').text(array[i].name).val(array[i].name));
-//    }
-//    for (var i = 0; i < array.length; i++) {
-//        if (array[i].isRequested) {
-//            $("#parties option[value='" + array[i].name + "']").attr("selected", "selected");
-//        }
-//    }
-//    select.multiselect(new multiSelectConfPerf("parties"));
-//
-//
-//    var select = $("#types");
-//    select.multiselect('destroy');
-//    var array = data.distinct.types;
-//    $("#types option").remove();
-//    for (var i = 0; i < array.length; i++) {
-//        $("#types").append($('<option></option>').text(array[i].name).val(array[i].name));
-//    }
-//    for (var i = 0; i < array.length; i++) {
-//        if (array[i].isRequested) {
-//            $("#types option[value='" + array[i].name + "']").attr("selected", "selected");
-//        }
-//    }
-//    select.multiselect(new multiSelectConfPerf("types"));
-//
-//
-//    var select = $("#units");
-//    select.multiselect('destroy');
-//    var array = data.distinct.units;
-//    $("#units option").remove();
-//    for (var i = 0; i < array.length; i++) {
-//        $("#units").append($('<option></option>').text(array[i].name).val(array[i].name));
-//    }
-//    for (var i = 0; i < array.length; i++) {
-//        if (array[i].isRequested) {
-//            $("#units option[value='" + array[i].name + "']").attr("selected", "selected");
-//        }
-//    }
-//    select.multiselect(new multiSelectConfPerf("units"));
 
     var select = $("#countrySelect");
     select.multiselect('destroy');
@@ -479,7 +340,7 @@ function getOptions(title, unit) {
                     if (unit === "size") {
                         return xLabel + ': ' + formatNumber(Math.round(t.yLabel / 1024)) + " kb";
                     } else if (unit === "time") {
-                        return xLabel + ': ' + t.yLabel.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1 ") + " ms";
+                        return xLabel + ': ' + t.yLabel.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1 ") + " min";
                     } else {
                         return xLabel + ': ' + t.yLabel;
                     }
@@ -561,87 +422,7 @@ function formatNumber(num) {
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
 }
 
-function buildGraphs(data) {
-
-    let curves = data.datasetPerf;
-
-    // Sorting values by nb of requests.
-    sortedCurves = curves.sort(function (a, b) {
-        let a1 = a.key.testcase.test + "-" + a.key.testcase.testcase + "-" + a.key.unit + "-" + a.key.party + "-" + a.key.type;
-        let b1 = b.key.testcase.test + "-" + b.key.testcase.testcase + "-" + b.key.unit + "-" + b.key.party + "-" + b.key.type;
-        return b1.localeCompare(a1);
-    });
-
-    var len = sortedCurves.length;
-
-    let reqdatasets = [];
-    let sizedatasets = [];
-    let timedatasets = [];
-    let partydatasets = [];
-
-    for (var i = 0; i < len; i++) {
-
-        let c = sortedCurves[i];
-        let d = [];
-        lend = c.points.length;
-        for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe};
-            d.push(p);
-        }
-        let lab = getLabel(c.key.testcase.description, c.key.country, c.key.environment, c.key.robotdecli, c.key.unit, c.key.party, c.key.type, c.key.testcase.testcase);
-        var dataset = {
-            label: lab,
-            backgroundColor: get_Color_fromindex(i),
-            borderColor: get_Color_fromindex(i),
-            pointRadius: 10,
-            pointHoverRadius: 15,
-            hitRadius: 10,
-            fill: false,
-            data: d
-        };
-        if ((c.key.unit === "totalsize") || (c.key.unit === "sizemax")) {
-            sizedatasets.push(dataset);
-        } else if ((c.key.unit === "totaltime") || (c.key.unit === "timemax")) {
-            timedatasets.push(dataset);
-        } else if (c.key.unit === "nbthirdparty") {
-            partydatasets.push(dataset);
-        } else {
-            reqdatasets.push(dataset);
-        }
-    }
-
-    if (reqdatasets.length > 0) {
-        $("#panelPerfRequests").show();
-    } else {
-        $("#panelPerfRequests").hide();
-    }
-    if (sizedatasets.length > 0) {
-        $("#panelPerfSize").show();
-    } else {
-        $("#panelPerfSize").hide();
-    }
-    if (timedatasets.length > 0) {
-        $("#panelPerfTime").show();
-    } else {
-        $("#panelPerfTime").hide();
-    }
-    if (partydatasets.length > 0) {
-        $("#panelPerfParty").show();
-    } else {
-        $("#panelPerfParty").hide();
-    }
-    configRequests.data.datasets = reqdatasets;
-    configSize.data.datasets = sizedatasets;
-    configTime.data.datasets = timedatasets;
-    configParty.data.datasets = partydatasets;
-
-    window.myLineReq.update();
-    window.myLineSize.update();
-    window.myLineTime.update();
-    window.myLineParty.update();
-}
-
-function buildExeGraphs(data) {
+function buildTagGraphs(data) {
 
     let curves = data.curvesTime;
 
@@ -655,18 +436,40 @@ function buildExeGraphs(data) {
     var len = sortedCurves.length;
 
     let timedatasets = [];
+    let cidatasets = [];
+    let exedatasets = [];
 
     for (var i = 0; i < len; i++) {
 
         let c = sortedCurves[i];
-        let d = [];
+        let d1 = [];
+        let d2a = [];
+        let d2b = [];
+        let d3a = [];
+        let d3b = [];
         lend = c.points.length;
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus};
-            d.push(p);
+            let p = {x: c.points[j].x, y: c.points[j].y, tag: c.points[j].tag, ciResult: c.points[j].ciRes};
+            d1.push(p);
+        }
+        for (var j = 0; j < lend; j++) {
+            let p = {x: c.points[j].x, y: c.points[j].ciSc, tag: c.points[j].tag, ciResult: c.points[j].ciRes};
+            d2a.push(p);
+        }
+        for (var j = 0; j < lend; j++) {
+            let p = {x: c.points[j].x, y: c.points[j].ciScT, tag: c.points[j].tag};
+            d2b.push(p);
+        }
+        for (var j = 0; j < lend; j++) {
+            let p = {x: c.points[j].x, y: c.points[j].nbExeU, tag: c.points[j].tag, ciResult: c.points[j].ciRes};
+            d3a.push(p);
+        }
+        for (var j = 0; j < lend; j++) {
+            let p = {x: c.points[j].x, y: c.points[j].nbExe, tag: c.points[j].tag};
+            d3b.push(p);
         }
         let lab = getLabel("c.key.testcase.description", c.key.country, c.key.environment, c.key.robotdecli, undefined, undefined, undefined, c.key.campaign);
-        var dataset = {
+        var dataset1 = {
             label: lab,
             backgroundColor: "white",
             borderColor: get_Color_fromindex(i),
@@ -675,23 +478,97 @@ function buildExeGraphs(data) {
                 var value = d.dataset.data[index];
                 return getExeStatusRowColor(value.ciResult);
             },
-            pointRadius: 10,
-            pointHoverRadius: 15,
+            pointRadius: 4,
+            pointHoverRadius: 6,
             hitRadius: 10,
             fill: false,
-            data: d
+            data: d1
         };
-        timedatasets.push(dataset);
+        var dataset2a = {
+            label: lab,
+            backgroundColor: "white",
+            borderColor: get_Color_fromindex(i),
+            pointBackgroundColor: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                return getExeStatusRowColor(value.ciResult);
+            },
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            hitRadius: 10,
+            fill: false,
+            data: d2a
+        };
+        var dataset2b = {
+            label: lab + " Threshold",
+            backgroundColor: "white",
+            borderColor: get_Color_fromindex(i),
+            pointBackgroundColor: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                return getExeStatusRowColor(value.ciResult);
+            },
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            hitRadius: 10,
+            pointStyle: 'line',
+            fill: false,
+            data: d2b
+        };
+        var dataset3a = {
+            label: lab + " Useful",
+            backgroundColor: "white",
+            borderColor: get_Color_fromindex(i),
+            pointBackgroundColor: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                return getExeStatusRowColor(value.ciResult);
+            },
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            hitRadius: 10,
+            fill: false,
+            data: d3a
+        };
+        var dataset3b = {
+            label: lab + " Total",
+            backgroundColor: "white",
+            borderColor: get_Color_fromindex(i),
+            pointBackgroundColor: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                return getExeStatusRowColor(value.ciResult);
+            },
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            hitRadius: 10,
+            pointStyle: 'line',
+            fill: false,
+            data: d3b
+        };
+        timedatasets.push(dataset1);
+        cidatasets.push(dataset2a);
+        cidatasets.push(dataset2b);
+        exedatasets.push(dataset3a);
+        exedatasets.push(dataset3b);
     }
 
     if (timedatasets.length > 0) {
-        $("#panelTestStat").show();
+        $("#panelTagDStat").show();
+        $("#panelTagSStat").show();
+        $("#panelTagEStat").show();
     } else {
-        $("#panelTestStat").hide();
+        $("#panelTagDStat").hide();
+        $("#panelTagSStat").hide();
+        $("#panelTagEStat").hide();
     }
-    configTcTime.data.datasets = timedatasets;
+    configTagDur.data.datasets = timedatasets;
+    configTagSco.data.datasets = cidatasets;
+    configTagExe.data.datasets = exedatasets;
 
-    window.myLineTcTime.update();
+    window.myLineTagDur.update();
+    window.myLineTagSco.update();
+    window.myLineTagExe.update();
 }
 
 function buildExeBarGraphs(data) {
@@ -780,54 +657,36 @@ function getLabel(tcDesc, country, env, robot, unit, party, type, testcaseid) {
 
 function initGraph() {
 
-//    var reqoption = getOptions("Requests", "request");
-//    var sizeoption = getOptions("Size in kb", "size");
-//    var timeoption = getOptions("Time in ms", "time");
-//    var partyoption = getOptions("nb Third Party", "nbthirdparty");
-    var tctimeoption = getOptions("Campaign Duration", "time");
+    var tagduroption = getOptions("Campaign Duration (min)", "time");
+    var tagscooption = getOptions("Campaign CI Score", "score");
+    var tagexeoption = getOptions("Campaign Executions", "nb");
 //    var tcbaroption = getOptionsBar("Test Case Duration", "nb");
 
-//    let reqdatasets = [];
-//    let sizedatasets = [];
-//    let timedatasets = [];
-//    let partydatasets = [];
-    let tctimedatasets = [];
+    let tagdurdatasets = [];
+    let tagscodatasets = [];
+    let tagexedatasets = [];
 //    let tcbardatasets = [];
 
-//    configRequests = {
-//        type: 'line',
-//        data: {
-//            datasets: reqdatasets
-//        },
-//        options: reqoption
-//    };
-//    configSize = {
-//        type: 'line',
-//        data: {
-//            datasets: sizedatasets
-//        },
-//        options: sizeoption
-//    };
-//    configTime = {
-//        type: 'line',
-//        data: {
-//            datasets: timedatasets
-//        },
-//        options: timeoption
-//    };
-//    configParty = {
-//        type: 'line',
-//        data: {
-//            datasets: partydatasets
-//        },
-//        options: partyoption
-//    };
-    configTcTime = {
+    configTagDur = {
         type: 'line',
         data: {
-            datasets: tctimedatasets
+            datasets: tagdurdatasets
         },
-        options: tctimeoption
+        options: tagduroption
+    };
+    configTagSco = {
+        type: 'line',
+        data: {
+            datasets: tagscodatasets
+        },
+        options: tagscooption
+    };
+    configTagExe = {
+        type: 'line',
+        data: {
+            datasets: tagexedatasets
+        },
+        options: tagexeoption
     };
 //    configTcBar = {
 //        type: 'bar',
@@ -837,68 +696,43 @@ function initGraph() {
 //        options: tcbaroption
 //    };
 
-//    var ctx = document.getElementById('canvasRequests').getContext('2d');
-//    window.myLineReq = new Chart(ctx, configRequests);
-//
-//    var ctx = document.getElementById('canvasSize').getContext('2d');
-//    window.myLineSize = new Chart(ctx, configSize);
-//
-//    var ctx = document.getElementById('canvasTime').getContext('2d');
-//    window.myLineTime = new Chart(ctx, configTime);
-//
-//    var ctx = document.getElementById('canvasParty').getContext('2d');
-//    window.myLineParty = new Chart(ctx, configParty);
+    var ctx = document.getElementById('canvasTagDStat').getContext('2d');
+    window.myLineTagDur = new Chart(ctx, configTagDur);
 
-    var ctx = document.getElementById('canvasTestStat').getContext('2d');
-    window.myLineTcTime = new Chart(ctx, configTcTime);
+    var ctx = document.getElementById('canvasTagSStat').getContext('2d');
+    window.myLineTagSco = new Chart(ctx, configTagSco);
+
+    var ctx = document.getElementById('canvasTagEStat').getContext('2d');
+    window.myLineTagExe = new Chart(ctx, configTagExe);
 
 //    var ctx = document.getElementById('canvasTestStatBar').getContext('2d');
 //    window.myLineTcBar = new Chart(ctx, configTcBar);
 
+    document.getElementById('canvasTagDStat').onclick = function (evt) {
+        var activePoints = window.myLineTagDur.getElementAtEvent(event);
+        // make sure click was on an actual point
+        if (activePoints.length > 0) {
+            let tag = window.myLineTagDur.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].tag;
+            window.open('./ReportingExecutionByTag.jsp?Tag=' + tag, '_blank');
+        }
+    };
 
-//    document.getElementById('canvasRequests').onclick = function (evt) {
-//        var activePoints = window.myLineReq.getElementAtEvent(event);
-//        // make sure click was on an actual point
-//        if (activePoints.length > 0) {
-//            let exe = window.myLineReq.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
-//            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
-//        }
-//    };
-//
-//    document.getElementById('canvasSize').onclick = function (evt) {
-//        var activePoints = window.myLineSize.getElementAtEvent(event);
-//        // make sure click was on an actual point
-//        if (activePoints.length > 0) {
-//            let exe = window.myLineSize.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
-//            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
-//        }
-//    };
-//
-//    document.getElementById('canvasTime').onclick = function (evt) {
-//        var activePoints = window.myLineTime.getElementAtEvent(event);
-//        // make sure click was on an actual point
-//        if (activePoints.length > 0) {
-//            let exe = window.myLineTime.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
-//            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
-//        }
-//    };
-//
-//    document.getElementById('canvasParty').onclick = function (evt) {
-//        var activePoints = window.myLineParty.getElementAtEvent(event);
-//        // make sure click was on an actual point
-//        if (activePoints.length > 0) {
-//            let exe = window.myLineParty.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
-//            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
-//        }
-//    };
-//
-//    document.getElementById('canvasTestStat').onclick = function (evt) {
-//        var activePoints = window.myLineTcTime.getElementAtEvent(event);
-//        // make sure click was on an actual point
-//        if (activePoints.length > 0) {
-//            let exe = window.myLineTcTime.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
-//            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
-//        }
-//    };
+    document.getElementById('canvasTagSStat').onclick = function (evt) {
+        var activePoints = window.myLineTagSco.getElementAtEvent(event);
+        // make sure click was on an actual point
+        if (activePoints.length > 0) {
+            let tag = window.myLineTagSco.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].tag;
+            window.open('./ReportingExecutionByTag.jsp?Tag=' + tag, '_blank');
+        }
+    };
+
+    document.getElementById('canvasTagEStat').onclick = function (evt) {
+        var activePoints = window.myLineTagExe.getElementAtEvent(event);
+        // make sure click was on an actual point
+        if (activePoints.length > 0) {
+            let tag = window.myLineTagExe.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].tag;
+            window.open('./ReportingExecutionByTag.jsp?Tag=' + tag, '_blank');
+        }
+    };
 
 }

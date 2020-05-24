@@ -138,11 +138,6 @@ public class ReadTagStat extends HttpServlet {
         List<String> campaigns = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("campaigns"), new ArrayList<String>(), "UTF8");
         int i = 0;
 
-//        List<String> parties = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("parties"), Arrays.asList("total"), "UTF8");
-//
-//        List<String> types = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("types"), Arrays.asList("total"), "UTF8");
-//
-//        List<String> units = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("units"), Arrays.asList("request", "totalsize"), "UTF8");
         List<String> countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("countries"), new ArrayList<String>(), "UTF8");
         Boolean countriesDefined = (request.getParameterValues("countries") != null);
 
@@ -156,7 +151,6 @@ public class ReadTagStat extends HttpServlet {
         List<String> group2s = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("group2s"), new ArrayList<String>(), "UTF8");
         List<String> group3s = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("group3s"), new ArrayList<String>(), "UTF8");
 
-        
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem<JSONObject> answer = new AnswerItem<>(msg);
 
@@ -167,7 +161,7 @@ public class ReadTagStat extends HttpServlet {
         tagService = appContext.getBean(ITagService.class);
 
 //        List<TestCaseExecution> exeL = testCaseExecutionService.readByCriteria(null, null, null, null, ltc, fromD, toD);
-        List<Tag> tagExeL = tagService.convert(tagService.readByVarious(campaigns,group1s, group2s, group3s, environments, countries, robotDeclis, fromD, toD));
+        List<Tag> tagExeL = tagService.convert(tagService.readByVarious(campaigns, group1s, group2s, group3s, environments, countries, robotDeclis, fromD, toD));
         for (Tag tagExe : tagExeL) {
             if (tagExe.getCountryList() != null) {
                 countryMap.put(tagExe.getCountryList(), countries.contains(tagExe.getCountryList()));
@@ -189,8 +183,8 @@ public class ReadTagStat extends HttpServlet {
             answer = findExeStatList(appContext, request, tagExeL, countryMap, countries, countriesDefined, environmentMap, environments, environmentsDefined, robotDecliMap, robotDeclis, robotDeclisDefined);
             jsonResponse = (JSONObject) answer.getItem();
 
-//            jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
-//            jsonResponse.put("message", answer.getResultMessage().getDescription());
+            jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+            jsonResponse.put("message", answer.getResultMessage().getDescription());
             jsonResponse.put("sEcho", echo);
 
             response.getWriter().print(jsonResponse.toString());
@@ -208,7 +202,10 @@ public class ReadTagStat extends HttpServlet {
             HashMap<String, Boolean> environmentMap, List<String> environments, Boolean environmentsDefined,
             HashMap<String, Boolean> robotDecliMap, List<String> robotDeclis, Boolean robotDeclisDefined) throws JSONException {
 
-        AnswerItem<JSONObject> item = new AnswerItem<>();
+        // Default message to unexpected error.
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        msg.setDescription(msg.getDescription().replace("%ITEM%", "Tag").replace("%OPERATION%", "Read"));
+        AnswerItem<JSONObject> item = new AnswerItem<>(msg);
         JSONObject object = new JSONObject();
         testCaseExecutionHttpStatService = appContext.getBean(ITestCaseExecutionHttpStatService.class);
         applicationService = appContext.getBean(IApplicationService.class);
@@ -242,8 +239,9 @@ public class ReadTagStat extends HttpServlet {
                 curveKey = exeCur.getCampaign() + "|" + exeCur.getCountryList() + "|" + exeCur.getEnvironmentList() + "|" + exeCur.getRobotDecliList() + "|";
 
                 long y = 0;
+                long ymin = 0;
                 y = exeCur.getDateEndQueue().getTime() - exeCur.getDateCreated().getTime();
-                y = y / 1000;
+                ymin = y / 60000;
 
                 if (!countryMap.containsKey(exeCur.getCountryList())) {
                     countryMap.put(exeCur.getCountryList(), false);
@@ -268,9 +266,13 @@ public class ReadTagStat extends HttpServlet {
 //                    df.setTimeZone(tz);
                     pointObj.put("x", df.format(d));
 
-                    pointObj.put("y", y);
+                    pointObj.put("y", ymin);
                     pointObj.put("tag", exeCur.getTag());
-                    pointObj.put("ciResult", exeCur.getCiResult());
+                    pointObj.put("ciRes", exeCur.getCiResult());
+                    pointObj.put("ciSc", exeCur.getCiScore());
+                    pointObj.put("ciScT", exeCur.getCiScoreThreshold());
+                    pointObj.put("nbExe", exeCur.getNbExe());
+                    pointObj.put("nbExeU", exeCur.getNbExeUsefull());
 
                     if (curveMap.containsKey(curveKey)) {
                         curArray = curveMap.get(curveKey);
@@ -281,11 +283,11 @@ public class ReadTagStat extends HttpServlet {
                         curveObj.put("key", curveKey);
                         curveObj.put("campaign", exeCur.getCampaign());
 
-                        curveObj.put("country", exeCur.getCountryList());
-                        curveObj.put("environment", exeCur.getEnvironmentList());
-                        curveObj.put("robotdecli", exeCur.getRobotDecliList());
-                        curveObj.put("system", exeCur.getSystemList());
-                        curveObj.put("application", exeCur.getApplicationList());
+                        curveObj.put("country", formatedJSONArray(exeCur.getCountryList()));
+                        curveObj.put("environment", formatedJSONArray(exeCur.getEnvironmentList()));
+                        curveObj.put("robotdecli", formatedJSONArray(exeCur.getRobotDecliList()));
+                        curveObj.put("system", formatedJSONArray(exeCur.getSystemList()));
+                        curveObj.put("application", formatedJSONArray(exeCur.getApplicationList()));
                         curveObj.put("unit", "duration");
 
                         curveObjMap.put(curveKey, curveObj);
@@ -392,7 +394,7 @@ public class ReadTagStat extends HttpServlet {
         for (Map.Entry<String, Boolean> country : countryMap.entrySet()) {
             String key = country.getKey();
             JSONObject objectcount = new JSONObject();
-            objectcount.put("name", key);
+            objectcount.put("name", formatedJSONArray(key));
             objectcount.put("hasData", countryMap.containsKey(key));
             if (countriesDefined) {
                 objectcount.put("isRequested", countryMap.get(key));
@@ -407,7 +409,7 @@ public class ReadTagStat extends HttpServlet {
         for (Map.Entry<String, Boolean> env : environmentMap.entrySet()) {
             String key = env.getKey();
             JSONObject objectcount = new JSONObject();
-            objectcount.put("name", key);
+            objectcount.put("name", formatedJSONArray(key));
             objectcount.put("hasData", environmentMap.containsKey(key));
             if (environmentsDefined) {
                 objectcount.put("isRequested", environmentMap.get(key));
@@ -422,7 +424,7 @@ public class ReadTagStat extends HttpServlet {
         for (Map.Entry<String, Boolean> env : robotDecliMap.entrySet()) {
             String key = env.getKey();
             JSONObject objectcount = new JSONObject();
-            objectcount.put("name", key);
+            objectcount.put("name", formatedJSONArray(key));
             objectcount.put("hasData", robotDecliMap.containsKey(key));
             if (robotDeclisDefined) {
                 objectcount.put("isRequested", robotDecliMap.get(key));
@@ -434,6 +436,14 @@ public class ReadTagStat extends HttpServlet {
         objectdist.put("robotDeclis", objectdinst);
 
         return objectdist;
+    }
+
+    private String formatedJSONArray(String in) {
+        if (in.equals("[]")) {
+            return "";
+        } else {
+            return in.replace("\"]", "").replace("[\"", "").replace("\",\"", "|");
+        }
     }
 
     private String getKeyCurve(TestCaseExecutionHttpStat stat, String party, String type, String unit) {

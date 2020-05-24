@@ -58,14 +58,8 @@
                             <div class="row">
                                 <div class='col-md-6'>
                                     <div class="form-group">
-                                        <label for="testSelect">Test Folder</label>
-                                        <select class="form-control" id="testSelect"></select>
-                                    </div>
-                                </div>
-                                <div class='col-md-6'>
-                                    <div class="form-group">
-                                        <label for="testCaseSelect">Test Case</label>
-                                        <select multiple="multiple" class="form-control" id="testCaseSelect"></select>
+                                        <label for="campaignSelect">Campaign</label>
+                                        <select multiple="multiple" class="form-control" id="campaignSelect"></select>
                                     </div>
                                 </div>
                             </div>
@@ -164,27 +158,56 @@
             </div>
             <div class="row" id="ReportByFunctionPanel">
                 <div class="col-lg-12">
-                    <div id="panelTestStat" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart0a">
+
+                    <div id="panelTagDStat" class="panel panel-default" style="display: none">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart1">
                             <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblTestStat">TestCase Stats</label>
+                            <label id="lblTagDStat">Campaign Duration</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body collapse in" id="perfChart0a">
+                        <div class="panel-body collapse in" id="perfChart1">
                             <div class="row">
-                                <div class="col-xs-12" id="ChartTestStat" style="height: 400px">
-                                    <canvas id="canvasTestStat"></canvas>
+                                <div class="col-xs-12" id="ChartTagDStat" style="height: 400px">
+                                    <canvas id="canvasTagDStat"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="panelTagSStat" class="panel panel-default" style="display: none">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart2">
+                            <span class="fa fa-bar-chart fa-fw"></span>
+                            <label id="lblTagSStat">Campaign Score</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        </div>
+                        <div class="panel-body collapse in" id="perfChart2">
+                            <div class="row">
+                                <div class="col-xs-12" id="ChartTagSStat" style="height: 400px">
+                                    <canvas id="canvasTagSStat"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="panelTagEStat" class="panel panel-default" style="display: none">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart3">
+                            <span class="fa fa-bar-chart fa-fw"></span>
+                            <label id="lblTagEStat">Campaign Executions</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        </div>
+                        <div class="panel-body collapse in" id="perfChart3">
+                            <div class="row">
+                                <div class="col-xs-12" id="ChartTagEStat" style="height: 400px">
+                                    <canvas id="canvasTagEStat"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div id="panelTestStatBar" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart0b">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart4">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="lblTestStatBar">TestCase Stats Bar</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body collapse in" id="perfChart0b">
+                        <div class="panel-body collapse in" id="perfChart4">
                             <div class="row">
                                 <div class="col-xs-12" id="ChartTestStatBar" style="height: 400px">
                                     <canvas id="canvasTestStatBar"></canvas>
@@ -192,62 +215,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="panelPerfRequests" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart1">
-                            <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblPerfRequests">Performance Graph - Requests</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                        </div>
-                        <div class="panel-body collapse in" id="perfChart1">
-                            <div class="row">
-                                <div class="col-xs-12" id="ChartRequests" style="height: 400px">
-                                    <canvas id="canvasRequests"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="panelPerfSize" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart2">
-                            <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblPerfSize">Performance Graph - Size</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                        </div>
-                        <div class="panel-body collapse in" id="perfChart2">
-                            <div class="row">
-                                <div class="col-xs-12" id="ChartSize" style="height: 400px">
-                                    <canvas id="canvasSize"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="panelPerfTime" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart3">
-                            <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblPerfTime">Performance Graph - Time</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                        </div>
-                        <div class="panel-body collapse in" id="perfChart3">
-                            <div class="row">
-                                <div class="col-xs-12" id="ChartTime" style="height: 400px">
-                                    <canvas id="canvasTime"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="panelPerfParty" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart4">
-                            <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblPerfParty">Performance Graph - nb Third Parties</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                        </div>
-                        <div class="panel-body collapse in" id="perfChart4">
-                            <div class="row">
-                                <div class="col-xs-12" id="ChartParty" style="height: 400px">
-                                    <canvas id="canvasParty"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
             </div>
             <footer class="footer">

@@ -474,7 +474,7 @@ public class TagDAO implements ITagDAO {
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS tag.* FROM tag tag JOIN campaign cap ON cap.campaign=tag.campaign ");
 
-        searchSQL.append(" where 1=1 ");
+        searchSQL.append(" where nbExe>0 ");
         if (campaigns != null && !campaigns.isEmpty()) {
             searchSQL.append(SqlUtil.generateInClause("and tag.campaign", campaigns));
         }
