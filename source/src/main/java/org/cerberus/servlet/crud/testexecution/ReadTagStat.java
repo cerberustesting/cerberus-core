@@ -439,7 +439,7 @@ public class ReadTagStat extends HttpServlet {
     }
 
     private String formatedJSONArray(String in) {
-        if (in.equals("[]")) {
+        if ((in == null) || (in.equals("[]"))) {
             return "";
         } else {
             return in.replace("\"]", "").replace("[\"", "").replace("\",\"", "|");
