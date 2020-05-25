@@ -143,7 +143,7 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             tc.setUserAgent(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("userAgent"), tc.getUserAgent(), charset));
             tc.setScreenSize(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("screenSize"), tc.getScreenSize(), charset));
             tc.setHowTo(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("howTo"), tc.getHowTo(), charset));
-            tc.setDetailedDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("detailledDescription"), tc.getDetailledDescription(), charset));
+            tc.setDetailedDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("detailedDescription"), tc.getDetailedDescription(), charset));
 
             // TODO verify, this setteer was not call on "create test case"
             tc.setConditionOperator(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("conditionOperator"), tc.getConditionOperator(), charset));

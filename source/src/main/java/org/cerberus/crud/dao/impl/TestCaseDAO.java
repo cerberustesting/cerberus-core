@@ -602,7 +602,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             try {
                 int i = 1;
                 preStat.setString(i++, testCase.getApplication());
-                preStat.setString(i++, testCase.getDetailledDescription());
+                preStat.setString(i++, testCase.getDetailedDescription());
                 preStat.setString(i++, testCase.getActiveQA());
                 preStat.setString(i++, testCase.getActiveUAT());
                 preStat.setString(i++, testCase.getActivePROD());
@@ -767,7 +767,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestCase(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getApplication(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDetailledDescription(), ""));
+                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDetailedDescription(), ""));
                 preStat.setString(i++, Integer.toString(testCase.getPriority()));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
                 preStat.setString(i++, testCase.getTcActive() != null && !testCase.getTcActive().equals("Y") ? "N" : "Y");
@@ -1180,7 +1180,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             try {
                 int i = 1;
                 preStat.setString(i++, testCase.getApplication());
-                preStat.setString(i++, testCase.getDetailledDescription());
+                preStat.setString(i++, testCase.getDetailedDescription());
                 preStat.setString(i++, testCase.getActiveQA().equals("Y") ? "Y" : "N");
                 preStat.setString(i++, testCase.getActiveUAT().equals("Y") ? "Y" : "N");
                 preStat.setString(i++, testCase.getActivePROD().equals("Y") ? "Y" : "N");
@@ -1893,7 +1893,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, tc.getActivePROD());
                 preStat.setString(i++, tc.getStatus());
                 preStat.setString(i++, tc.getDescription());
-                preStat.setString(i++, tc.getDetailledDescription());
+                preStat.setString(i++, tc.getDetailedDescription());
                 preStat.setString(i++, tc.getHowTo());
                 preStat.setString(i++, tc.getTcActive());
                 preStat.setString(i++, tc.getFromMajor());
@@ -1974,7 +1974,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestCase(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getApplication(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDetailledDescription(), ""));
+                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDetailedDescription(), ""));
                 preStat.setString(i++, Integer.toString(testCase.getPriority()));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
                 preStat.setString(i++, testCase.getTcActive() != null && !testCase.getTcActive().equals("Y") ? "N" : "Y");

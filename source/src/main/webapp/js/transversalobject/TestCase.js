@@ -84,7 +84,7 @@ function initModalTestCase() {
     $("[name='actUATField']").html(doc.getDocOnline("testcase", "activeUAT"));
     $("[name='actProdField']").html(doc.getDocOnline("testcase", "activePROD"));
     $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
-    $("[name='detailledDescriptionField']").html(doc.getDocOnline("testcase", "detailledDescription"));
+    $("[name='detailedDescriptionField']").html(doc.getDocOnline("testcase", "detailedDescription"));
     $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
     $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
     $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
@@ -578,7 +578,7 @@ function confirmTestCaseModalHandler(mode) {
             activeQA: data.activeQA,
             activeUAT: data.activeUAT,
             application: data.application,
-            detailledDescription: data.detailledDescription,
+            detailedDescription: data.detailedDescription,
             bugId: JSON.stringify(table_bug),
             comment: data.comment,
             fromMinor: data.fromMinor,
@@ -801,12 +801,12 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
 //    $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
 
     var observer = new MutationObserver(function(mutations, me) {
-        var detailledDescription = tinyMCE.get('detailledDescription');
-        if (detailledDescription !== null) {
+        var detailedDescription = tinyMCE.get('detailedDescription');
+        if (detailedDescription !== null) {
             if (isEmpty(testCase)) {
-                tinyMCE.get('detailledDescription').setContent("");
+                tinyMCE.get('detailedDescription').setContent("");
             } else {
-                tinyMCE.get('detailledDescription').setContent(testCase.detailledDescription);
+                tinyMCE.get('detailedDescription').setContent(testCase.detailedDescription);
             }
 
             me.disconnect()
@@ -954,8 +954,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#userAgent").prop("disabled", "disabled");
         formEdit.find("#screenSize").prop("disabled", "disabled");
         formEdit.find("#shortDesc").prop("readonly", "readonly");
-        if (tinyMCE.get('detailledDescription') !== null)
-            tinyMCE.get('detailledDescription').getBody().setAttribute('contenteditable', false);
+        if (tinyMCE.get('detailedDescription') !== null)
+            tinyMCE.get('detailedDescription').getBody().setAttribute('contenteditable', false);
         formEdit.find("#active").prop("disabled", "disabled");
         formEdit.find("#fromMajor").prop("disabled", "disabled");
         formEdit.find("#fromMinor").prop("disabled", "disabled");

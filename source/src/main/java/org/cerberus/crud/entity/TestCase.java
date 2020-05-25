@@ -236,7 +236,7 @@ public class TestCase {
         this.usrCreated = creator;
     }
 
-    public String getDetailledDescription() {
+    public String getDetailedDescription() {
         return detailedDescription;
     }
 
@@ -486,7 +486,7 @@ public class TestCase {
             result.put("type", this.getType());
             result.put("priority", this.getPriority());
             result.put("description", this.getDescription());
-            result.put("detailledDescription", this.getDetailledDescription());
+            result.put("detailedDescription", this.getDetailedDescription());
             result.put("howTo", this.getHowTo());
             result.put("isActive", this.getTcActive());
             result.put("isActiveQA", this.getActiveQA());
