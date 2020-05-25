@@ -110,11 +110,10 @@ public interface ITestCaseDAO {
      * @param targetMinor
      * @param creator
      * @param implementer
-     * @param function
      * @param campaign
      * @return
      */
-    List<TestCase> findTestCaseByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] type, String[] targetMajor, String[] targetMinor, String[] creator, String[] implementer, String[] function, String[] campaign);
+    List<TestCase> findTestCaseByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] type, String[] targetMajor, String[] targetMinor, String[] creator, String[] implementer, String[] campaign);
 
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException;
 

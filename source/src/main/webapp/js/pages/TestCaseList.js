@@ -68,15 +68,6 @@ function initMassActionModal() {
             $("#massActionTestCaseModal #massStatus").prop("disabled", true);
         }
     });
-    $("#massActionTestCaseModal #massFunction").prop("disabled", true);
-    $("#functionCheckbox").prop("checked", false);
-    $("#functionCheckbox").change(function() {
-        if ($(this).prop("checked")) {
-            $("#massActionTestCaseModal #massFunction").prop("disabled", false);
-        } else {
-            $("#massActionTestCaseModal #massFunction").prop("disabled", true);
-        }
-    });
     $("#massActionTestCaseModal #massApplication").prop("disabled", true);
     $("#applicationCheckbox").prop("checked", false);
     $("#applicationCheckbox").change(function() {
@@ -451,12 +442,6 @@ function massActionClick() {
         // Load Status.
         $("[name='massStatus']").empty();
         displayInvariantList("massStatus", "TCSTATUS", false);
-
-        // Load Function.
-        var availableFunctions = getInvariantArray("FUNCTION", false);
-        $('#massActionTestCaseModal').find("#massFunction").autocomplete({
-            source: availableFunctions
-        });
 
         // Load Applications.
         $("[name='massApplication']").empty();

@@ -65,7 +65,6 @@ public class TestCase {
     private String activeQA;
     private String activeUAT;
     private String activePROD;
-    private String function;
     private String userAgent;
     private String screenSize;
     private String usrCreated;
@@ -113,14 +112,6 @@ public class TestCase {
 
     public void setDateCreated(String dateCreated) {
         this.dateCreated = dateCreated;
-    }
-
-    public String getFunction() {
-        return function;
-    }
-
-    public void setFunction(String function) {
-        this.function = function;
     }
 
     public List<TestCaseCountryProperties> getTestCaseCountryProperties() {
@@ -515,9 +506,6 @@ public class TestCase {
             result.put("usrModif", this.getUsrModif());
             result.put("origine", this.getOrigine());
             result.put("refOrigine", this.getRefOrigine());
-
-            // [WIP] To delete !!!
-            result.put("function", this.getFunction());
 
             JSONArray array = new JSONArray();
             if (this.getTestCaseStep() != null) {

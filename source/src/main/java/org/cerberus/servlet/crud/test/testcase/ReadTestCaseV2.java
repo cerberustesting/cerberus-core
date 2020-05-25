@@ -540,7 +540,6 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                 .put("activeQA", testCase.getActiveQA())
                 .put("activeUAT", testCase.getActiveUAT())
                 .put("activePROD", testCase.getActivePROD())
-                .put("function", testCase.getFunction())
                 .put("usrAgent", testCase.getUserAgent())
                 .put("screenSize", testCase.getScreenSize())
                 .put("usrCreated", testCase.getUsrCreated())

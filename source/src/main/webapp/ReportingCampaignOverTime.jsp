@@ -19,7 +19,7 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%-- 
+<%--
     Document   : ReportingExecutionByTag2
     Created on : 31 Marsh 2020
     Author     : cerberus
@@ -156,7 +156,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row" id="ReportByFunctionPanel">
+            <div class="row" id="ReportByTestFolderPanel">
                 <div class="col-lg-12">
 
                     <div id="panelTagDStat" class="panel panel-default" style="display: none">

@@ -62,7 +62,7 @@ public class ExportListTestCase extends HttpServlet {
         List<TestCase> list = testCaseService.findTestCaseByAllCriteria(tCase, text, system);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Test,TestCase,Origin,RefOrigin,Creator,Implementer,LastModifier,Project,Ticket,Function,Application,RunQA,RunUAT,RunPROD,Priority,Group,Status,");
+        sb.append("Test,TestCase,Origin,RefOrigin,Creator,Implementer,LastModifier,Project,Ticket,Application,RunQA,RunUAT,RunPROD,Priority,Group,Status,");
         sb.append("ShortDescription,Description,HowTo,Active,fromMajor,FromMinor,ToMajor,ToMinor,LastExecution,BugID,TargetMajor,TargetMinor,Comment\n");
 
         for (TestCase tc : list) {
@@ -111,10 +111,9 @@ public class ExportListTestCase extends HttpServlet {
         String tRev = this.getValue(req, "ScTRev");
         String targetMajor = this.getValue(req, "ScTargetMajor");
         String targetMinor = this.getValue(req, "ScTargetMinor");
-        String function = this.getValue(req, "function");
 
         IFactoryTestCase factoryTCase = new FactoryTestCase();
-        return factoryTCase.create(test, testCase, origine, null, creator, executor, null, null, function, application, qa, uat, prod, priority, group,
+        return factoryTCase.create(test, testCase, origine, null, creator, executor, null, null, application, qa, uat, prod, priority, group,
                 status, null, null, null, active, conditionOperator, conditionVal1, conditionVal2, conditionVal3, fBuild, fRev, tBuild, tRev, null, bugJSON, targetMajor, targetMinor, null, "", "", null, null, null, null);
     }
 
@@ -185,8 +184,6 @@ public class ExportListTestCase extends HttpServlet {
         sb.append(StringUtil.getCleanCSVTextField(tc.getTargetMinor()));
         sb.append("\",\"");
         sb.append(StringUtil.getCleanCSVTextField(tc.getComment()));
-        sb.append("\",\"");
-        sb.append(StringUtil.getCleanCSVTextField(tc.getFunction()));
         sb.append("\"\n");
 
         return sb.toString();

@@ -19,7 +19,7 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%-- 
+<%--
     Document   : ReportingExecutionByTag2
     Created on : 3 août 2015, 11:02:49
     Author     : cerberus
@@ -140,7 +140,7 @@
                                                 <td style="text-align: center">Test Folder</td>
                                                 <td style="text-align: center">Test Case</td>
                                                 <td style="text-align: center">Status</td>
-                                            </tr>                                    
+                                            </tr>
                                         </thead>
                                         <tbody id="bugTableReportBody"></tbody>
                                     </table>
@@ -165,7 +165,7 @@
                                                 <td style="text-align: center">Total</td>
                                                 <td style="text-align: center">Progress %</td>
                                                 <td style="text-align: center">Still to do</td>
-                                            </tr>                                    
+                                            </tr>
                                         </thead>
                                         <tbody id="manualTableBody"></tbody>
                                     </table>
@@ -238,17 +238,17 @@
                     </div>
                 </div>
             </div>
-            <div class="row" id="ReportByFunctionPanel">
+            <div class="row" id="ReportByTestFolderPanel">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#functionChart">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#testFolderChart">
                             <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="reportFunction">Report by Function</label>
+                            <label id="reportTestFolder">Report by Test folder</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body collapse in" id="functionChart">
+                        <div class="panel-body collapse in" id="testFolderChart">
                             <div class="row">
-                                <div class="col-xs-12" id="ReportByfunctionChart"></div>
+                                <div class="col-xs-12" id="ReportTestFolderChart"></div>
                             </div>
                         </div>
                     </div>
@@ -313,7 +313,7 @@
                                             <td style="text-align: center">% PE</td>
                                             <td style="text-align: center">% CA</td>
                                             <td class="width80" style="text-align: center">% NOT OK</td>
-                                        </tr>                                    
+                                        </tr>
                                     </thead>
                                     <tbody id="summaryTableBody"></tbody>
                                 </table>
