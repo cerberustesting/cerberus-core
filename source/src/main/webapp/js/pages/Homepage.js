@@ -422,6 +422,7 @@ function readLastTagExec(searchString) {
         async: false,
         dataType: 'json',
         success: function (data) {
+            nbTagLoadedTarget = data.contentTable.length;
             for (var s = 0; s < data.contentTable.length; s++) {
                 tagList.push(data.contentTable[s].tag);
             }
