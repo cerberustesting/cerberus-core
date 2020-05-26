@@ -377,7 +377,6 @@ public class ReadTestCaseExecution extends HttpServlet {
                     } else {
                         ttcObject.put("test", testCaseExecution.getTest());
                         ttcObject.put("testCase", testCaseExecution.getTestCase());
-                        ttcObject.put("function", testCaseExecution.getTestCaseObj().getFunction());
                         ttcObject.put("shortDesc", testCaseExecution.getTestCaseObj().getDescription());
                         ttcObject.put("status", testCaseExecution.getStatus());
                         ttcObject.put("application", testCaseExecution.getApplication());
@@ -573,7 +572,6 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         result.put("Comment", JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getComment()));
         result.put("Priority", JavaScriptUtils.javaScriptEscape(String.valueOf(testCaseExecution.getTestCaseObj().getPriority())));
-        result.put("Function", JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getFunction()));
         result.put("Application", JavaScriptUtils.javaScriptEscape(testCaseExecution.getApplication()));
         result.put("ShortDescription", testCaseExecution.getTestCaseObj().getDescription());
 
@@ -700,7 +698,7 @@ public class ReadTestCaseExecution extends HttpServlet {
              */
             default:
                 String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-                String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,detailledDescription,readonly,bugtrackernewurl,deploytype,mavengroupid");
+                String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,detailedDescription,readonly,bugtrackernewurl,deploytype,mavengroupid");
                 String columnToSort[] = sColumns.split(",");
 
                 List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));

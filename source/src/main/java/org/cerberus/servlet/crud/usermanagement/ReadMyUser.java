@@ -61,6 +61,7 @@ public class ReadMyUser extends HttpServlet {
     private IUserSystemService userSystemService;
     private IUserGroupService userGroupService;
     private ILogEventService logEventService;
+    private IParameterService parameterService;
 
     private static final Logger LOG = LogManager.getLogger(ReadMyUser.class);
 
@@ -82,6 +83,11 @@ public class ReadMyUser extends HttpServlet {
         userSystemService = appContext.getBean(IUserSystemService.class);
         userGroupService = appContext.getBean(UserGroupService.class);
         logEventService = appContext.getBean(ILogEventService.class);
+        parameterService = appContext.getBean(IParameterService.class);
+
+        boolean isDeploymentOn = parameterService.getParameterBooleanByKey("cerberus_deploymentmode_isdeploymentmodeenabled", "", false);
+        LOG.debug("========================================");
+        LOG.debug("IS ON DEPLOYMENT : " + isDeploymentOn);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
@@ -93,7 +99,7 @@ public class ReadMyUser extends HttpServlet {
             String user = request.getUserPrincipal().getName();
             LOG.debug("Getting user data for (request.getUserPrincipal().getName()) : " + user);
 
-            // In case we activated KeyCloak, we create the user on the fly in order to allow to administer the system list. 
+            // In case we activated KeyCloak, we create the user on the fly in order to allow to administer the system list.
             String authMode = "";
             if (System.getProperty(Property.AUTHENTIFICATION) != null) {
                 authMode = System.getProperty(Property.AUTHENTIFICATION);
@@ -126,6 +132,7 @@ public class ReadMyUser extends HttpServlet {
             data.put("reportingFavorite", myUser.getReportingFavorite());
             data.put("userPreferences", myUser.getUserPreferences());
             data.put("isKeycloak", Property.isKeycloak());
+            data.put("isDeploymentMode", parameterService.getParameterBooleanByKey("cerberus_deploymentmode_isdeploymentmodeenabled", "", false));
 
             // Define submenu entries
             JSONObject menu = new JSONObject();

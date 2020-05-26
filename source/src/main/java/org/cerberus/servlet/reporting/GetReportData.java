@@ -57,7 +57,7 @@ import org.cerberus.crud.service.ITestCaseExecutionQueueService;
  */
 @WebServlet(name = "GetReportData", urlPatterns = {"/GetReportData"})
 public class GetReportData extends HttpServlet {
-    
+
     private static final Logger LOG = LogManager.getLogger(GetReportData.class);
 
     ITestCaseExecutionService testCaseExecutionService;
@@ -127,11 +127,7 @@ public class GetReportData extends HttpServlet {
                 JSONObject control = new JSONObject();
                 JSONObject function = new JSONObject();
 
-                if (testCaseWithExecution.getTestCaseObj().getFunction() != null && !"".equals(testCaseWithExecution.getTestCaseObj().getFunction())) {
-                    key = testCaseWithExecution.getTestCaseObj().getFunction();
-                } else {
-                    key = testCaseWithExecution.getTest();
-                }
+                key = testCaseWithExecution.getTest();
 
                 controlStatus = testCaseWithExecution.getControlStatus();
 

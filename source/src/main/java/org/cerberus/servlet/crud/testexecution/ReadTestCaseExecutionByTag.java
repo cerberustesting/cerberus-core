@@ -152,8 +152,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 jsonResponse.put("manualExecutionList", generateManualExecutionTable(appContext, testCaseExecutions, statusFilter, countryFilter));
             }
             // Executions per Function (or Test).
-            if (outputReport.isEmpty() || outputReport.contains("functionChart")) {
-                jsonResponse.put("functionChart", generateFunctionChart(testCaseExecutions, Tag, statusFilter, countryFilter));
+            if (outputReport.isEmpty() || outputReport.contains("testFolderChart")) {
+                jsonResponse.put("testFolderChart", generateTestFolderChart(testCaseExecutions, Tag, statusFilter, countryFilter));
             }
             // Global executions stats per Status
             if (outputReport.isEmpty() || outputReport.contains("statsChart")) {
@@ -349,8 +349,6 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         }
                         boolean testExist = ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getTest() != null));
                         if (testExist) {
-
-                            ttcObject.put("function", testCaseExecution.getTestCaseObj().getFunction());
                             ttcObject.put("priority", testCaseExecution.getTestCaseObj().getPriority());
                             ttcObject.put("comment", testCaseExecution.getTestCaseObj().getComment());
                             ttcObject.put("bugId", testCaseExecution.getTestCaseObj().getBugIDActive());
@@ -622,7 +620,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         return manualExecutionTable;
     }
 
-    private JSONObject generateFunctionChart(List<TestCaseExecution> testCaseExecutions, String tag, JSONObject statusFilter, JSONObject countryFilter) throws JSONException {
+    private JSONObject generateTestFolderChart(List<TestCaseExecution> testCaseExecutions, String tag, JSONObject statusFilter, JSONObject countryFilter) throws JSONException {
         JSONObject jsonResult = new JSONObject();
         Map<String, JSONObject> axisMap = new HashMap<String, JSONObject>();
         String globalStart = "";
@@ -638,11 +636,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
             String controlStatus = testCaseExecution.getControlStatus();
             if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseExecution.getCountry()).equals("on")) {
-                if (testCaseExecution.getTestCaseObj() != null && testCaseExecution.getTestCaseObj().getFunction() != null && !"".equals(testCaseExecution.getTestCaseObj().getFunction())) {
-                    key = testCaseExecution.getTestCaseObj().getFunction();
-                } else {
-                    key = testCaseExecution.getTest();
-                }
+
+                key = testCaseExecution.getTest();
 
                 controlStatus = testCaseExecution.getControlStatus();
 
@@ -697,8 +692,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
     }
 
     class SortExecution implements Comparator<JSONObject> {
-        // Used for sorting in ascending order of 
-        // name value. 
+        // Used for sorting in ascending order of
+        // name value.
 
         @Override
         public int compare(JSONObject a, JSONObject b) {

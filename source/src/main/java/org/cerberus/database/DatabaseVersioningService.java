@@ -8565,6 +8565,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("UPDATE invariant set idname = 'ACTIONCONDITIONOPERATOR' WHERE idname = 'ACTIONCONDITIONOPER'");
         a.add("UPDATE invariant set idname = 'CONTROLCONDITIONOPERATOR' WHERE idname = 'CONTROLCONDITIONOPER'");
 
+        // 1511
+        // Drop the column function from testcase table
+        a.add("ALTER TABLE testcase DROP function");
+
         return a;
     }
 

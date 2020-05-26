@@ -44,7 +44,6 @@ public interface IFactoryTestCase {
      * @param implementer
      * @param executor
      * @param usrModif
-     * @param function
      * @param application
      * @param activeQA
      * @param activeUAT
@@ -78,7 +77,7 @@ public interface IFactoryTestCase {
      * @return
      */
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
-            String implementer, String executor, String usrModif, String function, String application,
+            String implementer, String executor, String usrModif, String application,
             String activeQA, String activeUAT, String activePROD, int priority, String type, String status,
             String description, String detailedDescription, String howTo, String tcActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor,
             String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugID,
@@ -96,7 +95,6 @@ public interface IFactoryTestCase {
      * @param implementer
      * @param executor
      * @param usrModif
-     * @param function
      * @param application
      * @param activeQA
      * @param activeUAT
@@ -129,7 +127,7 @@ public interface IFactoryTestCase {
      * @return
      */
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
-            String implementer, String executor, String usrModif, String function, String application,
+            String implementer, String executor, String usrModif, String application,
             String activeQA, String activeUAT, String activePROD, int priority, String type, String status,
             String description, String detailedDescription, String howTo, String tcActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor,
             String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bigID,

@@ -187,12 +187,11 @@ public interface ITestCaseService {
      * @param targetMinor
      * @param creator
      * @param implementer
-     * @param function
      * @param campaign
      * @param battery
      * @return
      */
-    List<TestCase> findByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] type, String[] targetMajor, String[] targetMinor, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery);
+    List<TestCase> findByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] type, String[] targetMajor, String[] targetMinor, String[] creator, String[] implementer, String[] campaign, String[] battery);
 
     /**
      *

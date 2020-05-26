@@ -242,7 +242,7 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public List<String> findTestWithTestCaseActiveAutomatedBySystem(String system) {
-        TestCase tCase = factoryTCase.create(null, null, null, null, null, null, null, null, null,
+        TestCase tCase = factoryTCase.create(null, null, null, null, null, null, null, null,
                 null, null, null, null, -1, null, null, null, null, null, "Y", null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
@@ -262,7 +262,7 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public List<TestCase> findTestCaseActiveAutomatedBySystem(String test, String system) {
-        TestCase tCase = factoryTCase.create(test, null, null, null, null, null, null, null, null,
+        TestCase tCase = factoryTCase.create(test, null, null, null, null, null, null, null,
                 null, null, null, null, -1, null, null, null, null, null, "Y", null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
@@ -358,8 +358,8 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public List<TestCase> findByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] type, String[] targetMajor, String[] targetMinor, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery) {
-        return testCaseDao.findTestCaseByCriteria(test, app, active, priority, status, type, targetMajor, targetMinor, creator, implementer, function, campaign);
+    public List<TestCase> findByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] type, String[] targetMajor, String[] targetMinor, String[] creator, String[] implementer, String[] campaign, String[] battery) {
+        return testCaseDao.findTestCaseByCriteria(test, app, active, priority, status, type, targetMajor, targetMinor, creator, implementer, campaign);
     }
 
     @Override

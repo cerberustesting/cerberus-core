@@ -20,8 +20,8 @@
 /* global handleErrorAjaxAfterTimeout */
 
 var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"];
-$.when($.getScript("js/global/global.js")).then(function () {
-    $(document).ready(function () {
+$.when($.getScript("js/global/global.js")).then(function() {
+    $(document).ready(function() {
 
         initPage();
 
@@ -29,7 +29,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         var urlTag = GetURLParameter('Tag');
 
-        $("#splitFilter input").click(function () {
+        $("#splitFilter input").click(function() {
             //save the filter preferences in the session storage
             var serial = $("#splitFilter input").serialize();
             var obj = convertSerialToJSONObject(serial);
@@ -40,14 +40,14 @@ $.when($.getScript("js/global/global.js")).then(function () {
             }
         });
 
-        $(document).on("mouseover", "td.center", function (e) {
+        $(document).on("mouseover", "td.center", function(e) {
             var id = $(e.currentTarget).attr("aria-describedby")
             $("#" + id).css("display", "none")
         })
 
         splitFilterPreferences();
 
-        $("#splitLabelFilter input").click(function () {
+        $("#splitLabelFilter input").click(function() {
             //save the filter preferences in the session storage
             var serial = $("#splitLabelFilter input").serialize();
             var obj = convertSerialToJSONObject(serial);
@@ -58,7 +58,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             }
         });
 
-        $("#reportByEnvCountryBrowser .nav li").on("click", function (event) {
+        $("#reportByEnvCountryBrowser .nav li").on("click", function(event) {
             stopPropagation(event);
             $(this).parent().find(".active").removeClass("active");
             $(this).addClass("active");
@@ -71,7 +71,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             }
         });
 
-        $("#reportByLabel .nav li").on("click", function (event) {
+        $("#reportByLabel .nav li").on("click", function(event) {
             stopPropagation(event);
             $(this).parent().find(".active").removeClass("active");
             $(this).addClass("active");
@@ -133,7 +133,7 @@ function loadCountryFilter() {
         data: {idName: "COUNTRY"},
         async: false,
         dataType: 'json',
-        success: function (data) {
+        success: function(data) {
             var countryFilter = $("#countryFilter");
             var len = data.length;
 
@@ -153,7 +153,7 @@ function loadCountryFilter() {
                 }
                 countryFilter.append(cb);
             }
-            $("#countryFilter input").on("click", function () {
+            $("#countryFilter input").on("click", function() {
                 //save the filter preferences in the session storage
                 var serial = $("#countryFilter input").serialize();
                 var obj = convertSerialToJSONObject(serial);
@@ -162,16 +162,16 @@ function loadCountryFilter() {
         },
         error: showUnexpectedError
     });
-    $("#countrySelectAll").on("click", function () {
+    $("#countrySelectAll").on("click", function() {
         $("#countryFilter input").prop('checked', true);
     });
-    $("#countryUnselectAll").on("click", function () {
+    $("#countryUnselectAll").on("click", function() {
         $("#countryFilter input").prop('checked', false);
     });
-    $("#statusSelectAll").on("click", function () {
+    $("#statusSelectAll").on("click", function() {
         $("#statusFilter input").prop('checked', true);
     });
-    $("#statusUnselectAll").on("click", function () {
+    $("#statusUnselectAll").on("click", function() {
         $("#statusFilter input").prop('checked', false);
     });
 }
@@ -180,7 +180,7 @@ function splitFilterPreferences() {
     var filter = JSON.parse(sessionStorage.getItem("splitFilter"));
 
     if (filter !== null) {
-        $("#splitFilter input").each(function () {
+        $("#splitFilter input").each(function() {
             if (filter.hasOwnProperty($(this).prop("name"))) {
                 $(this).prop("checked", true);
             } else {
@@ -192,7 +192,7 @@ function splitFilterPreferences() {
 
 function displaySummaryTableLabel(doc) {
     $("#summaryTableTitle").html(doc.getDocOnline("page_reportbytag", "summary_table"));
-    //summary table header    
+    //summary table header
     $("#summaryTableHeaderApplication").html(doc.getDocOnline("application", "Application"));
     $("#summaryTableHeaderCountry").html(doc.getDocOnline("invariant", "COUNTRY"));
     $("#summaryTableHeaderEnvironment").html(doc.getDocOnline("invariant", "ENVIRONMENT"));
@@ -212,7 +212,7 @@ function displayPageLabel(doc) {
     $("#reloadbutton").html(doc.getDocLabel("page_reportbytag", "button_reload"));
     $("#filters").html(doc.getDocOnline("page_reportbytag", "filters"));
     $("#reportStatus").html(doc.getDocOnline("page_reportbytag", "report_status"));
-    $("#reportFunction").html(doc.getDocOnline("page_reportbytag", "report_function"));
+    $("#reportTestFolder").html(doc.getDocOnline("page_reportbytag", "report_testfolder"));
     displaySummaryTableLabel(doc);
     displayExportDataLabel(doc);
     $("#envCountryBrowser").html(doc.getDocOnline("page_reportbytag", "report_envcountrybrowser"));
@@ -246,7 +246,7 @@ function loadReportingData(selectTag) {
     //var selectTag = $("#selectTag option:selected").text();
     showLoader($("#TagDetail"));
     showLoader($("#ReportByStatus"));
-    showLoader($("#functionChart"));
+    showLoader($("#testFolderChart"));
     showLoader($("#BugReportByStatus"));
     showLoader($("#ManualReportByExecutor"));
     showLoader($("#reportEnvCountryBrowser"));
@@ -277,14 +277,14 @@ function loadReportingData(selectTag) {
 
     //Retrieve data for charts and draw them
     var jqxhr = $.get("ReadTestCaseExecutionByTag" + param, null, "json");
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
 
         if (data.hasOwnProperty('tagObject')) {
 
             // Tag Detail feed.
             $("#startExe").val(data.tagObject.DateCreated);
             $("#endExe").val(data.tagObject.DateEndQueue);
-            $("#endLastExe").val(data.functionChart.globalEnd);
+            $("#endLastExe").val(data.testFolderChart.globalEnd);
             $("#TagUsrCreated").val(data.tagObject.UsrCreated);
             $("#Tagcampaign").val(data.tagObject.campaign);
             if (isEmpty(data.tagObject.campaign)) {
@@ -294,7 +294,7 @@ function loadReportingData(selectTag) {
                 $("#TagcampaignCel1").removeClass("hidden");
                 $("#TagcampaignCel2").removeClass("hidden");
                 $("#buttonRunCampaign").attr("href", "./RunTests.jsp?campaign=" + data.tagObject.campaign);
-                $("#buttonSeeStatsCampaign").on("click", function () {
+                $("#buttonSeeStatsCampaign").on("click", function() {
                     viewStatEntryClick(data.tagObject.campaign);
                 });
             }
@@ -312,11 +312,11 @@ function loadReportingData(selectTag) {
             // Report By Status
             $("#ReportByStatusTable").empty();
             $("#statusChart").empty();
-            loadReportByStatusTable(data.functionChart, selectTag);
+            loadReportByStatusTable(data.testFolderChart, selectTag);
 
             // Report By Function
-            $("#ReportByfunctionChart").empty();
-            loadReportByFunctionChart(data.functionChart, selectTag);
+            $("#ReportTestFolderChart").empty();
+            loadReportTestFolderChart(data.testFolderChart, selectTag);
 
             // Bug Report
             $("#BugReportTable").empty();
@@ -340,7 +340,7 @@ function loadReportingData(selectTag) {
 
             hideLoader($("#TagDetail"));
             hideLoader($("#ReportByStatus"));
-            hideLoader($("#functionChart"));
+            hideLoader($("#testFolderChart"));
             hideLoader($("#BugReportByStatus"));
             hideLoader($("#reportEnvCountryBrowser"));
             hideLoader($("#reportLabel"));
@@ -352,7 +352,7 @@ function loadReportingData(selectTag) {
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
-        ).on('shown.bs.popover', function () {
+        ).on('shown.bs.popover', function() {
             // Manually offer possibility to popover elemt to know when it's loading
             let idPopup = $(this).attr("aria-describedby")
             let elmt = $("#" + idPopup).find("[onload]")
@@ -371,7 +371,7 @@ function  filterCountryBrowserReport(selectTag, splitFilterSettings) {
     var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + "outputReport=statsChart";
     var jqxhr = $.get(requestToServlet, null, "json");
 
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         loadEnvCountryBrowserReport(data.statsChart);
     });
 
@@ -385,7 +385,7 @@ function  filterLabelReport(selectTag) {
     var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + "outputReport=labelStat";
     var jqxhr = $.get(requestToServlet, null, "json");
 
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         $("#progressLabel").empty();
         if (!$.isEmptyObject(data.labelStat)) {
             loadLabelReport(data.labelStat);
@@ -481,7 +481,7 @@ function buildLabelBar(obj) {
 }
 
 function loadEnvCountryBrowserReport(data) {
-    //adds a loader to a table 
+    //adds a loader to a table
     showLoader($("#reportEnvCountryBrowser"));
     $("#progressEnvCountryBrowser").empty();
 
@@ -502,7 +502,7 @@ function loadEnvCountryBrowserReport(data) {
 }
 
 function loadLabelReport(data) {
-    //adds a loader to a table 
+    //adds a loader to a table
     showLoader($("#reportLabel"));
     $("#progressLabel").empty();
 
@@ -800,7 +800,7 @@ function loadReportByStatusChart(data) {
             .outerRadius(radius);
 
     var pie = d3.layout.pie()
-            .value(function (d) {
+            .value(function(d) {
                 return d.value;
             })
             .sort(null);
@@ -810,7 +810,7 @@ function loadReportByStatusChart(data) {
             .enter()
             .append('path')
             .attr('d', arc)
-            .attr('fill', function (d, i) {
+            .attr('fill', function(d, i) {
                 return d.data.color;
             });
     hideLoader($("#ReportByStatus"));
@@ -824,11 +824,11 @@ function convertData(dataset) {
     return data;
 }
 
-function loadReportByFunctionChart(dataset) {
+function loadReportTestFolderChart(dataset) {
     var data = convertData(dataset.axis);
 
     if (dataset.axis.length > 0) {
-        $("#ReportByFunctionPanel").show();
+        $("#ReportByTestFolderPanel").show();
 
         var margin = {top: 20, right: 20, bottom: 200, left: 150},
                 width = 1200 - margin.left - margin.right,
@@ -851,7 +851,7 @@ function loadReportByFunctionChart(dataset) {
         var tip = d3.tip()
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
-                .html(function (d) {
+                .html(function(d) {
                     var res = "<strong>Function :</strong> <span style='color:red'>" + d.name + "</span>";
                     var len = d.chartData.length;
 
@@ -862,7 +862,7 @@ function loadReportByFunctionChart(dataset) {
                     return res;
                 });
 
-        var svg = d3.select("#ReportByfunctionChart").append("svg")
+        var svg = d3.select("#ReportTestFolderChart").append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
                 .append("g")
@@ -871,7 +871,7 @@ function loadReportByFunctionChart(dataset) {
         svg.call(tip);
 
 
-        data.forEach(function (d) {
+        data.forEach(function(d) {
             var y0 = 0;
             d.chartData = [];
             for (var status in d) {
@@ -882,10 +882,10 @@ function loadReportByFunctionChart(dataset) {
             d.totalTests = d.chartData[d.chartData.length - 1].y1;
         });
 
-        x.domain(data.map(function (d) {
+        x.domain(data.map(function(d) {
             return d.name;
         }));
-        y.domain([0, d3.max(data, function (d) {
+        y.domain([0, d3.max(data, function(d) {
                 return d.totalTests;
             })]);
 
@@ -914,7 +914,7 @@ function loadReportByFunctionChart(dataset) {
                 .data(data)
                 .enter().append("g")
                 .attr("class", "g")
-                .attr("transform", function (d) {
+                .attr("transform", function(d) {
                     return "translate(" + x(d.name) + ",0)";
                 });
 
@@ -923,24 +923,24 @@ function loadReportByFunctionChart(dataset) {
                 .on('mouseout', tip.hide);
 
         name.selectAll("rect")
-                .data(function (d) {
+                .data(function(d) {
                     return d.chartData;
                 })
                 .enter().append("rect")
                 .attr("width", x.rangeBand())
-                .attr("y", function (d) {
+                .attr("y", function(d) {
                     return y(d.y1);
                 })
-                .attr("height", function (d) {
+                .attr("height", function(d) {
                     return y(d.y0) - y(d.y1);
                 })
-                .style("fill", function (d) {
+                .style("fill", function(d) {
                     return d.color;
                 });
     } else {
-        $("#ReportByFunctionPanel").hide();
+        $("#ReportByTestFolderPanel").hide();
     }
-    hideLoader($("#functionChart"));
+    hideLoader($("#testFolderChart"));
 }
 
 /*** EXPORT OPTIONS***/
@@ -954,7 +954,7 @@ function exportReport() {
 
     var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize() +
             "&" + countryFilter.serialize() + "&" + exportDataFilter.serialize());
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         alert(data);
     });
 }
@@ -1091,15 +1091,15 @@ function createSummaryTable(data) {
     $("#summaryTableBody tr").remove();
     $("#summaryTableHeader").append(createHeaderRow(data.total));
     //TODO:FN verifies if table is empty?
-    $.when($.each(data.split, function (idx, obj) {
-        //creates a new row 
+    $.when($.each(data.split, function(idx, obj) {
+        //creates a new row
         //numbers are aligned to right
         var $tr = createRow(obj, false);
         if (obj.percOK === 100) {
             $($tr).addClass("summary100");
         }
         $("#summaryTableBody").append($tr);
-    })).then(function () {
+    })).then(function() {
         var $total = createRow(data.total, true);
         $total.addClass("summaryTotal");
         $("#summaryTableBody").append($total);
@@ -1147,7 +1147,7 @@ function createShortDescRow(row, data, index) {
     $(row).children('.bugid').attr('rowspan', '3');
     $(createdRow.child()).children('td').attr('colspan', '3').attr('class', 'shortDesc').attr('data-toggle', 'tooltip').attr('data-original-title', data.shortDesc);
     var labelValue = '';
-    $.each(data.labels, function (i, e) {
+    $.each(data.labels, function(i, e) {
         labelValue += '<div style="float:left"><span class="label label-primary" style="background-color:' + e.color + '">' + e.name + '</span></div> ';
     });
     $($(createdRow.child())[1]).children('td').html(labelValue);
@@ -1190,7 +1190,7 @@ function generateTooltip(data) {
 
 function openModalTestCase_FromRepTag(element, test, testcase, mode) {
     openModalTestCase(test, testcase, mode, "tabTCBugReport");
-    $('#editTestCaseModal').on("hidden.bs.modal", function (e) {
+    $('#editTestCaseModal').on("hidden.bs.modal", function(e) {
         $('#editTestCaseModal').unbind("hidden.bs.modal");
 
         var testcaseobj = $('#editTestCaseModal').data("testcase");
@@ -1271,22 +1271,22 @@ function renderOptionsForExeList(selectTag, fullListSelected) {
 
         $("#listTable_length").before(contentToAdd);
 
-        $('#selectAllQueueQEERROR').click(function () {
+        $('#selectAllQueueQEERROR').click(function() {
             selectAllQueue("selectAllQueueQEERROR", "", "QEERROR");
         });
-        $('#selectAllQueueFA').click(function () {
+        $('#selectAllQueueFA').click(function() {
             selectAllQueue("selectAllQueueFA", "N", "FA");
         });
-        $('#selectAllQueueFAManual').click(function () {
+        $('#selectAllQueueFAManual').click(function() {
             selectAllQueue("selectAllQueueFAManual", "Y", "FA");
         });
-        $('#selectAllQueueKO').click(function () {
+        $('#selectAllQueueKO').click(function() {
             selectAllQueue("selectAllQueueKO", "N", "KO");
         });
-        $('#selectAllQueueKOManual').click(function () {
+        $('#selectAllQueueKOManual').click(function() {
             selectAllQueue("selectAllQueueKOManual", "Y", "KO");
         });
-        $('#selectAllQueueNA').click(function () {
+        $('#selectAllQueueNA').click(function() {
             selectAllQueue("selectAllQueueNA", "", "NA");
         });
         $('#submitExe').click(massAction_copyQueueWithoutDep);
@@ -1311,8 +1311,8 @@ function massAction_copyQueue(option) {
     } else {
 
         var jqxhr = $.post("CreateTestCaseExecutionQueue", paramSerialized + "&actionState=" + option + "&actionSave=save", "json");
-        $.when(jqxhr).then(function (data) {
-            // unblock when remote call returns 
+        $.when(jqxhr).then(function(data) {
+            // unblock when remote call returns
             if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
                 if (data.addedEntries === 1) {
                     data.message = data.message + "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
@@ -1357,7 +1357,7 @@ function aoColumnsFunc(Columns) {
             "sWidth": "80px",
             "title": doc.getDocOnline("test", "Test"),
             "sClass": "bold",
-            "fnCreatedCell": function (row, data, dataIndex) {
+            "fnCreatedCell": function(row, data, dataIndex) {
                 // Set the data-status attribute, and add a class
                 $(row).attr('data-original-title', data)
                 $(row).attr('data-toggle', "tooltip")
@@ -1368,7 +1368,7 @@ function aoColumnsFunc(Columns) {
             "sName": "tec.testCase",
             "sWidth": "60px",
             "title": doc.getDocOnline("testcase", "TestCase"),
-            "mRender": function (data, type, obj, meta) {
+            "mRender": function(data, type, obj, meta) {
                 var result = "<a href='./TestCaseScript.jsp?test=" + encodeURIComponent(obj.test) + "&testcase=" + encodeURIComponent(obj.testCase) + "'>" + obj.testCase + "</a>";
                 var editEntry = '<button id="editEntry" onclick="openModalTestCase_FromRepTag(this,\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\',\'EDIT\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
@@ -1397,7 +1397,7 @@ function aoColumnsFunc(Columns) {
             "bSearchable": true,
             "class": "mainCell",
             "sWidth": "40px",
-            "data": function (row, type, val, meta) {
+            "data": function(row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
                 if (row.hasOwnProperty("execTab") && row["execTab"].hasOwnProperty(dataTitle)) {
                     return row["execTab"][dataTitle];
@@ -1406,7 +1406,7 @@ function aoColumnsFunc(Columns) {
                 }
             },
             "sClass": "center",
-            "mRender": function (data, type, row, meta) {
+            "mRender": function(data, type, row, meta) {
                 if (data !== "") {
                     // Getting selected Tag;
                     var glyphClass = getRowClass(data.ControlStatus);
@@ -1500,7 +1500,7 @@ function aoColumnsFunc(Columns) {
             {
                 "data": "bugId",
                 "bSearchable": false,
-                "mRender": function (data, type, obj) {
+                "mRender": function(data, type, obj) {
                     return getBugIdList(data, obj.AppBugURL);
                 },
                 "sName": "tec.bugId",
@@ -1546,11 +1546,11 @@ function customConfig(config) {
     var doc = new Doc();
     var customColvisConfig = {"buttonText": doc.getDocLabel("dataTable", "colVis"),
         "exclude": [0, 1, 2],
-        "stateChange": function (iColumn, bVisible) {
-            $('.shortDesc').each(function () {
+        "stateChange": function(iColumn, bVisible) {
+            $('.shortDesc').each(function() {
                 $(this).attr('colspan', '3');
             });
-            $('.label').each(function () {
+            $('.label').each(function() {
                 $(this).attr('colspan', '3');
             });
         }
@@ -1567,7 +1567,7 @@ function customConfig(config) {
 
 
 function wrap(text, width) {
-    text.each(function () {
+    text.each(function() {
         var text = d3.select(this),
                 words = text.text().split(/\s+/).reverse(),
                 word,

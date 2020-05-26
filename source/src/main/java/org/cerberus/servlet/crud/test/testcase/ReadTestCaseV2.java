@@ -190,7 +190,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,tec.application,project,ticket,description,detailledDescription,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,tec.application,project,ticket,description,detailedDescription,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
@@ -302,7 +302,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         JSONObject jsonResponse = new JSONObject();
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,detailledDescription,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,detailedDescription,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
 
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
@@ -516,7 +516,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                 .put("application", testCase.getApplication())
                 .put("system", applicationService.readByKey(testCase.getApplication()).getItem().getSystem())
                 .put("description", testCase.getDescription())
-                .put("behaviourOrValueExpected", testCase.getDetailledDescription())
+                .put("behaviourOrValueExpected", testCase.getDetailedDescription())
                 .put("priority", testCase.getPriority())
                 .put("status", testCase.getStatus())
                 .put("tcActive", testCase.getTcActive())
@@ -540,7 +540,6 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                 .put("activeQA", testCase.getActiveQA())
                 .put("activeUAT", testCase.getActiveUAT())
                 .put("activePROD", testCase.getActivePROD())
-                .put("function", testCase.getFunction())
                 .put("usrAgent", testCase.getUserAgent())
                 .put("screenSize", testCase.getScreenSize())
                 .put("usrCreated", testCase.getUsrCreated())
