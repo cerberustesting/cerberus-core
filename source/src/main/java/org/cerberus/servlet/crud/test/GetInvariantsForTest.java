@@ -67,7 +67,6 @@ public class GetInvariantsForTest extends HttpServlet {
             values.add("PRIORITY");
             values.add("TYPE");
             values.add("TCSTATUS");
-            values.add("TCACTIVE");
             values.add("BUILD");
             values.add("REVISION");
 

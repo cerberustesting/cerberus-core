@@ -836,10 +836,10 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
-            "data": "tcActive",
+            "data": "isActive",
             "visible": false,
-            "sName": "tec.tcactive",
-            "title": doc.getDocOnline("testcase", "TcActive"),
+            "sName": "tec.isActive",
+            "title": doc.getDocOnline("testcase", "isActive"),
             "sDefaultContent": "",
             "sWidth": "70px",
             "className": "center",

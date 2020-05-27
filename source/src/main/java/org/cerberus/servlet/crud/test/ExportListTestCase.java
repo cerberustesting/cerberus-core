@@ -62,7 +62,7 @@ public class ExportListTestCase extends HttpServlet {
         List<TestCase> list = testCaseService.findTestCaseByAllCriteria(tCase, text, system);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Test,TestCase,Origin,RefOrigin,Creator,Implementer,LastModifier,Project,Ticket,Application,RunQA,RunUAT,RunPROD,Priority,Group,Status,");
+        sb.append("Test,TestCase,Origin,RefOrigin,Creator,Implementer,LastModifier,Project,Ticket,Application,isActiveQA,isActiveUAT,isActivePROD,Priority,Group,Status,");
         sb.append("ShortDescription,Description,HowTo,Active,fromMajor,FromMinor,ToMajor,ToMinor,LastExecution,BugID,TargetMajor,TargetMinor,Comment\n");
 
         for (TestCase tc : list) {
@@ -147,11 +147,11 @@ public class ExportListTestCase extends HttpServlet {
         sb.append("\",\"");
         sb.append(StringUtil.getCleanCSVTextField(tc.getApplication()));
         sb.append("\",\"");
-        sb.append(StringUtil.getCleanCSVTextField(tc.getActiveQA()));
+        sb.append(StringUtil.getCleanCSVTextField(tc.isActiveQA()));
         sb.append("\",\"");
-        sb.append(StringUtil.getCleanCSVTextField(tc.getActiveUAT()));
+        sb.append(StringUtil.getCleanCSVTextField(tc.isActiveUAT()));
         sb.append("\",\"");
-        sb.append(StringUtil.getCleanCSVTextField(tc.getActivePROD()));
+        sb.append(StringUtil.getCleanCSVTextField(tc.isActivePROD()));
         sb.append("\",\"");
         sb.append(tc.getPriority());
         sb.append("\",\"");
@@ -165,7 +165,7 @@ public class ExportListTestCase extends HttpServlet {
         sb.append("\",\"");
         sb.append(StringUtil.getCleanCSVTextField(tc.getHowTo()));
         sb.append("\",\"");
-        sb.append(StringUtil.getCleanCSVTextField(tc.getTcActive()));
+        sb.append(StringUtil.getCleanCSVTextField(tc.isActive()));
         sb.append("\",\"");
         sb.append(StringUtil.getCleanCSVTextField(tc.getFromMajor()));
         sb.append("\",\"");

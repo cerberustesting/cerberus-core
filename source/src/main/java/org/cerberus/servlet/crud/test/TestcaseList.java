@@ -19,7 +19,6 @@
  */
 package org.cerberus.servlet.crud.test;
 
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -47,16 +46,15 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class TestcaseList extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(TestcaseList.class);
-    
+
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -65,7 +63,7 @@ public class TestcaseList extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         DatabaseSpring db = appContext.getBean(DatabaseSpring.class);
         PreparedStatement stmt_testlist = null;
-        try(Connection conn = db.connect();){
+        try (Connection conn = db.connect();) {
             String application = request.getParameter("application");
             String app = "";
             String test = request.getParameter("test");
@@ -85,18 +83,18 @@ public class TestcaseList extends HttpServlet {
             }
             if (StringUtils.isNotBlank(url)) {
                 stmt_testlist = conn.prepareStatement("SELECT concat(?) AS list FROM testcase "
-                        + " WHERE TcActive = 'Y'  AND `Group` = 'AUTOMATED' ? ? ORDER BY test,testcase");
+                        + " WHERE isActive = 'Y'  AND `Group` = 'AUTOMATED' ? ? ORDER BY test,testcase");
                 stmt_testlist.setString(1, url);
                 stmt_testlist.setString(2, app);
                 stmt_testlist.setString(3, tes);
-                try(ResultSet rs_testlist = stmt_testlist.executeQuery();){
-                	int id = 0;
+                try (ResultSet rs_testlist = stmt_testlist.executeQuery();) {
+                    int id = 0;
                     if (rs_testlist.first()) {
                         do {
                             out.println(rs_testlist.getString("list"));
                         } while (rs_testlist.next());
                     }
-                }catch (SQLException ex) {
+                } catch (SQLException ex) {
                     LOG.warn(ex.toString());
                 }
                 stmt_testlist.close();
@@ -117,34 +115,31 @@ public class TestcaseList extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed"
     // desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response) throws ServletException, IOException {
+            HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response) throws ServletException, IOException {
+            HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 

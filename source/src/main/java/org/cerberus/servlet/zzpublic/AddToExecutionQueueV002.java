@@ -379,16 +379,16 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                     String testCase = selectTestCase.get(i);
                     TestCase tc = testCaseService.convert(testCaseService.readByKey(test, testCase));
                     // TestCases that are not active are not inserted into queue.
-                    if (tc.getTcActive().equals("Y")) {
+                    if (tc.isActive().equals("Y")) {
                         // We only insert testcase that exist for the given country.
                         for (TestCaseCountry country : testCaseCountryService.convert(testCaseCountryService.readByTestTestCase(null, test, testCase, null))) {
                             if (countries.contains(country.getCountry())) {
                                 // for each environment we test that correspondng gp1 is compatible with testcase environment flag activation.
                                 for (String environment : environments) {
                                     String envGp1 = invariantEnv.get(environment);
-                                    if (((envGp1.equals("PROD")) && (tc.getActivePROD().equalsIgnoreCase("Y")))
-                                            || ((envGp1.equals("UAT")) && (tc.getActiveUAT().equalsIgnoreCase("Y")))
-                                            || ((envGp1.equals("QA")) && (tc.getActiveQA().equalsIgnoreCase("Y")))
+                                    if (((envGp1.equals("PROD")) && (tc.isActivePROD().equalsIgnoreCase("Y")))
+                                            || ((envGp1.equals("UAT")) && (tc.isActiveUAT().equalsIgnoreCase("Y")))
+                                            || ((envGp1.equals("QA")) && (tc.isActiveQA().equalsIgnoreCase("Y")))
                                             || (envGp1.equals("DEV"))) {
                                         // Getting Application in order to check application type against browser.
                                         Application app = applicationService.convert(applicationService.readByKey(tc.getApplication()));

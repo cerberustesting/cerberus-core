@@ -112,14 +112,14 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             tc.setExecutor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("executor"), tc.getExecutor(), charset));
             tc.setUsrCreated(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getUserPrincipal().getName(), "", charset));
             tc.setApplication(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), tc.getApplication(), charset));
-            tc.setActiveQA(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeQA"), tc.getActiveQA(), charset));
-            tc.setActiveUAT(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeUAT"), tc.getActiveUAT(), charset));
-            tc.setActivePROD(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeProd"), tc.getActivePROD(), charset));
+            tc.setActiveQA(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("isActiveQA"), tc.isActiveQA(), charset));
+            tc.setActiveUAT(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("isActiveUAT"), tc.isActiveUAT(), charset));
+            tc.setActivePROD(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("isActivePROD"), tc.isActivePROD(), charset));
             tc.setFromMajor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromMajor"), tc.getFromMajor(), charset));
             tc.setFromMinor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromMinor"), tc.getFromMinor(), charset));
             tc.setToMajor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toMajor"), tc.getToMajor(), charset));
             tc.setToMinor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toMinor"), tc.getToMinor(), charset));
-            tc.setTcActive(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("active"), tc.getTcActive(), charset));
+            tc.setActive(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("active"), tc.isActive(), charset));
             tc.setTargetMajor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("targetMajor"), tc.getTargetMajor(), charset));
             tc.setTargetMinor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("targetMinor"), tc.getTargetMinor(), charset));
             tc.setPriority(ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("priority"), tc.getPriority(), charset));

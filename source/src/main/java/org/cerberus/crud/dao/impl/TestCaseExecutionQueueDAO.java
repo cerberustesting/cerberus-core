@@ -1089,7 +1089,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList<TestCaseExecutionQueue> readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> tcstatusList, List<String> typeList, List<String> tcactiveList, List<String> priorityList, List<String> targetMajorList, List<String> targetMinorList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
+    public AnswerList<TestCaseExecutionQueue> readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> tcstatusList, List<String> typeList, List<String> isActiveList, List<String> priorityList, List<String> targetMajorList, List<String> targetMinorList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
         AnswerList<TestCaseExecutionQueue> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<TestCaseExecutionQueue> tceqList = new ArrayList<>();
@@ -1127,9 +1127,9 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             whereClauses.add(typeClause);
         }
         //test case active
-        String tcactiveClause = SqlUtil.generateInClause("tec.tcactive", tcactiveList);
-        if (!StringUtil.isNullOrEmpty(tcactiveClause)) {
-            whereClauses.add(tcactiveClause);
+        String isActiveClause = SqlUtil.generateInClause("tec.isActive", isActiveList);
+        if (!StringUtil.isNullOrEmpty(isActiveClause)) {
+            whereClauses.add(isActiveClause);
         }
 
         //test case active
@@ -1251,8 +1251,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 }
             }
 
-            if (tcactiveList != null) {
-                for (String param : tcactiveList) {
+            if (isActiveList != null) {
+                for (String param : isActiveList) {
                     preStat.setString(++paramNumber, param);
                 }
             }

@@ -44,11 +44,11 @@ public class FactoryTestCase implements IFactoryTestCase {
 //    private TestCase newTestCase;
     @Override
     public TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, String implementer, String executor, String usrModif, String application,
-            String activeQA, String activeUAT, String activePROD, int priority, String type, String status, String description, String detailedDescription, String howTo, String tcActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor, String fromMinor,
+            String isActiveQA, String isActiveUAT, String isActivePROD, int priority, String type, String status, String description, String detailedDescription, String howTo, String isActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor, String fromMinor,
             String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugID, String targetMajor, String targetMinor, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry,
             List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep, List<TestCaseStepBatch> testCaseStepBatch) {
         TestCase newTestCase = new TestCase();
-        newTestCase.setTcActive(tcActive);
+        newTestCase.setActive(isActive);
         newTestCase.setConditionOperator(conditionOperator);
         newTestCase.setConditionVal1(conditionVal1);
         newTestCase.setConditionVal2(conditionVal2);
@@ -66,9 +66,9 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setOrigine(origine);
         newTestCase.setPriority(priority);
         newTestCase.setRefOrigine(refOrigine);
-        newTestCase.setActivePROD(activePROD);
-        newTestCase.setActiveQA(activeQA);
-        newTestCase.setActiveUAT(activeUAT);
+        newTestCase.setActivePROD(isActivePROD);
+        newTestCase.setActiveQA(isActiveQA);
+        newTestCase.setActiveUAT(isActiveUAT);
         newTestCase.setDescription(description);
         newTestCase.setStatus(status);
         newTestCase.setTargetMinor(targetMinor);
@@ -92,10 +92,10 @@ public class FactoryTestCase implements IFactoryTestCase {
 
     @Override
     public TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, String implementer, String executor, String usrModif, String application,
-            String activeQA, String activeUAT, String activePROD, int priority, String type, String status, String description, String detailedDescription, String howTo, String tcActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor, String fromMinor,
+            String isActiveQA, String isActiveUAT, String isActivePROD, int priority, String type, String status, String description, String detailedDescription, String howTo, String isActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor, String fromMinor,
             String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugID, String targetMajor, String targetMinor, String comment, String dateCreated, String userAgent, String screenSize, Timestamp dateModif, int version) {
         TestCase newTestCase = new TestCase();
-        newTestCase.setTcActive(tcActive);
+        newTestCase.setActive(isActive);
         newTestCase.setConditionOperator(conditionOperator);
         newTestCase.setConditionVal1(conditionVal1);
         newTestCase.setConditionVal2(conditionVal2);
@@ -114,9 +114,9 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setOrigine(origine);
         newTestCase.setPriority(priority);
         newTestCase.setRefOrigine(refOrigine);
-        newTestCase.setActivePROD(activePROD);
-        newTestCase.setActiveQA(activeQA);
-        newTestCase.setActiveUAT(activeUAT);
+        newTestCase.setActivePROD(isActivePROD);
+        newTestCase.setActiveQA(isActiveQA);
+        newTestCase.setActiveUAT(isActiveUAT);
         newTestCase.setDescription(description);
         newTestCase.setStatus(status);
         newTestCase.setTargetMinor(targetMinor);

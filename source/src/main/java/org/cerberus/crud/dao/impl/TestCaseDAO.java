@@ -181,7 +181,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" or tec.`application` like ?");
             searchSQL.append(" or tec.`usrCreated` like ?");
             searchSQL.append(" or tec.`usrModif` like ?");
-            searchSQL.append(" or tec.`tcactive` like ?");
+            searchSQL.append(" or tec.`isActive` like ?");
             searchSQL.append(" or tec.`status` like ?");
             searchSQL.append(" or tec.`type` like ?");
             searchSQL.append(" or tec.`priority` like ?");
@@ -384,7 +384,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCase> testCaseList = new ArrayList<>();
         final String sql = " select count(*) as total, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application,"
-                + "tc.TcActive as Active, tc.`Type`, tc.UsrCreated, tc.`Status` "
+                + "tc.isActive, tc.`Type`, tc.UsrCreated, tc.`Status` "
                 + " from testcase tc INNER JOIN test t ON t.test = tc.test "
                 + " INNER JOIN testcasestepaction tcsa ON tcsa.TestCase = tc.TestCase AND tcsa.Test = t.Test "
                 + " INNER JOIN appservice ser ON ser.Service = tcsa.Value1 "
@@ -426,7 +426,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                         testCaseDTO.setStatus(resultSet.getString("Status"));
 
                         testCaseDTO.setGroup(resultSet.getString("Group"));
-                        testCaseDTO.setIsActive(resultSet.getString("Active"));
+                        testCaseDTO.setIsActive(resultSet.getString("isActive"));
                         testList.getTestCaseList().add(testCaseDTO);
                         map.put(test, testList);
 
@@ -488,7 +488,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         List<TestCase> testCaseList = new ArrayList<>();
 
         final String sql = " select count(*) as total, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application,"
-                + "tc.TcActive as Active, tc.`Type`, tc.UsrCreated, tc.`Status` "
+                + "tc.isActive, tc.`Type`, tc.UsrCreated, tc.`Status` "
                 + " from testcase tc INNER JOIN test t ON t.test = tc.test"
                 + " INNER JOIN testcasecountryproperties tccp ON tccp.Test = t.Test AND tccp.TestCase = tc.TestCase"
                 + " INNER JOIN testdatalib td ON td.Name = tccp.Value1 AND (tccp.Country = td.Country or td.country='') and tccp.test = t.test and tccp.testcase = tc.testcase"
@@ -531,7 +531,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                         testCaseDTO.setStatus(resultSet.getString("Status"));
 
                         testCaseDTO.setGroup(resultSet.getString("Type"));
-                        testCaseDTO.setIsActive(resultSet.getString("Active"));
+                        testCaseDTO.setIsActive(resultSet.getString("isActive"));
                         testList.getTestCaseList().add(testCaseDTO);
                         map.put(test, testList);
 
@@ -586,8 +586,8 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public boolean updateTestCaseInformation(TestCase testCase) {
         boolean res = false;
-        final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.DetailedDescription = ?, tc.activeQA = ?, tc.activeUAT = ?, tc.activePROD = ?, "
-                + "tc.Priority = ?, tc.Status = ?, tc.TcActive = ?, tc.Description = ?, tc.Type = ?, tc.HowTo = ?, tc.Comment = ?, tc.FromMajor = ?, "
+        final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.DetailedDescription = ?, tc.isActiveQA = ?, tc.isActiveUAT = ?, tc.isActivePROD = ?, "
+                + "tc.Priority = ?, tc.Status = ?, tc.isActive = ?, tc.Description = ?, tc.Type = ?, tc.HowTo = ?, tc.Comment = ?, tc.FromMajor = ?, "
                 + "tc.FromMinor = ?, tc.ToMajor = ?, tc.ToMinor = ?, tc.BugID = ?, tc.TargetMajor = ?, tc.Implementer = ?, tc.Executor = ?, tc.LastModifier = ?, tc.TargetMinor = ?, "
                 + "tc.conditionOperator = ?, tc.conditionVal1 = ?, tc.conditionVal2 = ? , tc.conditionVal3 = ? "
                 + "WHERE tc.Test = ? AND tc.Testcase = ?";
@@ -603,12 +603,12 @@ public class TestCaseDAO implements ITestCaseDAO {
                 int i = 1;
                 preStat.setString(i++, testCase.getApplication());
                 preStat.setString(i++, testCase.getDetailedDescription());
-                preStat.setString(i++, testCase.getActiveQA());
-                preStat.setString(i++, testCase.getActiveUAT());
-                preStat.setString(i++, testCase.getActivePROD());
+                preStat.setString(i++, testCase.isActiveQA());
+                preStat.setString(i++, testCase.isActiveUAT());
+                preStat.setString(i++, testCase.isActivePROD());
                 preStat.setString(i++, Integer.toString(testCase.getPriority()));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
-                preStat.setString(i++, testCase.getTcActive());
+                preStat.setString(i++, testCase.isActive());
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getType(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getHowTo(), ""));
@@ -744,11 +744,11 @@ public class TestCaseDAO implements ITestCaseDAO {
         final StringBuffer sql = new StringBuffer("INSERT INTO `testcase` ")
                 .append(" ( `Test`, `TestCase`, `Application`, ")
                 .append("`Description`, `DetailedDescription`, ")
-                .append("`Priority`, `Status`, `TcActive`, ")
+                .append("`Priority`, `Status`, `isActive`, ")
                 .append("`Type`, `Origine`, `RefOrigine`, `HowTo`, `Comment`, ")
                 .append("`FromMajor`, `FromMinor`, `ToMajor`, `ToMinor`, ")
                 .append("`BugID`, `TargetMajor`, `TargetMinor`, `UsrCreated`, ")
-                .append("`Implementer`, `Executor`, `UsrModif`, `activeQA`, `activeUAT`, `activePROD`, `useragent`, `screensize`, ")
+                .append("`Implementer`, `Executor`, `UsrModif`, `isActiveQA`, `isActiveUAT`, `isActivePROD`, `useragent`, `screensize`, ")
                 .append("`conditionOperator`, `conditionVal1`, `conditionVal2`, `conditionVal3`) ")
                 .append("VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ")
                 .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ");
@@ -769,7 +769,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDetailedDescription(), ""));
                 preStat.setString(i++, Integer.toString(testCase.getPriority()));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
-                preStat.setString(i++, testCase.getTcActive() != null && !testCase.getTcActive().equals("Y") ? "N" : "Y");
+                preStat.setString(i++, testCase.isActive() != null && !testCase.isActive().equals("Y") ? "N" : "Y");
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getType(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getOrigine(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getRefOrigine(), ""));
@@ -786,9 +786,9 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getExecutor(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrModif(), ""));
-                preStat.setString(i++, testCase.getActiveQA() != null && !testCase.getActiveQA().equals("Y") ? "N" : "Y");
-                preStat.setString(i++, testCase.getActiveUAT() != null && !testCase.getActiveUAT().equals("Y") ? "N" : "Y");
-                preStat.setString(i++, testCase.getActivePROD() != null && !testCase.getActivePROD().equals("N") ? "Y" : "N");
+                preStat.setString(i++, testCase.isActiveQA() != null && !testCase.isActiveQA().equals("Y") ? "N" : "Y");
+                preStat.setString(i++, testCase.isActiveUAT() != null && !testCase.isActiveUAT().equals("Y") ? "N" : "Y");
+                preStat.setString(i++, testCase.isActivePROD() != null && !testCase.isActivePROD().equals("N") ? "Y" : "N");
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUserAgent(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getScreenSize(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOperator(), ""));
@@ -837,13 +837,13 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public List<TestCase> findTestCaseByCriteria(String test, String application, String country, String active) {
+    public List<TestCase> findTestCaseByCriteria(String test, String application, String country, String isActive) {
         List<TestCase> list = null;
         final String query = "SELECT tec.* FROM testcase tec "
                 + "JOIN testcasecountry tcc "
                 + "LEFT OUTER JOIN application app on app.application = tec.application "
                 + "WHERE tec.test=tcc.test AND tec.testcase=tcc.testcase "
-                + "AND tec.test = ? AND tec.application = ? AND tcc.country = ? AND tec.tcactive = ? ";
+                + "AND tec.test = ? AND tec.application = ? AND tcc.country = ? AND tec.isActive = ? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -857,7 +857,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(1, test);
                 preStat.setString(2, application);
                 preStat.setString(3, country);
-                preStat.setString(4, active);
+                preStat.setString(4, isActive);
 
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<>();
@@ -912,12 +912,12 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.status", testCase.getStatus()))
                 .append(") AND (tec.Type LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.Type", testCase.getType()))
-                .append(") AND (tec.activePROD LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.activePROD", testCase.getActivePROD()))
-                .append(") AND (tec.activeUAT LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.activeUAT", testCase.getActiveUAT()))
-                .append(") AND (tec.activeQA LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.activeQA", testCase.getActiveQA()))
+                .append(") AND (tec.isActivePROD LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.isActivePROD", testCase.isActivePROD()))
+                .append(") AND (tec.isActiveUAT LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.isActiveUAT", testCase.isActiveUAT()))
+                .append(") AND (tec.isActiveQA LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.isActiveQA", testCase.isActiveQA()))
                 .append(") AND (tec.description LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.description", text))
                 .append(" OR tec.howto LIKE ")
@@ -926,8 +926,8 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.DetailedDescription", text))
                 .append(" OR tec.comment LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.comment", text))
-                .append(") AND (tec.TcActive LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.TcActive", testCase.getTcActive()))
+                .append(") AND (tec.isActive LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.isActive", testCase.isActive()))
                 .append(") AND (tec.FromMajor LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.FromMajor", testCase.getFromMajor()))
                 .append(") AND (tec.FromMinor LIKE ")
@@ -1002,7 +1002,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             query.append("LEFT JOIN testcaselabel tel ON tec.test = tel.test AND tec.testcase = tel.testcase ");
             query.append("LEFT JOIN campaignlabel cpl ON cpl.labelId = tel.labelId ");
         }
-        query.append("WHERE 1=1 AND tec.tcactive = 'Y' ");
+        query.append("WHERE 1=1 AND tec.isActive = 'Y' ");
         query.append(createInClauseFromList(test, "tec.test", "AND ", " "));
         query.append(createInClauseFromList(app, "tec.application", "AND ", " "));
         query.append(createInClauseFromList(creator, "tec.usrCreated", "AND ", " "));
@@ -1160,8 +1160,8 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public void updateTestCase(TestCase testCase) throws CerberusException {
-        final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.DetailedDescription = ?, tc.activeQA = ?, tc.activeUAT = ?, tc.activePROD = ?, "
-                + "tc.Priority = ?, tc.Status = ?, tc.TcActive = ?, tc.Description = ?, tc.Type = ?, tc.HowTo = ?, tc.Comment = ?, tc.FromMajor = ?, "
+        final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.DetailedDescription = ?, tc.isActiveQA = ?, tc.isActiveUAT = ?, tc.isActivePROD = ?, "
+                + "tc.Priority = ?, tc.Status = ?, tc.isActive = ?, tc.Description = ?, tc.Type = ?, tc.HowTo = ?, tc.Comment = ?, tc.FromMajor = ?, "
                 + "tc.FromMinor = ?, tc.ToMajor = ?, tc.ToMinor = ?, tc.BugID = ?, tc.TargetMajor = ?, tc.Implementer = ?, tc.Executor = ?, tc.UsrModif = ?, tc.TargetMinor = ?,"
                 + " `conditionOperator` = ?, `conditionVal1` = ?, `conditionVal2` = ?, `conditionVal3` = ?, `useragent` = ?, `screensize` = ?, `version` = ?, dateModif = CURRENT_TIMESTAMP "
                 + "WHERE tc.Test = ? AND tc.Testcase = ?";
@@ -1177,12 +1177,12 @@ public class TestCaseDAO implements ITestCaseDAO {
                 int i = 1;
                 preStat.setString(i++, testCase.getApplication());
                 preStat.setString(i++, testCase.getDetailedDescription());
-                preStat.setString(i++, testCase.getActiveQA().equals("Y") ? "Y" : "N");
-                preStat.setString(i++, testCase.getActiveUAT().equals("Y") ? "Y" : "N");
-                preStat.setString(i++, testCase.getActivePROD().equals("Y") ? "Y" : "N");
+                preStat.setString(i++, testCase.isActiveQA().equals("Y") ? "Y" : "N");
+                preStat.setString(i++, testCase.isActiveUAT().equals("Y") ? "Y" : "N");
+                preStat.setString(i++, testCase.isActivePROD().equals("Y") ? "Y" : "N");
                 preStat.setString(i++, Integer.toString(testCase.getPriority()));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
-                preStat.setString(i++, testCase.getTcActive().equals("Y") ? "Y" : "N");
+                preStat.setString(i++, testCase.isActive().equals("Y") ? "Y" : "N");
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getType(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getHowTo(), ""));
@@ -1444,14 +1444,14 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public List<TestCase> findTestCaseByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] type, String[] targetMajor, String[] targetMinor, String[] creator, String[] implementer, String[] campaign) {
+    public List<TestCase> findTestCaseByCriteria(String[] test, String[] app, String[] isActive, String[] priority, String[] status, String[] type, String[] targetMajor, String[] targetMinor, String[] creator, String[] implementer, String[] campaign) {
         List<TestCase> list = null;
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM testcase tec join application app on tec.application=app.application ");
         sb.append(" WHERE 1=1 ");
         sb.append(SqlUtil.createWhereInClause(" AND tec.Test", test == null ? null : Arrays.asList(test), true));
         sb.append(SqlUtil.createWhereInClause(" AND tec.Application", app == null ? null : Arrays.asList(app), true));
-        sb.append(SqlUtil.createWhereInClause(" AND tec.tcactive", active == null ? null : Arrays.asList(active), true));
+        sb.append(SqlUtil.createWhereInClause(" AND tec.isActive", isActive == null ? null : Arrays.asList(isActive), true));
         sb.append(SqlUtil.createWhereInClause(" AND tec.priority", priority == null ? null : Arrays.asList(priority), true));
         sb.append(SqlUtil.createWhereInClause(" AND tec.status", status == null ? null : Arrays.asList(status), true));
         sb.append(SqlUtil.createWhereInClause(" AND tec.type", type == null ? null : Arrays.asList(type), true));
@@ -1719,7 +1719,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" or tec.`application` like ?");
             searchSQL.append(" or tec.`usrCreated` like ?");
             searchSQL.append(" or tec.`usrModif` like ?");
-            searchSQL.append(" or tec.`tcactive` like ?");
+            searchSQL.append(" or tec.`isActive` like ?");
             searchSQL.append(" or tec.`status` like ?");
             searchSQL.append(" or tec.`type` like ?");
             searchSQL.append(" or tec.`priority` like ?");
@@ -1837,14 +1837,14 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(" implementer = ?,");
         query.append(" Executor = ?,");
         query.append(" application = ?,");
-        query.append(" activeQA = ?,");
-        query.append(" activeUAT = ?,");
-        query.append(" activeProd = ?,");
+        query.append(" isActiveQA = ?,");
+        query.append(" isActiveUAT = ?,");
+        query.append(" isActivePROD = ?,");
         query.append(" status = ?,");
         query.append(" description = ?,");
         query.append(" DetailedDescription = ?,");
         query.append(" howTo = ?,");
-        query.append(" tcactive = ?,");
+        query.append(" isActive = ?,");
         query.append(" FromMajor = ?,");
         query.append(" FromMinor = ?,");
         query.append(" ToMajor = ?,");
@@ -1881,14 +1881,14 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, tc.getImplementer());
                 preStat.setString(i++, tc.getExecutor());
                 preStat.setString(i++, tc.getApplication());
-                preStat.setString(i++, tc.getActiveQA());
-                preStat.setString(i++, tc.getActiveUAT());
-                preStat.setString(i++, tc.getActivePROD());
+                preStat.setString(i++, tc.isActiveQA());
+                preStat.setString(i++, tc.isActiveUAT());
+                preStat.setString(i++, tc.isActivePROD());
                 preStat.setString(i++, tc.getStatus());
                 preStat.setString(i++, tc.getDescription());
                 preStat.setString(i++, tc.getDetailedDescription());
                 preStat.setString(i++, tc.getHowTo());
-                preStat.setString(i++, tc.getTcActive());
+                preStat.setString(i++, tc.isActive());
                 preStat.setString(i++, tc.getFromMajor());
                 preStat.setString(i++, tc.getFromMinor());
                 preStat.setString(i++, tc.getToMajor());
@@ -1944,11 +1944,11 @@ public class TestCaseDAO implements ITestCaseDAO {
         final StringBuffer sql = new StringBuffer("INSERT INTO `testcase` ")
                 .append(" ( `Test`, `TestCase`, `Application`, ")
                 .append("`Description`, `DetailedDescription`, ")
-                .append("`Priority`, `Status`, `TcActive`, ")
+                .append("`Priority`, `Status`, `isActive`, ")
                 .append("`Type`, `Origine`, `RefOrigine`, `HowTo`, `Comment`, ")
                 .append("`FromMajor`, `FromMinor`, `ToMajor`, `ToMinor`, ")
                 .append("`BugID`, `TargetMajor`, `TargetMinor`, `UsrCreated`, ")
-                .append("`Implementer`, `Executor`, `activeQA`, `activeUAT`, `activePROD`, `useragent`, `screenSize`, ")
+                .append("`Implementer`, `Executor`, `isActiveQA`, `isActiveUAT`, `isActivePROD`, `useragent`, `screenSize`, ")
                 .append("`conditionOperator`, `conditionVal1`, `conditionVal2`, `conditionVal3`, `version`) ")
                 .append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ")
                 .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ");
@@ -1969,7 +1969,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDetailedDescription(), ""));
                 preStat.setString(i++, Integer.toString(testCase.getPriority()));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
-                preStat.setString(i++, testCase.getTcActive() != null && !testCase.getTcActive().equals("Y") ? "N" : "Y");
+                preStat.setString(i++, testCase.isActive() != null && !testCase.isActive().equals("Y") ? "N" : "Y");
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getType(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getOrigine(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getRefOrigine(), ""));
@@ -1989,9 +1989,9 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrCreated(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getExecutor(), ""));
-                preStat.setString(i++, testCase.getActiveQA() != null && !testCase.getActiveQA().equals("Y") ? "N" : "Y");
-                preStat.setString(i++, testCase.getActiveUAT() != null && !testCase.getActiveUAT().equals("Y") ? "N" : "Y");
-                preStat.setString(i++, testCase.getActivePROD() != null && !testCase.getActivePROD().equals("N") ? "Y" : "N");
+                preStat.setString(i++, testCase.isActiveQA() != null && !testCase.isActiveQA().equals("Y") ? "N" : "Y");
+                preStat.setString(i++, testCase.isActiveUAT() != null && !testCase.isActiveUAT().equals("Y") ? "N" : "Y");
+                preStat.setString(i++, testCase.isActivePROD() != null && !testCase.isActivePROD().equals("N") ? "Y" : "N");
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUserAgent(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getScreenSize(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOperator(), ""));
@@ -2085,7 +2085,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         int priority = resultSet.getInt("tec.Priority");
         int version = resultSet.getInt("tec.version");
         String status = resultSet.getString("tec.Status");
-        String tcactive = resultSet.getString("tec.TcActive");
+        String isActive = resultSet.getString("tec.isActive");
         String conditionOperator = resultSet.getString("tec.conditionOperator");
         String conditionVal1 = resultSet.getString("tec.ConditionVal1");
         String conditionVal2 = resultSet.getString("tec.ConditionVal2");
@@ -2110,9 +2110,9 @@ public class TestCaseDAO implements ITestCaseDAO {
         String targetMinor = resultSet.getString("tec.TargetMinor");
         String implementer = resultSet.getString("tec.Implementer");
         String executor = resultSet.getString("tec.Executor");
-        String runQA = resultSet.getString("tec.activeQA");
-        String runUAT = resultSet.getString("tec.activeUAT");
-        String runPROD = resultSet.getString("tec.activePROD");
+        String isActiveQA = resultSet.getString("tec.isActiveQA");
+        String isActiveUAT = resultSet.getString("tec.isActiveUAT");
+        String isActivePROD = resultSet.getString("tec.isActivePROD");
         String usrCreated = resultSet.getString("tec.UsrCreated");
         String dateCreated = resultSet.getString("tec.DateCreated");
         String usrModif = resultSet.getString("tec.UsrModif");
@@ -2127,8 +2127,8 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
 
         TestCase newTestCase = factoryTestCase.create(test, testCase, origin, refOrigin, usrCreated, implementer, executor,
-                usrModif, tcapplication, runQA, runUAT, runPROD, priority, type,
-                status, description, detailedDescription, howTo, tcactive, conditionOperator, conditionVal1, conditionVal2, conditionVal3, fromMajor, fromMinor, toMajor,
+                usrModif, tcapplication, isActiveQA, isActiveUAT, isActivePROD, priority, type,
+                status, description, detailedDescription, howTo, isActive, conditionOperator, conditionVal1, conditionVal2, conditionVal3, fromMajor, fromMinor, toMajor,
                 toMinor, status, bugID, targetMajor, targetMinor, comment, dateCreated, userAgent, screenSize, dateModif, version);
         newTestCase.setSystem(system);
         return newTestCase;

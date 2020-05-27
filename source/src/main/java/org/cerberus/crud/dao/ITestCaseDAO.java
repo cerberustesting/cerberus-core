@@ -52,7 +52,7 @@ public interface ITestCaseDAO {
 
     List<TestCase> findTestCaseByApplication(String application);
 
-    List<TestCase> findTestCaseByCriteria(String test, String application, String country, String active);
+    List<TestCase> findTestCaseByCriteria(String test, String application, String country, String isActive);
 
     /**
      * @param testCase
@@ -102,7 +102,7 @@ public interface ITestCaseDAO {
      *
      * @param test
      * @param app
-     * @param active
+     * @param isActive
      * @param priority
      * @param status
      * @param type
@@ -113,7 +113,7 @@ public interface ITestCaseDAO {
      * @param campaign
      * @return
      */
-    List<TestCase> findTestCaseByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] type, String[] targetMajor, String[] targetMinor, String[] creator, String[] implementer, String[] campaign);
+    List<TestCase> findTestCaseByCriteria(String[] test, String[] app, String[] isActive, String[] priority, String[] status, String[] type, String[] targetMajor, String[] targetMinor, String[] creator, String[] implementer, String[] campaign);
 
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException;
 

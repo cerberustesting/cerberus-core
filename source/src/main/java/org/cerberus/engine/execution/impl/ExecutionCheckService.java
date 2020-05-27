@@ -115,7 +115,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if testcase is active");
         }
-        if (testCase.getTcActive().equals("Y")) {
+        if (testCase.isActive().equals("Y")) {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_NOTACTIVE);
@@ -275,11 +275,11 @@ public class ExecutionCheckService implements IExecutionCheckService {
         }
         TestCase tc = tCExecution.getTestCaseObj();
         if (tCExecution.getEnvironmentDataObj().getGp1().equalsIgnoreCase("QA")) {
-            return this.checkRunQA(tc, tCExecution.getEnvironmentData());
+            return this.checkIsActiveQA(tc, tCExecution.getEnvironmentData());
         } else if (tCExecution.getEnvironmentDataObj().getGp1().equalsIgnoreCase("UAT")) {
-            return this.checkRunUAT(tc, tCExecution.getEnvironmentData());
+            return this.checkIsActiveUAT(tc, tCExecution.getEnvironmentData());
         } else if (tCExecution.getEnvironmentDataObj().getGp1().equalsIgnoreCase("PROD")) {
-            return this.checkRunPROD(tc, tCExecution.getEnvironmentData());
+            return this.checkIsActivePROD(tc, tCExecution.getEnvironmentData());
         } else if (tCExecution.getEnvironmentDataObj().getGp1().equalsIgnoreCase("DEV")) {
             return true;
         }
@@ -289,29 +289,29 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return false;
     }
 
-    private boolean checkRunQA(TestCase tc, String env) {
-        if (tc.getActiveQA().equals("Y")) {
+    private boolean checkIsActiveQA(TestCase tc, String env) {
+        if (tc.isActiveQA().equals("Y")) {
             return true;
         }
-        message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RUNQA_NOTDEFINED);
+        message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ISACTIVEQA_NOTDEFINED);
         message.setDescription(message.getDescription().replace("%ENV%", env));
         return false;
     }
 
-    private boolean checkRunUAT(TestCase tc, String env) {
-        if (tc.getActiveUAT().equals("Y")) {
+    private boolean checkIsActiveUAT(TestCase tc, String env) {
+        if (tc.isActiveUAT().equals("Y")) {
             return true;
         }
-        message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RUNUAT_NOTDEFINED);
+        message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ISACTIVEUAT_NOTDEFINED);
         message.setDescription(message.getDescription().replace("%ENV%", env));
         return false;
     }
 
-    private boolean checkRunPROD(TestCase tc, String env) {
-        if (tc.getActivePROD().equals("Y")) {
+    private boolean checkIsActivePROD(TestCase tc, String env) {
+        if (tc.isActivePROD().equals("Y")) {
             return true;
         }
-        message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RUNPROD_NOTDEFINED);
+        message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ISACTIVEPROD_NOTDEFINED);
         message.setDescription(message.getDescription().replace("%ENV%", env));
         return false;
     }

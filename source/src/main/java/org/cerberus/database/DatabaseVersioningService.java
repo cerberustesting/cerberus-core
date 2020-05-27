@@ -8569,6 +8569,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Drop the column function from testcase table
         a.add("ALTER TABLE testcase DROP function");
 
+        // 1512
+        a.add("ALTER TABLE testcase "
+                + "CHANGE TcActive isActive VARCHAR(1),"
+                + "CHANGE activeQA isActiveQA VARCHAR(1),"
+                + "CHANGE activeUAT isActiveUAT VARCHAR(1),"
+                + "CHANGE activePROD isActivePROD VARCHAR(1)");
+
         return a;
     }
 

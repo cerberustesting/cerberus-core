@@ -79,10 +79,10 @@ function initModalTestCase() {
     $("[name='lastModifierField']").html(doc.getDocOnline("testcase", "LastModifier"));
     $("[name='applicationField']").html(doc.getDocOnline("application", "Application"));
     $("[name='statusField']").html(doc.getDocOnline("testcase", "Status"));
-    $("[name='actQAField']").html(doc.getDocOnline("testcase", "activeQA"));
-    $("[name='actUATField']").html(doc.getDocOnline("testcase", "activeUAT"));
-    $("[name='actUATField']").html(doc.getDocOnline("testcase", "activeUAT"));
-    $("[name='actProdField']").html(doc.getDocOnline("testcase", "activePROD"));
+    $("[name='isActiveQAField']").html(doc.getDocOnline("testcase", "IsActiveQA"));
+    $("[name='isActiveUATField']").html(doc.getDocOnline("testcase", "IsActiveUAT"));
+    $("[name='isActiveUATField']").html(doc.getDocOnline("testcase", "IsActiveUAT"));
+    $("[name='isActivePRODField']").html(doc.getDocOnline("testcase", "IsActivePROD"));
     $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
     $("[name='detailedDescriptionField']").html(doc.getDocOnline("testcase", "detailedDescription"));
     $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
@@ -94,7 +94,7 @@ function initModalTestCase() {
     $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
     $("[name='countryListLabel']").html(doc.getDocOnline("testcase", "countryListLabel"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
-    $("[name='activeField']").html(doc.getDocOnline("testcase", "TcActive"));
+    $("[name='activeField']").html(doc.getDocOnline("testcase", "IsActive"));
     $("[name='fromMajorField']").html(doc.getDocOnline("testcase", "FromMajor"));
     $("[name='fromMinorField']").html(doc.getDocOnline("testcase", "FromMinor"));
     $("[name='toMajorField']").html(doc.getDocOnline("testcase", "ToMajor"));
@@ -132,10 +132,10 @@ function initModalTestCase() {
     displayInvariantList("priority", "PRIORITY", false);
     displayInvariantList("conditionOperator", "TESTCASECONDITIONOPERATOR", false);
     $('[name="origin"]').append('<option value="All">All</option>');
-    displayInvariantList("active", "TCACTIVE", false);
-    displayInvariantList("activeQA", "TCACTIVE", false);
-    displayInvariantList("activeUAT", "TCACTIVE", false);
-    displayInvariantList("activeProd", "TCACTIVE", false);
+    displayInvariantList("isActive", "TCACTIVE", false);
+    displayInvariantList("isActiveQA", "TCACTIVE", false);
+    displayInvariantList("isActiveUAT", "TCACTIVE", false);
+    displayInvariantList("isActivePROD", "TCACTIVE", false);
 
     $('[data-toggle="popover"]').popover({
         'placement': 'auto',
@@ -574,9 +574,9 @@ function confirmTestCaseModalHandler(mode) {
             originalTest: data.originalTest,
             originalTestCase: data.originalTestCase,
             active: data.active,
-            activeProd: data.activeProd,
-            activeQA: data.activeQA,
-            activeUAT: data.activeUAT,
+            isActivePROD: data.isActivePROD,
+            isActiveQA: data.isActiveQA,
+            isActiveUAT: data.isActiveUAT,
             application: data.application,
             detailedDescription: data.detailedDescription,
             bugId: JSON.stringify(table_bug),
@@ -830,7 +830,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#datecreated").prop("value", testCase.dateCreated);
         formEdit.find("#usrmodif").prop("value", testCase.usrModif);
         formEdit.find("#datemodif").prop("value", getDate(testCase.dateModif));
-        formEdit.find("#actProd").val(testCase.activePROD);
+        formEdit.find("#isActivePROD").val(testCase.isActivePROD);
     } else { // DUPLICATE or ADD
         formEdit.find("#usrcreated").prop("value", "");
         formEdit.find("#datecreated").prop("value", "");
@@ -877,12 +877,12 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#tcDateCrea").prop("value", testCase.dateCreated);
         formEdit.find("#type").prop("value", testCase.type);
         formEdit.find("#priority").prop("value", testCase.priority);
-        formEdit.find("#actQA").prop("value", testCase.activeQA);
-        formEdit.find("#actUAT").prop("value", testCase.activeUAT);
+        formEdit.find("#isActiveQA").prop("value", testCase.isActiveQA);
+        formEdit.find("#isActiveUAT").prop("value", testCase.isActiveUAT);
         formEdit.find("#userAgent").prop("value", testCase.userAgent);
         formEdit.find("#screenSize").prop("value", testCase.screenSize);
         formEdit.find("#shortDesc").prop("value", testCase.description);
-        formEdit.find("#active").prop("value", testCase.tcActive);
+        formEdit.find("#active").prop("value", testCase.isActive);
 
         $('#bugTableBody tr').remove();
         // Sorting Bug list.

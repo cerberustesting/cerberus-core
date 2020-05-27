@@ -28,9 +28,9 @@ import org.cerberus.crud.entity.TestCaseExecution;
 public class ExecutionValidator {
 
     private TestCaseExecution execution;
-    private boolean runQA;
-    private boolean runUAT;
-    private boolean runPROD;
+    private boolean isActiveQA;
+    private boolean isActiveUAT;
+    private boolean isActivePROD;
     private boolean valid;
     private String message;
 
@@ -38,16 +38,16 @@ public class ExecutionValidator {
         this.execution = execution;
     }
 
-    public void setRunQA(String runQA) {
-        this.runQA = runQA.equals("Y");
+    public void setActiveQA(String isActiveQA) {
+        this.isActiveQA = isActiveQA.equals("Y");
     }
 
-    public void setRunUAT(String runUAT) {
-        this.runUAT = runUAT.equals("Y");
+    public void setActiveUAT(String isActiveUAT) {
+        this.isActiveUAT = isActiveUAT.equals("Y");
     }
 
-    public void setRunPROD(String runPROD) {
-        this.runPROD = runPROD.equals("Y");
+    public void setActivePROD(String isActivePROD) {
+        this.isActivePROD = isActivePROD.equals("Y");
     }
 
     public void setValid(boolean bool) {
@@ -62,18 +62,18 @@ public class ExecutionValidator {
         return this.execution;
     }
 
-    public boolean getRunQA() {
-        return this.runQA;
+    public boolean isActiveQA() {
+        return this.isActiveQA;
     }
-    
-    public boolean getRunUAT() {
-        return this.runUAT;
+
+    public boolean isActiveUAT() {
+        return this.isActiveUAT;
     }
-    
-    public boolean getRunPROD() {
-        return this.runPROD;
+
+    public boolean isActivePROD() {
+        return this.isActivePROD;
     }
-    
+
     public boolean isValid() {
         return this.valid;
     }

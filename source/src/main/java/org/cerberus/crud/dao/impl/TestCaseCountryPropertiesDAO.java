@@ -76,12 +76,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
 
     @Override
     public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) throws CerberusException {
-        final String query = "SELECT * FROM testcasecountryproperties tcp WHERE test = ? AND testcase = ? " ;
+        final String query = "SELECT * FROM testcasecountryproperties tcp WHERE test = ? AND testcase = ? ";
         // TestCase dependency should only be used on testcasedataexecution.
         // In other words, when a test case is linked to another testcase, it should have access to its data at execution level but should not inherit from testcase property definition.
         // As a consequece this method should not return properties from dependencies.
 //                "OR exists (select 1 from  testcasedep  where DepTest = tcp.Test AND DepTestCase = tcp.TestCase AND Test = ? AND TestCase = ?)"; // Manage tc dependencies
-
 
         return RequestDbUtils.executeQueryList(databaseSpring, query,
                 ps -> {
@@ -528,13 +527,13 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
     }
-    
+
     @Override
     public Answer bulkRenameProperties(String oldName, String newName) {
-    	Answer answer = new Answer();
+        Answer answer = new Answer();
         MessageEvent msg;
-        
-        String query ="UPDATE testcasecountryproperties SET `Value1`=? ";
+
+        String query = "UPDATE testcasecountryproperties SET `Value1`=? ";
         query += "WHERE `Type` = 'getFromDataLib' AND `Value1`=?";
 
         // Debug message on SQL.
@@ -542,16 +541,16 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             LOG.debug("SQL : " + query);
         }
 
-        try ( Connection connection = this.databaseSpring.connect() ) {        
-            try ( PreparedStatement preStat = connection.prepareStatement(query) ) {
-            	int i = 1;
+        try (Connection connection = this.databaseSpring.connect()) {
+            try (PreparedStatement preStat = connection.prepareStatement(query)) {
+                int i = 1;
                 preStat.setString(i++, newName);
                 preStat.setString(i++, oldName);
                 int rowsUpdated = preStat.executeUpdate();
 
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 // Message to customize : X properties updated using the rowsUpdated variable
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE").replace("success!", "success! - Row(s) updated : "+String.valueOf(rowsUpdated)));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE").replace("success!", "success! - Row(s) updated : " + String.valueOf(rowsUpdated)));
 
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString(), exception);
@@ -562,7 +561,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 }
-            } 
+            }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString(), exception);
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -671,7 +670,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         List<TestListDTO> listOfTests = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("select count(*) as total, tccp.property, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application, ");
-        query.append("tc.TcActive as Active, tc.`Group`, tc.UsrCreated, tc.`Status` ");
+        query.append("tc.isActive, tc.`Group`, tc.UsrCreated, tc.`Status` ");
         query.append("from testcasecountryproperties tccp    ");
         query.append("inner join test t on t.test = tccp.test ");
         query.append("inner join testcase tc  on t.test = tccp.test  and t.test = tc.test ");
@@ -728,7 +727,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                             testCaseDTO.setStatus(resultSet.getString("Status"));
 
                             testCaseDTO.setGroup(resultSet.getString("Group"));
-                            testCaseDTO.setIsActive(resultSet.getString("Active"));
+                            testCaseDTO.setIsActive(resultSet.getString("isActive"));
                             testList.getTestCaseList().add(testCaseDTO);
                             map.put(test, testList);
                             propertiesList = new ArrayList<PropertyListDTO>();
@@ -832,7 +831,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                     preStat.addBatch();
                 }
 
-                //executes the batch         
+                //executes the batch
                 preStat.executeBatch();
 
                 int affectedRows[] = preStat.executeBatch();
@@ -1017,7 +1016,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(13, object.getTest());
                 preStat.setString(14, object.getTestCase());
                 preStat.setString(15, object.getCountry());
-                preStat.setString(16, object.getProperty());             
+                preStat.setString(16, object.getProperty());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

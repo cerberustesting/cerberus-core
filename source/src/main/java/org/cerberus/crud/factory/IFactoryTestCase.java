@@ -45,16 +45,16 @@ public interface IFactoryTestCase {
      * @param executor
      * @param usrModif
      * @param application
-     * @param activeQA
-     * @param activeUAT
-     * @param activePROD
+     * @param isActiveQA
+     * @param isActiveUAT
+     * @param isActivePROD
      * @param priority
      * @param type
      * @param status
      * @param description
      * @param detailedDescription
      * @param howTo
-     * @param tcActive
+     * @param isActive
      * @param conditionOperator
      * @param conditionVal1
      * @param conditionVal2
@@ -78,8 +78,8 @@ public interface IFactoryTestCase {
      */
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
             String implementer, String executor, String usrModif, String application,
-            String activeQA, String activeUAT, String activePROD, int priority, String type, String status,
-            String description, String detailedDescription, String howTo, String tcActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor,
+            String isActiveQA, String isActiveUAT, String isActivePROD, int priority, String type, String status,
+            String description, String detailedDescription, String howTo, String isActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor,
             String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugID,
             String targetMajor, String targetMinor, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry,
             List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep,
@@ -96,16 +96,16 @@ public interface IFactoryTestCase {
      * @param executor
      * @param usrModif
      * @param application
-     * @param activeQA
-     * @param activeUAT
-     * @param activePROD
+     * @param isActiveQA
+     * @param isActiveUAT
+     * @param isActivePROD
      * @param priority
      * @param type
      * @param status
      * @param description
      * @param detailedDescription
      * @param howTo
-     * @param tcActive
+     * @param isActive
      * @param conditionOperator
      * @param conditionVal1
      * @param conditionVal2
@@ -128,8 +128,8 @@ public interface IFactoryTestCase {
      */
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
             String implementer, String executor, String usrModif, String application,
-            String activeQA, String activeUAT, String activePROD, int priority, String type, String status,
-            String description, String detailedDescription, String howTo, String tcActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor,
+            String isActiveQA, String isActiveUAT, String isActivePROD, int priority, String type, String status,
+            String description, String detailedDescription, String howTo, String isActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor,
             String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bigID,
             String targetMajor, String targetMinor, String comment, String dateCreated, String userAgent, String screenSize, Timestamp dateModif, int version);
 

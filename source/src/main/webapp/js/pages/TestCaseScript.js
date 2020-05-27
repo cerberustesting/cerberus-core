@@ -1420,10 +1420,10 @@ function displayPageLabel(doc) {
     $("[name='applicationField']").html(doc.getDocOnline("application", "Application"));
     $("[name='statusField']").html(doc.getDocOnline("testcase", "Status"));
     $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
-    $("[name='actQAField']").html(doc.getDocOnline("testcase", "activeQA"));
-    $("[name='actUATField']").html(doc.getDocOnline("testcase", "activeUAT"));
-    $("[name='actUATField']").html(doc.getDocOnline("testcase", "activeUAT"));
-    $("[name='actProdField']").html(doc.getDocOnline("testcase", "activePROD"));
+    $("[name='isActiveQAField']").html(doc.getDocOnline("testcase", "IsActiveQA"));
+    $("[name='isActiveUATField']").html(doc.getDocOnline("testcase", "IsActiveUAT"));
+    $("[name='isActiveUATField']").html(doc.getDocOnline("testcase", "IsActiveUAT"));
+    $("[name='isActivePRODField']").html(doc.getDocOnline("testcase", "IsActivePROD"));
     $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
     $("[name='detailedDescriptionField']").html(doc.getDocOnline("testcase", "detailedDescription"));
     $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
@@ -1435,7 +1435,7 @@ function displayPageLabel(doc) {
     $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
     $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
-    $("[name='activeField']").html(doc.getDocOnline("testcase", "TcActive"));
+    $("[name='activeField']").html(doc.getDocOnline("testcase", "IsActive"));
     $("[name='fromMajorField']").html(doc.getDocOnline("testcase", "FromMajor"));
     $("[name='fromMinorField']").html(doc.getDocOnline("testcase", "FromMinor"));
     $("[name='toMajorField']").html(doc.getDocOnline("testcase", "ToMajor"));

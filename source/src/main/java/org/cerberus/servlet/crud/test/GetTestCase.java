@@ -88,9 +88,9 @@ public class GetTestCase extends HttpServlet {
                 jsonObject.put("executor", tcInfo.getExecutor());
                 jsonObject.put("lastModifier", tcInfo.getUsrModif());
                 jsonObject.put("application", tcInfo.getApplication());
-                jsonObject.put("runQA", tcInfo.getActiveQA());
-                jsonObject.put("runUAT", tcInfo.getActiveUAT());
-                jsonObject.put("runPROD", tcInfo.getActivePROD());
+                jsonObject.put("isActiveQA", tcInfo.isActiveQA());
+                jsonObject.put("isActiveUAT", tcInfo.isActiveUAT());
+                jsonObject.put("isActivePROD", tcInfo.isActivePROD());
                 jsonObject.put("priority", tcInfo.getPriority());
                 jsonObject.put("group", tcInfo.getType());
                 jsonObject.put("status", tcInfo.getStatus());
@@ -102,7 +102,7 @@ public class GetTestCase extends HttpServlet {
                 jsonObject.put("shortDescription", tcInfo.getDescription());
                 jsonObject.put("description", tcInfo.getDetailedDescription());
                 jsonObject.put("howTo", tcInfo.getHowTo());
-                jsonObject.put("active", tcInfo.getTcActive());
+                jsonObject.put("active", tcInfo.isActive());
                 jsonObject.put("fromMajor", tcInfo.getFromMajor());
                 jsonObject.put("fromMinor", tcInfo.getFromMinor());
                 jsonObject.put("toMajor", tcInfo.getToMajor());

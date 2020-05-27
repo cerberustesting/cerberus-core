@@ -43,7 +43,10 @@ public class TestCase {
     private int priority;
     private int version;
     private String status;
-    private String tcActive;
+    private String isActive;
+    private String isActiveQA;
+    private String isActiveUAT;
+    private String isActivePROD;
     private String conditionOperator;
     private String conditionVal1;
     private String conditionVal2;
@@ -62,9 +65,6 @@ public class TestCase {
     private String targetMinor;
     private String implementer;
     private String executor;
-    private String activeQA;
-    private String activeUAT;
-    private String activePROD;
     private String userAgent;
     private String screenSize;
     private String usrCreated;
@@ -130,12 +130,12 @@ public class TestCase {
         this.testCaseStepBatch = testCaseStepBatch;
     }
 
-    public String getTcActive() {
-        return tcActive;
+    public String isActive() {
+        return isActive;
     }
 
-    public void setTcActive(String active) {
-        this.tcActive = active;
+    public void setActive(String isActive) {
+        this.isActive = isActive;
     }
 
     public String getConditionOperator() {
@@ -315,28 +315,28 @@ public class TestCase {
         this.refOrigine = refOrigin;
     }
 
-    public String getActivePROD() {
-        return activePROD;
+    public String isActiveQA() {
+        return isActiveQA;
     }
 
-    public void setActivePROD(String runPROD) {
-        this.activePROD = runPROD;
+    public void setActiveQA(String isActiveQA) {
+        this.isActiveQA = isActiveQA;
     }
 
-    public String getActiveQA() {
-        return activeQA;
+    public String isActiveUAT() {
+        return isActiveUAT;
     }
 
-    public void setActiveQA(String runQA) {
-        this.activeQA = runQA;
+    public void setActiveUAT(String isActiveUAT) {
+        this.isActiveUAT = isActiveUAT;
     }
 
-    public String getActiveUAT() {
-        return activeUAT;
+    public String isActivePROD() {
+        return isActivePROD;
     }
 
-    public void setActiveUAT(String runUAT) {
-        this.activeUAT = runUAT;
+    public void setActivePROD(String isActivePROD) {
+        this.isActivePROD = isActivePROD;
     }
 
     public String getDescription() {
@@ -479,10 +479,10 @@ public class TestCase {
             result.put("description", this.getDescription());
             result.put("detailedDescription", this.getDetailedDescription());
             result.put("howTo", this.getHowTo());
-            result.put("isActive", this.getTcActive());
-            result.put("isActiveQA", this.getActiveQA());
-            result.put("isActiveUAT", this.getActiveUAT());
-            result.put("isActivePROD", this.getActivePROD());
+            result.put("isActive", this.isActive());
+            result.put("isActiveQA", this.isActiveQA());
+            result.put("isActiveUAT", this.isActiveUAT());
+            result.put("isActivePROD", this.isActivePROD());
             result.put("fromMajor", this.getFromMajor());
             result.put("toMajor", this.getToMajor());
             result.put("targetMajor", this.getTargetMajor());
