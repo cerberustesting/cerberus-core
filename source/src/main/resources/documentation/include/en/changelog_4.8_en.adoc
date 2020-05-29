@@ -5,6 +5,7 @@
 *Improvements / New features*
 [square]
 * Make 'executeCommand' actions and 'getFromCommand' properties more generic in order to trigger any Appium command. That allow for example to perform deeplink tests. #2092
+* New page in order to follow-up campaign execution over time (duration, Status, coverage,...).
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

@@ -479,22 +479,22 @@ public class TagDAO implements ITagDAO {
             searchSQL.append(SqlUtil.generateInClause("and tag.campaign", campaigns));
         }
         if (group1s != null && !group1s.isEmpty()) {
-            searchSQL.append(SqlUtil.generateInClause("cap.group1", group1s));
+            searchSQL.append(SqlUtil.generateInClause("and cap.group1", group1s));
         }
         if (group2s != null && !group2s.isEmpty()) {
-            searchSQL.append(SqlUtil.generateInClause("cap.group2", group2s));
+            searchSQL.append(SqlUtil.generateInClause("and cap.group2", group2s));
         }
         if (group3s != null && !group3s.isEmpty()) {
-            searchSQL.append(SqlUtil.generateInClause("cap.group3", group3s));
+            searchSQL.append(SqlUtil.generateInClause("and cap.group3", group3s));
         }
         if (environments != null && !environments.isEmpty()) {
-            searchSQL.append(SqlUtil.generateInClause("cap.environmentlist", environments));
+            searchSQL.append(SqlUtil.generateInClause("and cap.environmentlist", environments));
         }
         if (countries != null && !countries.isEmpty()) {
-            searchSQL.append(SqlUtil.generateInClause("cap.countrylist", countries));
+            searchSQL.append(SqlUtil.generateInClause("and cap.countrylist", countries));
         }
         if (robotDeclis != null && !robotDeclis.isEmpty()) {
-            searchSQL.append(SqlUtil.generateInClause("cap.robotdeclilist", robotDeclis));
+            searchSQL.append(SqlUtil.generateInClause("and cap.robotdeclilist", robotDeclis));
         }
 
         searchSQL.append(" and tag.`DateCreated` > ? and tag.`DateCreated` < ? ");

@@ -47,6 +47,7 @@ import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
@@ -188,11 +189,46 @@ public class ReadCampaign extends HttpServlet {
 
 //        boolean userHasPermissions = request.isUserInRole("TestAdmin");
         JSONArray jsonArray = new JSONArray();
+        HashMap<String, Boolean> gp1 = new HashMap<>();
+        HashMap<String, Boolean> gp2 = new HashMap<>();
+        HashMap<String, Boolean> gp3 = new HashMap<>();
+
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+
             for (Campaign campaign : (List<Campaign>) answer.getDataList()) {
                 jsonArray.put(convertCampaigntoJSONObject(campaign));
+                if (!StringUtil.isNullOrEmpty(campaign.getGroup1())) {
+                    gp1.put(campaign.getGroup1(), true);
+                }
+                if (!StringUtil.isNullOrEmpty(campaign.getGroup2())) {
+                    gp2.put(campaign.getGroup2(), true);
+                }
+                if (!StringUtil.isNullOrEmpty(campaign.getGroup3())) {
+                    gp3.put(campaign.getGroup3(), true);
+                }
             }
         }
+
+        JSONObject dist = new JSONObject();
+        JSONArray distinct = new JSONArray();
+        for (Map.Entry<String, Boolean> entry : gp1.entrySet()) {
+            String key = entry.getKey();
+            distinct.put(key);
+        }
+        dist.put("group1", distinct);
+        distinct = new JSONArray();
+        for (Map.Entry<String, Boolean> entry : gp2.entrySet()) {
+            String key = entry.getKey();
+            distinct.put(key);
+        }
+        dist.put("group2", distinct);
+        distinct = new JSONArray();
+        for (Map.Entry<String, Boolean> entry : gp3.entrySet()) {
+            String key = entry.getKey();
+            distinct.put(key);
+        }
+        dist.put("group3", distinct);
+        resp.put("distinct", dist);
 
         resp.put("contentTable", jsonArray);
         resp.put("hasPermissions", userHasPermissions);

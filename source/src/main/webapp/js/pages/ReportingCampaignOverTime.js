@@ -61,6 +61,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
         var environments = GetURLParameters("environments");
         var countries = GetURLParameters("countries");
         var robotDeclis = GetURLParameters("robotDeclis");
+        var gp1s = GetURLParameters("group1s");
+        var gp2s = GetURLParameters("group2s");
+        var gp3s = GetURLParameters("group3s");
 
         let fromD;
         let toD;
@@ -80,7 +83,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         $("#campaignSelect").empty();
         $("#campaignSelect").select2({width: "100%"});
-        feedPerfCampaign("#campaignSelect", campaigns, countries, environments, robotDeclis);
+        feedPerfCampaign("#campaignSelect", campaigns, countries, environments, robotDeclis, gp1s, gp2s, gp3s);
 
     });
 });
@@ -103,7 +106,7 @@ function multiSelectConfPerf(name) {
  * @param {String} defaultCampaigns - id of testcase to select.
  * @returns {null}
  */
-function feedPerfCampaign(selectElement, defaultCampaigns, countries, environments, robotDeclis) {
+function feedPerfCampaign(selectElement, defaultCampaigns, countries, environments, robotDeclis, gp1s, gp2s, gp3s) {
     showLoader($("#otFilterPanel"));
 
     var campaignList = $(selectElement);
@@ -116,12 +119,38 @@ function feedPerfCampaign(selectElement, defaultCampaigns, countries, environmen
         }
         $('#campaignSelect').val(defaultCampaigns);
         $('#campaignSelect').trigger('change');
-        loadPerfGraph(false, countries, environments, robotDeclis)
+        console.info(data.distinct);
+        feedCampaignGp("#gp1Select", data.distinct.group1);
+        feedCampaignGp("#gp2Select", data.distinct.group2);
+        feedCampaignGp("#gp3Select", data.distinct.group3);
+        loadPerfGraph(false, countries, environments, robotDeclis, gp1s, gp2s, gp3s)
         hideLoader($("#otFilterPanel"));
 
     });
 }
 
+function feedCampaignGp(selectId, data) {
+    console.info(selectId);
+    console.info(data);
+    var select = $(selectId);
+    select.multiselect('destroy');
+    var array = data;
+    $(selectId + " option").remove();
+    for (var i = 0; i < array.length; i++) {
+        let n = array[i];
+        if (isEmpty(n)) {
+            n = "[Empty]";
+        }
+        $(selectId).append($('<option></option>').text(n).val(array[i]));
+    }
+//    for (var i = 0; i < array.length; i++) {
+//        if (array[i].isRequested) {
+//            $(selectId + " option[value='" + array[i] + "']").attr("selected", "selected");
+//        }
+//    }
+    select.multiselect(new multiSelectConfPerf(selectId));
+
+}
 
 /*
  * Loading functions
@@ -147,7 +176,7 @@ function displayPageLabel(doc) {
     $("#lblTestStatBar").html(doc.getDocLabel("page_reportovertime", "lblTestStatBar"));
 }
 
-function loadPerfGraph(saveURLtoHistory, countries, environments, robotDeclis) {
+function loadPerfGraph(saveURLtoHistory, countries, environments, robotDeclis, gp1s, gp2s, gp3s) {
     showLoader($("#otFilterPanel"));
 
     if (countries === null || countries === undefined) {
@@ -198,7 +227,40 @@ function loadPerfGraph(saveURLtoHistory, countries, environments, robotDeclis) {
         }
     }
 
-    let qS = "from=" + from.toISOString() + "&to=" + to.toISOString() + campaignString; //+ countriesQ + environmentsQ + robotDeclisQ + partiQ + typeQ + unitQ + tcString;
+    if ($("#gp1Select").val() !== null) {
+        gp1s = $("#gp1Select").val();
+    }
+    var gp1sQ = "";
+    if (gp1s !== undefined) {
+        len = gp1s.length;
+        for (var i = 0; i < len; i++) {
+            gp1sQ += "&group1s=" + encodeURI(gp1s[i]);
+        }
+    }
+
+    if ($("#gp2Select").val() !== null) {
+        gp2s = $("#gp2Select").val();
+    }
+    var gp2sQ = "";
+    if (gp2s !== undefined) {
+        len = gp2s.length;
+        for (var i = 0; i < len; i++) {
+            gp2sQ += "&group2s=" + encodeURI(gp2s[i]);
+        }
+    }
+
+    if ($("#gp3Select").val() !== null) {
+        gp3s = $("#gp3Select").val();
+    }
+    var gp3sQ = "";
+    if (gp3s !== undefined) {
+        len = gp3s.length;
+        for (var i = 0; i < len; i++) {
+            gp3sQ += "&group3s=" + encodeURI(gp3s[i]);
+        }
+    }
+
+    let qS = "from=" + from.toISOString() + "&to=" + to.toISOString() + campaignString + countriesQ + environmentsQ + robotDeclisQ + gp1sQ + gp2sQ + gp3sQ;
     if (saveURLtoHistory) {
         InsertURLInHistory("./ReportingCampaignOverTime.jsp?" + qS);
     }
@@ -325,7 +387,7 @@ function loadCombos(data) {
 
 }
 
-function getOptions(title, unit) {
+function getOptions(title, unit, axisType) {
     let option = {
         responsive: true,
         maintainAspectRatio: false,
@@ -375,7 +437,8 @@ function getOptions(title, unit) {
                             } else {
                                 return value;
                             }
-                        }}
+                        }},
+                    type: axisType
 
                 }]
         }
@@ -657,9 +720,9 @@ function getLabel(tcDesc, country, env, robot, unit, party, type, testcaseid) {
 
 function initGraph() {
 
-    var tagduroption = getOptions("Campaign Duration (min)", "time");
-    var tagscooption = getOptions("Campaign CI Score", "score");
-    var tagexeoption = getOptions("Campaign Executions", "nb");
+    var tagduroption = getOptions("Campaign Duration (min)", "time", "linear");
+    var tagscooption = getOptions("Campaign CI Score", "score", "logarithmic");
+    var tagexeoption = getOptions("Campaign Executions", "nb", "linear");
 //    var tcbaroption = getOptionsBar("Test Case Duration", "nb");
 
     let tagdurdatasets = [];

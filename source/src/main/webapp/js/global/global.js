@@ -2776,6 +2776,6 @@ function getBugIdList(data, appurl) {
 }
 
 function get_Color_fromindex(index) {
-    var colors = ['#3366FF', '#cad3f1', '#B91D0D', '#3498DB', 'blueviolet', 'midnightblue', 'salmon', 'olive', 'teal', 'grey', 'yellow', 'magenta', 'lightgreen', 'lightgrey', 'coral', 'violet', 'olive'];
+    var colors = ['#3366FF', '#3498DB', 'blueviolet', 'midnightblue', 'salmon', 'olive', 'teal', 'grey', '#cad3f1', 'yellow', 'magenta', 'lightgreen', 'lightgrey', 'coral', 'violet', '#B91D0D', 'olive'];
     return colors[index % colors.length];
 }

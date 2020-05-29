@@ -2102,7 +2102,11 @@ public class TestCaseDAO implements ITestCaseDAO {
         String bugIDString = resultSet.getString("tec.BugID");
         JSONArray bugID = new JSONArray();
         try {
-            bugID = new JSONArray(bugIDString);
+            if (bugIDString != null) {
+                bugID = new JSONArray(bugIDString);
+            } else {
+                bugID = new JSONArray();
+            }
         } catch (JSONException ex) {
             LOG.error("Could not convert '" + bugIDString + "' to JSONArray.", ex);
         }

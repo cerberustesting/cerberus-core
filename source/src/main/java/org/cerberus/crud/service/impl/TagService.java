@@ -20,6 +20,8 @@
 package org.cerberus.crud.service.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,7 @@ import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -135,6 +138,27 @@ public class TagService implements ITagService {
         return tagDAO.update(tag, object);
     }
 
+    private JSONArray sortJsonArray(JSONArray in) {
+        JSONArray out = new JSONArray();
+        try {
+
+            List<String> list = new ArrayList<>();
+            for (int i = 0; i < in.length(); i++) {
+                list.add(in.getString(i));
+            }
+
+            Collections.sort(list, (String a, String b) -> a.compareTo(b));
+            for (String string : list) {
+                out.put(string);
+            }
+
+        } catch (JSONException ex) {
+            LOG.error(ex, ex);
+        }
+
+        return out;
+    }
+
     @Override
     public Answer updateEndOfQueueData(String tag) {
 
@@ -159,11 +183,11 @@ public class TagService implements ITagService {
                 mytag.setCiResult(jsonResponse.getString("result"));
             }
 
-            mytag.setEnvironmentList(jsonResponse.getJSONArray("environment_List").toString());
-            mytag.setCountryList(jsonResponse.getJSONArray("country_list").toString());
-            mytag.setRobotDecliList(jsonResponse.getJSONArray("robotdecli_list").toString());
-            mytag.setSystemList(jsonResponse.getJSONArray("system_list").toString());
-            mytag.setApplicationList(jsonResponse.getJSONArray("application_list").toString());
+            mytag.setEnvironmentList(sortJsonArray(jsonResponse.getJSONArray("environment_List")).toString());
+            mytag.setCountryList(sortJsonArray(jsonResponse.getJSONArray("country_list")).toString());
+            mytag.setRobotDecliList(sortJsonArray(jsonResponse.getJSONArray("robotdecli_list")).toString());
+            mytag.setSystemList(sortJsonArray(jsonResponse.getJSONArray("system_list")).toString());
+            mytag.setApplicationList(sortJsonArray(jsonResponse.getJSONArray("application_list")).toString());
 
             mytag.setNbOK(jsonResponse.getInt("status_OK_nbOfExecution"));
             mytag.setNbKO(jsonResponse.getInt("status_KO_nbOfExecution"));

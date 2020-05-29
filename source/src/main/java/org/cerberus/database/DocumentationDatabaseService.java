@@ -1430,9 +1430,11 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_header','menuProject','','en','Project','',NULL)");
         b.append(",('page_header','menuProject','','fr','Projet','',NULL)");
         b.append(",('page_header','menuReportingExecutionByTag','','en','Campaign Execution Report','',NULL)");
-        b.append(",('page_header','menuReportingExecutionByTag','','fr','Rapport d\\'Execution de campagne','',NULL)");
+        b.append(",('page_header','menuReportingExecutionByTag','','fr','Rapport de campagne','',NULL)");
         b.append(",('page_header','menuReportingExecutionOverTime','','en','Execution Report Over Time','',NULL)");
         b.append(",('page_header','menuReportingExecutionOverTime','','fr','Rapport d\\'Execution dans le temps','',NULL)");
+        b.append(",('page_header','menuReportingCampaignOverTime','','en','Campaign Report Over Time','',NULL)");
+        b.append(",('page_header','menuReportingCampaignOverTime','','fr','Rapport de Campagne dans le temps','',NULL)");
         b.append(",('page_header','menuReportingExecutionList','','en','Execution List','',NULL)");
         b.append(",('page_header','menuReportingExecutionList','','fr','Liste d\\'Execution','',NULL)");
         b.append(",('page_header','menuReportingExecutionThreadMonitoring','','en','Cerberus Monitoring','',NULL)");

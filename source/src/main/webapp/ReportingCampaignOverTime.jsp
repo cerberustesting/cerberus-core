@@ -65,6 +65,26 @@
                             </div>
 
                             <div class="row">
+                                <div class='col-md-4'>
+                                    <div class="form-group">
+                                        <label for="gp1Select">Group 1</label>
+                                        <select multiple="multiple" class="form-control" id="gp1Select"></select>
+                                    </div>
+                                </div>
+                                <div class='col-md-4'>
+                                    <div class="form-group">
+                                        <label for="gp2Select">Group 2</label>
+                                        <select multiple="multiple" class="form-control" id="gp2Select"></select>
+                                    </div>
+                                </div>
+                                <div class='col-md-4'>
+                                    <div class="form-group">
+                                        <label for="gp3Select">Group 3</label>
+                                        <select multiple="multiple" class="form-control" id="gp3Select"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class='col-sm-4 col-md-4'>
                                     <div class="form-group">
                                         <label for="frompicker">From</label>
@@ -173,20 +193,6 @@
                             </div>
                         </div>
                     </div>
-                    <div id="panelTagSStat" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart2">
-                            <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblTagSStat">Campaign Score</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                        </div>
-                        <div class="panel-body collapse in" id="perfChart2">
-                            <div class="row">
-                                <div class="col-xs-12" id="ChartTagSStat" style="height: 400px">
-                                    <canvas id="canvasTagSStat"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div id="panelTagEStat" class="panel panel-default" style="display: none">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart3">
                             <span class="fa fa-bar-chart fa-fw"></span>
@@ -197,6 +203,20 @@
                             <div class="row">
                                 <div class="col-xs-12" id="ChartTagEStat" style="height: 400px">
                                     <canvas id="canvasTagEStat"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="panelTagSStat" class="panel panel-default" style="display: none">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart2">
+                            <span class="fa fa-bar-chart fa-fw"></span>
+                            <label id="lblTagSStat">Campaign Score</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        </div>
+                        <div class="panel-body collapse in" id="perfChart2">
+                            <div class="row">
+                                <div class="col-xs-12" id="ChartTagSStat" style="height: 400px">
+                                    <canvas id="canvasTagSStat"></canvas>
                                 </div>
                             </div>
                         </div>

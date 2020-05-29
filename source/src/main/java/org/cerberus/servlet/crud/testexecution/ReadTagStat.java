@@ -135,21 +135,28 @@ public class ReadTagStat extends HttpServlet {
         LOG.debug("from : " + fromD);
         LOG.debug("to : " + toD);
 
-        List<String> campaigns = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("campaigns"), new ArrayList<String>(), "UTF8");
-        int i = 0;
+        List<String> gp1 = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("group1s"), new ArrayList<String>(), "UTF8");
+        List<String> gp2 = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("group2s"), new ArrayList<String>(), "UTF8");
+        List<String> gp3 = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("group3s"), new ArrayList<String>(), "UTF8");
+
+        List<String> defaultCampaigns = new ArrayList<>();
+        if (gp1.isEmpty() && gp2.isEmpty() && gp3.isEmpty()) {
+            // If none of the groups are defined we allow not to filter per campaign.
+            defaultCampaigns.add("");
+        }
+        List<String> campaigns = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("campaigns"), defaultCampaigns, "UTF8");
 
         List<String> countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("countries"), new ArrayList<String>(), "UTF8");
         Boolean countriesDefined = (request.getParameterValues("countries") != null);
+        LOG.debug("countries : " + countries);
 
         List<String> environments = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("environments"), new ArrayList<String>(), "UTF8");
         Boolean environmentsDefined = (request.getParameterValues("environments") != null);
+        LOG.debug("environments : " + environments);
 
         List<String> robotDeclis = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("robotDeclis"), new ArrayList<String>(), "UTF8");
         Boolean robotDeclisDefined = (request.getParameterValues("robotDeclis") != null);
-
-        List<String> group1s = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("group1s"), new ArrayList<String>(), "UTF8");
-        List<String> group2s = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("group2s"), new ArrayList<String>(), "UTF8");
-        List<String> group3s = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("group3s"), new ArrayList<String>(), "UTF8");
+        LOG.debug("robotDeclis : " + robotDeclis);
 
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem<JSONObject> answer = new AnswerItem<>(msg);
@@ -161,16 +168,16 @@ public class ReadTagStat extends HttpServlet {
         tagService = appContext.getBean(ITagService.class);
 
 //        List<TestCaseExecution> exeL = testCaseExecutionService.readByCriteria(null, null, null, null, ltc, fromD, toD);
-        List<Tag> tagExeL = tagService.convert(tagService.readByVarious(campaigns, group1s, group2s, group3s, environments, countries, robotDeclis, fromD, toD));
+        List<Tag> tagExeL = tagService.convert(tagService.readByVarious(campaigns, gp1, gp2, gp3, new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>(), fromD, toD));
         for (Tag tagExe : tagExeL) {
             if (tagExe.getCountryList() != null) {
-                countryMap.put(tagExe.getCountryList(), countries.contains(tagExe.getCountryList()));
+                countryMap.put(tagExe.getCountryList(), countries.contains(formatedJSONArray(tagExe.getCountryList())));
             }
             if (tagExe.getEnvironmentList() != null) {
-                environmentMap.put(tagExe.getEnvironmentList(), environments.contains(tagExe.getEnvironmentList()));
+                environmentMap.put(tagExe.getEnvironmentList(), environments.contains(formatedJSONArray(tagExe.getEnvironmentList())));
             }
             if (tagExe.getRobotDecliList() != null) {
-                robotDecliMap.put(tagExe.getRobotDecliList(), robotDeclis.contains(tagExe.getRobotDecliList()));
+                robotDecliMap.put(tagExe.getRobotDecliList(), robotDeclis.contains(formatedJSONArray(tagExe.getRobotDecliList())));
             }
         }
         LOG.debug(countryMap);
@@ -229,9 +236,9 @@ public class ReadTagStat extends HttpServlet {
 
         for (Tag exeCur : tagExeList) {
 
-            if ((countries.isEmpty() || countries.contains(exeCur.getCountryList()))
-                    && (environments.isEmpty() || environments.contains(exeCur.getEnvironmentList()))
-                    && (robotDeclis.isEmpty() || robotDeclis.contains(exeCur.getRobotDecliList()))) {
+            if ((countries.isEmpty() || countries.contains(formatedJSONArray(exeCur.getCountryList())))
+                    && (environments.isEmpty() || environments.contains(formatedJSONArray(exeCur.getEnvironmentList())))
+                    && (robotDeclis.isEmpty() || robotDeclis.contains(formatedJSONArray(exeCur.getRobotDecliList())))) {
 
                 /**
                  * Curves of tag response time.
