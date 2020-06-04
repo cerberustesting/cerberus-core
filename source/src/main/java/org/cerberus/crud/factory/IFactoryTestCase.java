@@ -78,8 +78,8 @@ public interface IFactoryTestCase {
      */
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
             String implementer, String executor, String usrModif, String application,
-            String isActiveQA, String isActiveUAT, String isActivePROD, int priority, String type, String status,
-            String description, String detailedDescription, String howTo, String isActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor,
+            boolean isActiveQA, boolean isActiveUAT, boolean isActivePROD, int priority, String type, String status,
+            String description, String detailedDescription, String howTo, boolean isActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor,
             String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugID,
             String targetMajor, String targetMinor, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry,
             List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep,
@@ -128,8 +128,8 @@ public interface IFactoryTestCase {
      */
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
             String implementer, String executor, String usrModif, String application,
-            String isActiveQA, String isActiveUAT, String isActivePROD, int priority, String type, String status,
-            String description, String detailedDescription, String howTo, String isActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor,
+            boolean isActiveQA, boolean isActiveUAT, boolean isActivePROD, int priority, String type, String status,
+            String description, String detailedDescription, String howTo, boolean isActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor,
             String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bigID,
             String targetMajor, String targetMinor, String comment, String dateCreated, String userAgent, String screenSize, Timestamp dateModif, int version);
 

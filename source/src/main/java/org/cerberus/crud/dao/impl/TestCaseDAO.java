@@ -603,12 +603,12 @@ public class TestCaseDAO implements ITestCaseDAO {
                 int i = 1;
                 preStat.setString(i++, testCase.getApplication());
                 preStat.setString(i++, testCase.getDetailedDescription());
-                preStat.setString(i++, testCase.isActiveQA());
-                preStat.setString(i++, testCase.isActiveUAT());
-                preStat.setString(i++, testCase.isActivePROD());
+                preStat.setBoolean(i++, testCase.isActiveQA());
+                preStat.setBoolean(i++, testCase.isActiveUAT());
+                preStat.setBoolean(i++, testCase.isActivePROD());
                 preStat.setString(i++, Integer.toString(testCase.getPriority()));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
-                preStat.setString(i++, testCase.isActive());
+                preStat.setBoolean(i++, testCase.isActive());
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getType(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getHowTo(), ""));
@@ -769,7 +769,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDetailedDescription(), ""));
                 preStat.setString(i++, Integer.toString(testCase.getPriority()));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
-                preStat.setString(i++, testCase.isActive() != null && !testCase.isActive().equals("Y") ? "N" : "Y");
+                preStat.setBoolean(i++, testCase.isActive());
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getType(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getOrigine(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getRefOrigine(), ""));
@@ -786,9 +786,9 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getExecutor(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrModif(), ""));
-                preStat.setString(i++, testCase.isActiveQA() != null && !testCase.isActiveQA().equals("Y") ? "N" : "Y");
-                preStat.setString(i++, testCase.isActiveUAT() != null && !testCase.isActiveUAT().equals("Y") ? "N" : "Y");
-                preStat.setString(i++, testCase.isActivePROD() != null && !testCase.isActivePROD().equals("N") ? "Y" : "N");
+                preStat.setBoolean(i++, testCase.isActiveQA());
+                preStat.setBoolean(i++, testCase.isActiveUAT());
+                preStat.setBoolean(i++, testCase.isActivePROD());
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUserAgent(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getScreenSize(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOperator(), ""));
@@ -913,11 +913,11 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append(") AND (tec.Type LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.Type", testCase.getType()))
                 .append(") AND (tec.isActivePROD LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.isActivePROD", testCase.isActivePROD()))
+                .append(testCase.isActivePROD())
                 .append(") AND (tec.isActiveUAT LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.isActiveUAT", testCase.isActiveUAT()))
+                .append(testCase.isActiveUAT())
                 .append(") AND (tec.isActiveQA LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.isActiveQA", testCase.isActiveQA()))
+                .append(testCase.isActiveQA())
                 .append(") AND (tec.description LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.description", text))
                 .append(" OR tec.howto LIKE ")
@@ -927,7 +927,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append(" OR tec.comment LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.comment", text))
                 .append(") AND (tec.isActive LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.isActive", testCase.isActive()))
+                .append(testCase.isActive())
                 .append(") AND (tec.FromMajor LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.FromMajor", testCase.getFromMajor()))
                 .append(") AND (tec.FromMinor LIKE ")
@@ -1177,12 +1177,12 @@ public class TestCaseDAO implements ITestCaseDAO {
                 int i = 1;
                 preStat.setString(i++, testCase.getApplication());
                 preStat.setString(i++, testCase.getDetailedDescription());
-                preStat.setString(i++, testCase.isActiveQA().equals("Y") ? "Y" : "N");
-                preStat.setString(i++, testCase.isActiveUAT().equals("Y") ? "Y" : "N");
-                preStat.setString(i++, testCase.isActivePROD().equals("Y") ? "Y" : "N");
+                preStat.setBoolean(i++, testCase.isActiveQA());
+                preStat.setBoolean(i++, testCase.isActiveUAT());
+                preStat.setBoolean(i++, testCase.isActivePROD());
                 preStat.setString(i++, Integer.toString(testCase.getPriority()));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
-                preStat.setString(i++, testCase.isActive().equals("Y") ? "Y" : "N");
+                preStat.setBoolean(i++, testCase.isActive());
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getType(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getHowTo(), ""));
@@ -1881,14 +1881,14 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, tc.getImplementer());
                 preStat.setString(i++, tc.getExecutor());
                 preStat.setString(i++, tc.getApplication());
-                preStat.setString(i++, tc.isActiveQA());
-                preStat.setString(i++, tc.isActiveUAT());
-                preStat.setString(i++, tc.isActivePROD());
+                preStat.setBoolean(i++, tc.isActiveQA());
+                preStat.setBoolean(i++, tc.isActiveUAT());
+                preStat.setBoolean(i++, tc.isActivePROD());
                 preStat.setString(i++, tc.getStatus());
                 preStat.setString(i++, tc.getDescription());
                 preStat.setString(i++, tc.getDetailedDescription());
                 preStat.setString(i++, tc.getHowTo());
-                preStat.setString(i++, tc.isActive());
+                preStat.setBoolean(i++, tc.isActive());
                 preStat.setString(i++, tc.getFromMajor());
                 preStat.setString(i++, tc.getFromMinor());
                 preStat.setString(i++, tc.getToMajor());
@@ -1969,7 +1969,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDetailedDescription(), ""));
                 preStat.setString(i++, Integer.toString(testCase.getPriority()));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
-                preStat.setString(i++, testCase.isActive() != null && !testCase.isActive().equals("Y") ? "N" : "Y");
+                preStat.setBoolean(i++, testCase.isActive());
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getType(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getOrigine(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getRefOrigine(), ""));
@@ -1989,9 +1989,9 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrCreated(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getExecutor(), ""));
-                preStat.setString(i++, testCase.isActiveQA() != null && !testCase.isActiveQA().equals("Y") ? "N" : "Y");
-                preStat.setString(i++, testCase.isActiveUAT() != null && !testCase.isActiveUAT().equals("Y") ? "N" : "Y");
-                preStat.setString(i++, testCase.isActivePROD() != null && !testCase.isActivePROD().equals("N") ? "Y" : "N");
+                preStat.setBoolean(i++, testCase.isActiveQA());
+                preStat.setBoolean(i++, testCase.isActiveUAT());
+                preStat.setBoolean(i++, testCase.isActivePROD());
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUserAgent(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getScreenSize(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOperator(), ""));
@@ -2085,7 +2085,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         int priority = resultSet.getInt("tec.Priority");
         int version = resultSet.getInt("tec.version");
         String status = resultSet.getString("tec.Status");
-        String isActive = resultSet.getString("tec.isActive");
+        boolean isActive = resultSet.getBoolean("tec.isActive");
         String conditionOperator = resultSet.getString("tec.conditionOperator");
         String conditionVal1 = resultSet.getString("tec.ConditionVal1");
         String conditionVal2 = resultSet.getString("tec.ConditionVal2");
@@ -2114,9 +2114,9 @@ public class TestCaseDAO implements ITestCaseDAO {
         String targetMinor = resultSet.getString("tec.TargetMinor");
         String implementer = resultSet.getString("tec.Implementer");
         String executor = resultSet.getString("tec.Executor");
-        String isActiveQA = resultSet.getString("tec.isActiveQA");
-        String isActiveUAT = resultSet.getString("tec.isActiveUAT");
-        String isActivePROD = resultSet.getString("tec.isActivePROD");
+        boolean isActiveQA = resultSet.getBoolean("tec.isActiveQA");
+        boolean isActiveUAT = resultSet.getBoolean("tec.isActiveUAT");
+        boolean isActivePROD = resultSet.getBoolean("tec.isActivePROD");
         String usrCreated = resultSet.getString("tec.UsrCreated");
         String dateCreated = resultSet.getString("tec.DateCreated");
         String usrModif = resultSet.getString("tec.UsrModif");

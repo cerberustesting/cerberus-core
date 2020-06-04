@@ -115,7 +115,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if testcase is active");
         }
-        if (testCase.isActive().equals("Y")) {
+        if (testCase.isActive()) {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_NOTACTIVE);
@@ -290,7 +290,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkIsActiveQA(TestCase tc, String env) {
-        if (tc.isActiveQA().equals("Y")) {
+        if (tc.isActiveQA()) {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ISACTIVEQA_NOTDEFINED);
@@ -299,7 +299,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkIsActiveUAT(TestCase tc, String env) {
-        if (tc.isActiveUAT().equals("Y")) {
+        if (tc.isActiveUAT()) {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ISACTIVEUAT_NOTDEFINED);
@@ -308,7 +308,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkIsActivePROD(TestCase tc, String env) {
-        if (tc.isActivePROD().equals("Y")) {
+        if (tc.isActivePROD()) {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ISACTIVEPROD_NOTDEFINED);

@@ -355,10 +355,6 @@
         <servlet-class>org.cerberus.servlet.integration.JenkinsDeploy</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ExportListTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.ExportListTestCase</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>ReadBuildRevisionInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.ReadBuildRevisionInvariant</servlet-class>
     </servlet>
@@ -788,7 +784,7 @@
         <servlet-name>ImportTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.testcase.ImportTestCase</servlet-class>
     </servlet>
-    <!-- 
+    <!--
     <servlet>
         <servlet-name>JerseyWebapp</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
@@ -1142,10 +1138,6 @@
     <servlet-mapping>
         <servlet-name>JenkinsDeploy</servlet-name>
         <url-pattern>/JenkinsDeploy</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ExportListTestCase</servlet-name>
-        <url-pattern>/ExportListTestCase</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadBuildRevisionInvariant</servlet-name>
@@ -1654,7 +1646,6 @@
             <url-pattern>/ReadTestCaseExecutionMedia</url-pattern>
             <url-pattern>/GetTestCase</url-pattern>
             <url-pattern>/TestcaseList</url-pattern>
-            <url-pattern>/ExportListTestCase</url-pattern>
             <url-pattern>/GetDataForTestCaseSearch</url-pattern>
             <url-pattern>/TCEwwwDetail</url-pattern>
             <url-pattern>/GenerateGraph</url-pattern>

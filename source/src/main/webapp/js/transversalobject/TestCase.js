@@ -132,10 +132,6 @@ function initModalTestCase() {
     displayInvariantList("priority", "PRIORITY", false);
     displayInvariantList("conditionOperator", "TESTCASECONDITIONOPERATOR", false);
     $('[name="origin"]').append('<option value="All">All</option>');
-    displayInvariantList("isActive", "TCACTIVE", false);
-    displayInvariantList("isActiveQA", "TCACTIVE", false);
-    displayInvariantList("isActiveUAT", "TCACTIVE", false);
-    displayInvariantList("isActivePROD", "TCACTIVE", false);
 
     $('[data-toggle="popover"]').popover({
         'placement': 'auto',

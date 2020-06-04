@@ -43,10 +43,10 @@ public class TestCase {
     private int priority;
     private int version;
     private String status;
-    private String isActive;
-    private String isActiveQA;
-    private String isActiveUAT;
-    private String isActivePROD;
+    private boolean isActive;
+    private boolean isActiveQA;
+    private boolean isActiveUAT;
+    private boolean isActivePROD;
     private String conditionOperator;
     private String conditionVal1;
     private String conditionVal2;
@@ -130,11 +130,11 @@ public class TestCase {
         this.testCaseStepBatch = testCaseStepBatch;
     }
 
-    public String isActive() {
+    public boolean isActive() {
         return isActive;
     }
 
-    public void setActive(String isActive) {
+    public void setActive(boolean isActive) {
         this.isActive = isActive;
     }
 
@@ -315,27 +315,27 @@ public class TestCase {
         this.refOrigine = refOrigin;
     }
 
-    public String isActiveQA() {
+    public boolean isActiveQA() {
         return isActiveQA;
     }
 
-    public void setActiveQA(String isActiveQA) {
+    public void setActiveQA(boolean isActiveQA) {
         this.isActiveQA = isActiveQA;
     }
 
-    public String isActiveUAT() {
+    public boolean isActiveUAT() {
         return isActiveUAT;
     }
 
-    public void setActiveUAT(String isActiveUAT) {
+    public void setActiveUAT(boolean isActiveUAT) {
         this.isActiveUAT = isActiveUAT;
     }
 
-    public String isActivePROD() {
+    public boolean isActivePROD() {
         return isActivePROD;
     }
 
-    public void setActivePROD(String isActivePROD) {
+    public void setActivePROD(boolean isActivePROD) {
         this.isActivePROD = isActivePROD;
     }
 

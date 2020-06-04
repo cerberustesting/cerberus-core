@@ -8576,6 +8576,31 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + "CHANGE activeUAT isActiveUAT VARCHAR(1),"
                 + "CHANGE activePROD isActivePROD VARCHAR(1)");
 
+        // 1513 - 1516
+        // Updating all Y in pseudo boolean columns for testcase table to 1
+        a.add("UPDATE testcase SET isActive = 1 WHERE isActive = 'Y'");
+        a.add("UPDATE testcase SET isActiveQA = 1 WHERE isActiveQA = 'Y'");
+        a.add("UPDATE testcase SET isActiveUAT = 1 WHERE isActiveUAT = 'Y'");
+        a.add("UPDATE testcase SET isActivePROD = 1 WHERE isActivePROD = 'Y'");
+
+        // 1517 - 1520
+        // Updating all non 1 in pseudo boolean columns for testcase table to 0
+        a.add("UPDATE testcase SET isActive = 0 WHERE isActive != '1'");
+        a.add("UPDATE testcase SET isActiveQA = 0 WHERE isActiveQA != '1'");
+        a.add("UPDATE testcase SET isActiveUAT = 0 WHERE isActiveUAT != '1'");
+        a.add("UPDATE testcase SET isActivePROD = 0 WHERE isActivePROD != '1'");
+
+        // 1521 - 1524
+        // Modify pseudo boolean columns to boolean type for the testcase table
+        a.add("ALTER TABLE testcase MODIFY isActive BOOLEAN");
+        a.add("ALTER TABLE testcase MODIFY isActiveQA BOOLEAN");
+        a.add("ALTER TABLE testcase MODIFY isActiveUAT BOOLEAN");
+        a.add("ALTER TABLE testcase MODIFY isActivePROD BOOLEAN");
+
+        // 1525
+        // Deleting TCACTIVE invariants
+        a.add("DELETE FROM invariant WHERE idname = 'TCACTIVE'");
+
         return a;
     }
 
