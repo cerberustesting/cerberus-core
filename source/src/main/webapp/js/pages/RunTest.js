@@ -180,8 +180,8 @@ function displayPageLabel() {
     $("#lbl_campaign").text(doc.getDocLabel("page_runtest", "campaign"));
     $("#lbl_priority").text(doc.getDocLabel("page_runtest", "priority"));
     $("#lbl_status").text(doc.getDocLabel("page_runtest", "status"));
-    $("#lbl_targetMinor").text(doc.getDocLabel("page_runtest", "targetMinor"));
-    $("#lbl_targetMajor").text(doc.getDocLabel("page_runtest", "targetMajor"));
+    $("#lbl_targetMinor").text(doc.getDocLabel("page_runtest", "TargetMinor"));
+    $("#lbl_targetMajor").text(doc.getDocLabel("page_runtest", "TargetMajor"));
     $("#lbl_size").text(doc.getDocLabel("page_runtest", "size"));
     $("input[name='envSettings'][value='auto']").next().text(doc.getDocLabel("page_runtest", "automatic"));
     $("input[name='envSettings'][value='manual']").next().text(doc.getDocLabel("page_runtest", "manual"));

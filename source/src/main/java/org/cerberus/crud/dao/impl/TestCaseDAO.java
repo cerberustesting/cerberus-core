@@ -1002,7 +1002,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             query.append("LEFT JOIN testcaselabel tel ON tec.test = tel.test AND tec.testcase = tel.testcase ");
             query.append("LEFT JOIN campaignlabel cpl ON cpl.labelId = tel.labelId ");
         }
-        query.append("WHERE 1=1 AND tec.isActive = 'Y' ");
+        query.append("WHERE 1=1 AND tec.isActive = 1 ");
         query.append(createInClauseFromList(test, "tec.test", "AND ", " "));
         query.append(createInClauseFromList(app, "tec.application", "AND ", " "));
         query.append(createInClauseFromList(creator, "tec.usrCreated", "AND ", " "));
