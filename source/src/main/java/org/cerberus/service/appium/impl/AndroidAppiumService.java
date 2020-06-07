@@ -37,10 +37,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.engine.entity.SwipeAction;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -162,8 +165,14 @@ public class AndroidAppiumService extends AppiumService {
 //        argss.put("command", cmd);
 //        argss.put("args", Lists.newArrayList(args));
 //        String value = driver.executeScript("mobile: shell", argss).toString();
+        JSONObject param = new JSONObject();
+        try {
+            param = new JSONObject(args);
+        } catch (JSONException ex) {
+            LOG.error(ex);
+        }
 
-        String value = driver.executeScript(cmd, args).toString();
+        String value = driver.executeScript(cmd, param).toString();
 
         // execute Script return an \n or \r\n sometimes, so we delete the last occurence of it
         if (value.endsWith("\r\n")) {

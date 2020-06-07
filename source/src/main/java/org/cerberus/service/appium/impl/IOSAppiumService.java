@@ -37,6 +37,8 @@ import org.cerberus.engine.entity.SwipeAction;
 import org.cerberus.engine.entity.SwipeAction.Direction;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.StringUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -198,7 +200,15 @@ public class IOSAppiumService extends AppiumService {
     @Override
     public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException {
         IOSDriver driver = ((IOSDriver) session.getAppiumDriver());
-        String value = driver.executeScript(cmd, args).toString();
+
+        JSONObject param = new JSONObject();
+        try {
+            param = new JSONObject(args);
+        } catch (JSONException ex) {
+            LOG.error(ex);
+        }
+
+        String value = driver.executeScript(cmd, param).toString();
 
         // execute Script return an \n or \r\n sometimes, so we delete the last occurence of it
         if (value.endsWith("\r\n")) {
