@@ -293,7 +293,7 @@ public class SoapService implements ISoapService {
 
                 // Create the Proxy.
                 SocketAddress sockaddr = new InetSocketAddress(proxyHost, proxyPort);
-                try ( Socket socket = new Socket();) {
+                try (Socket socket = new Socket();) {
                     socket.connect(sockaddr, 10000);
                     Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(socket.getInetAddress(), proxyPort));
 
@@ -311,7 +311,14 @@ public class SoapService implements ISoapService {
                     // Call with Proxy.
                     soapResponse = sendSOAPMessage(input, servicePath, proxy, timeOutMs);
                 } catch (Exception e) {
-                    LOG.warn(e.toString(), e);
+                    LOG.error("Exception when trying to callSOAP on URL : '" + servicePath + "' for operation : '" + soapOperation + "'", e);
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
+                    message.setDescription(message.getDescription()
+                            .replace("%SERVICEPATH%", servicePath)
+                            .replace("%SOAPMETHOD%", soapOperation)
+                            .replace("%DESCRIPTION%", e.getMessage()));
+                    result.setResultMessage(message);
+                    return result;
                 }
             } else {
 
