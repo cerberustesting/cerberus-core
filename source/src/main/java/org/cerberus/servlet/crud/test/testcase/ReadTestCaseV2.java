@@ -527,7 +527,6 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                 .put("type", testCase.getType())
                 .put("origine", testCase.getOrigine())
                 .put("refOrigine", testCase.getRefOrigine())
-                .put("howTo", testCase.getHowTo())
                 .put("comment", testCase.getComment())
                 .put("fromMajor", testCase.getFromMajor())
                 .put("fromMinor", testCase.getFromMinor())

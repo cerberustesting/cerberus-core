@@ -54,7 +54,6 @@ public class TestCase {
     private String type;
     private String origine;
     private String refOrigine;
-    private String howTo;
     private String comment;
     private String fromMajor;
     private String fromMinor;
@@ -257,14 +256,6 @@ public class TestCase {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getHowTo() {
-        return howTo;
-    }
-
-    public void setHowTo(String howTo) {
-        this.howTo = howTo;
     }
 
     public String getImplementer() {
@@ -478,7 +469,6 @@ public class TestCase {
             result.put("priority", this.getPriority());
             result.put("description", this.getDescription());
             result.put("detailedDescription", this.getDetailedDescription());
-            result.put("howTo", this.getHowTo());
             result.put("isActive", this.isActive());
             result.put("isActiveQA", this.isActiveQA());
             result.put("isActiveUAT", this.isActiveUAT());

@@ -516,8 +516,6 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','FromMinor','','fr','De Mineure','','_cas_de_test')");
         b.append(",('testcase','Function','','en','Function','The function is the functionnality that the <code class=\\'doc-crbvvoca\\'>test case</code> is testing.','_testcase')");
         b.append(",('testcase','Function','','fr','Fonction','','_cas_de_test')");
-        b.append(",('testcase','HowTo','','en','How To','<i>How to</i> field is used to define the step by step procedure used in order to execute the <code class=\\'doc-crbvvoca\\'>test case</code>. This is mainly used for MANUAL group <code class=\\'doc-crbvvoca\\'>test cases</code>.','_testcase')");
-        b.append(",('testcase','HowTo','','fr','Comment Reproduire','','_cas_de_test')");
         b.append(",('testcase','Implementer','','en','Implementer','This is the name of the Cerberus user who implemented the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','Implementer','','fr','Réalisateur','Nom de l\\'utilisateur Cerberus qui a implementé le cas de test.','_testcase')");
         b.append(",('testcase','Executor','','en','Manual Executor','This is the name of the Cerberus user who will execute that test case in manual mode.','_testcase')");

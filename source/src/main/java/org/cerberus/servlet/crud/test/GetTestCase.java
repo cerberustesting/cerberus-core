@@ -101,7 +101,6 @@ public class GetTestCase extends HttpServlet {
                 jsonObject.put("countriesList", countryList);
                 jsonObject.put("shortDescription", tcInfo.getDescription());
                 jsonObject.put("description", tcInfo.getDetailedDescription());
-                jsonObject.put("howTo", tcInfo.getHowTo());
                 jsonObject.put("active", tcInfo.isActive());
                 jsonObject.put("fromMajor", tcInfo.getFromMajor());
                 jsonObject.put("fromMinor", tcInfo.getFromMinor());

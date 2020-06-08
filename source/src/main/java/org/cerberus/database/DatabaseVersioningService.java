@@ -8601,6 +8601,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Deleting TCACTIVE invariants
         a.add("DELETE FROM invariant WHERE idname = 'TCACTIVE'");
 
+        a.add("ALTER TABLE testcase DROP HowTo");
+
         return a;
     }
 
