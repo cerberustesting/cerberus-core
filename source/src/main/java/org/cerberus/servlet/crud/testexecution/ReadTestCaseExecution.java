@@ -301,7 +301,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testCase,application,priority,status,description,bugId,function");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testCase,application,priority,status,description,bugs,function");
         String columnToSort[] = sColumns.split(",");
 
         //Get Sorting information
@@ -555,9 +555,9 @@ public class ReadTestCaseExecution extends HttpServlet {
         result.put("ControlMessage", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlMessage()));
         result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecution.getStatus()));
 
-        JSONArray bugId = new JSONArray();
+        JSONArray bugs = new JSONArray();
         if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
-                && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugID() != null) {
+                && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugs() != null) {
 //            bugId = testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID());
 //            bugId = new StringBuffer("<a href='")
 //                    .append(bugId)
@@ -566,9 +566,9 @@ public class ReadTestCaseExecution extends HttpServlet {
 //                    .append("</a>")
 //                    .toString();
         } else {
-            bugId = testCaseExecution.getTestCaseObj().getBugID();
+            bugs = testCaseExecution.getTestCaseObj().getBugs();
         }
-        result.put("BugID", bugId);
+        result.put("bugs", bugs);
 
         result.put("Comment", JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getComment()));
         result.put("Priority", JavaScriptUtils.javaScriptEscape(String.valueOf(testCaseExecution.getTestCaseObj().getPriority())));

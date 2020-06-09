@@ -22,9 +22,9 @@ var paramWebsocketpushperiod = 5000;
 var networkStat = {};
 var configDo = {};
 
-$.when($.getScript("js/global/global.js")).then(function () {
-    $(document).ready(function () {
-        var stepList = [];
+$.when($.getScript("js/global/global.js")).then(function() {
+    $(document).ready(function() {
+        var steps = [];
         var doc = new Doc();
         displayHeaderLabel(doc);
         displayFooter(doc);
@@ -32,13 +32,13 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         bindToggleCollapse();
 
-        $("#sortSize").click(function () {
+        $("#sortSize").click(function() {
             update_thirdParty_Chart(1);
         });
-        $("#sortRequest").click(function () {
+        $("#sortRequest").click(function() {
             update_thirdParty_Chart(2);
         });
-        $("#sortTime").click(function () {
+        $("#sortTime").click(function() {
             update_thirdParty_Chart(3);
         });
 
@@ -57,10 +57,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
             // executionId parameter is not feed so we probably want to see the queue status.
             $("#TestCaseButton").hide();
             $("#RefreshQueueButton").show();
-            $("#refreshQueue").click(function () {
+            $("#refreshQueue").click(function() {
                 loadExecutionQueue(executionQueueId, false);
             });
-            $("#editQueue").click(function () {
+            $("#editQueue").click(function() {
                 openModalTestCaseExecutionQueue(executionQueueId, "EDIT");
             });
 
@@ -71,7 +71,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             $("#RefreshQueueButton").hide();
             /* global */ sockets = [];
             initPage(executionId);
-            loadExecutionInformation(executionId, stepList, sockets);
+            loadExecutionInformation(executionId, steps, sockets);
 
             $('[data-toggle="popover"]').popover({
                 'placement': 'auto',
@@ -102,7 +102,7 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
         data: "queueid=" + executionQueueId,
         datatype: "json",
         async: true,
-        success: function (data) {
+        success: function(data) {
             if (data.messageType === "OK") {
                 var tceq = data.contentTable;
 
@@ -126,7 +126,7 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
                     var curDate = new Date();
                     configPanel.find("#tcDescription").html("Still <span style='color:red;'>" + tceq.nbEntryInQueueToGo + "</span> execution(s) in the Queue before execution start. <br><span class='glyphicon glyphicon-refresh spin text-info'></span> Last refresh : " + curDate);
                     if (bTriggerAgain) {
-                        setTimeout(function () {
+                        setTimeout(function() {
                             loadExecutionQueue(executionQueueId, true);
                         }, 5000);
                     }
@@ -135,7 +135,7 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
                     var curDate = new Date();
                     configPanel.find("#tcDescription").html("<span class='glyphicon glyphicon-refresh spin text-info'></span> Last refresh : " + curDate);
                     if (bTriggerAgain) {
-                        setTimeout(function () {
+                        setTimeout(function() {
                             loadExecutionQueue(executionQueueId, true);
                         }, 5000);
                     }
@@ -156,7 +156,7 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
 
 //global bool that say if the execution is manual
 var isTheExecutionManual = false;
-function loadExecutionInformation(executionId, stepList, sockets) {
+function loadExecutionInformation(executionId, steps, sockets) {
 
     $.ajax({
         url: "ReadTestCaseExecution",
@@ -164,7 +164,7 @@ function loadExecutionInformation(executionId, stepList, sockets) {
         data: "executionId=" + executionId,
         datatype: "json",
         async: true,
-        success: function (data) {
+        success: function(data) {
             var tce = data.testCaseExecution;
 
             var tc = tce.testcase;
@@ -173,7 +173,7 @@ function loadExecutionInformation(executionId, stepList, sockets) {
             //store in a global var if the manualExecution is set to yes to double check with the control status
             if (tce.manualExecution === "Y")
                 isTheExecutionManual = true;
-            updatePage(tce, stepList);
+            updatePage(tce, steps);
 
             if (tce.controlStatus === "PE") {
                 if (paramActivatewebsocketpush === "Y") {
@@ -189,17 +189,17 @@ function loadExecutionInformation(executionId, stepList, sockets) {
 
                     var socket = new WebSocket(new_uri);
 
-                    socket.onopen = function (e) {
+                    socket.onopen = function(e) {
                     } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
-                    socket.onmessage = function (e) {
+                    socket.onmessage = function(e) {
                         var data = JSON.parse(e.data);
-                        updatePage(data, stepList);
+                        updatePage(data, steps);
                     } //on récupère les messages provenant du serveur websocket
-                    socket.onclose = function (e) {
+                    socket.onclose = function(e) {
                     } //on est informé lors de la fermeture de la connexion vers le serveur
-                    socket.onerror = function (e) {
-                        setTimeout(function () {
-                            loadExecutionInformation(executionId, stepList);
+                    socket.onerror = function(e) {
+                        setTimeout(function() {
+                            loadExecutionInformation(executionId, steps);
                         }, 5000);
                     } //on traite les cas d'erreur*/
 
@@ -208,18 +208,18 @@ function loadExecutionInformation(executionId, stepList, sockets) {
 
                 } else {
 
-                    setTimeout(function () {
-                        loadExecutionInformation(executionId, stepList);
+                    setTimeout(function() {
+                        loadExecutionInformation(executionId, steps);
                     }, paramWebsocketpushperiod);
 
                 }
 
             }
-            $("#seeProperties").click(function () {
+            $("#seeProperties").click(function() {
                 $("#propertiesModal").modal('show');
             });
             //disable list-group expansion in case of clicking on link
-            $('.linkified').on('click', function (e) {
+            $('.linkified').on('click', function(e) {
                 e.stopPropagation();
             });
         }
@@ -232,7 +232,7 @@ function initPage(id) {
 
     var wrap = $(window);
 
-    wrap.on("scroll", function (e) {
+    wrap.on("scroll", function(e) {
         $(".affix").width($("#page-layout").width() - 3);
     });
 
@@ -242,23 +242,23 @@ function initPage(id) {
     $("#lastExecution").attr("disabled", true);
     $("#lastExecutionoT").attr("disabled", true);
 
-    $("#runOld").click(function () {
+    $("#runOld").click(function() {
         window.location = "TestCaseExecution.jsp?executionId=" + id;
     });
 
-    $("#editTags").click(function () {
+    $("#editTags").click(function() {
         $(this).hide();
         $("#saveTag").show();
         $("#testCaseDetails #tag").attr("readonly", false);
     });
 
-    $("#saveTag").click(function () {
+    $("#saveTag").click(function() {
         $("#testCaseDetails #tag").attr("readonly", true);
         $(this).attr("disabled", true);
         $.ajax({
             url: "SetTagToExecution",
             data: {"executionId": id, newTag: $("#testCaseDetails #tag").val()},
-            success: function (data) {
+            success: function(data) {
                 $("#saveTag").attr("disabled", false);
                 $("#saveTag").hide();
                 $("#editTags").show();
@@ -273,10 +273,10 @@ function initPage(id) {
 
     var secondaryPropertiesTable = $("#secondaryPropTable");
     secondaryPropertiesTable.hide();
-    $("#showSecondaryProp").click(function () {
+    $("#showSecondaryProp").click(function() {
         secondaryPropertiesTable.show();
     });
-    $("#hideSecondaryProp").click(function () {
+    $("#hideSecondaryProp").click(function() {
         secondaryPropertiesTable.hide();
     });
 
@@ -355,7 +355,7 @@ function displayPageLabel(doc) {
 
 }
 
-function updatePage(data, stepList) {
+function updatePage(data, steps) {
 
     sortData(data.testCaseStepExecutionList);
 
@@ -375,7 +375,7 @@ function updatePage(data, stepList) {
         $("#editTcInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
         $("#editTcStepInfo").attr("disabled", false);
         $("#editTcStepInfo").parent().attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
-        $("#btnGroupDrop4").click(function () {
+        $("#btnGroupDrop4").click(function() {
             setLinkOnEditTCStepInfoButton();
         });
 
@@ -411,17 +411,17 @@ function updatePage(data, stepList) {
     } else {
         $("#ExecutionQueue").attr("disabled", false);
         $("#ExecutionQueue").unbind("click");
-        $("#ExecutionQueue").click(function () {
+        $("#ExecutionQueue").click(function() {
             openModalTestCaseExecutionQueue(data.queueId, 'EDIT');
         });
         $("#rerunFromQueue").attr("disabled", false);
         $("#rerunFromQueue").unbind("click");
-        $("#rerunFromQueue").click(function () {
+        $("#rerunFromQueue").click(function() {
             openModalTestCaseExecutionQueue(data.queueId, 'DUPLICATE');
         });
         $("#rerunFromQueueandSee").attr("disabled", false);
         $("#rerunFromQueueandSee").unbind("click");
-        $("#rerunFromQueueandSee").click(function () {
+        $("#rerunFromQueueandSee").click(function() {
             triggerTestCaseExecutionQueueandSee(data.queueId);
         });
     }
@@ -437,7 +437,7 @@ function updatePage(data, stepList) {
             url: "ReadApplication",
             data: {application: data.application},
             async: true,
-            success: function (dataApp) {
+            success: function(dataApp) {
                 var link;
 
                 if (data.testCaseObj !== undefined) {
@@ -460,14 +460,14 @@ function updatePage(data, stepList) {
                         newBugURL = newBugURL.replace(/%REV%/g, data.revision);
                         newBugURL = newBugURL.replace(/%BROWSER%/g, data.browser);
                         newBugURL = newBugURL.replace(/%BROWSERFULLVERSION%/g, data.browser + ' ' + data.version + ' ' + data.platform);
-                        link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block marginTop5'>").text("Open a new bug"));
+                        link = $('<a target="_blank" id="bugs">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block marginTop5'>").text("Open a new bug"));
                     } else {
-                        link = $('<a id="bugID">').attr("href", "#").append($("<button class='btn btn-default btn-block'>").text("No 'New Bug' URL Specified.").attr("title", "Please specify 'New Bug' URL on application '" + data.application + "'."));
+                        link = $('<a id="bugs">').attr("href", "#").append($("<button class='btn btn-default btn-block'>").text("No 'New Bug' URL Specified.").attr("title", "Please specify 'New Bug' URL on application '" + data.application + "'."));
                     }
                     $("#bugID").append(link);
-                    link = $('<a id="bugID">').append($("<button class='btn btn-default btn-block marginTop5' id='editTcHeaderBug'>").text("Assign to Test Case"));
+                    link = $('<a id="bugs">').append($("<button class='btn btn-default btn-block marginTop5' id='editTcHeaderBug'>").text("Assign to Test Case"));
                     $("#bugID").append(link);
-                    $("#editTcHeaderBug").unbind("click").click(function () {
+                    $("#editTcHeaderBug").unbind("click").click(function() {
                         openModalTestCase(data.test, data.testcase, "EDIT", "tabTCBugReport")
                     })
 
@@ -480,7 +480,7 @@ function updatePage(data, stepList) {
     }
     setConfigPanel(data);
 
-    createStepList(data.testCaseStepExecutionList, stepList);
+    createStepList(data.testCaseStepExecutionList, steps);
     createProperties(data.testCaseExecutionDataList);
     createVideo(data.videos);
     setUpClickFunctionToSaveTestCaseExecutionButton(data);
@@ -567,11 +567,11 @@ function drawChart_HttpStatus(data, titletext, target) {
             }
         }
         // Sorting values by nb of requests.
-        sortedArrayOfObj = newDataArray.sort(function (a, b) {
+        sortedArrayOfObj = newDataArray.sort(function(a, b) {
             return b.nb - a.nb;
         });
 
-        sortedArrayOfObj.forEach(function (d) {
+        sortedArrayOfObj.forEach(function(d) {
             dataArray.push(d.nb);
             labelArray.push(d.name);
             bgColorArray.push(d.color);
@@ -640,11 +640,11 @@ function drawChart_SizePerType(data, titletext, target) {
         drawChart_SizePerType_Data(data.total.type.media.sizeSum, "media", newDataArray, "media");
 
         // Sorting values by nb of requests.
-        sortedArrayOfObj = newDataArray.sort(function (a, b) {
+        sortedArrayOfObj = newDataArray.sort(function(a, b) {
             return b.nb - a.nb;
         });
 
-        sortedArrayOfObj.forEach(function (d) {
+        sortedArrayOfObj.forEach(function(d) {
             dataArray.push(d.nb);
             labelArray.push(d.name);
             bgColorArray.push(d.color);
@@ -665,7 +665,7 @@ function drawChart_SizePerType(data, titletext, target) {
                 tooltips: {
                     enabled: true,
                     callbacks: {
-                        label: function (tooltipItem, data) {
+                        label: function(tooltipItem, data) {
                             var label = data.labels[tooltipItem.index] + " " + data.datasets[0].label;
                             label += ': ';
                             let tmp = data.datasets[0].data[tooltipItem.index];
@@ -740,7 +740,7 @@ function drawChart_PerThirdParty(data, target) {
             tooltips: {
                 enabled: true,
                 callbacks: {
-                    label: function (tooltipItem, data) {
+                    label: function(tooltipItem, data) {
                         var label = data.datasets[0].labels[tooltipItem.index] + " " + data.datasets[tooltipItem.datasetIndex].label;
                         label += ': ';
                         if (tooltipItem.datasetIndex === 0) {
@@ -785,28 +785,28 @@ function update_thirdParty_Chart(sortCol) {
 
     // Sorting values by nb of requests.
     if (sortCol === 2) {
-        sortedArrayOfObj = newDataArray.sort(function (a, b) {
+        sortedArrayOfObj = newDataArray.sort(function(a, b) {
             return b.nb2 - a.nb2;
         });
         $("#sortSize").addClass("btn-default");
         $("#sortRequest").addClass("btn-primary");
         $("#sortTime").addClass("btn-default");
     } else if (sortCol === 3) {
-        sortedArrayOfObj = newDataArray.sort(function (a, b) {
+        sortedArrayOfObj = newDataArray.sort(function(a, b) {
             return b.nb3 - a.nb3;
         });
         $("#sortSize").addClass("btn-default");
         $("#sortRequest").addClass("btn-default");
         $("#sortTime").addClass("btn-primary");
     } else {
-        sortedArrayOfObj = newDataArray.sort(function (a, b) {
+        sortedArrayOfObj = newDataArray.sort(function(a, b) {
             return b.nb1 - a.nb1;
         });
         $("#sortSize").addClass("btn-primary");
         $("#sortRequest").addClass("btn-default");
         $("#sortTime").addClass("btn-default");
     }
-    sortedArrayOfObj.forEach(function (d) {
+    sortedArrayOfObj.forEach(function(d) {
         dataArray1.push(d.nb1);
         dataArray2.push(d.nb2);
         dataArray3.push(d.nb3);
@@ -923,11 +923,11 @@ function drawChart_GanttPerThirdParty(data, titletext, target) {
 
 
     // Sorting values by nb of requests.
-    sortedArrayOfObj = newDataArray.sort(function (a, b) {
+    sortedArrayOfObj = newDataArray.sort(function(a, b) {
         return a.start - b.start;
     });
 
-    sortedArrayOfObj.forEach(function (d) {
+    sortedArrayOfObj.forEach(function(d) {
         dataArray1.push(d.start);
         dataArray2.push(d.end);
         labelArray.push(d.name);
@@ -1002,8 +1002,8 @@ function drawChart_GanttPerThirdParty(data, titletext, target) {
 
     // this part to make the tooltip only active on your real dataset
     var originalGetElementAtEvent = chart.getElementAtEvent;
-    chart.getElementAtEvent = function (e) {
-        return originalGetElementAtEvent.apply(this, arguments).filter(function (e) {
+    chart.getElementAtEvent = function(e) {
+        return originalGetElementAtEvent.apply(this, arguments).filter(function(e) {
             return e._datasetIndex === 1;
         });
     }
@@ -1026,7 +1026,7 @@ function createVideo(videos) {
 
     var videoIndex = 0;
 
-    videos.forEach(function (video) {
+    videos.forEach(function(video) {
         menuEntry += "            <a href=\"javascript:void(0);\" id=\"anchorToVideo" + videoIndex + "\" name=\"anchorToVideo\" index=\"" + videoIndex + "\" class=\"list-group-item row " + (videoIndex == 0 ? "active" : "") + " \" style=\"margin-left: 0px; margin-right: 0px;\">Part " + (videoIndex + 1) + "/" + videos.length + " </a>\n";
 
         videoEntry +=
@@ -1056,7 +1056,7 @@ function createVideo(videos) {
     var myvid = $('#videoTest').get(0);
 
 
-    $("[name='anchorToVideo']").click(function () {
+    $("[name='anchorToVideo']").click(function() {
         $("[name='anchorToVideo']").removeClass("active");
         $(this).addClass("active");
 
@@ -1068,7 +1068,7 @@ function createVideo(videos) {
     })
 
     // automaticaly stream  the next part
-    myvid.addEventListener('ended', function (e) {
+    myvid.addEventListener('ended', function(e) {
         // get the active source and the next video source.
         // I set it so if there's no next, it loops to the first one
         var activesource = $("#videoTest source.active");
@@ -1089,7 +1089,7 @@ function createVideo(videos) {
         myvid.play();
     });
 
-    $("#editTabVideo").click(function () { // automaticaly play video when you arrive on the video page
+    $("#editTabVideo").click(function() { // automaticaly play video when you arrive on the video page
         myvid.play();
     });
 
@@ -1106,7 +1106,7 @@ function triggerTestCaseExecutionQueueandSee(queueId) {
             actionState: "toQUEUED",
             actionSave: "save"
         },
-        success: function (data) {
+        success: function(data) {
             if (getAlertType(data.messageType) === "success") {
                 showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
                 var url = "./TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id;
@@ -1137,7 +1137,7 @@ function setConfigPanel(data) {
         $("#returnMessage").html(returnMessageField);
     }
 
-    $("#editTcHeader").unbind("click").click(function () {
+    $("#editTcHeader").unbind("click").click(function() {
         openModalTestCase(data.test, data.testcase, "EDIT")
     })
 
@@ -1252,7 +1252,7 @@ function showSaveTestCaseExecutionButton() {
  * @returns {undefined}
  */
 function setUpClickFunctionToSaveTestCaseExecutionButton(data) {
-    $("#saveTestCaseExecution").click(function () {
+    $("#saveTestCaseExecution").click(function() {
         saveExecution(data);
     });
 }
@@ -1266,9 +1266,9 @@ function setLinkOnEditTCStepInfoButton() {
 function setLoadBar(data) {
     var total = 0;
     var ended = 0;
-    if (data.testCaseObj !== undefined && data.testCaseObj.testCaseStepList !== undefined) {
-        for (var i = 0; i < data.testCaseObj.testCaseStepList.length; i++) {
-            var step = data.testCaseObj.testCaseStepList[i];
+    if (data.testCaseObj !== undefined && data.testCaseObj.testCaseSteps !== undefined) {
+        for (var i = 0; i < data.testCaseObj.testCaseSteps.length; i++) {
+            var step = data.testCaseObj.testCaseSteps[i];
             var stepExec = data.testCaseStepExecutionList[i];
             if (stepExec !== undefined && stepExec.returnCode !== "PE") {
                 ended += 1;
@@ -1305,7 +1305,7 @@ function setLoadBar(data) {
 
 function updateDataBarVisual(controlStatus, progress = 100) {
 
-    $("#progress-bar").removeClass(function (index, className) {
+    $("#progress-bar").removeClass(function(index, className) {
         return (className.match(/(^|\s)progress-bar-\S+/g) || []).join(' ');
     });
 
@@ -1333,12 +1333,12 @@ function sortStep(step) {
     for (var j = 0; j < step.testCaseStepActionExecutionList.length; j++) {
         var action = step.testCaseStepActionExecutionList[j];
 
-        action.testCaseStepActionControlExecutionList.sort(function (a, b) {
+        action.testCaseStepActionControlExecutionList.sort(function(a, b) {
             return a.sort - b.sort;
         });
     }
 
-    step.testCaseStepActionExecutionList.sort(function (a, b) {
+    step.testCaseStepActionExecutionList.sort(function(a, b) {
         return a.sort - b.sort;
     });
 }
@@ -1350,7 +1350,7 @@ function sortData(agreg) {
         sortStep(step);
     }
 
-    agreg.sort(function (a, b) {
+    agreg.sort(function(a, b) {
         return a.sort - b.sort;
     });
 }
@@ -1358,7 +1358,7 @@ function sortData(agreg) {
 function sortProperties(identifier) {
     var container = $(identifier);
     var list = container.children(".property");
-    list.sort(function (a, b) {
+    list.sort(function(a, b) {
 
         var aProp = $(a).find("[name='masterProp']").data("property").property.toLowerCase(),
                 bProp = $(b).find("[name='masterProp']").data("property").property.toLowerCase();
@@ -1476,7 +1476,7 @@ function drawProperty(property, table, isSecondary) {
 
     var container1 = $("#PROPERTY-" + property.property);
     var container2 = $("#content-container-" + property.property);
-    container1.click(function () {
+    container1.click(function() {
         if (container1.find(".glyphicon-chevron-down").length > 0) {
             container1.find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
         } else {
@@ -1717,7 +1717,7 @@ function createPropertiesOld(propList) {
         header.append(rcDiv).append(propertyDiv).append(typeDiv).append(messageDiv);
         var htmlElement = headerDiv.append(header).append(right).append($("<div>").addClass("clearfix"));
 
-        htmlElement.click(function () {
+        htmlElement.click(function() {
             if ($(this).find(".glyphicon-chevron-down").length > 0) {
                 $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
             } else {
@@ -1749,53 +1749,53 @@ function createPropertiesOld(propList) {
     return propertyArray;
 }
 
-function createStepList(data, stepList) {
+function createStepList(data, steps) {
     $("#actionContainer").empty();
-    $("#stepList").empty();
+    $("#steps").empty();
 
     for (var i = 0; i < data.length; i++) {
         if (data[i].test === "Pre Testing") {
             var step = data[i];
-            var stepObj = new Step(step, stepList, i);
+            var stepObj = new Step(step, steps, i);
             $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
             stepObj.addElements();
             stepObj.draw();
-            stepList.push(stepObj);
+            steps.push(stepObj);
         }
     }
 
     for (var i = 0; i < data.length; i++) {
         if ((data[i].test !== "Pre Testing") && (data[i].test !== "Post Testing")) {
             var step = data[i];
-            var stepObj = new Step(step, stepList, i);
+            var stepObj = new Step(step, steps, i);
             $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
             stepObj.addElements();
             stepObj.draw();
-            stepList.push(stepObj);
+            steps.push(stepObj);
         }
     }
 
     for (var i = 0; i < data.length; i++) {
         if (data[i].test === "Post Testing") {
             var step = data[i];
-            var stepObj = new Step(step, stepList, i);
+            var stepObj = new Step(step, steps, i);
             $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
             stepObj.addElements();
             stepObj.draw();
-            stepList.push(stepObj);
+            steps.push(stepObj);
         }
     }
 
 
-    if (stepList.length > 0) {
-        $("#stepList a:last-child").trigger("click");
+    if (steps.length > 0) {
+        $("#steps a:last-child").trigger("click");
     }
-    $("#stepList").data("listOfStep", stepList);
+    $("#steps").data("listOfStep", steps);
 }
 
 /** JAVASCRIPT OBJECT **/
 
-function Step(json, stepList, id) {
+function Step(json, steps, id) {
     this.stepActionContainer = $("<div></div>").addClass("list-group").css("display", "none");
     this.description = json.description;
     this.end = json.end;
@@ -1825,10 +1825,10 @@ function Step(json, stepList, id) {
     this.useStepTestCaseStep = json.useStepTestCaseStep;
     this.useStepStep = json.useStepStep;
     this.inLibrary = json.inLibrary;
-    this.actionList = [];
-    this.setActionList(json.testCaseStepActionExecutionList, id);
+    this.actions = [];
+    this.setActions(json.testCaseStepActionExecutionList, id);
 
-    this.stepList = stepList;
+    this.steps = steps;
     this.toDelete = false;
 
     this.html = $("<a href='#'></a>").addClass("list-group-item row").css("margin-left", "0px").css("margin-right", "0px");
@@ -1844,19 +1844,19 @@ function Step(json, stepList, id) {
 
 }
 
-Step.prototype.addElements = function () {
+Step.prototype.addElements = function() {
     var htmlElement = this.html;
 
     htmlElement.data("item", this);
     htmlElement.click(this.show);
 
     htmlElement.append(this.textArea);
-    $("#stepList").append(htmlElement);
+    $("#steps").append(htmlElement);
     $("#actionContainer").append(this.stepActionContainer);
 
 };
 
-Step.prototype.draw = function () {
+Step.prototype.draw = function() {
 
     var htmlElement = this.html;
     var object = htmlElement.data("item");
@@ -1890,7 +1890,7 @@ Step.prototype.draw = function () {
 
 
 //update display of the step
-Step.prototype.update = function (idStep) {
+Step.prototype.update = function(idStep) {
 
 
     var glyphiconColor = "text-black";
@@ -1911,15 +1911,15 @@ Step.prototype.update = function (idStep) {
         glyphiconColor = "text-success";
     }
 
-    $($("#steps").find("a")[idStep]).removeClass(function (index, className) {
+    $($("#steps").find("a")[idStep]).removeClass(function(index, className) {
         return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
     }).addClass(className);
 
-    $($("#steps").find("a")[idStep]).find("span").removeClass(function (index, className) {
+    $($("#steps").find("a")[idStep]).find("span").removeClass(function(index, className) {
         return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
     }).addClass(glyphiconName);
 
-    var glyphIcon = $($("#stepInfo h2")[0]).removeClass(function (index, className) {
+    var glyphIcon = $($("#stepInfo h2")[0]).removeClass(function(index, className) {
         return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
     });
     //
@@ -1932,14 +1932,14 @@ Step.prototype.update = function (idStep) {
 
 
 
-Step.prototype.show = function () {
+Step.prototype.show = function() {
     var doc = new Doc();
     var object = $(this).data("item");
     var stepDesc = $("<div>").addClass("col-xs-10");
     var stepButton = $("<div id='stepPlus'></a>").addClass("col-xs-1").addClass("paddingLeft0").addClass("paddingTop30").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
 
-    for (var i = 0; i < object.stepList.length; i++) {
-        var step = object.stepList[i];
+    for (var i = 0; i < object.steps.length; i++) {
+        var step = object.steps[i];
         step.stepActionContainer.hide();
         step.html.removeClass("active");
     }
@@ -1996,7 +1996,7 @@ Step.prototype.show = function () {
 
     returnMessageWritableForStep(object, $("#stepMessage"));
 
-    $("#stepInfo").unbind("click").click(function () {
+    $("#stepInfo").unbind("click").click(function() {
         $("#stepHiddenRow").toggle();
         if ($(this).find("span").hasClass("glyphicon-chevron-down")) {
             $(this).find("span").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
@@ -2008,13 +2008,13 @@ Step.prototype.show = function () {
     return false;
 };
 
-Step.prototype.setActionList = function (actionList, idMotherStep) {
-    for (var i = 0; i < actionList.length; i++) {
-        this.setAction(actionList[i], idMotherStep, i);
+Step.prototype.setActions = function(actions, idMotherStep) {
+    for (var i = 0; i < actions.length; i++) {
+        this.setAction(actions[i], idMotherStep, i);
     }
 };
 
-Step.prototype.setAction = function (action, idMotherStep, idAction) {
+Step.prototype.setAction = function(action, idMotherStep, idAction) {
     var actionObj;
     if (action instanceof Action) {
         actionObj = action;
@@ -2022,24 +2022,24 @@ Step.prototype.setAction = function (action, idMotherStep, idAction) {
         actionObj = new Action(action, this);
     }
 
-    this.actionList.push(actionObj);
+    this.actions.push(actionObj);
 
     actionObj.draw(idMotherStep, idAction);
 
-    actionObj.setControlList(actionObj.controlListJson, idMotherStep, idAction);
+    actionObj.setControlList(actionObj.controlsJson, idMotherStep, idAction);
 };
 
-Step.prototype.setDescription = function (description) {
+Step.prototype.setDescription = function(description) {
     this.description = description;
     this.textArea.text(description);
     $("#stepHeaderDescription").text(description);
 };
 
-Step.prototype.setStep = function (step) {
+Step.prototype.setStep = function(step) {
     this.step = step;
 };
 
-Step.prototype.setReturnMessage = function (returnMessage) {
+Step.prototype.setReturnMessage = function(returnMessage) {
     this.returnMessage = returnMessage;
 };
 
@@ -2057,7 +2057,7 @@ function returnMessageWritableForStep(object, field) {
     field.prop("readonly", true);
     if (isTheExecutionManual) {
         field.prop("readonly", false);
-        field.change(function () {
+        field.change(function() {
             var currentObject = field.data("currentStep");
             currentObject.setReturnMessage(field.val());
         });
@@ -2068,7 +2068,7 @@ function returnMessageWritableForStep(object, field) {
 
 
 //Get the json data from the input of the field
-Step.prototype.getJsonData = function () {
+Step.prototype.getJsonData = function() {
     var json = {};
     json.conditionOperator = this.conditionOperator;
     json.conditionVal1 = this.conditionVal1;
@@ -2132,8 +2132,8 @@ function Action(json, parentStep) {
         this.value2init = json.value2init;
         this.value3init = json.value3init;
         this.screenshotFileName = json.screenshotFileName;
-        this.controlListJson = json.testCaseStepActionControlExecutionList;
-        this.controlList = [];
+        this.controlsJson = json.testCaseStepActionControlExecutionList;
+        this.controls = [];
         this.fileList = json.fileList;
         this.conditionOperator = json.conditionOperator;
         this.conditionVal1Init = json.conditionVal1Init;
@@ -2166,8 +2166,8 @@ function Action(json, parentStep) {
         this.value2init = "";
         this.value3init = "";
         this.screenshotFileName = "";
-        this.controlListJson = "";
-        this.controlList = [];
+        this.controlsJson = "";
+        this.controls = [];
         this.fileList = [];
         this.conditionOperator = "always";
         this.conditionVal1Init = "";
@@ -2182,7 +2182,7 @@ function Action(json, parentStep) {
     $(this.html).data("index", this.sort - 1)
 }
 
-Action.prototype.draw = function (idMotherStep, id) {
+Action.prototype.draw = function(idMotherStep, id) {
 
     var fullActionElement = $("<div name='fullActionDiv'></div>");
     var htmlElement = this.html;
@@ -2240,7 +2240,7 @@ Action.prototype.draw = function (idMotherStep, id) {
     $(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length));
     // Adding all media attached to action execution.
 
-    htmlElement.click(function () {
+    htmlElement.click(function() {
         if ($(this).find(".glyphicon-chevron-down").length > 0) {
             $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
         } else {
@@ -2256,33 +2256,33 @@ Action.prototype.draw = function (idMotherStep, id) {
     addFileLink(this.fileList, $(header).find(".row"), isTheExecutionManual, idMotherStep);
 };
 
-Action.prototype.setControlList = function (controlList, idMotherStep, idMotherAction) {
-    for (var i = 0; i < controlList.length; i++) {
-        this.setControl(controlList[i], idMotherStep, idMotherAction, i);
+Action.prototype.setControlList = function(controls, idMotherStep, idMotherAction) {
+    for (var i = 0; i < controls.length; i++) {
+        this.setControl(controls[i], idMotherStep, idMotherAction, i);
     }
 };
 
-Action.prototype.setControl = function (control, idMotherStep, idMotherAction, id) {
+Action.prototype.setControl = function(control, idMotherStep, idMotherAction, id) {
     if (control instanceof Control) {
         control.draw(idMotherStep, idMotherAction, id);
-        this.controlList.push(control);
+        this.controls.push(control);
     } else {
         var controlObj = new Control(control, this);
 
         controlObj.draw(idMotherStep, idMotherAction, id);
-        this.controlList.push(controlObj);
+        this.controls.push(controlObj);
     }
 };
 
-Action.prototype.setStep = function (step) {
+Action.prototype.setStep = function(step) {
     this.step = step;
 };
 
-Action.prototype.setSequence = function (sequence) {
+Action.prototype.setSequence = function(sequence) {
     this.sequence = sequence;
 };
 
-Action.prototype.setReturnMessage = function (returnMessage) {
+Action.prototype.setReturnMessage = function(returnMessage) {
     this.returnMessage = returnMessage;
 };
 /*
@@ -2297,13 +2297,13 @@ function returnMessageWritable(object, field) {
     field.prop("readonly", true);
     if (isTheExecutionManual) {
         field.prop("readonly", false);
-        field.change(function () {
+        field.change(function() {
             object.setReturnMessage(field.val());
         });
     }
 }
 
-Action.prototype.generateHeader = function (id) {
+Action.prototype.generateHeader = function(id) {
     var scope = this;
     var content = $("<div></div>").addClass("content");
     var firstRow = $("<div></div>").addClass("row ");
@@ -2329,18 +2329,18 @@ Action.prototype.generateHeader = function (id) {
         var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
         var buttonUpload = $($("<button>").addClass("btn btn-upload btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
 
-        buttonOK.click(function (event) {
+        buttonOK.click(function(event) {
             event.preventDefault();
             event.stopPropagation();
             triggerActionExecution(this, id, "OK");
         });
-        buttonFA.click(function (event) {
+        buttonFA.click(function(event) {
             event.preventDefault();
             event.stopPropagation();
             triggerActionExecution(this, id, "FA");
         });
 
-        buttonUpload.click(function (event) {
+        buttonUpload.click(function(event) {
             var indexStep = $("#nav-execution").find(".active").data("index");
             var indexAction = $(this).parents("a").data('index')
             var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
@@ -2373,19 +2373,19 @@ function triggerActionExecution(element, id, status) {
     var currentElement = $($(element).closest(".action")[0]);
     var newReturnCode = "WE";
     if (status === "OK") {
-        currentElement.removeClass(function (index, className) {
+        currentElement.removeClass(function(index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
         }).addClass("row list-group-item list-group-item-success");
-        $(currentElement.find("span")[0]).removeClass(function (index, className) {
+        $(currentElement.find("span")[0]).removeClass(function(index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-ok");
         $(currentElement).next("div").find("input[id='returncode']").val("OK").change();
         newReturnCode = "OK";
     } else {
-        currentElement.removeClass(function (index, className) {
+        currentElement.removeClass(function(index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
         }).addClass("row list-group-item list-group-item-warning");
-        $(currentElement.find("span")[0]).removeClass(function (index, className) {
+        $(currentElement.find("span")[0]).removeClass(function(index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-alert");
         $(currentElement).next("div").find("input[id='returncode']").val("FA").change();
@@ -2396,11 +2396,11 @@ function triggerActionExecution(element, id, status) {
 
     //Modify style of all previous action and control of the current step that have not been modified yet
     var prevElementCurrentStep = $($($(element).closest(".action")[0]).parent().prevAll().find(".list-group-item-black"));
-    prevElementCurrentStep.removeClass(function (index, className) {
+    prevElementCurrentStep.removeClass(function(index, className) {
         return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
     }).addClass("row list-group-item list-group-item-success");
     //Modify glyphicon of all previous action and control of the current step that have not been modified yet
-    $($($($(element).closest(".action")[0]).parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
+    $($($($(element).closest(".action")[0]).parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function(index, className) {
         return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
     }).addClass("glyphicon-ok");
     //Modify Status of all previous action and control of the current step that have not been modified yet
@@ -2409,11 +2409,11 @@ function triggerActionExecution(element, id, status) {
 
     //Modify style of all previous action and control of the previous steps that have not been modified yet
     var prevElementPreviousStep = $($($(element).closest(".action")[0]).parent().parent().prevAll().find(".list-group-item-black"));
-    prevElementPreviousStep.removeClass(function (index, className) {
+    prevElementPreviousStep.removeClass(function(index, className) {
         return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
     }).addClass("row list-group-item list-group-item-success");
     //Modify glyphicon of all previous action and control of the previous steps that have not been modified yet
-    $($($($(element).closest(".action")[0]).parent().parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
+    $($($($(element).closest(".action")[0]).parent().parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function(index, className) {
         return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
     }).addClass("glyphicon-ok");
 
@@ -2433,7 +2433,7 @@ function triggerActionExecution(element, id, status) {
 function updateActionControlReturnCode(idElementTriggers, returnCodeElementTrigger) {
 
     //go though every action or control to update them
-    $(".itemContainer").each(function () {
+    $(".itemContainer").each(function() {
 
         var idCurrentElement = $(this).data("id");
         var isBeforeTheElementTrigger = false;
@@ -2479,7 +2479,7 @@ function updateActionControlReturnCode(idElementTriggers, returnCodeElementTrigg
                 updateStepExecutionReturnCode(idElementTriggers.stepId, returnCodeElementTrigger, true);
                 //then update all the previous step if they are untouched
                 for (var idStep = 0; idStep < idElementTriggers.stepId; idStep++) {// update all the step below the element trigger
-                    var currentStep = $("#stepList").data("listOfStep")[ idStep ];
+                    var currentStep = $("#steps").data("listOfStep")[ idStep ];
                     //if previous element are untouch
                     if (currentStep.returnCode === "WE") {
                         updateStepExecutionReturnCode(idStep, "OK", false);
@@ -2504,7 +2504,7 @@ function updateActionControlReturnCode(idElementTriggers, returnCodeElementTrigg
 function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, isStepDisplayed) {
 
     var newStepReturnCode = null;
-    var currentStep = $("#stepList").data("listOfStep")[stepId]
+    var currentStep = $("#steps").data("listOfStep")[stepId]
     if (returnCodeActionControlTrigger !== currentStep.returnCode) {
         if (returnCodeActionControlTrigger === "KO") {
             newStepReturnCode = "KO";
@@ -2515,7 +2515,7 @@ function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, i
             var everyActionAndControlOK = true;
             var returnMessageCanBeReset = true;
 
-            $(".itemContainer").each(function () {
+            $(".itemContainer").each(function() {
                 var idCurrentActionControl = $(this).data("id");
                 var actionControBelongToCurrentStep = (stepId == idCurrentActionControl.stepId);
                 if (actionControBelongToCurrentStep) {
@@ -2543,7 +2543,7 @@ function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, i
         }
         if (newStepReturnCode !== null) {
             //update step return code
-            var stepUpdated = $("#stepList").data("listOfStep")[ stepId ];
+            var stepUpdated = $("#steps").data("listOfStep")[ stepId ];
             stepUpdated.returnCode = newStepReturnCode;
 
             //update step visual
@@ -2565,17 +2565,17 @@ function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, i
                 glyphiconColor = "text-success";
             }
 
-            $($("#steps").find("a")[stepId]).removeClass(function (index, className) {
+            $($("#steps").find("a")[stepId]).removeClass(function(index, className) {
                 return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
             }).addClass(className);
 
-            $($("#steps").find("a")[stepId]).find("span").removeClass(function (index, className) {
+            $($("#steps").find("a")[stepId]).find("span").removeClass(function(index, className) {
                 return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
             }).addClass(glyphiconName);
 
             //if the current step is the one displayed at the center of the screen
             if (isStepDisplayed) {
-                var glyphIcon = $($("#stepInfo h2")[0]).removeClass(function (index, className) {
+                var glyphIcon = $($("#stepInfo h2")[0]).removeClass(function(index, className) {
                     return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
                 });
 
@@ -2596,8 +2596,8 @@ function updateTestCaseReturnCode() {
 
     var testCaseNewReturnCode = null;
     // go tough every step to see if the testCase need to be update
-    for (var idStep = 0; idStep < $("#stepList").data("listOfStep").length; idStep++) {
-        var currentStep = $("#stepList").data("listOfStep")[idStep];
+    for (var idStep = 0; idStep < $("#steps").data("listOfStep").length; idStep++) {
+        var currentStep = $("#steps").data("listOfStep")[idStep];
         //a step is not complete no need to go further in the list of step
         if (currentStep.returnCode === "WE") {
             if (testCaseNewReturnCode !== "FA" && testCaseNewReturnCode !== "KO")
@@ -2647,7 +2647,7 @@ function updateTestCaseReturnCode() {
     }
 }
 
-Action.prototype.generateContent = function () {
+Action.prototype.generateContent = function() {
     var obj = this;
     var doc = new Doc();
 
@@ -2673,7 +2673,7 @@ Action.prototype.generateContent = function () {
     var row6 = $("<div></div>").addClass("row" + hideOnManual + hideCondition);
     var row7 = $("<div></div>").addClass("row" + hideOnManual + hideCondition);
     var container = $("<div id='content-container'></div>").addClass("action-group row list-group-item");
-    var actionList = $("<input type='text' class='form-control' id='action'>").prop("readonly", true);
+    var actions = $("<input type='text' class='form-control' id='action'>").prop("readonly", true);
     var descField = $("<textarea type='text' rows='1' class='form-control' id='description'>").prop("readonly", true);
     var value1Field = $("<textarea type='text' rows='1' class='form-control' id='value1'>").prop("readonly", true);
     var value1InitField = $("<textarea type='text' rows='1' class='form-control' id='value1init'>").prop("readonly", true);
@@ -2697,7 +2697,7 @@ Action.prototype.generateContent = function () {
     var conditionVal2Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal2'>").prop("readonly", true);
     var conditionVal3Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal3'>").prop("readonly", true);
 
-    var actionGroup = $("<div class='form-group'></div>").append($("<label for='action'>" + doc.getDocLabel("page_executiondetail", "action") + "</label>")).append(actionList);
+    var actionGroup = $("<div class='form-group'></div>").append($("<label for='action'>" + doc.getDocLabel("page_executiondetail", "action") + "</label>")).append(actions);
     var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
     var value1Group = $("<div class='form-group'></div>").append($("<label for='value1'>" + doc.getDocLabel("page_executiondetail", "value1") + "</label>")).append(value1Field);
     var value1GroupInit = $("<div class='form-group'></div>").append($("<label for='value1init'>" + doc.getDocLabel("page_executiondetail", "value1init") + "</label>")).append(value1InitField);
@@ -2719,7 +2719,7 @@ Action.prototype.generateContent = function () {
     var conditionVal3Group = $("<div class='form-group'></div>").append($("<label for='conditionVal3'>" + doc.getDocLabel("page_executiondetail", "conditionVal3") + "</label>")).append(conditionVal3Field);
 
     descField.val(this.description);
-    actionList.val(this.action);
+    actions.val(this.action);
     value1Field.val(this.value1);
     value1InitField.val(this.value1init);
     value2Field.val(this.value2);
@@ -2786,7 +2786,7 @@ Action.prototype.generateContent = function () {
 };
 
 
-Action.prototype.getJsonData = function () {
+Action.prototype.getJsonData = function() {
     var json = {};
 
     json.action = this.action;
@@ -2903,7 +2903,7 @@ function Control(json, parentAction) {
     $(this.html).data("index", this.sort - 1)
 }
 
-Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
+Control.prototype.draw = function(idMotherStep, idMotherAction, idControl) {
     var htmlElement = this.html;
     var row = $("<div class='itemContainer'></div>").addClass("col-xs-10");
     var type = $("<div></div>").addClass("type");
@@ -2956,7 +2956,7 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
 
     $(this.parentAction.html).parent().append(htmlElement);
     $(this.parentAction.html).parent().append(content);
-    htmlElement.click(function () {
+    htmlElement.click(function() {
         if ($(this).find(".glyphicon-chevron-down").length > 0) {
             $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
         } else {
@@ -2968,23 +2968,23 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
 
 };
 
-Control.prototype.setStep = function (step) {
+Control.prototype.setStep = function(step) {
     this.step = step;
 };
 
-Control.prototype.setSequence = function (sequence) {
+Control.prototype.setSequence = function(sequence) {
     this.sequence = sequence;
 };
 
-Control.prototype.setControl = function (control) {
+Control.prototype.setControl = function(control) {
     this.control = control;
 };
 
-Control.prototype.setReturnMessage = function (returnMessage) {
+Control.prototype.setReturnMessage = function(returnMessage) {
     this.returnMessage = returnMessage;
 };
 
-Control.prototype.generateHeader = function (id) {
+Control.prototype.generateHeader = function(id) {
     var scope = this;
     var content = $("<div></div>").addClass("content");
     var firstRow = $("<div></div>").addClass("row ");
@@ -3007,17 +3007,17 @@ Control.prototype.generateHeader = function (id) {
         var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
         var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
         $(buttonUpload).css("float", "right")
-        buttonOK.click(function (event) {
+        buttonOK.click(function(event) {
             event.preventDefault();
             event.stopPropagation();
             triggerControlExecution(this, id, "OK");
         });
-        buttonFA.click(function (event) {
+        buttonFA.click(function(event) {
             event.preventDefault();
             event.stopPropagation();
             triggerControlExecution(this, id, "KO");
         });
-        $(buttonUpload).click(function (event) {
+        $(buttonUpload).click(function(event) {
             var indexStep = $("#nav-execution").find(".active").data("index");
             var indexAction = $(this).parents("a").parent().find(".action").data('index')
             var indexControl = $(this).parents("a").data('index')
@@ -3048,10 +3048,10 @@ function triggerControlExecution(element, id, status) {
     var currentElement = $($(element).closest(".control")[0]);
     var newReturnCode = "NE";
     if (status === "OK") {
-        currentElement.removeClass(function (index, className) {
+        currentElement.removeClass(function(index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
         }).addClass("row list-group-item list-group-item-success");
-        $(currentElement.find("span")[0]).removeClass(function (index, className) {
+        $(currentElement.find("span")[0]).removeClass(function(index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-ok");
         //Modify Status of current action
@@ -3060,10 +3060,10 @@ function triggerControlExecution(element, id, status) {
         $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
         newReturnCode = "OK";
     } else {
-        currentElement.removeClass(function (index, className) {
+        currentElement.removeClass(function(index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
         }).addClass("row list-group-item list-group-item-danger");
-        $(currentElement.find("span")[0]).removeClass(function (index, className) {
+        $(currentElement.find("span")[0]).removeClass(function(index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-remove");
         //Modify Status of current action
@@ -3075,11 +3075,11 @@ function triggerControlExecution(element, id, status) {
 
     //Modify style of action of the current actiongroup that have not been modified yet
     var prevElementCurrentActionGroup = $($($(element).closest(".control")[0]).prevAll(".list-group-item-black"));
-    prevElementCurrentActionGroup.removeClass(function (index, className) {
+    prevElementCurrentActionGroup.removeClass(function(index, className) {
         return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
     }).addClass("row list-group-item list-group-item-success");
     //Modify glyphicon of action of the current actiongroup that have not been modified yet
-    $($($($(element).closest(".control")[0]).prevAll(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
+    $($($($(element).closest(".control")[0]).prevAll(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function(index, className) {
         return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
     }).addClass("glyphicon-ok");
     //Modify Status of action of the current actiongroup that have not been modified yet
@@ -3088,11 +3088,11 @@ function triggerControlExecution(element, id, status) {
 
     //Modify style of all previous action and control of the current step that have not been modified yet
     var prevElementCurrentStep = $($($(element).closest(".control")[0]).parent().prevAll().find(".list-group-item-black"));
-    prevElementCurrentStep.removeClass(function (index, className) {
+    prevElementCurrentStep.removeClass(function(index, className) {
         return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
     }).addClass("row list-group-item list-group-item-success");
     //Modify glyphicon of all previous action and control of the current step that have not been modified yet
-    $($($($(element).closest(".control")[0]).parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
+    $($($($(element).closest(".control")[0]).parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function(index, className) {
         return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
     }).addClass("glyphicon-ok");
     //Modify Status of all previous action and control of the current step that have not been modified yet
@@ -3102,11 +3102,11 @@ function triggerControlExecution(element, id, status) {
 
     //Modify style of all previous action and control of the previous steps that have not been modified yet
     var prevElementPreviousStep = $($($(element).closest(".control")[0]).parent().parent().prevAll().find(".list-group-item-black"));
-    prevElementPreviousStep.removeClass(function (index, className) {
+    prevElementPreviousStep.removeClass(function(index, className) {
         return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
     }).addClass("row list-group-item list-group-item-success");
     //Modify glyphicon of all previous action and control of the previous steps that have not been modified yet
-    $($($($(element).closest(".control")[0]).parent().parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
+    $($($($(element).closest(".control")[0]).parent().parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function(index, className) {
         return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
     }).addClass("glyphicon-ok");
     //Modify Status of all previous action and control of the previous step that have not been modified yet
@@ -3117,7 +3117,7 @@ function triggerControlExecution(element, id, status) {
 
 }
 
-Control.prototype.generateContent = function () {
+Control.prototype.generateContent = function() {
     var doc = new Doc();
     var obj = this;
 
@@ -3249,7 +3249,7 @@ Control.prototype.generateContent = function () {
     return container;
 };
 
-Control.prototype.getJsonData = function () {
+Control.prototype.getJsonData = function() {
     var json = {};
 
     json.conditionOperator = this.conditionOperator;
@@ -3326,7 +3326,7 @@ function addFileLink(fileList, container, manual, idStep) {
             var fileDesc = fileList[i].fileDesc;
             var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                     .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
-                    .click(function (e) {
+                    .click(function(e) {
                         changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
                         return false;
                     }));
@@ -3344,28 +3344,28 @@ function addFileLink(fileList, container, manual, idStep) {
             if (i === 0) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .css("height", "30px").click(function (f) {
+                        .css("height", "30px").click(function(f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 1) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .css("height", "30px").click(function (f) {
+                        .css("height", "30px").click(function(f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 2) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .css("height", "30px").click(function (f) {
+                        .css("height", "30px").click(function(f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 3) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .css("height", "30px").click(function (f) {
+                        .css("height", "30px").click(function(f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
@@ -3376,12 +3376,12 @@ function addFileLink(fileList, container, manual, idStep) {
             var linkBoxtxt = null;
 
             if (fileList[i].fileType === "BIN") {
-                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function (f) {
+                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function(f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
             } else if (fileList[i].fileType === "PDF") {
-                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function (f) {
+                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function(f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
@@ -3396,7 +3396,7 @@ function addFileLink(fileList, container, manual, idStep) {
     if (isTheExecutionManual && fileList.length !== 0) {
         var buttonUpload = $($("<button>").addClass("btn btn-info btn-upload btn-inverse").attr("type", "button").text("UPLOAD"));
         $(buttonUpload).css("float", "right")
-        buttonUpload.click(function (event) {
+        buttonUpload.click(function(event) {
             var idex = $("#idlabel").text()
             if ($(container).parent().parent().parent().hasClass("action")) {
                 var indexAction = $(this).parents("a").data('index')
@@ -3434,7 +3434,7 @@ function saveExecution(data) {
     var rCode = $("#controlstatus").html();
     var executor = $("#tabDetail input#executor").val();
 
-    var saveProp = function () {
+    var saveProp = function() {
         showLoaderInModal('#propertiesModal');
         getScriptInformationOfStep()
         $.ajax({
@@ -3450,9 +3450,9 @@ function saveExecution(data) {
                 returnMessage: rMessage,
                 stepArray: getScriptInformationOfStep()
             }),
-            success: function () {
+            success: function() {
 
-                /*var stepHtml = $("#stepList li.active");
+                /*var stepHtml = $("#steps li.active");
                  var stepData = stepHtml.data("item");
                  var tabActive = $("#tabsScriptEdit li.active a").attr("name");*/
 
@@ -3468,7 +3468,7 @@ function saveExecution(data) {
     };
 
     if (propertyWithoutCountry) {
-        showModalConfirmation(function () {
+        showModalConfirmation(function() {
             $('#confirmationModal').modal('hide');
             saveProp();
         }, undefined, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcasescript", "warning_no_country"), "", "", "", "");
@@ -3480,34 +3480,34 @@ function saveExecution(data) {
 
 /*
  *
- * @param {type} stepListData
+ * @param {type} stepsData
  * @returns {Array}
  */
 
 function getScriptInformationOfStep() {
-    var stepList = $("#stepList a");
+    var steps = $("#steps a");
     var stepArr = [];
 
     // Construct the step/action/control list:
     // Iterate over steps
-    for (var i = 0; i < stepList.length; i++) {
-        var step = $(stepList[i]).data("item");
+    for (var i = 0; i < steps.length; i++) {
+        var step = $(steps[i]).data("item");
         var actionArr = [];
         // Get step's actions
-        var actionList = step.stepActionContainer.find("[name='fullActionDiv']");
+        var actions = step.stepActionContainer.find("[name='fullActionDiv']");
 
         // Iterate over actions
-        for (var j = 0; j < actionList.length; j++) {
+        for (var j = 0; j < actions.length; j++) {
 
             var controlArr = [];
-            var action = $(actionList[j]).find("div.itemContainer").data("item");
+            var action = $(actions[j]).find("div.itemContainer").data("item");
 
             // Get action's controls
-            var controlList = $(actionList[j]).find("a.control");
+            var controls = $(actions[j]).find("a.control");
 
             // Iterate over controls
-            for (var k = 0; k < controlList.length; k++) {
-                var control = $(controlList[k]).find("div.itemContainer").data("item");
+            for (var k = 0; k < controls.length; k++) {
+                var control = $(controls[k]).find("div.itemContainer").data("item");
                 controlArr.push(control.getJsonData());
             }
             var actionJson = action.getJsonData();

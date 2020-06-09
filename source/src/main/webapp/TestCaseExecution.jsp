@@ -166,7 +166,7 @@
                                 <nav class="col-lg-3" id="nav-execution" style="z-index:1;">
                                     <div id="list-wrapper" style="top:107px;">
                                         <div id="steps">
-                                            <ul class="list-group step-list side-item" id="stepList" style="max-height: 500px;overflow-y: auto"></ul>
+                                            <ul class="list-group step-list side-item" id="steps" style="max-height: 500px;overflow-y: auto"></ul>
                                         </div>
                                     </div>
                                 </nav>
@@ -303,8 +303,8 @@
                             <div class="row">
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label>Bug ID</label>
-                                        <div id="bugID"></div>
+                                        <label>Bugs</label>
+                                        <div id="bugs"></div>
                                     </div>
                                 </div>
 
@@ -593,66 +593,66 @@
 
                         <div class="center marginTop25 tab-pane fade" id="tabNetwork">
 
-                                <div class="panel panel-default" id="NS1Panel">
-                                    <div class="panel-heading card" data-toggle="collapse" data-target="#NS1">
-                                        <span class="fa fa-pie-chart fa-fw"></span>
-                                        <label id="ns1Label">Global Statistics</label>
-                                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                    </div>
-                                    <div class="panel-body collapse in" id="NS1">
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <canvas id="myChart1"></canvas>
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <canvas id="myChart2"></canvas>
-                                            </div>
+                            <div class="panel panel-default" id="NS1Panel">
+                                <div class="panel-heading card" data-toggle="collapse" data-target="#NS1">
+                                    <span class="fa fa-pie-chart fa-fw"></span>
+                                    <label id="ns1Label">Global Statistics</label>
+                                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                </div>
+                                <div class="panel-body collapse in" id="NS1">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <canvas id="myChart1"></canvas>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <canvas id="myChart2"></canvas>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div class="panel panel-default" id="NS2Panel">
-                                    <div class="panel-heading card" data-toggle="collapse" data-target="#NS2">
-                                        <span class="fa fa-pie-chart fa-fw"></span>
-                                        <label id="ns2Label">Statistics Per Third Party</label>
-                                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                            <div class="panel panel-default" id="NS2Panel">
+                                <div class="panel-heading card" data-toggle="collapse" data-target="#NS2">
+                                    <span class="fa fa-pie-chart fa-fw"></span>
+                                    <label id="ns2Label">Statistics Per Third Party</label>
+                                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                </div>
+                                <div class="panel-body collapse in" id="NS2">
+
+                                    <div class="row" >
+                                        <div class="col-sm-1" id="radioSort">
+                                            <label id="ns2Label"><span class="glyphicon glyphicon-sort"></span> Sort Third Party</label>
+                                            <button class="btn btn-default pull-left" id="sortSize" style="margin-left: 5px; margin-right: 5px;">by Size</button>
+                                            <button class="btn btn-default pull-left" id="sortRequest" style="margin-left: 5px; margin-right: 5px;">by Request</button>
+                                            <button class="btn btn-default pull-left" id="sortTime" style="margin-left: 5px; margin-right: 5px;">by Max Time</button>
+                                        </div>
+                                        <div class="col-sm-11">
+                                            <canvas id="myChart3"></canvas>
+                                        </div>
                                     </div>
-                                    <div class="panel-body collapse in" id="NS2">
 
-                                        <div class="row" >
-                                            <div class="col-sm-1" id="radioSort">
-                                                <label id="ns2Label"><span class="glyphicon glyphicon-sort"></span> Sort Third Party</label>
-                                                <button class="btn btn-default pull-left" id="sortSize" style="margin-left: 5px; margin-right: 5px;">by Size</button>
-                                                <button class="btn btn-default pull-left" id="sortRequest" style="margin-left: 5px; margin-right: 5px;">by Request</button>
-                                                <button class="btn btn-default pull-left" id="sortTime" style="margin-left: 5px; margin-right: 5px;">by Max Time</button>
-                                            </div>
-                                            <div class="col-sm-11">
-                                                <canvas id="myChart3"></canvas>
-                                            </div>
-                                        </div>
-
-                                        <div class="row" id="detailUnknown">
-                                            <ul class="list-group marginTop25" id="detailUnknownList">
-                                            </ul>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-sm-12">
-                                                <canvas id="myChart4"></canvas>
-                                            </div>
+                                    <div class="row" id="detailUnknown">
+                                        <ul class="list-group marginTop25" id="detailUnknownList">
+                                        </ul>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <canvas id="myChart4"></canvas>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div class="panel panel-default" id="NS3Panel">
-                                    <div class="panel-heading card" data-toggle="collapse" data-target="#NS3">
-                                        <span class="fa fa-pie-chart fa-fw"></span>
-                                        <label id="ns3Label">Requests List</label>
-                                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                    </div>
-                                    <div class="panel-body collapse in" id="NS3">
-                                        <table id="requestTable" class="table table-bordered table-hover display" name="requestTable"></table>
-                                    </div>
+                            <div class="panel panel-default" id="NS3Panel">
+                                <div class="panel-heading card" data-toggle="collapse" data-target="#NS3">
+                                    <span class="fa fa-pie-chart fa-fw"></span>
+                                    <label id="ns3Label">Requests List</label>
+                                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                 </div>
+                                <div class="panel-body collapse in" id="NS3">
+                                    <table id="requestTable" class="table table-bordered table-hover display" name="requestTable"></table>
+                                </div>
+                            </div>
 
                         </div>
 

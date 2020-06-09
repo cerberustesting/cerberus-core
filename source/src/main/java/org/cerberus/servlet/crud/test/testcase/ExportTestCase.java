@@ -72,7 +72,7 @@ public class ExportTestCase extends HttpServlet {
             // Java object to JSON string
             ObjectMapper mapper = new ObjectMapper();
             JSONObject jo = new JSONObject(mapper.writeValueAsString(tcInfo));
-            jo.put("bugIds", tcInfo.getBugID());
+            jo.put("bugs", tcInfo.getBugs());
 
             JSONObject export = new JSONObject();
             export.put("version", Infos.getInstance().getProjectVersion());

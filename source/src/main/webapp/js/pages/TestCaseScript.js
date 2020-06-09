@@ -1075,7 +1075,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
         });
 
         var doc = new Doc();
-        var stepList = [];
+        var steps = [];
 
         // Load invariant list into local storage.
         getSelectInvariant("SRVTYPE", false, true);
@@ -1153,12 +1153,12 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
 
                     testcaseinfo = data.info;
                     loadTestCaseInfo(data.info);
-                    json = data.stepList;
+                    json = data.steps;
                     sortData(json);
                     data.inheritedProp.sort(function(a, b) {
                         return compareStrings(a.property, b.property);
                     })
-                    createStepList(json, stepList, step, data.hasPermissionsUpdate, data.hasPermissionsStepLibrary);
+                    createSteps(json, steps, step, data.hasPermissionsUpdate, data.hasPermissionsStepLibrary);
                     drawInheritedProperty(data.inheritedProp);
 
                     var configs = {
@@ -1249,7 +1249,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
 
 //            $("#propertiesModal [name='buttonSave']").click(editPropertiesModalSaveHandler);
 
-            $("#addStep").click({stepList: stepList}, function(event) {
+            $("#addStep").click({steps: steps}, function(event) {
                 // Store the current saveScript button status and disable it
                 var saveScriptOldStatus = $("#saveScript").attr("disabled");
                 $("#saveScript").attr("disabled", true);
@@ -1276,7 +1276,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
 
             $("#deleteStep").click(function() {
 
-                var step = $("#stepList .active").data("item");
+                var step = $("#steps .active").data("item");
 
                 if (step.isStepInUseByOtherTestCase) {
                     showStepUsesLibraryInConfirmationModal(step);
@@ -1383,7 +1383,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
 function displayPageLabel(doc) {
     $("h1.page-title-line").html(doc.getDocLabel("page_testcasescript", "testcasescript_title"));
     $("#pageTitle").html(doc.getDocLabel("page_testcasescript", "testcasescript_title"));
-    $("#nav-execution #list-wrapper #stepListWrapper h3").html(doc.getDocLabel("page_testcasescript", "steps_title"));
+    $("#nav-execution #list-wrapper #stepsWrapper h3").html(doc.getDocLabel("page_testcasescript", "steps_title"));
     $("#nav-execution #list-wrapper #tcButton h3").html(doc.getDocLabel("page_global", "columnAction"));
     $("#nav-execution #list-wrapper #deleteButton h3").html(doc.getDocLabel("page_global", "columnAction") + " " + doc.getDocLabel("page_header", "menuTestCase"));
 
@@ -1488,7 +1488,7 @@ function triggerTestCaseExecutionQueueandSeeFromTC(queueId) {
 
 function addAction(action) {
     setModif(true);
-    var step = $("#stepList li.active").data("item");
+    var step = $("#steps li.active").data("item");
     var act = new Action(null, step, true);
     step.setAction(act, action);
     setAllSort();
@@ -1507,13 +1507,13 @@ function getTestCase(test, testcase, step) {
 }
 
 function setAllSort() {
-    var stepList = $("#stepList li");
+    var steps = $("#steps li");
     var stepArr = [];
 
     // Construct the step/action/control list:
     // Iterate over steps
-    for (var i = 0; i < stepList.length; i++) {
-        var step = $(stepList[i]).data("item");
+    for (var i = 0; i < steps.length; i++) {
+        var step = $(steps[i]).data("item");
         var actionArr = [];
 
         if (!step.toDelete) {
@@ -1521,11 +1521,11 @@ function setAllSort() {
             step.setSort(i + 1);
 
             // Get step's actions
-            var actionList = step.stepActionContainer.children(".action-group").children(".action");
+            var actions = step.stepActionContainer.children(".action-group").children(".action");
 
             // Iterate over actions
-            for (var j = 0; j < actionList.length; j++) {
-                var action = $(actionList[j]).data("item");
+            for (var j = 0; j < actions.length; j++) {
+                var action = $(actions[j]).data("item");
                 var controlArr = [];
 
                 if (!action.toDelete) {
@@ -1536,11 +1536,11 @@ function setAllSort() {
                     action.setStep(i + 1);
 
                     // Get action's controls
-                    var controlList = action.html.children(".control");
+                    var controls = action.html.children(".control");
 
                     // Iterate over controls
-                    for (var k = 0; k < controlList.length; k++) {
-                        var control = $(controlList[k]).data("item");
+                    for (var k = 0; k < controls.length; k++) {
+                        var control = $(controls[k]).data("item");
 
                         if (!control.toDelete) {
                             // Set the control's sort
@@ -1624,7 +1624,7 @@ function saveScript(property) {
             }),
             success: function() {
 
-                var stepHtml = $("#stepList li.active");
+                var stepHtml = $("#steps li.active");
                 var stepData = stepHtml.data("item");
 
                 var tabActive = $("#tabsScriptEdit li.active a").attr("name");
@@ -2287,7 +2287,7 @@ function loadTestCaseInfo(info) {
 
 function changeLib() {
     setModif(true);
-    var stepHtml = $("#stepList li.active");
+    var stepHtml = $("#steps li.active");
     var stepData = stepHtml.data("item");
     if (stepData.inLibrary === "Y") {
         stepData.inLibrary = "N";
@@ -2355,7 +2355,7 @@ function initStep() {
         "useStep": "N",
         "description": "",
         "useStepStep": -1,
-        "actionList": [],
+        "actions": [],
         "loop": "onceIfConditionTrue",
         "conditionOperator": "always",
         "conditionVal1": "",
@@ -2367,7 +2367,7 @@ function initStep() {
 
 
 function addStep(event) {
-    var stepList = event.data.stepList;
+    var steps = event.data.steps;
     $("#addStepModal").modal('show');
 
     // Setting the focus on the Description of the step.
@@ -2383,10 +2383,10 @@ function addStep(event) {
             var step = initStep();
             step.description = $("#addStepModal #description").val();
 
-            var stepObj = new Step(step, stepList, true);
+            var stepObj = new Step(step, steps, true);
 
             stepObj.draw();
-            stepList.push(stepObj);
+            steps.push(stepObj);
             stepObj.html.trigger("click");
         } else {
 
@@ -2404,12 +2404,12 @@ function addStep(event) {
                         data: {test: useStep.test, testcase: useStep.testCase, step: useStep.step},
                         async: false,
                         success: function(data) {
-                            step.actionList = data.tcsActionList;
+                            step.actions = data.tcsActions;
 
-                            for (var index = 0; index < data.tcsActionControlList.length; index++) {
-                                var control = data.tcsActionControlList[index];
+                            for (var index = 0; index < data.tcsActionControls.length; index++) {
+                                var control = data.tcsActionControls[index];
 
-                                step.actionList[control.sequence - 1].controlList.push(control);
+                                step.actions[control.sequence - 1].controls.push(control);
                             }
                             sortStep(step);
                         }
@@ -2422,38 +2422,38 @@ function addStep(event) {
                         step.useStepStepSort = useStep.sort;
                     }
                 }
-                var stepObj = new Step(step, stepList, true);
+                var stepObj = new Step(step, steps, true);
 
                 stepObj.draw();
-                stepList.push(stepObj);
+                steps.push(stepObj);
                 stepObj.html.trigger("click");
             });
         }
     });
 }
 
-function createStepList(data, stepList, stepIndex, canUpdate, hasPermissionsStepLibrary) {
+function createSteps(data, steps, stepIndex, canUpdate, hasPermissionsStepLibrary) {
     for (var i = 0; i < data.length; i++) {
         var step = data[i];
-        var stepObj = new Step(step, stepList, canUpdate, hasPermissionsStepLibrary);
+        var stepObj = new Step(step, steps, canUpdate, hasPermissionsStepLibrary);
 
         stepObj.draw();
-        stepList.push(stepObj);
+        steps.push(stepObj);
     }
 
     if (stepIndex !== undefined) {
         var find = false;
-        for (var i = 0; i < stepList.length; i++) {
-            if (stepList[i].sort == stepIndex) {
+        for (var i = 0; i < steps.length; i++) {
+            if (steps[i].sort == stepIndex) {
                 find = true;
-                $(stepList[i].html[0]).click();
+                $(steps[i].html[0]).click();
             }
         }
-        if ((!find) && (stepList.length > 0)) {
-            $(stepList[0].html[0]).click();
+        if ((!find) && (steps.length > 0)) {
+            $(steps[0].html[0]).click();
         }
-    } else if (stepList.length > 0) {
-        $(stepList[0].html[0]).click();
+    } else if (steps.length > 0) {
+        $(steps[0].html[0]).click();
     } else {
         $("#stepHeader").hide();
         $("#addActionBottomBtn").hide();
@@ -2501,8 +2501,8 @@ function loadLibraryStep(search, system) {
         success: function(data) {
             var test = {};
 
-            for (var index = 0; index < data.testCaseStepList.length; index++) {
-                var step = data.testCaseStepList[index];
+            for (var index = 0; index < data.testCaseSteps.length; index++) {
+                var step = data.testCaseSteps[index];
 
                 if (search === undefined || search === "" || step.description.toLowerCase().indexOf(search_lower) > -1 || step.testCase.toLowerCase().indexOf(search_lower) > -1 || step.test.toLowerCase().indexOf(search_lower) > -1) {
                     if (!test.hasOwnProperty(step.test)) {
@@ -2717,15 +2717,15 @@ function handleDragEnd(event) {
 /** DATA AGREGATION * */
 
 function sortStep(step) {
-    for (var j = 0; j < step.actionList.length; j++) {
-        var action = step.actionList[j];
+    for (var j = 0; j < step.actions.length; j++) {
+        var action = step.actions[j];
 
-        action.controlList.sort(function(a, b) {
+        action.controls.sort(function(a, b) {
             return a.sort - b.sort;
         });
     }
 
-    step.actionList.sort(function(a, b) {
+    step.actions.sort(function(a, b) {
         return a.sort - b.sort;
     });
 }
@@ -2751,7 +2751,7 @@ function compareStrings(a, b) {
 
 /** JAVASCRIPT OBJECT * */
 
-function Step(json, stepList, canUpdate, hasPermissionsStepLibrary) {
+function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
     this.stepActionContainer = $("<div></div>").addClass("step-container").css("display", "none");
     this.test = json.test;
     this.testcase = json.testCase;
@@ -2771,7 +2771,7 @@ function Step(json, stepList, canUpdate, hasPermissionsStepLibrary) {
     this.inLibrary = json.inLibrary;
     this.forceExe = json.forceExe;
     this.isStepInUseByOtherTestCase = json.isStepInUseByOtherTestCase;
-    this.actionList = [];
+    this.actions = [];
     if (canUpdate) {
         // If we can update the testcase we check whether we can still modify
         // following the TestStepLibrary group.
@@ -2779,9 +2779,9 @@ function Step(json, stepList, canUpdate, hasPermissionsStepLibrary) {
             canUpdate = false;
         }
     }
-    this.setActionList(json.actionList, canUpdate);
+    this.setActions(json.actions, canUpdate);
 
-    this.stepList = stepList;
+    this.steps = steps;
     this.toDelete = false;
     this.hasPermissionsUpdate = canUpdate;
     this.hasPermissionsStepLibrary = hasPermissionsStepLibrary;
@@ -2834,7 +2834,7 @@ Step.prototype.draw = function() {
         }
     });
 
-    $("#stepList").append(htmlElement);
+    $("#steps").append(htmlElement);
     $("#actionContainer").append(this.stepActionContainer);
     this.refreshSort();
 };
@@ -2845,8 +2845,8 @@ Step.prototype.show = function() {
     $("#stepHeader").show();
     $("#addActionBottomBtn").show();
 
-    for (var i = 0; i < object.stepList.length; i++) {
-        var step = object.stepList[i];
+    for (var i = 0; i < object.steps.length; i++) {
+        var step = object.steps[i];
 
         step.stepActionContainer.hide();
         step.stepActionContainer.find("[data-toggle='tooltip']").tooltip("hide");
@@ -2989,21 +2989,21 @@ Step.prototype.show = function() {
     $("#stepConditionVal3").attr("disabled", activateDisableWithUseStep);
 };
 
-Step.prototype.setActionList = function(actionList, canUpdate) {
-    for (var i = 0; i < actionList.length; i++) {
-        this.setAction(actionList[i], undefined, canUpdate);
+Step.prototype.setActions = function(actions, canUpdate) {
+    for (var i = 0; i < actions.length; i++) {
+        this.setAction(actions[i], undefined, canUpdate);
     }
 };
 
 Step.prototype.setAction = function(action, afterAction, canUpdate) {
     if (action instanceof Action) {
         action.draw(afterAction);
-        this.actionList.push(action);
+        this.actions.push(action);
     } else {
         var actionObj = new Action(action, this, canUpdate);
 
         actionObj.draw(afterAction);
-        this.actionList.push(actionObj);
+        this.actions.push(actionObj);
     }
 };
 
@@ -3030,8 +3030,8 @@ Step.prototype.setDelete = function() {
         $("#deleteStep span").addClass("glyphicon glyphicon-trash");
     }
 
-    for (var i = 0; i < this.stepList.length; i++) {
-        var step = this.stepList[i];
+    for (var i = 0; i < this.steps.length; i++) {
+        var step = this.steps[i];
 
         if (step.toDelete) {
             step.html.addClass("list-group-item-danger");
@@ -3107,8 +3107,8 @@ function Action(json, parentStep, canUpdate) {
         this.value1 = json.value1;
         this.value2 = json.value2;
         this.value3 = json.value3;
-        this.controlList = [];
-        this.setControlList(json.controlList, canUpdate);
+        this.controls = [];
+        this.setControls(json.controls, canUpdate);
     } else {
         this.test = "";
         this.testcase = "";
@@ -3126,7 +3126,7 @@ function Action(json, parentStep, canUpdate) {
         this.value1 = "";
         this.value2 = "";
         this.value3 = "";
-        this.controlList = [];
+        this.controls = [];
     }
 
     this.toDelete = false;
@@ -3209,21 +3209,21 @@ Action.prototype.draw = function(afterAction) {
     this.refreshSort();
 };
 
-Action.prototype.setControlList = function(controlList, canUpdate) {
-    for (var i = 0; i < controlList.length; i++) {
-        this.setControl(controlList[i], undefined, canUpdate);
+Action.prototype.setControls = function(controls, canUpdate) {
+    for (var i = 0; i < controls.length; i++) {
+        this.setControl(controls[i], undefined, canUpdate);
     }
 };
 
 Action.prototype.setControl = function(control, afterControl, canUpdate) {
     if (control instanceof Control) {
         control.draw(afterControl);
-        this.controlList.push(control);
+        this.controls.push(control);
     } else {
         var controlObj = new Control(control, this, canUpdate);
 
         controlObj.draw(afterControl);
-        this.controlList.push(controlObj);
+        this.controls.push(controlObj);
     }
 };
 
@@ -3261,7 +3261,7 @@ Action.prototype.generateContent = function() {
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelDiv'></span>"));
     descContainer.append(descriptionField);
 
-    var actionList = $("<select></select>").addClass("form-control input-sm");
+    var actions = $("<select></select>").addClass("form-control input-sm");
 
     var value1Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v1");
     var value2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v2");
@@ -3321,13 +3321,13 @@ Action.prototype.generateContent = function() {
     });
     actionconditionval3.val(this.conditionVal3);
 
-    actionList = getSelectInvariant("ACTION", false, true).css("width", "100%").attr("id", "actionSelect");
-    actionList.val(this.action);
-    actionList.off("change").on("change", function() {
+    actions = getSelectInvariant("ACTION", false, true).css("width", "100%").attr("id", "actionSelect");
+    actions.val(this.action);
+    actions.off("change").on("change", function() {
         setModif(true);
-        obj.action = actionList.val();
+        obj.action = actions.val();
         setPlaceholderAction($(this).parents(".action"));
-        $(actionList).parent().parent().find(".input-group-btn").remove();
+        $(actions).parent().parent().find(".input-group-btn").remove();
     });
 
     forceExeStatusList = getSelectInvariant("ACTIONFORCEEXESTATUS", false, true).css("width", "100%");
@@ -3359,7 +3359,7 @@ Action.prototype.generateContent = function() {
     });
 
     firstRow.append(descContainer);
-    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actions));
     secondRow.append($("<div></div>").addClass("v1 col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(value1Field));
     /*
      * if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers
@@ -3380,7 +3380,7 @@ Action.prototype.generateContent = function() {
         value1Field.prop("readonly", true);
         value2Field.prop("readonly", true);
         value3Field.prop("readonly", true);
-        actionList.prop("disabled", "disabled");
+        actions.prop("disabled", "disabled");
         forceExeStatusList.prop("disabled", "disabled");
         actionconditionoperator.prop("disabled", "disabled");
         actionconditionval1.prop("readonly", true);
@@ -3590,7 +3590,7 @@ Control.prototype.generateContent = function() {
     secondRow.css("width", "120%");
     var thirdRow = $("<div></div>").addClass("fieldRow row").hide();
 
-    var controlList = $("<select></select>").addClass("form-control input-sm").css("width", "100%");
+    var controls = $("<select></select>").addClass("form-control input-sm").css("width", "100%");
     var descContainer = $("<div class='input-group'></div>");
     var descriptionField = $("<input class='description form-control' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_control") + "'>");
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelDiv'></span>"));
@@ -3646,12 +3646,12 @@ Control.prototype.generateContent = function() {
     });
 
 
-    controlList = getSelectInvariant("CONTROL", false, true).attr("id", "controlSelect");
-    controlList.val(this.control);
-    controlList.css("width", "100%");
-    controlList.on("change", function() {
+    controls = getSelectInvariant("CONTROL", false, true).attr("id", "controlSelect");
+    controls.val(this.control);
+    controls.css("width", "100%");
+    controls.on("change", function() {
         setModif(true);
-        obj.control = controlList.val();
+        obj.control = controls.val();
         setPlaceholderControl($(this).parents(".control"));
     });
 
@@ -3686,7 +3686,7 @@ Control.prototype.generateContent = function() {
 
     firstRow.append(descContainer);
 
-    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "control_field"))).append(controlList));
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "control_field"))).append(controls));
     secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(controlValue1Field));
     secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(controlValue2Field));
     secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value3_field"))).append(controlValue3Field));
@@ -3704,7 +3704,7 @@ Control.prototype.generateContent = function() {
         controlValue1Field.prop("readonly", true);
         controlValue2Field.prop("readonly", true);
         controlValue3Field.prop("readonly", true);
-        controlList.prop("disabled", "disabled");
+        controls.prop("disabled", "disabled");
         fatalList.prop("disabled", "disabled");
         controlconditionoperator.prop("disabled", "disabled");
         controlconditionval1.prop("readonly", true);

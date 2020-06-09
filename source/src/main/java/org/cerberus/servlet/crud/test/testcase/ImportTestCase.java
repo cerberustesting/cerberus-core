@@ -100,13 +100,13 @@ public class ImportTestCase extends HttpServlet {
 
                         //Remove attribute not in the Object
                         JSONObject tcJson = json.getJSONObject("testCase");
-                        JSONArray bugIds = tcJson.getJSONArray("bugIds");
-                        tcJson.remove("bugIds");
+                        JSONArray bugs = tcJson.getJSONArray("bugs");
+                        tcJson.remove("bugs");
 
                         ObjectMapper mapper = new ObjectMapper();
 
                         TestCase tcInfo = mapper.readValue(tcJson.toString(), TestCase.class);
-                        tcInfo.setBugID(bugIds);
+                        tcInfo.setBugs(bugs);
                         try {
                             tcService.importWithDependency(tcInfo);
 

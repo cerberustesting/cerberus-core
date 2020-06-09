@@ -155,9 +155,9 @@
                         <div class="center marginTop25 tab-pane fade in active" id="tabSteps">
                             <nav class="col-lg-3" id="nav-execution" style="z-index:1;">
                                 <div id="list-wrapper" style="top:107px;">
-                                    <div id="stepListWrapper">
+                                    <div id="stepsWrapper">
                                         <!--<h4>Steps</h4>-->
-                                        <ul class="list-group step-list side-item nav nav-pills" id="stepList" style="max-height: 600px;overflow-y: auto"></ul>
+                                        <ul class="list-group step-list side-item nav nav-pills" id="steps" style="max-height: 600px;overflow-y: auto"></ul>
                                     </div>
                                     <div id="tcButton">
                                         <!--<h4>Actions</h4>-->

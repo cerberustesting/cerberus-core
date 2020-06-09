@@ -736,7 +736,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append("and (exe.`test` like ? ");
             query.append(" or exe.`testCase` like ? ");
             query.append(" or exe.`application` like ? ");
-            query.append(" or tec.`bugid` like ? ");
+            query.append(" or tec.`bugs` like ? ");
             query.append(" or tec.`priority` like ? ");
             query.append(" or tec.`description` like ? )");
         }
@@ -791,7 +791,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList<TestCaseExecution> readByCriteria(List<String> system,List<String> countries,List<String> environments,List<String> robotDecli,  List<TestCase> testcases, Date from, Date to) {
+    public AnswerList<TestCaseExecution> readByCriteria(List<String> system, List<String> countries, List<String> environments, List<String> robotDecli, List<TestCase> testcases, Date from, Date to) {
         AnswerList<TestCaseExecution> response = new AnswerList<>();
         List<TestCaseExecution> objectList = new ArrayList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -800,7 +800,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         Timestamp t1;
 
         StringBuilder query = new StringBuilder();
-        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcaseexecution exe ");
 

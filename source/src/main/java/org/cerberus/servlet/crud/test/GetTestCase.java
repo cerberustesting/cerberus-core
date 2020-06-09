@@ -107,7 +107,7 @@ public class GetTestCase extends HttpServlet {
                 jsonObject.put("toMajor", tcInfo.getToMajor());
                 jsonObject.put("toMinor", tcInfo.getToMinor());
                 jsonObject.put("lastExecutionStatus", tcInfo.getLastExecutionStatus());
-                jsonObject.put("bugID", tcInfo.getBugID());
+                jsonObject.put("bugs", tcInfo.getBugs());
                 jsonObject.put("targetMajor", tcInfo.getTargetMajor());
                 jsonObject.put("targetMinor", tcInfo.getTargetMinor());
                 jsonObject.put("comment", tcInfo.getComment());

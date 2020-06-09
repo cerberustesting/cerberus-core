@@ -119,7 +119,7 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             tc.setFromMinor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromMinor"), tc.getFromMinor(), charset));
             tc.setToMajor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toMajor"), tc.getToMajor(), charset));
             tc.setToMinor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toMinor"), tc.getToMinor(), charset));
-            tc.setActive(ParameterParserUtil.parseBooleanParam(request.getParameter("active"), tc.isActive()));
+            tc.setActive(ParameterParserUtil.parseBooleanParam(request.getParameter("isActive"), tc.isActive()));
             tc.setTargetMajor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("targetMajor"), tc.getTargetMajor(), charset));
             tc.setTargetMinor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("targetMinor"), tc.getTargetMinor(), charset));
             tc.setPriority(ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("priority"), tc.getPriority(), charset));
@@ -129,15 +129,15 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             tc.setType(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), tc.getType(), charset));
             tc.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), tc.getStatus(), charset));
             tc.setDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("shortDesc"), tc.getDescription(), charset));
-            String bug = tc.getBugID() == null ? "" : tc.getBugID().toString();
-            String bugIDString = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugId"), bug, charset);
-            JSONArray bugID = new JSONArray();
+            String bug = tc.getBugs() == null ? "" : tc.getBugs().toString();
+            String bugsString = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugs"), bug, charset);
+            JSONArray bugs = new JSONArray();
             try {
-                bugID = new JSONArray(bugIDString);
+                bugs = new JSONArray(bugsString);
             } catch (JSONException ex) {
-                LOG.error("Could not convert '" + bugIDString + "' to JSONArray.", ex);
+                LOG.error("Could not convert '" + bugsString + "' to JSONArray.", ex);
             }
-            tc.setBugID(bugID);
+            tc.setBugs(bugs);
             tc.setComment(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("comment"), tc.getComment(), charset));
             tc.setUserAgent(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("userAgent"), tc.getUserAgent(), charset));
             tc.setScreenSize(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("screenSize"), tc.getScreenSize(), charset));

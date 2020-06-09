@@ -344,21 +344,21 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         ttcObject.put("status", testCaseExecution.getStatus());
                         ttcObject.put("application", testCaseExecution.getApplication());
                         if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
-                                && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugID() != null) {
+                                && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugs() != null) {
                             ttcObject.put("AppBugURL", testCaseExecution.getApplicationObj().getBugTrackerUrl());
                         }
                         boolean testExist = ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getTest() != null));
                         if (testExist) {
                             ttcObject.put("priority", testCaseExecution.getTestCaseObj().getPriority());
                             ttcObject.put("comment", testCaseExecution.getTestCaseObj().getComment());
-                            ttcObject.put("bugId", testCaseExecution.getTestCaseObj().getBugIDActive());
+                            ttcObject.put("bugs", testCaseExecution.getTestCaseObj().getBugsActive());
 
                         } else {
 
                             ttcObject.put("function", "");
                             ttcObject.put("priority", 0);
                             ttcObject.put("comment", "");
-                            ttcObject.put("bugId", new JSONArray());
+                            ttcObject.put("bugs", new JSONArray());
 
                         }
 
@@ -439,7 +439,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 // building Bug Status.
                 for (Map.Entry<String, JSONObject> entry : ttc.entrySet()) {
                     JSONObject val = entry.getValue();
-                    JSONArray bugA = new JSONArray(val.getString("bugId"));
+                    JSONArray bugA = new JSONArray(val.getString("bugs"));
                     int nbBug = bugA.length();
                     if (nbBug > 0) {
                         for (int i = 0; i < nbBug; i++) {
@@ -507,7 +507,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         String key = entry.getKey();
                         JSONObject val = entry.getValue();
                         if ((val.getInt("NbExeUsefullToHide") != val.getInt("NbExeUsefull")) // One of the execution of the test case has a status <> QU and OK
-                                || (val.getJSONArray("bugId").length() > 0) // At least 1 bug has been assigned to the testcase.
+                                || (val.getJSONArray("bugs").length() > 0) // At least 1 bug has been assigned to the testcase.
                                 ) {
                             newttc.put(key, val);
                         }
@@ -770,8 +770,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 if (bugsToReport.contains(testCaseExecution.getControlStatus())) {
                     totalBugToReport++;
                 }
-                if ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getBugID().length() > 0)) {
-                    JSONArray arr = testCaseExecution.getTestCaseObj().getBugID();
+                if ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getBugs().length() > 0)) {
+                    JSONArray arr = testCaseExecution.getTestCaseObj().getBugs();
                     for (int i = 0; i < arr.length(); i++) {
                         JSONObject bug = (JSONObject) arr.get(i);
                         key = bug.getString("id");

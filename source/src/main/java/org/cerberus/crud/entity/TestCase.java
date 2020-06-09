@@ -59,7 +59,7 @@ public class TestCase {
     private String fromMinor;
     private String toMajor;
     private String toMinor;
-    private JSONArray bugID;
+    private JSONArray bugs;
     private String targetMajor;
     private String targetMinor;
     private String implementer;
@@ -186,16 +186,16 @@ public class TestCase {
     }
 
     @JsonIgnore
-    public JSONArray getBugID() {
-        return bugID;
+    public JSONArray getBugs() {
+        return bugs;
     }
 
     @JsonIgnore
-    public JSONArray getBugIDActive() {
+    public JSONArray getBugsActive() {
         JSONArray res = new JSONArray();
-        for (int i = 0; i < bugID.length(); i++) {
+        for (int i = 0; i < bugs.length(); i++) {
             try {
-                JSONObject jo = bugID.getJSONObject(i);
+                JSONObject jo = bugs.getJSONObject(i);
                 if (jo.getBoolean("act")) {
                     res.put(jo);
                 }
@@ -206,8 +206,8 @@ public class TestCase {
         return res;
     }
 
-    public void setBugID(JSONArray bugID) {
-        this.bugID = bugID;
+    public void setBugs(JSONArray bugs) {
+        this.bugs = bugs;
     }
 
     public String getComment() {
@@ -485,7 +485,7 @@ public class TestCase {
             result.put("conditionValue3", this.getConditionVal3());
             result.put("usrAgent", this.getUserAgent());
             result.put("screenSize", this.getScreenSize());
-            result.put("bugs", this.getBugID());
+            result.put("bugs", this.getBugs());
             result.put("comment", this.getComment());
             result.put("implementer", this.getImplementer());
             result.put("executor", this.getExecutor());

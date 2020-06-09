@@ -63,7 +63,7 @@ public interface IFactoryTestCase {
      * @param toMajor
      * @param toMinor
      * @param lastExecutionStatus
-     * @param bugID
+     * @param bugs
      * @param targetMajor
      * @param targetMinor
      * @param comment
@@ -79,7 +79,7 @@ public interface IFactoryTestCase {
             String implementer, String executor, String usrModif, String application,
             boolean isActiveQA, boolean isActiveUAT, boolean isActivePROD, int priority, String type, String status,
             String description, String detailedDescription, boolean isActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor,
-            String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugID,
+            String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugs,
             String targetMajor, String targetMinor, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry,
             List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep,
             List<TestCaseStepBatch> testCaseStepBatch);
@@ -113,7 +113,7 @@ public interface IFactoryTestCase {
      * @param toMajor
      * @param toMinor
      * @param lastExecutionStatus
-     * @param bigID
+     * @param bugs
      * @param targetMajor
      * @param targetMinor
      * @param comment
@@ -128,7 +128,7 @@ public interface IFactoryTestCase {
             String implementer, String executor, String usrModif, String application,
             boolean isActiveQA, boolean isActiveUAT, boolean isActivePROD, int priority, String type, String status,
             String description, String detailedDescription, boolean isActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor,
-            String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bigID,
+            String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugs,
             String targetMajor, String targetMinor, String comment, String dateCreated, String userAgent, String screenSize, Timestamp dateModif, int version);
 
     /**

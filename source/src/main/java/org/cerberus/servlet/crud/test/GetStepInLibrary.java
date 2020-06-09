@@ -49,7 +49,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class GetStepInLibrary extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(GetStepInLibrary.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -76,7 +76,7 @@ public class GetStepInLibrary extends HttpServlet {
         JSONObject jsonObject = new JSONObject();
         try {
             List<TestCaseStep> tcsList;
-            if (test.equals("") && testCase.equals("")){
+            if (test.equals("") && testCase.equals("")) {
                 tcsList = testCaseStepService.getStepLibraryBySystem(system);
             } else if (testCase.equals("")) {
                 tcsList = testCaseStepService.getStepLibraryBySystemTest(system, test);
@@ -90,13 +90,13 @@ public class GetStepInLibrary extends HttpServlet {
                 tcs.put("step", list.getStep());
                 tcs.put("sort", list.getSort());
                 tcs.put("description", list.getDescription());
-                if (list.getTestCaseObj()!=null){
-                tcs.put("tcdesc", list.getTestCaseObj().getDescription());
-                tcs.put("tcapp", list.getTestCaseObj().getApplication());
+                if (list.getTestCaseObj() != null) {
+                    tcs.put("tcdesc", list.getTestCaseObj().getDescription());
+                    tcs.put("tcapp", list.getTestCaseObj().getApplication());
                 }
                 array.put(tcs);
             }
-            jsonObject.put("testCaseStepList", array);
+            jsonObject.put("testCaseSteps", array);
 
             response.setContentType("application/json");
             response.getWriter().print(jsonObject.toString());

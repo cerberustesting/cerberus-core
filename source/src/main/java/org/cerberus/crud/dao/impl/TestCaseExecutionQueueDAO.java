@@ -264,7 +264,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             query.append("and (exq.`test` like ? ");
             query.append(" or exq.`testCase` like ? ");
             query.append(" or tec.`application` like ? ");
-            query.append(" or tec.`bugid` like ? ");
+            query.append(" or tec.`bugs` like ? ");
             query.append(" or tec.`priority` like ? ");
             query.append(" or tec.`description` like ? )");
         }
@@ -1089,7 +1089,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList<TestCaseExecutionQueue> readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> tcstatusList, List<String> typeList, List<String> isActiveList, List<String> priorityList, List<String> targetMajorList, List<String> targetMinorList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
+    public AnswerList<TestCaseExecutionQueue> readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> tcstatusList, List<String> typeList, List<String> isActiveList, List<String> priorityList, List<String> targetMajorList, List<String> targetMinorList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugs, String ticket) {
         AnswerList<TestCaseExecutionQueue> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<TestCaseExecutionQueue> tceqList = new ArrayList<>();
@@ -1211,8 +1211,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         if (!StringUtil.isNullOrEmpty(comment)) {
             whereClauses.add(" exq.comment like ? ");
         }
-        if (!StringUtil.isNullOrEmpty(bugid)) {
-            whereClauses.add(" tec.BugID like ? ");
+        if (!StringUtil.isNullOrEmpty(bugs)) {
+            whereClauses.add(" tec.bugs like ? ");
         }
         if (!StringUtil.isNullOrEmpty(ticket)) {
             whereClauses.add(" tec.Ticket like ? ");
@@ -1335,8 +1335,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             if (!StringUtil.isNullOrEmpty(comment)) {
                 preStat.setString(++paramNumber, "%" + comment + "%");
             }
-            if (!StringUtil.isNullOrEmpty(bugid)) {
-                preStat.setString(++paramNumber, "%" + bugid + "%");
+            if (!StringUtil.isNullOrEmpty(bugs)) {
+                preStat.setString(++paramNumber, "%" + bugs + "%");
             }
             if (!StringUtil.isNullOrEmpty(ticket)) {
                 preStat.setString(++paramNumber, "%" + ticket + "%");

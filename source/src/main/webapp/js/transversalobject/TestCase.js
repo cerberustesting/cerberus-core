@@ -92,7 +92,7 @@ function initModalTestCase() {
     $("[name='executorField']").html(doc.getDocOnline("testcase", "Executor"));
     $("[name='typeField']").html(doc.getDocOnline("invariant", "Type"));
     $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
-    $("[name='countryListLabel']").html(doc.getDocOnline("testcase", "countryListLabel"));
+    $("[name='countriesLabel']").html(doc.getDocOnline("testcase", "countryListLabel"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
     $("[name='activeField']").html(doc.getDocOnline("testcase", "IsActive"));
     $("[name='fromMajorField']").html(doc.getDocOnline("testcase", "FromMajor"));
@@ -151,7 +151,7 @@ function initModalTestCase() {
         source: availableFunctions
     });
     $("#select_all").change(function() {  //"select all" change
-        $("#countryList input").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
+        $("#countries input").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
     });
 
     $("#addTestCaseDependencyButton").click(function() {
@@ -483,17 +483,17 @@ function confirmTestCaseModalHandler(mode) {
     }
 
     // Getting Data from Country List
-    var countryList = $("#countryList input");
+    var countries = $("#countries input");
     var table_country = [];
-    for (var i = 0; i < countryList.length; i++) {
-        if (countryList[i].checked === true) {
+    for (var i = 0; i < countries.length; i++) {
+        if (countries[i].checked === true) {
             var countryValue = {
-                country: $(countryList[i]).attr("name"),
+                country: $(countries[i]).attr("name"),
                 toDelete: false
             }
         } else {
             countryValue = {
-                country: $(countryList[i]).attr("name"),
+                country: $(countries[i]).attr("name"),
                 toDelete: true
             }
         }
@@ -599,8 +599,8 @@ function confirmTestCaseModalHandler(mode) {
             toMajor: data.toMajor,
             userAgent: data.userAgent,
             screenSize: data.screenSize,
-            labelList: JSON.stringify(table_label),
-            countryList: JSON.stringify(table_country),
+            labels: JSON.stringify(table_label),
+            countries: JSON.stringify(table_country),
             testcaseDependency: JSON.stringify(testcaseDependency)},
         success: function(dataMessage) {
             hideLoaderInModal('#editTestCaseModal');
@@ -688,7 +688,7 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
             // Title of the label list.
             $("#labelField").html("Labels from system : " + t.system);
             // Loading the label list from aplication of the testcase.
-            loadLabel(testCase.labelList, t.system, "#selectLabel", undefined, testCase.test, testCase.testCase);
+            loadLabel(testCase.labels, t.system, "#selectLabel", undefined, testCase.test, testCase.testCase);
             // Loading application combo from the system of the current application.
             appendApplicationList(testCase.application, t.system);
 
@@ -882,7 +882,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
 
         $('#bugTableBody tr').remove();
         // Sorting Bug list.
-        testCase.bugID.sort(function(a, b) {
+        testCase.bugs.sort(function(a, b) {
             if (a.act === b.act) {
                 if (a.id === b.id) {
                     if (b.dateCreated < a.dateCreated)
@@ -901,7 +901,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
             else
                 return -1;
         });
-        $.each(testCase.bugID, function(idx, obj) {
+        $.each(testCase.bugs, function(idx, obj) {
             obj.toDelete = false;
             if (isEmpty(obj.act)) {
                 obj.act = true;
@@ -1158,15 +1158,15 @@ function appendBuildRevListOnTestCase(system, editData) {
 function appendTestCaseDepList(testCase) {
     $("#depenencyTable").find("tr").remove() // clean the table
 
-    testCase.dependencyList.forEach((dep) =>
+    testCase.dependencies.forEach((dep) =>
         addHtmlForDependencyLine(dep.id, dep.depTest, dep.depTestCase, dep.depTestCase + " - " + dep.depDescription, dep.active, dep.description)
     )
 }
 
 
 function appendTestCaseCountryList(testCase, isReadOnly) {
-    $("#countryList label").remove();
-    var countryList = $("[name=countryList]");
+    $("#countries label").remove();
+    var countries = $("[name=countries]");
 
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
     $.when(jqxhr).then(function(data) {
@@ -1174,7 +1174,7 @@ function appendTestCaseCountryList(testCase, isReadOnly) {
         for (var index = 0; index < data.length; index++) {
             var country = data[index].value;
 
-            countryList.append('<label class="checkbox-inline">\n\
+            countries.append('<label class="checkbox-inline">\n\
                                 <input class="countrycb" type="checkbox" ' + ' name="' + country + '"/>' + country + '\
                                 </label>');
         }
@@ -1191,17 +1191,17 @@ function appendTestCaseCountryList(testCase, isReadOnly) {
 
         if (!(testCase === undefined)) {
             // Init the values from the object value.
-            for (var myCountry in testCase.countryList) {
-                $("#countryList [name='" + testCase.countryList[myCountry].country + "']").prop("checked", "checked");
+            for (var myCountry in testCase.countries) {
+                $("#countries [name='" + testCase.countries[myCountry].country + "']").prop("checked", "checked");
             }
         }
         if (testCase === undefined) {
-            $("#countryList input").attr('checked', true);
+            $("#countries input").attr('checked', true);
             $("#select_all").attr('checked', true);
         }
 
         if (isReadOnly) {
-            $("#countryList input").attr('disabled', true);
+            $("#countries input").attr('disabled', true);
             $("#select_all").attr('disabled', true);
         }
     });
@@ -1209,7 +1209,7 @@ function appendTestCaseCountryList(testCase, isReadOnly) {
 
 /***
  * Build the list of label and flag them from the testcase values..
- * @param {String} labelList - list of labels from the testcase to flag. Label in that list are displayed first. This is optional.
+ * @param {String} labels - list of labels from the testcase to flag. Label in that list are displayed first. This is optional.
  * @param {String} mySystem - system that will be used in order to load the label list. if not feed, the default system from user will be used.
  * @param {String} myLabelDiv - Reference of the div where the label will be added. Ex : "#selectLabel".
  * @param {String} labelSize - size of col-xs-?? from 1 to 12. Default to 2 Ex : "4".
@@ -1217,7 +1217,7 @@ function appendTestCaseCountryList(testCase, isReadOnly) {
  * @param {String} testCase - Test ID to Select.
  * @returns {null}
  */
-function loadLabel(labelList, mySystem, myLabelDiv, labelSize, test, testCase) {
+function loadLabel(labels, mySystem, myLabelDiv, labelSize, test, testCase) {
 
     if (isEmpty(labelSize)) {
         labelSize = "2";

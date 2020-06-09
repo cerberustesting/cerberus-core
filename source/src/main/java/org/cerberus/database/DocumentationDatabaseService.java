@@ -494,8 +494,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','IsActiveUAT','','fr','Actif UAT','','_cas_de_test')");
         b.append(",('testcase','DetailedDescription','','en','Detailed Description / Value Expected','It is a full description of the <code class=\\'doc-crbvvoca\\'>application</code> feature that we expect to be tested with that <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','DetailedDescription','','fr','Description détaillée / Valeur attendue','','_cas_de_test')");
-        b.append(",('testcase','BugID','','en','Bug ID','This is the bug ID that will fix the pending KO.','_testcase')");
-        b.append(",('testcase','BugID','','fr','BugID','','_cas_de_test')");
+        b.append(",('testcase','Bugs','','en','Bugs','This is the bug ID that will fix the pending KO.','_testcase')");
+        b.append(",('testcase','Bugs','','fr','Bugs','','_cas_de_test')");
         b.append(",('testcase','Comment','','en','Comment','This is where to add any interesting comment about the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','Comment','','fr','Commentaire','This is where to add any interesting comment about the <code class=\\'doc-crbvvoca\\'>test case</code>.','_cas_de_test')");
         b.append(",('testcase','ConditionOperator','','en','Condition Operator','',NULL)");
@@ -1978,8 +1978,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcampaign','value_col','','fr','Valeur','',NULL)");
         b.append(",('page_testcampaign','viewtestcampaign_field','','en','Campaign','',NULL)");
         b.append(",('page_testcampaign','viewtestcampaign_field','','fr','Campagne','',NULL)");
-        b.append(",('page_testcase','BugIDLink','','en','Link','',NULL)");
-        b.append(",('page_testcase','BugIDLink','','fr','Lien',NULL,NULL)");
+        b.append(",('page_testcase','BugsLink','','en','Link','',NULL)");
+        b.append(",('page_testcase','BugsLink','','fr','Lien',NULL,NULL)");
         b.append(",('page_testcase','delete','','en','Dlt','Select this checkbox and then save changes in order to delete the row.',NULL)");
         b.append(",('page_testcase','delete','','fr','Sup','',NULL)");
         b.append(",('page_testcase','dpd_choose_step','','en','-- Choose Step  --','',NULL)");
