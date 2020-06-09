@@ -94,7 +94,7 @@ function initModalTestCase() {
     $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
     $("[name='countriesLabel']").html(doc.getDocOnline("testcase", "countryListLabel"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
-    $("[name='activeField']").html(doc.getDocOnline("testcase", "IsActive"));
+    $("[name='isActiveField']").html(doc.getDocOnline("testcase", "IsActive"));
     $("[name='fromMajorField']").html(doc.getDocOnline("testcase", "FromMajor"));
     $("[name='fromMinorField']").html(doc.getDocOnline("testcase", "FromMinor"));
     $("[name='toMajorField']").html(doc.getDocOnline("testcase", "ToMajor"));
@@ -569,7 +569,7 @@ function confirmTestCaseModalHandler(mode) {
             testCase: data.testCase,
             originalTest: data.originalTest,
             originalTestCase: data.originalTestCase,
-            active: data.active,
+            isActive: data.isActive,
             isActivePROD: data.isActivePROD,
             isActiveQA: data.isActiveQA,
             isActiveUAT: data.isActiveUAT,

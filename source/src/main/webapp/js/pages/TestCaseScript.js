@@ -1434,7 +1434,7 @@ function displayPageLabel(doc) {
     $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
     $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
-    $("[name='activeField']").html(doc.getDocOnline("testcase", "IsActive"));
+    $("[name='isActiveField']").html(doc.getDocOnline("testcase", "IsActive"));
     $("[name='fromMajorField']").html(doc.getDocOnline("testcase", "FromMajor"));
     $("[name='fromMinorField']").html(doc.getDocOnline("testcase", "FromMinor"));
     $("[name='toMajorField']").html(doc.getDocOnline("testcase", "ToMajor"));
