@@ -92,7 +92,7 @@ function initModalTestCase() {
     $("[name='executorField']").html(doc.getDocOnline("testcase", "Executor"));
     $("[name='typeField']").html(doc.getDocOnline("invariant", "Type"));
     $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
-    $("[name='countriesLabel']").html(doc.getDocOnline("testcase", "countryListLabel"));
+    $("[name='countriesLabel']").html(doc.getDocOnline("testcase", "countriesLabel"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
     $("[name='isActiveField']").html(doc.getDocOnline("testcase", "IsActive"));
     $("[name='fromMajorField']").html(doc.getDocOnline("testcase", "FromMajor"));
@@ -965,7 +965,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#conditionVal3").prop("disabled", "disabled");
 //        formEdit.find("#bugId").prop("readonly", "readonly");
         // feed the country list.
-        appendTestCaseCountryList(testCase, true);
+        appendTestCaseCountries(testCase, true);
         // Save button is hidden.
         $('#editTestCaseButton').attr('class', '');
         $('#editTestCaseButton').attr('hidden', 'hidden');
@@ -1001,7 +1001,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#conditionVal3").removeProp("disabled");
         formEdit.find("#comment").removeProp("readonly");
         // feed the country list.
-        appendTestCaseCountryList(testCase, false);
+        appendTestCaseCountries(testCase, false);
     }
 
 }
@@ -1164,7 +1164,7 @@ function appendTestCaseDepList(testCase) {
 }
 
 
-function appendTestCaseCountryList(testCase, isReadOnly) {
+function appendTestCaseCountries(testCase, isReadOnly) {
     $("#countries label").remove();
     var countries = $("[name=countries]");
 

@@ -1188,8 +1188,8 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
 
                     // Building full list of country from testcase.
                     var myCountry = [];
-                    $.each(testcaseinfo.countryList, function(index) {
-                        myCountry.push(testcaseinfo.countryList[index].country);
+                    $.each(testcaseinfo.countries, function(index) {
+                        myCountry.push(testcaseinfo.countries[index].country);
                     });
 
                     // Button Add Property insert a new Property
@@ -1805,7 +1805,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     var row5 = $("<div class='row'></div>");
     var propertyName = $("<div class='col-sm-4 form-group'></div>").append(propertyInput);
     var description = $("<div class='col-sm-8 form-group'></div>").append(descriptionInput);
-    var country = $("<div class='col-sm-10'></div>").append(getTestCaseCountry(testcaseinfo.countryList, property.country, !canUpdate));
+    var country = $("<div class='col-sm-10'></div>").append(getTestCaseCountry(testcaseinfo.countries, property.country, !canUpdate));
     var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "type_field"))).append(selectType.val(property.type));
     var db = $("<div class='col-sm-2 form-group' name='fieldDatabase'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "db_field"))).append(selectDB.val(property.database));
     var value = $("<div class='col-sm-8 form-group' name='fieldValue1'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(valueInput);
@@ -2237,15 +2237,15 @@ function sortSecondaryProperties(identifier) {
     container.append(list);
 }
 
-function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
+function getTestCaseCountry(countries, countryToCheck, isDisabled) {
     var html = [];
     var cpt = 0;
     var div = $("<div></div>").addClass("checkbox");
 
-    $.each(countryList, function(index) {
+    $.each(countries, function(index) {
         var country;
         if (typeof index === "number") {
-            country = countryList[index].country;
+            country = countries[index].country;
         } else if (typeof index === "string") {
             country = index;
         }
@@ -4818,7 +4818,7 @@ function addPropertyWithAce(keywordValue) {
             loadTestCaseInfo(data.info);
 
             var myCountry = [];
-            $.each(testcaseinfo.countryList, function(index) {
+            $.each(testcaseinfo.countries, function(index) {
                 myCountry.push(index);
             });
             // Store the current saveScript button status and disable it

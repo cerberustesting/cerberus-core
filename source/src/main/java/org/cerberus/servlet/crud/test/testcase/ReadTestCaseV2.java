@@ -375,9 +375,9 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
 
     private JSONArray getTestCaseCountries(String test, String testCase) throws JSONException {
         JSONArray countries = new JSONArray();
-        AnswerList<TestCaseCountry> answerTestCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
+        AnswerList<TestCaseCountry> answerTestCaseCountries = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
 
-        for (TestCaseCountry country : (List<TestCaseCountry>) answerTestCaseCountryList.getDataList()) {
+        for (TestCaseCountry country : (List<TestCaseCountry>) answerTestCaseCountries.getDataList()) {
             countries.put(convertToJSONObject(invariantService.readByKey("COUNTRY", country.getCountry()).getItem()));
         }
         return countries;

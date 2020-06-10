@@ -262,13 +262,13 @@ public class ReadTestCase extends AbstractCrudTestCase {
                 /**
                  * Find the list of countries
                  */
-                AnswerList<TestCaseCountry> testCaseCountryList = testCaseCountryService.readByTestTestCase(system, test, null, testCaseList.getDataList());
+                AnswerList<TestCaseCountry> testCaseCountries = testCaseCountryService.readByTestTestCase(system, test, null, testCaseList.getDataList());
                 /**
                  * Iterate on the country retrieved and generate HashMap based
                  * on the key Test_TestCase
                  */
                 LinkedHashMap<String, JSONArray> testCaseWithCountry = new LinkedHashMap<>();
-                for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountryList.getDataList()) {
+                for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountries.getDataList()) {
                     String key = country.getTest() + "_" + country.getTestCase();
 
                     if (testCaseWithCountry.containsKey(key)) {
@@ -388,8 +388,8 @@ public class ReadTestCase extends AbstractCrudTestCase {
 
             // Country List feed.
             JSONArray countryArray = new JSONArray();
-            AnswerList<TestCaseCountry> answerTestCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
-            for (TestCaseCountry country : (List<TestCaseCountry>) answerTestCaseCountryList.getDataList()) {
+            AnswerList<TestCaseCountry> answerTestCaseCountries = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
+            for (TestCaseCountry country : (List<TestCaseCountry>) answerTestCaseCountries.getDataList()) {
                 countryArray.put(convertToJSONObject(country));
             }
             response.put("countries", countryArray);
@@ -510,7 +510,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
             return item;
         }
 
-        AnswerList<TestCaseCountry> testCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
+        AnswerList<TestCaseCountry> testCaseCountries = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
         AnswerList<TestCaseStep> testCaseSteps = testCaseStepService.readByTestTestCase(test, testCase);
         AnswerList<TestCaseStepAction> testCaseStepActions = testCaseStepActionService.readByTestTestCase(test, testCase);
         AnswerList<TestCaseStepActionControl> testCaseStepActionControls = testCaseStepActionControlService.readByTestTestCase(test, testCase);
@@ -527,7 +527,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         }
 
         JSONArray countryLst = new JSONArray();
-        for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountryList.getDataList()) {
+        for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountries.getDataList()) {
             countryLst.put(convertToJSONObject(country));
         }
         object.put("countries", countryLst);

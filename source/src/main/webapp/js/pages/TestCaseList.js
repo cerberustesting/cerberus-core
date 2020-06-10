@@ -975,13 +975,13 @@ function aoColumnsFunc(countries, tableId) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
 
                 if (row.hasPermissionsUpdate) {
-                    if (row.hasOwnProperty("countryList") && row["countryList"].some(item => item.country === dataTitle)) {
+                    if (row.hasOwnProperty("countries") && row["countries"].some(item => item.country === dataTitle)) {
                         return '<input type="checkbox" name="' + dataTitle + '" data-test="' + row.test + '" data-testcase="' + row.testCase + '" onchange="setCountry(this);" checked/>';
                     } else {
                         return '<input type="checkbox" name="' + dataTitle + '" data-test="' + row.test + '" data-testcase="' + row.testCase + '" onchange="setCountry(this);"/>';
                     }
                 } else {
-                    if (row.hasOwnProperty("countryList") && row["countryList"].some(item => item.country === dataTitle)) {
+                    if (row.hasOwnProperty("countries") && row["countries"].some(item => item.country === dataTitle)) {
                         return '<input type="checkbox" checked disabled/>';
                     } else {
                         return '<input type="checkbox" disabled/>';

@@ -504,8 +504,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','ConditionVal1','','fr','Condition Valeur1','',NULL)");
         b.append(",('testcase','ConditionVal2','','en','Condition Value2','',NULL)");
         b.append(",('testcase','ConditionVal2','','fr','Condition Valeur2','',NULL)");
-        b.append(",('testcase','countryListLabel','','en','Countries','The list of countries where the test case is defined','_testcase')");
-        b.append(",('testcase','countryListLabel','','fr','Pays','La liste des pays sur lesquels le cas de test est défini','_cas_de_test')");
+        b.append(",('testcase','countriesLabel','','en','Countries','The list of countries where the test case is defined','_testcase')");
+        b.append(",('testcase','countriesLabel','','fr','Pays','La liste des pays sur lesquels le cas de test est défini','_cas_de_test')");
         b.append(",('testcase','Creator','','en','Creator','This is the name of the Cerberus user who created the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','Creator','','fr','Créateur','','_cas_de_test')");
         b.append(",('testcase','Description','','en','Test case short description','It is a synthetic description of what the <code class=\\'doc-crbvvoca\\'>test case</code> do.','_testcase')");

@@ -2026,7 +2026,7 @@ Step.prototype.setAction = function(action, idMotherStep, idAction) {
 
     actionObj.draw(idMotherStep, idAction);
 
-    actionObj.setControlList(actionObj.controlsJson, idMotherStep, idAction);
+    actionObj.setControls(actionObj.controlsJson, idMotherStep, idAction);
 };
 
 Step.prototype.setDescription = function(description) {
@@ -2256,7 +2256,7 @@ Action.prototype.draw = function(idMotherStep, id) {
     addFileLink(this.fileList, $(header).find(".row"), isTheExecutionManual, idMotherStep);
 };
 
-Action.prototype.setControlList = function(controls, idMotherStep, idMotherAction) {
+Action.prototype.setControls = function(controls, idMotherStep, idMotherAction) {
     for (var i = 0; i < controls.length; i++) {
         this.setControl(controls[i], idMotherStep, idMotherAction, i);
     }
