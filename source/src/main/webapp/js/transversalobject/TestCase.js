@@ -832,7 +832,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#datecreated").prop("value", "");
         formEdit.find("#usrmodif").prop("value", "");
         formEdit.find("#datemodif").prop("value", "");
-        formEdit.find("#actProd").val("N");
+        formEdit.find("#isActivePROD").val("false");
         formEdit.find("#status option:nth(0)").attr("selected", "selected"); // We select the 1st entry of the status combobox.
         if (mode === "ADD") {
             $("[name='editTestCaseField']").html(doc.getDocOnline("page_testcaselist", "btn_create"));
@@ -851,12 +851,12 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#executor").prop("value", "");
         formEdit.find("#type").val("AUTOMATED");
         formEdit.find("#priority option:nth(0)").attr("selected", "selected");
-        formEdit.find("#actQA").val("Y");
-        formEdit.find("#actUAT").val("Y");
+        formEdit.find("#isActiveQA").val("true");
+        formEdit.find("#isActiveUAT").val("true");
         formEdit.find("#userAgent").prop("value", "");
         formEdit.find("#screenSize").prop("value", "");
         formEdit.find("#shortDesc").prop("value", "");
-        formEdit.find("#active").prop("value", "Y");
+        formEdit.find("#isActive").prop("value", "true");
         $('#bugTableBody tr').remove();
         formEdit.find("#conditionOperator").prop("value", "always");
         formEdit.find("#conditionVal1").prop("value", "");
@@ -878,7 +878,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#userAgent").prop("value", testCase.userAgent);
         formEdit.find("#screenSize").prop("value", testCase.screenSize);
         formEdit.find("#shortDesc").prop("value", testCase.description);
-        formEdit.find("#active").prop("value", testCase.isActive);
+        formEdit.find("#isActive").prop("value", testCase.isActive);
 
         $('#bugTableBody tr').remove();
         // Sorting Bug list.
@@ -944,15 +944,15 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#status").prop("disabled", "disabled");
         formEdit.find("#type").prop("disabled", "disabled");
         formEdit.find("#priority").prop("disabled", "disabled");
-        formEdit.find("#actQA").prop("disabled", "disabled");
-        formEdit.find("#actUAT").prop("disabled", "disabled");
-        formEdit.find("#actProd").prop("disabled", "disabled");
+        formEdit.find("#isActiveQA").prop("disabled", "disabled");
+        formEdit.find("#isActiveUAT").prop("disabled", "disabled");
+        formEdit.find("#isActivePROD").prop("disabled", "disabled");
         formEdit.find("#userAgent").prop("disabled", "disabled");
         formEdit.find("#screenSize").prop("disabled", "disabled");
         formEdit.find("#shortDesc").prop("readonly", "readonly");
         if (tinyMCE.get('detailedDescription') !== null)
             tinyMCE.get('detailedDescription').getBody().setAttribute('contenteditable', false);
-        formEdit.find("#active").prop("disabled", "disabled");
+        formEdit.find("#isActive").prop("disabled", "disabled");
         formEdit.find("#fromMajor").prop("disabled", "disabled");
         formEdit.find("#fromMinor").prop("disabled", "disabled");
         formEdit.find("#toMajor").prop("disabled", "disabled");
@@ -973,22 +973,22 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         //test case info
         formEdit.find("#test").removeAttr("disabled");
         formEdit.find("#testCase").removeAttr("readonly");
-        formEdit.find("#active").removeProp("disabled");
+        formEdit.find("#isActive").removeProp("disabled");
 //        formEdit.find("#bugId").removeProp("readonly");
         formEdit.find("#implementer").removeProp("readonly");
         formEdit.find("#application").removeProp("disabled");
         formEdit.find("#status").removeProp("disabled");
         formEdit.find("#type").removeProp("disabled");
         formEdit.find("#priority").removeProp("disabled");
-        formEdit.find("#actQA").removeProp("disabled");
-        formEdit.find("#actUAT").removeProp("disabled");
-        formEdit.find("#actProd").removeProp("disabled");
+        formEdit.find("#isActiveQA").removeProp("disabled");
+        formEdit.find("#isActiveUAT").removeProp("disabled");
+        formEdit.find("#isActivePROD").removeProp("disabled");
         formEdit.find("#userAgent").removeProp("disabled");
         formEdit.find("#screenSize").removeProp("disabled");
         formEdit.find("#shortDesc").removeProp("readonly");
         if (tinyMCE.get('DetailedDescription') !== null)
             tinyMCE.get('DetailedDescription').getBody().setAttribute('contenteditable', true);
-        formEdit.find("#active").removeProp("disabled");
+        formEdit.find("#isActive").removeProp("disabled");
         formEdit.find("#fromMajor").removeProp("disabled");
         formEdit.find("#fromMinor").removeProp("disabled");
         formEdit.find("#toMajor").removeProp("disabled");
