@@ -575,7 +575,7 @@ function confirmTestCaseModalHandler(mode) {
             isActiveUAT: data.isActiveUAT,
             application: data.application,
             detailedDescription: data.detailedDescription,
-            bugId: JSON.stringify(table_bug),
+            bugs: JSON.stringify(table_bug),
             comment: data.comment,
             fromMinor: data.fromMinor,
             fromMajor: data.fromMajor,
