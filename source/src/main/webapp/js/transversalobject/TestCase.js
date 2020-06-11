@@ -826,7 +826,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#datecreated").prop("value", testCase.dateCreated);
         formEdit.find("#usrmodif").prop("value", testCase.usrModif);
         formEdit.find("#datemodif").prop("value", getDate(testCase.dateModif));
-        formEdit.find("#isActivePROD").val(testCase.isActivePROD);
     } else { // DUPLICATE or ADD
         formEdit.find("#usrcreated").prop("value", "");
         formEdit.find("#datecreated").prop("value", "");
@@ -875,6 +874,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#priority").prop("value", testCase.priority);
         formEdit.find("#isActiveQA").prop("value", testCase.isActiveQA);
         formEdit.find("#isActiveUAT").prop("value", testCase.isActiveUAT);
+        formEdit.find("#isActivePROD").prop("value",testCase.isActivePROD);
         formEdit.find("#userAgent").prop("value", testCase.userAgent);
         formEdit.find("#screenSize").prop("value", testCase.screenSize);
         formEdit.find("#shortDesc").prop("value", testCase.description);
