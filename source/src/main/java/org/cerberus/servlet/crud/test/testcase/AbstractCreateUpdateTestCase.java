@@ -129,8 +129,8 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
                 }
 
                 // Update labels
-                if (request.getParameter("labelList") != null) {
-                    JSONArray objLabelArray = new JSONArray(request.getParameter("labelList"));
+                if (request.getParameter("labels") != null) {
+                    JSONArray objLabelArray = new JSONArray(request.getParameter("labels"));
                     List<TestCaseLabel> labelList = getLabelListFromRequest(request, test, testcase, objLabelArray);
 
                     // Update the Database with the new list.
@@ -139,8 +139,8 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
                 }
 
                 // Update Countries
-                if (request.getParameter("countryList") != null) {
-                    JSONArray objCountryArray = new JSONArray(request.getParameter("countryList"));
+                if (request.getParameter("countries") != null) {
+                    JSONArray objCountryArray = new JSONArray(request.getParameter("countries"));
                     List<TestCaseCountry> tccList = getCountryListFromRequest(request, test, testcase, objCountryArray);
 
                     // Update the Database with the new list.
@@ -149,8 +149,8 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
                 }
 
                 // Update Countries
-                if (request.getParameter("countryList") != null) {
-                    JSONArray objCountryArray = new JSONArray(request.getParameter("countryList"));
+                if (request.getParameter("countries") != null) {
+                    JSONArray objCountryArray = new JSONArray(request.getParameter("countries"));
                     List<TestCaseCountry> tccList = getCountryListFromRequest(request, test, testcase, objCountryArray);
 
                     // Update the Database with the new list.
