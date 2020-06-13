@@ -297,8 +297,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public void updateToStarting(long id, String selectedRobot) throws CerberusException {
-        testCaseExecutionInQueueDAO.updateToStarting(id, selectedRobot);
+    public void updateToStarting(long id, String selectedRobot, String selectedRobotExt) throws CerberusException {
+        testCaseExecutionInQueueDAO.updateToStarting(id, selectedRobot, selectedRobotExt);
     }
 
     @Override

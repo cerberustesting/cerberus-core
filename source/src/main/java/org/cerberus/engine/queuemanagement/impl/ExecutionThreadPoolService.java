@@ -122,6 +122,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
             String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
             String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_APPLICATION + CONST_SEPARATOR + exe.getApplication();
             String const04_key = TestCaseExecutionQueueToTreat.CONSTRAIN4_ROBOT + CONST_SEPARATOR + exe.getSelectedRobotHost();
+            String const05_key = TestCaseExecutionQueueToTreat.CONSTRAIN5_EXECUTOREXTENSION + CONST_SEPARATOR + exe.getSelectedRobotExtensionHost();
 
             if (constrains_current.containsKey(const01_key)) {
                 constrains_current.put(const01_key, constrains_current.get(const01_key) + 1);
@@ -143,6 +144,11 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
             } else {
                 constrains_current.put(const04_key, 1);
             }
+            if (constrains_current.containsKey(const05_key)) {
+                constrains_current.put(const05_key, constrains_current.get(const05_key) + 1);
+            } else {
+                constrains_current.put(const05_key, 1);
+            }
         }
         return constrains_current;
 
@@ -156,11 +162,14 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
         String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
         int poolSizeGeneral = parameterService.getParameterIntegerByKey("cerberus_queueexecution_global_threadpoolsize", "", 12);
         int poolSizeRobot = parameterService.getParameterIntegerByKey("cerberus_queueexecution_defaultrobothost_threadpoolsize", "", 10);
+        int poolSizeExecutorExt = parameterService.getParameterIntegerByKey("cerberus_queueexecution_defaultexecutorexthost_threadpoolsize", "", 2);
         constrains_current.put(const01_key, poolSizeGeneral);
 
         // Getting RobotHost PoolSize
         HashMap<String, Integer> robot_poolsize = new HashMap<String, Integer>();
         robot_poolsize = invariantService.readToHashMapGp1IntegerByIdname("ROBOTHOST", poolSizeRobot);
+        HashMap<String, Integer> robotext_poolsize = new HashMap<String, Integer>();
+        robotext_poolsize = invariantService.readToHashMapGp1IntegerByIdname("EXECUTOREXTENSIONHOST", poolSizeExecutorExt);
 
         // Getting all executions to be treated.
         answer = tceiqService.readQueueToTreatOrRunning();
@@ -170,6 +179,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
             String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
             String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_APPLICATION + CONST_SEPARATOR + exe.getApplication();
             String const04_key = TestCaseExecutionQueueToTreat.CONSTRAIN4_ROBOT + CONST_SEPARATOR + exe.getSelectedRobotHost();
+            String const05_key = TestCaseExecutionQueueToTreat.CONSTRAIN5_EXECUTOREXTENSION + CONST_SEPARATOR + exe.getSelectedRobotExtensionHost();
 
             constrains_current.put(const02_key, exe.getPoolSizeAppEnvironment());
 
@@ -185,6 +195,18 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                 }
             }
             constrains_current.put(const04_key, robot_poolsize_final);
+
+            // Getting Robot Host PoolSize from invariant hashmap.
+            int robotext_poolsize_final = 0;
+            if (!StringUtil.isNullOrEmpty(exe.getSelectedRobotExtensionHost())) {
+                if (robotext_poolsize.containsKey(exe.getSelectedRobotExtensionHost())) {
+                    robotext_poolsize_final = ParameterParserUtil.parseIntegerParam(robotext_poolsize.get(exe.getSelectedRobotExtensionHost()), poolSizeExecutorExt);
+                } else {
+                    robotext_poolsize_final = poolSizeExecutorExt;
+                }
+            }
+            constrains_current.put(const05_key, robotext_poolsize_final);
+
         }
         return constrains_current;
 
@@ -205,6 +227,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
             String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
             String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_APPLICATION + CONST_SEPARATOR + exe.getApplication();
             String const04_key = TestCaseExecutionQueueToTreat.CONSTRAIN4_ROBOT + CONST_SEPARATOR + exe.getQueueRobotHost();
+            String const05_key = TestCaseExecutionQueueToTreat.CONSTRAIN5_EXECUTOREXTENSION + CONST_SEPARATOR + "";
 
             if (constrains_current.containsKey(const01_key)) {
                 constrains_current.put(const01_key, constrains_current.get(const01_key) + 1);
@@ -285,6 +308,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
                     int poolSizeGeneral = 12;
                     int poolSizeRobot = 10;
+                    int poolSizeExecutorExt = 2;
                     int queueTimeout = 600000;
 
                     // Init constrain counter (from list of already running execution.).
@@ -292,8 +316,10 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                     int const02_current = 0;
                     int const03_current = 0;
                     int const04_current = 0;
+                    int const05_current = 0;
                     HashMap<String, Integer> constrains_current = new HashMap<>();
                     HashMap<String, Integer> robothost_poolsize = new HashMap<>();
+                    HashMap<String, Integer> executorexthost_poolsize = new HashMap<>();
                     HashMap<String, List<RobotExecutor>> robot_executor = new HashMap<>();
                     HashMap<String, Robot> robot_header = new HashMap<>();
 
@@ -301,6 +327,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
                         poolSizeGeneral = parameterService.getParameterIntegerByKey("cerberus_queueexecution_global_threadpoolsize", "", 12);
                         poolSizeRobot = parameterService.getParameterIntegerByKey("cerberus_queueexecution_defaultrobothost_threadpoolsize", "", 10);
+                        poolSizeExecutorExt = parameterService.getParameterIntegerByKey("cerberus_queueexecution_defaultexecutorexthost_threadpoolsize", "", 2);
                         queueTimeout = parameterService.getParameterIntegerByKey("cerberus_queueexecution_timeout", "", 600000);
 
                         // Init constrain counter (from list of already running execution.).
@@ -308,11 +335,15 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                         const02_current = 0;
                         const03_current = 0;
                         const04_current = 0;
+                        const05_current = 0;
                         constrains_current = getCurrentlyRunning();
                         LOG.debug("Current Constrains : " + constrains_current);
 
                         // Getting RobotHost PoolSize
                         robothost_poolsize = invariantService.readToHashMapGp1IntegerByIdname("ROBOTHOST", poolSizeRobot);
+
+                        // Getting CerberusExecutorHost PoolSize
+                        executorexthost_poolsize = invariantService.readToHashMapGp1IntegerByIdname("EXECUTOREXTENSIONHOST", poolSizeExecutorExt);
 
                         // Getting the list of robot in scope of the queue entries. This is to avoid getting all robots from database.
                         LOG.debug("Getting List of Robot Executor.");
@@ -339,6 +370,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                     String robot = "";
                     String robotExecutor = "";
                     String robotHost = "";
+                    String robotExtHost = "";
                     String robotPort = "";
                     String appType = "";
                     List<RobotExecutor> tmpExelist = new ArrayList<>();
@@ -377,10 +409,17 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                         // Looping other every potential executor on the corresponding robot.
                         for (RobotExecutor robotExecutor1 : exelist) {
 
+                            if ("Y".equalsIgnoreCase(robotExecutor1.getExecutorProxyActive())) {
+                                robotExtHost = robotExecutor1.getExecutorExtensionHost();
+                                if (StringUtil.isNullOrEmpty(robotExtHost)){
+                                    robotExtHost = robotExecutor1.getHost();
+                                }
+                            }
+
                             robotHost = robotExecutor1.getHost();
                             robotPort = robotExecutor1.getPort();
                             robotExecutor = robotExecutor1.getExecutor();
-                            LOG.debug("Trying with : " + robotHost + " Port : " + robotPort + " From Robot/Executor : " + robotExecutor1.getRobot() + "/" + robotExecutor1.getExecutor());
+                            LOG.debug("Trying with : " + robotHost + " Port : " + robotPort + " From Robot/Executor : " + robotExecutor1.getRobot() + "/" + robotExecutor1.getExecutor() + " Extension : " + robotExtHost);
 
                             // RobotHost PoolSize if retreived from invariant hashmap.
                             int robothost_poolsize_final = 0;
@@ -392,12 +431,23 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                 }
                             }
 
-                            LOG.debug("Pool Values : poolGen " + poolSizeGeneral + " poolApp " + exe.getPoolSizeAppEnvironment() + " poolRobotHost " + robothost_poolsize_final);
+                            // RobotExtensionHost PoolSize if retreived from invariant hashmap.
+                            int robotexthost_poolsize_final = 0;
+                            if (!StringUtil.isNullOrEmpty(robotExtHost)) {
+                                if (executorexthost_poolsize.containsKey(robotExtHost)) {
+                                    robotexthost_poolsize_final = ParameterParserUtil.parseIntegerParam(executorexthost_poolsize.get(robotExtHost), poolSizeExecutorExt);
+                                } else {
+                                    robotexthost_poolsize_final = poolSizeExecutorExt;
+                                }
+                            }
+
+                            LOG.debug("Pool Values : poolGen " + poolSizeGeneral + " poolAppEnv " + exe.getPoolSizeAppEnvironment() + " poolApp " + exe.getPoolSizeApplication() + " poolRobotHost " + robothost_poolsize_final + " poolRobotExtHost " + robotexthost_poolsize_final);
 
                             String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
                             String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
                             String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_APPLICATION + CONST_SEPARATOR + exe.getApplication();
                             String const04_key = TestCaseExecutionQueueToTreat.CONSTRAIN4_ROBOT + CONST_SEPARATOR + robotHost;
+                            String const05_key = TestCaseExecutionQueueToTreat.CONSTRAIN5_EXECUTOREXTENSION + CONST_SEPARATOR + robotExtHost;
 
                             // Eval Constrain 1
                             if (constrains_current.containsKey(const01_key)) {
@@ -459,7 +509,22 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                 constMatch04 = (const04_current >= robothost_poolsize_final);
                             }
 
-                            if ((!constMatch01 && !constMatch02 && !constMatch03 && !constMatch04)
+                            // Eval Constrain 5
+                            if (constrains_current.containsKey(const05_key)) {
+                                const05_current = constrains_current.get(const05_key);
+                            } else {
+                                const05_current = 0;
+                            }
+                            // Eval Constrain 5
+                            boolean constMatch05;
+                            if (robotexthost_poolsize_final == 0) {
+                                // if poolsize == 0, this means no constrain specified.
+                                constMatch05 = false;
+                            } else {
+                                constMatch05 = (const05_current >= robotexthost_poolsize_final);
+                            }
+
+                            if ((!constMatch01 && !constMatch02 && !constMatch03 && !constMatch04 && !constMatch05)
                                     || (!constMatch01 && exe.getManualExecution().equals("Y"))) {
                                 // None of the constrains match or exe is manual so we can trigger the execution.
 
@@ -494,6 +559,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                             task.setQueueId(exe.getId());
                                             task.setRobotExecutor(robotExecutor);
                                             task.setSelectedRobotHost(robotHost);
+                                            task.setSelectedRobotExtHost(robotExtHost);
                                             task.setToExecuteTimeout(queueTimeout);
                                             task.setQueueService(queueService);
                                             task.setQueueDepService(queueDepService);
@@ -506,8 +572,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                             nbqueuedexe++;
 
                                             // Debug messages.
-                                            LOG.debug("RESULT : Execution triggered. Const1 " + constMatch01 + " Const2 " + constMatch02 + " Const3 " + constMatch03 + " Const4 " + constMatch04 + " Manual " + exe.getManualExecution());
-                                            LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current + " CurConst4 " + const04_current);
+                                            LOG.debug("RESULT : Execution triggered. Const1 " + constMatch01 + " Const2 " + constMatch02 + " Const3 " + constMatch03 + " Const4 " + constMatch04 + " Const5 " + constMatch05 + " Manual " + exe.getManualExecution());
+                                            LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current + " CurConst4 " + const04_current + " CurConst5 " + const05_current);
 
                                             // Constrains Counter increase
                                             constrains_current.put(const01_key, const01_current + 1);
@@ -516,6 +582,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                                 constrains_current.put(const02_key, const02_current + 1);
                                                 constrains_current.put(const03_key, const03_current + 1);
                                                 constrains_current.put(const04_key, const04_current + 1);
+                                                constrains_current.put(const05_key, const05_current + 1);
                                             }
 
                                         } catch (Exception e) {
@@ -528,6 +595,9 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                 }
 
                             } else {
+                                if (constMatch05) {
+                                    notTriggeredExeMessage += "Robot Extension Host contrain on '" + const05_key + "' reached. " + robotexthost_poolsize_final + " Execution(s) already in pool. ";
+                                }
                                 if (constMatch04) {
                                     notTriggeredExeMessage += "Robot Host contrain on '" + const04_key + "' reached. " + robothost_poolsize_final + " Execution(s) already in pool. ";
                                 }
@@ -540,8 +610,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                 if (constMatch01) {
                                     notTriggeredExeMessage += "Global contrain reached. " + poolSizeGeneral + " Execution(s) already in pool. ";
                                 }
-                                LOG.debug("RESULT : Execution not triggered. Const1 " + constMatch01 + " Const2 " + constMatch02 + " Const3 " + constMatch03 + " Const4 " + constMatch04 + " Manual " + exe.getManualExecution());
-                                LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current + " CurConst4 " + const04_current);
+                                LOG.debug("RESULT : Execution not triggered. Const1 " + constMatch01 + " Const2 " + constMatch02 + " Const3 " + constMatch03 + " Const4 " + constMatch04 + " Const5 " + constMatch05 + " Manual " + exe.getManualExecution());
+                                LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current + " CurConst4 " + const04_current + " CurConst5 " + const05_current);
                             }
                         }
 

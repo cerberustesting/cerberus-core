@@ -346,6 +346,30 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                             jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name, 0));
                             jsonObject.put("hasPermissionsUpdate", invariantService.hasPermissionsUpdate(factoryInvariant.create("ROBOTHOST", "", 0, "", "", "", "", "", "", "", "", "", "", ""), request));
                             break;
+                        case TestCaseExecutionQueueToTreat.CONSTRAIN5_EXECUTOREXTENSION:
+                            jsonObject.put("contrainId", data[0]);
+                            jsonObject.put("system", "");
+                            jsonObject.put("environment", "");
+                            jsonObject.put("country", "");
+                            jsonObject.put("application", "");
+                            if (data.length > 1) {
+                                jsonObject.put("robot", data[1]);
+                                if ((data[1] == null) || (data[1].equalsIgnoreCase("null"))) {
+                                    jsonObject.put("invariantExist", false);
+                                } else {
+                                    jsonObject.put("invariantExist", invariantService.isInvariantExist("EXECUTOREXTENSIONHOST", data[1]));
+                                }
+                            } else {
+                                jsonObject.put("robot", "");
+                                jsonObject.put("invariantExist", false);
+                            }
+                            // We cannot determine the Nb of execution in the queue attached to a given Robot as it could be spread by ROUNDROBIN or BYRANKING. The result is subject to change depending on duration of each execution.
+                            // jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column), 0));
+                            jsonObject.put("nbInQueue", "");
+                            jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column), 0));
+                            jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name, 0));
+                            jsonObject.put("hasPermissionsUpdate", invariantService.hasPermissionsUpdate(factoryInvariant.create("EXECUTOREXTENSIONHOST", "", 0, "", "", "", "", "", "", "", "", "", "", ""), request));
+                            break;
                     }
                     jsonArray.put(jsonObject);
                 }

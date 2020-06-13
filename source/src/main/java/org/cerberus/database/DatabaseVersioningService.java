@@ -8608,6 +8608,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1527
         a.add("ALTER TABLE testcase CHANGE BugID Bugs TEXT");
 
+        // 1528-1530
+        a.add("ALTER TABLE `testcaseexecutionqueue` ADD COLUMN `SelectedExtensionHost` VARCHAR(150) NULL DEFAULT '' AFTER `SelectedRobotHost`;");
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_queueexecution_defaultexecutorexthost_threadpoolsize', '2', 'Default number of simultaneous execution allowed for Robot execution extension host constrain (only used when host entry does not exist in EXECUTOREXTENSIONHOST invariant table).')");
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc, gp1) "
+                + "VALUES('EXECUTOREXTENSIONHOST', 'localhost', 100, 'Localhost Extension', '', '2')"
+                + ",('INVARIANTPUBLIC', 'EXECUTOREXTENSIONHOST', 900, '', '', '');");
+
         return a;
     }
 

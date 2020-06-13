@@ -784,6 +784,18 @@ function aoColumnsFunc_followUp() {
                                 class="btn btn-default btn-xs margin-right5" \n\
                             name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_create") + '" type="button">\n\
                             <span class="glyphicon glyphicon-plus"></span></button>';
+                var editRobotExtParam = '<button id="editExeQ' + data + '"  onclick="openModalParameter(\'cerberus_queueexecution_defaultexecutorexthost_threadpoolsize\',\'' + getSys() + '\');" \n\
+                                class="btn btn-default btn-xs margin-right5" \n\
+                            name="editExecutionQueue" title="' + doc.getDocLabel("page_parameter", "editparameter_field") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-pencil"></span></button>';
+                var editRobotExtInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'EXECUTOREXTENSIONHOST\',\'' + data[5] + '\',\'EDIT\',\'tabInvAdvanced\');" \n\
+                                class="btn btn-default btn-xs margin-right5" \n\
+                            name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_edit") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-pencil"></span></button>';
+                var addRobotExtInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'EXECUTOREXTENSIONHOST\',\'' + data[5] + '\',\'ADD\',\'tabInvAdvanced\');" \n\
+                                class="btn btn-default btn-xs margin-right5" \n\
+                            name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_create") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-plus"></span></button>';
 
                 var buttons = "";
                 if ((data[0] === "constrain1_global") && (data[9])) {
@@ -799,6 +811,17 @@ function aoColumnsFunc_followUp() {
                         //Invariant does not exist and is not null or empty. We can either create it or change default parameter.
                         buttons += editRobotParam;
                         buttons += addRobotInvariant;
+                    }
+                }
+                if ((data[0] === "constrain5_executorextension") && (data[9])) {
+                    // Constrain is global and hasPermitionUpdate is true.
+                    if (data[10]) {
+                        // Invariant exist. We can edit it.
+                        buttons += editRobotExtInvariant;
+                    } else if (!isEmpty(data[5]) && data[5] !== "null") {
+                        //Invariant does not exist and is not null or empty. We can either create it or change default parameter.
+                        buttons += editRobotExtParam;
+                        buttons += addRobotExtInvariant;
                     }
                 }
                 return '<div class="center btn-group width100">' + buttons + '</div>';

@@ -98,6 +98,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     private static final String COLUMN_PRIORITY = "Priority";
     private static final String COLUMN_DEBUGFLAG = "DebugFlag";
     private static final String COLUMN_SELECTEDROBOTHOST = "SelectedRobotHost";
+    private static final String COLUMN_SELECTEDROBOTEXTHOST = "SelectedExtensionHost";
     private static final String COLUMN_EXEID = "ExeId";
     private static final String COLUMN_USRCREATED = "UsrCreated";
     private static final String COLUMN_DATECREATED = "DateCreated";
@@ -451,7 +452,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
         final StringBuilder query = new StringBuilder();
 
-        query.append("SELECT exq.id, exq.manualexecution, app.System, app.poolSize, cea.environment, cea.country, cea.application, cea.poolsize, exq.robot, exq.robotIP, exq.robotPort, exq.DebugFlag, exq.selectedRobotHost, app.type ");
+        query.append("SELECT exq.id, exq.manualexecution, app.System, app.poolSize, cea.environment, cea.country, cea.application, cea.poolsize, exq.robot, exq.robotIP, exq.robotPort, exq.DebugFlag, exq.selectedRobotHost, exq.selectedExtensionHost, app.type ");
         query.append("from testcaseexecutionqueue exq ");
         query.append("left join testcase tec on tec.test=exq.test and tec.testcase=exq.testcase ");
         query.append("left join application app on app.application=tec.application ");
@@ -2004,9 +2005,9 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public void updateToStarting(long id, String selectedRobot) throws CerberusException {
+    public void updateToStarting(long id, String selectedRobot, String selectedRobotExt) throws CerberusException {
         String queryUpdate = "UPDATE `" + TABLE + "` "
-                + "SET `" + COLUMN_STATE + "` = 'STARTING', `" + COLUMN_SELECTEDROBOTHOST + "` = ?, `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
+                + "SET `" + COLUMN_STATE + "` = 'STARTING', `" + COLUMN_SELECTEDROBOTHOST + "` = ?, `" + COLUMN_SELECTEDROBOTEXTHOST + "` = ?, `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
                 + "WHERE `" + COLUMN_ID + "` = ? "
                 + "AND `" + COLUMN_STATE + "` = 'WAITING'";
 
@@ -2021,7 +2022,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 PreparedStatement updateStateStatement = connection.prepareStatement(queryUpdate)) {
 
             updateStateStatement.setString(1, selectedRobot);
-            updateStateStatement.setLong(2, id);
+            updateStateStatement.setString(2, selectedRobotExt);
+            updateStateStatement.setLong(3, id);
 
             int updateResult = updateStateStatement.executeUpdate();
             if (updateResult <= 0) {
@@ -2519,6 +2521,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             inQueue.setQueueRobotHost(queueRobotHost);
             inQueue.setQueueRobotPort(queueRobotPort);
             inQueue.setSelectedRobotHost(resultSet.getString("exq.SelectedRobotHost"));
+            inQueue.setSelectedRobotExtensionHost(resultSet.getString("exq.SelectedExtensionHost"));
 
         } catch (Exception e) {
             LOG.debug("Exception in load queue from resultset : " + e.toString());

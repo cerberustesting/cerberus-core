@@ -1498,12 +1498,12 @@ function aoColumnsFunc(Columns) {
     aoColumns.push(col);
     var col =
             {
-                "data": "bugId",
+                "data": "bugs",
                 "bSearchable": false,
                 "mRender": function(data, type, obj) {
                     return getBugIdList(data, obj.AppBugURL);
                 },
-                "sName": "tec.bugId",
+                "sName": "tec.bugs",
                 "sClass": "bugid",
                 "sWidth": "40px",
                 "title": doc.getDocOnline("testcase", "BugID")

@@ -68,6 +68,7 @@ public interface IRobotService {
     /**
      *
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     HashMap<String, String> readToHashMapRobotDecli() throws CerberusException;
 
@@ -77,6 +78,7 @@ public interface IRobotService {
      *
      * @param robotList
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     HashMap<String, Robot> readToHashMapByRobotList(List<String> robotList) throws CerberusException;
 

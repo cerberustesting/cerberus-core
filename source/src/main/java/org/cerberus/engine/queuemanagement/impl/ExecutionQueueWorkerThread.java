@@ -60,6 +60,7 @@ public class ExecutionQueueWorkerThread implements Runnable {
     private long queueId;
     private String robotExecutor;
     private String selectedRobotHost;
+    private String selectedRobotExtHost;
     private TestCaseExecutionQueue toExecute;
 
     private String cerberusExecutionUrl;
@@ -157,6 +158,14 @@ public class ExecutionQueueWorkerThread implements Runnable {
         this.selectedRobotHost = selectedRobotHost;
     }
 
+    public String getSelectedRobotExtHost() {
+        return selectedRobotExtHost;
+    }
+
+    public void setSelectedRobotExtHost(String selectedRobotExtHost) {
+        this.selectedRobotExtHost = selectedRobotExtHost;
+    }
+
     public TestCaseExecutionQueue getToExecute() {
         return toExecute;
     }
@@ -204,10 +213,10 @@ public class ExecutionQueueWorkerThread implements Runnable {
     @Override
     public void run() {
         try {
-            LOG.debug("Start to execute : " + queueId + " with RobotHost : " + selectedRobotHost);
+            LOG.debug("Start to execute : " + queueId + " with RobotHost : " + selectedRobotHost+ " with RobotExtensionHost : " + selectedRobotExtHost);
 
             // Flag the queue entry to STARTING
-            queueService.updateToStarting(queueId, selectedRobotHost);
+            queueService.updateToStarting(queueId, selectedRobotHost, selectedRobotExtHost);
 
             LOG.debug("Get queue exe to execute : " + queueId);
             // Getting the queue full object.
