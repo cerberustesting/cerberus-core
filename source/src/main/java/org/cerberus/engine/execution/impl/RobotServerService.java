@@ -424,6 +424,11 @@ public class RobotServerService implements IRobotServerService {
                 driver.manage().timeouts().implicitlyWait(cerberus_selenium_implicitlyWait, TimeUnit.MILLISECONDS);
                 driver.manage().timeouts().setScriptTimeout(cerberus_selenium_setScriptTimeout, TimeUnit.MILLISECONDS);
             }
+            if (appiumDriver != null) {
+                appiumDriver.manage().timeouts().pageLoadTimeout(cerberus_appium_wait_element, TimeUnit.MILLISECONDS);
+                appiumDriver.manage().timeouts().implicitlyWait(cerberus_appium_wait_element, TimeUnit.MILLISECONDS);
+                appiumDriver.manage().timeouts().setScriptTimeout(cerberus_appium_wait_element, TimeUnit.MILLISECONDS);
+            }
             tCExecution.getSession().setDriver(driver);
             tCExecution.getSession().setAppiumDriver(appiumDriver);
 
