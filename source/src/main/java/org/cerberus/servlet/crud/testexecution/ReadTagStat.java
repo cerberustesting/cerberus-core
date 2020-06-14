@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Tag;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.service.IApplicationService;
@@ -228,8 +229,9 @@ public class ReadTagStat extends HttpServlet {
         JSONObject pointObj = new JSONObject();
 
         HashMap<String, JSONObject> curveStatusObjMap = new HashMap<>();
-        HashMap<String, Boolean> curveDateMap = new HashMap<>();
-        HashMap<String, Integer> curveDateStatusMap = new HashMap<>();
+        List<String> curveBarMap = new ArrayList<>();
+        HashMap<String, Tag> curveTagObjMap = new HashMap<>();
+        HashMap<String, List<Integer>> curveTagObjValMap = new HashMap<>();
 
         String curveKeyStatus = "";
         JSONObject curveStatObj = new JSONObject();
@@ -306,31 +308,67 @@ public class ReadTagStat extends HttpServlet {
                 /**
                  * Bar Charts per control status.
                  */
-//                curveKeyStatus = exeCur.getControlStatus();
-//
-//                Date d = new Date(exeCur.getStart());
-//                TimeZone tz = TimeZone.getTimeZone("UTC");
-//                DateFormat df = new SimpleDateFormat(DATE_FORMAT_DAY);
-//                df.setTimeZone(tz);
-//                String dday = df.format(d);
-//
-//                curveDateMap.put(dday, false);
-//
-//                String keyDateStatus = curveKeyStatus + "-" + dday;
-//                if (curveDateStatusMap.containsKey(keyDateStatus)) {
-//                    curveDateStatusMap.put(keyDateStatus, curveDateStatusMap.get(keyDateStatus) + 1);
-//                } else {
-//                    curveDateStatusMap.put(keyDateStatus, 1);
-//                }
-//
-//                if (!curveStatusObjMap.containsKey(curveKeyStatus)) {
-//
-//                    curveStatObj = new JSONObject();
-//                    curveStatObj.put("key", curveKeyStatus);
-//                    curveStatObj.put("unit", "nbExe");
-//
-//                    curveStatusObjMap.put(curveKeyStatus, curveStatObj);
-//                }
+                curveBarMap.add(exeCur.getTag());
+                curveTagObjMap.put(exeCur.getTag(), exeCur);
+
+                curveKeyStatus = "RETRY";
+                List<Integer> tempList;
+                if (curveTagObjValMap.containsKey(curveKeyStatus)) {
+                    tempList = curveTagObjValMap.get(curveKeyStatus);
+                    tempList.add(exeCur.getNbExe() - exeCur.getNbExeUsefull());
+                } else {
+                    tempList = new ArrayList<>();
+                    tempList.add(exeCur.getNbExe() - exeCur.getNbExeUsefull());
+                }
+                curveTagObjValMap.put(curveKeyStatus, tempList);
+
+                for (TestCaseExecution.ControlStatus ctrlStat : TestCaseExecution.ControlStatus.values()) {
+                    curveKeyStatus = ctrlStat.name();
+
+                    Integer myVal = 0;
+                    switch (curveKeyStatus) {
+                        case TestCaseExecution.CONTROLSTATUS_CA:
+                            myVal = exeCur.getNbCA();
+                            break;
+                        case TestCaseExecution.CONTROLSTATUS_FA:
+                            myVal = exeCur.getNbFA();
+                            break;
+                        case TestCaseExecution.CONTROLSTATUS_KO:
+                            myVal = exeCur.getNbKO();
+                            break;
+                        case TestCaseExecution.CONTROLSTATUS_NA:
+                            myVal = exeCur.getNbNA();
+                            break;
+                        case TestCaseExecution.CONTROLSTATUS_NE:
+                            myVal = exeCur.getNbNE();
+                            break;
+                        case TestCaseExecution.CONTROLSTATUS_OK:
+                            myVal = exeCur.getNbOK();
+                            break;
+                        case TestCaseExecution.CONTROLSTATUS_PE:
+                            myVal = exeCur.getNbPE();
+                            break;
+                        case TestCaseExecution.CONTROLSTATUS_QE:
+                            myVal = exeCur.getNbQE();
+                            break;
+                        case TestCaseExecution.CONTROLSTATUS_QU:
+                            myVal = exeCur.getNbQU();
+                            break;
+                        case TestCaseExecution.CONTROLSTATUS_WE:
+                            myVal = exeCur.getNbWE();
+                            break;
+                    }
+
+                    if (curveTagObjValMap.containsKey(curveKeyStatus)) {
+                        tempList = curveTagObjValMap.get(curveKeyStatus);
+                        tempList.add(myVal);
+                    } else {
+                        tempList = new ArrayList<>();
+                        tempList.add(myVal);
+                    }
+                    curveTagObjValMap.put(curveKeyStatus, tempList);
+
+                }
             }
 
         }
@@ -355,34 +393,47 @@ public class ReadTagStat extends HttpServlet {
         /**
          * Bar Charts per control status to JSON.
          */
-//        curvesArray = new JSONArray();
-//        for (Map.Entry<String, Boolean> entry : curveDateMap.entrySet()) {
-//            curvesArray.put(entry.getKey());
-//        }
-//        object.put("curvesDatesNb", curvesArray);
-//
-//        curvesArray = new JSONArray();
-//        for (Map.Entry<String, JSONObject> entry : curveStatusObjMap.entrySet()) {
-//            String key = entry.getKey();
-//            JSONObject val = entry.getValue();
-//
-//            JSONArray valArray = new JSONArray();
-//
-//            for (Map.Entry<String, Boolean> entry1 : curveDateMap.entrySet()) {
-//                String key1 = entry1.getKey(); // Date
-//                if (curveDateStatusMap.containsKey(key + "-" + key1)) {
-//                    valArray.put(curveDateStatusMap.get(key + "-" + key1));
-//                } else {
-//                    valArray.put(0);
-//                }
-//            }
-//
-//            JSONObject localcur = new JSONObject();
-//            localcur.put("key", val);
-//            localcur.put("points", valArray);
-//            curvesArray.put(localcur);
-//        }
-//        object.put("curvesNb", curvesArray);
+        curvesArray = new JSONArray();
+        for (String entry : curveBarMap) {
+            curvesArray.put(entry);
+        }
+        object.put("curvesTag", curvesArray);
+
+        curvesArray = new JSONArray();
+
+        JSONObject objStat = new JSONObject();
+        JSONObject objStatKey = new JSONObject();
+        objStatKey.put("key", "RETRY");
+        objStatKey.put("unit", "nbExe");
+        objStat.put("key", objStatKey);
+
+        JSONArray curvesArray1 = new JSONArray();
+        for (Integer myInt : curveTagObjValMap.get("RETRY")) {
+            curvesArray1.put(myInt);
+        }
+        objStat.put("points", curvesArray1);
+
+        curvesArray.put(objStat);
+
+        for (TestCaseExecution.ControlStatus ctrlStat : TestCaseExecution.ControlStatus.values()) {
+            objStat = new JSONObject();
+            objStatKey = new JSONObject();
+            objStatKey.put("key", ctrlStat.name());
+            objStatKey.put("unit", "nbExe");
+            objStat.put("key", objStatKey);
+
+            curvesArray1 = new JSONArray();
+            curveTagObjValMap.get(ctrlStat.name());
+            for (Integer myInt : curveTagObjValMap.get(ctrlStat.name())) {
+                curvesArray1.put(myInt);
+            }
+            objStat.put("points", curvesArray1);
+
+            curvesArray.put(objStat);
+
+        }
+
+        object.put("curvesTagStatus", curvesArray);
         item.setItem(object);
         return item;
     }

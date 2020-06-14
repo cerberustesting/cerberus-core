@@ -498,6 +498,7 @@ public class TagDAO implements ITagDAO {
         }
 
         searchSQL.append(" and tag.`DateCreated` > ? and tag.`DateCreated` < ? ");
+        searchSQL.append(" order by tag.id asc ");
 
         query.append(searchSQL);
 

@@ -22,7 +22,7 @@
 var configTagDur = {};
 var configTagSco = {};
 var configTagExe = {};
-var configTcBar = {};
+var configTagBar = {};
 // Counters of different countries, env and robotdecli (used to shorten the labels)
 var nbCountries = 0;
 var nbEnv = 0;
@@ -119,7 +119,7 @@ function feedPerfCampaign(selectElement, defaultCampaigns, countries, environmen
         }
         $('#campaignSelect').val(defaultCampaigns);
         $('#campaignSelect').trigger('change');
-        console.info(data.distinct);
+
         feedCampaignGp("#gp1Select", data.distinct.group1);
         feedCampaignGp("#gp2Select", data.distinct.group2);
         feedCampaignGp("#gp3Select", data.distinct.group3);
@@ -130,8 +130,6 @@ function feedPerfCampaign(selectElement, defaultCampaigns, countries, environmen
 }
 
 function feedCampaignGp(selectId, data) {
-    console.info(selectId);
-    console.info(data);
     var select = $(selectId);
     select.multiselect('destroy');
     var array = data;
@@ -275,7 +273,7 @@ function loadPerfGraph(saveURLtoHistory, countries, environments, robotDeclis, g
                 updateNbDistinct(data.distinct);
                 loadCombos(data);
                 buildTagGraphs(data);
-//            buildExeBarGraphs(data);
+                buildTagBarGraphs(data);
             }
             hideLoader($("#otFilterPanel"));
         }
@@ -456,18 +454,18 @@ function getOptionsBar(title, unit) {
         scales: {
             xAxes: [{
                     offset: true,
-                    type: 'time',
+//                    type: 'time',
                     stacked: true,
-                    time: {
-                        tooltipFormat: 'll',
-                        unit: 'day',
-                        round: 'day',
-                        displayFormats: {
-                            day: 'MMM D'
-                        }},
+//                    time: {
+//                        tooltipFormat: 'll',
+//                        unit: 'day',
+//                        round: 'day',
+//                        displayFormats: {
+//                            day: 'MMM D'
+//                        }},
                     scaleLabel: {
                         display: true,
-                        labelString: 'Date'
+                        labelString: 'Tag'
                     }
                 }],
             yAxes: [{
@@ -634,9 +632,9 @@ function buildTagGraphs(data) {
     window.myLineTagExe.update();
 }
 
-function buildExeBarGraphs(data) {
+function buildTagBarGraphs(data) {
 
-    let curves = data.datasetExeStatusNb;
+    let curves = data.curvesTagStatus;
 
     // Sorting values by nb of requests.
     sortedCurves = curves.sort(function (a, b) {
@@ -672,15 +670,15 @@ function buildExeBarGraphs(data) {
     }
 
     if (timedatasets.length > 0) {
-        $("#panelTestStatBar").show();
+        $("#panelTagStatBar").show();
     } else {
-        $("#panelTestStatBar").hide();
+        $("#panelTagStatBar").hide();
     }
-    configTcBar.data.datasets = timedatasets;
-    configTcBar.data.labels = data.datasetExeStatusNbDates;
+    configTagBar.data.datasets = timedatasets;
+    configTagBar.data.labels = data.curvesTag;
 
-//    console.info(configTcBar);
-    window.myLineTcBar.update();
+//    console.info(configTagBar);
+    window.myLineTagBar.update();
 }
 
 
@@ -723,12 +721,12 @@ function initGraph() {
     var tagduroption = getOptions("Campaign Duration (min)", "time", "linear");
     var tagscooption = getOptions("Campaign CI Score", "score", "logarithmic");
     var tagexeoption = getOptions("Campaign Executions", "nb", "linear");
-//    var tcbaroption = getOptionsBar("Test Case Duration", "nb");
+    var tagbaroption = getOptionsBar("Tag Status", "nb");
 
     let tagdurdatasets = [];
     let tagscodatasets = [];
     let tagexedatasets = [];
-//    let tcbardatasets = [];
+    let tagbardatasets = [];
 
     configTagDur = {
         type: 'line',
@@ -751,13 +749,13 @@ function initGraph() {
         },
         options: tagexeoption
     };
-//    configTcBar = {
-//        type: 'bar',
-//        data: {
-//            datasets: tcbardatasets
-//        },
-//        options: tcbaroption
-//    };
+    configTagBar = {
+        type: 'bar',
+        data: {
+            datasets: tagbardatasets
+        },
+        options: tagbaroption
+    };
 
     var ctx = document.getElementById('canvasTagDStat').getContext('2d');
     window.myLineTagDur = new Chart(ctx, configTagDur);
@@ -768,8 +766,8 @@ function initGraph() {
     var ctx = document.getElementById('canvasTagEStat').getContext('2d');
     window.myLineTagExe = new Chart(ctx, configTagExe);
 
-//    var ctx = document.getElementById('canvasTestStatBar').getContext('2d');
-//    window.myLineTcBar = new Chart(ctx, configTcBar);
+    var ctx = document.getElementById('canvasTagBar').getContext('2d');
+    window.myLineTagBar = new Chart(ctx, configTagBar);
 
     document.getElementById('canvasTagDStat').onclick = function (evt) {
         var activePoints = window.myLineTagDur.getElementAtEvent(event);

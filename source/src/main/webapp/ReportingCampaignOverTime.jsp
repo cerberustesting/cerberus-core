@@ -196,7 +196,7 @@
                     <div id="panelTagEStat" class="panel panel-default" style="display: none">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart3">
                             <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblTagEStat">Campaign Executions</label>
+                            <label id="lblTagEStat">Campaign TestCase coverage & total execution number</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
                         <div class="panel-body collapse in" id="perfChart3">
@@ -210,7 +210,7 @@
                     <div id="panelTagSStat" class="panel panel-default" style="display: none">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart2">
                             <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblTagSStat">Campaign Score</label>
+                            <label id="lblTagSStat">Campaign CI Score & Threshold</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
                         <div class="panel-body collapse in" id="perfChart2">
@@ -221,16 +221,16 @@
                             </div>
                         </div>
                     </div>
-                    <div id="panelTestStatBar" class="panel panel-default" style="display: none">
+                    <div id="panelTagStatBar" class="panel panel-default" style="display: none">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart4">
                             <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblTestStatBar">TestCase Stats Bar</label>
+                            <label id="lblTagStatBar">Campaign Execution per status</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
                         <div class="panel-body collapse in" id="perfChart4">
                             <div class="row">
-                                <div class="col-xs-12" id="ChartTestStatBar" style="height: 400px">
-                                    <canvas id="canvasTestStatBar"></canvas>
+                                <div class="col-xs-12" id="ChartTagBar" style="height: 400px">
+                                    <canvas id="canvasTagBar"></canvas>
                                 </div>
                             </div>
                         </div>
