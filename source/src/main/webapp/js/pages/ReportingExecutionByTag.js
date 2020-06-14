@@ -294,9 +294,7 @@ function loadReportingData(selectTag) {
                 $("#TagcampaignCel1").removeClass("hidden");
                 $("#TagcampaignCel2").removeClass("hidden");
                 $("#buttonRunCampaign").attr("href", "./RunTests.jsp?campaign=" + data.tagObject.campaign);
-                $("#buttonSeeStatsCampaign").on("click", function() {
-                    viewStatEntryClick(data.tagObject.campaign);
-                });
+                $("#buttonSeeStatsCampaign").attr("href", "./ReportingCampaignOverTime.jsp?campaigns=" + data.tagObject.campaign);
             }
 
             $("#durExe").val(data.tagDuration);
