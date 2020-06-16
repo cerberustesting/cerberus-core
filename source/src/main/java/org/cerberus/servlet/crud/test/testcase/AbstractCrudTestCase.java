@@ -128,7 +128,7 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             tc.setOrigine(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("origin"), tc.getOrigine(), charset));
             tc.setType(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), tc.getType(), charset));
             tc.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), tc.getStatus(), charset));
-            tc.setDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("shortDesc"), tc.getDescription(), charset));
+            tc.setDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), tc.getDescription(), charset));
             String bug = tc.getBugs() == null ? "" : tc.getBugs().toString();
             String bugsString = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugs"), bug, charset);
             JSONArray bugs = new JSONArray();

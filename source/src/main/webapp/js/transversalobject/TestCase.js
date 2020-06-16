@@ -83,9 +83,9 @@ function initModalTestCase() {
     $("[name='isActiveUATField']").html(doc.getDocOnline("testcase", "IsActiveUAT"));
     $("[name='isActiveUATField']").html(doc.getDocOnline("testcase", "IsActiveUAT"));
     $("[name='isActivePRODField']").html(doc.getDocOnline("testcase", "IsActivePROD"));
-    $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
+    $("[name='testCaseDescriptionField']").html(doc.getDocOnline("testcase", "Description"));
     $("[name='detailedDescriptionField']").html(doc.getDocOnline("testcase", "detailedDescription"));
-    $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
+    $("[name='testCaseDescriptionField']").html(doc.getDocOnline("testcase", "Description"));
     $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
     $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
     $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
@@ -529,10 +529,10 @@ function confirmTestCaseModalHandler(mode) {
 
 
     // Getting Dependency data
-    let testcaseDependency = []
+    let testcaseDependencies = []
     $("#depenencyTable").find("tr")
             .each((t, v) =>
-                testcaseDependency.push(
+                testcaseDependencies.push(
                         {id: $(v).attr("testcaseid"), test: $(v).attr("test"), testcase: $(v).attr("testcase"), description: $(v).find("[name='description']").val(), active: $(v).find("[name='activate']").is(":checked")}
                 )
             )
@@ -586,7 +586,7 @@ function confirmTestCaseModalHandler(mode) {
             priority: data.priority,
             project: data.project,
             refOrigin: data.refOrigin,
-            shortDesc: data.shortDesc,
+            description: data.description,
             status: data.status,
             targetMinor: data.targetMinor,
             targetMajor: data.targetMajor,
@@ -601,7 +601,7 @@ function confirmTestCaseModalHandler(mode) {
             screenSize: data.screenSize,
             labels: JSON.stringify(table_label),
             countries: JSON.stringify(table_country),
-            testcaseDependency: JSON.stringify(testcaseDependency)},
+            dependencies: JSON.stringify(testcaseDependencies)},
         success: function(dataMessage) {
             hideLoaderInModal('#editTestCaseModal');
             if (getAlertType(dataMessage.messageType) === "success") {
@@ -854,7 +854,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#isActiveUAT").val("true");
         formEdit.find("#userAgent").prop("value", "");
         formEdit.find("#screenSize").prop("value", "");
-        formEdit.find("#shortDesc").prop("value", "");
+        formEdit.find("#description").prop("value", "");
         formEdit.find("#isActive").prop("value", "true");
         $('#bugTableBody tr').remove();
         formEdit.find("#conditionOperator").prop("value", "always");
@@ -874,10 +874,10 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#priority").prop("value", testCase.priority);
         formEdit.find("#isActiveQA").prop("value", testCase.isActiveQA);
         formEdit.find("#isActiveUAT").prop("value", testCase.isActiveUAT);
-        formEdit.find("#isActivePROD").prop("value",testCase.isActivePROD);
+        formEdit.find("#isActivePROD").prop("value", testCase.isActivePROD);
         formEdit.find("#userAgent").prop("value", testCase.userAgent);
         formEdit.find("#screenSize").prop("value", testCase.screenSize);
-        formEdit.find("#shortDesc").prop("value", testCase.description);
+        formEdit.find("#description").prop("value", testCase.description);
         formEdit.find("#isActive").prop("value", testCase.isActive);
 
         $('#bugTableBody tr').remove();
@@ -949,7 +949,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#isActivePROD").prop("disabled", "disabled");
         formEdit.find("#userAgent").prop("disabled", "disabled");
         formEdit.find("#screenSize").prop("disabled", "disabled");
-        formEdit.find("#shortDesc").prop("readonly", "readonly");
+        formEdit.find("#description").prop("readonly", "readonly");
         if (tinyMCE.get('detailedDescription') !== null)
             tinyMCE.get('detailedDescription').getBody().setAttribute('contenteditable', false);
         formEdit.find("#isActive").prop("disabled", "disabled");
@@ -985,9 +985,9 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#isActivePROD").removeProp("disabled");
         formEdit.find("#userAgent").removeProp("disabled");
         formEdit.find("#screenSize").removeProp("disabled");
-        formEdit.find("#shortDesc").removeProp("readonly");
-        if (tinyMCE.get('DetailedDescription') !== null)
-            tinyMCE.get('DetailedDescription').getBody().setAttribute('contenteditable', true);
+        formEdit.find("#description").removeProp("readonly");
+        if (tinyMCE.get('detailedDescription') !== null)
+            tinyMCE.get('detailedDescription').getBody().setAttribute('contenteditable', true);
         formEdit.find("#isActive").removeProp("disabled");
         formEdit.find("#fromMajor").removeProp("disabled");
         formEdit.find("#fromMinor").removeProp("disabled");

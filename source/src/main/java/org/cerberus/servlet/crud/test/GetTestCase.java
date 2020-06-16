@@ -98,10 +98,10 @@ public class GetTestCase extends HttpServlet {
                 for (TestCaseCountry tcc : tcInfo.getTestCaseCountry()) {
                     countryList.put(tcc.getCountry());
                 }
-                jsonObject.put("countriesList", countryList);
-                jsonObject.put("shortDescription", tcInfo.getDescription());
-                jsonObject.put("description", tcInfo.getDetailedDescription());
-                jsonObject.put("active", tcInfo.isActive());
+                jsonObject.put("countries", countryList);
+                jsonObject.put("description", tcInfo.getDescription());
+                jsonObject.put("detailedDescription", tcInfo.getDetailedDescription());
+                jsonObject.put("isActive", tcInfo.isActive());
                 jsonObject.put("fromMajor", tcInfo.getFromMajor());
                 jsonObject.put("fromMinor", tcInfo.getFromMinor());
                 jsonObject.put("toMajor", tcInfo.getToMajor());

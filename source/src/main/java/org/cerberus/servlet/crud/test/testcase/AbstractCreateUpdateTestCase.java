@@ -177,7 +177,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
                 }
 
                 // update testcase dependency
-                if (request.getParameter("testcaseDependency") != null) {
+                if (request.getParameter("dependencies") != null) {
                     List<TestCaseDep> tcdList = getDependencyFromRequest(request, tc);
 
                     testCaseDepService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestCase(), tcdList);
@@ -272,7 +272,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
 
     protected List<TestCaseDep> getDependencyFromRequest(HttpServletRequest request, TestCase tc) throws JSONException {
         List<TestCaseDep> res = new LinkedList<>();
-        jsonArrayFoEach(request, "testcaseDependency", (jsonObj) -> {
+        jsonArrayFoEach(request, "dependencies", (jsonObj) -> {
             String testcase = jsonObj.getString("testcase");
             Long testcaseid = jsonObj.getLong("id");
             String test = jsonObj.getString("test");
