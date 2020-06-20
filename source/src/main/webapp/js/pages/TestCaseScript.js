@@ -1424,9 +1424,9 @@ function displayPageLabel(doc) {
     $("[name='isActiveUATField']").html(doc.getDocOnline("testcase", "IsActiveUAT"));
     $("[name='isActiveUATField']").html(doc.getDocOnline("testcase", "IsActiveUAT"));
     $("[name='isActivePRODField']").html(doc.getDocOnline("testcase", "IsActivePROD"));
-    $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
+    $("[name='testCaseDescriptionField']").html(doc.getDocOnline("testcase", "Description"));
     $("[name='detailedDescriptionField']").html(doc.getDocOnline("testcase", "detailedDescription"));
-    $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
+    $("[name='testCaseDescriptionField']").html(doc.getDocOnline("testcase", "Description"));
     $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
     $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
     $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));

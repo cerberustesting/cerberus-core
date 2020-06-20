@@ -106,6 +106,8 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
 
     private static final Logger LOG = LogManager.getLogger(ReadTestCase.class);
 
+    AnswerList<TestCaseCountry> answerTestCaseCountries;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -140,6 +142,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         boolean filter = ParameterParserUtil.parseBooleanParam(request.getParameter("filter"), false);
         boolean withSteps = ParameterParserUtil.parseBooleanParam(request.getParameter("withSteps"), false);
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
+        answerTestCaseCountries = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
 
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem<>(msg);
@@ -513,6 +516,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
                 .put("application", testCase.getApplication())
                 .put("system", applicationService.readByKey(testCase.getApplication()).getItem().getSystem())
                 .put("description", testCase.getDescription())
+                .put("detailedDescription", testCase.getDetailedDescription())
                 .put("behaviourOrValueExpected", testCase.getDetailedDescription())
                 .put("priority", testCase.getPriority())
                 .put("status", testCase.getStatus())

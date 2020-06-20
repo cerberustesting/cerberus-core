@@ -281,17 +281,21 @@ public class ReadTestCase extends AbstractCrudTestCase {
                 /**
                  * find the list of dependencies
                  */
-                List<TestCaseDep> testCaseDepList = testCaseDepService.readByTestAndTestCase(testCaseList.getDataList());
-                LinkedHashMap<String, JSONArray> testCaseWithDep = new LinkedHashMap<>();
-                for (TestCaseDep testCaseDep : testCaseDepList) {
-                    String key = testCaseDep.getTest() + "_" + testCaseDep.getTestCase();
+                List<TestCaseDep> testCaseDependencies = testCaseDepService.readByTestAndTestCase(testCaseList.getDataList());
+                LinkedHashMap<String, JSONArray> testCaseWithDependencies = new LinkedHashMap<>();
+                for (TestCaseDep testCaseDependency : testCaseDependencies) {
+                    String key = testCaseDependency.getTest() + "_" + testCaseDependency.getTestCase();
 
-                    JSONObject jo = convertToJSONObject(testCaseDep);
+                    LOG.debug("=====================================================");
+                    LOG.debug(key);
+                    LOG.debug("=====================================================");
 
-                    if (testCaseWithDep.containsKey(key)) {
-                        testCaseWithDep.get(key).put(jo);
+                    JSONObject jo = convertToJSONObject(testCaseDependency);
+
+                    if (testCaseWithDependencies.containsKey(key)) {
+                        testCaseWithDependencies.get(key).put(jo);
                     } else {
-                        testCaseWithDep.put(key, new JSONArray().put(jo));
+                        testCaseWithDependencies.put(key, new JSONArray().put(jo));
                     }
                 }
 
@@ -354,7 +358,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
                     value.put("labelsSTICKER", testCaseWithLabelSticker.get(key));
                     value.put("labelsREQUIREMENT", testCaseWithLabelRequirement.get(key));
                     value.put("labelsBATTERY", testCaseWithLabelBattery.get(key));
-                    value.put("dependencies", testCaseWithDep.get(key));
+                    value.put("dependencies", testCaseWithDependencies.get(key));
                     jsonArray.put(value);
                 }
             }
