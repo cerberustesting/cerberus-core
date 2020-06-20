@@ -91,7 +91,7 @@ function editAppServiceClick(service, page) {
     $("[name='editSoapLibraryField']").html(doc.getDocLabel("page_appservice", "editSoapLibrary_field"));
 
     $("#editSoapLibraryButton").off("click");
-    $("#editSoapLibraryButton").click(function() {
+    $("#editSoapLibraryButton").click(function () {
         confirmAppServiceModalHandler("EDIT", page);
     });
 
@@ -117,7 +117,7 @@ function editAppServiceClick(service, page) {
  */
 function duplicateAppServiceClick(service) {
     $("#duplicateSoapLibraryButton").off("click");
-    $("#duplicateSoapLibraryButton").click(function() {
+    $("#duplicateSoapLibraryButton").click(function () {
         confirmAppServiceModalHandler("DUPLICATE", undefined);
     });
 
@@ -142,7 +142,7 @@ function duplicateAppServiceClick(service) {
  */
 function addAppServiceClick(service, page) {
     $("#addSoapLibraryButton").off("click");
-    $("#addSoapLibraryButton").click(function() {
+    $("#addSoapLibraryButton").click(function () {
         confirmAppServiceModalHandler("ADD", page);
     });
 
@@ -171,11 +171,11 @@ function prepareAppServiceModal() {
 
     // when type is changed we enable / disable type field.
     $("#editSoapLibraryModal #type").off("change");
-    $("#editSoapLibraryModal #type").change(function() {
+    $("#editSoapLibraryModal #type").change(function () {
         refreshDisplayOnTypeChange($(this).val());
     });
 
-    $("#editSoapLibraryModal #method").change(function() {
+    $("#editSoapLibraryModal #method").change(function () {
         if ($("#editSoapLibraryModal #type").val() == "FTP") {
             if ($(this).val() == "GET") {
                 $("#editSoapLibraryModal #srvRequest textarea").hide();
@@ -269,7 +269,7 @@ function confirmAppServiceModalHandler(mode, page) {
         data: formData,
         processData: false,
         contentType: false,
-        success: function(data) {
+        success: function (data) {
             data = JSON.parse(data);
 
             if (getAlertType(data.messageType) === "success") {
@@ -405,7 +405,7 @@ function feedAppServiceModal(serviceName, modalId, mode) {
             data: {
                 service: serviceName
             },
-            success: function(data) {
+            success: function (data) {
                 if (data.messageType === "OK") {
 
                     // Feed the data to the screen and manage authorities.
@@ -550,7 +550,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
 
     //On ADD, try to autodetect Ace mode until it is defined
 
-    $($("#editSoapLibraryModal #srvRequest").get(0)).keyup(function() {
+    $($("#editSoapLibraryModal #srvRequest").get(0)).keyup(function () {
         if (editor.getSession().getMode().$id === "ace/mode/text") {
             editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
         }
@@ -606,7 +606,7 @@ function appendApplicationListServiceModal(defaultValue) {
 function feedAppServiceModalDataContent(ContentList) {
     $('#contentTableBody tr').remove();
     if (!isEmpty(ContentList)) {
-        $.each(ContentList, function(idx, obj) {
+        $.each(ContentList, function (idx, obj) {
             obj.toDelete = false;
             appendContentRow(obj);
         });
@@ -631,7 +631,7 @@ function appendContentRow(content) {
     var keyName = $("<td></td>").append(keyInput);
     var valueName = $("<td></td>").append(valueInput);
     var descriptionName = $("<td></td>").append(descriptionInput);
-    deleteBtn.click(function() {
+    deleteBtn.click(function () {
         content.toDelete = (content.toDelete) ? false : true;
 
         if (content.toDelete) {
@@ -640,19 +640,19 @@ function appendContentRow(content) {
             row.removeClass("danger");
         }
     });
-    activeSelect.change(function() {
+    activeSelect.change(function () {
         content.active = $(this).val();
     });
     /*sortInput.change(function () {
      content.sort = $(this).val();
      });*/
-    keyInput.change(function() {
+    keyInput.change(function () {
         content.key = $(this).val();
     });
-    valueInput.change(function() {
+    valueInput.change(function () {
         content.value = $(this).val();
     });
-    descriptionInput.change(function() {
+    descriptionInput.change(function () {
         content.description = $(this).val();
     });
     row.append(deleteBtnRow);
@@ -681,7 +681,7 @@ function feedAppServiceModalDataHeader(headerList) {
 
     $('#headerTableBody tr').remove();
     if (!isEmpty(headerList)) {
-        $.each(headerList, function(idx, obj) {
+        $.each(headerList, function (idx, obj) {
             obj.toDelete = false;
             appendHeaderRow(obj);
         });
@@ -705,7 +705,7 @@ function appendHeaderRow(content) {
     var keyName = $("<td></td>").append(keyInput);
     var valueName = $("<td></td>").append(valueInput);
     var descriptionName = $("<td></td>").append(descriptionInput);
-    deleteBtn.click(function() {
+    deleteBtn.click(function () {
         content.toDelete = (content.toDelete) ? false : true;
         if (content.toDelete) {
             row.addClass("danger");
@@ -713,19 +713,19 @@ function appendHeaderRow(content) {
             row.removeClass("danger");
         }
     });
-    activeSelect.change(function() {
+    activeSelect.change(function () {
         content.active = $(this).val();
     });
     /**sortInput.change(function () {
      content.sort = $(this).val();
      });*/
-    keyInput.change(function() {
+    keyInput.change(function () {
         content.key = $(this).val();
     });
-    valueInput.change(function() {
+    valueInput.change(function () {
         content.value = $(this).val();
     });
-    descriptionInput.change(function() {
+    descriptionInput.change(function () {
         content.description = $(this).val();
     });
     row.append(deleteBtnRow);
@@ -778,11 +778,11 @@ function handlePictureSend(items, idModal) {
 function pasteListennerForClipboardPicture(idModal) {
     var _self = this;
     //handlers
-    document.addEventListener('paste', function(e) {
+    document.addEventListener('paste', function (e) {
         _self.paste_auto(e);
     }, false);
     //on paste
-    this.paste_auto = function(e) {
+    this.paste_auto = function (e) {
         //handle paste event if the user do not select an input;
         if (e.clipboardData && !$(e.target).is("input")) {
             var items = e.clipboardData.items;
@@ -801,7 +801,7 @@ function setUpDragAndDrop(idModal) {
     var dropzone = $(idModal).find("#dropzone")[0];
     dropzone.addEventListener("dragenter", dragenter, false);
     dropzone.addEventListener("dragover", dragover, false);
-    dropzone.addEventListener("drop", function(event) {
+    dropzone.addEventListener("drop", function (event) {
         drop(event, idModal);
     });
 }
@@ -845,17 +845,19 @@ function drop(e, idModal) {
 function listennerForInputTypeFile(idModal) {
 
     var inputs = $(idModal).find("#Filename");
-    inputs[0].addEventListener('change', function(e) {
-        //check if the input is an image
-        var fileName = '';
-        if (this.files && this.files.length > 1)
-            fileName = (this.getAttribute('data-multiple-caption') || '').replace('{count}', this.files.length);
-        else
-            fileName = e.target.value.split('\\').pop();
-        if (fileName) {
-            updateDropzone(fileName, idModal);
-        }
-    });
+    if (inputs[0] !== undefined) {
+        inputs[0].addEventListener('change', function (e) {
+            //check if the input is an image
+            var fileName = '';
+            if (this.files && this.files.length > 1)
+                fileName = (this.getAttribute('data-multiple-caption') || '').replace('{count}', this.files.length);
+            else
+                fileName = e.target.value.split('\\').pop();
+            if (fileName) {
+                updateDropzone(fileName, idModal);
+            }
+        });
+    }
 }
 
 /**
@@ -887,17 +889,17 @@ function getComboConfigApplicationList() {
                     url: "ReadApplication",
                     dataType: 'json',
                     delay: 0,
-                    data: function(params) {
+                    data: function (params) {
                         params.page = params.page || 1;
                         return {
                             sSearch: params.term, // search term
                             iDisplayStart: (params.page * 30) - 30
                         };
                     },
-                    processResults: function(data, params) {
+                    processResults: function (data, params) {
                         params.page = params.page || 1;
                         return {
-                            results: $.map(data.contentTable, function(obj) {
+                            results: $.map(data.contentTable, function (obj) {
                                 return {id: obj.service, text: obj.service};
                             }),
                             pagination: {

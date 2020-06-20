@@ -31,7 +31,7 @@ function openModalApplicationObject(applicationObject, value, mode, page) {
     }
     if (mode === "EDIT") {
         editApplicationObjectClick(applicationObject, value);
-    } else if (mode == "ADD") {
+    } else if (mode === "ADD") {
         addApplicationObjectClick(applicationObject, value);
     }
 }
@@ -188,7 +188,7 @@ function feedApplicationObjectModal(application, object, modalId, mode) {
             method: "POST",
             data: {
                 application: application,
-                object: object,
+                object: object
             },
             success: function (data) {
                 if (data.messageType === "OK") {
@@ -250,7 +250,7 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
         } else {
             //formEdit.find("#application").val(applicationObject.application);
             var newOption = new Option(applicationObject.application, applicationObject.application, true, true);
-            $('#application').append(newOption).trigger('change');
+            formEdit.find('#application').append(newOption).trigger('change');
         }
 
         if (applicationObject.screenshotfilename == "") {
