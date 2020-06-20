@@ -335,7 +335,7 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
             /**
-             * For BrowserStack only, we try to enrish the Tag with build hash.
+             * For BrowserStack only, we try to enrich the Tag with build hash.
              */
             if (TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK.equals(tCExecution.getRobotProvider())) {
                 String newBuildHash = tagService.enrichTagWithBrowserStackBuild(tCExecution.getSystem(), tCExecution.getTag(), tCExecution.getRobotExecutorObj().getHostUser(), tCExecution.getRobotExecutorObj().getHostPassword());

@@ -23,7 +23,8 @@ import java.io.IOException;
 import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+//import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 /**
  * {Insert class description here}
@@ -32,7 +33,7 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
  * @version 1.0, 11/03/2013
  * @since 2.0.0
  */
-public class PropertiesResolver extends PropertyPlaceholderConfigurer {
+public class PropertiesResolver extends PropertySourcesPlaceholderConfigurer {
 
     private static final Logger LOG = LogManager.getLogger(PropertiesResolver.class);
 

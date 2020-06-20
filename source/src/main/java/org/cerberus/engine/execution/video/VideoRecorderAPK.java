@@ -45,10 +45,10 @@ public class VideoRecorderAPK extends VideoRecorder {
        super(testCaseExecution,recorderService);
     }
 
-    public void finalize() {
-        if (running.get())
-            endRecordVideo();
-    }
+//    public void finalize() {
+//        if (running.get())
+//            endRecordVideo();
+//    }
 
     public void beginRecordVideo() {
 
