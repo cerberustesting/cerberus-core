@@ -640,6 +640,20 @@ function buildTagBarGraphs(data) {
     sortedCurves = curves.sort(function (a, b) {
         let a1 = a.key.totalExe;
         let b1 = b.key.totalExe;
+        // Put RETRY On Top no matter what.
+        if (b.key.key === "RETRY") {
+            if (a.key.key === "RETRY") {
+                return b1 - a1;
+            } else {
+                return -10;
+            }
+        } else {
+            if (a.key.key === "RETRY") {
+                return 10;
+            } else {
+                return b1 - a1;
+            }
+        }
         return b1 - a1;
     });
 
