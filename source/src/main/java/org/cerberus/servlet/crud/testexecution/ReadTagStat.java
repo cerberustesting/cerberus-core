@@ -232,6 +232,7 @@ public class ReadTagStat extends HttpServlet {
         List<String> curveBarMap = new ArrayList<>();
         HashMap<String, Tag> curveTagObjMap = new HashMap<>();
         HashMap<String, List<Integer>> curveTagObjValMap = new HashMap<>();
+        HashMap<String, Integer> curveTagObjValTotMap = new HashMap<>();
 
         String curveKeyStatus = "";
         JSONObject curveStatObj = new JSONObject();
@@ -313,19 +314,25 @@ public class ReadTagStat extends HttpServlet {
 
                 curveKeyStatus = "RETRY";
                 List<Integer> tempList;
+                Integer myVal = exeCur.getNbExe() + exeCur.getNbQE() + exeCur.getNbQU() - exeCur.getNbExeUsefull();
                 if (curveTagObjValMap.containsKey(curveKeyStatus)) {
                     tempList = curveTagObjValMap.get(curveKeyStatus);
-                    tempList.add(exeCur.getNbExe() - exeCur.getNbExeUsefull());
+                    tempList.add(myVal);
                 } else {
                     tempList = new ArrayList<>();
-                    tempList.add(exeCur.getNbExe() - exeCur.getNbExeUsefull());
+                    tempList.add(myVal);
                 }
                 curveTagObjValMap.put(curveKeyStatus, tempList);
+                if (curveTagObjValTotMap.containsKey(curveKeyStatus)) {
+                    curveTagObjValTotMap.put(curveKeyStatus, curveTagObjValTotMap.get(curveKeyStatus) + myVal);
+                } else {
+                    curveTagObjValTotMap.put(curveKeyStatus, myVal);
+                }
 
                 for (TestCaseExecution.ControlStatus ctrlStat : TestCaseExecution.ControlStatus.values()) {
                     curveKeyStatus = ctrlStat.name();
 
-                    Integer myVal = 0;
+                    myVal = 0;
                     switch (curveKeyStatus) {
                         case TestCaseExecution.CONTROLSTATUS_CA:
                             myVal = exeCur.getNbCA();
@@ -368,6 +375,12 @@ public class ReadTagStat extends HttpServlet {
                     }
                     curveTagObjValMap.put(curveKeyStatus, tempList);
 
+                    if (curveTagObjValTotMap.containsKey(curveKeyStatus)) {
+                        curveTagObjValTotMap.put(curveKeyStatus, curveTagObjValTotMap.get(curveKeyStatus) + myVal);
+                    } else {
+                        curveTagObjValTotMap.put(curveKeyStatus, myVal);
+                    }
+
                 }
             }
 
@@ -403,23 +416,14 @@ public class ReadTagStat extends HttpServlet {
 
         JSONObject objStat = new JSONObject();
         JSONObject objStatKey = new JSONObject();
-        objStatKey.put("key", "RETRY");
-        objStatKey.put("unit", "nbExe");
-        objStat.put("key", objStatKey);
-
         JSONArray curvesArray1 = new JSONArray();
-        for (Integer myInt : curveTagObjValMap.get("RETRY")) {
-            curvesArray1.put(myInt);
-        }
-        objStat.put("points", curvesArray1);
-
-        curvesArray.put(objStat);
 
         for (TestCaseExecution.ControlStatus ctrlStat : TestCaseExecution.ControlStatus.values()) {
             objStat = new JSONObject();
             objStatKey = new JSONObject();
             objStatKey.put("key", ctrlStat.name());
             objStatKey.put("unit", "nbExe");
+            objStatKey.put("totalExe", curveTagObjValTotMap.get(ctrlStat.name()));
             objStat.put("key", objStatKey);
 
             curvesArray1 = new JSONArray();
@@ -429,8 +433,26 @@ public class ReadTagStat extends HttpServlet {
             }
             objStat.put("points", curvesArray1);
 
-            curvesArray.put(objStat);
+            if (curveTagObjValTotMap.get(ctrlStat.name()) > 0) {
+                curvesArray.put(objStat);
+            }
 
+        }
+
+        objStat = new JSONObject();
+        objStatKey = new JSONObject();
+        objStatKey.put("key", "RETRY");
+        objStatKey.put("unit", "nbExe");
+        objStatKey.put("totalExe", curveTagObjValTotMap.get("RETRY"));
+        objStat.put("key", objStatKey);
+
+        curvesArray1 = new JSONArray();
+        for (Integer myInt : curveTagObjValMap.get("RETRY")) {
+            curvesArray1.put(myInt);
+        }
+        objStat.put("points", curvesArray1);
+        if (curveTagObjValTotMap.get("RETRY") > 0) {
+            curvesArray.put(objStat);
         }
 
         object.put("curvesTagStatus", curvesArray);

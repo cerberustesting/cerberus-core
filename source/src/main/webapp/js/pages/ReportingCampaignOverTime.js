@@ -638,9 +638,9 @@ function buildTagBarGraphs(data) {
 
     // Sorting values by nb of requests.
     sortedCurves = curves.sort(function (a, b) {
-        let a1 = a.key.key;
-        let b1 = b.key.key;
-        return b1.localeCompare(a1);
+        let a1 = a.key.totalExe;
+        let b1 = b.key.totalExe;
+        return b1 - a1;
     });
 
 
@@ -792,6 +792,15 @@ function initGraph() {
         // make sure click was on an actual point
         if (activePoints.length > 0) {
             let tag = window.myLineTagExe.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].tag;
+            window.open('./ReportingExecutionByTag.jsp?Tag=' + tag, '_blank');
+        }
+    };
+
+    document.getElementById('canvasTagBar').onclick = function (evt) {
+        var activePoints = window.myLineTagBar.getElementAtEvent(event);
+        // make sure click was on an actual point
+        if (activePoints.length > 0) {
+            let tag = window.myLineTagBar.data.labels[activePoints[0]._index];
             window.open('./ReportingExecutionByTag.jsp?Tag=' + tag, '_blank');
         }
     };
