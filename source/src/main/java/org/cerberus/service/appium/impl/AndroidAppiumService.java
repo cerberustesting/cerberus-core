@@ -19,32 +19,26 @@
  */
 package org.cerberus.service.appium.impl;
 
-import com.google.common.collect.Lists;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
-import java.time.Duration;
-
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.engine.entity.Session;
-import org.cerberus.enums.MessageEventEnum;
-import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
+import java.time.Duration;
 import java.util.regex.Pattern;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.impl.ParameterService;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.entity.SwipeAction;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.JSONUtil;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Specific Android implementation of the {@link AppiumService}
@@ -158,21 +152,10 @@ public class AndroidAppiumService extends AppiumService {
     }
 
     @Override
-    public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException {
+    public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException, JSONException {
         AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
 
-//        Map<String, Object> argss = new HashMap<>();
-//        argss.put("command", cmd);
-//        argss.put("args", Lists.newArrayList(args));
-//        String value = driver.executeScript("mobile: shell", argss).toString();
-        JSONObject param = new JSONObject();
-        try {
-            param = new JSONObject(args);
-        } catch (JSONException ex) {
-            LOG.error(ex);
-        }
-
-        String value = driver.executeScript(cmd, param).toString();
+        String value = driver.executeScript(cmd, JSONUtil.convertFromJSONObjectString(args)).toString();
 
         // execute Script return an \n or \r\n sometimes, so we delete the last occurence of it
         if (value.endsWith("\r\n")) {

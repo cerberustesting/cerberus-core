@@ -22,25 +22,23 @@ package org.cerberus.service.appium.impl;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.IOSTouchAction;
-import java.time.Duration;
-import java.util.HashMap;
-
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
-import org.apache.logging.log4j.Logger;
+import java.time.Duration;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.entity.SwipeAction;
 import org.cerberus.engine.entity.SwipeAction.Direction;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.JSONUtil;
 import org.cerberus.util.StringUtil;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.JavascriptExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -198,17 +196,10 @@ public class IOSAppiumService extends AppiumService {
     }
 
     @Override
-    public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException {
+    public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException, JSONException {
         IOSDriver driver = ((IOSDriver) session.getAppiumDriver());
 
-        JSONObject param = new JSONObject();
-        try {
-            param = new JSONObject(args);
-        } catch (JSONException ex) {
-            LOG.error(ex);
-        }
-
-        String value = driver.executeScript(cmd, param).toString();
+        String value = driver.executeScript(cmd, JSONUtil.convertFromJSONObjectString(args)).toString();
 
         // execute Script return an \n or \r\n sometimes, so we delete the last occurence of it
         if (value.endsWith("\r\n")) {

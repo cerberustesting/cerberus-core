@@ -33,6 +33,7 @@ import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.entity.SwipeAction;
+import org.cerberus.engine.entity.SwipeAction.Direction;
 import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.appium.IAppiumService;
@@ -45,11 +46,11 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.geom.Line2D;
-import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
+import java.util.Set;
 import java.time.Duration;
-import org.cerberus.engine.entity.SwipeAction.Direction;
+import org.json.JSONException;
 
 /**
  * @author bcivel
@@ -391,7 +392,7 @@ public abstract class AppiumService implements IAppiumService {
 
     }
 
-    public abstract String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException;
+    public abstract String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException, JSONException;
 
     public String getElementPosition(Session session, Identifier identifier) {
         AppiumDriver driver = session.getAppiumDriver();
