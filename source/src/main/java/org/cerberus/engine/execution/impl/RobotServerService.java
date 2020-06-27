@@ -659,7 +659,7 @@ public class RobotServerService implements IRobotServerService {
         switch (tCExecution.getRobotProvider()) {
             case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
                 if (!StringUtil.isNullOrEmpty(tCExecution.getTag()) && isNotAlreadyDefined(caps, "build")) {
-                    caps.setCapability("build", tCExecution.getTag()); // use UIAutomator2 by default
+                    caps.setCapability("build", tCExecution.getTag());
                 }
                 if (isNotAlreadyDefined(caps, "project")) {
                     caps.setCapability("project", tCExecution.getApplication());
@@ -944,10 +944,10 @@ public class RobotServerService implements IRobotServerService {
             switch (tce.getRobotProvider()) {
                 case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
                     try {
-                        tce.addFileList(recorderService.recordSeleniumLog(tce));
-                    } catch (Exception ex) {
-                        LOG.error("Exception Getting Selenium Logs " + tce.getId(), ex);
-                    }
+                    tce.addFileList(recorderService.recordSeleniumLog(tce));
+                } catch (Exception ex) {
+                    LOG.error("Exception Getting Selenium Logs " + tce.getId(), ex);
+                }
 //                    try {
 //                        tce.addFileList(recorderService.recordBrowserstackSeleniumLog(tce));
 //                    } catch (Exception ex) {
@@ -956,11 +956,11 @@ public class RobotServerService implements IRobotServerService {
 //                    break;
                 case TestCaseExecution.ROBOTPROVIDER_NONE:
                     try {
-                        tce.addFileList(recorderService.recordSeleniumLog(tce));
-                    } catch (Exception ex) {
-                        LOG.error("Exception Getting Selenium Logs " + tce.getId(), ex);
-                    }
-                    break;
+                    tce.addFileList(recorderService.recordSeleniumLog(tce));
+                } catch (Exception ex) {
+                    LOG.error("Exception Getting Selenium Logs " + tce.getId(), ex);
+                }
+                break;
                 default:
             }
 

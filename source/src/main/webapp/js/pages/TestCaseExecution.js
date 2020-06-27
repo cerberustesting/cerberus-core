@@ -430,7 +430,7 @@ function updatePage(data, steps) {
     var fileContainer = $("#testCaseConfig #tcFileContentField");
     addFileLink(data.fileList, fileContainer, isTheExecutionManual);
 
-    var myURL = $("#bugID").data("appBugURL");
+    var myURL = $("#bugs").data("appBugURL");
     if (myURL === undefined) {
         // We only refresh the bugURL and call readApplication if the information is not already filed.
         $.ajax({
@@ -443,8 +443,8 @@ function updatePage(data, steps) {
                 if (data.testCaseObj !== undefined) {
 
                     // Display already existing bugs.
-                    link = getBugIdList(data.testCaseObj.bugId, dataApp.contentTable.bugTrackerUrl);
-                    $("#bugID").append(link);
+                    link = getBugIdList(data.testCaseObj.bugs, dataApp.contentTable.bugTrackerUrl);
+                    $("#bugs").append(link);
 
                     // Adding a button to create a new bug.
                     var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
@@ -464,16 +464,16 @@ function updatePage(data, steps) {
                     } else {
                         link = $('<a id="bugs">').attr("href", "#").append($("<button class='btn btn-default btn-block'>").text("No 'New Bug' URL Specified.").attr("title", "Please specify 'New Bug' URL on application '" + data.application + "'."));
                     }
-                    $("#bugID").append(link);
+                    $("#bugs").append(link);
                     link = $('<a id="bugs">').append($("<button class='btn btn-default btn-block marginTop5' id='editTcHeaderBug'>").text("Assign to Test Case"));
-                    $("#bugID").append(link);
+                    $("#bugs").append(link);
                     $("#editTcHeaderBug").unbind("click").click(function () {
                         openModalTestCase(data.test, data.testcase, "EDIT", "tabTCBugReport")
-                    })
+                    });
 
 
                 }
-                $("#bugID").data("appBugURL", "true");
+                $("#bugs").data("appBugURL", "true");
 
             }
         });
