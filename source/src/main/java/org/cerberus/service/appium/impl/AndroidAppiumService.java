@@ -26,6 +26,7 @@ import io.appium.java_client.android.nativekey.KeyEvent;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,6 +37,7 @@ import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.entity.SwipeAction;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.JSONUtil;
+import org.cerberus.util.StringUtil;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -155,7 +157,12 @@ public class AndroidAppiumService extends AppiumService {
     public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException, JSONException {
         AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
 
-        String value = driver.executeScript(cmd, JSONUtil.convertFromJSONObjectString(args)).toString();
+        String value;
+        if (StringUtil.isNullOrEmpty(args)) {
+            value = driver.executeScript(cmd, new HashMap<>()).toString();
+        } else {
+            value = driver.executeScript(cmd, JSONUtil.convertFromJSONObjectString(args)).toString();
+        }
 
         // execute Script return an \n or \r\n sometimes, so we delete the last occurence of it
         if (value.endsWith("\r\n")) {

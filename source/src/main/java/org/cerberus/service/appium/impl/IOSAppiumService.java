@@ -26,6 +26,7 @@ import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
 import java.time.Duration;
+import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.service.impl.ParameterService;
@@ -199,7 +200,12 @@ public class IOSAppiumService extends AppiumService {
     public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException, JSONException {
         IOSDriver driver = ((IOSDriver) session.getAppiumDriver());
 
-        String value = driver.executeScript(cmd, JSONUtil.convertFromJSONObjectString(args)).toString();
+        String value;
+        if (StringUtil.isNullOrEmpty(args)) {
+            value = driver.executeScript(cmd, new HashMap<>()).toString();
+        } else {
+            value = driver.executeScript(cmd, JSONUtil.convertFromJSONObjectString(args)).toString();
+        }
 
         // execute Script return an \n or \r\n sometimes, so we delete the last occurence of it
         if (value.endsWith("\r\n")) {
