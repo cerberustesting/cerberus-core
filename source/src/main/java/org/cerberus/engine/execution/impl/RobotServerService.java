@@ -95,6 +95,8 @@ import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
 import org.openqa.selenium.remote.internal.OkHttpClient;
 import org.openqa.selenium.safari.SafariOptions;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.opera.OperaOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -718,7 +720,7 @@ public class RobotServerService implements IRobotServerService {
     }
 
     /**
-     * Instanciate DesiredCapabilities regarding the browser
+     * Instantiate DesiredCapabilities regarding the browser
      *
      * @param capabilities
      * @param browser
@@ -728,147 +730,160 @@ public class RobotServerService implements IRobotServerService {
      */
     private MutableCapabilities setCapabilityBrowser(MutableCapabilities capabilities, String browser, TestCaseExecution tCExecution) throws CerberusException {
         try {
-            if (browser.equalsIgnoreCase("firefox")) {
-                FirefoxOptions options = new FirefoxOptions();
-//                capabilities = DesiredCapabilities.firefox();
+            String usedUserAgent;
 
-                FirefoxProfile profile = new FirefoxProfile();
-                profile.setPreference("app.update.enabled", false);
-                try {
-                    Invariant invariant = invariantService.convert(invariantService.readByKey("COUNTRY", tCExecution.getCountry()));
-                    if (invariant.getGp2() == null) {
-                        LOG.warn("Country selected (" + tCExecution.getCountry() + ") has no value of GP2 in Invariant table, default language set to English (en)");
+            switch (browser) {
+
+                case "firefox":
+                    FirefoxOptions optionsFF = new FirefoxOptions();
+                    FirefoxProfile profile = new FirefoxProfile();
+                    profile.setPreference("app.update.enabled", false);
+                    try {
+                        Invariant invariant = invariantService.convert(invariantService.readByKey("COUNTRY", tCExecution.getCountry()));
+                        if (invariant.getGp2() == null) {
+                            LOG.warn("Country selected (" + tCExecution.getCountry() + ") has no value of GP2 in Invariant table, default language set to English (en)");
+                            profile.setPreference("intl.accept_languages", "en");
+                        } else {
+                            profile.setPreference("intl.accept_languages", invariant.getGp2());
+                        }
+                    } catch (CerberusException ex) {
+                        LOG.warn("Country selected (" + tCExecution.getCountry() + ") not in Invariant table, default language set to English (en)");
                         profile.setPreference("intl.accept_languages", "en");
-                    } else {
-                        profile.setPreference("intl.accept_languages", invariant.getGp2());
                     }
-                } catch (CerberusException ex) {
-                    LOG.warn("Country selected (" + tCExecution.getCountry() + ") not in Invariant table, default language set to English (en)");
-                    profile.setPreference("intl.accept_languages", "en");
-                }
 
-                // Set UserAgent if testCaseUserAgent or robotUserAgent is defined
-                String usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
-                if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
-                    profile.setPreference("general.useragent.override", usedUserAgent);
-                }
+                    // Set UserAgent if testCaseUserAgent or robotUserAgent is defined
+                    usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
+                    if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
+                        profile.setPreference("general.useragent.override", usedUserAgent);
+                    }
 
-//                capabilities.setCapability(FirefoxDriver.PROFILE, profile);
-                if (tCExecution.getVerbose() <= 0) {
-                    options.setHeadless(true);
-                }
-                // Add the WebDriver proxy capability.
-                if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
-                    Proxy proxy = new Proxy();
-                    proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    proxy.setProxyType(Proxy.ProxyType.MANUAL);
-                    LOG.debug("Setting Firefox proxy to : " + proxy.toString());
-                    options.setProxy(proxy);
-                }
+                    if (tCExecution.getVerbose() <= 0) {
+                        optionsFF.setHeadless(true);
+                    }
+                    // Add the WebDriver proxy capability.
+                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setProxyType(Proxy.ProxyType.MANUAL);
+                        LOG.debug("Setting Firefox proxy to : " + proxy.toString());
+                        optionsFF.setProxy(proxy);
+                    }
 
-                options.setProfile(profile);
+                    optionsFF.setProfile(profile);
 
-                // Accept Insecure Certificates.
-                options.setAcceptInsecureCerts(true);
+                    // Accept Insecure Certificates.
+                    optionsFF.setAcceptInsecureCerts(true);
+                    return optionsFF;
 
-                return options;
-//                capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, options);
+                case "IE":
+                    InternetExplorerOptions optionsIE = new InternetExplorerOptions();
+                    // Add the WebDriver proxy capability.
+                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setProxyType(Proxy.ProxyType.MANUAL);
+                        LOG.debug("Setting IE proxy to : " + proxy.toString());
+                        optionsIE.setCapability("proxy", proxy);
+                    }
+                    return optionsIE;
 
-            } else if (browser.equalsIgnoreCase("IE")) {
-                InternetExplorerOptions options = new InternetExplorerOptions();
-                // Add the WebDriver proxy capability.
-                if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
-                    Proxy proxy = new Proxy();
-                    proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    proxy.setProxyType(Proxy.ProxyType.MANUAL);
-                    LOG.debug("Setting IE proxy to : " + proxy.toString());
-                    options.setCapability("proxy", proxy);
-                }
-                return options;
-//                capabilities = DesiredCapabilities.internetExplorer();
+                case "chrome":
+                    ChromeOptions optionsCH = new ChromeOptions();
+                    // Maximize windows for chrome browser
+                    String targetScreensize = getScreenSizeToUse(tCExecution.getTestCaseObj().getScreenSize(), tCExecution.getScreenSize());
+                    if ((!StringUtil.isNullOrEmpty(targetScreensize)) && targetScreensize.contains("*")) {
+                        Integer screenWidth = Integer.valueOf(targetScreensize.split("\\*")[0]);
+                        Integer screenLength = Integer.valueOf(targetScreensize.split("\\*")[1]);
+                        String sizeOpts = "--window-size=" + screenWidth + "," + screenLength;
+                        optionsCH.addArguments(sizeOpts);
+                        LOG.debug("Selenium resolution (for Chrome) Activated : " + screenWidth + "*" + screenLength);
 
-            } else if (browser.equalsIgnoreCase("chrome")) {
+                    }
+                    optionsCH.addArguments("start-maximized");
+                    if (tCExecution.getVerbose() <= 0) {
+                        optionsCH.addArguments("--headless");
+                    }
+                    // Set UserAgent if necessary
+                    usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
+                    if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
+                        optionsCH.addArguments("--user-agent=" + usedUserAgent);
+                    }
+                    // Add the WebDriver proxy capability.
+                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setNoProxy("");
+                        proxy.setProxyType(Proxy.ProxyType.MANUAL);
+                        LOG.debug("Setting Chrome proxy to : " + proxy.toString());
+                        optionsCH.setCapability("proxy", proxy);
+                    }
+                    // Accept Insecure Certificates.
+                    optionsCH.setAcceptInsecureCerts(true);
 
-                /**
-                 * Add custom capabilities
-                 */
-                ChromeOptions options = new ChromeOptions();
-//                capabilities = DesiredCapabilities.chrome();
+                    return optionsCH;
 
-                // Maximize windows for chrome browser
-                String targetScreensize = getScreenSizeToUse(tCExecution.getTestCaseObj().getScreenSize(), tCExecution.getScreenSize());
-                if ((!StringUtil.isNullOrEmpty(targetScreensize)) && targetScreensize.contains("*")) {
-                    Integer screenWidth = Integer.valueOf(targetScreensize.split("\\*")[0]);
-                    Integer screenLength = Integer.valueOf(targetScreensize.split("\\*")[1]);
-                    String sizeOpts = "--window-size=" + screenWidth + "," + screenLength;
-                    options.addArguments(sizeOpts);
-                    LOG.debug("Selenium resolution (for Chrome) Activated : " + screenWidth + "*" + screenLength);
+                case "android":
+                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                    }
+                    capabilities = DesiredCapabilities.android();
+                    break;
 
-                }
-                options.addArguments("start-maximized");
-                if (tCExecution.getVerbose() <= 0) {
-                    options.addArguments("--headless");
-                }
-                // Set UserAgent if necessary
-                String usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
-                if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
-                    options.addArguments("--user-agent=" + usedUserAgent);
-                }
+                case "ipad":
+                    capabilities = DesiredCapabilities.ipad();
+                    break;
 
-                // Add the WebDriver proxy capability.
-                if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
-                    Proxy proxy = new Proxy();
-                    proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    proxy.setNoProxy("");
-                    proxy.setProxyType(Proxy.ProxyType.MANUAL);
-                    LOG.debug("Setting Chrome proxy to : " + proxy.toString());
-                    options.setCapability("proxy", proxy);
-                }
+                case "iphone":
+                    capabilities = DesiredCapabilities.iphone();
+                    break;
 
-                // Accept Insecure Certificates.
-                options.setAcceptInsecureCerts(true);
+                case "safari":
+                    SafariOptions optionsSA = new SafariOptions();
+                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        optionsSA.setProxy(proxy);
+                    }
+                    return optionsSA;
 
-                return options;
-//                capabilities.setCapability(ChromeOptions.CAPABILITY, options);
-//                additionalCapabilities.add(factoryRobotCapability.create(0, "", ChromeOptions.CAPABILITY, options.toString()));
+                case "edge":
+                    EdgeOptions optionsED = new EdgeOptions();
+                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        optionsED.setProxy(proxy);
+                    }
+                    return optionsED;
 
-            } else if (browser.contains("android")) {
+                case "opera":
+                    OperaOptions optionsOP = new OperaOptions();
+                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        optionsOP.setProxy(proxy);
+                    }
+                    return optionsOP;
 
-                if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
-                    Proxy proxy = new Proxy();
-                    proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                }
+//                case "yandex":
+//                    capabilities = new DesiredCapabilities();
+//                    capabilities.setCapability("browser", "Yandex");
+//                    capabilities.setCapability("browser_version", "14.12");
+//                    break;
 
-                capabilities = DesiredCapabilities.android();
-
-            } else if (browser.contains("ipad")) {
-                capabilities = DesiredCapabilities.ipad();
-
-            } else if (browser.contains("iphone")) {
-                capabilities = DesiredCapabilities.iphone();
-
-            } else if (browser.contains("safari")) {
-                SafariOptions options = new SafariOptions();
-
-                if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
-                    Proxy proxy = new Proxy();
-                    proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    options.setProxy(proxy);
-                }
-
-                return options;
-
-            } else {
-                LOG.warn("Not supported Browser : " + browser);
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription(mes.getDescription().replace("%MES%", "Browser '" + browser + "' is not supported"));
-                mes.setDescription("Not supported Browser : " + browser);
-                throw new CerberusException(mes);
+                default:
+                    LOG.warn("Not supported Browser : " + browser);
+                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+                    mes.setDescription(mes.getDescription().replace("%MES%", "Browser '" + browser + "' is not supported"));
+                    mes.setDescription("Not supported Browser : " + browser);
+                    throw new CerberusException(mes);
             }
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);

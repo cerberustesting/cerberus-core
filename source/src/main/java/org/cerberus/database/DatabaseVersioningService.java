@@ -8616,6 +8616,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + "VALUES('EXECUTOREXTENSIONHOST', 'localhost', 100, 'Localhost Extension', '', '2')"
                 + ",('INVARIANTPUBLIC', 'EXECUTOREXTENSIONHOST', 900, '', '', '');");
 
+        // 1531
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES('BROWSER', 'edge', 100, 'Edge Browser', '');");
+
         return a;
     }
 
