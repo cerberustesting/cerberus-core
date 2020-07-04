@@ -588,15 +588,19 @@ public class RecorderService implements IRecorderService {
             }
 
             // Stat.
-            if (!(StringUtil.isNullOrEmpty(se.getResponseHTTPBody()))) {
+            LOG.debug("Size of HAR message : " + se.getResponseHTTPBody().length());
+            // If JSON Size is higher than 1 Meg, we save the stat.
+            if (!(StringUtil.isNullOrEmpty(se.getResponseHTTPBody())) && se.getResponseHTTPBody().length() > 1000000) {
                 JSONObject stat = new JSONObject(se.getResponseHTTPBody());
                 Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "networktraffic_stat", "json", false);
                 if (stat.has("stat")) {
-                    JSONObject statToRecord = stat.getJSONObject("stat");
-                    recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), statToRecord.toString(1));
+                    if (stat.has("log")) {
+                        stat.remove("log");
+                    }
+                    recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), stat.toString(1));
 
                     // Index file created to database.
-                    object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "Network Stat", recorderResponse.getRelativeFilenameURL(), TestCaseExecutionFile.FILETYPE_JSON, "", null, "", null);
+                    object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "Stat Only", recorderResponse.getRelativeFilenameURL(), TestCaseExecutionFile.FILETYPE_JSON, "", null, "", null);
                     testCaseExecutionFileService.save(object);
                     objectFileList.add(object);
                 } else {

@@ -1313,7 +1313,7 @@ function massAction_copyQueue(option) {
             // unblock when remote call returns
             if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
                 if (data.addedEntries === 1) {
-                    data.message = data.message + "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
+                    data.message = data.message + "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id + "'><button class='btn btn-primary' id='goToExecution'>Open Execution</button></a>";
                 }
                 let formA = $('#massActionForm :input#selectLine');
                 for (var i = 0; i < formA.length; i++) {

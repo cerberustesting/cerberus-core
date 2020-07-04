@@ -205,7 +205,7 @@ function confirmExecutionQueueModalHandler(mode, queueAction, saveAction) {
                 $('#editExecutionQueueModal').data("Saved", true);
                 $('#editExecutionQueueModal').modal('hide');
                 if (data.addedEntries === 1) {
-                    data.message = data.message + "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
+                    data.message = data.message + "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id + "'><button class='btn btn-primary' id='goToExecution'>Open Execution</button></a>";
                 }
                 showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
             } else {

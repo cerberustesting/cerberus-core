@@ -132,10 +132,13 @@ public class HarService implements IHarService {
                 target.put(PROVIDER_UNKNOWN, new HarStat());
             }
 
-            // Build Recap of the total
+            // Build Recap of the total 
             harTotalStat = processRecap(harTotalStat);
 
-            Date firstEver = new Date(harTotalStat.getFirstStart().getTime());
+            Date firstEver = new Date();
+            if (harTotalStat.getFirstStart() != null) {
+                firstEver = new Date(harTotalStat.getFirstStart().getTime());
+            }
             JSONObject stat = new JSONObject();
             JSONObject thirdPartyStat = new JSONObject();
             // Adding total to HAR JSON.
@@ -625,8 +628,6 @@ public class HarService implements IHarService {
             time.put("firstStart", harStat.getFirstStartS());
             if (harStat.getFirstStart() != null) {
                 time.put("firstStartR", harStat.getFirstStart().getTime() - firstEver.getTime());
-            } else {
-                LOG.warn("Null FirstStart for har stat entry : " + statKey);
             }
             if (harStat.getFirstEnd() != null) {
                 time.put("firstEnd", new SimpleDateFormat(DATE_FORMAT).format(harStat.getFirstEnd()));
