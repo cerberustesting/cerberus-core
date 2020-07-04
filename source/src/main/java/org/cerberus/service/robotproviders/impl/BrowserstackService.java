@@ -144,11 +144,11 @@ public class BrowserstackService implements IBrowserstackService {
             }
 
         } catch (UnsupportedEncodingException ex) {
-            LOG.error("Exception when notify Execution status to Browserstack.", ex);
+            LOG.error("Exception when getting build referential and find the tag from BrowserStack.", ex);
         } catch (IOException ex) {
-            LOG.error("Exception when notify Execution status to Browserstack.", ex);
+            LOG.error("Exception when getting build referential and find the tag from BrowserStack.", ex);
         } catch (Exception ex) {
-            LOG.error("Exception when notify Execution status to Browserstack.", ex);
+            LOG.error("Exception when getting build referential and find the tag from BrowserStack.", ex);
         }
 
         return "BSHash";

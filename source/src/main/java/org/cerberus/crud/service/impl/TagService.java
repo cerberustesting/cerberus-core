@@ -244,7 +244,7 @@ public class TagService implements ITagService {
             AnswerItem answerTag;
             answerTag = readByKey(tagS);
             Tag tag = (Tag) answerTag.getItem();
-            if ((tag != null) && StringUtil.isNullOrEmpty(tag.getBrowserstackBuildHash())) {
+            if ((tag != null) && (StringUtil.isNullOrEmpty(tag.getBrowserstackBuildHash()) || "BSHash".equalsIgnoreCase(tag.getBrowserstackBuildHash()))) {
                 String newBuildHash = browserstackService.getBrowserStackBuildHash(system, tagS, user, pass);
                 tag.setBrowserstackBuildHash(newBuildHash);
                 Answer ans = tagDAO.updateBrowserStackBuild(tagS, tag);

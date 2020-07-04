@@ -30,6 +30,7 @@ public interface IBrowserstackService {
 
     /**
      *
+     * @param system
      * @param sessionId BrowserStack session id.
      * @param status TestCase Execution control status.
      * @param reason Detailed reason.
@@ -40,7 +41,11 @@ public interface IBrowserstackService {
 
     /**
      *
+     * @param system
      * @param tag Tag value.
+     * @param user
+     * @param pass
+     * @return 
      */
     public String getBrowserStackBuildHash(String system, String tag, String user, String pass);
 

@@ -1,6 +1,7 @@
 *Bug fixes*
 [square]
-* none
+* Forcing Cerberus to retry getting BrowserStack build hash when unsuccessful result.
+* Improved Appium timeout support and fixed timeout setup at campaign level.
 
 *Improvements / New features*
 [square]
@@ -8,6 +9,8 @@
 * New page in order to follow-up campaign execution over time (duration, Status, coverage,...).
 * New queue constrain on executor extension in order to secure performance of proxy layer. #2133
 * Lots of refactors in order to provide cleaner JSON services (in preparation for Angular Version of Cerberus UI)
+* Added support for EDGE Browser
+* Optimized memory consumption on ExecutionOverTime reporting page.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

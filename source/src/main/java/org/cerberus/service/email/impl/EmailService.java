@@ -21,8 +21,10 @@ package org.cerberus.service.email.impl;
 
 import org.cerberus.service.email.entity.Email;
 import org.apache.commons.mail.HtmlEmail;
+import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.service.email.IEmailService;
 import org.cerberus.util.StringUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -31,6 +33,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class EmailService implements IEmailService {
+
+    @Autowired
+    private ILogEventService logEventService;
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(EmailService.class);
 
@@ -89,7 +94,20 @@ public class EmailService implements IEmailService {
                 }
             }
 
-            email.send();
+            logEventService.createForPrivateCalls("", "EMAIL", "Start Sending email '" + cerberusEmail.getSubject() + "'.");
+            LOG.info("Start Sending email '" + cerberusEmail.getSubject() + "'.");
+
+            try {
+                //Sending the email
+                email.send();
+            } catch (Exception e) {
+                logEventService.createForPrivateCalls("", "EMAIL", "Error Sending email '" + cerberusEmail.getSubject() + "'");
+                LOG.error("Exception catched when trying to send the mail '" + cerberusEmail.getSubject() + "' : ", e);
+                throw e;
+            }
+
+            logEventService.createForPrivateCalls("", "EMAIL", "Email Sent '" + cerberusEmail.getSubject() + "'.");
+            LOG.info("End Sending email '" + cerberusEmail.getSubject() + "'.");
 
         } else {
             LOG.debug("Mail not send because smtp host not defined or default. smtp : " + cerberusEmail.getHost());
