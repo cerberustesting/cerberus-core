@@ -219,6 +219,7 @@ public class TestCaseService implements ITestCaseService {
         for (TestCase testCase : testCases) {
             testCasesAnswer.getItem().add(this.findTestCaseByKeyWithDependencies(testCase.getTest(), testCase.getTestCase(), withSteps).getItem());
         }
+        return testCasesAnswer;
     }
 
     @Override
