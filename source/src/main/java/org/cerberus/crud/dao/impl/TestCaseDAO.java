@@ -657,7 +657,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         ArrayList<String> countriesDB = new ArrayList<String>();
 
         List<String> countryList = new ArrayList<String>();
-        for (TestCaseCountry tcCountry : tc.getTestCaseCountry()) {
+        for (TestCaseCountry tcCountry : tc.getTestCaseCountries()) {
             countryList.add(tcCountry.getCountry());
         }
         // Debug message on SQL.

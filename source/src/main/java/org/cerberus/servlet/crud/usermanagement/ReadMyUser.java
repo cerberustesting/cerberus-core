@@ -85,10 +85,9 @@ public class ReadMyUser extends HttpServlet {
         logEventService = appContext.getBean(ILogEventService.class);
         parameterService = appContext.getBean(IParameterService.class);
 
-        boolean isDeploymentOn = parameterService.getParameterBooleanByKey("cerberus_deploymentmode_isdeploymentmodeenabled", "", false);
-        LOG.debug("========================================");
-        LOG.debug("IS ON DEPLOYMENT : " + isDeploymentOn);
-
+        //boolean isDeploymentOn = parameterService.getParameterBooleanByKey("cerberus_deploymentmode_isdeploymentmodeenabled", "", false);
+        //LOG.debug("========================================");
+        //LOG.debug("IS ON DEPLOYMENT : " + isDeploymentOn);
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
 
@@ -132,7 +131,7 @@ public class ReadMyUser extends HttpServlet {
             data.put("reportingFavorite", myUser.getReportingFavorite());
             data.put("userPreferences", myUser.getUserPreferences());
             data.put("isKeycloak", Property.isKeycloak());
-            data.put("isDeploymentMode", parameterService.getParameterBooleanByKey("cerberus_deploymentmode_isdeploymentmodeenabled", "", false));
+            //data.put("isDeploymentMode", parameterService.getParameterBooleanByKey("cerberus_deploymentmode_isdeploymentmodeenabled", "", false));
 
             // Define submenu entries
             JSONObject menu = new JSONObject();

@@ -424,8 +424,8 @@ public class ExecutionRunService implements IExecutionRunService {
             LOG.debug(logPrefix + "Loading all Steps information of Main testcase.");
             List<TestCaseStep> testCaseStepList;
             testCaseStepList = this.loadTestCaseService.loadTestCaseStep(tCExecution.getTestCaseObj());
-            tCExecution.getTestCaseObj().setTestCaseStep(testCaseStepList);
-            LOG.debug(logPrefix + "Steps information of Main testcase Loaded : " + tCExecution.getTestCaseObj().getTestCaseStep().size() + " Step(s) found.");
+            tCExecution.getTestCaseObj().setSteps(testCaseStepList);
+            LOG.debug(logPrefix + "Steps information of Main testcase Loaded : " + tCExecution.getTestCaseObj().getSteps().size() + " Step(s) found.");
 
             /**
              * Load All properties of the testcase
@@ -1025,7 +1025,7 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Iterate Actions
          */
-        List<TestCaseStepAction> testCaseStepActionList = testCaseStepExecution.getTestCaseStep().getTestCaseStepAction();
+        List<TestCaseStepAction> testCaseStepActionList = testCaseStepExecution.getTestCaseStep().getActions();
         LOG.debug("Getting list of actions of the step. " + testCaseStepActionList.size() + " action(s) to perform.");
 
         for (TestCaseStepAction testCaseStepAction : testCaseStepActionList) {
@@ -1294,7 +1294,7 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Iterate Control
          */
-        List<TestCaseStepActionControl> tcsacList = actionExe.getTestCaseStepAction().getTestCaseStepActionControl();
+        List<TestCaseStepActionControl> tcsacList = actionExe.getTestCaseStepAction().getControls();
         for (TestCaseStepActionControl control : tcsacList) {
 
             /**

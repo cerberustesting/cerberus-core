@@ -76,12 +76,15 @@ public class TestCase {
      */
     private String system;
     private String lastExecutionStatus;
-    private List<TestCaseCountry> testCaseCountry;
     private List<TestCaseCountryProperties> testCaseCountryProperties;
-    private List<TestCaseStep> testCaseStep;
+    private List<TestCaseCountryProperties> testCaseInheritedProperties;
+    private List<Invariant> invariantCountries;
+    private List<TestCaseCountry> testCaseCountries;
+    private List<TestCaseStep> steps;
     private List<TestCaseStepBatch> testCaseStepBatch;
-    private List<TestCaseLabel> testCaseLabel;
-    private List<TestCaseDep> testCaseDep;
+    private List<TestCaseLabel> testCaseLabels;
+    private List<Label> labels;
+    private List<TestCaseDep> dependencies;
 
     public static final String TESTCASE_TYPE_MANUAL = "MANUAL";
     public static final String TESTCASE_TYPE_AUTOMATED = "AUTOMATED";
@@ -111,14 +114,6 @@ public class TestCase {
 
     public void setDateCreated(String dateCreated) {
         this.dateCreated = dateCreated;
-    }
-
-    public List<TestCaseCountryProperties> getTestCaseCountryProperties() {
-        return testCaseCountryProperties;
-    }
-
-    public void setTestCaseCountryProperties(List<TestCaseCountryProperties> testCaseCountryProperties) {
-        this.testCaseCountryProperties = testCaseCountryProperties;
     }
 
     public List<TestCaseStepBatch> getTestCaseStepBatch() {
@@ -378,20 +373,44 @@ public class TestCase {
         this.testCase = testCase;
     }
 
-    public List<TestCaseCountry> getTestCaseCountry() {
-        return testCaseCountry;
+    public List<TestCaseCountryProperties> getTestCaseCountryProperties() {
+        return testCaseCountryProperties;
     }
 
-    public void setTestCaseCountry(List<TestCaseCountry> testCaseCountry) {
-        this.testCaseCountry = testCaseCountry;
+    public void setTestCaseCountryProperties(List<TestCaseCountryProperties> testCaseCountryProperties) {
+        this.testCaseCountryProperties = testCaseCountryProperties;
     }
 
-    public List<TestCaseStep> getTestCaseStep() {
-        return testCaseStep;
+    public List<TestCaseCountryProperties> getTestCaseInheritedProperties() {
+        return testCaseInheritedProperties;
     }
 
-    public void setTestCaseStep(List<TestCaseStep> testCaseStep) {
-        this.testCaseStep = testCaseStep;
+    public void setTestCaseInheritedProperties(List<TestCaseCountryProperties> testCaseInheritedProperties) {
+        this.testCaseInheritedProperties = testCaseInheritedProperties;
+    }
+
+    public List<TestCaseCountry> getTestCaseCountries() {
+        return testCaseCountries;
+    }
+
+    public void setTestCaseCountries(List<TestCaseCountry> testCaseCountries) {
+        this.testCaseCountries = testCaseCountries;
+    }
+
+    public List<Invariant> getInvariantCountries() {
+        return invariantCountries;
+    }
+
+    public void setInvariantCountries(List<Invariant> invariantCountries) {
+        this.invariantCountries = invariantCountries;
+    }
+
+    public List<TestCaseStep> getSteps() {
+        return steps;
+    }
+
+    public void setSteps(List<TestCaseStep> steps) {
+        this.steps = steps;
     }
 
     public String getTicket() {
@@ -418,20 +437,28 @@ public class TestCase {
         this.toMajor = toMajor;
     }
 
-    public List<TestCaseLabel> getTestCaseLabel() {
-        return testCaseLabel;
+    public List<TestCaseLabel> getTestCaseLabels() {
+        return testCaseLabels;
     }
 
-    public void setTestCaseLabel(List<TestCaseLabel> testCaseLabel) {
-        this.testCaseLabel = testCaseLabel;
+    public void setTestCaseLabels(List<TestCaseLabel> testCaseLabels) {
+        this.testCaseLabels = testCaseLabels;
     }
 
-    public List<TestCaseDep> getTestCaseDep() {
-        return testCaseDep;
+    public List<Label> getLabels() {
+        return labels;
     }
 
-    public void setTestCaseDep(List<TestCaseDep> testCaseDep) {
-        this.testCaseDep = testCaseDep;
+    public void setLabels(List<Label> labels) {
+        this.labels = labels;
+    }
+
+    public List<TestCaseDep> getDependencies() {
+        return dependencies;
+    }
+
+    public void setDependencies(List<TestCaseDep> dependencies) {
+        this.dependencies = dependencies;
     }
 
     public String getUserAgent() {
@@ -458,56 +485,105 @@ public class TestCase {
         this.version = version;
     }
 
-    public JSONObject toJson() {
-        JSONObject result = new JSONObject();
-        try {
-            result.put("test", this.getTest());
-            result.put("testcase", this.getTestCase());
-            result.put("application", this.getApplication());
-            result.put("status", this.getStatus());
-            result.put("type", this.getType());
-            result.put("priority", this.getPriority());
-            result.put("description", this.getDescription());
-            result.put("detailedDescription", this.getDetailedDescription());
-            result.put("isActive", this.isActive());
-            result.put("isActiveQA", this.isActiveQA());
-            result.put("isActiveUAT", this.isActiveUAT());
-            result.put("isActivePROD", this.isActivePROD());
-            result.put("fromMajor", this.getFromMajor());
-            result.put("toMajor", this.getToMajor());
-            result.put("targetMajor", this.getTargetMajor());
-            result.put("fromMinor", this.getFromMinor());
-            result.put("toMinor", this.getToMinor());
-            result.put("targetMinor", this.getTargetMinor());
-            result.put("conditionOperator", this.getConditionOperator());
-            result.put("conditionValue1", this.getConditionVal1());
-            result.put("conditionValue2", this.getConditionVal2());
-            result.put("conditionValue3", this.getConditionVal3());
-            result.put("usrAgent", this.getUserAgent());
-            result.put("screenSize", this.getScreenSize());
-            result.put("bugs", this.getBugs());
-            result.put("comment", this.getComment());
-            result.put("implementer", this.getImplementer());
-            result.put("executor", this.getExecutor());
-            result.put("version", this.getVersion());
-            result.put("dateCreated", this.getDateCreated());
-            result.put("usrCreated", this.getUsrCreated());
-            result.put("dateModif", this.getDateModif());
-            result.put("usrModif", this.getUsrModif());
-            result.put("origine", this.getOrigine());
-            result.put("refOrigine", this.getRefOrigine());
+    @Override
+    public String toString() {
+        return "TestCase{" + "test=" + test + ", testCase=" + testCase + ", application=" + application + ", ticket=" + ticket + ", description=" + description + ", detailedDescription=" + detailedDescription + ", priority=" + priority + ", version=" + version + ", status=" + status + ", isActive=" + isActive + ", isActiveQA=" + isActiveQA + ", isActiveUAT=" + isActiveUAT + ", isActivePROD=" + isActivePROD + ", conditionOperator=" + conditionOperator + ", conditionVal1=" + conditionVal1 + ", conditionVal2=" + conditionVal2 + ", conditionVal3=" + conditionVal3 + ", type=" + type + ", origine=" + origine + ", refOrigine=" + refOrigine + ", comment=" + comment + ", fromMajor=" + fromMajor + ", fromMinor=" + fromMinor + ", toMajor=" + toMajor + ", toMinor=" + toMinor + ", bugs=" + bugs + ", targetMajor=" + targetMajor + ", targetMinor=" + targetMinor + ", implementer=" + implementer + ", executor=" + executor + ", userAgent=" + userAgent + ", screenSize=" + screenSize + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", system=" + system + ", lastExecutionStatus=" + lastExecutionStatus + ", testCaseCountryProperties=" + testCaseCountryProperties + ", invariantCountries=" + invariantCountries + ", testCaseCountries=" + testCaseCountries + ", steps=" + steps + ", testCaseStepBatch=" + testCaseStepBatch + ", testCaseLabels=" + testCaseLabels + ", labels=" + labels + ", dependencies=" + dependencies + '}';
+    }
 
-            JSONArray array = new JSONArray();
-            if (this.getTestCaseStep() != null) {
-                for (Object testCaseStepList : this.getTestCaseStep()) {
-                    array.put(((TestCaseStep) testCaseStepList).toJson());
+    public JSONObject toJson() {
+        JSONObject testCaseJson = new JSONObject();
+        try {
+            testCaseJson.put("test", this.getTest());
+            testCaseJson.put("testcase", this.getTestCase());
+            testCaseJson.put("application", this.getApplication());
+            testCaseJson.put("system", this.getSystem());
+            testCaseJson.put("status", this.getStatus());
+            testCaseJson.put("type", this.getType());
+            testCaseJson.put("priority", this.getPriority());
+            testCaseJson.put("description", this.getDescription());
+            testCaseJson.put("detailedDescription", this.getDetailedDescription());
+            testCaseJson.put("isActive", this.isActive());
+            testCaseJson.put("isActiveQA", this.isActiveQA());
+            testCaseJson.put("isActiveUAT", this.isActiveUAT());
+            testCaseJson.put("isActivePROD", this.isActivePROD());
+            testCaseJson.put("fromMajor", this.getFromMajor());
+            testCaseJson.put("toMajor", this.getToMajor());
+            testCaseJson.put("targetMajor", this.getTargetMajor());
+            testCaseJson.put("fromMinor", this.getFromMinor());
+            testCaseJson.put("toMinor", this.getToMinor());
+            testCaseJson.put("targetMinor", this.getTargetMinor());
+            testCaseJson.put("conditionOperator", this.getConditionOperator());
+            testCaseJson.put("conditionValue1", this.getConditionVal1());
+            testCaseJson.put("conditionValue2", this.getConditionVal2());
+            testCaseJson.put("conditionValue3", this.getConditionVal3());
+            testCaseJson.put("usrAgent", this.getUserAgent());
+            testCaseJson.put("screenSize", this.getScreenSize());
+            testCaseJson.put("bugs", this.getBugs());
+            testCaseJson.put("comment", this.getComment());
+            testCaseJson.put("implementer", this.getImplementer());
+            testCaseJson.put("executor", this.getExecutor());
+            testCaseJson.put("version", this.getVersion());
+            testCaseJson.put("dateCreated", this.getDateCreated());
+            testCaseJson.put("usrCreated", this.getUsrCreated());
+            testCaseJson.put("dateModif", this.getDateModif());
+            testCaseJson.put("usrModif", this.getUsrModif());
+            testCaseJson.put("origine", this.getOrigine());
+            testCaseJson.put("refOrigine", this.getRefOrigine());
+
+            JSONArray stepsJson = new JSONArray();
+            if (this.getSteps() != null) {
+                for (TestCaseStep step : this.getSteps()) {
+                    stepsJson.put(step.toJson());
                 }
             }
-            result.put("testCaseStepList", array);
+            testCaseJson.put("steps", stepsJson);
+
+            JSONArray countriesJson = new JSONArray();
+            if (this.getInvariantCountries() != null) {
+                for (Invariant country : this.getInvariantCountries()) {
+                    countriesJson.put(country.toJson());
+                }
+            }
+            testCaseJson.put("countries", countriesJson);
+
+            JSONArray dependenciesJson = new JSONArray();
+            if (this.getDependencies() != null) {
+                for (TestCaseDep testCaseDependecy : this.getDependencies()) {
+                    dependenciesJson.put(testCaseDependecy.toJson());
+                }
+            }
+            testCaseJson.put("dependencies", dependenciesJson);
+
+            JSONArray labelsJson = new JSONArray();
+            if (this.getLabels() != null) {
+                for (Label label : this.getLabels()) {
+                    labelsJson.put(label.toJson());
+                }
+            }
+            testCaseJson.put("labels", labelsJson);
+
+            JSONObject propertiesJson = new JSONObject();
+            JSONArray testCasePropertiesJson = new JSONArray();
+            if (this.getTestCaseCountryProperties() != null) {
+                for (TestCaseCountryProperties testCaseCountryProperties : this.getTestCaseCountryProperties()) {
+                    testCasePropertiesJson.put(testCaseCountryProperties.toJson());
+                }
+            }
+            propertiesJson.put("testCaseProperties", testCasePropertiesJson);
+
+            JSONArray testCaseInheritedPropertiesJson = new JSONArray();
+            if (this.getTestCaseInheritedProperties() != null) {
+                for (TestCaseCountryProperties testCaseCountryProperties : this.getTestCaseInheritedProperties()) {
+                    testCaseInheritedPropertiesJson.put(testCaseCountryProperties.toJson());
+                }
+            }
+            propertiesJson.put("inheritedProperties", testCaseInheritedPropertiesJson);
+            testCaseJson.put("properties", propertiesJson);
+
         } catch (JSONException ex) {
             LOG.error(ex.toString(), ex);
         }
-        return result;
+        return testCaseJson;
     }
 
 }

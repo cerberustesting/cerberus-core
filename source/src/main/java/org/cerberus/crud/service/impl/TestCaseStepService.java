@@ -198,16 +198,20 @@ public class TestCaseStepService implements ITestCaseStepService {
 
     @Override
     public AnswerList<TestCaseStep> readByTestTestCaseWithDependency(String test, String testcase) {
-        AnswerList<TestCaseStep> steps = this.readByTestTestCase(test, testcase);
+        AnswerList<TestCaseStep> answerSteps = this.readByTestTestCase(test, testcase);
         AnswerList<TestCaseStep> response = null;
-        List<TestCaseStep> tcseList = new ArrayList<>();
-        for (Object step : steps.getDataList()) {
-            TestCaseStep tces = (TestCaseStep) step;
-            AnswerList<TestCaseStepAction> actions = testCaseStepActionService.readByVarious1WithDependency(test, testcase, tces.getStep());
-            tces.setTestCaseStepAction(actions.getDataList());
-            tcseList.add(tces);
+        AnswerList<TestCaseStepAction> actions;
+        List<TestCaseStep> steps = new ArrayList<>();
+        for (TestCaseStep step : answerSteps.getDataList()) {
+            if (step.getUseStep().equals("Y")) {
+                actions = testCaseStepActionService.readByVarious1WithDependency(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
+            } else {
+                actions = testCaseStepActionService.readByVarious1WithDependency(test, testcase, step.getStep());
+            }
+            step.setActions(actions.getDataList());
+            steps.add(step);
         }
-        response = new AnswerList<>(tcseList, steps.getTotalRows(), new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        response = new AnswerList<>(steps, answerSteps.getTotalRows(), new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         return response;
     }
 

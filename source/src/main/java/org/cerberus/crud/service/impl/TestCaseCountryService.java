@@ -20,6 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -117,6 +118,16 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     }
 
     @Override
+    public HashMap<String, TestCaseCountry> readByTestTestCaseToHash(String test, String testCase) {
+
+        HashMap<String, TestCaseCountry> testCaseCountries = new HashMap<String, TestCaseCountry>();
+        for (TestCaseCountry testCaseCountry : this.readByTestTestCase(null, test, testCase, null).getDataList()) {
+            testCaseCountries.put(testCaseCountry.getCountry(), testCaseCountry);
+        }
+        return testCaseCountries;
+    }
+
+    @Override
     public boolean exist(String test, String testcase, String country) {
         AnswerItem objectAnswer = readByKey(test, testcase, country);
         return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
@@ -204,7 +215,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
             ans = this.deleteList(listToDelete);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
         }
-        
+
         // We insert only at the end (after deletion of all potencial enreg - linked with #1281)
         if (!listToUpdateOrInsert.isEmpty()) {
             ans = this.createList(listToUpdateOrInsert);
@@ -239,7 +250,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
-    
+
     @Override
     public Answer duplicateList(List<TestCaseCountry> objectList, String targetTest, String targetTestCase) {
         Answer ans = new Answer(null);

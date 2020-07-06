@@ -179,27 +179,27 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                         tcs.setStep(++nextStepNumber);
                     }
 
-                    if (tcs.getTestCaseStepAction() != null) {
-                        int nextSequenceNumber = getMaxSequenceNumber(tcs.getTestCaseStepAction());
-                        for (TestCaseStepAction tcsa : tcs.getTestCaseStepAction()) {
+                    if (tcs.getActions() != null) {
+                        int nextSequenceNumber = getMaxSequenceNumber(tcs.getActions());
+                        for (TestCaseStepAction tcsa : tcs.getActions()) {
                             if (tcsa.getSequence() == -1) {
                                 tcsa.setSequence(++nextSequenceNumber);
                             }
                             tcsa.setStep(tcs.getStep());
 
-                            if (tcsa.getTestCaseStepActionControl() != null) {
-                                int nextControlNumber = getMaxControlNumber(tcsa.getTestCaseStepActionControl());
-                                for (TestCaseStepActionControl tscac : tcsa.getTestCaseStepActionControl()) {
+                            if (tcsa.getControls() != null) {
+                                int nextControlNumber = getMaxControlNumber(tcsa.getControls());
+                                for (TestCaseStepActionControl tscac : tcsa.getControls()) {
                                     if (tscac.getControlSequence() == -1) {
                                         tscac.setControlSequence(++nextControlNumber);
                                     }
                                     tscac.setStep(tcs.getStep());
                                     tscac.setSequence(tcsa.getSequence());
                                 }
-                                tcsacFromPage.addAll(tcsa.getTestCaseStepActionControl());
+                                tcsacFromPage.addAll(tcsa.getControls());
                             }
                         }
-                        tcsaFromPage.addAll(tcs.getTestCaseStepAction());
+                        tcsaFromPage.addAll(tcs.getActions());
                     }
                 }
 
@@ -364,7 +364,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                         useStepTestCase, useStepStep, inLibrary, forceExe, null, null, request.getUserPrincipal().getName(), null);
 
                 if (useStep.equals("N")) {
-                    tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, stepActions));
+                    tcStep.setActions(getTestCaseStepActionFromParameter(request, appContext, test, testCase, stepActions));
                 } else {
                     TestCaseStep tcs = null;
                     if (useStepStep != -1 && !useStepTest.equals("") && !useStepTestCase.equals("")) {
@@ -408,7 +408,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
             if (!delete) {
                 TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, sort, conditionOperator, conditionVal1, conditionVal2, conditionVal3, action, object, property, value3, forceExeStatus, description, screenshot);
-                tcsa.setTestCaseStepActionControl(getTestCaseStepActionControlFromParameter(request, appContext, test, testCase, controlArray));
+                tcsa.setControls(getTestCaseStepActionControlFromParameter(request, appContext, test, testCase, controlArray));
                 testCaseStepAction.add(tcsa);
             }
         }

@@ -95,7 +95,7 @@ public class GetTestCase extends HttpServlet {
                 jsonObject.put("group", tcInfo.getType());
                 jsonObject.put("status", tcInfo.getStatus());
                 JSONArray countryList = new JSONArray();
-                for (TestCaseCountry tcc : tcInfo.getTestCaseCountry()) {
+                for (TestCaseCountry tcc : tcInfo.getTestCaseCountries()) {
                     countryList.put(tcc.getCountry());
                 }
                 jsonObject.put("countries", countryList);
@@ -130,7 +130,7 @@ public class GetTestCase extends HttpServlet {
                     property.put("rowLimit", prop.getRowLimit());
                     property.put("nature", prop.getNature());
                     List<String> countriesSelected = testCaseDAO.findCountryByProperty(prop);
-                    for (TestCaseCountry tcc : tcInfo.getTestCaseCountry()) {
+                    for (TestCaseCountry tcc : tcInfo.getTestCaseCountries()) {
                         if (!(countriesSelected == null) && (countriesSelected.contains(tcc.getCountry()))) {
                             property.put(tcc.getCountry(), true);
                         } else {
@@ -153,7 +153,7 @@ public class GetTestCase extends HttpServlet {
                     JSONArray controlList = new JSONArray();
                     JSONArray sequenceList = new JSONArray();
 
-                    for (TestCaseStepAction action : step.getTestCaseStepAction()) {
+                    for (TestCaseStepAction action : step.getActions()) {
                         JSONObject actionObject = new JSONObject();
                         actionObject.put("sequence", i);
                         actionObject.put("action", action.getAction());
@@ -163,7 +163,7 @@ public class GetTestCase extends HttpServlet {
                         actionList.put(actionObject);
                         sequenceList.put(actionObject);
 
-                        for (TestCaseStepActionControl control : action.getTestCaseStepActionControl()) {
+                        for (TestCaseStepActionControl control : action.getControls()) {
                             JSONObject controlObject = new JSONObject();
                             controlObject.put("step", control.getStep());
                             controlObject.put("sequence", control.getSequence());

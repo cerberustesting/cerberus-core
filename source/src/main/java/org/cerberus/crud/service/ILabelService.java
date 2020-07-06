@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.cerberus.crud.entity.Label;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.dto.TreeNode;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -48,6 +49,13 @@ public interface ILabelService {
      * @return
      */
     AnswerList<Label> readAll();
+
+    /**
+     * Return Label HashMap with id as Key
+     *
+     * @return
+     */
+    HashMap<Integer, Label> readAllToHash();
 
     /**
      * Reading from database all lines of Parent / Child Labels.
@@ -105,6 +113,15 @@ public interface ILabelService {
      * @return
      */
     AnswerList<Label> readByVariousByCriteria(List<String> system, boolean strictSystemFilter, List<String> type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param testCases
+     * @return
+     */
+    List<Label> findLabelsFromTestCase(String test, String testCase, List<TestCase> testCases);
 
     /**
      *
