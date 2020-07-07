@@ -215,6 +215,8 @@ public class IOSAppiumService extends AppiumService {
             if (value.endsWith("\n")) {
                 value = value.substring(0, value.lastIndexOf("\n"));
             }
+        } else {
+            return "";
         }
 
         return value;
