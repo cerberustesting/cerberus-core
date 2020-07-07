@@ -286,10 +286,6 @@ public class ReadTestCase extends AbstractCrudTestCase {
                 for (TestCaseDep testCaseDependency : testCaseDependencies) {
                     String key = testCaseDependency.getTest() + "_" + testCaseDependency.getTestCase();
 
-                    LOG.debug("=====================================================");
-                    LOG.debug(key);
-                    LOG.debug("=====================================================");
-
                     JSONObject jo = convertToJSONObject(testCaseDependency);
 
                     if (testCaseWithDependencies.containsKey(key)) {
@@ -500,7 +496,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         return answer;
     }
 
-    private AnswerItem<JSONObject> findTestCaseWithStep(HttpServletRequest request, String test, String testCase) throws JSONException {
+    private AnswerItem<JSONObject> findTestCaseWithStep(HttpServletRequest request, String test, String testCase) throws JSONException, CerberusException {
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         HashMap<String, JSONObject> hashProp = new HashMap<>();

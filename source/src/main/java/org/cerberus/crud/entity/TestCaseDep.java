@@ -22,6 +22,8 @@ package org.cerberus.crud.entity;
 import java.sql.Timestamp;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author bcivel
@@ -164,9 +166,25 @@ public class TestCaseDep {
     }
 
     public boolean hasSameKey(TestCaseDep tcd) {
-        return this.getTest().equals(tcd.getTest()) &&
-                this.getTestCase().equals(tcd.getTestCase()) &&
-                this.getDepTest().equals(tcd.getDepTest()) &&
-                this.getDepTestCase().equals(tcd.getDepTestCase());
+        return this.getTest().equals(tcd.getTest())
+                && this.getTestCase().equals(tcd.getTestCase())
+                && this.getDepTest().equals(tcd.getDepTest())
+                && this.getDepTestCase().equals(tcd.getDepTestCase());
+    }
+
+    public JSONObject toJson() {
+        JSONObject testCaseDependencyJson = new JSONObject();
+        try {
+            testCaseDependencyJson.put("id", this.getId());
+            testCaseDependencyJson.put("dependencyTest", this.getDepTest());
+            testCaseDependencyJson.put("dependencyTestCase", this.getDepTestCase());
+            testCaseDependencyJson.put("type", this.getType());
+            testCaseDependencyJson.put("active", "Y".equals(this.getActive()));
+            testCaseDependencyJson.put("dependencyDescription", this.getDepDescription());
+            testCaseDependencyJson.put("event", this.getDepEvent());
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return testCaseDependencyJson;
     }
 }

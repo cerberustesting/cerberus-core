@@ -404,7 +404,7 @@ public class KafkaService implements IKafkaService {
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKALLTOPICS);
 
         for (TestCaseStep testCaseStep : mainExecutionTestCaseStepList) {
-            for (TestCaseStepAction testCaseStepAction : testCaseStep.getTestCaseStepAction()) {
+            for (TestCaseStepAction testCaseStepAction : testCaseStep.getActions()) {
                 if (testCaseStepAction.getAction().equals(TestCaseStepAction.ACTION_CALLSERVICE)
                         && !testCaseStepAction.getConditionOperator().equals(TestCaseStepAction.CONDITIONOPERATOR_NEVER)) {
 

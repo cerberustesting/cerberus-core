@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -49,6 +51,35 @@ public interface IInvariantService {
      * @throws CerberusException
      */
     List<Invariant> readByIdName(String idName) throws CerberusException;
+
+    /**
+     * Return a hashmap of Invariants with value as Key
+     *
+     * @param idName
+     * @return
+     * @throws org.cerberus.exception.CerberusException
+     */
+    HashMap<String, Invariant> readByIdNameToHash(String idName) throws CerberusException;
+
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param testCaseCountries
+     * @param countryInvariants
+     * @return
+     * @throws CerberusException
+     */
+    List<Invariant> findCountryInvariantsFromTestCase(String test, String testCase, HashMap<String, TestCaseCountry> testCaseCountries, HashMap<String, Invariant> countryInvariants) throws CerberusException;
+
+    /**
+     *
+     * @param testCaseCountryproperties
+     * @param countryInvariants
+     * @return
+     * @throws CerberusException
+     */
+    public List<Invariant> convertCountryPropertiesToCountryInvariants(TestCaseCountryProperties testCaseCountryproperties, HashMap<String, Invariant> countryInvariants) throws CerberusException;
 
     /**
      *

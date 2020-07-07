@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.HashMap;
 import java.util.List;
 import org.cerberus.crud.entity.TestCase;
 
@@ -46,6 +47,8 @@ public interface ITestCaseCountryService {
     List<TestCaseCountry> findTestCaseCountryByTestTestCase(String test, String testCase);
 
     List<String> findListOfCountryByTestTestCase(String test, String testcase);
+
+    HashMap<String, TestCaseCountry> readByTestTestCaseToHash(String test, String testCase);
 
     void insertTestCaseCountry(TestCaseCountry testCaseCountry) throws CerberusException;
 
@@ -150,13 +153,13 @@ public interface ITestCaseCountryService {
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
-    
+
     /**
-     * 
+     *
      * @param objectList
      * @param targetTest
      * @param targetTestCase
-     * @return 
+     * @return
      */
     Answer duplicateList(List<TestCaseCountry> objectList, String targetTest, String targetTestCase);
 }

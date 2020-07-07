@@ -52,7 +52,7 @@ public class TestCaseStepAction {
     /**
      * From here are data outside database model.
      */
-    List<TestCaseStepActionControl> testCaseStepActionControl;
+    List<TestCaseStepActionControl> controls;
 
     /**
      * Invariant ACTION String.
@@ -176,12 +176,12 @@ public class TestCaseStepAction {
         this.screenshotFilename = screenshotFilename;
     }
 
-    public List<TestCaseStepActionControl> getTestCaseStepActionControl() {
-        return testCaseStepActionControl;
+    public List<TestCaseStepActionControl> getControls() {
+        return controls;
     }
 
-    public void setTestCaseStepActionControl(List<TestCaseStepActionControl> testCaseStepActionControl) {
-        this.testCaseStepActionControl = testCaseStepActionControl;
+    public void setControls(List<TestCaseStepActionControl> controls) {
+        this.controls = controls;
     }
 
     public String getAction() {
@@ -378,7 +378,7 @@ public class TestCaseStepAction {
 
     @Override
     public String toString() {
-        return "TestCaseStepAction{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", action=" + action + ", object=" + value1 + ", property=" + value2 + ",value3= " + value3 + ", description=" + description + ", testCaseStepActionControl=" + testCaseStepActionControl + '}';
+        return "TestCaseStepAction{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", action=" + action + ", object=" + value1 + ", property=" + value2 + ",value3= " + value3 + ", description=" + description + ", testCaseStepActionControl=" + controls + '}';
     }
 
     public JSONObject toJson() {
@@ -401,13 +401,14 @@ public class TestCaseStepAction {
             result.put("test", this.getTest());
             result.put("testcase", this.getTestCase());
 
-            JSONArray array = new JSONArray();
-            if (this.getTestCaseStepActionControl() != null) {
-                for (Object testCaseStepActionControlExecution : this.getTestCaseStepActionControl()) {
-                    array.put(((TestCaseStepActionControl) testCaseStepActionControlExecution).toJson());
+            JSONArray controlsJson = new JSONArray();
+            if (this.getControls() != null) {
+                for (TestCaseStepActionControl control : this.getControls()) {
+                    controlsJson.put(control.toJson());
                 }
             }
-            result.put("controls", array);
+            result.put("controls", controlsJson);
+
         } catch (JSONException ex) {
             Logger LOG = LogManager.getLogger(TestCaseStepAction.class);
             LOG.warn(ex);

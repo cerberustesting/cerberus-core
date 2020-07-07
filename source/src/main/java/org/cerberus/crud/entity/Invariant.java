@@ -19,6 +19,11 @@
  */
 package org.cerberus.crud.entity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 /**
  * @author bcivel
  */
@@ -38,6 +43,11 @@ public class Invariant {
     private String gp7;
     private String gp8;
     private String gp9;
+
+    /**
+     * Not included in table.
+     */
+    private static final Logger LOG = LogManager.getLogger(TestCase.class);
 
     public String getDescription() {
         return description;
@@ -149,5 +159,28 @@ public class Invariant {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public JSONObject toJson() {
+        JSONObject invariantJson = new JSONObject();
+        try {
+            invariantJson.put("idName", this.getIdName());
+            invariantJson.put("value", this.getValue());
+            invariantJson.put("sort", this.getSort());
+            invariantJson.put("description", this.getDescription());
+            invariantJson.put("veryShortDesc", this.getVeryShortDesc());
+            invariantJson.put("gp1", this.getGp1());
+            invariantJson.put("gp2", this.getGp2());
+            invariantJson.put("gp3", this.getGp3());
+            invariantJson.put("gp4", this.getGp4());
+            invariantJson.put("gp5", this.getGp5());
+            invariantJson.put("gp6", this.getGp6());
+            invariantJson.put("gp7", this.getGp7());
+            invariantJson.put("gp8", this.getGp8());
+            invariantJson.put("gp9", this.getGp9());
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return invariantJson;
     }
 }

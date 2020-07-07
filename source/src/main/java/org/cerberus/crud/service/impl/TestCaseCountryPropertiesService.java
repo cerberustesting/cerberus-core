@@ -26,14 +26,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.crud.dao.ITestCaseStepActionDAO;
+import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.Test;
-import org.cerberus.crud.entity.TestCaseDep;
 import org.cerberus.crud.service.ITestCaseDepService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.crud.entity.TestCaseStep;
+import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
@@ -65,6 +67,8 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     IParameterService parameterService;
     @Autowired
     private DatabaseSpring dbmanager;
+    @Autowired
+    IInvariantService invariantService;
 
     private final String OBJECT_NAME = "TestCaseCountryProperties";
 
@@ -86,8 +90,28 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     }
 
     @Override
-    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase) {
+    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase) throws CerberusException {
         return testCaseCountryPropertiesDAO.findDistinctPropertiesOfTestCase(test, testcase);
+    }
+
+    @Override
+    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase, HashMap<String, Invariant> countryInvariants) throws CerberusException {
+        List<TestCaseCountryProperties> properties = testCaseCountryPropertiesDAO.findDistinctPropertiesOfTestCase(test, testcase);
+        for (TestCaseCountryProperties property : properties) {
+            property.setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(property, countryInvariants));
+        }
+        return properties;
+    }
+
+    @Override
+    public List<TestCaseCountryProperties> findDistinctInheritedPropertiesOfTestCase(TestCase testCase, HashMap<String, Invariant> countryInvariants) throws CerberusException {
+        List<TestCaseCountryProperties> inheritedProperties = new ArrayList<TestCaseCountryProperties>();
+        for (TestCaseStep step : testCase.getSteps()) {
+            if (step.getUseStep().equals("Y")) {
+                inheritedProperties.addAll(findDistinctPropertiesOfTestCase(step.getUseStepTest(), step.getUseStepTestCase(), countryInvariants));
+            }
+        }
+        return inheritedProperties;
     }
 
     @Override
@@ -183,7 +207,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
                 tccpMap.put(tccp.getProperty(), tccp);
             }
             //These if/else instructions are done because of the way how the propertyService verifies if
-            //the properties exist for the country. 
+            //the properties exist for the country.
             for (TestCaseCountryProperties tccp : tccpList) {
                 TestCaseCountryProperties p = (TestCaseCountryProperties) tccpMap.get(tccp.getProperty());
                 if (p == null) {

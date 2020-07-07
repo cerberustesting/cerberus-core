@@ -56,7 +56,7 @@ public class TestCaseStep {
     /**
      * Not included in table.
      */
-    private List<TestCaseStepAction> testCaseStepAction;
+    private List<TestCaseStepAction> actions;
     private boolean isStepInUseByOtherTestCase;
     private int initialStep;
     private TestCase testCaseObj;
@@ -175,12 +175,12 @@ public class TestCaseStep {
         this.useStepStep = useStepStep;
     }
 
-    public List<TestCaseStepAction> getTestCaseStepAction() {
-        return testCaseStepAction;
+    public List<TestCaseStepAction> getActions() {
+        return actions;
     }
 
-    public void setTestCaseStepAction(List<TestCaseStepAction> testCaseStepAction) {
-        this.testCaseStepAction = testCaseStepAction;
+    public void setActions(List<TestCaseStepAction> actions) {
+        this.actions = actions;
     }
 
     public String getDescription() {
@@ -366,51 +366,48 @@ public class TestCaseStep {
 
     @Override
     public String toString() {
-        return "TestCaseStep{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", description=" + description + ", useStep=" + useStep + ", useStepTest=" + useStepTest + ", useStepTestCase=" + useStepTestCase + ", useStepStep=" + useStepStep + ", inLibrary=" + inLibrary + '}';
+        return "TestCaseStep{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sort=" + sort + ", loop=" + loop + ", conditionOperator=" + conditionOperator + ", conditionVal1=" + conditionVal1 + ", conditionVal2=" + conditionVal2 + ", conditionVal3=" + conditionVal3 + ", description=" + description + ", useStep=" + useStep + ", useStepTest=" + useStepTest + ", useStepTestCase=" + useStepTestCase + ", useStepStep=" + useStepStep + ", inLibrary=" + inLibrary + ", forceExe=" + forceExe + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", actions=" + actions + ", isStepInUseByOtherTestCase=" + isStepInUseByOtherTestCase + ", initialStep=" + initialStep + ", testCaseObj=" + testCaseObj + '}';
     }
 
     public JSONObject toJson() {
-        JSONObject result = new JSONObject();
+        JSONObject stepJson = new JSONObject();
         try {
-            result.put("sort", this.getSort());
-            result.put("stepId", this.getStep());
-            result.put("description", this.getDescription());
-            result.put("isExecutionForced", this.getForceExe());
-            result.put("loop", this.getLoop());
-            result.put("conditionOperator", this.getConditionOperator());
-            result.put("conditionVal1", this.getConditionVal1());
-            result.put("conditionVal2", this.getConditionVal2());
-            result.put("conditionVal3", this.getConditionVal3());
-            result.put("isUsedStep", this.getUseStep());
-            result.put("isLibraryStep", this.getInLibrary());
-            result.put("libraryStepTest", this.getUseStepTest());
-            result.put("libraryStepTestCase", this.getUseStepTestCase());
-            result.put("libraryStepStepId", this.getUseStepStep());
-            result.put("test", this.getTest());
-            result.put("testcase", this.getTestCase());
-            result.put("initialStep", this.getInitialStep());
-            result.put("usrCreated", this.usrCreated);
-            result.put("dateCreated", this.dateCreated);
-            result.put("usrModif", this.usrModif);
-            result.put("dateModif", this.dateModif);
+            stepJson.put("sort", this.getSort());
+            stepJson.put("stepId", this.getStep());
+            stepJson.put("description", this.getDescription());
+            stepJson.put("isExecutionForced", this.getForceExe());
+            stepJson.put("loop", this.getLoop());
+            stepJson.put("conditionOperator", this.getConditionOperator());
+            stepJson.put("conditionVal1", this.getConditionVal1());
+            stepJson.put("conditionVal2", this.getConditionVal2());
+            stepJson.put("conditionVal3", this.getConditionVal3());
+            stepJson.put("isUsedStep", this.getUseStep());
+            stepJson.put("isLibraryStep", this.getInLibrary());
+            stepJson.put("libraryStepTest", this.getUseStepTest());
+            stepJson.put("libraryStepTestCase", this.getUseStepTestCase());
+            stepJson.put("libraryStepStepId", this.getUseStepStep());
+            stepJson.put("test", this.getTest());
+            stepJson.put("testcase", this.getTestCase());
+            stepJson.put("initialStep", this.getInitialStep());
+            stepJson.put("usrCreated", this.usrCreated);
+            stepJson.put("dateCreated", this.dateCreated);
+            stepJson.put("usrModif", this.usrModif);
+            stepJson.put("dateModif", this.dateModif);
 
-            JSONArray array = new JSONArray();
-
-            if (this.getTestCaseStepAction()
-                    != null) {
-                for (Object testCaseStepExecution : this.getTestCaseStepAction()) {
-                    array.put(((TestCaseStepAction) testCaseStepExecution).toJson());
+            JSONArray stepsJson = new JSONArray();
+            if (this.getActions() != null) {
+                for (TestCaseStepAction action : this.getActions()) {
+                    stepsJson.put(action.toJson());
                 }
             }
+            stepJson.put("actions", stepsJson);
 
-            result.put(
-                    "actions", array);
         } catch (JSONException ex) {
             Logger LOG = LogManager.getLogger(TestCaseStep.class
             );
             LOG.warn(ex);
         }
-        return result;
+        return stepJson;
     }
 
 }

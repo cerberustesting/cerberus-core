@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
+import org.cerberus.exception.CerberusException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,7 +47,7 @@ import org.cerberus.util.servlet.ServletUtil;
 public class GetPropertiesForTestCase extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(GetPropertiesForTestCase.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -60,7 +61,6 @@ public class GetPropertiesForTestCase extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        
 
         try {
 
@@ -92,7 +92,7 @@ public class GetPropertiesForTestCase extends HttpServlet {
                     propertyFound.put("retryPeriod", prop.getRetryPeriod());
                     propertyFound.put("cacheExpire", prop.getCacheExpire());
                     propertyFound.put("rank", prop.getRank());
-                    
+
                     List<String> countriesSelected = testCaseCountryPropertiesService.findCountryByProperty(prop);
                     JSONArray countries = new JSONArray();
                     for (String country : countriesSelected) {
@@ -107,6 +107,8 @@ public class GetPropertiesForTestCase extends HttpServlet {
             response.getWriter().print(propertyList.toString());
 
         } catch (JSONException ex) {
+            LOG.warn(ex.toString());
+        } catch (CerberusException ex) {
             LOG.warn(ex.toString());
         } finally {
             out.close();

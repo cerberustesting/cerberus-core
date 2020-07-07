@@ -19,7 +19,10 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.HashMap;
 import java.util.List;
+import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.dto.TestListDTO;
 import org.cerberus.exception.CerberusException;
@@ -33,11 +36,15 @@ public interface ITestCaseCountryPropertiesService {
 
     List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseCountry(String test, String testCase, String country);
 
-    List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) throws CerberusException ;
+    List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) throws CerberusException;
 
     List<TestCaseCountryProperties> findOnePropertyPerTestTestCase(String test, String testcase, String oneproperty);
 
-    List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase);
+    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase) throws CerberusException;
+
+    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase, HashMap<String, Invariant> countryInvariants) throws CerberusException;
+
+    public List<TestCaseCountryProperties> findDistinctInheritedPropertiesOfTestCase(TestCase testCase, HashMap<String, Invariant> countryInvariants) throws CerberusException;
 
     List<String> findCountryByProperty(TestCaseCountryProperties testCaseCountryProperties);
 
@@ -134,7 +141,7 @@ public interface ITestCaseCountryPropertiesService {
      * @return
      * @throws CerberusException
      */
-    Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountryProperties> newList) throws CerberusException ;
+    Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountryProperties> newList) throws CerberusException;
 
     /**
      *

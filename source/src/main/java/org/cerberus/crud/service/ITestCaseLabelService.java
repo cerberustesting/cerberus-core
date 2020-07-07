@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.TestCase;
@@ -77,6 +78,16 @@ public interface ITestCaseLabelService {
      * @return
      */
     AnswerList<TestCaseLabel> readByTestTestCase(String test, String testCase, List<TestCase> testCaseList);
+
+    /**
+     * Return TestCaseLabel hashmap with LabelId as Key
+     *
+     * @param test
+     * @param testCase
+     * @param testCaseList
+     * @return
+     */
+    HashMap<Integer, TestCaseLabel> readByTestTestCaseToHash(String test, String testCase, List<TestCase> testCaseList);
 
     /**
      *
@@ -156,7 +167,7 @@ public interface ITestCaseLabelService {
      * @param test
      * @param testCase
      * @param newList
-     * @return 
+     * @return
      */
     Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseLabel> newList);
 

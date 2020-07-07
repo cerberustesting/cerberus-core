@@ -81,9 +81,9 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setUserAgent(userAgent);
         newTestCase.setScreenSize(screenSize);
         newTestCase.setLastExecutionStatus(lastExecutionStatus);
-        newTestCase.setTestCaseCountry(testCaseCountry);
+        newTestCase.setTestCaseCountries(testCaseCountry);
         newTestCase.setTestCaseCountryProperties(testCaseCountryProperties);
-        newTestCase.setTestCaseStep(testCaseStep);
+        newTestCase.setSteps(testCaseStep);
         newTestCase.setTestCaseStepBatch(testCaseStepBatch);
 
         return newTestCase;
