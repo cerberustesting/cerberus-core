@@ -208,11 +208,13 @@ public class IOSAppiumService extends AppiumService {
         }
 
         // execute Script return an \n or \r\n sometimes, so we delete the last occurence of it
-        if (value.endsWith("\r\n")) {
-            value = value.substring(0, value.lastIndexOf("\r\n"));
-        }
-        if (value.endsWith("\n")) {
-            value = value.substring(0, value.lastIndexOf("\n"));
+        if (!StringUtil.isNullOrEmpty(value)) {
+            if (value.endsWith("\r\n")) {
+                value = value.substring(0, value.lastIndexOf("\r\n"));
+            }
+            if (value.endsWith("\n")) {
+                value = value.substring(0, value.lastIndexOf("\n"));
+            }
         }
 
         return value;
