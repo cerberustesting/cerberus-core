@@ -870,6 +870,7 @@ public class RobotServerService implements IRobotServerService {
                         proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                         optionsOP.setProxy(proxy);
                     }
+                    optionsOP.setCapability("browser", "opera");
                     return optionsOP;
 
 //                case "yandex":
