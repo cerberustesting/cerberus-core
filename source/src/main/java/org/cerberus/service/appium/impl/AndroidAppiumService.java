@@ -155,14 +155,13 @@ public class AndroidAppiumService extends AppiumService {
 
     @Override
     public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException, JSONException {
-        AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
 
         Object value;
         String valueString = "";
         if (StringUtil.isNullOrEmpty(args)) {
-            value = driver.executeScript(cmd, new HashMap<>());
+            value = session.getAppiumDriver().executeScript(cmd, new HashMap<>());
         } else {
-            value = driver.executeScript(cmd, JSONUtil.convertFromJSONObjectString(args));
+            value = session.getAppiumDriver().executeScript(cmd, JSONUtil.convertFromJSONObjectString(args));
         }
 
         if (value != null) {
