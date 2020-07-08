@@ -157,26 +157,28 @@ public class AndroidAppiumService extends AppiumService {
     public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException, JSONException {
         AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
 
-        String value;
+        Object value;
+        String valueString = "";
         if (StringUtil.isNullOrEmpty(args)) {
-            value = driver.executeScript(cmd, new HashMap<>()).toString();
+            value = driver.executeScript(cmd, new HashMap<>());
         } else {
-            value = driver.executeScript(cmd, JSONUtil.convertFromJSONObjectString(args)).toString();
+            value = driver.executeScript(cmd, JSONUtil.convertFromJSONObjectString(args));
         }
 
+        if (value != null) {
+            valueString = value.toString();
+        }
         // execute Script return an \n or \r\n sometimes, so we delete the last occurence of it
-        if (!StringUtil.isNullOrEmpty(value)) {
-            if (value.endsWith("\r\n")) {
-                value = value.substring(0, value.lastIndexOf("\r\n"));
+        if (!StringUtil.isNullOrEmpty(valueString)) {
+            if (valueString.endsWith("\r\n")) {
+                valueString = valueString.substring(0, valueString.lastIndexOf("\r\n"));
             }
-            if (value.endsWith("\n")) {
-                value = value.substring(0, value.lastIndexOf("\n"));
+            if (valueString.endsWith("\n")) {
+                valueString = valueString.substring(0, valueString.lastIndexOf("\n"));
             }
-        } else {
-            return "";
         }
 
-        return value;
+        return valueString;
     }
 
     @Override
