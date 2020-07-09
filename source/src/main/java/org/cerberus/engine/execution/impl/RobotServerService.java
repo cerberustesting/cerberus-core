@@ -730,7 +730,9 @@ public class RobotServerService implements IRobotServerService {
      */
     private MutableCapabilities setCapabilityBrowser(MutableCapabilities capabilities, String browser, TestCaseExecution tCExecution) throws CerberusException {
         try {
+            // Get User Agent to use.
             String usedUserAgent;
+            usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
 
             switch (browser) {
 
@@ -752,7 +754,6 @@ public class RobotServerService implements IRobotServerService {
                     }
 
                     // Set UserAgent if testCaseUserAgent or robotUserAgent is defined
-                    usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
                     if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
                         profile.setPreference("general.useragent.override", usedUserAgent);
                     }
@@ -776,19 +777,6 @@ public class RobotServerService implements IRobotServerService {
                     optionsFF.setAcceptInsecureCerts(true);
                     return optionsFF;
 
-                case "IE":
-                    InternetExplorerOptions optionsIE = new InternetExplorerOptions();
-                    // Add the WebDriver proxy capability.
-                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
-                        Proxy proxy = new Proxy();
-                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                        proxy.setProxyType(Proxy.ProxyType.MANUAL);
-                        LOG.debug("Setting IE proxy to : " + proxy.toString());
-                        optionsIE.setCapability("proxy", proxy);
-                    }
-                    return optionsIE;
-
                 case "chrome":
                     ChromeOptions optionsCH = new ChromeOptions();
                     // Maximize windows for chrome browser
@@ -806,7 +794,6 @@ public class RobotServerService implements IRobotServerService {
                         optionsCH.addArguments("--headless");
                     }
                     // Set UserAgent if necessary
-                    usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
                     if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
                         optionsCH.addArguments("--user-agent=" + usedUserAgent);
                     }
@@ -825,23 +812,6 @@ public class RobotServerService implements IRobotServerService {
 
                     return optionsCH;
 
-                case "android":
-                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
-                        Proxy proxy = new Proxy();
-                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    }
-                    capabilities = DesiredCapabilities.android();
-                    break;
-
-                case "ipad":
-                    capabilities = DesiredCapabilities.ipad();
-                    break;
-
-                case "iphone":
-                    capabilities = DesiredCapabilities.iphone();
-                    break;
-
                 case "safari":
                     SafariOptions optionsSA = new SafariOptions();
                     if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
@@ -851,6 +821,19 @@ public class RobotServerService implements IRobotServerService {
                         optionsSA.setProxy(proxy);
                     }
                     return optionsSA;
+
+                case "IE":
+                    InternetExplorerOptions optionsIE = new InternetExplorerOptions();
+                    // Add the WebDriver proxy capability.
+                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setProxyType(Proxy.ProxyType.MANUAL);
+                        LOG.debug("Setting IE proxy to : " + proxy.toString());
+                        optionsIE.setCapability("proxy", proxy);
+                    }
+                    return optionsIE;
 
                 case "edge":
                     EdgeOptions optionsED = new EdgeOptions();
@@ -871,14 +854,35 @@ public class RobotServerService implements IRobotServerService {
                         optionsOP.setProxy(proxy);
                     }
                     optionsOP.setCapability("browser", "opera");
+                    // Forcing a profile in order to force UserAgent. This has been commented because it fail when using BrowserStack that does not allow to create the correcponding profile folder.
+//                    if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
+//                        optionsOP.setCapability("opera.profile", "{profileName: \"foo\",userAgent: \"" + usedUserAgent + "\"}");
+//                    }
                     return optionsOP;
 
+                case "android":
+                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                    }
+                    capabilities = DesiredCapabilities.android();
+                    break;
+
+                case "ipad":
+                    capabilities = DesiredCapabilities.ipad();
+                    break;
+
+                case "iphone":
+                    capabilities = DesiredCapabilities.iphone();
+                    break;
+
+                // Unfortunatly Yandex is not yet supported on BrowserStack. Once it will be it should look like that:
 //                case "yandex":
 //                    capabilities = new DesiredCapabilities();
 //                    capabilities.setCapability("browser", "Yandex");
 //                    capabilities.setCapability("browser_version", "14.12");
 //                    break;
-
                 default:
                     LOG.warn("Not supported Browser : " + browser);
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
