@@ -1388,11 +1388,6 @@ function returnMessageHandler(response) {
 
 function showUnexpectedError(jqXHR, textStatus, errorThrown) {
 
-    console.log(jqXHR.responseText);
-    console.log(jqXHR.statusText);
-    console.log(textStatus);
-    console.log(errorThrown);
-
     clearResponseMessageMainPage();
     var type = getAlertType(textStatus);
     var message = "";

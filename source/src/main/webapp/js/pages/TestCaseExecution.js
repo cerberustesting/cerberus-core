@@ -149,7 +149,8 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
                     window.location.replace(url);
                 }
             }
-        }
+        },
+        error: showUnexpectedError
     });
 }
 
@@ -1134,8 +1135,14 @@ function setConfigPanel(data) {
 
     if (isTheExecutionManual) {
         var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnMessageEx' placeholder='Execution Result Message'>");
+        var setToNAButtonField = $("<button class='btn statusNA btn-inverse' type='button'>set to NA</button>");
+        setToNAButtonField.click(function () { // automaticaly play video when you arrive on the video page
+            setTestCaseReturnCodeToNA();
+        });
+
         returnMessageField.val(data.controlMessage);
-        $("#returnMessage").html(returnMessageField);
+        $("#returnMessage").html(returnMessageField).append(setToNAButtonField);
+
     }
 
     $("#editTcHeader").unbind("click").click(function () {
@@ -1311,16 +1318,19 @@ function updateDataBarVisual(controlStatus, progress = 100) {
     });
 
     if (controlStatus !== "PE") {
+        $("#progress-bar").removeClass("progress-bar statusOK statusKO statusNE statusNA statusWE statusFA progress-bar-warning");
         if (controlStatus === "OK") {
-            $("#progress-bar").addClass("progress-bar-success");
+            $("#progress-bar").addClass("progress-bar statusOK");
         } else if (controlStatus === "KO") {
-            $("#progress-bar").addClass("progress-bar-danger");
+            $("#progress-bar").addClass("progress-bar statusKO");
         } else if (controlStatus === "NE") {
-            $("#progress-bar").addClass("progress-bar-grey");
+            $("#progress-bar").addClass("progress-bar statusNE");
+        } else if (controlStatus === "NA") {
+            $("#progress-bar").addClass("progress-bar statusNA");
         } else if (controlStatus === "WE" && isTheExecutionManual) {
-            $("#progress-bar").addClass("progress-bar-black");
+            $("#progress-bar").addClass("progress-bar statusWE");
         } else {
-            $("#progress-bar").addClass("progress-bar-warning");
+            $("#progress-bar").addClass("progress-bar statusFA");
         }
         $("#progress-bar").empty().append($("<span style='font-weight:900;'>").append(controlStatus));
         progress = 100;
@@ -2326,8 +2336,8 @@ Action.prototype.generateHeader = function (id) {
      */
     if (isTheExecutionManual) {
 
-        var buttonFA = $($("<button>").addClass("btn btn-warning btn-inverse").attr("type", "button").text("FA"));
-        var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
+        var buttonFA = $($("<button>").addClass("btn btn statusFA btn-inverse").attr("type", "button").text("FA"));
+        var buttonOK = $($("<button>").addClass("btn btn statusOK btn-inverse").attr("type", "button").text("OK"));
         var buttonUpload = $($("<button>").addClass("btn btn-upload btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
 
         buttonOK.click(function (event) {
@@ -2349,8 +2359,8 @@ Action.prototype.generateHeader = function (id) {
             openModalFile(true, currentActionOrControl, "ADD", idex)
             event.preventDefault()
             event.stopPropagation()
-        })
-        $(buttonUpload).css("float", "right")
+        });
+        $(buttonUpload).css("float", "right");
 
         contentField.append($("<div class='col-xs-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
         contentField.append(buttonUpload);
@@ -2375,14 +2385,14 @@ function triggerActionExecution(element, id, status) {
     var newReturnCode = "WE";
     if (status === "OK") {
         currentElement.removeClass(function (index, className) {
-            return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
+            return (className.match(/(^|\s)list-group-item\S+/g) || []).join(' ');
         }).addClass("row list-group-item list-group-item-success");
         $(currentElement.find("span")[0]).removeClass(function (index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-ok");
         $(currentElement).next("div").find("input[id='returncode']").val("OK").change();
         newReturnCode = "OK";
-    } else {
+    } else if (status === "FA") {
         currentElement.removeClass(function (index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
         }).addClass("row list-group-item list-group-item-warning");
@@ -2393,7 +2403,7 @@ function triggerActionExecution(element, id, status) {
         newReturnCode = "FA";
     }
     $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
-    $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
+    //$(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
 
     //Modify style of all previous action and control of the current step that have not been modified yet
     var prevElementCurrentStep = $($($(element).closest(".action")[0]).parent().prevAll().find(".list-group-item-black"));
@@ -2406,7 +2416,7 @@ function triggerActionExecution(element, id, status) {
     }).addClass("glyphicon-ok");
     //Modify Status of all previous action and control of the current step that have not been modified yet
     //$(prevElementCurrentStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
-    $(prevElementCurrentStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
+    //$(prevElementCurrentStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
 
     //Modify style of all previous action and control of the previous steps that have not been modified yet
     var prevElementPreviousStep = $($($(element).closest(".action")[0]).parent().parent().prevAll().find(".list-group-item-black"));
@@ -2420,7 +2430,7 @@ function triggerActionExecution(element, id, status) {
 
     //Modify Status of all previous action and control of the previous step that have not been modified yet
     //$(prevElementPreviousStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
-    $(prevElementPreviousStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
+    //$(prevElementPreviousStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
     //update return code
     updateActionControlReturnCode(id, newReturnCode);
 }
@@ -2432,7 +2442,6 @@ function triggerActionExecution(element, id, status) {
  * @returns {void}
  */
 function updateActionControlReturnCode(idElementTriggers, returnCodeElementTrigger) {
-
     //go though every action or control to update them
     $(".itemContainer").each(function () {
 
@@ -2589,12 +2598,22 @@ function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, i
     }
 }
 
+
+function setTestCaseReturnCodeToNA() {
+    var testCaseNewReturnCode = "NA";
+    var configPanel = $("#testCaseConfig");
+
+    configPanel.find("#controlstatus").text(testCaseNewReturnCode);
+//        configPanel.find("#returnMessageEx").text(controlMessage);
+    configPanel.find("input#controlstatus2").val(testCaseNewReturnCode);
+    updateDataBarVisual(testCaseNewReturnCode);
+
+}
 /*
  * * Update the testCase focus if needed
  * @returns {void}
  */
 function updateTestCaseReturnCode() {
-
     var testCaseNewReturnCode = null;
     // go tough every step to see if the testCase need to be update
     for (var idStep = 0; idStep < $("#steps").data("listOfStep").length; idStep++) {
@@ -2617,32 +2636,32 @@ function updateTestCaseReturnCode() {
     if (testCaseNewReturnCode !== null && testCaseNewReturnCode !== configPanel.find("#controlstatus").val()) {
 
         removeColorClass(configPanel.find("#controlstatus"));
-        removeColorClass(configPanel.find("#exReturnMessage"));
-        var controlMessage = null;
+//        removeColorClass(configPanel.find("#exReturnMessage"));
+//        var controlMessage = null;
 
         if (testCaseNewReturnCode === "PE") {
             configPanel.find("#controlstatus").addClass("text-primary");
-            configPanel.find("#exReturnMessage").addClass("text-primary");
-            controlMessage = "";
+//            configPanel.find("#exReturnMessage").addClass("text-primary");
+//            controlMessage = "";
         } else if (testCaseNewReturnCode === "OK") {
             configPanel.find("#controlstatus").addClass("text-success");
-            configPanel.find("#exReturnMessage").addClass("text-success");
-            controlMessage = "The test case finished successfully."
+//            configPanel.find("#exReturnMessage").addClass("text-success");
+//            controlMessage = "The test case finished successfully."
         } else if (testCaseNewReturnCode === "KO") {
             configPanel.find("#controlstatus").addClass("text-danger");
-            configPanel.find("#exReturnMessage").addClass("text-danger");
-            controlMessage = "The test case failed on validations."
+//            configPanel.find("#exReturnMessage").addClass("text-danger");
+//            controlMessage = "The test case failed on validations."
         } else if (testCaseNewReturnCode === "WE") {
             configPanel.find("#controlstatus").addClass("text-black");
-            configPanel.find("#exReturnMessage").addClass("text-black");
-            controlMessage = "The test case has not been executed.";
+//            configPanel.find("#exReturnMessage").addClass("text-black");
+//            controlMessage = "The test case has not been executed.";
         } else if (testCaseNewReturnCode === "FA") {
             configPanel.find("#controlstatus").addClass("text-black");
-            configPanel.find("#exReturnMessage").addClass("text-black");
-            controlMessage = "The test case failed to be executed because of an action.";
+//            configPanel.find("#exReturnMessage").addClass("text-black");
+//            controlMessage = "The test case failed to be executed because of an action.";
         }
         configPanel.find("#controlstatus").text(testCaseNewReturnCode);
-        configPanel.find("#exReturnMessage").text(controlMessage);
+//        configPanel.find("#returnMessageEx").text(controlMessage);
         configPanel.find("input#controlstatus2").val(testCaseNewReturnCode);
         updateDataBarVisual(testCaseNewReturnCode);
     }

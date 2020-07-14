@@ -54,98 +54,100 @@
                                     <span class="sr-only"></span>
                                 </div>
                             </div>
-                            <div class="col-lg-7 pull-left">
-                                <div class="text-nowrap">
-                                    <span id="idlabel"></span>
-                                    <span name="Separator">Loading...</span>
-                                    <span id="test"></span>
-                                    <span name="Separator"> </span>
-                                    <span id="testcase"></span>
-                                    <span name="Separator"> </span>
-                                    <span id="country"></span>
-                                    <span name="Separator"> </span>
-                                    <span id="environment"></span>
-                                    <span name="Separator"> </span>
-                                    <span id="controlstatus" style="font-weight: 900"></span>
+                            <div class="row">
+                                <div class="col-lg-7 pull-left">
+                                    <div class="text-nowrap">
+                                        <span id="idlabel"></span>
+                                        <span name="Separator">Loading...</span>
+                                        <span id="test"></span>
+                                        <span name="Separator"> </span>
+                                        <span id="testcase"></span>
+                                        <span name="Separator"> </span>
+                                        <span id="country"></span>
+                                        <span name="Separator"> </span>
+                                        <span id="environment"></span>
+                                        <span name="Separator"> </span>
+                                        <span id="controlstatus" style="font-weight: 900"></span>
+                                    </div>
+                                    <div class="text-wrap">
+                                        <span id="tcDescription" style="font-size:.9em;margin:0px;line-height:1;height:.95em;"></span>
+                                    </div>
+                                    <div class="text-wrap" id="returnMessage">
+                                        <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;font-weight: 900;word-wrap: break-word"></span>
+                                    </div>
                                 </div>
-                                <div class="text-wrap">
-                                    <span id="tcDescription" style="font-size:.9em;margin:0px;line-height:1;height:.95em;"></span>
-                                </div>
-                                <div class="text-wrap" id="returnMessage">
-                                    <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;font-weight: 900;word-wrap: break-word"></span>
-                                </div>
-                            </div>
                             <div class="col-lg-5" style="padding: 0px;">
-                                <div id="RefreshQueueButton">
-                                    <button id="refreshQueue" class="btn btn-default">Refresh</button>
-                                    <button id="editQueue" class="btn btn-default">Edit Queue Entry</button>
-                                </div>
-                                <div id="TestCaseButton">
+                                    <div id="RefreshQueueButton">
+                                        <button id="refreshQueue" class="btn btn-default">Refresh</button>
+                                        <button id="editQueue" class="btn btn-default">Edit Queue Entry</button>
+                                    </div>
+                                    <div id="TestCaseButton">
 
-                                    <div class="btn-group pull-right" role="group" aria-label="Button group with nested dropdown" style="margin-top: 10px;">
+                                        <div class="btn-group pull-right" role="group" aria-label="Button group with nested dropdown" style="margin-top: 10px;">
 
-                                        <div class="btn-group ">
-                                            <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                Go To <span class="caret"></span>
-                                            </button>
-                                            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                <a><button class="btn btn-default pull-left" id="lastExecution" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Last Executions</button></a>
-                                                <a><button class="btn btn-default pull-left" id="lastExecutionoT" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Reporting over Time</button></a>
-                                                <a><button class="btn btn-default pull-left" id="lastExecutionwithEnvCountry" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Last Executions With Country Env</button></a>
-                                                <!--                                                <a><button class="btn btn-default pull-left" id="lastExecutionoTwithEnvCountry" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Reporting over time With Country Env</button></a>-->
-                                                <a><button class="btn btn-default pull-left" id="ExecutionByTag" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-tasks"></span> Campaign Report</button></a>
-                                                <a><button class="btn btn-default pull-left" id="ExecutionQueue" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-eye-open"></span> See Queue Parameters</button></a>
-                                                <a><button class="btn btn-default pull-left" id="ExecutionQueueByTag" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> See Queue By Tag</button></a>
-                                                <a><button class="btn btn-default pull-left" id="sessionLinkHeader" style="margin-left: 5px; margin-right: 5px;">Link External Provider</button></a>
+                                            <div class="btn-group ">
+                                                <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Go To <span class="caret"></span>
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                    <a><button class="btn btn-default pull-left" id="lastExecution" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Last Executions</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="lastExecutionoT" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Reporting over Time</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="lastExecutionwithEnvCountry" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Last Executions With Country Env</button></a>
+                                                    <!--                                                <a><button class="btn btn-default pull-left" id="lastExecutionoTwithEnvCountry" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Reporting over time With Country Env</button></a>-->
+                                                    <a><button class="btn btn-default pull-left" id="ExecutionByTag" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-tasks"></span> Campaign Report</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="ExecutionQueue" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-eye-open"></span> See Queue Parameters</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="ExecutionQueueByTag" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> See Queue By Tag</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="sessionLinkHeader" style="margin-left: 5px; margin-right: 5px;">Link External Provider</button></a>
+                                                </div>
                                             </div>
+
+                                            <div class="btn-group">
+                                                <button id="btnGroupDrop2" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Run <span class="caret"></span>
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="btnGroupDrop2">
+                                                    <a><button class="btn btn-default pull-left" id="runTestCase" style="margin-left: 5px; margin-left: 5px;" data-toggle="tooltip" ><span class="glyphicon glyphicon-play"></span>Run</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="rerunTestCase" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>ReRun</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="rerunFromQueue" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>From Queue</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="rerunFromQueueandSee" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>From Queue & See</button></a>
+                                                </div>
+                                            </div>
+
+                                            <div class="btn-group">
+                                                <a type="button" class="btn btn-default" id="editTcInfo" ><span class="glyphicon glyphicon-new-window"></span> Edit Test Case</a>
+                                                <button id="btnGroupDrop4" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <span class="caret"></span>
+                                                    <span class="sr-only">Toggle Dropdown</span>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a><button class="btn btn-default" id="editTcStepInfo" style="margin-left: 5px; margin-left: 5px;" ><span class="glyphicon glyphicon-new-window"></span> Edit Test Case from the current Step</button></a>
+                                                    <a><button class="btn btn-default" id="editTcHeader" style="margin-left: 5px; margin-left: 5px;" ><span class="glyphicon glyphicon-pencil"></span> Edit Test Case Header</button></a>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="btn-group ">
+                                                <button class="btn btn-default" id="saveTestCaseExecution" disabled style="margin-left: 1px;"><span class="glyphicon glyphicon-save"></span> Save</button>
+                                                <button id="btnGroupDrop3" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled="">
+                                                    <span class="caret"></span>
+                                                    <span class="sr-only">Toggle Dropdown</span>
+                                                </button>
+                                                <div class="dropdown-menu"  aria-labelledby="btnGroupDrop3">
+                                                    <a><button class="btn btn-default pull-left" id="deleteTestCaseExecution" style="margin-left: 5px; margin-left: 5px;" disabled><span class="glyphicon glyphicon-trash"></span>Delete</button></a>
+                                                </div>
+                                            </div>
+
                                         </div>
 
-                                        <div class="btn-group">
-                                            <button id="btnGroupDrop2" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                Run <span class="caret"></span>
-                                            </button>
-                                            <div class="dropdown-menu" aria-labelledby="btnGroupDrop2">
-                                                <a><button class="btn btn-default pull-left" id="runTestCase" style="margin-left: 5px; margin-left: 5px;" data-toggle="tooltip" ><span class="glyphicon glyphicon-play"></span>Run</button></a>
-                                                <a><button class="btn btn-default pull-left" id="rerunTestCase" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>ReRun</button></a>
-                                                <a><button class="btn btn-default pull-left" id="rerunFromQueue" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>From Queue</button></a>
-                                                <a><button class="btn btn-default pull-left" id="rerunFromQueueandSee" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>From Queue & See</button></a>
-                                            </div>
-                                        </div>
-
-                                        <div class="btn-group">
-                                            <a type="button" class="btn btn-default" id="editTcInfo" ><span class="glyphicon glyphicon-new-window"></span> Edit Test Case</a>
-                                            <button id="btnGroupDrop4" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <span class="caret"></span>
-                                                <span class="sr-only">Toggle Dropdown</span>
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                <a><button class="btn btn-default" id="editTcStepInfo" style="margin-left: 5px; margin-left: 5px;" ><span class="glyphicon glyphicon-new-window"></span> Edit Test Case from the current Step</button></a>
-                                                <a><button class="btn btn-default" id="editTcHeader" style="margin-left: 5px; margin-left: 5px;" ><span class="glyphicon glyphicon-pencil"></span> Edit Test Case Header</button></a>
-                                            </div>
-                                        </div>
-
-
-                                        <div class="btn-group ">
-                                            <button class="btn btn-default" id="saveTestCaseExecution" disabled style="margin-left: 1px;"><span class="glyphicon glyphicon-save"></span> Save</button>
-                                            <button id="btnGroupDrop3" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled="">
-                                                <span class="caret"></span>
-                                                <span class="sr-only">Toggle Dropdown</span>
-                                            </button>
-                                            <div class="dropdown-menu"  aria-labelledby="btnGroupDrop3">
-                                                <a><button class="btn btn-default pull-left" id="deleteTestCaseExecution" style="margin-left: 5px; margin-left: 5px;" disabled><span class="glyphicon glyphicon-trash"></span>Delete</button></a>
-                                            </div>
-                                        </div>
+                                        <div class="side-item pull-right"></div>
 
                                     </div>
-
-                                    <div class="side-item pull-right"></div>
-
                                 </div>
                             </div>
                             <div class="clearfix"></div>
                         </div>
                         <div id="NavtabsScriptEdit" background-color: white">
-                             <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
+                            <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
                                 <li class="active"><a data-toggle="tab" href="#tabSteps" id="editTabStep" name="tabSteps">Steps</a></li>
                                 <li><a data-toggle="tab" href="#tabProperties" id="editTabProperties" name="tabProperties">Properties</a></li>
                                 <li><a data-toggle="tab" href="#tabDetail" id="editTabDetail" name="tabDetail">Execution Details</a></li>

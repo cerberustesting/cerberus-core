@@ -160,7 +160,6 @@ function confirmExecutionQueueModalHandler(mode, queueAction, saveAction) {
     }
 
     showLoaderInModal('#editExecutionQueueModal');
-
     $.ajax({
         url: myServlet,
         async: true,
@@ -286,7 +285,7 @@ function feedExecutionQueueModal(queueid, modalId, mode) {
 
                 formEdit.modal('show');
             } else {
-                showUnexpectedError();
+                showUnexpectedError(null, "ERROR", data.message);
             }
         },
         error: showUnexpectedError

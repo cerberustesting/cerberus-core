@@ -427,14 +427,17 @@ public class ReadTagStat extends HttpServlet {
             objStat.put("key", objStatKey);
 
             curvesArray1 = new JSONArray();
-            curveTagObjValMap.get(ctrlStat.name());
-            for (Integer myInt : curveTagObjValMap.get(ctrlStat.name())) {
-                curvesArray1.put(myInt);
+            if (curveTagObjValMap.containsKey(ctrlStat.name())) {
+                for (Integer myInt : curveTagObjValMap.get(ctrlStat.name())) {
+                    curvesArray1.put(myInt);
+                }
             }
             objStat.put("points", curvesArray1);
 
-            if (curveTagObjValTotMap.get(ctrlStat.name()) > 0) {
-                curvesArray.put(objStat);
+            if (curveTagObjValTotMap.containsKey(ctrlStat.name())) {
+                if (curveTagObjValTotMap.get(ctrlStat.name()) > 0) {
+                    curvesArray.put(objStat);
+                }
             }
 
         }
@@ -447,12 +450,17 @@ public class ReadTagStat extends HttpServlet {
         objStat.put("key", objStatKey);
 
         curvesArray1 = new JSONArray();
-        for (Integer myInt : curveTagObjValMap.get("RETRY")) {
-            curvesArray1.put(myInt);
+        if (curveTagObjValMap.containsKey("RETRY")) {
+            for (Integer myInt : curveTagObjValMap.get("RETRY")) {
+                curvesArray1.put(myInt);
+            }
         }
         objStat.put("points", curvesArray1);
-        if (curveTagObjValTotMap.get("RETRY") > 0) {
-            curvesArray.put(objStat);
+
+        if (curveTagObjValTotMap.containsKey("RETRY")) {
+            if (curveTagObjValTotMap.get("RETRY") > 0) {
+                curvesArray.put(objStat);
+            }
         }
 
         object.put("curvesTagStatus", curvesArray);
