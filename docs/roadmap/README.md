@@ -1,13 +1,13 @@
 1. Move to latest MariaDb
-1. More reporting dashboard at campaign level.
 1. Add Webperf KPI (SpeedIndex)
 1. Clean the structure of API.
 1. Angular Version of the frontend.
 1. Improve requirements and test folder hierarchy
 1. Queue Dependency improvements. 
-1. Improve email notification layout
+1. Improve Notification system
 1. Integrate more CICD tools
 1. pdf connector
+1. Kafka Avro connector
 
 DONE
 1. Add robotexecutor
@@ -15,6 +15,7 @@ DONE
 1. Manage better Authentification
 1. Improve system management
 1. Add har and network traffic support
+1. More reporting and dashboard at campaign level
 
 # 1. Move to latest MariaDb
 
@@ -26,21 +27,14 @@ To check as well the effort of moving to flyway removing constrain of SQL Script
 ## Benefit
 * Up to date Mariadb version.
 
-# 2. More reporting and dashboard at campaign level
-
-## Description
-
-## Benefit
-* 
-
-# 3. Add more webperf KPI
+# 2. Add more webperf KPI
 
 ## Description
 Including SpeedIndex
 
 ## Benefit
 * 
-# 4. Clean API
+# 3. Clean API
 
 ## Description
 Clean some structure (using more Array than Objects) and making some obect name less verbose and moving some String to boolean.
@@ -48,22 +42,22 @@ Clean some structure (using more Array than Objects) and making some obect name 
 ## Benefit
 * Easier to integrate and maintain.
 
-# 5. Angular Version
+# 4. Angular Version
 
 ## Description
-Faster UI and better hergonomy
+Faster UI and better ergonomy
 
 ## Benefit
 * Better enjoy to use the tools and improve productivity.
 
-# 6. Improve requirements and test folder hierarchy
+# 5. Improve requirements and test folder hierarchy
 
 ## Description
 
 ## Benefit
 * 
 
-# 7. Queue Dependency improvements.
+# 6. Queue Dependency improvements.
 
 ## Description
 
@@ -78,14 +72,20 @@ Dependency on :
 * Allow single campaign for batch executions.
 * Allow multi application tests scenarii. [DONE]
  
-# 8. Improve email notification layout
+# 7. Improve Notification system
 
 ## Description
+* Centralize notification system.
+* Make notification system asynchroneus.
+* Allow user GUI in order to activate or not notifications and webhook.
+* Allow various connector such as email, slack, app server log, Kafka producer or even webhook.
+* Event referencial such as execution start / end campaign start / end, create/update/delete any object. 
 
 ## Benefit
-* 
+* Faster notification
+* more flexible integration to external systems.
 
-# 9. integrate more CICD Tools.
+# 8. integrate more CICD Tools.
 
 ## Description
 Such as Bitrise
@@ -93,9 +93,18 @@ Such as Bitrise
 ## Benefit
 * 
 
-# 10. pdf connector
+# 9. pdf connector
 
 ## Description
+
+## Benefit
+* 
+
+# 10. KAFKA Avro connector
+
+## Description
+Support produce and consume event with Avro Schema registry.
+https://aseigneurin.github.io/2018/08/02/kafka-tutorial-4-avro-and-schema-registry.html
 
 ## Benefit
 * 
@@ -148,5 +157,12 @@ Also agregate stats in order to make controls easier and build dedicated graph a
 ## Benefit
 * Web perf management.
 * Better analysis of execution over time.
+
+# 6. More reporting and dashboard at campaign level
+
+## Description
+
+## Benefit
+* 
 
 
