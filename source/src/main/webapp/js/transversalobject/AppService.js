@@ -28,7 +28,7 @@ function openModalAppService(service, mode, page = undefined) {
 
     if (mode === "EDIT") {
         editAppServiceClick(service, page);
-    } else if (mode == "ADD") {
+    } else if (mode === "ADD") {
         addAppServiceClick(service, page);
     } else {
         duplicateAppServiceClick(service);

@@ -3895,12 +3895,12 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                 case 'callService':
                     if (htmlElement.val()) {
                         $.ajax({
-                            url: "ReadAppService?service=" + htmlElement.val(),
+                            url: "ReadAppService?service=" + encodeURI(htmlElement.val()),
                             dataType: "json",
                             success: function(data) {
-                                var dataContent = data.contentTable
-                                if ($(htmlElement).parent().find(".v1").val() != undefined) {
-                                    if (dataContent != undefined) {
+                                var dataContent = data.contentTable;
+                                if ($(htmlElement).parent().find(".v1").val() !== undefined) {
+                                    if (dataContent !== undefined) {
                                         var editEntry = $('<span class="input-group-btn ' + encodeURIComponent(htmlElement.val()) + '"><button id="editEntry" onclick="openModalAppService(\'' + encodeURIComponent(htmlElement.val()) + '\',\'EDIT\'  ,\'TestCase\' );"\n\
         								class="buttonObject btn btn-default input-sm " \n\
         								title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
@@ -4002,7 +4002,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
         $(document).on('input', ".content div.fieldRow input:not('.description')", function(e) {
             let data = loadGuiProperties()
             if ($(this).parent().parent().find("select").val() === "callService") {
-                let url = "ReadAppService?service=" + $(this).val() + "&limit=15";
+                let url = "ReadAppService?service=" + encodeURI($(this).val()) + "&limit=15";
                 modifyAutocompleteSource($(this), url)
             } else if ($(this).parent().parent().find("select").val() === "calculateProperty") {
                 modifyAutocompleteSource($(this), null, data);

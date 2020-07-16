@@ -2,6 +2,7 @@
 [square]
 * Forcing Cerberus to retry getting BrowserStack build hash when unsuccessful result.
 * Improved Appium timeout support and fixed timeout setup at campaign level.
+* Allow space and special characters on service name #2147
 
 *Improvements / New features*
 [square]

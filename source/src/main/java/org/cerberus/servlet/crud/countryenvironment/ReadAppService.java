@@ -76,6 +76,7 @@ public class ReadAppService extends HttpServlet {
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
@@ -99,26 +100,27 @@ public class ReadAppService extends HttpServlet {
         // Init Answer with potencial error from Parsing soapLibrary.
         AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         boolean testcase = ParameterParserUtil.parseBooleanParam(request.getParameter("testcase"), false);
+        String service = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("service"), "", charset);
 
         try {
 
             String system;
             JSONObject jsonResponse = new JSONObject();
 
-            if (request.getParameter("service") == null && Strings.isNullOrEmpty(columnName)) {
+            if (service == null && Strings.isNullOrEmpty(columnName)) {
                 answer = findAppServiceList(appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(columnName)) {
                 answer = findDistinctValuesOfColumn(appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (request.getParameter("service") != null && request.getParameter("limit") != null) {
-                answer = findAppServiceByLikeName(request.getParameter("service"), appContext, Integer.parseInt(request.getParameter("limit")));
+            } else if (service != null && request.getParameter("limit") != null) {
+                answer = findAppServiceByLikeName(service, appContext, Integer.parseInt(request.getParameter("limit")));
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (request.getParameter("service") != null && testcase) {
-                answer = getTestCasesUsingService(request.getParameter("service"), appContext);
+            } else if (service != null && testcase) {
+                answer = getTestCasesUsingService(service, appContext);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
-                answer = findAppServiceBySystemByKey(request.getParameter("service"), appContext, userHasPermissions);
+                answer = findAppServiceBySystemByKey(service, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
