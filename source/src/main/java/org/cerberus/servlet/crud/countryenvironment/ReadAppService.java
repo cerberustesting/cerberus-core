@@ -100,7 +100,7 @@ public class ReadAppService extends HttpServlet {
         // Init Answer with potencial error from Parsing soapLibrary.
         AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         boolean testcase = ParameterParserUtil.parseBooleanParam(request.getParameter("testcase"), false);
-        String service = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("service"), "", charset);
+        String service = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("service"), null, charset);
 
         try {
 
