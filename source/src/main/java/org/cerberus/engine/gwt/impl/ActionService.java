@@ -978,7 +978,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionWait(TestCaseExecution tCExecution, String object, String property) {
+    private MessageEvent doActionWait(TestCaseExecution tCExecution, String value1, String value2) {
         MessageEvent message;
         String element;
         long timeToWaitInMs = 0;
@@ -988,7 +988,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, null if both are empty
              */
-            element = getElementToUse(object, property, "wait", tCExecution);
+            element = getElementToUse(value1, value2, "wait", tCExecution);
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
@@ -1013,7 +1013,13 @@ public class ActionService implements IActionService {
                     return sikuliService.doSikuliActionWait(tCExecution.getSession(), "", identifier.getLocator());
                 } else if (identifier != null) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionWait(tCExecution.getSession(), identifier);
+                    if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                        return androidAppiumService.wait(tCExecution.getSession(), identifier);
+                    } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                        return iosAppiumService.wait(tCExecution.getSession(), identifier);
+                    } else {
+                        return webdriverService.doSeleniumActionWait(tCExecution.getSession(), identifier);
+                    }
                 } else {
                     return this.waitTime(timeToWaitInMs);
                 }

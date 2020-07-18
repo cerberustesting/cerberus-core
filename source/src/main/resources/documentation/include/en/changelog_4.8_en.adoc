@@ -2,7 +2,7 @@
 [square]
 * Forcing Cerberus to retry getting BrowserStack build hash when unsuccessful result.
 * Improved Appium timeout support and fixed timeout setup at campaign level.
-* Allow space and special characters on service name #2147
+* Allow space and special characters on service name (there were some issue editing them from testcase script page) #2147
 
 *Improvements / New features*
 [square]
@@ -15,4 +15,4 @@
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* Make sure to tests all your testcases that use 'getFromCommand' properties or 'executeCommand' action before upgrade.
+* Make sure to tests all your Application (Appium) testcases that use 'getFromCommand' properties or 'executeCommand' action before upgrade.
