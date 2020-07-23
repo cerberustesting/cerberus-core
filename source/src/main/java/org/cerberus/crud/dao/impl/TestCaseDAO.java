@@ -855,7 +855,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(1, test);
                 preStat.setString(2, application);
                 preStat.setString(3, country);
-                preStat.setString(4, isActive);
+                preStat.setBoolean(4, ParameterParserUtil.parseBooleanParam(isActive, false));
 
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<>();
