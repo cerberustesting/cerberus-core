@@ -210,7 +210,7 @@ public class ManageV001 extends HttpServlet {
                          */
                         parameterService.setParameter("cerberus_queueexecution_enable", "", "Y");
 
-                        message = "Instance Stopped.";
+                        message = "Cerberus Started.";
                         returnCode = "OK";
 
                     } else {

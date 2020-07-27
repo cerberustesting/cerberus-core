@@ -293,6 +293,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
                     if (!(parameterService.getParameterBooleanByKey("cerberus_queueexecution_enable", "", true))) {
                         LOG.debug("Queue_Processing_Job disabled by parameter : 'cerberus_queueexecution_enable'.");
+                        // Flag in database that job is finished.
+                        myVersionService.updateMyVersionString("queueprocessingjobrunning", "N");
                         return;
                     }
 
@@ -411,7 +413,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
                             if ("Y".equalsIgnoreCase(robotExecutor1.getExecutorProxyActive())) {
                                 robotExtHost = robotExecutor1.getExecutorExtensionHost();
-                                if (StringUtil.isNullOrEmpty(robotExtHost)){
+                                if (StringUtil.isNullOrEmpty(robotExtHost)) {
                                     robotExtHost = robotExecutor1.getHost();
                                 }
                             }

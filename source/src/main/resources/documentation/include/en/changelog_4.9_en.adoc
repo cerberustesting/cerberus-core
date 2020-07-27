@@ -1,6 +1,6 @@
 *Bug fixes*
 [square]
-* none
+* Fixed issue when loading 'pre testing' and 'post testing' testcases (activation criteria was inverted).
 
 *Improvements / New features*
 [square]
