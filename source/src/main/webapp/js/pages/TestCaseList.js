@@ -822,6 +822,38 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
+            "data": "isActive",
+            "visible": false,
+            "sName": "tec.isActive",
+            "title": doc.getDocOnline("testcase", "IsActive"),
+            "sWidth": "100px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "isActivePROD",
+            "visible": false,
+            "sName": "tec.isActivePROD",
+            "title": doc.getDocOnline("testcase", "IsActivePROD"),
+            "sWidth": "100px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "isActiveQA",
+            "visible": false,
+            "sName": "tec.isActiveQA",
+            "title": doc.getDocOnline("testcase", "IsActiveQA"),
+            "sWidth": "100px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "isActiveUAT",
+            "visible": false,
+            "sName": "tec.isActiveUAT",
+            "title": doc.getDocOnline("testcase", "IsActiveUAT"),
+            "sWidth": "100px",
+            "sDefaultContent": ""
+        },
+        {
             "data": "application",
             "sName": "tec.application",
             "title": doc.getDocOnline("application", "Application"),
@@ -955,7 +987,6 @@ function aoColumnsFunc(countries, tableId) {
             "mRender": function(data, type, oObj) {
                 return getDate(oObj["dateModif"]);
             }
-
         },
         {
             "data": "usrModif",
