@@ -162,8 +162,8 @@ public class DataLibService implements IDataLibService {
         }
 
         /**
-         * Get List of DataObject in a format List<Map<String>> - 1 item per row
-         * with key = column and value = content
+         * Get List of DataObject in a format List<Map<String, String>> - 1 item
+         * per row with key = column and value = content
          */
         int rowLimit = testCaseCountryProperty.getRowLimit();
         if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_STATIC)) { // If Nature of the property is static, we don't need to getch more than reqested record.
@@ -566,11 +566,11 @@ public class DataLibService implements IDataLibService {
                     }
 
                 } else if ((answerData.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerData.getDataList().isEmpty()) {
-                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOSUBDATASOAP);
+                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOSUBDATA);
                     result.setResultMessage(msg);
 
                 } else {
-                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SUBDATASOAP);
+                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SUBDATASERVICE);
                     result.setResultMessage(msg);
 
                 }
@@ -825,6 +825,7 @@ public class DataLibService implements IDataLibService {
                     } else {
 
                         switch (appService.getResponseHTTPBodyContentType()) {
+
                             case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
 
                                 Document xmlDocument = xmlUnitService.getXmlDocument(appService.getResponseHTTPBody());
@@ -943,6 +944,7 @@ public class DataLibService implements IDataLibService {
 
                                 }
                                 break;
+
                             case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
 
                                 // We get the content of the XML in order to report it log messages.
@@ -1016,9 +1018,9 @@ public class DataLibService implements IDataLibService {
                                  */
                                 if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSERVICE.getCode()) {
                                     result.setDataList(listResult);
-                                    msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SOAP);
+                                    msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SERVICE);
                                     msg.setDescription(msg.getDescription().replace("%NBROW%", String.valueOf(result.getDataList().size()))
-                                            .replace("%URL%", servicePath).replace("%OPER%", lib.getMethod()));
+                                            .replace("%URL%", appService.getServicePath()).replace("%METHOD%", appService.getMethod()));
 
                                 }
                                 break;

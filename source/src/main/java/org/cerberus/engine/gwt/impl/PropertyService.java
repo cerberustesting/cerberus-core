@@ -1537,7 +1537,7 @@ public class PropertyService implements IPropertyService {
 
             AnswerList<HashMap<String, String>> serviceAnswer;
 
-            //check if there are properties defined in the data specification
+            // Here, we try to decode the SQL field if datalib is SQL type.
             try {
                 if (testDataLib.getType().equals(TestDataLib.TYPE_SQL)) {
                     //check if the script contains properties that neeed to be calculated
@@ -1591,7 +1591,7 @@ public class PropertyService implements IPropertyService {
                 }
             }
 
-            //we need to recalculate the result for the lib
+            // We calculate here the result for the lib
             serviceAnswer = dataLibService.getFromDataLib(testDataLib, testCaseCountryProperty, tCExecution, testCaseExecutionData);
             testCaseExecutionData.setDataLib(testDataLib.getName());
 
