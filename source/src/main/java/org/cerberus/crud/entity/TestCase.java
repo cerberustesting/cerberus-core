@@ -541,7 +541,9 @@ public class TestCase {
             JSONArray countriesJson = new JSONArray();
             if (this.getInvariantCountries() != null) {
                 for (Invariant country : this.getInvariantCountries()) {
-                    countriesJson.put(country.toJson());
+                    if(country != null) {
+                       countriesJson.put(country.toJson()); 
+                    }
                 }
             }
             testCaseJson.put("countries", countriesJson);
