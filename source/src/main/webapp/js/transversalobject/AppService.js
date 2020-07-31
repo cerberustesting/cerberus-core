@@ -313,12 +313,13 @@ function refreshDisplayOnTypeChange(newValue) {
         $("label[name='attachementurlField']").parent().show();
 //        $("input[name='attachementurl']").show();
         $('#editSoapLibraryModal #method').prop("disabled", true);
-        $('#editSoapLibraryModal #addContent').prop("disabled", false);
+        $('#editSoapLibraryModal #addContent').prop("disabled", true);
         $('#editSoapLibraryModal #addHeader').prop("disabled", false);
         $("label[name='kafkaTopicField']").parent().hide();
         $("label[name='kafkaKeyField']").parent().hide();
         $("label[name='kafkaFilterPathField']").parent().hide();
         $("label[name='kafkaFilterValueField']").parent().hide();
+        $('#editSoapLibraryModal #tab3Text').text("Request Detail");
     } else if (newValue === "FTP") {
         $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "none");
@@ -326,7 +327,7 @@ function refreshDisplayOnTypeChange(newValue) {
         $('#editSoapLibraryModal #method option[value="PATCH"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="GET"]').css("display", "block");
         $('#editSoapLibraryModal #method option[value="POST"]').css("display", "block");
-        $('#editSoapLibraryModal #method option[value="SEEK"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="SEARCH"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "none");
         $('#editSoapLibraryModal #addContent').prop("disabled", true);
         $('#editSoapLibraryModal #addHeader').prop("disabled", true);
@@ -340,6 +341,7 @@ function refreshDisplayOnTypeChange(newValue) {
         $("label[name='kafkaKeyField']").parent().hide();
         $("label[name='kafkaFilterPathField']").parent().hide();
         $("label[name='kafkaFilterValueField']").parent().hide();
+        $('#editSoapLibraryModal #tab3Text').text("Request Detail");
     } else if (newValue === "KAFKA") {
         $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "none");
@@ -347,9 +349,9 @@ function refreshDisplayOnTypeChange(newValue) {
         $('#editSoapLibraryModal #method option[value="PATCH"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="GET"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="POST"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="SEEK"]').css("display", "block");
+        $('#editSoapLibraryModal #method option[value="SEARCH"]').css("display", "block");
         $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "block");
-        $('#editSoapLibraryModal #addContent').prop("disabled", true);
+        $('#editSoapLibraryModal #addContent').prop("disabled", false);
         $('#editSoapLibraryModal #addHeader').prop("disabled", false);
         $('.upload-drop-zone').hide();
         $("label[name='screenshotfilenameField']").hide();
@@ -361,6 +363,7 @@ function refreshDisplayOnTypeChange(newValue) {
         $("label[name='kafkaKeyField']").parent().show();
         $("label[name='kafkaFilterPathField']").parent().show();
         $("label[name='kafkaFilterValueField']").parent().show();
+        $('#editSoapLibraryModal #tab3Text').text("KAFKA Props");
     } else { // REST
         $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "block");
@@ -368,7 +371,7 @@ function refreshDisplayOnTypeChange(newValue) {
         $('#editSoapLibraryModal #method option[value="PATCH"]').css("display", "block");
         $('#editSoapLibraryModal #method option[value="GET"]').css("display", "block");
         $('#editSoapLibraryModal #method option[value="POST"]').css("display", "block");
-        $('#editSoapLibraryModal #method option[value="SEEK"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="SEARCH"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "none");
         $('#editSoapLibraryModal #addContent').prop("disabled", false);
         $('#editSoapLibraryModal #addHeader').prop("disabled", false);
@@ -382,6 +385,7 @@ function refreshDisplayOnTypeChange(newValue) {
         $("label[name='kafkaKeyField']").parent().hide();
         $("label[name='kafkaFilterPathField']").parent().hide();
         $("label[name='kafkaFilterValueField']").parent().hide();
+        $('#editSoapLibraryModal #tab3Text').text("Request Detail");
     }
 }
 

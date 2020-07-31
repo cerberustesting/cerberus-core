@@ -242,6 +242,11 @@ public class ExecutionRunService implements IExecutionRunService {
                         || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)
                         || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
 
+                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_PREPARINGROBOTSERVER);
+                    mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getRobotHost()));
+                    tCExecution.setResultMessage(mes);
+                    updateTCExecutionWebSocketOnly(tCExecution, true);
+
                     // Decoding Robot capabilities.
                     if (tCExecution.getRobotObj() != null) {
                         List<RobotCapability> caps = tCExecution.getRobotObj().getCapabilities();
@@ -294,11 +299,10 @@ public class ExecutionRunService implements IExecutionRunService {
                         tCExecution.getRobotObj().setCapabilitiesDecoded(capsDecoded);
                     }
 
-                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_STARTINGROBOTSERVER);
+                    mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_STARTINGROBOTSERVER);
                     mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getRobotHost()));
                     tCExecution.setResultMessage(mes);
-
-                    updateTCExecution(tCExecution, false);
+                    updateTCExecution(tCExecution, true);
 
                     if (tCExecution.getRobotHost().equalsIgnoreCase("")) {
                         mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
@@ -376,6 +380,8 @@ public class ExecutionRunService implements IExecutionRunService {
              * Load Pre TestCase information
              */
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDETAILEDDATA));
+            updateTCExecutionWebSocketOnly(tCExecution, true);
+            
             LOG.debug(logPrefix + "Loading Pre-testcases.");
             List<TestCase> preTests = testCaseService.getTestCaseForPrePostTesting(Test.TEST_PRETESTING, tCExecution.getTestCaseObj().getApplication(), tCExecution.getCountry(),
                     tCExecution.getSystem(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision());
@@ -398,7 +404,6 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Load Post TestCase information
              */
-            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDETAILEDDATA));
             LOG.debug(logPrefix + "Loading Post-testcases.");
             List<TestCase> postTests = testCaseService.getTestCaseForPrePostTesting(Test.TEST_POSTTESTING, tCExecution.getTestCaseObj().getApplication(), tCExecution.getCountry(),
                     tCExecution.getSystem(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision());
@@ -466,6 +471,8 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Open Kafka Consumers
              */
+            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGKAFKACONSUMERS));
+            updateTCExecutionWebSocketOnly(tCExecution, true);
             tCExecution.setKafkaLatestOffset(kafkaService.getAllConsumers(mainExecutionTestCaseStepList, tCExecution));
 
             /**
@@ -1550,14 +1557,14 @@ public class ExecutionRunService implements IExecutionRunService {
             case Application.TYPE_APK:
             case Application.TYPE_IPA:
                 try {
-                    this.robotServerService.stopServer(tCExecution);
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Stop server for execution " + tCExecution.getId());
-                    }
-                } catch (WebDriverException exception) {
-                    LOG.warn("Selenium/Appium didn't manage to close connection for execution " + tCExecution.getId(), exception);
+                this.robotServerService.stopServer(tCExecution);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Stop server for execution " + tCExecution.getId());
                 }
-                break;
+            } catch (WebDriverException exception) {
+                LOG.warn("Selenium/Appium didn't manage to close connection for execution " + tCExecution.getId(), exception);
+            }
+            break;
             case Application.TYPE_FAT:
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Stop Sikuli server for execution " + tCExecution.getId() + " closing application " + tCExecution.getCountryEnvironmentParameters().getIp());

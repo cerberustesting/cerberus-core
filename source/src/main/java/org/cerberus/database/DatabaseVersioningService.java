@@ -8620,6 +8620,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
                 + "VALUES('BROWSER', 'edge', 100, 'Edge Browser', '');");
 
+        // 1532-1533
+        a.add("INSERT INTO appservicecontent select asr.* from appserviceheader asr join appservice app ON app.Service=asr.Service where `type`='KAFKA';");
+        a.add("DELETE FROM appserviceheader USING appserviceheader join appservice ON appservice.Service = appserviceheader.Service where appservice.`type` = 'KAFKA';");
+
         return a;
     }
 

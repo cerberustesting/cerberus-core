@@ -19,6 +19,8 @@
  */
 package org.cerberus.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -55,7 +57,7 @@ public final class StringUtil {
     private static final Logger LOG = LogManager.getLogger(StringUtil.class);
 
     /**
-     * To avoid instanciation of utility class
+     * To avoid instantiation of utility class
      */
     private StringUtil() {
     }
@@ -65,19 +67,23 @@ public final class StringUtil {
      * @param ex
      * @return
      */
-    public static String getExceptionCause(Exception ex) {
+    public static String getExceptionCauseFromString(Throwable ex) {
+
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String sStackTrace = sw.toString();
+        String[] exString = sStackTrace.split("\n");
+
         StringBuilder result = new StringBuilder();
-        StackTraceElement[] ste = ex.getStackTrace();
-        String[] exString = ex.getMessage().split("\n");
-//        LOG.debug(exString.length);
-//        LOG.debug("toto " + ex.getMessage());
-        for (StackTraceElement string : ste) {
-//            LOG.debug("toto : " + string.toString());
-            if (string.toString().contains("Caused by")) {
-                result.append(string.toString());
+
+        for (String string : exString) {
+            if (string.contains("Caused by")) {
+                result.append(string);
+                result.append(" ");
             }
         }
-        return result.toString();
+        return result.toString().trim();
     }
 
     /**

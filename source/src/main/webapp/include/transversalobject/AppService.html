@@ -70,13 +70,30 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-xs-12">
-                                        <label for="screenshotfilenameLabel" name="screenshotfilenameField">FTP File</label>	             
-                                        <label  for="Filename" id="dropzone" class="upload-drop-zone" >
-                                            <h3 id ="dropzoneText"> Drag and drop Files  <span class="glyphicon glyphicon-download-alt"></span></h3>
-                                            <label for="Filename" class="btn btn-primary browseFile">Browse Files </label>
-                                        </label>
-                                        <input type="file" name="Filename" id="Filename" class="hidden"/> 
-                                        </form>
+                                        <label for="operation" name="operationField">Operation</label>
+                                        <input type="text" class="form-control" name="operation" id="operation"
+                                               aria-describedby="basic-editon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="kafkaTopic" name="kafkaTopicField">Kafka Topic</label>
+                                        <input type="text" class="form-control" name="kafkaTopic" id="kafkaTopic"
+                                               aria-describedby="basic-editon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="kafkaFilterPath" name="kafkaFilterPathField">Kafka Filter Path</label>
+                                        <input type="text" class="form-control" name="kafkaFilterPath" id="kafkaFilterPath"
+                                               aria-describedby="basic-editon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="kafkaFilterValue" name="kafkaFilterValueField">Kafka Filter Value</label>
+                                        <input type="text" class="form-control" name="kafkaFilterValue" id="kafkaFilterValue"
+                                               aria-describedby="basic-editon1">
                                     </div>
                                 </div>
                                 <div class="row">
@@ -97,22 +114,8 @@
                             <div class="center marginTop25 tab-pane fade in" id="tabsEdit-2">
                                 <div class="row">
                                     <div class="form-group col-xs-12">
-                                        <label for="operation" name="operationField">Operation</label>
-                                        <input type="text" class="form-control" name="operation" id="operation"
-                                               aria-describedby="basic-editon1">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
                                         <label for="attachementurl" name="attachementurlField">Attachement URL</label>
                                         <input type="text" class="form-control" name="attachementurl" id="attachementurl"
-                                               aria-describedby="basic-editon1">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="kafkaTopic" name="kafkaTopicField">Kafka Topic</label>
-                                        <input type="text" class="form-control" name="kafkaTopic" id="kafkaTopic"
                                                aria-describedby="basic-editon1">
                                     </div>
                                 </div>
@@ -125,16 +128,13 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-xs-12">
-                                        <label for="kafkaFilterPath" name="kafkaFilterPathField">Kafka Filter Path</label>
-                                        <input type="text" class="form-control" name="kafkaFilterPath" id="kafkaFilterPath"
-                                               aria-describedby="basic-editon1">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="kafkaFilterValue" name="kafkaFilterValueField">Kafka Filter Value</label>
-                                        <input type="text" class="form-control" name="kafkaFilterValue" id="kafkaFilterValue"
-                                               aria-describedby="basic-editon1">
+                                        <label for="screenshotfilenameLabel" name="screenshotfilenameField">FTP File</label>	             
+                                        <label  for="Filename" id="dropzone" class="upload-drop-zone" >
+                                            <h3 id ="dropzoneText"> Drag and drop Files  <span class="glyphicon glyphicon-download-alt"></span></h3>
+                                            <label for="Filename" class="btn btn-primary browseFile">Browse Files </label>
+                                        </label>
+                                        <input type="file" name="Filename" id="Filename" class="hidden"/> 
+                                        </form>
                                     </div>
                                 </div>
                                 <div class="row">

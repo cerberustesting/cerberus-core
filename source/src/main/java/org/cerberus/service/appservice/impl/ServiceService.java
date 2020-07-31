@@ -434,7 +434,7 @@ public class ServiceService implements IServiceService {
                                 /**
                                  * Call REST and store it into the execution.
                                  */
-                                result = kafkaService.produceEvent(decodedTopic, decodedKey, decodedRequest, decodedServicePath, appService.getHeaderList());
+                                result = kafkaService.produceEvent(decodedTopic, decodedKey, decodedRequest, decodedServicePath, appService.getHeaderList(), appService.getContentList(), token, timeOutMs);
                                 message = result.getResultMessage();
                                 break;
 
@@ -500,7 +500,7 @@ public class ServiceService implements IServiceService {
                                 appService.setKafkaFilterValue(decodedFilterValue);
 
                                 String kafkaKey = kafkaService.getKafkaConsumerKey(decodedTopic, decodedServicePath);
-                                AnswerItem<String> resultSearch = kafkaService.searchEvent(tCExecution.getKafkaLatestOffset().get(kafkaKey), decodedTopic, decodedServicePath, appService.getHeaderList(), decodedFilterPath, decodedFilterValue, targetNbEventsInt, targetNbSecInt);
+                                AnswerItem<String> resultSearch = kafkaService.searchEvent(tCExecution.getKafkaLatestOffset().get(kafkaKey), decodedTopic, decodedServicePath, appService.getHeaderList(), appService.getContentList(), decodedFilterPath, decodedFilterValue, targetNbEventsInt, targetNbSecInt);
 
                                 if (!(resultSearch.isCodeStringEquals("OK"))) {
                                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);

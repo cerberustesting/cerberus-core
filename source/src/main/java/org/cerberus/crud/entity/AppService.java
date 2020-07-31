@@ -487,6 +487,17 @@ public class AppService {
                 jsonMyRequest.put("KAFKA-Method", this.getMethod());
             }
             jsonMyRequest.put("ServiceType", this.getType());
+            if (!(this.getContentList().isEmpty())) {
+                JSONObject jsonProps = new JSONObject();
+                for (AppServiceContent prop : this.getContentList()) {
+                    if (prop.getKey().contains("passw")) {
+                        jsonProps.put(prop.getKey(), "XXXXXXXX");
+                    } else {
+                        jsonProps.put(prop.getKey(), prop.getValue());
+                    }
+                }
+                jsonMyRequest.put("KAFKA-Props", jsonProps);
+            }
             if (!(this.getHeaderList().isEmpty())) {
                 JSONObject jsonHeaders = new JSONObject();
                 for (AppServiceHeader header : this.getHeaderList()) {
@@ -496,7 +507,7 @@ public class AppService {
                         jsonHeaders.put(header.getKey(), header.getValue());
                     }
                 }
-                jsonMyRequest.put("KAFKA-PropsHeader", jsonHeaders);
+                jsonMyRequest.put("KAFKA-Header", jsonHeaders);
             }
             jsonMyRequest.put("KAFKA-Request", this.getServiceRequest());
             jsonMyRequest.put("KAFKA-Key", this.getKafkaKey());
@@ -506,8 +517,10 @@ public class AppService {
             if (!(this.getKafkaWaitSecond() == 0)) {
                 jsonMyRequest.put("WaitSeconds", this.getKafkaWaitSecond());
             }
-            jsonMyRequest.put("KAFKA-FilterPath", this.getKafkaFilterPath());
-            jsonMyRequest.put("KAFKA-FilterValue", this.getKafkaFilterValue());
+            JSONObject jsonFilters = new JSONObject();
+            jsonFilters.put("Path", this.getKafkaFilterPath());
+            jsonFilters.put("Value", this.getKafkaFilterValue());
+            jsonMyRequest.put("KAFKA-SearchFilter", jsonFilters);
 
             jsonMain.put("Request", jsonMyRequest);
 
