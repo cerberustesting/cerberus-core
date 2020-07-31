@@ -161,6 +161,11 @@ public class Invariant {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        return "Invariant{" + "idName=" + idName + ", value=" + value + ", sort=" + sort + ", description=" + description + ", veryShortDesc=" + veryShortDesc + ", gp1=" + gp1 + ", gp2=" + gp2 + ", gp3=" + gp3 + ", gp4=" + gp4 + ", gp5=" + gp5 + ", gp6=" + gp6 + ", gp7=" + gp7 + ", gp8=" + gp8 + ", gp9=" + gp9 + '}';
+    }
+
     public JSONObject toJson() {
         JSONObject invariantJson = new JSONObject();
         try {

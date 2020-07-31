@@ -350,7 +350,7 @@ public class TestCaseCountryProperties {
 
     @Override
     public String toString() {
-        return "TestCaseCountryProperties{" + "test=" + test + ", testCase=" + testCase + ", country=" + country + ", property=" + property + ", type=" + type + ", database=" + database + ", value1=" + value1 + ", value2=" + value2 + ", length=" + length + ", rowLimit=" + rowLimit + ", nature=" + nature + '}';
+        return "TestCaseCountryProperties{" + "test=" + test + ", testCase=" + testCase + ", country=" + country + ", property=" + property + ", description=" + description + ", type=" + type + ", database=" + database + ", value1=" + value1 + ", value2=" + value2 + ", length=" + length + ", rowLimit=" + rowLimit + ", nature=" + nature + ", cacheExpire=" + cacheExpire + ", retryNb=" + retryNb + ", retryPeriod=" + retryPeriod + ", Rank=" + Rank + ", result=" + result + ", testCaseCountry=" + testCaseCountry + ", invariantCountries=" + invariantCountries + ", tccList=" + tccList + '}';
     }
 
     public JSONObject toJson() {
@@ -358,7 +358,7 @@ public class TestCaseCountryProperties {
         try {
             testCaseCountryPropertiesJson.put("fromTest", this.getTest());
             testCaseCountryPropertiesJson.put("fromTestCase", this.getTestCase());
-            testCaseCountryPropertiesJson.put("property", this.getDescription());
+            testCaseCountryPropertiesJson.put("property", this.getProperty());
             testCaseCountryPropertiesJson.put("description", this.getDescription());
             testCaseCountryPropertiesJson.put("type", this.getType());
             testCaseCountryPropertiesJson.put("dataBase", this.getDatabase());
@@ -372,7 +372,9 @@ public class TestCaseCountryProperties {
             JSONArray countriesJson = new JSONArray();
             if (this.getInvariantCountries() != null) {
                 for (Invariant country : this.getInvariantCountries()) {
-                    countriesJson.put(country.toJson());
+                    if(country != null) {
+                        countriesJson.put(country.toJson());
+                    }
                 }
             }
             testCaseCountryPropertiesJson.put("countries", countriesJson);

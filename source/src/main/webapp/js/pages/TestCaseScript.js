@@ -1134,11 +1134,11 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
             $("#TestCaseButton").show();
             $("#tcBody").show();
 
-            var json;
-            var testcaseinfo;
+            var stepsObject;
+            var testcaseObject;
             $.ajax({
                 url: "ReadTestCase",
-                data: {test: test, testCase: testcase, withStep: true, system: getSys()},
+                data: {test: test, testCase: testcase, withSteps: true, system: getSys()},
                 dataType: "json",
                 success: function (data) {
 
@@ -1149,30 +1149,29 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                     }
 
                     canUpdate = data.hasPermissionsUpdate;
-                    loadLibraryStep(undefined, data.info.system);
+                    loadLibraryStep(undefined, data.contentTable[0].system);
 
-                    testcaseinfo = data.info;
-                    loadTestCaseInfo(data.info);
-                    json = data.steps;
-                    sortData(json);
-                    data.inheritedProp.sort(function (a, b) {
+                    testcaseObject = data.contentTable[0];
+                    loadTestCaseInfo(testcaseObject);
+                    stepsObject = testcaseObject.steps;
+                    sortData(stepsObject);
+                    testcaseObject.properties.inheritedProperties.sort(function (a, b) {
                         return compareStrings(a.property, b.property);
-                    })
-                    createSteps(json, steps, step, data.hasPermissionsUpdate, data.hasPermissionsStepLibrary);
-                    drawInheritedProperty(data.inheritedProp);
+                    });
+                    createSteps(stepsObject, steps, step, data.hasPermissionsUpdate, data.hasPermissionsStepLibrary);
+                    drawInheritedProperty(data.contentTable[0].properties.inheritedProperties);
 
                     var configs = {
                         'system': true,
-                        'object': data.info.application,
+                        'object': testcaseObject.application,
                         'property': data,
                         'identifier': true
-                    }
-                    var context = data
+                    };
+                    var context = data;
                     initTags(configs, context).then(function (tags) {
                         autocompleteAllFields(configs, context, tags);
                     });
-
-                    loadPropertiesAndDraw(test, testcase, data.info, property, data.hasPermissionsUpdate);
+                    loadPropertiesAndDraw(test, testcase, testcaseObject, property, data.hasPermissionsUpdate);
 
                     // Manage authorities when data is fully loadable.
                     $("#deleteTestCase").attr("disabled", !data.hasPermissionsDelete);
@@ -1188,8 +1187,8 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
 
                     // Building full list of country from testcase.
                     var myCountry = [];
-                    $.each(testcaseinfo.countries, function (index) {
-                        myCountry.push(testcaseinfo.countries[index].country);
+                    $.each(testcaseObject.countries, function (index) {
+                        myCountry.push(testcaseObject.countries[index].value);
                     });
 
                     // Button Add Property insert a new Property
@@ -1226,7 +1225,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                                 toDelete: false
                             };
 
-                            var prop = drawProperty(newProperty, testcaseinfo, true, document.getElementsByClassName("property").length);
+                            var prop = drawProperty(newProperty, testcaseObject, true, document.getElementsByClassName("property").length);
                             setPlaceholderProperty(prop[0], prop[1]);
 
                             $(prop[0]).find("#propName").focus();
@@ -1300,7 +1299,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                     var tc = $('#editTestCaseModal').find("#testCase");
                     if ($('#editTestCaseModal').data("Saved")) {
                         $('#editTestCaseModal').data("Saved", undefined);
-                        window.location = "./TestCaseScript.jsp?test=" + encodeURI(t.val()) + "&testcase=" + encodeURI(tc.val());
+                        window.location = "./TestCaseScript.jsp?test=" + t.val() + "&testcase=" + tc.val();
                     }
                 });
             });
@@ -2241,11 +2240,11 @@ function getTestCaseCountry(countries, countryToCheck, isDisabled) {
     var html = [];
     var cpt = 0;
     var div = $("<div></div>").addClass("checkbox");
-
+    
     $.each(countries, function (index) {
         var country;
         if (typeof index === "number") {
-            country = countries[index].country;
+            country = countries[index].value;
         } else if (typeof index === "string") {
             country = index;
         }
@@ -2282,18 +2281,18 @@ function getTestCaseCountry(countries, countryToCheck, isDisabled) {
 }
 
 function loadTestCaseInfo(info) {
-    $(".testTestCase #description").text(info.shortDescription);
+    $(".testTestCase #description").text(info.description);
 }
 
 function changeLib() {
     setModif(true);
     var stepHtml = $("#steps li.active");
     var stepData = stepHtml.data("item");
-    if (stepData.inLibrary === "Y") {
-        stepData.inLibrary = "N";
+    if (stepData.isLibraryStep === "Y") {
+        stepData.isLibraryStep = "N";
         $(this).removeClass("btn-dark");
     } else {
-        stepData.inLibrary = "Y";
+        stepData.isLibraryStep = "Y";
         $(this).addClass("btn-dark");
     }
 }
@@ -2348,20 +2347,20 @@ function showImportStepDetail(element) {
 
 function initStep() {
     return {
-        "inLibrary": "N",
+        "isLibraryStep": "N",
         "objType": "step",
-        "useStepTest": "",
-        "useStepTestCase": "",
-        "useStep": "N",
+        "libraryStepTest": "",
+        "libraryStepTestCase": "",
+        "isUsedStep": "N",
         "description": "",
-        "useStepStep": -1,
+        "libraryStepStepId": -1,
         "actions": [],
         "loop": "onceIfConditionTrue",
         "conditionOperator": "always",
         "conditionVal1": "",
         "conditionVal2": "",
         "conditionVal3": "",
-        "forceExe": "N"
+        "isExecutionForced": "N"
     };
 }
 
@@ -2373,7 +2372,7 @@ function addStep(event) {
     // Setting the focus on the Description of the step.
     $('#addStepModal').on('shown.bs.modal', function () {
         $('#description').focus();
-    })
+    });
 
     $("#addStepConfirm").unbind("click").click(function (event) {
         setModif(true);
@@ -2382,14 +2381,11 @@ function addStep(event) {
         if ($("[name='importInfo']").length === 0) { // added a new step
             var step = initStep();
             step.description = $("#addStepModal #description").val();
-
             var stepObj = new Step(step, steps, true);
-
             stepObj.draw();
             steps.push(stepObj);
             stepObj.html.trigger("click");
         } else {
-
             // added a library step
             $("[name='importInfo']").each(function (idx, importInfo) {
                 var step = initStep();
@@ -2405,20 +2401,24 @@ function addStep(event) {
                         async: false,
                         success: function (data) {
                             step.actions = data.tcsActions;
-
                             for (var index = 0; index < data.tcsActionControls.length; index++) {
                                 var control = data.tcsActionControls[index];
 
-                                step.actions[control.sequence - 1].controls.push(control);
+                                for (var i = 0; i < step.actions.length; i++) {
+                                    if (step.actions[i].actionId === control.actionId) {
+                                        step.actions[i].controls.push(control);
+                                        break;
+                                    }
+                                }
                             }
                             sortStep(step);
                         }
                     });
                     if ($("#" + generateImportInfoId(useStep)).find("[name='useStep']").prop("checked")) {
-                        step.useStep = "Y";
-                        step.useStepTest = useStep.test;
-                        step.useStepTestCase = useStep.testCase;
-                        step.useStepStep = useStep.step;
+                        step.isUsedStep = "Y";
+                        step.libraryStepTest = useStep.test;
+                        step.libraryStepTestCase = useStep.testCase;
+                        step.libraryStepStepId = useStep.step;
                         step.useStepStepSort = useStep.sort;
                     }
                 }
@@ -2753,29 +2753,29 @@ function compareStrings(a, b) {
 
 function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
     this.stepActionContainer = $("<div></div>").addClass("step-container").css("display", "none");
-    this.test = json.test;
-    this.testcase = json.testCase;
-    this.step = json.step;
     this.sort = json.sort;
+    this.step = json.stepId;
     this.description = json.description;
-    this.useStep = json.useStep;
-    this.useStepTest = json.useStepTest;
-    this.useStepTestCase = json.useStepTestCase;
-    this.useStepStep = json.useStepStep;
-    this.useStepStepSort = json.useStepStepSort;
+    this.isExecutionForced= json.isExecutionForced;
     this.loop = json.loop;
     this.conditionOperator = json.conditionOperator;
     this.conditionVal1 = json.conditionVal1;
     this.conditionVal2 = json.conditionVal2;
     this.conditionVal3 = json.conditionVal3;
-    this.inLibrary = json.inLibrary;
-    this.forceExe = json.forceExe;
+    this.isUsedStep = json.isUsedStep;
+    this.isLibraryStep = json.isLibraryStep;
+    this.libraryStepTest = json.libraryStepTest;
+    this.libraryStepTestCase = json.libraryStepTestCase;
+    this.libraryStepStepId = json.libraryStepStepId;
+    this.useStepStepSort = json.useStepStepSort;
+    this.test = json.test;
+    this.testcase = json.testcase;
     this.isStepInUseByOtherTestCase = json.isStepInUseByOtherTestCase;
     this.actions = [];
     if (canUpdate) {
         // If we can update the testcase we check whether we can still modify
         // following the TestStepLibrary group.
-        if (!hasPermissionsStepLibrary && json.inLibrary === "Y") {
+        if (!hasPermissionsStepLibrary && json.isLibraryStep === "Y") {
             canUpdate = false;
         }
     }
@@ -2802,11 +2802,11 @@ Step.prototype.draw = function () {
         loopIcon = $("<span class='loopIcon'></span>").addClass("glyphicon glyphicon-refresh loop-Icon");
     }
 
-    if (this.inLibrary == "Y") {
+    if (this.isLibraryStep == "Y") {
         libraryIcon = $("<span class='libraryIcon'></span>").addClass("glyphicon glyphicon-book library-Icon");
     }
 
-    if (this.useStep == "Y") {
+    if (this.isUsedStep == "Y") {
         libraryIcon = $("<span class='libraryIcon'></span>").addClass("glyphicon glyphicon-lock library-Icon");
     }
 
@@ -2863,7 +2863,7 @@ Step.prototype.show = function () {
     }
 
     $("#isLib").unbind("click");
-    if (object.inLibrary === "Y") {
+    if (object.isLibraryStep === "Y") {
         $("#isLib").addClass("btn-dark");
         if (object.isStepInUseByOtherTestCase) {
             $("#isLib").click(function () {
@@ -2879,9 +2879,9 @@ Step.prototype.show = function () {
         $("#isLib").click(changeLib);
     }
 
-    if (object.useStep === "Y") {
+    if (object.isUsedStep === "Y") {
         $("#isLib").hide();
-        $("#UseStepRow").html("(" + doc.getDocLabel("page_testcasescript", "imported_from") + " <a href='./TestCaseScript.jsp?test=" + encodeURI(object.useStepTest) + "&testcase=" + encodeURI(object.useStepTestCase) + "&step=" + encodeURI(object.useStepStepSort) + "' >" + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStepSort + "</a>)").show();
+        $("#UseStepRow").html("(" + doc.getDocLabel("page_testcasescript", "imported_from") + " <a href='./TestCaseScript.jsp?test=" + encodeURI(object.libraryStepTest) + "&testcase=" + encodeURI(object.libraryStepTestCase) + "&step=" + encodeURI(object.useStepStepSort) + "' >" + object.libraryStepTest + " - " + object.libraryStepTestCase + " - " + object.useStepStepSort + "</a>)").show();
         $("#UseStepRowButton").html("|").show();
         $("#addAction").prop("disabled", true);
         $("#addActionBottomBtn").hide();
@@ -2911,7 +2911,7 @@ Step.prototype.show = function () {
     $("#stepForceExe").replaceWith(getSelectInvariant("STEPFORCEEXE", true, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepForceExe"));
     $("#stepForceExe").unbind("change").change(function () {
         setModif(true);
-        object.forceExe = $(this).val();
+        object.isExecutionForced= $(this).val();
     });
 
     $("#stepConditionVal1").unbind("change").change(function () {
@@ -2945,12 +2945,12 @@ Step.prototype.show = function () {
 
     $("#isUseStep").unbind("click").click(function () {
         setModif(true);
-        if (object.useStep === "Y") {
+        if (object.isUsedStep === "Y") {
             showModalConfirmation(function () {
-                object.useStep = "N";
-                object.useStepStep = -1;
-                object.useStepTest = "";
-                object.useStepTestCase = "";
+                object.isUsedStep = "N";
+                object.libraryStepStepId = -1;
+                object.libraryStepTest = "";
+                object.libraryStepTestCase = "";
                 saveScript();
             }, undefined, doc.getDocLabel("page_testcasescript", "unlink_useStep"), doc.getDocLabel("page_testcasescript", "unlink_useStep_warning"), "", "", "", "");
         }
@@ -2962,7 +2962,7 @@ Step.prototype.show = function () {
     $("#stepConditionVal2").val(object.conditionVal2);
     $("#stepConditionVal3").val(object.conditionVal3);
     $("#stepDescription").val(object.description);
-    $("#stepForceExe").val(object.forceExe);
+    $("#stepForceExe").val(object.isExecutionForced);
     $("#stepId").text(object.sort);
     $("#stepInfo").show();
     $("#addActionContainer").show();
@@ -2981,7 +2981,7 @@ Step.prototype.show = function () {
     $("#isLib").attr("disabled", activateIsLib);
     // Detail of the Step can be modified if hasPermitionUpdate is true and Step
     // is not a useStep.
-    var activateDisableWithUseStep = !(object.hasPermissionsUpdate && !(object.useStep === "Y"));
+    var activateDisableWithUseStep = !(object.hasPermissionsUpdate && !(object.isUsedStep === "Y"));
     $("#stepLoop").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionOperator").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal1").attr("disabled", activateDisableWithUseStep);
@@ -3066,20 +3066,20 @@ Step.prototype.getJsonData = function () {
     json.toDelete = this.toDelete;
     json.test = this.test;
     json.testcase = this.testcase;
-    json.step = this.step;
+    json.stepId = this.stepId;
     json.sort = this.sort;
     json.description = this.description;
-    json.useStep = this.useStep;
-    json.useStepTest = this.useStepTest;
-    json.useStepTestCase = this.useStepTestCase;
-    json.useStepStep = this.useStepStep;
-    json.inLibrary = this.inLibrary;
+    json.isUsedStep = this.isUsedStep;
+    json.libraryStepTest = this.libraryStepTest;
+    json.libraryStepTestCase = this.libraryStepTestCase;
+    json.libraryStepStepId = this.libraryStepStepId;
+    json.isLibraryStep = this.isLibraryStep;
     json.loop = this.loop;
     json.conditionOperator = this.conditionOperator;
     json.conditionVal1 = this.conditionVal1;
     json.conditionVal2 = this.conditionVal2;
     json.conditionVal3 = this.conditionVal3;
-    json.forceExe = this.forceExe;
+    json.isExecutionForced= this.isExecutionForced;
 
     return json;
 };
@@ -3090,15 +3090,17 @@ function Action(json, parentStep, canUpdate) {
 
     if (json !== null) {
         this.test = json.test;
-        this.testcase = json.testCase;
-        this.step = json.step;
-        this.sequence = json.sequence;
+        this.testcase = json.testcase;
+        this.stepId = json.stepId;
+        this.sequence = json.actionId;
         this.sort = json.sort;
         this.description = json.description;
         this.action = json.action;
-        this.object = json.object;
-        this.property = json.property;
-        this.forceExeStatus = json.forceExeStatus;
+        // A SUPPRIMER
+        //this.object = json.value1;
+        //this.property = json.value2;
+        // FIN SUPPR
+        this.forceExeStatus = json.isFatal;
         this.conditionOperator = json.conditionOperator;
         this.conditionVal1 = json.conditionVal1;
         this.conditionVal2 = json.conditionVal2;
@@ -3112,7 +3114,7 @@ function Action(json, parentStep, canUpdate) {
     } else {
         this.test = "";
         this.testcase = "";
-        this.step = parentStep.step;
+        this.stepId = parentStep.stepId;
         this.description = "";
         this.action = "doNothing";
         this.object = "";
@@ -3145,7 +3147,7 @@ Action.prototype.draw = function (afterAction) {
     var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding", "0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
     var imgGrp = $("<div></div>").addClass("col-lg-1").css("height", "100%").append($("<div style='margin-top:40px;'></div>").append($("<img>").attr("id", "ApplicationObjectImg").css("width", "100%")));
 
-    if ((this.parentStep.useStep === "N") && (action.hasPermissionsUpdate)) {
+    if ((this.parentStep.isUsedStep === "N") && (action.hasPermissionsUpdate)) {
         drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
         drag.on("dragstart", handleDragStart);
         drag.on("dragenter", handleDragEnter);
@@ -3170,7 +3172,6 @@ Action.prototype.draw = function (afterAction) {
     });
 
     var scope = this;
-
     addBtn.click(function () {
         addControlAndFocus(scope);
     });
@@ -3188,7 +3189,6 @@ Action.prototype.draw = function (afterAction) {
             action.html.find(".step-action").removeClass("danger");
         }
     });
-
     row.append(drag);
     row.append(this.generateContent());
     row.append(imgGrp);
@@ -3227,8 +3227,8 @@ Action.prototype.setControl = function (control, afterControl, canUpdate) {
     }
 };
 
-Action.prototype.setStep = function (step) {
-    this.step = step;
+Action.prototype.setStep = function (stepId) {
+    this.stepId = stepId;
 };
 
 Action.prototype.setSequence = function (sequence) {
@@ -3375,7 +3375,7 @@ Action.prototype.generateContent = function () {
 
     actionconditionoperator.trigger("change");
 
-    if ((this.parentStep.useStep === "Y") || (!obj.hasPermissionsUpdate)) {
+    if ((this.parentStep.isUsedStep === "Y") || (!obj.hasPermissionsUpdate)) {
         descriptionField.prop("readonly", true);
         value1Field.prop("readonly", true);
         value2Field.prop("readonly", true);
@@ -3396,13 +3396,12 @@ Action.prototype.generateContent = function () {
 };
 
 Action.prototype.getJsonData = function () {
-
     var json = {};
 
     json.toDelete = this.toDelete;
     json.test = this.test;
     json.testcase = this.testcase;
-    json.step = this.step;
+    json.stepId = this.stepId;
     json.sequence = this.sequence;
     json.sort = this.sort;
     json.description = this.description;
@@ -3423,18 +3422,18 @@ Action.prototype.getJsonData = function () {
 function Control(json, parentAction, canUpdate) {
     if (json !== null) {
         this.test = json.test;
-        this.testcase = json.testCase;
-        this.step = json.step;
-        this.sequence = json.sequence;
+        this.testcase = json.testcase;
+        this.stepId = json.stepId;
+        this.sequence = json.actionId;
         this.control = json.control;
         this.sort = json.sort;
         this.description = json.description;
-        this.objType = json.objType;
-        this.controlSequence = json.controlSequence;
+        //this.objType = json.objType;
+        this.controlSequence = json.controlId;
         this.value1 = json.value1;
         this.value2 = json.value2;
         this.value3 = json.value3;
-        this.fatal = json.fatal;
+        this.fatal = json.isFatal;
         this.conditionOperator = json.conditionOperator;
         this.conditionVal1 = json.conditionVal1;
         this.conditionVal2 = json.conditionVal2;
@@ -3443,8 +3442,8 @@ function Control(json, parentAction, canUpdate) {
     } else {
         this.test = "";
         this.testcase = "";
-        this.step = parentAction.step;
-        this.sequence = parentAction.sequence;
+        this.stepId = parentAction.stepId;
+        this.sequence = parentAction.actionId;
         this.control = "Unknown";
         this.description = "";
         this.objType = "Unknown";
@@ -3482,7 +3481,7 @@ Control.prototype.draw = function (afterControl) {
 
     var content = this.generateContent();
 
-    if ((this.parentAction.parentStep.useStep === "N") && (control.hasPermissionsUpdate)) {
+    if ((this.parentAction.parentStep.isUsedStep === "N") && (control.hasPermissionsUpdate)) {
         drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
         drag.on("dragstart", handleDragStart);
         drag.on("dragenter", handleDragEnter);
@@ -3513,7 +3512,8 @@ Control.prototype.draw = function (afterControl) {
         }
     });
 
-    if ((this.parentStep.useStep === "Y") || (!control.hasPermissionsUpdate)) {
+    if ((this.parentStep.isUsedStep === "Y") || (!control.hasPermissionsUpdate)) {
+
         supprBtn.attr("disabled", true);
         addBtn.attr("disabled", true);
         addABtn.attr("disabled", true);
@@ -3547,8 +3547,8 @@ Control.prototype.draw = function (afterControl) {
     this.refreshSort();
 };
 
-Control.prototype.setStep = function (step) {
-    this.step = step;
+Control.prototype.setStep = function (stepId) {
+    this.stepId = stepId;
 };
 
 Control.prototype.setSequence = function (sequence) {
@@ -3699,7 +3699,7 @@ Control.prototype.generateContent = function () {
     thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(controlconditionoperator));
 
 
-    if ((this.parentStep.useStep === "Y") || (!obj.hasPermissionsUpdate)) {
+    if ((this.parentStep.isUsedStep === "Y") || (!obj.hasPermissionsUpdate)) {
         descriptionField.prop("readonly", true);
         controlValue1Field.prop("readonly", true);
         controlValue2Field.prop("readonly", true);
@@ -3725,12 +3725,11 @@ Control.prototype.getJsonData = function () {
     json.toDelete = this.toDelete;
     json.test = this.test;
     json.testcase = this.testcase;
-    json.step = this.step;
+    json.stepId = this.stepId;
     json.sequence = this.sequence;
     json.control = this.control;
     json.sort = this.sort;
     json.description = this.description;
-    json.objType = this.objType;
     json.controlSequence = this.controlSequence;
     json.value1 = this.value1;
     json.value2 = this.value2;
@@ -3870,7 +3869,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
         }
 
         if (configs !== undefined) {
-            tcInfo = configs.property.info;
+            tcInfo = configs.property.contentTable[0];
         }
 
         if (context !== undefined) {
@@ -3970,7 +3969,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                     $(htmlElement).parent().append(editEntry);
                                 }
                             } else if (betweenPercent[i].startsWith("%property.") && findname !== null && findname.length > 0) {
-                                let data = loadGuiProperties()
+                                let data = loadGuiProperties();
                                 name = findname[0];
                                 name = name.slice(1, name.length - 1);
                                 if (objectIntoTagToUseExist(TagsToUse[2], name)) {
@@ -3979,7 +3978,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 	                                		title="' + name + '" type="button">\n\
 	                                <span class="glyphicon glyphicon-eye-open"></span></button></span>');
                                     if (data[name]) {
-                                        let property = name
+                                        let property = name;
                                         viewEntry.find("button").on("click", function () {
                                             let firstRow = $('<p style="text-align:center" > Type : ' + data[property].type + '</p>');
                                             let secondRow = $('<p style="text-align:center"> Value : ' + data[property].value + '</p>');
@@ -3997,20 +3996,20 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                         }
                     }
             }
-        })
+        });
 
         $(document).on('input', ".content div.fieldRow input:not('.description')", function (e) {
-            let data = loadGuiProperties()
+            let data = loadGuiProperties();
             if ($(this).parent().parent().find("select").val() === "callService") {
                 let url = "ReadAppService?service=" + encodeURI($(this).val()) + "&limit=15";
-                modifyAutocompleteSource($(this), url)
+                modifyAutocompleteSource($(this), url);
             } else if ($(this).parent().parent().find("select").val() === "calculateProperty") {
                 modifyAutocompleteSource($(this), null, data);
             }
-            $(this).trigger("settingsButton")
-        })
-        $("div.step-action .content div.fieldRow:nth-child(2) input").trigger("settingsButton")
-    }
+            $(this).trigger("settingsButton");
+        });
+        $("div.step-action .content div.fieldRow:nth-child(2) input").trigger("settingsButton");
+    };
 })();
 
 
@@ -4239,20 +4238,20 @@ function setPlaceholderProperty(propertyElement, property) {
                                     var editEntry = $('<div class="input-group col-sm-5 col-sm-offset-3"><label>Choose one data library</label><select class="datalib  form-control"></select><span class="input-group-btn"  style="vertical-align:bottom"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>');
                                     $("#" + editor.container.id).parent().append(editEntry);
 
-                                    displayDataLibList(editor.container.id, undefined, data)
+                                    displayDataLibList(editor.container.id, undefined, data);
                                     $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + $("#" + editor.container.id).parent().find("select").val() + "\','EDIT'," + "'" + escaped + "')");
                                     $("#" + editor.container.id).parent().find("select").unbind("change").change(function () {
                                         $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + $("#" + editor.container.id).parent().find("select").val() + "\','EDIT'," + "'" + escaped + "')");
-                                    })
+                                    });
 
 
                                 } else {
                                     $("#" + editor.container.id).parent().find('.input-group').remove();
                                     $("#" + editor.container.id).parent().parent().find('.col-btn').remove();
-                                    if (service.length == 1) {
+                                    if (service.length === 1) {
                                         var editEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Edit the DataLib</label><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></div>');
                                         var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
-                                        $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8")
+                                        $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8");
                                         $("#" + editor.container.id).parent().parent().append(editEntry);
                                         $("#" + editor.container.id).parent().parent().append(addEntry);
                                         $("#" + editor.container.id).parent().parent().find("button:eq(0)").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + service[0].testDataLibID + "\','EDIT'," + "'" + escaped + "')");
@@ -4260,7 +4259,7 @@ function setPlaceholderProperty(propertyElement, property) {
                                     } else {
                                         var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary ' + escaped + '" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
                                         addEntry.find("button").attr("disabled", !canUpdate);
-                                        $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8")
+                                        $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8");
                                         $("#" + editor.container.id).parent().parent().append(addEntry);
                                         $("#" + editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + escaped + "\','ADD'," + "'" + escaped + "')");
                                     }
@@ -4294,7 +4293,7 @@ function setPlaceholderProperty(propertyElement, property) {
                     configureAceEditor(editor, placeHolders[i].value1EditorMode, property);
 
                     if (placeHolders[i].type === "getFromDataLib") {
-                        if ((editor.getValue() != null)) {
+                        if ((editor.getValue() !== null)) {
                             initChange();
                         }
                         editor.on('change', initChange);
@@ -4373,14 +4372,14 @@ function CompleterForAllDataLib() {
     var staticWordCompleter = {
 
         getCompletions: function (editor, session, pos, prefix, callback) {
-            var escaped = encodeURIComponent(editor.getValue())
+            var escaped = encodeURIComponent(editor.getValue());
             $.getJSON("ReadTestDataLib?name=" + escaped + "&limit=15&like=Y", function (wordList) {
                 callback(null, wordList.contentTable.map(function (ea) {
-                    return {name: ea.name, value: ea.name, meta: "DataLib"}
+                    return {name: ea.name, value: ea.name, meta: "DataLib"};
                 }));
-            })
+            });
         }
-    }
+    };
 
     langTools.addCompleter(staticWordCompleter);
 }
@@ -4400,20 +4399,20 @@ function configureAceEditor(editor, mode, property) {
         var langTools = ace.require('ace/ext/language_tools');
 
 
-        if (e.command.name == "insertstring" || e.command.name == "paste" || e.command.name == "backspace") {
+        if (e.command.name === "insertstring" || e.command.name === "paste" || e.command.name === "backspace") {
             // recreate the array at each loop
 
             if (property.type === "getFromDataLib") {
                 CompleterForAllDataLib();
                 $("pre").off("input").on("input", function (e) {
-                    editor.execCommand("startAutocomplete")
-                })
+                    editor.execCommand("startAutocomplete");
+                });
                 editor.setOptions({maxLines: 15, enableBasicAutocompletion: true, enableLiveAutocompletion: false});
             } else {
                 editor.setOptions({maxLines: 15, enableBasicAutocompletion: true, enableLiveAutocompletion: false});
                 var allKeyword = createAllKeywordList(getKeywordList("object"), getKeywordList("property"));
                 // editor.completers = [allKeyword]
-                if (e.command.name != "backspace") {
+                if (e.command.name !== "backspace") {
                     addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
                     editor.commands.exec(commandNameForAutoCompletePopup);// set
                     // autocomplete
@@ -4609,8 +4608,8 @@ function checkIfTheKeywordIsCorrect(allKeyword, keywordInputByUser, idKeywordToC
  */
 function getPossibleMotherKeyword(keyword, allKeyword) {
     var idmotherKeyword = [];
-    for (i in allKeyword) {
-        for (y in allKeyword[i]["listKeyword"]) {
+    for (var i in allKeyword) {
+        for (var y in allKeyword[i]["listKeyword"]) {
             if (allKeyword[i]["listKeyword"][y] === keyword) {
                 idmotherKeyword.push(allKeyword[i]["motherKeyword"]);
             }
@@ -4657,7 +4656,7 @@ function changeAceCompletionList(keywordList, label, editor) {
             }
             callback(null, completions);
         }
-    }
+    };
 
     langTools.addCompleter(completer);
 }
@@ -4678,9 +4677,9 @@ function addCommandToDetectKeywordIssue(editor, allKeyword, commandName) {
                 var numberOfPercentCaractereAtLine = (editorValueAtTheLine.match(/\%/g) || []).length;
                 if (numberOfPercentCaractereAtLine !== 0 && numberOfPercentCaractereAtLine % 2 === 0) {
                     var editorValueSplit = editorValueAtTheLine.split("%");
-                    var cerberusVarAtLine = []
+                    var cerberusVarAtLine = [];
                     for (var i = 0; i < editorValueSplit.length; i++) {
-                        if (i % 2 == 1)
+                        if (i % 2 === 1)
                             cerberusVarAtLine.push(editorValueSplit[i]);
                     }
                     // Check if each cerberus var is correct
@@ -4756,7 +4755,7 @@ function createAceAnnotationObject(lineNumber, annotationText, annotationType, k
         lineNumber: lineNumber,
         keywordType: keywordTypeVar,
         keywordValue: keywordValueVar
-    }
+    };
 }
 
 // set the list of ace annotion object as annotation
@@ -4796,7 +4795,7 @@ function createGuterCellListenner(editor) {
                 }
             }
             this.className = "ace_gutter-cell";// Remove the warning annotation
-        }
+        };
     }
 }
 
@@ -4810,15 +4809,15 @@ function addPropertyWithAce(keywordValue) {
 
     $.ajax({
         url: "ReadTestCase",
-        data: {test: test, testCase: testcase, withStep: true},
+        data: {test: test, testCase: testcase, withSteps: true},
         dataType: "json",
         success: function (data) {
 
-            testcaseinfo = data.info;
-            loadTestCaseInfo(data.info);
+            testCaseObject = data.contentTable[0];
+            loadTestCaseInfo(testCaseObject);
 
             var myCountry = [];
-            $.each(testcaseinfo.countries, function (index) {
+            $.each(testCaseObject.countries, function (index) {
                 myCountry.push(index);
             });
             // Store the current saveScript button status and disable it
@@ -4842,7 +4841,7 @@ function addPropertyWithAce(keywordValue) {
                 rank: 1
             };
 
-            var prop = drawProperty(newProperty, testcaseinfo, true, $("div[name='propertyLine']").length);
+            var prop = drawProperty(newProperty, testCaseObject, true, $("div[name='propertyLine']").length);
             setPlaceholderProperty(prop[0], prop[1]);
 
             // Restore the saveScript button status
@@ -4861,14 +4860,14 @@ function addObjectWithAce(keywordValue) {
 
     $.ajax({
         url: "ReadTestCase",
-        data: {test: test, testCase: testcase, withStep: true},
+        data: {test: test, testCase: testcase, withSteps: true},
         dataType: "json",
         success: function (data) {
             // Store the current saveScript button status and disable it
             var saveScriptOldStatus = $("#saveScript").attr("disabled");
             $("#saveScript").attr("disabled", true);
 
-            var applicationName = data.info.application;
+            var applicationName = data.contentTable[0].application;
             addApplicationObjectModalClick(undefined, keywordValue, applicationName);
 
             // Restore the saveScript button status
@@ -4879,7 +4878,7 @@ function addObjectWithAce(keywordValue) {
 
 // Get the CURRENT list of keyword for each type
 function getKeywordList(type) {
-    if (getTags() != undefined && getTags().length > 0) {
+    if (getTags() !== undefined && getTags().length > 0) {
         var idType = -1;
         switch (type) {
             case "object":

@@ -93,7 +93,7 @@ public interface ITestCaseStepService {
      * @param testcase
      * @return
      */
-    AnswerList<TestCaseStep> readByTestTestCaseWithDependency(String test, String testcase);
+    AnswerList<TestCaseStep> readByTestTestCaseStepsWithDependencies(String test, String testcase);
 
     /**
      *

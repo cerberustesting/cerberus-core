@@ -114,7 +114,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         String campaign = ParameterParserUtil.parseStringParam(request.getParameter("campaign"), "");
         boolean getMaxTC = ParameterParserUtil.parseBooleanParam(request.getParameter("getMaxTC"), false);
         boolean filter = ParameterParserUtil.parseBooleanParam(request.getParameter("filter"), false);
-        boolean withStep = ParameterParserUtil.parseBooleanParam(request.getParameter("withStep"), false);
+        boolean withSteps = ParameterParserUtil.parseBooleanParam(request.getParameter("withSteps"), false);
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
@@ -125,11 +125,8 @@ public class ReadTestCase extends AbstractCrudTestCase {
         JSONObject jsonResponse = new JSONObject();
 
         try {
-            if (!Strings.isNullOrEmpty(test) && testCase != null && !withStep) {
-                answer = findTestCaseByTestTestCase(test, testCase, request);
-                jsonResponse = (JSONObject) answer.getItem();
-            } else if (!Strings.isNullOrEmpty(test) && testCase != null && withStep) { // TestCaseScript
-                answer = findTestCaseWithStep(request, test, testCase);
+            if (!Strings.isNullOrEmpty(test) && testCase != null) {
+                answer = findTestCaseByTestTestCase(test, testCase, request, withSteps);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(test) && getMaxTC) {
                 String max = testCaseService.getMaxNumberTestCase(test);
@@ -372,54 +369,29 @@ public class ReadTestCase extends AbstractCrudTestCase {
         return answer;
     }
 
-    private AnswerItem<JSONObject> findTestCaseByTestTestCase(String test, String testCase, HttpServletRequest request) throws JSONException, CerberusException {
-        AnswerItem<JSONObject> item = new AnswerItem<>();
-        JSONObject object = new JSONObject();
+    private AnswerItem<JSONObject> findTestCaseByTestTestCase(String test, String testCase, HttpServletRequest request, boolean withSteps) throws JSONException, CerberusException {
+        AnswerItem<JSONObject> answerItem = new AnswerItem<>();
+        JSONObject jsonResponse = new JSONObject();
 
-        //finds the project
-        AnswerItem answerTestCase = testCaseService.readByKey(test, testCase);
-
+        AnswerItem answerTestCase;
+        answerTestCase = testCaseService.findTestCaseByKeyWithDependencies(test, testCase, withSteps);
         if (answerTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerTestCase.getItem() != null) {
-            //if the service returns an OK message then we can get the item and convert it to JSONformat
             TestCase tc = (TestCase) answerTestCase.getItem();
-            LOG.debug(tc.getBugs().toString());
-            JSONObject response = convertToJSONObject(tc);
-            response.put("bugs", tc.getBugs());
-
-            // Country List feed.
-            JSONArray countryArray = new JSONArray();
-            AnswerList<TestCaseCountry> answerTestCaseCountries = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
-            for (TestCaseCountry country : (List<TestCaseCountry>) answerTestCaseCountries.getDataList()) {
-                countryArray.put(convertToJSONObject(country));
+            if (withSteps) {
+                jsonResponse.put("hasPermissionsStepLibrary", (request.isUserInRole("TestStepLibrary")));
             }
-            response.put("countries", countryArray);
-
-            // list of dependencies
-            List<TestCaseDep> testCaseDepList = testCaseDepService.readByTestAndTestCase(test, testCase);
-            JSONArray testCaseWithDep = new JSONArray();
-            for (TestCaseDep testCaseDep : testCaseDepList) {
-                testCaseWithDep.put(convertToJSONObject(testCaseDep));
-            }
-            response.put("dependencies", testCaseWithDep);
-
-            // Label List feed.
-            JSONArray labelArray = new JSONArray();
-            AnswerList<TestCaseLabel> answerTestCaseLabelList = testCaseLabelService.readByTestTestCase(test, testCase, null);
-            for (TestCaseLabel label : (List<TestCaseLabel>) answerTestCaseLabelList.getDataList()) {
-                labelArray.put(convertToJSONObject(label));
-            }
-            response.put("labels", labelArray);
-
-            object.put("contentTable", response);
-
-            object.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
-
+            jsonResponse.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
+            jsonResponse.put("hasPermissionsDelete", testCaseService.hasPermissionsDelete(tc, request));
+            jsonResponse.put("contentTable", new JSONArray().put(tc.toJson()));
+        } else {
+            answerItem.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_NOT_FOUND_OR_NOT_AUTHORIZE));
+            return answerItem;
         }
 
-        item.setItem(object);
-        item.setResultMessage(answerTestCase.getResultMessage());
+        answerItem.setItem(jsonResponse);
+        answerItem.setResultMessage(answerTestCase.getResultMessage());
 
-        return item;
+        return answerItem;
     }
 
     private AnswerItem<JSONObject> findTestCaseByVarious(HttpServletRequest request) throws JSONException {

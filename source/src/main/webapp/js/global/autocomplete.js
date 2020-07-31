@@ -315,11 +315,11 @@ function propertiesToArray(propList){
 }
 
 function initTags(configs,context){
-	var inheritedProperties = [], propertiesPromise = [] ,objectsPromise = [];	
+	var inheritedProperties = [], propertiesPromise = [] ,objectsPromise = [];
 	if(configs.property && context instanceof Object){
-		inheritedProperties = propertiesToArray(context.inheritedProp);
-	    propertiesPromise = loadProperties(context.info, context.hasPermissionsUpdate);
-	    objectsPromise = loadApplicationObject(context.info.application)
+		inheritedProperties = propertiesToArray(context.contentTable[0].properties.inheritedProperties);
+	    propertiesPromise = loadProperties(context.contentTable[0], context.hasPermissionsUpdate);
+	    objectsPromise = loadApplicationObject(context.contentTable[0].application)
 	}
 	if(configs.object && !configs.property && context instanceof String) objectsPromise = loadApplicationObject(context);
     return Promise.all([propertiesPromise,objectsPromise]).then(function (data) {

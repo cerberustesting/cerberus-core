@@ -666,7 +666,7 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
     var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
     $.when(jqxhr).then(function(data) {
 
-        var testCase = data.contentTable;
+        var testCase = data.contentTable[0];
         var testperm = data["hasPermissionsUpdate"];
 
         var appInfo = $.getJSON("ReadApplication", "application=" + encodeURIComponent(testCase.application));
@@ -688,7 +688,7 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
             // Title of the label list.
             $("#labelField").html("Labels from system : " + t.system);
             // Loading the label list from aplication of the testcase.
-            loadLabel(testCase.labels, t.system, "#selectLabel", undefined, testCase.test, testCase.testCase);
+            loadLabel(testCase.labels, t.system, "#selectLabel", undefined, testCase.test, testCase.testcase);
             // Loading application combo from the system of the current application.
             appendApplicationList(testCase.application, t.system);
 
@@ -1159,7 +1159,7 @@ function appendTestCaseDepList(testCase) {
     $("#depenencyTable").find("tr").remove() // clean the table
 
     testCase.dependencies.forEach((dep) =>
-        addHtmlForDependencyLine(dep.id, dep.depTest, dep.depTestCase, dep.depTestCase + " - " + dep.depDescription, dep.active, dep.description)
+        addHtmlForDependencyLine(dep.id, dep.dependencyTest, dep.dependencyTestCase, dep.dependencyTestCase + " - " + dep.dependencyDescription, dep.active, dep.dependencyDescription)
     )
 }
 
@@ -1170,7 +1170,6 @@ function appendTestCaseCountries(testCase, isReadOnly) {
 
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
     $.when(jqxhr).then(function(data) {
-
         for (var index = 0; index < data.length; index++) {
             var country = data[index].value;
 
@@ -1192,7 +1191,7 @@ function appendTestCaseCountries(testCase, isReadOnly) {
         if (!(testCase === undefined)) {
             // Init the values from the object value.
             for (var myCountry in testCase.countries) {
-                $("#countries [name='" + testCase.countries[myCountry].country + "']").prop("checked", "checked");
+                $("#countries [name='" + testCase.countries[myCountry].value + "']").prop("checked", "checked");
             }
         }
         if (testCase === undefined) {

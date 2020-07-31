@@ -112,8 +112,7 @@ public class ReadTestCaseStep extends HttpServlet {
 
         for (Object obj : answer.getDataList()) {
             TestCaseStep testCaseStep = (TestCaseStep) obj;
-            Gson gson = new Gson();
-            JSONObject result = new JSONObject(gson.toJson(testCaseStep));
+            JSONObject result = testCaseStep.toJson();
             res.put(result);
         }
 
@@ -130,9 +129,7 @@ public class ReadTestCaseStep extends HttpServlet {
         ITestCaseStepActionControlService stepActionControlService = appContext.getBean(TestCaseStepActionControlService.class);
 
         TestCaseStep testCaseStep = stepService.findTestCaseStep(test, testcase, step);
-
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(testCaseStep));
+        JSONObject result = testCaseStep.toJson();
         jsonResponse.put("step", result);
         //jsonResponse.put("step", testCaseStep);
 
@@ -140,8 +137,8 @@ public class ReadTestCaseStep extends HttpServlet {
 
         if (tcsActions != null) {
             JSONArray list = new JSONArray();
-            for (TestCaseStepAction t : tcsActions) {
-                JSONObject obj = new JSONObject(gson.toJson(t));
+            for (TestCaseStepAction testCaseStepAction : tcsActions) {
+                JSONObject obj = testCaseStepAction.toJson();
                 obj.put("controls", new JSONArray());
                 obj.put("objType", "action");
                 list.put(obj);
@@ -153,8 +150,8 @@ public class ReadTestCaseStep extends HttpServlet {
 
         if (tcsActionControls != null) {
             JSONArray list2 = new JSONArray();
-            for (TestCaseStepActionControl t : tcsActionControls) {
-                JSONObject obj = new JSONObject(gson.toJson(t));
+            for (TestCaseStepActionControl testCaseStepActionControl : tcsActionControls) {
+                JSONObject obj = testCaseStepActionControl.toJson();
                 list2.put(obj);
             }
             jsonResponse.put("tcsActionControls", list2);

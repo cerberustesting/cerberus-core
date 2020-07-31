@@ -186,28 +186,19 @@ public class TestCaseService implements ITestCaseService {
         HashMap<String, TestCaseCountry> testCaseCountries;
         HashMap<String, Invariant> countryInvariants;
 
-        LOG.debug("========== RECUPERATION DU TESTCASE");
         AnswerItem<TestCase> answerTestCase = this.readByKey(test, testCase);
         if (answerTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerTestCase.getItem() != null) {
 
-            LOG.debug("========== RECUPERATION DES TESTCASECOUNTRIES DB");
             testCaseCountries = testCaseCountryService.readByTestTestCaseToHash(test, testCase);
-            LOG.debug("========== RECUPERATION DES INVARIANTS COUNTRIES DB");
             countryInvariants = invariantService.readByIdNameToHash("COUNTRY");
 
-            LOG.debug("========== RECUPERATION DES INVARIANTS COUNTRY DU TESTCASE");
             answerTestCase.getItem().setInvariantCountries(invariantService.findCountryInvariantsFromTestCase(test, testCase, testCaseCountries, countryInvariants));
-            LOG.debug("========== RECUPERATION DES DEPENDANCES");
             answerTestCase.getItem().setDependencies(testCaseDepService.readByTestAndTestCase(answerTestCase.getItem().getTest(), answerTestCase.getItem().getTestCase()));
-            LOG.debug("========== RECUPERATION DES LABELS");
             answerTestCase.getItem().setLabels(labelService.findLabelsFromTestCase(test, testCase, null));
-            LOG.debug("========== RECUPERATION DES PROPERTIES");
             answerTestCase.getItem().setTestCaseCountryProperties(testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(test, testCase, countryInvariants));
 
             if (withSteps) {
-                LOG.debug("========== RECUPERATION DES STEPS");
-                answerTestCase.getItem().setSteps(testCaseStepService.readByTestTestCaseWithDependency(test, testCase).getDataList());
-                LOG.debug("========== RECUPERATION DU PROPERTIES HERITEES");
+                answerTestCase.getItem().setSteps(testCaseStepService.readByTestTestCaseStepsWithDependencies(test, testCase).getDataList());
                 answerTestCase.getItem().setTestCaseInheritedProperties(testCaseCountryPropertiesService.findDistinctInheritedPropertiesOfTestCase(answerTestCase.getItem(), countryInvariants));
             }
         }
@@ -475,7 +466,7 @@ public class TestCaseService implements ITestCaseService {
         AnswerItem<TestCase> ai = testCaseDao.readByKey(test, testCase);
         if (ai.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ai.getItem() != null) {
             TestCase tc = (TestCase) ai.getItem();
-            AnswerList<TestCaseStep> al = testCaseStepService.readByTestTestCaseWithDependency(tc.getTest(), tc.getTestCase());
+            AnswerList<TestCaseStep> al = testCaseStepService.readByTestTestCaseStepsWithDependencies(tc.getTest(), tc.getTestCase());
             if (al.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && al.getDataList() != null) {
                 tc.setSteps(al.getDataList());
             }

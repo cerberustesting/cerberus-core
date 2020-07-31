@@ -60,6 +60,7 @@ public class TestCaseStep {
     private boolean isStepInUseByOtherTestCase;
     private int initialStep;
     private TestCase testCaseObj;
+    private int useStepStepSort;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -201,6 +202,14 @@ public class TestCaseStep {
 
     public void setSort(int sort) {
         this.sort = sort;
+    }
+
+    public int getUseStepStepSort() {
+        return useStepStepSort;
+    }
+
+    public void setUseStepStepSort(int useStepStepSort) {
+        this.useStepStepSort = useStepStepSort;
     }
 
     public String getLoop() {
@@ -393,6 +402,8 @@ public class TestCaseStep {
             stepJson.put("dateCreated", this.dateCreated);
             stepJson.put("usrModif", this.usrModif);
             stepJson.put("dateModif", this.dateModif);
+            stepJson.put("isStepInUseByOtherTestCase", this.isIsStepInUseByOtherTestCase());
+            stepJson.put("useStepStepSort", this.getUseStepStepSort());
 
             JSONArray stepsJson = new JSONArray();
             if (this.getActions() != null) {

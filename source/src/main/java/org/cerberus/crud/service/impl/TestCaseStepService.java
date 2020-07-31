@@ -197,13 +197,15 @@ public class TestCaseStepService implements ITestCaseStepService {
     }
 
     @Override
-    public AnswerList<TestCaseStep> readByTestTestCaseWithDependency(String test, String testcase) {
+    public AnswerList<TestCaseStep> readByTestTestCaseStepsWithDependencies(String test, String testcase) {
         AnswerList<TestCaseStep> answerSteps = this.readByTestTestCase(test, testcase);
         AnswerList<TestCaseStep> response = null;
         AnswerList<TestCaseStepAction> actions;
         List<TestCaseStep> steps = new ArrayList<>();
         for (TestCaseStep step : answerSteps.getDataList()) {
             if (step.getUseStep().equals("Y")) {
+                TestCaseStep usedStep = this.findTestCaseStep(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
+                step.setUseStepStepSort(usedStep.getSort());
                 actions = testCaseStepActionService.readByVarious1WithDependency(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
             } else {
                 actions = testCaseStepActionService.readByVarious1WithDependency(test, testcase, step.getStep());

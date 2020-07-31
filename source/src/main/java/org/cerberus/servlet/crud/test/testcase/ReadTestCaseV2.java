@@ -144,7 +144,6 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         boolean getMaxTC = ParameterParserUtil.parseBooleanParam(request.getParameter("getMaxTC"), false);
         boolean filter = ParameterParserUtil.parseBooleanParam(request.getParameter("filter"), false);
         boolean withSteps = ParameterParserUtil.parseBooleanParam(request.getParameter("withSteps"), false);
-        boolean withService = ParameterParserUtil.parseBooleanParam(request.getParameter("withService"), false);
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         // Init Answer with potencial error from Parsing parameter.
@@ -153,7 +152,7 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
 
         try {
             if (!Strings.isNullOrEmpty(test) && testCase != null) {
-                answer = findTestCaseByTestTestCase(test, testCase, request, withSteps, withService);
+                answer = findTestCaseByTestTestCase(test, testCase, request, withSteps);
             } else if (!Strings.isNullOrEmpty(test) && getMaxTC) {
                 String max = testCaseService.getMaxNumberTestCase(test) == null ? "0" : testCaseService.getMaxNumberTestCase(test);
                 jsonResponse.put("maxTestCase", Integer.valueOf(max));
@@ -221,20 +220,19 @@ public class ReadTestCaseV2 extends AbstractCrudTestCase {
         return answerItem;
     }
 
-    private AnswerItem<JSONObject> findTestCaseByTestTestCase(String test, String testCase, HttpServletRequest request, boolean withSteps, boolean withService) throws JSONException, CerberusException {
+    private AnswerItem<JSONObject> findTestCaseByTestTestCase(String test, String testCase, HttpServletRequest request, boolean withSteps) throws JSONException, CerberusException {
         AnswerItem<JSONObject> answerItem = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
 
-        AnswerItem answerTestCase;
+        AnswerItem<TestCase> answerTestCase;
         answerTestCase = testCaseService.findTestCaseByKeyWithDependencies(test, testCase, withSteps);
         if (answerTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerTestCase.getItem() != null) {
-            TestCase tc = (TestCase) answerTestCase.getItem();
+            TestCase tc = answerTestCase.getItem();
             if (withSteps) {
                 jsonResponse.put("hasPermissionsStepLibrary", (request.isUserInRole("TestStepLibrary")));
             }
             jsonResponse.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
             jsonResponse.put("hasPermissionsDelete", testCaseService.hasPermissionsDelete(tc, request));
-            jsonResponse.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
             jsonResponse.put("contentTable", new JSONArray().put(tc.toJson()));
         } else {
             answerItem.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_NOT_FOUND_OR_NOT_AUTHORIZE));
