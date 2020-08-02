@@ -25,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.execution.impl.RecorderService;
 import org.cerberus.util.StringUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -509,7 +510,14 @@ public class AppService {
                 }
                 jsonMyRequest.put("KAFKA-Header", jsonHeaders);
             }
-            jsonMyRequest.put("KAFKA-Request", this.getServiceRequest());
+            if (!StringUtil.isNullOrEmpty(this.getServiceRequest())) {
+                try {
+                    JSONObject reqBody = new JSONObject(this.getServiceRequest());
+                    jsonMyRequest.put("KAFKA-Request", reqBody);
+                } catch (JSONException e) {
+                    jsonMyRequest.put("KAFKA-Request", this.getServiceRequest());
+                }
+            }
             jsonMyRequest.put("KAFKA-Key", this.getKafkaKey());
             if (!(this.getKafkaWaitNbEvent() == 0)) {
                 jsonMyRequest.put("WaitNbEvents", this.getKafkaWaitNbEvent());
@@ -517,10 +525,12 @@ public class AppService {
             if (!(this.getKafkaWaitSecond() == 0)) {
                 jsonMyRequest.put("WaitSeconds", this.getKafkaWaitSecond());
             }
-            JSONObject jsonFilters = new JSONObject();
-            jsonFilters.put("Path", this.getKafkaFilterPath());
-            jsonFilters.put("Value", this.getKafkaFilterValue());
-            jsonMyRequest.put("KAFKA-SearchFilter", jsonFilters);
+            if (METHOD_KAFKASEARCH.equalsIgnoreCase(this.getMethod())) {
+                JSONObject jsonFilters = new JSONObject();
+                jsonFilters.put("Path", this.getKafkaFilterPath());
+                jsonFilters.put("Value", this.getKafkaFilterValue());
+                jsonMyRequest.put("KAFKA-SearchFilter", jsonFilters);
+            }
 
             jsonMain.put("Request", jsonMyRequest);
 
@@ -532,7 +542,12 @@ public class AppService {
                 jsonMyResponse.put("Partition", this.getKafkaResponsePartition());
             }
             if (!StringUtil.isNullOrEmpty(this.getResponseHTTPBody())) {
-                jsonMyResponse.put("Messages", this.getResponseHTTPBody());
+                try {
+                    JSONArray respBody = new JSONArray(this.getResponseHTTPBody());
+                    jsonMyResponse.put("Messages", respBody);
+                } catch (JSONException e) {
+                    jsonMyResponse.put("Messages", this.getResponseHTTPBody());
+                }
             }
             jsonMain.put("Response", jsonMyResponse);
 
