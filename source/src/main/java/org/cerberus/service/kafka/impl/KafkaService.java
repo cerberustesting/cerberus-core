@@ -41,6 +41,7 @@ import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.TimeoutException;
 import org.apache.kafka.common.errors.WakeupException;
+import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
@@ -343,7 +344,18 @@ public class KafkaService implements IKafkaService {
                         try {
                             LOG.debug("New record " + record.topic() + " " + record.partition() + " " + record.offset());
                             LOG.debug("  " + record.key() + " | " + record.value());
+                            
+                            // Parsing message.
                             JSONObject recordJSON = new JSONObject(record.value());
+                            
+                            // Parsing header.
+                            JSONObject headerJSON = new JSONObject();
+                            for (Header header : record.headers()) {
+                                String headerKey = header.key();
+                                String headerValue = new String(header.value());
+                                headerJSON.put(headerKey, headerValue);
+                            }
+
                             nbEvents++;
 
                             boolean match = true;
@@ -373,6 +385,7 @@ public class KafkaService implements IKafkaService {
                                 messageJSON.put("value", recordJSON);
                                 messageJSON.put("offset", record.offset());
                                 messageJSON.put("partition", record.partition());
+                                messageJSON.put("header", headerJSON);
                                 resultJSON.put(messageJSON);
                                 nbFound++;
                                 if (nbFound >= targetNbEventsInt) {
