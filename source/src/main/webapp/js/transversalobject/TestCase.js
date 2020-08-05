@@ -820,7 +820,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
     if (mode === "EDIT") {
         $("[name='editTestCaseField']").html(doc.getDocOnline("page_testcaselist", "btn_edit"));
         appendTestList(testCase.test);
-        formEdit.find("#testCase").prop("value", testCase.testCase);
+        formEdit.find("#testCase").prop("value", testCase.testcase);
         formEdit.find("#status").prop("value", testCase.status);
         formEdit.find("#usrcreated").prop("value", testCase.usrCreated);
         formEdit.find("#datecreated").prop("value", testCase.dateCreated);
@@ -865,7 +865,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
     } else {
         formEdit.find("#test").prop("value", testCase.test);
         formEdit.find("#originalTest").prop("value", testCase.test);
-        formEdit.find("#originalTestCase").prop("value", testCase.testCase);
+        formEdit.find("#originalTestCase").prop("value", testCase.testcase);
         formEdit.find("#newTest").prop("value", testCase.test);
         formEdit.find("#implementer").prop("value", testCase.implementer);
         formEdit.find("#executor").prop("value", testCase.executor);

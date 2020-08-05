@@ -42,7 +42,7 @@ $.when($.getScript("js/global/global.js")).then(function() {
         //check if Extended Test Case Filters is collapse and load the data if it is not
         var filterPanelDataLoaded = false;
         var filterPanel = document.getElementById("filtersPanel");
-        console.log(filterPanel.className);
+        
         if (filterPanel.className === "panel-body collapse defaultNotExpanded in") {
             loadTestCaseFilterData(system);
             filterPanelDataLoaded = true;
@@ -254,7 +254,7 @@ function selectionManual(test, testcase, environment, country) {
         $("#envSettingsAuto select").prop("disabled", false).val("");
         var mysize = $("#countryList input.countrycb").length;
         $("#countryList input.countrycb").each(function() {
-            if (($(this).attr("name") == country) || (mysize <= 1)) { // We select the the country if it is the one from the URL or if there is only 1 country.
+            if (($(this).attr("name") === country) || (mysize <= 1)) { // We select the country if it is the one from the URL or if there is only 1 country.
                 $(this).prop("disabled", false).prop("checked", true);
             } else {
                 $(this).prop("disabled", false).prop("checked", false);
@@ -324,19 +324,19 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
                 if (data.contentTable.length > 0) {
                     for (var i = 0; i < data.contentTable.length; i++) {
 
-                        var text = data.contentTable[i].test + " - " + data.contentTable[i].testCase + " [" + data.contentTable[i].application + "]: " + data.contentTable[i].description;
+                        var text = data.contentTable[i].test + " - " + data.contentTable[i].testcase + " [" + data.contentTable[i].application + "]: " + data.contentTable[i].description;
 
                         testCaseList.append($("<option></option>")
                                 .text(text)
-                                .val(data.contentTable[i].test + "-" + data.contentTable[i].testCase)
+                                .val(data.contentTable[i].test + "-" + data.contentTable[i].testcase)
                                 .data("item", data.contentTable[i]));
                     }
                 } else {
-                    var text = data.contentTable.test + " - " + data.contentTable.testCase + " [" + data.contentTable.application + "]: " + data.contentTable.description;
+                    var text = data.contentTable.test + " - " + data.contentTable.testcase + " [" + data.contentTable.application + "]: " + data.contentTable.description;
 
                     testCaseList.append($("<option></option>")
                             .text(text)
-                            .val(data.contentTable.test + "-" + data.contentTable.testCase)
+                            .val(data.contentTable.test + "-" + data.contentTable.testcase)
                             .data("item", data.contentTable));
                 }
             }
@@ -680,7 +680,7 @@ function loadMultiSelect(url, urlParams, selectName, textItem, valueItem) {
         async: true,
         success: function(data) {
             var select = $("#" + selectName + "Filter");
-            console.info(selectName);
+
             for (var index = 0; index < data.contentTable.length; index++) {
                 var text = textItem.map(function(item) {
                     return data.contentTable[index][item];
@@ -1064,8 +1064,7 @@ function bindToggleCollapseCustom() {
                     localStorage.setItem(this.id, false);
                 }
             }
-            console.info(this.id);
-            console.info(localStorage.getItem(this.id));
+
             if (localStorage.getItem(this.id) === "false") {
                 $(this).removeClass('in');
                 $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
