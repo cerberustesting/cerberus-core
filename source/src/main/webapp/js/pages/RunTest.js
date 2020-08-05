@@ -550,7 +550,7 @@ function runTestCase(doRedirect) {
         var select = $("#testCaseList option:selected");
         select.each(function() {
             var item = $(this).data("item");
-            teststring += "&test=" + item.test + "&testcase=" + item.testCase;
+            teststring += "&test=" + item.test + "&testcase=" + item.testcase;
         });
     }
 
