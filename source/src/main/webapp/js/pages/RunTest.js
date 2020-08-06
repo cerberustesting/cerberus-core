@@ -321,23 +321,23 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
             if (data.contentTable === undefined) {
                 showMessageMainPage("danger", "Test Case : " + defTest + " - " + defTestcase + " does not exist !", true);
             } else {
-                if (data.contentTable.length > 0) {
+                if (data.contentTable.length > 1) {
                     for (var i = 0; i < data.contentTable.length; i++) {
 
-                        var text = data.contentTable[i].test + " - " + data.contentTable[i].testcase + " [" + data.contentTable[i].application + "]: " + data.contentTable[i].description;
+                        var text = data.contentTable[i].test + " - " + data.contentTable[i].testCase + " [" + data.contentTable[i].application + "]: " + data.contentTable[i].description;
 
                         testCaseList.append($("<option></option>")
                                 .text(text)
-                                .val(data.contentTable[i].test + "-" + data.contentTable[i].testcase)
+                                .val(data.contentTable[i].test + "-" + data.contentTable[i].testCase)
                                 .data("item", data.contentTable[i]));
                     }
                 } else {
-                    var text = data.contentTable.test + " - " + data.contentTable.testcase + " [" + data.contentTable.application + "]: " + data.contentTable.description;
+                    var text = data.contentTable[0].test + " - " + data.contentTable[0].testcase + " [" + data.contentTable[0].application + "]: " + data.contentTable[0].description;
 
                     testCaseList.append($("<option></option>")
                             .text(text)
-                            .val(data.contentTable.test + "-" + data.contentTable.testcase)
-                            .data("item", data.contentTable));
+                            .val(data.contentTable[0].test + "-" + data.contentTable[0].testcase)
+                            .data("item", data.contentTable[0]));
                 }
             }
             hideLoader("#chooseTest");
