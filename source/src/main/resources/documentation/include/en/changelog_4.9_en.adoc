@@ -6,6 +6,7 @@
 [square]
 * Support for Kafka Headers + better error message on Kafka avoiding to analysis of application server logs. #2152
 * Small modifications on service modal in order to isolate the request on 1 tab. All non request data have moved to 1st tab.
+* Added a new graph on "Execution in queue" screen in order to monitor queue size and nb of simultaneous executions over time.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

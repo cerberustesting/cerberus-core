@@ -25,6 +25,41 @@ $.when($.getScript("js/global/global.js")).then(function () {
             'placement': 'auto',
             'container': 'body'}
         );
+
+        moment.locale("fr");
+
+        $('#frompicker').datetimepicker();
+        $('#topicker').datetimepicker({
+            useCurrent: false //Important! See issue #1075
+        });
+
+        $("#frompicker").on("dp.change", function (e) {
+            $('#topicker').data("DateTimePicker").minDate(e.date);
+        });
+        $("#topicker").on("dp.change", function (e) {
+            $('#frompicker').data("DateTimePicker").maxDate(e.date);
+        });
+
+        var from = GetURLParameter("from");
+        var to = GetURLParameter("to");
+
+        let fromD;
+        let toD;
+        if (from === null) {
+            fromD = new Date();
+            fromD.setMonth(fromD.getMonth() - 1);
+        } else {
+            fromD = new Date(from);
+        }
+        if (to === null) {
+            toD = new Date();
+        } else {
+            toD = new Date(to);
+        }
+        $('#frompicker').data("DateTimePicker").date(moment(fromD));
+        $('#topicker').data("DateTimePicker").date(moment(toD));
+
+
     });
 });
 
@@ -33,9 +68,7 @@ function initPage() {
     var myTag = GetURLParameter("tag");
 
     displayPageLabel();
-
-    displayAndRefresh_followup();
-
+    initGraph();
 
     // Display table
     var configurations = new TableConfigurationsServerSide("executionsTable", "ReadTestCaseExecutionQueue", "contentTable", aoColumnsFunc("executionsTable"), [2, 'desc'], [10, 25, 50, 100, 200, 500, 1000]);
@@ -70,8 +103,15 @@ function initPage() {
     $("#massActionExeQButtonPrio").click(massActionModalSaveHandler_changePrio);
     $('#massActionExeQModal').on('hidden.bs.modal', massActionModalCloseHandler);
 
+    var tab = sessionStorage.getItem("TestCaseExecutionQueueList-TAB")
+    if (isEmpty(tab)) {
+        tab = "#tabDetails";
+    }
+
     // React on tab changes
     $('#tabsScriptEdit a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        sessionStorage.setItem("TestCaseExecutionQueueList-TAB", $(e.target).attr("href"));
+
         switch ($(e.target).attr("href")) {
             case "#tabDetails":
                 refreshTable();
@@ -84,10 +124,13 @@ function initPage() {
                 break;
         }
     });
+    $('.nav-tabs a[href="' + tab + '"]').tab('show');
+
 }
 
 function displayAndRefresh_followup() {
     showLoader('#followUpTableList');
+    console.info("refresh followup");
 
     // Display table
     var jqxhr = $.getJSON("ReadTestCaseExecutionQueue?flag=queueStatus");
@@ -123,6 +166,7 @@ function displayAndRefresh_followup() {
 function displayAndRefresh_jobStatus() {
     showLoader('#QueueJobStatus');
     showLoader('#QueueJobActive');
+    console.info("refresh jobstatus");
 
     var jqxhr = $.getJSON("GetExecutionsInQueue");
     $.when(jqxhr).then(function (data) {
@@ -402,6 +446,7 @@ function resetTableFilters() {
 }
 
 function refreshTable() {
+    console.info("refresh table");
     getTable().fnDraw();
 }
 
@@ -870,4 +915,191 @@ function aoColumnsFunc_followUp() {
         }
     ];
     return aoColumns;
+}
+
+function getOptions(title, unit) {
+    let option = {
+        responsive: true,
+        maintainAspectRatio: false,
+        hover: {
+            mode: 'nearest',
+            intersect: true
+        },
+        tooltips: {
+            callbacks: {
+                label: function (t, d) {
+                    var xLabel = d.datasets[t.datasetIndex].label;
+                    return xLabel + ': ' + t.yLabel;
+                }
+            },
+        },
+        title: {
+            text: title
+        },
+        scales: {
+            xAxes: [{
+                    type: 'time',
+                    time: {
+                        tooltipFormat: 'll HH:mm:ss'
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Date'
+                    }
+                }],
+            yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: title
+                    },
+                    ticks: {
+                        callback: function (value, index, values) {
+                            return value;
+                        }}
+
+                }]
+        }
+    };
+    return option;
+}
+
+function initGraph() {
+
+    var queueStatoption = getOptions("", "nb");
+
+    let queueStatdatasets = [];
+
+    configQueueStat = {
+        type: 'line',
+        data: {
+            datasets: queueStatdatasets
+        },
+        options: queueStatoption
+    };
+
+    var ctx = document.getElementById('canvasQueueStat').getContext('2d');
+    window.myLineQueueStat = new Chart(ctx, configQueueStat);
+}
+
+
+function loadStatGraph() {
+    showLoader($("#qsFilterPanel"));
+
+    let from = new Date($('#frompicker').data("DateTimePicker").date());
+    let to = new Date($('#topicker').data("DateTimePicker").date());
+
+    let qS = "from=" + from.toISOString() + "&to=" + to.toISOString();
+//    let qS = "from=2020-08-07T01:01:01.0Z&to=2020-08-07T16:14:01.0Z";
+
+    $.ajax({
+        url: "ReadQueueStat?" + qS,
+        method: "GET",
+        async: true,
+        dataType: 'json',
+        success: function (data) {
+            var messageType = getAlertType(data.messageType);
+
+            if (data.messageType === "OK") {
+                buildGraphs(data);
+            } else {
+                showMessageMainPage(messageType, data.message, false);
+            }
+            hideLoader($("#qsFilterPanel"));
+        },
+        error: showUnexpectedError
+    });
+}
+
+
+function buildGraphs(data) {
+
+    let curves = data.datasetQueueStat;
+
+    // Sorting values by nb of requests.
+    sortedCurves = curves.sort(function (a, b) {
+//        let a1 = a.key.testcase.test + "-" + a.key.testcase.testcase + "-" + a.key.unit + "-" + a.key.country + "-" + a.key.environment + "-" + a.key.robotdecli;
+//        let b1 = b.key.testcase.test + "-" + b.key.testcase.testcase + "-" + b.key.unit + "-" + b.key.country + "-" + b.key.environment + "-" + a.key.robotdecli;
+//        return b1.localeCompare(a1);
+        return true;
+    });
+
+    var len = sortedCurves.length;
+
+    let timedatasets = [];
+
+    for (var i = 0; i < len; i++) {
+
+        let c = sortedCurves[i];
+        let d = [];
+        lend = c.points.length;
+        for (var j = 0; j < lend; j++) {
+            let p = {x: c.points[j].x, y: c.points[j].y};
+            d.push(p);
+        }
+        let lab = c.key.key;
+        let doFill = false;
+        if (c.key.key === "CurrentlyRunning") {
+            doFill = true;
+        }
+        var dataset = {
+            label: lab,
+            backgroundColor: "white",
+            borderColor: getColorQueueStat(c.key.key),
+            pointBackgroundColor: getColorQueueStat(c.key.key),
+            pointRadius: 1,
+            pointHoverRadius: 6,
+            hitRadius: 10,
+            fill: doFill,
+            lineTension: 0,
+            data: d
+        };
+        timedatasets.push(dataset);
+    }
+
+    if (timedatasets.length > 0) {
+        $("#panelQueueStat").show();
+    } else {
+        $("#panelQueueStat").hide();
+    }
+    configQueueStat.data.datasets = timedatasets;
+
+    window.myLineQueueStat.update();
+}
+
+function getColorQueueStat(name) {
+    console.info(name);
+    switch (name) {
+        case "CurrentlyRunning":
+            return "orange";
+        case "GlobalConstrain":
+            return "red";
+        case "QueueSize":
+            return "darkblue";
+    }
+    return "red";
+
+}
+function setTimeRange(id) {
+    let fromD;
+    let toD = new Date();
+    toD.setHours(23);
+    toD.setMinutes(59);
+    fromD = new Date();
+    fromD.setHours(23);
+    fromD.setMinutes(59);
+    if (id === 1) { // 1 month
+        fromD.setMonth(fromD.getMonth() - 1);
+    } else if (id === 2) { // 3 months
+        fromD.setMonth(fromD.getMonth() - 3);
+    } else if (id === 3) { // 6 months
+        fromD.setMonth(fromD.getMonth() - 6);
+    } else if (id === 4) { //
+        fromD.setMonth(fromD.getMonth() - 12);
+    } else if (id === 5) {
+        fromD.setHours(fromD.getHours() - 168);
+    } else if (id === 6) {
+        fromD.setHours(fromD.getHours() - 24);
+    }
+    $('#frompicker').data("DateTimePicker").date(moment(fromD));
+    $('#topicker').data("DateTimePicker").date(moment(toD));
 }

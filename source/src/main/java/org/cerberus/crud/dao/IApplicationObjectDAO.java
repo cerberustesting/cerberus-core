@@ -20,7 +20,6 @@
 package org.cerberus.crud.dao;
 
 import org.apache.commons.fileupload.FileItem;
-import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.ApplicationObject;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;

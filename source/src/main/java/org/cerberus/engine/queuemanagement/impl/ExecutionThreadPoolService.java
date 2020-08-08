@@ -30,12 +30,14 @@ import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotExecutor;
+import org.cerberus.crud.factory.IFactoryQueueStat;
 import org.cerberus.crud.factory.IFactoryRobotExecutor;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.engine.execution.IRetriesService;
 import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.IQueueStatService;
 import org.cerberus.crud.service.IRobotExecutorService;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
@@ -87,6 +89,10 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     private IRobotService robotService;
     @Autowired
     private IFactoryRobotExecutor factoryRobotExecutor;
+    @Autowired
+    private IFactoryQueueStat factoryQueueStat;
+    @Autowired
+    private IQueueStatService queueStatService;
 
     @Override
     public boolean isInstanceActive() {
@@ -325,9 +331,13 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                     HashMap<String, List<RobotExecutor>> robot_executor = new HashMap<>();
                     HashMap<String, Robot> robot_header = new HashMap<>();
 
+                    poolSizeGeneral = parameterService.getParameterIntegerByKey("cerberus_queueexecution_global_threadpoolsize", "", 12);
+
+                    constrains_current = getCurrentlyRunning();
+                    LOG.debug("Current Constrains : " + constrains_current);
+
                     if (!executionsInQueue.isEmpty()) {
 
-                        poolSizeGeneral = parameterService.getParameterIntegerByKey("cerberus_queueexecution_global_threadpoolsize", "", 12);
                         poolSizeRobot = parameterService.getParameterIntegerByKey("cerberus_queueexecution_defaultrobothost_threadpoolsize", "", 10);
                         poolSizeExecutorExt = parameterService.getParameterIntegerByKey("cerberus_queueexecution_defaultexecutorexthost_threadpoolsize", "", 2);
                         queueTimeout = parameterService.getParameterIntegerByKey("cerberus_queueexecution_timeout", "", 600000);
@@ -338,8 +348,6 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                         const03_current = 0;
                         const04_current = 0;
                         const05_current = 0;
-                        constrains_current = getCurrentlyRunning();
-                        LOG.debug("Current Constrains : " + constrains_current);
 
                         // Getting RobotHost PoolSize
                         robothost_poolsize = invariantService.readToHashMapGp1IntegerByIdname("ROBOTHOST", poolSizeRobot);
@@ -628,6 +636,15 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                     }
 
                     LOG.debug("Stopping Queue_Processing_Job - TOTAL Released execution(s) : " + nbqueuedexe);
+
+                    if (constrains_current.containsKey(TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL)) {
+                        const01_current = constrains_current.get(TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL);
+                    } else {
+                        const01_current = 0;
+                    }
+                    LOG.debug("Stats : GlobalContrain=" + poolSizeGeneral + " - nbRunning=" + const01_current + " - NbQueued=" + executionsInQueue.size());
+
+                    queueStatService.create(factoryQueueStat.create(0, poolSizeGeneral, const01_current, executionsInQueue.size(), "", null, null, null));
 
                 } while (nbqueuedexe > 0);
             } else {

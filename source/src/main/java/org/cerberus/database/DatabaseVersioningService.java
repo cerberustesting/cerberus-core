@@ -840,7 +840,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("  KEY `ix_TestcaseExecution` (`Test`,`TestCase`,`Build`,`Revision`,`Environment`,`Country`,`ID`),");
         b.append("  CONSTRAINT `FK_testcaseexecution_1` FOREIGN KEY (`Test`, `TestCase`) REFERENCES `testcase` (`Test`, `TestCase`) ON DELETE CASCADE ON UPDATE CASCADE,");
         b.append("  CONSTRAINT `FK_testcaseexecution_3` FOREIGN KEY (`Application`) REFERENCES `application` (`Application`) ON DELETE CASCADE ON UPDATE CASCADE");
-        b.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        b.append(") ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8;");
         a.add(b.toString());
 
         b = new StringBuilder();
@@ -8624,6 +8624,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO appservicecontent select asr.* from appserviceheader asr join appservice app ON app.Service=asr.Service where `type`='KAFKA';");
         a.add("DELETE FROM appserviceheader USING appserviceheader join appservice ON appservice.Service = appserviceheader.Service where appservice.`type` = 'KAFKA';");
 
+        // Create Table Application Object
+        // 960
+        b = new StringBuilder();
+        b.append("CREATE TABLE `queuestat` ("
+                + "  `ID` int(11) NOT NULL AUTO_INCREMENT,"
+                + "  `GlobalConstrain` int(10) DEFAULT 0,"
+                + "  `CurrentlyRunning` int(10) DEFAULT 0,"
+                + "  `QueueSize` int(10) DEFAULT 0,"
+                + "`UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',"
+                + "`DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+                + "`UsrModif` VARCHAR(45) NOT NULL DEFAULT '',"
+                + "`DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',"
+                + "  PRIMARY KEY (`ID`),"
+                + "  KEY `IX_queuestat_01` (`DateCreated`)"
+                + ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        a.add(b.toString());
+        
+        
         return a;
     }
 
