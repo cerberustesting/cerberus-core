@@ -51,8 +51,8 @@
             <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
                 <li class="active"><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">Executions in queue</a></li>
                 <li><a data-toggle="tab" href="#tabFollowUp" id="editTabFollowUp" name="tabFollowUp">Pools Follow Up</a></li>
-                <li><a data-toggle="tab" href="#tabJobStatus" id="editTabJobStatus" name="tabJobStatus">Queue Job Status</a></li>
                 <li><a data-toggle="tab" href="#tabQueueHistory" id="editTabQueueHistory" name="tabQueueHistory">Queue History</a></li>
+                <li><a data-toggle="tab" href="#tabJobStatus" id="editTabJobStatus" name="tabJobStatus">Queue Job Status</a></li>
             </ul>
 
 
@@ -176,7 +176,9 @@
                                             Preset Range<span class="caret"></span>
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                            <button class="btn btn-default pull-left" id="last1Week" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(6)"><span class=""></span> Current Day</button>
+                                            <button class="btn btn-default pull-left" id="last2Hours" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(8)"><span class=""></span> Previous 2 Hours</button>
+                                            <button class="btn btn-default pull-left" id="last6Hours" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(7)"><span class=""></span> Previous 6 Hours</button>
+                                            <button class="btn btn-default pull-left" id="currentDay" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(6)"><span class=""></span> Current Day</button>
                                             <button class="btn btn-default pull-left" id="last1Week" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(5)"><span class=""></span> Previous Week</button>
                                             <button class="btn btn-default pull-left" id="last1Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(1)"><span class=""></span> Previous Month</button>
                                             <button class="btn btn-default pull-left" id="last3Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(2)"><span class=""></span> Previous 3 Months</button>

@@ -744,6 +744,10 @@
         <servlet-class>org.cerberus.servlet.crud.testexecution.ReadExecutionStat</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadQueueStat</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadQueueStat</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>ReadTagStat</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTagStat</servlet-class>
     </servlet>
@@ -1488,6 +1492,10 @@
         <url-pattern>/ReadExecutionStat</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadQueueStat</servlet-name>
+        <url-pattern>/ReadQueueStat</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>ReadTagStat</servlet-name>
         <url-pattern>/ReadTagStat</url-pattern>
     </servlet-mapping>
@@ -1665,6 +1673,7 @@
             <url-pattern>/GetReportTest</url-pattern>
             <url-pattern>/ReadTestCaseExecutionByTag</url-pattern>
             <url-pattern>/ReadExecutionStat</url-pattern>
+            <url-pattern>/ReadQueueStat</url-pattern>
             <url-pattern>/ReadTagStat</url-pattern>
         </web-resource-collection>
         <auth-constraint>

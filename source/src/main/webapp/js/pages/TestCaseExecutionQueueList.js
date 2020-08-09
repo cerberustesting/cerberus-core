@@ -26,40 +26,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
             'container': 'body'}
         );
 
-        moment.locale("fr");
-
-        $('#frompicker').datetimepicker();
-        $('#topicker').datetimepicker({
-            useCurrent: false //Important! See issue #1075
-        });
-
-        $("#frompicker").on("dp.change", function (e) {
-            $('#topicker').data("DateTimePicker").minDate(e.date);
-        });
-        $("#topicker").on("dp.change", function (e) {
-            $('#frompicker').data("DateTimePicker").maxDate(e.date);
-        });
-
-        var from = GetURLParameter("from");
-        var to = GetURLParameter("to");
-
-        let fromD;
-        let toD;
-        if (from === null) {
-            fromD = new Date();
-            fromD.setMonth(fromD.getMonth() - 1);
-        } else {
-            fromD = new Date(from);
-        }
-        if (to === null) {
-            toD = new Date();
-        } else {
-            toD = new Date(to);
-        }
-        $('#frompicker').data("DateTimePicker").date(moment(fromD));
-        $('#topicker').data("DateTimePicker").date(moment(toD));
-
-
     });
 });
 
@@ -69,6 +35,43 @@ function initPage() {
 
     displayPageLabel();
     initGraph();
+
+    //Queue History tab
+    moment.locale("fr");
+
+    $('#frompicker').datetimepicker();
+    $('#topicker').datetimepicker({
+        useCurrent: false //Important! See issue #1075
+    });
+
+    $("#frompicker").on("dp.change", function (e) {
+        $('#topicker').data("DateTimePicker").minDate(e.date);
+    });
+    $("#topicker").on("dp.change", function (e) {
+        $('#frompicker').data("DateTimePicker").maxDate(e.date);
+    });
+
+    var from = GetURLParameter("from");
+    var to = GetURLParameter("to");
+
+    let fromD;
+    let toD;
+    if (from === null) {
+        fromD = new Date();
+        fromD.setHours(fromD.getHours() - 2);
+    } else {
+        fromD = new Date(from);
+    }
+    if (to === null) {
+        toD = new Date();
+        toD.setHours(23);
+        toD.setMinutes(59);
+    } else {
+        toD = new Date(to);
+    }
+    $('#frompicker').data("DateTimePicker").date(moment(fromD));
+    $('#topicker').data("DateTimePicker").date(moment(toD));
+
 
     // Display table
     var configurations = new TableConfigurationsServerSide("executionsTable", "ReadTestCaseExecutionQueue", "contentTable", aoColumnsFunc("executionsTable"), [2, 'desc'], [10, 25, 50, 100, 200, 500, 1000]);
@@ -122,6 +125,9 @@ function initPage() {
             case "#tabJobStatus":
                 displayAndRefresh_jobStatus();
                 break;
+            case "#tabQueueHistory":
+                loadStatGraph();
+                break;
         }
     });
     $('.nav-tabs a[href="' + tab + '"]').tab('show');
@@ -130,7 +136,6 @@ function initPage() {
 
 function displayAndRefresh_followup() {
     showLoader('#followUpTableList');
-    console.info("refresh followup");
 
     // Display table
     var jqxhr = $.getJSON("ReadTestCaseExecutionQueue?flag=queueStatus");
@@ -166,7 +171,6 @@ function displayAndRefresh_followup() {
 function displayAndRefresh_jobStatus() {
     showLoader('#QueueJobStatus');
     showLoader('#QueueJobActive');
-    console.info("refresh jobstatus");
 
     var jqxhr = $.getJSON("GetExecutionsInQueue");
     $.when(jqxhr).then(function (data) {
@@ -446,7 +450,6 @@ function resetTableFilters() {
 }
 
 function refreshTable() {
-    console.info("refresh table");
     getTable().fnDraw();
 }
 
@@ -1067,10 +1070,9 @@ function buildGraphs(data) {
 }
 
 function getColorQueueStat(name) {
-    console.info(name);
     switch (name) {
         case "CurrentlyRunning":
-            return "orange";
+            return "green";
         case "GlobalConstrain":
             return "red";
         case "QueueSize":
@@ -1099,6 +1101,12 @@ function setTimeRange(id) {
         fromD.setHours(fromD.getHours() - 168);
     } else if (id === 6) {
         fromD.setHours(fromD.getHours() - 24);
+    } else if (id === 7) {
+        fromD = new Date();
+        fromD.setHours(fromD.getHours() - 6);
+    } else if (id === 8) {
+        fromD = new Date();
+        fromD.setHours(fromD.getHours() - 2);
     }
     $('#frompicker').data("DateTimePicker").date(moment(fromD));
     $('#topicker').data("DateTimePicker").date(moment(toD));
