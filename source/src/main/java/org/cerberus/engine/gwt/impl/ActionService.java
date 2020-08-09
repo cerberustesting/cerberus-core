@@ -347,6 +347,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT:
                     res = this.doActionSetNetworkTrafficContent(tCExecution, testCaseStepActionExecution, value1, value2);
                     break;
+                case TestCaseStepAction.ACTION_SETSERVICECALLCONTENT:
+                    res = this.doActionSetServiceCallContent(tCExecution, testCaseStepActionExecution);
+                    break;
                 case TestCaseStepAction.ACTION_DONOTHING:
                     res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
                     break;
@@ -469,6 +472,7 @@ public class ActionService implements IActionService {
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 return iosAppiumService.scrollTo(tCExecution.getSession(), identifier, text);
+                
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 return webdriverService.scrollTo(tCExecution.getSession(), identifier, text);
             }
@@ -1370,9 +1374,11 @@ public class ActionService implements IActionService {
         if (lastServiceCalledAnswer.getItem() != null) {
             AppService lastServiceCalled = (AppService) lastServiceCalledAnswer.getItem();
             tCExecution.setLastServiceCalled(lastServiceCalled);
+            tCExecution.setOriginalLastServiceCalled(lastServiceCalled.getResponseHTTPBody());
+            tCExecution.setOriginalLastServiceCalledContent(lastServiceCalled.getResponseHTTPBodyContentType());
 
             /**
-             * Record the Request and Response in filesystem.
+             * Record the Request and Response in file system.
              */
             testCaseStepActionExecution.addFileList(recorderService.recordServiceCall(tCExecution, testCaseStepActionExecution, 0, null, lastServiceCalled));
         }
@@ -1562,6 +1568,7 @@ public class ActionService implements IActionService {
 
             har = harService.enrichWithStats(har, exe.getCountryEnvironmentParameters().getDomain(), exe.getSystem());
             appSrv.setResponseHTTPBody(har.toString());
+            appSrv.setResponseHTTPBodyContentType(AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON);
             appSrv.setRecordTraceFile(false);
 
             exe.setLastServiceCalled(appSrv);
@@ -1579,6 +1586,39 @@ public class ActionService implements IActionService {
         } catch (Exception ex) {
             LOG.error("Error doing Action setNetworkTrafficContent :" + ex);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETNETWORKTRAFFICCONTENT);
+            message.setDescription(message.getDescription().replace("%DETAIL%", ex.toString()));
+            return message;
+        }
+    }
+
+    public MessageEvent doActionSetServiceCallContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe) throws IOException {
+        MessageEvent message;
+        try {
+            
+            // Check that robot has executor activated
+            if (exe.getLastServiceCalled() == null) {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETSERVICECALLCONTENT_NOLASTCALLDONE);
+                return message;
+            }
+            
+            // Force last service call content to JSON Service Call Structure & disable file save.
+            exe.getLastServiceCalled().setResponseHTTPBody(exe.getLastServiceCalled().toJSONOnExecution().toString());
+            exe.getLastServiceCalled().setResponseHTTPBodyContentType(AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON);
+            exe.getLastServiceCalled().setRecordTraceFile(false);
+
+            /**
+             * Record the Request and Response in file system.
+             */
+            actionexe.addFileList(recorderService.recordServiceCallContent(exe, actionexe, exe.getLastServiceCalled()));
+
+            // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
+            exe.setAppTypeEngine(Application.TYPE_SRV);
+
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETSERVICECALLCONTENT);
+            return message;
+        } catch (Exception ex) {
+            LOG.error("Error doing Action setServiceCallContent :" + ex);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETSERVICECALLCONTENT);
             message.setDescription(message.getDescription().replace("%DETAIL%", ex.toString()));
             return message;
         }

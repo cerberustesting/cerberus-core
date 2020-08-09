@@ -271,6 +271,11 @@ Close an application.
 *[blue]#Value1#*	Application to Open.
 
 ==== dragAndDrop
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Will Drag from an _Element_ to another __Element__.
 
 *[blue]#Value1#*	Identifier and name of the element to drag in the form of : identifier=html_reference.
@@ -278,11 +283,16 @@ Will Drag from an _Element_ to another __Element__.
 *[blue]#Value2#*	Identifier and name of the element where to drop in the form of : identifier=html_reference..
 
 ==== select
-Select an option in a <select> Element. this 'text' must be defined : <option value="text">
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Select an option in a <select> Element. this 'text' must be defined : <option value="text">. For APK and IPA, action only works in a web mode.
 
 *[blue]#Value1#*	Identifier and name of the element of the select in the form of : identifier=html_reference.
 
-*[blue]#Value2#*	Element to drop.
+*[blue]#Value2#*	Element to select.
 
 .Title
 ====
@@ -290,6 +300,11 @@ Select an option in a <select> Element. this 'text' must be defined : <option va
 ====
 
 ==== keypress
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
 will allow you to press any key in the current web page.
 
 *[blue]#Value1#* : Identifier and name of the element where the key is pressed in the form of : identifier=html_reference.
@@ -325,6 +340,11 @@ Following KEYNAME values can be used : ENTER, TAB, ESC, BACKSPACE, DELETE, INSER
 
 
 ==== type
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
 Type a data in an Element.
 
 *[blue]#Value1#* : Identifier and name of the element where the data is entered in the form of : identifier=html_reference.
@@ -332,14 +352,29 @@ Type a data in an Element.
 *[blue]#Value2#* : data to enter in the field.
 
 ==== clearField
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Clear (Empty) an Element.
 
 *[blue]#Value1#* : Identifier and name of the element to be cleared in the form of : identifier=html_reference.
 
 ==== hidekeyboard
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Hide the currently visible keyboard
 
 ==== swipe
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 The action simulates a user pressing down on the screen, sliding to another position, and removing their finger from the screen. Swipe action can be used neither with unique parameter *[red]#UP#*, *[red]#DOWN#*, *[red]#LEFT#* or *[red]#RIGHT#* or with combination of parameter *[red]#CUSTOM#* and *[red]#x1;y1;x2;y2#*, which are coordinates of origin point (x1;y1) and *relatives* coordinates of destination point (x2;y2)
 
 *[blue]#Value1#* : *[red]#UP#*, *[red]#DOWN#*, *[red]#LEFT#*, *[red]#RIGHT#* or *[red]#CUSTOM#*.
@@ -366,17 +401,28 @@ Will swipe from the point (100;100) to the point (100;200)
 ====
 
 ==== scrollTo
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Scroll to either an element or a text.
 
 *[blue]#Value1#* : Identifier and name of the element where the scroll will move the screen to in the form of : identifier=html_reference.
 
 *[blue]#Value2#* : text in the screen where the scroll will move.
+
 [NOTE]
 ====
 Use either Value1 or Value2. If both are feed, the Value2 scroll will be used first.
 ====
 
 ==== installApp
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Install an application on the mobile.
 
 *[blue]#Value1#* : Path to the application to install.
@@ -387,6 +433,11 @@ Install an application on the mobile.
 ====
 
 ==== removeApp
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Remove an application from the mobile.
 
 *[blue]#Value1#* : Application package name to remove.
@@ -398,9 +449,14 @@ com.cerberus.appmobile
 
 
 ==== wait
-Wait for a certain amount of time Feed a number (ms) or wait for element present feed an element (xpath)
+|=== 
 
-*[blue]#Value1#* : Either an interger that represent a duration in ms, either an Element that we will wait to exist in the form of : identifier=html_reference.
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Wait for a certain amount of time or for an element to be present on a page.
+
+*[blue]#Value1#* : Either an integer that represent a duration in ms, either an Element that we will wait to exist in the form of : identifier=html_reference.
 
 .Title
 ====
@@ -413,11 +469,16 @@ Will wait 10 seconds
 ====
 id=userName
 
-Will that element with id equal to userName is loaded on the current screen.
+Will wait that element with id equal to userName is loaded on the current screen.
 ====
 
 
 ==== waitVanish
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
 Wait that an element is removed from the page.
 
 *[blue]#Value1#* : Element that we will wait to be removed from the screen in the form of : identifier=html_reference.
@@ -426,12 +487,17 @@ Wait that an element is removed from the page.
 ====
 id=userName
 
-Will that Element with id equal to userName is removed from the current screen.
+Will wait that Element with id equal to userName is removed from the current screen.
 ====
 
 
 ==== waitNetworkTrafficIdle
-Wait that network traffic idle. Cerberus will wait until requests are no longer performed. That can be used in order to secure that all page components are fully loaded and does not miss some important ressource hits. In order to do so, Cerberus will check periodically the number of hits generated from the application. When the number of hits stops to grow during that period, Cerberus stop waiting and continue the test.
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Wait that network traffic idle. Cerberus will wait until requests are no longer performed. That can be used in order to secure that all page components are fully loaded and does not miss some important resource hits. In order to do so, Cerberus will check periodically the number of hits generated from the application since the beginning of the test case. When the number of hits stops to grow during that period, Cerberus stop waiting and continue the test case.
 
 Parameter 'cerberus_networkstatsave_idleperiod_ms' can be used to change the period in millisecond and 'cerberus_networkstatsave_idlemaxloop_nb' can be used in order to limit those checks after a maximum of iteration.
 
@@ -443,15 +509,25 @@ It also require at least version 1.1 of the executor.
 
 
 ==== callService
-Call a service (REST, FTP, KAFKA,...) defined the Service Library and provide the output within the execution.
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Call a service (REST, FTP, KAFKA,...) defined on the Service Library and provide the output within the execution.
 
 *[blue]#Value1#* : Name of the service to call.
 
-*[blue]#Value2#* : Nb of Event until the action finish. It is only used if the Service is a KAFKA service with a SEARCH method.
+*[blue]#Value2#* : Nb of Event until the action finish. It is only used if the Service is a KAFKA service with a SEARCH method. It correspond to the nb of event the action will wait until it resume to the following controls or actions.
 
-*[blue]#Value3#* : Time in second until the action finish.It is only used if the Service is a KAFKA service with a SEARCH method.
+*[blue]#Value3#* : Time in second until the action finish.It is only used if the Service is a KAFKA service with a SEARCH method. It correspond to maximum time in second the action will wait until it resume to the following controls or actions.
 
 ==== executeSqlUpdate
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
 Will allow you to execute SQL update (insert,delete,update).
 
 *[blue]#Value1#* : Name of the database where the SQL will be executed. Database needs to be created into the invariant `PROPERTYDATABASE` and configured on the corresponding environment.
@@ -459,6 +535,11 @@ Will allow you to execute SQL update (insert,delete,update).
 *[blue]#Value2#* : SQL to be executed.
 
 ==== executeSqlStoredProcedure
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
 Will allow you to execute SQL stored procedure.
 
 *[blue]#Value1#* : Name of the database where the SQL will be executed. Database needs to be created into the invariant `PROPERTYDATABASE` and configured on the corresponding environment.
@@ -466,21 +547,49 @@ Will allow you to execute SQL stored procedure.
 *[blue]#Value2#* : SQL to be executed.
 
 ==== calculateProperty
+|=== 
 
-Will allow you to calculate a *[red]#Property#* defined in the property section of the test case and optionaly update the content with another property.
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Will allow you to calculate a *[red]#Property#* defined in the property section of the test case and optionally update the content with another property. That action should only be used if you need to force a calculation at a precise timing or if you want to recalculate it with the latest value. A property calculation is automatically triggered when using a property without being forced to use that action.
 
 *[blue]#Value1#* : Name of the property to calculate. If the property is already calculated, it will be forced to be calculated again.
 
 *[blue]#Value2#* : [Optional] Name of a second property that will affect the property in *Value1*.
 
-
 ==== setNetworkTrafficContent
-Retrieve the network traffic from Cerberus Executor (when activated at robot level) and calculate a json message that can be used for direct controls on all attached controls. If Robot Executor is not activated, Action will end in NA Status and all attached controls ignored.
+|=== 
 
-*[blue]#Value1#* : URL to filter.
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
 
+|=== 
+Retrieve the network traffic from Cerberus Executor (when activated at robot level) and calculate a json message that can be used for direct controls on all attached controls. If Robot Executor is not activated, Action will end in NE Status and all attached controls ignored. Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
+
+*[blue]#Value1#* : URL to filter. Network requests will be filtered based on that value. Any url that contain the value1 will be included in the network traffic.
+
+*[blue]#Value2#* : [Optional] Flag in order to include the response content of every requests. For speed and performance reason, Cerberus by default will not retrieve the content of every requests. If you want to get them in order to perform some controls on them, you can use that flag.
+
+[NOTE]
+====
+This action is only possible when Robot has the Cerberus executor activated and fully working.
+It also require at least version 1.1 of the executor.
+====
+
+==== setServiceCallContent
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Force current content of the test case on the last service call in a JSON format. That JSON will allow controls on the structure of the last call for both Request and Response including information such as http header, http protocol version, or return code. Any control attached to that action will take json path as element syntax for direct controls. If no calls were performed before that action, action will end in NE Status and all attached controls ignored. Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
 
 ==== doNothing
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
 Just perform no action. No action will be executed and engine will go to the next action or control
 
 ==== removeDifference

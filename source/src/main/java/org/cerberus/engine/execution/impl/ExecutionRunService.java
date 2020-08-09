@@ -381,7 +381,7 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDETAILEDDATA));
             updateTCExecutionWebSocketOnly(tCExecution, true);
-            
+
             LOG.debug(logPrefix + "Loading Pre-testcases.");
             List<TestCase> preTests = testCaseService.getTestCaseForPrePostTesting(Test.TEST_PRETESTING, tCExecution.getTestCaseObj().getApplication(), tCExecution.getCountry(),
                     tCExecution.getSystem(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision());
@@ -1290,8 +1290,9 @@ public class ExecutionRunService implements IExecutionRunService {
             return actionExe;
         }
 
-        // If Action setNetworkTrafficContent is not executed, we don't execute the corresponding controls.
-        if (actionExe.getActionResultMessage().getCodeString().equals("NE") && actionExe.getAction().equals(TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT)) {
+        // If Action setNetworkTrafficContent or setServiceCallContent is not executed, we don't execute the corresponding controls.
+        if (actionExe.getActionResultMessage().getCodeString().equals("NE")
+                && (actionExe.getAction().equals(TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT) || actionExe.getAction().equals(TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT))) {
             return actionExe;
         }
         //As controls are associated with an action, the current state for the action is stored in order to restore it
@@ -1505,8 +1506,19 @@ public class ExecutionRunService implements IExecutionRunService {
 
         }
 
-        // All controls of the actions are done, we now put back the AppTypeEngine value to the one from the application.
+        /**
+         *
+         * All controls of the actions are done. We now put back the
+         * AppTypeEngine value to the one from the application. and also put
+         * back the last service called content and format.
+         *
+         */
         exe.setAppTypeEngine(exe.getApplicationObj().getType());
+        if (exe.getLastServiceCalled() != null) {
+            exe.getLastServiceCalled().setResponseHTTPBody(exe.getOriginalLastServiceCalled());
+            exe.getLastServiceCalled().setResponseHTTPBodyContentType(exe.getOriginalLastServiceCalledContent());
+            exe.getLastServiceCalled().setRecordTraceFile(true);
+        }
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         updateTCExecutionWebSocketOnly(exe, false);

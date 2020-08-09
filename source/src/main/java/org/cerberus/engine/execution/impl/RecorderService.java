@@ -468,17 +468,7 @@ public class RecorderService implements IRecorderService {
             // Service Call META data information.
             Recorder recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "call", "json", false);
 
-            switch (se.getType()) {
-                case AppService.TYPE_FTP:
-                    recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toFTPJSONOnExecution().toString());
-                    break;
-                case AppService.TYPE_KAFKA:
-                    recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toKAFKAOnExecution().toString());
-                    break;
-                default:
-                    recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toJSONOnExecution().toString());
-                    break;
-            }
+            recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toJSONOnExecution().toString());
 
             // Index file created to database.
             object = testCaseExecutionFileFactory.create(0, runId, recorderRequest.getLevel(), "Service Call", recorderRequest.getRelativeFilenameURL(), "JSON", "", null, "", null);
@@ -543,6 +533,49 @@ public class RecorderService implements IRecorderService {
                 testCaseExecutionFileService.save(object);
                 objectFileList.add(object);
             }
+        } catch (Exception ex) {
+            LOG.error(logPrefix + ex.toString(), ex);
+        }
+        return objectFileList;
+    }
+
+    @Override
+    public List<TestCaseExecutionFile> recordServiceCallContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, AppService se) {
+        // Used for logging purposes
+        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
+
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
+
+        if (!se.isRecordTraceFile()) {
+            return objectFileList;
+        }
+        TestCaseExecutionFile object = null;
+        String test = null;
+        String testCase = null;
+        String step = null;
+        String index = null;
+        String sequence = null;
+        if (testCaseStepActionExecution != null) {
+            test = testCaseExecution.getTest();
+            testCase = testCaseExecution.getTestCase();
+            step = String.valueOf(testCaseStepActionExecution.getStep());
+            index = String.valueOf(testCaseStepActionExecution.getIndex());
+            sequence = String.valueOf(testCaseStepActionExecution.getSequence());
+        }
+        long runId = testCaseExecution.getId();
+
+        try {
+
+            // Service Call META data information.
+            Recorder recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, null, null, 0, "call", "json", false);
+
+            recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toJSONOnExecution().toString());
+
+            // Index file created to database.
+            object = testCaseExecutionFileFactory.create(0, runId, recorderRequest.getLevel(), "Service Call", recorderRequest.getRelativeFilenameURL(), "JSON", "", null, "", null);
+            testCaseExecutionFileService.save(object);
+            objectFileList.add(object);
+
         } catch (Exception ex) {
             LOG.error(logPrefix + ex.toString(), ex);
         }

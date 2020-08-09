@@ -4,9 +4,11 @@
 
 *Improvements / New features*
 [square]
-* Support for Kafka Headers + better error message on Kafka avoiding to analysis of application server logs. #2152
-* Small modifications on service modal in order to isolate the request on 1 tab. All non request data have moved to 1st tab.
-* Added a new dashboard in "Execution in queue" page in order to monitor queue size and nb of simultaneous executions over time.
+* [API] Support for Kafka Headers + better error message on Kafka avoiding to analysis of application server logs. #2152
+* [API] New 'setServiceCallContent' action in order to allow controls on full request and response structure (headers, http code,... )
+* [API] Small modifications on service modal in order to isolate the request information on one single tab. All non request data have moved to 1st tab.
+* [API] "Service Call" JSON body response now display in JSON mode if answer is in JSON (it used to be added in a single line text format).
+* [QUEUE MANAGEMENT] Added a new dashboard in "Execution in queue" page in order to monitor queue size and nb of simultaneous executions over time.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

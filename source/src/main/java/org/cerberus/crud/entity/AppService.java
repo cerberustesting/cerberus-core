@@ -408,6 +408,19 @@ public class AppService {
     }
 
     public JSONObject toJSONOnExecution() {
+        switch (this.getType()) {
+            case AppService.TYPE_FTP:
+                return this.toJSONOnFTPExecution();
+            case AppService.TYPE_KAFKA:
+                return this.toJSONOnKAFKAExecution();
+            default:
+                return this.toJSONOnDefaultExecution();
+        }
+
+    }
+
+    public JSONObject toJSONOnDefaultExecution() {
+
         JSONObject jsonMain = new JSONObject();
         JSONObject jsonMyRequest = new JSONObject();
         JSONObject jsonMyResponse = new JSONObject();
@@ -456,7 +469,19 @@ public class AppService {
             // Response Information.
             jsonMyResponse.put("HTTP-ReturnCode", this.getResponseHTTPCode());
             jsonMyResponse.put("HTTP-Version", this.getResponseHTTPVersion());
-            jsonMyResponse.put("HTTP-ResponseBody", this.getResponseHTTPBody());
+            if (!StringUtil.isNullOrEmpty(this.getResponseHTTPBody())) {
+                try {
+                    JSONArray respBody = new JSONArray(this.getResponseHTTPBody());
+                    jsonMyResponse.put("HTTP-ResponseBody", respBody);
+                } catch (JSONException e1) {
+                    try {
+                        JSONObject respBody = new JSONObject(this.getResponseHTTPBody());
+                        jsonMyResponse.put("HTTP-ResponseBody", respBody);
+                    } catch (JSONException e2) {
+                        jsonMyResponse.put("HTTP-ResponseBody", this.getResponseHTTPBody());
+                    }
+                }
+            }
             jsonMyResponse.put("HTTP-ResponseContentType", this.getResponseHTTPBodyContentType());
             if (!(this.getResponseHeaderList().isEmpty())) {
                 JSONObject jsonHeaders = new JSONObject();
@@ -474,7 +499,7 @@ public class AppService {
         return jsonMain;
     }
 
-    public JSONObject toKAFKAOnExecution() {
+    public JSONObject toJSONOnKAFKAExecution() {
         JSONObject jsonMain = new JSONObject();
         JSONObject jsonMyRequest = new JSONObject();
         JSONObject jsonMyResponse = new JSONObject();
@@ -558,7 +583,7 @@ public class AppService {
         return jsonMain;
     }
 
-    public JSONObject toFTPJSONOnExecution() {
+    public JSONObject toJSONOnFTPExecution() {
         JSONObject jsonMain = new JSONObject();
         JSONObject jsonMyRequest = new JSONObject();
         JSONObject jsonMyResponse = new JSONObject();

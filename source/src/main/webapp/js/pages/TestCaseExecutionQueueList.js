@@ -111,6 +111,10 @@ function initPage() {
         tab = "#tabDetails";
     }
 
+//    if (tab === "#tabDetails") {
+//        refreshTable();
+//    }
+
     // React on tab changes
     $('#tabsScriptEdit a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         sessionStorage.setItem("TestCaseExecutionQueueList-TAB", $(e.target).attr("href"));
@@ -450,17 +454,18 @@ function resetTableFilters() {
 }
 
 function refreshTable() {
+    console.info("refresh");
     getTable().fnDraw();
 }
 
-function filterAndDisplayTable(poolId) {
-    filterTable(poolId);
-    displayTable();
-}
-
-function displayTable() {
-    $('.nav-tabs a[href="#tabDetails"]').tab('show');
-}
+//function filterAndDisplayTable(poolId) {
+//    filterTable(poolId);
+//    displayTable();
+//}
+//
+//function displayTable() {
+//    $('.nav-tabs a[href="#tabDetails"]').tab('show');
+//}
 
 function aoColumnsFunc(tableId) {
     var doc = new Doc();

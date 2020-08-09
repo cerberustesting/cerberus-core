@@ -148,6 +148,8 @@ public class TestCaseExecution {
     private Robot robotObj;
     private RobotExecutor robotExecutorObj;
     private AppService lastServiceCalled;
+    private String originalLastServiceCalled; // Used in order to save the last call when using the action setServiceCallContent.
+    private String originalLastServiceCalledContent; // Used in order to save the last call when using the action setServiceCallContent.
     private Integer nbExecutions; // Has the nb of execution that was necessary to execute the testcase.
     // Global parameters.
     private Integer cerberus_action_wait_default;
@@ -390,6 +392,23 @@ public class TestCaseExecution {
 
     public void setLastServiceCalled(AppService lastServiceCalled) {
         this.lastServiceCalled = lastServiceCalled;
+    }
+
+    public String getOriginalLastServiceCalled() {
+        return originalLastServiceCalled;
+    }
+
+    public void setOriginalLastServiceCalled(String originalLastServiceCalled) {
+        LOG.debug("TOTO set.");
+        this.originalLastServiceCalled = originalLastServiceCalled;
+    }
+
+    public String getOriginalLastServiceCalledContent() {
+        return originalLastServiceCalledContent;
+    }
+
+    public void setOriginalLastServiceCalledContent(String originalLastServiceCalledContent) {
+        this.originalLastServiceCalledContent = originalLastServiceCalledContent;
     }
 
     public long getLastWebsocketPush() {

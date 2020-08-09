@@ -8640,8 +8640,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + "  KEY `IX_queuestat_01` (`DateCreated`)"
                 + ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
         a.add(b.toString());
-        
-        
+
+        // ADD setServiceCallContent Action.
+        // 1471
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES('ACTION', 'setServiceCallContent', 24910, 'Set JSON Service Call to current content', 'Set Call content');");
+
         return a;
     }
 

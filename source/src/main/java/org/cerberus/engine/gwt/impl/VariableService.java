@@ -343,13 +343,13 @@ public class VariableService implements IVariableService {
              */
             if (!(tCExecution.getLastServiceCalled() == null)) {
                 stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_HTTPCODE%", String.valueOf(tCExecution.getLastServiceCalled().getResponseHTTPCode()));
-                stringToDecode = stringToDecode.replace("%system.LASTSERVICE_CALL%", tCExecution.getLastServiceCalled().toJSONOnExecution().toString());
+                stringToDecode = stringToDecode.replace("%system.LASTSERVICE_CALL%", tCExecution.getLastServiceCalled().toJSONOnDefaultExecution().toString());
             } else {
                 stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_HTTPCODE%", VALUE_WHEN_NULL);
             }
             if (!(tCExecution.getLastServiceCalled() == null)) {
                 stringToDecode = stringToDecode.replace("%system.LASTSERVICE_HTTPCODE%", String.valueOf(tCExecution.getLastServiceCalled().getResponseHTTPCode()));
-                stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_CALL%", tCExecution.getLastServiceCalled().toJSONOnExecution().toString());
+                stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_CALL%", tCExecution.getLastServiceCalled().toJSONOnDefaultExecution().toString());
             } else {
                 stringToDecode = stringToDecode.replace("%system.LASTSERVICE_HTTPCODE%", VALUE_WHEN_NULL);
             }

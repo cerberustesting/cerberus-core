@@ -49,7 +49,7 @@
             <h1 class="page-title-line" id="title">Executions in Queue</h1>
 
             <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
-                <li class="active"><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">Executions in queue</a></li>
+                <li><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">Executions in queue</a></li>
                 <li><a data-toggle="tab" href="#tabFollowUp" id="editTabFollowUp" name="tabFollowUp">Pools Follow Up</a></li>
                 <li><a data-toggle="tab" href="#tabQueueHistory" id="editTabQueueHistory" name="tabQueueHistory">Queue History</a></li>
                 <li><a data-toggle="tab" href="#tabJobStatus" id="editTabJobStatus" name="tabJobStatus">Queue Job Status</a></li>

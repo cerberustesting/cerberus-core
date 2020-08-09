@@ -80,6 +80,15 @@ public interface IRecorderService {
      *
      * @param testCaseExecution
      * @param testCaseStepActionExecution
+     * @param service
+     * @return
+     */
+    List<TestCaseExecutionFile> recordServiceCallContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, AppService service);
+    
+    /**
+     *
+     * @param testCaseExecution
+     * @param testCaseStepActionExecution
      * @param control
      * @param property
      * @param service
