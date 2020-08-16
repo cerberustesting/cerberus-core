@@ -99,7 +99,7 @@ public class ServiceService implements IServiceService {
             if (StringUtil.isNullOrEmpty(service)) {
                 LOG.debug("Creating AppService from parameters.");
                 appService = factoryAppService.create("null", AppService.TYPE_SOAP, "", "", "", request, "", "", "", "", "Automatically created Service from datalib.",
-                        servicePathParam, "", operation, null, null, null, null, null);
+                        servicePathParam, true, "", operation, null, null, null, null, null);
                 service = "null";
 
             } else {
@@ -385,7 +385,7 @@ public class ServiceService implements IServiceService {
                                  * Call REST and store it into the execution.
                                  */
                                 result = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(),
-                                        appService.getHeaderList(), appService.getContentList(), token, timeOutMs, system, tCExecution);
+                                        appService.getHeaderList(), appService.getContentList(), token, timeOutMs, system, appService.isFollowRedir(), tCExecution);
                                 message = result.getResultMessage();
                                 break;
 

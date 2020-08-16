@@ -92,7 +92,7 @@ public class FactoryTestCase implements IFactoryTestCase {
     @Override
     public TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, String implementer, String executor, String usrModif, String application,
             boolean isActiveQA, boolean isActiveUAT, boolean isActivePROD, int priority, String type, String status, String description, String detailedDescription, boolean isActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor, String fromMinor,
-            String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugs, String targetMajor, String targetMinor, String comment, String dateCreated, String userAgent, String screenSize, Timestamp dateModif, int version) {
+            String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugs, String targetMajor, String targetMinor, String comment, Timestamp dateCreated, String userAgent, String screenSize, Timestamp dateModif, int version) {
         TestCase newTestCase = new TestCase();
         newTestCase.setActive(isActive);
         newTestCase.setConditionOperator(conditionOperator);

@@ -28,6 +28,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1619,6 +1620,108 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
+    public AnswerList<TestCase> readStatsBySystem(List<String> systems, Date to) {
+        AnswerList<TestCase> response = new AnswerList<>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        List<TestCase> list = new ArrayList<>();
+        StringBuilder query = new StringBuilder();
+        Timestamp t1;
+
+        query.append("select app.system, tec.Status, tec.DateCreated from testcase tec  ");
+        query.append("join application app ON tec.application=app.application ");
+
+        query.append("WHERE 1=1");
+
+        query.append(" and tec.`DateCreated` < ? ");
+
+        // Always filter on system user can view
+        query.append(" AND ");
+        query.append(UserSecurity.getSystemAllowForSQL("app.`system`"));
+        query.append(" ");
+
+        if (systems != null && !systems.isEmpty()) {
+            query.append(" AND ");
+            query.append(SqlUtil.generateInClause("app.`system`", systems));
+        }
+
+        query.append("order by tec.DateCreated; ");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                int i = 1;
+                t1 = new Timestamp(to.getTime());
+                preStat.setTimestamp(i++, t1);
+                if (systems != null && !systems.isEmpty()) {
+                    for (String string : systems) {
+                        preStat.setString(i++, string);
+                    }
+                }
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    list = new ArrayList<>();
+
+                    while (resultSet.next()) {
+                        list.add(loadStatsFromResultSet(resultSet));
+                    }
+
+                    if (list.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                        LOG.error("Partial Result in the query.");
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList<>(list, list.size());
+                    } else if (list.size() <= 0) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                        response = new AnswerList<>(list, list.size());
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        response = new AnswerList<>(list, list.size());
+                    }
+
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+        response.setDataList(list);
+        response.setResultMessage(msg);
+        return response;
+    }
+
+    @Override
     public AnswerItem<TestCase> readByKey(String test, String testCase) {
         AnswerItem<TestCase> ans = new AnswerItem<>();
         TestCase result = null;
@@ -2109,7 +2212,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         boolean isActiveUAT = resultSet.getBoolean("tec.isActiveUAT");
         boolean isActivePROD = resultSet.getBoolean("tec.isActivePROD");
         String usrCreated = resultSet.getString("tec.UsrCreated");
-        String dateCreated = resultSet.getString("tec.DateCreated");
+        Timestamp dateCreated = resultSet.getTimestamp("tec.DateCreated");
         String usrModif = resultSet.getString("tec.UsrModif");
         Timestamp dateModif = resultSet.getTimestamp("tec.DateModif");
         String userAgent = resultSet.getString("tec.useragent");
@@ -2125,6 +2228,22 @@ public class TestCaseDAO implements ITestCaseDAO {
                 usrModif, tcapplication, isActiveQA, isActiveUAT, isActivePROD, priority, type,
                 status, description, detailedDescription, isActive, conditionOperator, conditionVal1, conditionVal2, conditionVal3, fromMajor, fromMinor, toMajor,
                 toMinor, status, bugs, targetMajor, targetMinor, comment, dateCreated, userAgent, screenSize, dateModif, version);
+        newTestCase.setSystem(system);
+        return newTestCase;
+    }
+
+    private TestCase loadStatsFromResultSet(ResultSet resultSet) throws SQLException {
+        String status = resultSet.getString("tec.Status");
+        Timestamp dateCreated = resultSet.getTimestamp("tec.DateCreated");
+        String system = null;
+        try {
+            system = resultSet.getString("app.system");
+        } catch (SQLException e) {
+            LOG.debug("Column system does not Exist.");
+        }
+
+        TestCase newTestCase = factoryTestCase.create(null, null, null, null, null, null, null, null, null, false, false, false, 0, null, status, null,
+                null, false, null, null, null, null, null, null, null, null, status, null, null, null, null, dateCreated, null, null, null, 0);
         newTestCase.setSystem(system);
         return newTestCase;
     }

@@ -132,6 +132,7 @@ public class CreateAppService extends HttpServlet {
         String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("method"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String servicePath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("servicePath"), "", charset);
+        boolean isFollowRedir = ParameterParserUtil.parseBooleanParamAndDecode(fileData.get("isFollowRedir"), true, charset);
         String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(fileData.get("srvRequest"), null, charset);
         String kafkaTopic = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaTopic"), "", charset);
         String kafkaKey = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaKey"), "", charset);
@@ -167,7 +168,7 @@ public class CreateAppService extends HttpServlet {
             appServiceContentFactory = appContext.getBean(IFactoryAppServiceContent.class);
             appServiceHeaderFactory = appContext.getBean(IFactoryAppServiceHeader.class);
 
-            AppService appService = appServiceFactory.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, description, servicePath, attachementurl, operation, request.getRemoteUser(), null, null, null, fileName);
+            AppService appService = appServiceFactory.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, description, servicePath, isFollowRedir, attachementurl, operation, request.getRemoteUser(), null, null, null, fileName);
             ans = appServiceService.create(appService);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 

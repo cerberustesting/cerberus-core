@@ -404,10 +404,10 @@ public final class ParameterParserUtil {
         if (inParam == null) {
             return defaultVal;
         }
-        if ((inParam.equalsIgnoreCase(DEFAULT_BOOLEAN_TRUE_VALUE) || inParam.equalsIgnoreCase("yes") || inParam.equalsIgnoreCase("true"))) {
+        if ((inParam.equalsIgnoreCase(DEFAULT_BOOLEAN_TRUE_VALUE) || inParam.equalsIgnoreCase("yes") || inParam.equalsIgnoreCase("true") || inParam.equalsIgnoreCase("1"))) {
             return true;
         }
-        if ((inParam.equalsIgnoreCase(DEFAULT_BOOLEAN_FALSE_VALUE) || inParam.equalsIgnoreCase("no") || inParam.equalsIgnoreCase("false"))) {
+        if ((inParam.equalsIgnoreCase(DEFAULT_BOOLEAN_FALSE_VALUE) || inParam.equalsIgnoreCase("no") || inParam.equalsIgnoreCase("false") || inParam.equalsIgnoreCase("0"))) {
             return false;
         }
         return defaultVal;

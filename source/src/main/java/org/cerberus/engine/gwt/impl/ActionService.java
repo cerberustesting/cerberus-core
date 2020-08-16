@@ -1561,7 +1561,7 @@ public class ActionService implements IActionService {
             LOG.debug("Getting Network Traffic content from URL : " + url);
 
             AnswerItem<AppService> result = new AnswerItem<>();
-            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", exe);
+            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, exe);
 
             AppService appSrv = result.getItem();
             JSONObject har = new JSONObject(appSrv.getResponseHTTPBody());

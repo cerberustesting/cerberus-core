@@ -115,7 +115,7 @@ public class KafkaService implements IKafkaService {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_PRODUCEKAFKA);;
         AnswerItem<AppService> result = new AnswerItem<>();
-        AppService serviceREST = factoryAppService.create("", AppService.TYPE_KAFKA, AppService.METHOD_KAFKAPRODUCE, "", "", "", "", "", "", "", "", "", "", "",
+        AppService serviceREST = factoryAppService.create("", AppService.TYPE_KAFKA, AppService.METHOD_KAFKAPRODUCE, "", "", "", "", "", "", "", "", "", true, "", "",
                 "", null, "", null, null);
 
         // If token is defined, we add 'cerberus-token' on the http header.
@@ -277,7 +277,6 @@ public class KafkaService implements IKafkaService {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEARCHKAFKA);
         AnswerItem<String> result = new AnswerItem<>();
-        AppService serviceREST = factoryAppService.create("", AppService.TYPE_KAFKA, AppService.METHOD_KAFKASEARCH, "", "", "", "", "", "", "", "", "", "", "", "", null, "", null, null);
         Instant date1 = Instant.now();
 
         JSONArray resultJSON = new JSONArray();

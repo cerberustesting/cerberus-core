@@ -8625,7 +8625,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("DELETE FROM appserviceheader USING appserviceheader join appservice ON appservice.Service = appserviceheader.Service where appservice.`type` = 'KAFKA';");
 
         // Create Table Application Object
-        // 960
+        // 1534
         b = new StringBuilder();
         b.append("CREATE TABLE `queuestat` ("
                 + "  `ID` int(11) NOT NULL AUTO_INCREMENT,"
@@ -8642,9 +8642,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
         // ADD setServiceCallContent Action.
-        // 1471
+        // 1535
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
                 + "VALUES('ACTION', 'setServiceCallContent', 24910, 'Set JSON Service Call to current content', 'Set Call content');");
+
+        // ADD setServiceCallContent Action.
+        // 1536
+        a.add("ALTER TABLE `appservice` ADD COLUMN `isFollowRedir` BOOLEAN DEFAULT 1 AFTER `ServicePath`;");
 
         return a;
     }

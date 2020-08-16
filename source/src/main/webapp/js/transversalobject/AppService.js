@@ -260,6 +260,10 @@ function confirmAppServiceModalHandler(mode, page) {
         formData.append("file", file.prop("files")[0]);
     }
 
+    if (isEmpty(formData.get("isFollowRedir"))) {
+        formData.append("isFollowRedir", 0);
+    }
+
     var temp = data.service;
 
     $.ajax({
@@ -319,6 +323,7 @@ function refreshDisplayOnTypeChange(newValue) {
         $("label[name='kafkaKeyField']").parent().hide();
         $("label[name='kafkaFilterPathField']").parent().hide();
         $("label[name='kafkaFilterValueField']").parent().hide();
+        $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tab3Text').text("Request Detail");
     } else if (newValue === "FTP") {
         $('#editSoapLibraryModal #method').prop("disabled", false);
@@ -341,6 +346,7 @@ function refreshDisplayOnTypeChange(newValue) {
         $("label[name='kafkaKeyField']").parent().hide();
         $("label[name='kafkaFilterPathField']").parent().hide();
         $("label[name='kafkaFilterValueField']").parent().hide();
+        $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tab3Text').text("Request Detail");
     } else if (newValue === "KAFKA") {
         $('#editSoapLibraryModal #method').prop("disabled", false);
@@ -363,6 +369,7 @@ function refreshDisplayOnTypeChange(newValue) {
         $("label[name='kafkaKeyField']").parent().show();
         $("label[name='kafkaFilterPathField']").parent().show();
         $("label[name='kafkaFilterValueField']").parent().show();
+        $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tab3Text').text("KAFKA Props");
     } else { // REST
         $('#editSoapLibraryModal #method').prop("disabled", false);
@@ -385,6 +392,7 @@ function refreshDisplayOnTypeChange(newValue) {
         $("label[name='kafkaKeyField']").parent().hide();
         $("label[name='kafkaFilterPathField']").parent().hide();
         $("label[name='kafkaFilterValueField']").parent().hide();
+        $("label[name='isFollowRedirField']").parent().show();
         $('#editSoapLibraryModal #tab3Text').text("Request Detail");
     }
 }
@@ -453,6 +461,7 @@ function feedAppServiceModal(serviceName, modalId, mode) {
         serviceObj1.contentList = "";
         serviceObj1.headerList = "";
         serviceObj1.fileName = "Drag and drop Files";
+        serviceObj1.isFollowRedir = true;
 
         feedAppServiceModalData(serviceObj1, modalId, mode, hasPermissions);
         refreshDisplayOnTypeChange(serviceObj1.type);
@@ -508,6 +517,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         refreshDisplayOnTypeChange("REST");
         formEdit.find("#method").prop("value", "GET");
         formEdit.find("#servicePath").prop("value", "");
+        formEdit.find("#isFollowRedir").prop("checked", true);
         formEdit.find("#attachementurl").prop("value", "");
         formEdit.find("#srvRequest").text("");
         formEdit.find("#group").prop("value", "");
@@ -523,6 +533,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#type").val(service.type);
         formEdit.find("#method").val(service.method);
         formEdit.find("#servicePath").prop("value", service.servicePath);
+        formEdit.find("#isFollowRedir").prop("checked", service.isFollowRedir);
         formEdit.find("#attachementurl").prop("value", service.attachementURL);
         formEdit.find("#srvRequest").text(service.serviceRequest);
         formEdit.find("#group").prop("value", service.group);
@@ -577,6 +588,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#attachementurl").prop("readonly", true);
         formEdit.find("#srvRequest").prop("readonly", "readonly");
         formEdit.find("#description").prop("readonly", "readonly");
+        formEdit.find("#isFollowRedir").prop("readonly", "readonly");
         formEdit.find("#kafkaTopic").prop("readonly", "readonly");
         formEdit.find("#kafkaKey").prop("readonly", "readonly");
         formEdit.find("#kafkaFilterPath").prop("readonly", "readonly");
@@ -592,6 +604,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#attachementurl").prop("readonly", false);
         formEdit.find("#srvRequest").removeProp("readonly");
         formEdit.find("#description").removeProp("disabled");
+        formEdit.find("#isFollowRedir").prop("readonly", false);
         formEdit.find("#kafkaTopic").removeProp("disabled");
         formEdit.find("#kafkaKey").removeProp("disabled");
         formEdit.find("#kafkaFilterPath").removeProp("disabled");

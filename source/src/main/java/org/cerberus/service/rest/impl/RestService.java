@@ -150,7 +150,7 @@ public class RestService implements IRestService {
                 public AppService handleResponse(final HttpResponse response)
                         throws ClientProtocolException, IOException {
                     AppService myResponse = factoryAppService.create("", AppService.TYPE_REST,
-                            AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", "", "", "", null, "", null, null);
+                            AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", true, "", "", "", null, "", null, null);
                     int responseCode = response.getStatusLine().getStatusCode();
                     myResponse.setResponseHTTPCode(responseCode);
                     myResponse.setResponseHTTPVersion(response.getProtocolVersion().toString());
@@ -179,9 +179,9 @@ public class RestService implements IRestService {
     @Override
     public AnswerItem<AppService> callREST(String servicePath, String requestString, String method,
             List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
-            String system, TestCaseExecution tcexecution) {
+            String system, boolean isFollowRedir, TestCaseExecution tcexecution) {
         AnswerItem<AppService> result = new AnswerItem<>();
-        AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "", "", "", "", "",
+        AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "", "", "", true, "", "",
                 "", null, "", null, null);
         serviceREST.setProxy(false);
         serviceREST.setProxyHost(null);
@@ -278,6 +278,14 @@ public class RestService implements IRestService {
                 httpclientBuilder
                         .setSSLContext(sslContext)
                         .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+            }
+
+            // Disable redir if required. 
+            if (isFollowRedir) {
+                serviceREST.setFollowRedir(true);
+            } else {
+                httpclientBuilder.disableRedirectHandling();
+                serviceREST.setFollowRedir(false);
             }
 
             httpclient = httpclientBuilder.build();

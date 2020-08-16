@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -196,7 +197,6 @@ public interface ITestCaseService {
     /**
      *
      * @param test
-     * @param project
      * @param app
      * @param active
      * @param priority
@@ -293,6 +293,14 @@ public interface ITestCaseService {
      * @return
      */
     public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    /**
+     *
+     * @param systems
+     * @param to
+     * @return
+     */
+    public AnswerList<TestCase> readStatsBySystem(List<String> systems, Date to);
 
     /**
      *

@@ -515,7 +515,7 @@ public class ControlService implements IControlService {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_EQUAL);
                     mes.setDescription(mes.getDescription()
                             .replace("%COND%", control)
-                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
+                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString().replace("%STRING3%", ""))
                     );
                 }
                 break;
@@ -531,7 +531,7 @@ public class ControlService implements IControlService {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_DIFFERENT);
                     mes.setDescription(mes.getDescription()
                             .replace("%COND%", control)
-                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
+                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString()).replace("%STRING3%", "")
                     );
                 }
                 break;
@@ -1197,13 +1197,13 @@ public class ControlService implements IControlService {
 
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                             try {
-                                pathContent = jsonService.getFromJson(responseBody, null, path);
-                            } catch (Exception ex) {
-                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                                mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
-                                return mes;
-                            }
-                            break;
+                            pathContent = jsonService.getFromJson(responseBody, null, path);
+                        } catch (Exception ex) {
+                            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+                            mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
+                            return mes;
+                        }
+                        break;
 
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);

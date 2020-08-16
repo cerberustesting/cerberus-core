@@ -67,7 +67,7 @@ public class TestCase {
     private String userAgent;
     private String screenSize;
     private String usrCreated;
-    private String dateCreated;
+    private Timestamp dateCreated;
     private String usrModif;
     private Timestamp dateModif;
 
@@ -108,11 +108,11 @@ public class TestCase {
         this.system = system;
     }
 
-    public String getDateCreated() {
+    public Timestamp getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(String dateCreated) {
+    public void setDateCreated(Timestamp dateCreated) {
         this.dateCreated = dateCreated;
     }
 

@@ -21,6 +21,7 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.TestCase;
@@ -168,6 +169,14 @@ public interface ITestCaseDAO {
      * @return
      */
     public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    /**
+     *
+     * @param systems
+     * @param to
+     * @return
+     */
+    public AnswerList<TestCase> readStatsBySystem(List<String> systems, Date to);
 
     /**
      *

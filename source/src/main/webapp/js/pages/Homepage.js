@@ -31,6 +31,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         initHPGraph();
         loadTagHistoBar();
+        loadTcHistoBar();
 
         $('body').tooltip({
             selector: '[data-toggle="tooltip"]'
@@ -201,8 +202,9 @@ function loadTagHistoBar() {
     showLoader($("#panelHistory"));
 
     fromD = new Date();
-    fromD.setMonth(fromD.getMonth() - 3);
+    fromD.setMonth(fromD.getMonth() - 12);
     toD = new Date();
+    toD.setMonth(fromD.getMonth() - 1);
 
     $.ajax({
         url: "ReadExecutionTagHistory?from=" + fromD.toISOString() + "&to=" + toD.toISOString() + getUser().defaultSystemsQuery,
@@ -253,6 +255,74 @@ function buildExeBar(data) {
         timedatasets.push(dataset);
     }
 
+    configHistoExeBar.data.datasets = timedatasets;
+    configHistoExeBar.data.labels = data.curvesDatesNb;
+
+    window.myLineExeHistoBar.update();
+}
+
+function loadTcHistoBar() {
+    showLoader($("#panelTcHistory"));
+
+    fromD = new Date();
+    fromD.setMonth(fromD.getMonth() - 12);
+    toD = new Date();
+    toD.setMonth(fromD.getMonth() - 1);
+
+    $.ajax({
+        url: "ReadTestCaseStat?from=" + fromD.toISOString() + "&to=" + toD.toISOString() + getUser().defaultSystemsQuery,
+        method: "GET",
+        async: true,
+        dataType: 'json',
+        success: function (data) {
+            buildTcBar(data);
+            hideLoader($("#panelTcHistory"));
+        }
+    });
+}
+
+function buildTcBar(data) {
+
+    let curves = data.curvesNb;
+
+    // Sorting values by nb of requests.
+    sortedCurves = curves.sort(function (a, b) {
+        let a1 = a.key.nbExe;
+        let b1 = b.key.nbExe;
+        return b1 - a1;
+    });
+
+
+    var len = sortedCurves.length;
+
+    let timedatasets = [];
+
+    for (var i = 0; i < len; i++) {
+
+        let c = sortedCurves[i];
+        let d = [];
+        lend = c.points.length;
+        for (var j = 0; j < lend; j++) {
+            let p = {x: c.points[j].x, y: c.points[j].y};
+            d.push(p);
+        }
+        let lab = c.key.key;
+
+        var dataset = {
+            label: lab,
+            backgroundColor: "white",
+            borderColor: get_Color_fromindex(i),
+            pointBackgroundColor: get_Color_fromindex(i),
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            hitRadius: 10,
+            fill: false,
+            data: c.points
+        };
+
+        timedatasets.push(dataset);
+    }
+
     configHistoTcBar.data.datasets = timedatasets;
     configHistoTcBar.data.labels = data.curvesDatesNb;
 
@@ -262,24 +332,36 @@ function buildExeBar(data) {
 
 function initHPGraph() {
 
-    var tcbaroption = getHPOptionsBar("Executions", "nb");
+    var exebaroption = getHPOptionsExeBar("Executions", "nb");
+    var tcgraphoption = getHPOptionsTcGraph("Testcases", "nb");
 
-    let tcbardatasets = [];
+    let exebardatasets = [];
+    let tcgraphdatasets = [];
 
-    configHistoTcBar = {
+    configHistoExeBar = {
         type: 'bar',
         data: {
-            datasets: tcbardatasets
+            datasets: exebardatasets
         },
-        options: tcbaroption
+        options: exebaroption
+    };
+    configHistoTcBar = {
+        type: 'line',
+        data: {
+            datasets: tcgraphdatasets
+        },
+        options: tcgraphoption
     };
 
-    var ctx = document.getElementById('canvasHistPerStatus').getContext('2d');
+    var ctx = document.getElementById('canvasHistExePerStatus').getContext('2d');
+    window.myLineExeHistoBar = new Chart(ctx, configHistoExeBar);
+
+    var ctx = document.getElementById('canvasHistTcPerStatus').getContext('2d');
     window.myLineTcHistoBar = new Chart(ctx, configHistoTcBar);
 
 }
 
-function getHPOptionsBar(title, unit) {
+function getHPOptionsExeBar(title, unit) {
     let option = {
         title: {
             text: title
@@ -303,6 +385,43 @@ function getHPOptionsBar(title, unit) {
                 }],
             yAxes: [{
                     stacked: true,
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+        }
+    };
+    return option;
+}
+
+function getHPOptionsTcGraph(title, unit) {
+    let option = {
+        hover: {
+            mode: 'nearest',
+            intersect: true
+        },
+        title: {
+            text: title
+        },
+        scales: {
+            xAxes: [{
+                    offset: false,
+                    type: 'time',
+                    stacked: false,
+                    time: {
+                        tooltipFormat: 'll',
+                        unit: 'day',
+                        round: 'day',
+                        displayFormats: {
+                            day: 'MMM D'
+                        }},
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Date'
+                    }
+                }],
+            yAxes: [{
+                    stacked: false,
                     ticks: {
                         beginAtZero: true
                     }
@@ -373,22 +492,26 @@ function loadTagExec() {
         tagList = readLastTagExec(searchTag);
     }
 
-    for (var index = 0; index < tagList.length; index++) {
-        var idDiv = '<div id="tagExecStatusRow' + index + '"></div>';
-        reportArea.append(idDiv);
-    }
+    if (tagList.length > 0) {
+        for (var index = 0; index < tagList.length; index++) {
+            var idDiv = '<div id="tagExecStatusRow' + index + '"></div>';
+            reportArea.append(idDiv);
+        }
 
-    for (var index = 0; index < tagList.length; index++) {
-        let : tagName = tagList[index];
-        //TODO find a way to remove the use for resendTag
-        var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + tagName + "&" + "outputReport=totalStatsCharts" + "&" + "outputReport=resendTag" + "&" + "sEcho=" + index;
-        var jqxhr = $.get(requestToServlet, null, "json");
+        for (var index = 0; index < tagList.length; index++) {
+            let : tagName = tagList[index];
+            //TODO find a way to remove the use for resendTag
+            var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + tagName + "&" + "outputReport=totalStatsCharts" + "&" + "outputReport=resendTag" + "&" + "sEcho=" + index;
+            var jqxhr = $.get(requestToServlet, null, "json");
 
-        $.when(jqxhr).then(function (data) {
-            generateTagReport(data.statsChart.contentTable.total, data.tag, data.sEcho);
-            nbTagLoaded++;
-            hideLoaderTag();
-        });
+            $.when(jqxhr).then(function (data) {
+                generateTagReport(data.statsChart.contentTable.total, data.tag, data.sEcho);
+                nbTagLoaded++;
+                hideLoaderTag();
+            });
+        }
+    } else {
+        hideLoader($("#LastTagExecPanel"));
     }
 
 }

@@ -28,7 +28,31 @@ import org.cerberus.crud.entity.AppService;
  */
 public interface IFactoryAppService {
 
-    AppService create(String service, String type, String method, String application, String group, String serviceRequest, 
-            String kafkaTopic, String kafkaKey, String kafkaFilterPath, String kafkaFilterValue, String description, String servicePath, String attachementURL, String operation, String usrCreated,
+    /**
+     *
+     * @param service
+     * @param type
+     * @param method
+     * @param application
+     * @param group
+     * @param serviceRequest
+     * @param kafkaTopic
+     * @param kafkaKey
+     * @param kafkaFilterPath
+     * @param kafkaFilterValue
+     * @param description
+     * @param servicePath
+     * @param isFollowRedir
+     * @param attachementURL
+     * @param operation
+     * @param usrCreated
+     * @param dateCreated
+     * @param usrModif
+     * @param dateModif
+     * @param fileName
+     * @return
+     */
+    AppService create(String service, String type, String method, String application, String group, String serviceRequest,
+            String kafkaTopic, String kafkaKey, String kafkaFilterPath, String kafkaFilterValue, String description, String servicePath, boolean isFollowRedir, String attachementURL, String operation, String usrCreated,
             Timestamp dateCreated, String usrModif, Timestamp dateModif, String fileName);
 }

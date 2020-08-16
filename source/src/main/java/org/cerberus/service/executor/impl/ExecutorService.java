@@ -133,7 +133,7 @@ public class ExecutorService implements IExecutorService {
             Integer i = 0;
             for (i = 0; i < maxLoop; i++) {
                 AnswerItem<AppService> result = new AnswerItem<>();
-                result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", null);
+                result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, null);
 
                 if (result.isCodeStringEquals("OK")) {
 
@@ -184,7 +184,7 @@ public class ExecutorService implements IExecutorService {
 
             LOG.debug("Getting Network Traffic content from URL : " + url);
             AnswerItem<AppService> result = new AnswerItem<>();
-            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", null);
+            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, null);
 
             AppService appSrv = result.getItem();
             return new JSONObject(appSrv.getResponseHTTPBody());

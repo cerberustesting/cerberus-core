@@ -21,6 +21,7 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -479,6 +480,11 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return testCaseDao.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
+    }
+
+    @Override
+    public AnswerList<TestCase> readStatsBySystem(List<String> system, Date to) {
+        return testCaseDao.readStatsBySystem(system, to);
     }
 
     @Override

@@ -41,6 +41,7 @@ public class AppService {
     private String type; // either SOAP/REST
     private String method; // Method used : POST/GET
     private String servicePath; // Path to access the service
+    private boolean isFollowRedir; // Path to access the service
     private String operation; // Operation used for SOAP Requests
     private String serviceRequest; // Content of the request.
     private String attachementURL; // Attachement in cas of SOAP call with attachement.
@@ -295,6 +296,14 @@ public class AppService {
         return servicePath;
     }
 
+    public boolean isFollowRedir() {
+        return isFollowRedir;
+    }
+
+    public void setFollowRedir(boolean isFollowRedir) {
+        this.isFollowRedir = isFollowRedir;
+    }
+
     public String getGroup() {
         return group;
     }
@@ -463,6 +472,7 @@ public class AppService {
                 }
             }
             jsonMyRequest.put("HTTP-Proxy", jsonProxy);
+            jsonMyRequest.put("isFollowRedir", this.isFollowRedir());
 
             jsonMain.put("Request", jsonMyRequest);
 

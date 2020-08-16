@@ -100,7 +100,22 @@
                             <label id="lblPerfParty">Execution History</label>
                         </div>
                         <div class="panel-body collapse in" id="histoChart1">
-                            <canvas id="canvasHistPerStatus" class=""></canvas>
+                            <canvas id="canvasHistExePerStatus" class=""></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6" id="TcStatPanel">
+                    <div id="panelTcHistory" class="panel panel-default" style="display: block;">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#histoChart2">
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                            <div class="btn-group pull-right">
+                                <button id="refreshTcs" class="btn btn-default btn-xs marginRight10" onclick="stopPropagation(event); loadTcHistoBar();"><span class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
+                            </div>
+                            <span class="fa fa-bar-chart fa-fw"></span>
+                            <label id="lblPerfParty">Testcase History Status</label>
+                        </div>
+                        <div class="panel-body collapse in" id="histoChart2">
+                            <canvas id="canvasHistTcPerStatus" class=""></canvas>
                         </div>
                     </div>
                 </div>
