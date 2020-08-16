@@ -202,9 +202,9 @@ function loadTagHistoBar() {
     showLoader($("#panelHistory"));
 
     fromD = new Date();
-    fromD.setMonth(fromD.getMonth() - 12);
+    fromD.setMonth(fromD.getMonth() - 3);
     toD = new Date();
-    toD.setMonth(fromD.getMonth() - 1);
+//    toD.setMonth(fromD.getMonth() - 1);
 
     $.ajax({
         url: "ReadExecutionTagHistory?from=" + fromD.toISOString() + "&to=" + toD.toISOString() + getUser().defaultSystemsQuery,
@@ -265,9 +265,9 @@ function loadTcHistoBar() {
     showLoader($("#panelTcHistory"));
 
     fromD = new Date();
-    fromD.setMonth(fromD.getMonth() - 12);
+    fromD.setMonth(fromD.getMonth() - 3);
     toD = new Date();
-    toD.setMonth(fromD.getMonth() - 1);
+//    toD.setMonth(fromD.getMonth() - 1);
 
     $.ajax({
         url: "ReadTestCaseStat?from=" + fromD.toISOString() + "&to=" + toD.toISOString() + getUser().defaultSystemsQuery,
