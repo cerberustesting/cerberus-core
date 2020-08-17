@@ -8650,6 +8650,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1536
         a.add("ALTER TABLE `appservice` ADD COLUMN `isFollowRedir` BOOLEAN DEFAULT 1 AFTER `ServicePath`;");
 
+        // ADD setServiceCallContent Action.
+        // 1537
+        a.add("ALTER TABLE `tag` ADD COLUMN `Comment` VARCHAR(1000) DEFAULT '' AFTER `Description`;");
+
         return a;
     }
 

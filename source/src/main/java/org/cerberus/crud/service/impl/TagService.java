@@ -221,7 +221,7 @@ public class TagService implements ITagService {
         Tag tag = (Tag) answerTag.getItem();
         if (tag == null) {
             LOG.debug("toto service : " + reqEnvironmentList.toString());
-            Answer ans = tagDAO.create(factoryTag.create(0, tagS, "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "", "",
+            Answer ans = tagDAO.create(factoryTag.create(0, tagS, "", "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "", "",
                     reqEnvironmentList.toString(), reqCountryList.toString(), "", user, null, user, null));
             if (!StringUtil.isNullOrEmpty(campaign)) {
                 notificationService.generateAndSendNotifyStartTagExecution(tagS, campaign);

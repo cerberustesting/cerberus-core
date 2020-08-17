@@ -110,7 +110,7 @@
 
                                 <div class="col-sm-2 col-md-2 btn-group marginTop20">
                                     <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Choose Preselected Range<span class="caret"></span>
+                                        Preset Range<span class="caret"></span>
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                         <button class="btn btn-default pull-left" id="last1Week" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(6)"><span class=""></span> Current Day</button>

@@ -283,6 +283,8 @@ public class ReadTagStat extends HttpServlet {
                     pointObj.put("ciScT", exeCur.getCiScoreThreshold());
                     pointObj.put("nbExe", exeCur.getNbExe());
                     pointObj.put("nbExeU", exeCur.getNbExeUsefull());
+                    pointObj.put("description", exeCur.getDescription());
+                    pointObj.put("comment", exeCur.getComment());
 
                     if (curveMap.containsKey(curveKey)) {
                         curArray = curveMap.get(curveKey);

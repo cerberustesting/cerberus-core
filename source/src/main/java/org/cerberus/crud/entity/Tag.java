@@ -35,6 +35,7 @@ public class Tag {
     private long id;
     private String tag;
     private String description;
+    private String comment;
     private String campaign;
     private Timestamp DateEndQueue;
     private int nbExe;
@@ -311,6 +312,14 @@ public class Tag {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public String getBrowserstackBuildHash() {

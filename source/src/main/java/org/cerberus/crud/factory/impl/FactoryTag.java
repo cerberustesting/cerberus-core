@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 public class FactoryTag implements IFactoryTag {
 
     @Override
-    public Tag create(long id, String tag, String description, String campaign, Timestamp dateEndQueue,
+    public Tag create(long id, String tag, String description, String comment, String campaign, Timestamp dateEndQueue,
             int nbExe, int nbExeUsefull, int nbOK, int nbKO, int nbFA, int nbNA, int nbNE, int nbWE, int nbPE, int nbQU, int nbQE, int nbCA,
             int ciScore, int ciScoreThreshold, String ciResult,
             String environmentList, String countryList, String robotDecliList, String systemList, String applicationList,
@@ -41,6 +41,7 @@ public class FactoryTag implements IFactoryTag {
         newObject.setId(id);
         newObject.setTag(tag);
         newObject.setDescription(description);
+        newObject.setComment(comment);
         newObject.setCampaign(campaign);
         newObject.setDateEndQueue(dateEndQueue);
 

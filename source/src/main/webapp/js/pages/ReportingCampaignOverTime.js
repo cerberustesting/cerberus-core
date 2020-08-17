@@ -397,10 +397,19 @@ function getOptions(title, unit, axisType) {
             callbacks: {
                 label: function (t, d) {
                     var xLabel = d.datasets[t.datasetIndex].label;
+                    let com = "";
+                    if (!isEmpty(d.datasets[t.datasetIndex].data[t.index].desc)) {
+                        com += " - ";
+                        com += d.datasets[t.datasetIndex].data[t.index].desc;
+                    }
+                    if (!isEmpty(d.datasets[t.datasetIndex].data[t.index].comment)) {
+                        com += " - ";
+                        com += d.datasets[t.datasetIndex].data[t.index].comment;
+                    }
                     if (unit === "size") {
                         return xLabel + ': ' + formatNumber(Math.round(t.yLabel / 1024)) + " kb";
                     } else if (unit === "time") {
-                        return xLabel + ': ' + t.yLabel.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1 ") + " min";
+                        return xLabel + ': ' + t.yLabel.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1 ") + " min" + com;
                     } else {
                         return xLabel + ': ' + t.yLabel;
                     }
@@ -510,23 +519,23 @@ function buildTagGraphs(data) {
         let d3b = [];
         lend = c.points.length;
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].y, tag: c.points[j].tag, ciResult: c.points[j].ciRes};
+            let p = {x: c.points[j].x, y: c.points[j].y, tag: c.points[j].tag, ciResult: c.points[j].ciRes, desc: c.points[j].description, comment: c.points[j].comment};
             d1.push(p);
         }
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].ciSc, tag: c.points[j].tag, ciResult: c.points[j].ciRes};
+            let p = {x: c.points[j].x, y: c.points[j].ciSc, tag: c.points[j].tag, ciResult: c.points[j].ciRes, desc: c.points[j].description, comment: c.points[j].comment};
             d2a.push(p);
         }
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].ciScT, tag: c.points[j].tag};
+            let p = {x: c.points[j].x, y: c.points[j].ciScT, tag: c.points[j].tag, desc: c.points[j].description, comment: c.points[j].comment};
             d2b.push(p);
         }
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].nbExeU, tag: c.points[j].tag, ciResult: c.points[j].ciRes};
+            let p = {x: c.points[j].x, y: c.points[j].nbExeU, tag: c.points[j].tag, ciResult: c.points[j].ciRes, desc: c.points[j].description, comment: c.points[j].comment};
             d3a.push(p);
         }
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].nbExe, tag: c.points[j].tag};
+            let p = {x: c.points[j].x, y: c.points[j].nbExe, tag: c.points[j].tag, desc: c.points[j].description, comment: c.points[j].comment};
             d3b.push(p);
         }
         let lab = getLabel("c.key.testcase.description", c.key.country, c.key.environment, c.key.robotdecli, undefined, undefined, undefined, c.key.campaign);

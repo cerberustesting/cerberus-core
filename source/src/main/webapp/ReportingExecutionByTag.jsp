@@ -197,29 +197,26 @@
                         </div>
                         <div class="panel-body collapse in" id="TagDetail">
                             <div class="row">
-                                <div class="col-lg-12">
+                                <div class="col-sm-6">
                                     <label for="startExe">Start :</label>
                                     <input type="text" class="form-control" name="startExe" id="startExe" readonly aria-describedby="basic-addon1" >
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="endExe">End : <br>(When all execution queue has been closed)</label>
+                                    <input type="text" class="form-control" name="endExe" id="endExe" readonly aria-describedby="basic-addon1" >
                                 </div>
                             </div>
                             <div class="row" id="panelDuration">
                                 <div class="col-sm-6">
-                                    <label for="endExe">End : (When all execution queue has been closed)</label>
-                                    <input type="text" class="form-control" name="endExe" id="endExe" readonly aria-describedby="basic-addon1" >
-                                </div>
-                                <div class="col-sm-6">
                                     <label for="durExe">Duration (Minutes) :</label>
                                     <input type="text" class="form-control" name="durExe" id="durExe" readonly aria-describedby="basic-addon1" >
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-8">
+                                <div class="col-sm-6">
                                     <label for="endLastExe">Last Execution :</label>
                                     <input type="text" class="form-control" name="endLastExe" id="endLastExe" readonly aria-describedby="basic-addon1" >
                                 </div>
-                                <div class="input-group-btn col-xs-4" id="TagcampaignCel2">
-                                    <a id="buttonSeeStatsCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;margin-top: 20px;">See Stats</button></a>
-                                </div>
+                            </div>
+                            <div class="row">
                             </div>
                             <div class="row">
                                 <div class="col-sm-4">
@@ -230,7 +227,22 @@
                                     <label for="Tagcampaign">Campaign :</label>
                                     <input type="text" class="form-control" name="Tagcampaign" id="Tagcampaign" readonly aria-describedby="basic-addon1" >
                                 </div>
-                                <div class="input-group-btn col-sm-4" id="TagcampaignCel2">
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12" id="TagDescCel">
+                                    <label for="TagDesc">Description :</label>
+                                    <input type="text" class="form-control" name="TagDesc" id="TagDesc" readonly aria-describedby="basic-addon1" >
+                                </div>
+                                <div class="col-sm-12" id="TagCommentCel">
+                                    <label for="TagComment">Comment :</label>
+                                    <input type="text" class="form-control" name="TagComment" id="TagComment" readonly aria-describedby="basic-addon1" >
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-group-btn" id="TagcampaignCel2">
+                                    <a id="buttonSeeStatsCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;margin-top: 20px;">See Stats</button></a>
+                                </div>
+                                <div class="input-group-btn" id="TagcampaignCel2">
                                     <a id="buttonRunCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;margin-top: 20px;">Run Campaign</button></a>
                                 </div>
                             </div>

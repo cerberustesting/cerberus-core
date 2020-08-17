@@ -919,6 +919,7 @@ public class TagDAO implements ITagDAO {
         long id = ParameterParserUtil.parseLongParam(rs.getString("tag.id"), 0);
         String tag = ParameterParserUtil.parseStringParam(rs.getString("tag.tag"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("tag.description"), "");
+        String comment = ParameterParserUtil.parseStringParam(rs.getString("tag.comment"), "");
         String campaign = ParameterParserUtil.parseStringParam(rs.getString("tag.campaign"), "");
         Timestamp dateEndQueue = rs.getTimestamp("tag.DateEndQueue");
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("tag.UsrModif"), "");
@@ -952,7 +953,7 @@ public class TagDAO implements ITagDAO {
 
         //TODO remove when working in test with mockito and autowired
         factoryTag = new FactoryTag();
-        Tag newTag = factoryTag.create(id, tag, description, campaign, dateEndQueue, nbExe, nbExeUsefull, nbOK, nbKO, nbFA, nbNA, nbNE, nbWE, nbPE, nbQU, nbQE, nbCA, ciScore, ciScoreThreshold, ciResult, envList, countryList, robotDecliList, systemList, applicationList, reqEnvList, reqCountryList, browserstackBuildHash, usrCreated, dateCreated, usrModif, dateModif);
+        Tag newTag = factoryTag.create(id, tag, description, comment, campaign, dateEndQueue, nbExe, nbExeUsefull, nbOK, nbKO, nbFA, nbNA, nbNE, nbWE, nbPE, nbQU, nbQE, nbCA, ciScore, ciScoreThreshold, ciResult, envList, countryList, robotDecliList, systemList, applicationList, reqEnvList, reqCountryList, browserstackBuildHash, usrCreated, dateCreated, usrModif, dateModif);
 
         return newTag;
     }
