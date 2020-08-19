@@ -1,9 +1,11 @@
 # Cerberus 
 
+User-friendly automated testing framework.
+
 [![Build Status](https://travis-ci.org/cerberustesting/cerberus-source.svg?branch=master)](//travis-ci.org/cerberustesting/cerberus-source)
 [![Test Status](https://prod.cerberus-testing.org/ResultCIV003?campaign=Cerberus_campaign&outputformat=svg&t=180131)](https://prod.cerberus-testing.org/)
 
-User-friendly automated testing framework.
+[![Screenshots](https://raw.githubusercontent.com/cerberustesting/cerberus-source/master/docs/screenshots/CerberusGitHub.gif)](https://cerberus-testing.com/)
 
 # What is it? How to install it? How to use it?
 
