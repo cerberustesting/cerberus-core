@@ -197,7 +197,9 @@ public class TestCaseService implements ITestCaseService {
             answerTestCase.getItem().setInvariantCountries(invariantService.findCountryInvariantsFromTestCase(test, testCase, testCaseCountries, countryInvariants));
             answerTestCase.getItem().setDependencies(testCaseDepService.readByTestAndTestCase(answerTestCase.getItem().getTest(), answerTestCase.getItem().getTestCase()));
             answerTestCase.getItem().setLabels(labelService.findLabelsFromTestCase(test, testCase, null));
-            answerTestCase.getItem().setTestCaseCountryProperties(testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(test, testCase, countryInvariants));
+            List<TestCase> testcases = new ArrayList<>();
+            testcases.add(factoryTCase.create(test, testCase));
+            answerTestCase.getItem().setTestCaseCountryProperties(testCaseCountryPropertiesService.findDistinctPropertiesOfTestCaseFromTestcaseList(testcases, countryInvariants));
 
             if (withSteps) {
                 answerTestCase.getItem().setSteps(testCaseStepService.readByTestTestCaseStepsWithDependencies(test, testCase).getDataList());
@@ -205,15 +207,6 @@ public class TestCaseService implements ITestCaseService {
             }
         }
         return answerTestCase;
-    }
-
-    @Override
-    public AnswerItem<List<TestCase>> findTestCasesByTestWithDependencies(List<TestCase> testCases, boolean withSteps) throws CerberusException {
-        AnswerItem<List<TestCase>> testCasesAnswer = null;
-        for (TestCase testCase : testCases) {
-            testCasesAnswer.getItem().add(this.findTestCaseByKeyWithDependencies(testCase.getTest(), testCase.getTestCase(), withSteps).getItem());
-        }
-        return testCasesAnswer;
     }
 
     @Override

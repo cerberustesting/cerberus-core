@@ -20,6 +20,7 @@
 package org.cerberus.crud.dao;
 
 import java.util.List;
+import org.cerberus.crud.entity.TestCase;
 
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.dto.TestListDTO;
@@ -47,12 +48,29 @@ public interface ITestCaseCountryPropertiesDAO {
 
     /**
      *
+     * @param testcases
+     * @return
+     * @throws CerberusException
+     */
+    List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseList(List<TestCase> testcases) throws CerberusException;
+
+    /**
+     *
      * @param test
      * @param testcase
      * @param oneproperty
      * @return
      */
-    List<TestCaseCountryProperties> findOnePropertyPerTestTestCase(String test, String testcase, String oneproperty);
+    List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseProperty(String test, String testcase, String oneproperty);
+
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param country
+     * @return
+     */
+    List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseCountry(String test, String testcase, String country);
 
     /**
      *
@@ -77,15 +95,6 @@ public interface ITestCaseCountryPropertiesDAO {
      * @return
      */
     List<String> findCountryByPropertyNameAndTestCase(String test, String testcase, String property);
-
-    /**
-     *
-     * @param test
-     * @param testcase
-     * @param country
-     * @return
-     */
-    List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseCountry(String test, String testcase, String country);
 
     /**
      *

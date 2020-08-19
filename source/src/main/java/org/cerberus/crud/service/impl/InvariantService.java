@@ -127,8 +127,8 @@ public class InvariantService implements IInvariantService {
         return countryInvariantsToReturn;
     }
 
-    public List<Invariant> convertCountryPropertiesToCountryInvariants(TestCaseCountryProperties testCaseCountryproperties, HashMap<String, Invariant> countryInvariants) throws CerberusException {
-        List<String> countries = testCaseCountryPropertiesService.findCountryByProperty(testCaseCountryproperties);
+    @Override
+    public List<Invariant> convertCountryPropertiesToCountryInvariants(List<String> countries, HashMap<String, Invariant> countryInvariants) throws CerberusException {
         List<Invariant> countryInvariantsToReturn = new ArrayList<>();
         for (String country : countries) {
             countryInvariantsToReturn.add(countryInvariants.get(country));

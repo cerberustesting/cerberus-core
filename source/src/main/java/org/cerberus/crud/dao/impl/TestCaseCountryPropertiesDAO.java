@@ -32,6 +32,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.utils.RequestDbUtils;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.dto.PropertyListDTO;
@@ -82,11 +83,6 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         // As a consequece this method should not return properties from dependencies.
 //                "OR exists (select 1 from  testcasedep  where DepTest = tcp.Test AND DepTestCase = tcp.TestCase AND Test = ? AND TestCase = ?)"; // Manage tc dependencies
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
-
         return RequestDbUtils.executeQueryList(databaseSpring, query,
                 ps -> {
                     ps.setString(1, test);
@@ -116,7 +112,62 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     }
 
     @Override
-    public List<TestCaseCountryProperties> findOnePropertyPerTestTestCase(String test, String testcase, String oneproperty) {
+    public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseList(List<TestCase> testcases) throws CerberusException {
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT * FROM testcasecountryproperties tcp WHERE 1=1");
+        // TestCase dependency should only be used on testcasedataexecution.
+        // In other words, when a test case is linked to another testcase, it should have access to its data at execution level but should not inherit from testcase property definition.
+        // As a consequece this method should not return properties from dependencies.
+//                "OR exists (select 1 from  testcasedep  where DepTest = tcp.Test AND DepTestCase = tcp.TestCase AND Test = ? AND TestCase = ?)"; // Manage tc dependencies
+
+        if ((testcases != null) && !testcases.isEmpty() && testcases.size() < 5000) {
+            query.append(" AND (");
+            int j = 0;
+            for (TestCase testCase1 : testcases) {
+                if (j != 0) {
+                    query.append(" OR");
+                }
+                query.append(" (tcp.`test` = ? and tcp.testcase = ?) ");
+                j++;
+            }
+            query.append(" )");
+        }
+
+        return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
+                ps -> {
+                    int i = 1;
+                    if ((testcases != null) && !testcases.isEmpty() && testcases.size() < 5000) {
+                        for (TestCase testCase1 : testcases) {
+                            ps.setString(i++, testCase1.getTest());
+                            ps.setString(i++, testCase1.getTestCase());
+                        }
+                    }
+                },
+                resultSet -> {
+                    String test = resultSet.getString("test");
+                    String testcase = resultSet.getString("testcase");
+                    String country = resultSet.getString("country");
+                    String property = resultSet.getString("property");
+                    String description = resultSet.getString("description");
+                    String type = resultSet.getString("type");
+                    String database = resultSet.getString("database");
+                    String value1 = resultSet.getString("value1");
+                    String value2 = resultSet.getString("value2");
+                    String length = resultSet.getString("length");
+                    int rowLimit = resultSet.getInt("rowLimit");
+                    String nature = resultSet.getString("nature");
+                    int retryNb = resultSet.getInt("RetryNb");
+                    int retryPeriod = resultSet.getInt("RetryPeriod");
+                    int cacheExpire = resultSet.getInt("CacheExpire");
+                    int rank = resultSet.getInt("Rank");
+                    return factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature, retryNb, retryPeriod, cacheExpire, rank);
+                }
+        );
+
+    }
+
+    @Override
+    public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseProperty(String test, String testcase, String oneproperty) {
         List<TestCaseCountryProperties> list = null;
         final String query = "SELECT * FROM testcasecountryproperties WHERE test = ? AND testcase = ? AND property = ?";
 

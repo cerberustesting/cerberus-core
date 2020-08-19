@@ -762,7 +762,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
             LOG.debug("SQL.param.tag : " + tag);
         }
 

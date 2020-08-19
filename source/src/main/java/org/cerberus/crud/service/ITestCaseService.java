@@ -65,14 +65,6 @@ public interface ITestCaseService {
      */
     AnswerItem<TestCase> findTestCaseByKeyWithDependencies(String test, String testCase, boolean withSteps) throws CerberusException;
 
-    /**
-     *
-     * @param testCases
-     * @param withSteps
-     * @return
-     * @throws CerberusException
-     */
-    AnswerItem<List<TestCase>> findTestCasesByTestWithDependencies(List<TestCase> testCases, boolean withSteps) throws CerberusException;
 
     /**
      *

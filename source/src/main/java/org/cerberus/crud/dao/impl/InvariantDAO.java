@@ -102,12 +102,6 @@ public class InvariantDAO implements IInvariantDAO {
 
         final String query = "SELECT * FROM invariant i  WHERE i.idname = ? " + systemClause + " ORDER BY sort";
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.idName : " + idName);
-        }
-
         return RequestDbUtils.executeQueryList(databaseSpring, query,
                ps -> {
                    ps.setString(1, idName);

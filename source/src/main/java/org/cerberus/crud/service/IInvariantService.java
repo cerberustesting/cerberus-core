@@ -74,12 +74,12 @@ public interface IInvariantService {
 
     /**
      *
-     * @param testCaseCountryproperties
+     * @param countries
      * @param countryInvariants
      * @return
      * @throws CerberusException
      */
-    public List<Invariant> convertCountryPropertiesToCountryInvariants(TestCaseCountryProperties testCaseCountryproperties, HashMap<String, Invariant> countryInvariants) throws CerberusException;
+    public List<Invariant> convertCountryPropertiesToCountryInvariants(List<String> countries, HashMap<String, Invariant> countryInvariants) throws CerberusException;
 
     /**
      *

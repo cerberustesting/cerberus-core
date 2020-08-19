@@ -114,7 +114,6 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
             LOG.debug("SQL.param.robot : " + robot);
         }
 
