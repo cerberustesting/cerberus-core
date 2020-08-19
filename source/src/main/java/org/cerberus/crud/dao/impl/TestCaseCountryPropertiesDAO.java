@@ -82,6 +82,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         // As a consequece this method should not return properties from dependencies.
 //                "OR exists (select 1 from  testcasedep  where DepTest = tcp.Test AND DepTestCase = tcp.TestCase AND Test = ? AND TestCase = ?)"; // Manage tc dependencies
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         return RequestDbUtils.executeQueryList(databaseSpring, query,
                 ps -> {
                     ps.setString(1, test);
@@ -114,6 +119,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     public List<TestCaseCountryProperties> findOnePropertyPerTestTestCase(String test, String testcase, String oneproperty) {
         List<TestCaseCountryProperties> list = null;
         final String query = "SELECT * FROM testcasecountryproperties WHERE test = ? AND testcase = ? AND property = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -175,6 +185,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         final StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasecountryproperties WHERE test = ? AND testcase = ?");
         query.append(" group by HEX(`property`), `type`, `database`, HEX(`value1`) ,  HEX(`value2`) , `length`, `rowlimit`, `nature`");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -363,6 +378,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         boolean throwException = false;
         final String query = "SELECT * FROM testcasecountryproperties WHERE test = ? AND testcase = ? AND country = ? AND hex(`property`) = hex(?)";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -428,6 +448,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         query.append(",`Database`,`Value1`,`Value2`,`Length`,`RowLimit`,`Nature`,`RetryNb`,`RetryPeriod`,`Rank`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -481,6 +506,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         query.append("UPDATE testcasecountryproperties SET ");
         query.append(" `Description` = ?, `Type` = ? ,`Database` = ? ,Value1 = ?,Value2 = ?,`Length` = ?,  RowLimit = ?,  `Nature` = ? ,  `RetryNb` = ? ,  `RetryPeriod` = ? , `Rank` = ? ");
         query.append(" WHERE Test = ? AND TestCase = ? AND Country = ? AND hex(`Property`) like hex(?)");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -578,6 +608,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
 
         final String query = "SELECT country FROM testcasecountryproperties WHERE test = ? AND testcase = ? AND hex(`property`) like hex(?)";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -630,6 +665,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         boolean throwExcep = false;
         final String query = "DELETE FROM testcasecountryproperties WHERE test = ? and testcase = ? and country = ? and hex(`property`) like hex(?)";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -679,6 +719,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         query.append("where tccp.`Type` LIKE ? and tdl.TestDataLibID = ? ");
         query.append("and tdl.`Name` LIKE ? and (tdl.Country = ? or tdl.country='') ");
         query.append("group by tccp.test, tccp.testcase, tccp.property ");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -806,6 +851,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         query.append("INSERT INTO testcasecountryproperties (`Test`,`TestCase`,`Country`,`Property` , `Description`, `Type`");
         query.append(",`Database`,`Value1`,`Value2`,`Length`,`RowLimit`,`Nature`,`RetryNb`,`RetryPeriod`, `Rank`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {

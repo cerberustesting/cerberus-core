@@ -44,6 +44,15 @@ public interface ITestCaseCountryPropertiesService {
 
     public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase, HashMap<String, Invariant> countryInvariants) throws CerberusException;
 
+    /**
+     *
+     * @param testCaseList
+     * @param countryInvariants
+     * @return
+     * @throws CerberusException
+     */
+    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase1(List<TestCase> testCaseList, HashMap<String, Invariant> countryInvariants) throws CerberusException;
+
     public List<TestCaseCountryProperties> findDistinctInheritedPropertiesOfTestCase(TestCase testCase, HashMap<String, Invariant> countryInvariants) throws CerberusException;
 
     List<String> findCountryByProperty(TestCaseCountryProperties testCaseCountryProperties);

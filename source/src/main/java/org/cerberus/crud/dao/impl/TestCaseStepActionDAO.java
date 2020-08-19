@@ -69,6 +69,12 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         final String query = "SELECT * FROM testcasestepaction tca WHERE tca.test = ? AND tca.testcase = ? AND tca.step = ? AND tca.sequence = ?";
 
         Connection connection = this.databaseSpring.connect();
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
@@ -122,6 +128,12 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         query.append("ORDER BY tcs.Sort, tca.Sort ");
 
         Connection connection = this.databaseSpring.connect();
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
@@ -176,6 +188,12 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         }
 
         Connection connection = this.databaseSpring.connect();
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
@@ -227,6 +245,12 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         query.append("SELECT * FROM testcasestepaction tca WHERE tca.test = ? AND tca.testcase = ?");
 
         Connection connection = this.databaseSpring.connect();
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
@@ -312,6 +336,12 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         query.append("SELECT * FROM testcasestepaction tca WHERE tca.test = ? AND tca.testcase = ? AND tca.step = ?");
 
         Connection connection = this.databaseSpring.connect();
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
@@ -398,6 +428,12 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         Connection connection = this.databaseSpring.connect();
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
@@ -534,6 +570,12 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         final String query = "DELETE FROM testcasestepaction WHERE test = ? and testcase = ? and step = ? and `sequence` = ?";
 
         Connection connection = this.databaseSpring.connect();
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
@@ -572,6 +614,12 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         final String query = "update testcasestepaction set sequence = ? WHERE test = ? AND testcase = ? AND step = ? AND sequence = ?";
 
         Connection connection = this.databaseSpring.connect();
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
@@ -612,6 +660,12 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         query.append("INSERT INTO testcasestepaction (`test`, `testCase`, `step`, `sequence`, `sort`, ")
                 .append("`conditionOperator`, `conditionVal1`, `conditionVal2`, `conditionVal3`, `action`, `Value1`, `Value2`, `Value3`, `ForceExeStatus`, `description`, `screenshotfilename`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {

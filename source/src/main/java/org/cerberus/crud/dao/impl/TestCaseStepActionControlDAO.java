@@ -72,6 +72,11 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         TestCaseStepActionControl actionControl = null;
         final String query = "SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? AND step = ? AND sequence = ? AND control = ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query);) {
 
@@ -166,6 +171,11 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         query.append("`conditionOperator`, `conditionVal1`, `conditionVal2`, `conditionVal3`, `control`, `value1`, `value2`, `value3`, `fatal`, `Description`, `screenshotfilename`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
@@ -200,6 +210,11 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
     public List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int step) {
         List<TestCaseStepActionControl> list = null;
         final String query = "SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? AND step = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query);) {
@@ -262,6 +277,11 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                 .append("WHERE `Test` = ? AND `TestCase` = ? AND `Step` = ? AND `Sequence` = ? AND `ControlSequence` = ? ")
                 .toString();
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query);) {
 
@@ -302,6 +322,11 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         boolean throwExcep = false;
         final String query = "DELETE FROM testcasestepactioncontrol WHERE test = ? and testcase = ? and step = ? and `sequence` = ? and `controlSequence` = ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query);) {
             preStat.setString(1, tcsac.getTest());
@@ -329,6 +354,11 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         query.append("WHERE tcsac.Test = ? AND tcsac.TestCase = ? ");
         query.append("GROUP BY tcsac.Test, tcsac.TestCase, tcsac.Step, tcsac.Sequence, tcsac.ControlSequence ");
         query.append("ORDER BY tcs.Sort, tcsa.Sort, tcsac.Sort ");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());) {
@@ -374,6 +404,11 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         List<TestCaseStepActionControl> controlList = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ?");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -431,6 +466,11 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         List<TestCaseStepActionControl> controlList = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? AND step = ? AND sequence = ?");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -490,6 +530,11 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testcasestepactioncontrol (`test`, `testCase`, `step`, `sequence`, `controlSequence`, `sort`, `conditionOperator`, `conditionVal1`, `conditionVal2`, `conditionVal3`, `control`, `value1`, `value2`, `value3`, `fatal`, `Description`, `screenshotfilename`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {

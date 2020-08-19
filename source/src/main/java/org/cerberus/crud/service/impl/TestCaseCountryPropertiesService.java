@@ -22,6 +22,7 @@ package org.cerberus.crud.service.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
@@ -35,6 +36,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseStep;
+import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.exception.CerberusException;
@@ -69,6 +71,8 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     private DatabaseSpring dbmanager;
     @Autowired
     IInvariantService invariantService;
+    @Autowired
+    IFactoryTestCase factoryTestCase;
 
     private final String OBJECT_NAME = "TestCaseCountryProperties";
 
@@ -104,13 +108,37 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     }
 
     @Override
+    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase1(List<TestCase> testCaseList, HashMap<String, Invariant> countryInvariants) throws CerberusException {
+        List<TestCaseCountryProperties> properties = new ArrayList<>();
+//        List<TestCaseCountryProperties> properties = testCaseCountryPropertiesDAO.findDistinctPropertiesOfTestCase(test, testcase);
+        for (TestCaseCountryProperties property : properties) {
+            property.setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(property, countryInvariants));
+        }
+        return properties;
+    }
+
+    @Override
     public List<TestCaseCountryProperties> findDistinctInheritedPropertiesOfTestCase(TestCase testCase, HashMap<String, Invariant> countryInvariants) throws CerberusException {
-        List<TestCaseCountryProperties> inheritedProperties = new ArrayList<TestCaseCountryProperties>();
+        List<TestCaseCountryProperties> inheritedProperties = new ArrayList<>();
+        List<TestCase> testCaseList = new ArrayList<>();
+        HashMap<String, TestCase> testCaseHash = new HashMap<>();
+        // Before getting the list of properties, we first dedup the list of testcase with useStep as many steps from TestCase, could point to the same testCase library.
         for (TestCaseStep step : testCase.getSteps()) {
             if (step.getUseStep().equals("Y")) {
-                inheritedProperties.addAll(findDistinctPropertiesOfTestCase(step.getUseStepTest(), step.getUseStepTestCase(), countryInvariants));
+                LOG.debug("Item to add " + step.getUseStepTest() + "#/" + step.getUseStepTestCase());
+                testCaseHash.put(step.getUseStepTest() + "#/" + step.getUseStepTestCase(), factoryTestCase.create(step.getUseStepTest(), step.getUseStepTestCase()));
+//                inheritedProperties.addAll(findDistinctPropertiesOfTestCase(step.getUseStepTest(), step.getUseStepTestCase(), countryInvariants));
             }
         }
+        LOG.debug("Size " + testCaseHash.size());
+        for (Map.Entry<String, TestCase> entry : testCaseHash.entrySet()) {
+            TestCase val = entry.getValue();
+            testCaseList.add(val);
+            inheritedProperties.addAll(findDistinctPropertiesOfTestCase(val.getTest(), val.getTestCase(), countryInvariants));
+        }
+        LOG.debug("Size " + testCaseList.size());
+
+//        inheritedProperties.addAll(findDistinctPropertiesOfTestCase1(testCaseList, countryInvariants));
         return inheritedProperties;
     }
 

@@ -182,6 +182,7 @@ public class TestCaseService implements ITestCaseService {
         return newTcase;
     }
 
+    @Override
     public AnswerItem<TestCase> findTestCaseByKeyWithDependencies(String test, String testCase, boolean withSteps) throws CerberusException {
 
         HashMap<String, TestCaseCountry> testCaseCountries;
@@ -206,6 +207,7 @@ public class TestCaseService implements ITestCaseService {
         return answerTestCase;
     }
 
+    @Override
     public AnswerItem<List<TestCase>> findTestCasesByTestWithDependencies(List<TestCase> testCases, boolean withSteps) throws CerberusException {
         AnswerItem<List<TestCase>> testCasesAnswer = null;
         for (TestCase testCase : testCases) {
