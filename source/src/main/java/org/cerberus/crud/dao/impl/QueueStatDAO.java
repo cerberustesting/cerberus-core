@@ -64,7 +64,7 @@ public class QueueStatDAO implements IQueueStatDAO {
 
     private final String OBJECT_NAME = "QueueStat";
     private final String SQL_DUPLICATED_CODE = "23000";
-    private final int MAX_ROW_SELECTED = 100000;
+    private final int MAX_ROW_SELECTED = 10000;
 
     @Override
     public AnswerList<QueueStat> readByCriteria(Date from, Date to) {
@@ -87,7 +87,7 @@ public class QueueStatDAO implements IQueueStatDAO {
 
         query.append(searchSQL);
 
-        query.append(" order by ID asc");
+        query.append(" order by ID desc");
 
         query.append(" limit ").append(0).append(" , ").append(MAX_ROW_SELECTED);
 
@@ -110,7 +110,7 @@ public class QueueStatDAO implements IQueueStatDAO {
                     ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
-                    objectList.add(this.loadFromResultSet(resultSet));
+                    objectList.add(this.loadFromResultSet_light(resultSet));
                 }
 
                 //get the total number of rows
@@ -192,6 +192,19 @@ public class QueueStatDAO implements IQueueStatDAO {
         Timestamp datecreated = rs.getTimestamp("DateCreated");
         String usrmodif = ParameterParserUtil.parseStringParam(rs.getString("UsrModif"), "");
         Timestamp datemodif = rs.getTimestamp("DateModif");
+
+        return factoryQueueStat.create(id, globalConstrain, currentlyRunning, queueSize, usrcreated, datecreated, usrmodif, datemodif);
+    }
+
+    private QueueStat loadFromResultSet_light(ResultSet rs) throws SQLException {
+        long id = -1;
+        Integer globalConstrain = ParameterParserUtil.parseIntegerParam(rs.getString("globalConstrain"), -1);
+        Integer currentlyRunning = ParameterParserUtil.parseIntegerParam(rs.getString("currentlyRunning"), -1);
+        Integer queueSize = ParameterParserUtil.parseIntegerParam(rs.getString("queueSize"), -1);
+        String usrcreated = null;
+        Timestamp datecreated = rs.getTimestamp("DateCreated");
+        String usrmodif = null;
+        Timestamp datemodif = null;
 
         return factoryQueueStat.create(id, globalConstrain, currentlyRunning, queueSize, usrcreated, datecreated, usrmodif, datemodif);
     }

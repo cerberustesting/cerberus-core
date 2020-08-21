@@ -176,7 +176,7 @@
                                             Preset Range<span class="caret"></span>
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                            <button class="btn btn-default pull-left" id="last2Hours" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(8)"><span class=""></span> Previous 2 Hours</button>
+                                            <button class="btn btn-default pull-left" id="last2Hours" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(8)"><span class=""></span> Previous Hour</button>
                                             <button class="btn btn-default pull-left" id="last6Hours" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(7)"><span class=""></span> Previous 6 Hours</button>
                                             <button class="btn btn-default pull-left" id="currentDay" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(6)"><span class=""></span> Current Day</button>
                                             <button class="btn btn-default pull-left" id="last1Week" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(5)"><span class=""></span> Previous Week</button>

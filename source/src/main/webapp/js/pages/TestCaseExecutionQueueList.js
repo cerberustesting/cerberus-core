@@ -58,7 +58,7 @@ function initPage() {
     let toD;
     if (from === null) {
         fromD = new Date();
-        fromD.setHours(fromD.getHours() - 2);
+        fromD.setHours(fromD.getHours() - 1);
     } else {
         fromD = new Date(from);
     }
@@ -1111,7 +1111,7 @@ function setTimeRange(id) {
         fromD.setHours(fromD.getHours() - 6);
     } else if (id === 8) {
         fromD = new Date();
-        fromD.setHours(fromD.getHours() - 2);
+        fromD.setHours(fromD.getHours() - 1);
     }
     $('#frompicker').data("DateTimePicker").date(moment(fromD));
     $('#topicker').data("DateTimePicker").date(moment(toD));
