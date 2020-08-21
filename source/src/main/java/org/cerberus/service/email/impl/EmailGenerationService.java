@@ -116,18 +116,23 @@ public class EmailGenerationService implements IEmailGenerationService {
         String lastBuild = myCountryEnvParam.getBuild();
         String lastRev = myCountryEnvParam.getRevision();
 
-        content = emailBodyGeneration.GenerateBuildContentTable(system, build, revision, lastBuild, lastRev);
-        content = content.replace("$", " ");
-        body = body.replace("%BUILDCONTENT%", content);
+        if (body.contains("%BUILDCONTENT%")) {
+            content = emailBodyGeneration.GenerateBuildContentTable(system, build, revision, lastBuild, lastRev);
+            content = content.replace("$", " ");
+            body = body.replace("%BUILDCONTENT%", content);
+        }
 
-        content = emailBodyGeneration.GenerateTestRecapTable(system, build, revision, country);
-        content = content.replace("$", " ");
-        body = body.replace("%TESTRECAP%", content);
+        if (body.contains("%TESTRECAP%")) {
+            content = emailBodyGeneration.GenerateTestRecapTable(system, build, revision, country);
+            content = content.replace("$", " ");
+            body = body.replace("%TESTRECAP%", content);
+        }
 
-        content = emailBodyGeneration.GenerateTestRecapTable(system, build, revision, "ALL");
-        content = content.replace("$", " ");
-        body = body.replace("%TESTRECAPALL%", content);
-        //End
+        if (body.contains("%TESTRECAPALL%")) {
+            content = emailBodyGeneration.GenerateTestRecapTable(system, build, revision, "ALL");
+            content = content.replace("$", " ");
+            body = body.replace("%TESTRECAPALL%", content);
+        }
 
         email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, cc);
 
@@ -309,7 +314,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         String subject = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_tagexecutionstart_subject'.");
         String body = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_body", system, "Empty Body. Please define parameter 'cerberus_notification_tagexecutionstart_body'.");
         boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
-        
+
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
         if (StringUtil.isNullOrEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
@@ -355,7 +360,7 @@ public class EmailGenerationService implements IEmailGenerationService {
             String subject = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_tagexecutionend_subject'.");
             String body = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_body", system, "Empty Body. Please define parameter 'cerberus_notification_tagexecutionend_body'.");
             boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
-            
+
             String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
             if (StringUtil.isNullOrEmpty(cerberusUrl)) {
                 cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
