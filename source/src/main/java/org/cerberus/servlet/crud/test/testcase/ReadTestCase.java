@@ -215,6 +215,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
+        boolean isCalledFromListPage = (request.getParameter("sColumns") != null);
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
 
@@ -259,83 +260,90 @@ public class ReadTestCase extends AbstractCrudTestCase {
                 /**
                  * Find the list of countries
                  */
-                AnswerList<TestCaseCountry> testCaseCountries = testCaseCountryService.readByTestTestCase(system, test, null, testCaseList.getDataList());
-                /**
-                 * Iterate on the country retrieved and generate HashMap based
-                 * on the key Test_TestCase
-                 */
                 LinkedHashMap<String, JSONArray> testCaseWithCountry = new LinkedHashMap<>();
-                for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountries.getDataList()) {
-                    String key = country.getTest() + "_" + country.getTestCase();
+                if (isCalledFromListPage) {
 
-                    if (testCaseWithCountry.containsKey(key)) {
-                        testCaseWithCountry.get(key).put(convertToJSONObject(country));
-                    } else {
-                        testCaseWithCountry.put(key, new JSONArray().put(convertToJSONObject(country)));
+                    AnswerList<TestCaseCountry> testCaseCountries = testCaseCountryService.readByTestTestCase(system, test, null, testCaseList.getDataList());
+                    /**
+                     * Iterate on the country retrieved and generate HashMap
+                     * based on the key Test_TestCase
+                     */
+                    for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountries.getDataList()) {
+                        String key = country.getTest() + "_" + country.getTestCase();
+
+                        if (testCaseWithCountry.containsKey(key)) {
+                            testCaseWithCountry.get(key).put(convertToJSONObject(country));
+                        } else {
+                            testCaseWithCountry.put(key, new JSONArray().put(convertToJSONObject(country)));
+                        }
                     }
                 }
 
                 /**
                  * find the list of dependencies
                  */
-                List<TestCaseDep> testCaseDependencies = testCaseDepService.readByTestAndTestCase(testCaseList.getDataList());
                 LinkedHashMap<String, JSONArray> testCaseWithDependencies = new LinkedHashMap<>();
-                for (TestCaseDep testCaseDependency : testCaseDependencies) {
-                    String key = testCaseDependency.getTest() + "_" + testCaseDependency.getTestCase();
+                if (isCalledFromListPage) {
+                    List<TestCaseDep> testCaseDependencies = testCaseDepService.readByTestAndTestCase(testCaseList.getDataList());
+                    for (TestCaseDep testCaseDependency : testCaseDependencies) {
+                        String key = testCaseDependency.getTest() + "_" + testCaseDependency.getTestCase();
 
-                    JSONObject jo = convertToJSONObject(testCaseDependency);
+                        JSONObject jo = convertToJSONObject(testCaseDependency);
 
-                    if (testCaseWithDependencies.containsKey(key)) {
-                        testCaseWithDependencies.get(key).put(jo);
-                    } else {
-                        testCaseWithDependencies.put(key, new JSONArray().put(jo));
+                        if (testCaseWithDependencies.containsKey(key)) {
+                            testCaseWithDependencies.get(key).put(jo);
+                        } else {
+                            testCaseWithDependencies.put(key, new JSONArray().put(jo));
+                        }
                     }
                 }
 
                 /**
                  * Find the list of labels
                  */
-                AnswerList<TestCaseLabel> testCaseLabelList = testCaseLabelService.readByTestTestCase(test, null, testCaseList.getDataList());
-                /**
-                 * Iterate on the label retrieved and generate HashMap based on
-                 * the key Test_TestCase
-                 */
                 LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap<>();
                 LinkedHashMap<String, JSONArray> testCaseWithLabelSticker = new LinkedHashMap<>();
                 LinkedHashMap<String, JSONArray> testCaseWithLabelRequirement = new LinkedHashMap<>();
                 LinkedHashMap<String, JSONArray> testCaseWithLabelBattery = new LinkedHashMap<>();
-                for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
-                    String key = label.getTest() + "_" + label.getTestcase();
+                if (isCalledFromListPage) {
+                    AnswerList<TestCaseLabel> testCaseLabelList = testCaseLabelService.readByTestTestCase(test, null, testCaseList.getDataList());
+                    /**
+                     * Iterate on the label retrieved and generate HashMap based
+                     * on the key Test_TestCase
+                     */
+                    for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
+                        String key = label.getTest() + "_" + label.getTestcase();
 
-                    JSONObject jo = new JSONObject().put("name", label.getLabel().getLabel()).put("color", label.getLabel().getColor()).put("description", label.getLabel().getDescription());
-                    switch (label.getLabel().getType()) {
-                        case Label.TYPE_STICKER:
-                            if (testCaseWithLabelSticker.containsKey(key)) {
-                                testCaseWithLabelSticker.get(key).put(jo);
-                            } else {
-                                testCaseWithLabelSticker.put(key, new JSONArray().put(jo));
-                            }
-                            break;
-                        case Label.TYPE_REQUIREMENT:
-                            if (testCaseWithLabelRequirement.containsKey(key)) {
-                                testCaseWithLabelRequirement.get(key).put(jo);
-                            } else {
-                                testCaseWithLabelRequirement.put(key, new JSONArray().put(jo));
-                            }
-                            break;
-                        case Label.TYPE_BATTERY:
-                            if (testCaseWithLabelBattery.containsKey(key)) {
-                                testCaseWithLabelBattery.get(key).put(jo);
-                            } else {
-                                testCaseWithLabelBattery.put(key, new JSONArray().put(jo));
-                            }
-                            break;
-                        default:
-                    }
-                    if (testCaseWithLabel.containsKey(key)) {
-                        testCaseWithLabel.get(key).put(jo);
-                    } else {
-                        testCaseWithLabel.put(key, new JSONArray().put(jo));
+                        JSONObject jo = new JSONObject().put("name", label.getLabel().getLabel()).put("color", label.getLabel().getColor()).put("description", label.getLabel().getDescription());
+                        switch (label.getLabel().getType()) {
+                            case Label.TYPE_STICKER:
+                                if (testCaseWithLabelSticker.containsKey(key)) {
+                                    testCaseWithLabelSticker.get(key).put(jo);
+                                } else {
+                                    testCaseWithLabelSticker.put(key, new JSONArray().put(jo));
+                                }
+                                break;
+                            case Label.TYPE_REQUIREMENT:
+                                if (testCaseWithLabelRequirement.containsKey(key)) {
+                                    testCaseWithLabelRequirement.get(key).put(jo);
+                                } else {
+                                    testCaseWithLabelRequirement.put(key, new JSONArray().put(jo));
+                                }
+                                break;
+                            case Label.TYPE_BATTERY:
+                                if (testCaseWithLabelBattery.containsKey(key)) {
+                                    testCaseWithLabelBattery.get(key).put(jo);
+                                } else {
+                                    testCaseWithLabelBattery.put(key, new JSONArray().put(jo));
+                                }
+                                break;
+                            default:
+                        }
+                        if (testCaseWithLabel.containsKey(key)) {
+                            testCaseWithLabel.get(key).put(jo);
+                        } else {
+                            testCaseWithLabel.put(key, new JSONArray().put(jo));
+                        }
                     }
                 }
 
