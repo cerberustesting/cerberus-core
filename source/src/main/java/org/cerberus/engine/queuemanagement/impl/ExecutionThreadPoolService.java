@@ -396,34 +396,36 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                         robot = exe.getQueueRobot();
 
                         // Getting here the list of possible executor sorted by prio.
-                        List<RobotExecutor> exelist = new ArrayList<>();
+                        List<RobotExecutor> robotExelist = new ArrayList<>();
                         appType = exe.getAppType();
                         if ((appType.equals(Application.TYPE_APK)) || (appType.equals(Application.TYPE_GUI)) || (appType.equals(Application.TYPE_FAT)) || (appType.equals(Application.TYPE_IPA))) {
                             // Application require a robot so we can get the list of executors.
                             if (StringUtil.isNullOrEmpty(robot)) {
-                                exelist = new ArrayList<>();
-                                exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
+                                robotExelist = new ArrayList<>();
+                                robotExelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
                             } else {
-                                exelist = robot_executor.get(robot);
-                                if (exelist == null || exelist.size() < 1) {
-                                    exelist = new ArrayList<>();
-                                    exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
+                                robotExelist = robot_executor.get(robot);
+                                if (robotExelist == null || robotExelist.size() < 1) {
+                                    robotExelist = new ArrayList<>();
+                                    robotExelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
                                 }
                             }
                         } else {
                             // Application does not require a robot so we create a fake one with empty data.
-                            exelist = new ArrayList<>();
-                            exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
+                            robotExelist = new ArrayList<>();
+                            robotExelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
                         }
 
                         // Looping other every potential executor on the corresponding robot.
-                        for (RobotExecutor robotExecutor1 : exelist) {
+                        for (RobotExecutor robotExecutor1 : robotExelist) {
 
                             if ("Y".equalsIgnoreCase(robotExecutor1.getExecutorProxyActive())) {
                                 robotExtHost = robotExecutor1.getExecutorExtensionHost();
                                 if (StringUtil.isNullOrEmpty(robotExtHost)) {
                                     robotExtHost = robotExecutor1.getHost();
                                 }
+                            } else {
+                                robotExtHost = "";
                             }
 
                             robotHost = robotExecutor1.getHost();
@@ -550,7 +552,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                             // Update robot_executor HasMap for next queued executions in the current batch. If Algo is based on Ranking, nothing needs to be changed.
                                             if ((robot_header.get(robot) != null)
                                                     && (Robot.LOADBALANCINGEXECUTORMETHOD_ROUNDROBIN.equals(robot_header.get(robot).getLbexemethod()))
-                                                    && (exelist.size() > 1)) {
+                                                    && (robotExelist.size() > 1)) {
                                                 tmpExelist = robot_executor.get(robot);
                                                 newTmpExelist = new ArrayList<>();
                                                 RobotExecutor lastRobotExecutor = null;
