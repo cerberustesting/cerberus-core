@@ -166,23 +166,25 @@ public class Invariant {
         return "Invariant{" + "idName=" + idName + ", value=" + value + ", sort=" + sort + ", description=" + description + ", veryShortDesc=" + veryShortDesc + ", gp1=" + gp1 + ", gp2=" + gp2 + ", gp3=" + gp3 + ", gp4=" + gp4 + ", gp5=" + gp5 + ", gp6=" + gp6 + ", gp7=" + gp7 + ", gp8=" + gp8 + ", gp9=" + gp9 + '}';
     }
 
-    public JSONObject toJson() {
+    public JSONObject toJson(boolean fatVersion) {
         JSONObject invariantJson = new JSONObject();
         try {
-            invariantJson.put("idName", this.getIdName());
+            if (fatVersion) {
+                invariantJson.put("idName", this.getIdName());
+                invariantJson.put("sort", this.getSort());
+                invariantJson.put("veryShortDesc", this.getVeryShortDesc());
+                invariantJson.put("gp1", this.getGp1());
+                invariantJson.put("gp2", this.getGp2());
+                invariantJson.put("gp3", this.getGp3());
+                invariantJson.put("gp4", this.getGp4());
+                invariantJson.put("gp5", this.getGp5());
+                invariantJson.put("gp6", this.getGp6());
+                invariantJson.put("gp7", this.getGp7());
+                invariantJson.put("gp8", this.getGp8());
+                invariantJson.put("gp9", this.getGp9());
+            }
             invariantJson.put("value", this.getValue());
-            invariantJson.put("sort", this.getSort());
             invariantJson.put("description", this.getDescription());
-            invariantJson.put("veryShortDesc", this.getVeryShortDesc());
-            invariantJson.put("gp1", this.getGp1());
-            invariantJson.put("gp2", this.getGp2());
-            invariantJson.put("gp3", this.getGp3());
-            invariantJson.put("gp4", this.getGp4());
-            invariantJson.put("gp5", this.getGp5());
-            invariantJson.put("gp6", this.getGp6());
-            invariantJson.put("gp7", this.getGp7());
-            invariantJson.put("gp8", this.getGp8());
-            invariantJson.put("gp9", this.getGp9());
         } catch (JSONException ex) {
             LOG.error(ex.toString(), ex);
         }

@@ -131,6 +131,8 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 j++;
             }
             query.append(" )");
+        } else {
+            query.append(" and 1=0 ");
         }
 
         return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),

@@ -542,7 +542,7 @@ public class TestCase {
             if (this.getInvariantCountries() != null) {
                 for (Invariant country : this.getInvariantCountries()) {
                     if(country != null) {
-                       countriesJson.put(country.toJson()); 
+                       countriesJson.put(country.toJson(true)); 
                     }
                 }
             }

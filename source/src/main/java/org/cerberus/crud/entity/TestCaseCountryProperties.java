@@ -371,9 +371,9 @@ public class TestCaseCountryProperties {
 
             JSONArray countriesJson = new JSONArray();
             if (this.getInvariantCountries() != null) {
-                for (Invariant country : this.getInvariantCountries()) {
-                    if(country != null) {
-                        countriesJson.put(country.toJson());
+                for (Invariant countryInv : this.getInvariantCountries()) {
+                    if(countryInv != null) {
+                        countriesJson.put(countryInv.toJson(false));
                     }
                 }
             }
