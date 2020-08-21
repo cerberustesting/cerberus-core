@@ -426,7 +426,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                         testCaseDTO.setCreator(resultSet.getString("tc.UsrCreated"));
                         testCaseDTO.setStatus(resultSet.getString("Status"));
 
-                        testCaseDTO.setGroup(resultSet.getString("Group"));
+                        testCaseDTO.setGroup(resultSet.getString("Type"));
                         testCaseDTO.setIsActive(resultSet.getString("isActive"));
                         testList.getTestCaseList().add(testCaseDTO);
                         map.put(test, testList);
