@@ -8654,6 +8654,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1537
         a.add("ALTER TABLE `tag` ADD COLUMN `Comment` VARCHAR(1000) DEFAULT '' AFTER `Description`;");
 
+        // ADD Parameter.
+        // 1538
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_queueshistorystatgraph_maxnbpoints', '1000', 'Maximum number of points on the queue history graph.')");
+        
         return a;
     }
 

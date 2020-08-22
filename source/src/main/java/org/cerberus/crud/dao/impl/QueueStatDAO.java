@@ -39,6 +39,7 @@ import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -64,10 +65,10 @@ public class QueueStatDAO implements IQueueStatDAO {
 
     private final String OBJECT_NAME = "QueueStat";
     private final String SQL_DUPLICATED_CODE = "23000";
-    private final int MAX_ROW_SELECTED = 10000;
+    private final int MAX_ROW_SELECTED = 50000;
 
     @Override
-    public AnswerList<QueueStat> readByCriteria(Date from, Date to) {
+    public AnswerList<QueueStat> readByCriteria(Date from, Date to, int modulo) {
         AnswerList<QueueStat> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -94,6 +95,7 @@ public class QueueStatDAO implements IQueueStatDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.modulo : " + modulo);
         }
 
         try (Connection connection = this.databaseSpring.connect();
@@ -109,8 +111,16 @@ public class QueueStatDAO implements IQueueStatDAO {
             try (ResultSet resultSet = preStat.executeQuery();
                     ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
+                int c = 0;
                 while (resultSet.next()) {
-                    objectList.add(this.loadFromResultSet_light(resultSet));
+                    if (modulo != 0) {
+                        int t = c++ % modulo;
+                        if (t == 0) {
+                            objectList.add(this.loadFromResultSet_light(resultSet));
+                        }
+                    } else {
+                        objectList.add(this.loadFromResultSet_light(resultSet));
+                    }
                 }
 
                 //get the total number of rows
@@ -147,6 +157,62 @@ public class QueueStatDAO implements IQueueStatDAO {
         }
         response.setResultMessage(msg);
         response.setDataList(objectList);
+        return response;
+    }
+
+    @Override
+    public AnswerItem<Integer> readNbRowsByCriteria(Date from, Date to) {
+        AnswerItem<Integer> response = new AnswerItem<>();
+        Integer result = 0;
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        StringBuilder searchSQL = new StringBuilder();
+        Timestamp t1;
+
+        StringBuilder query = new StringBuilder();
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
+        //were applied -- used for pagination p
+        query.append("SELECT count(*) FROM queuestat ");
+
+        searchSQL.append(" where 1=1 ");
+
+        searchSQL.append(" and DateCreated > ? and DateCreated < ? ");
+
+        query.append(searchSQL);
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement();) {
+
+            int i = 1;
+            t1 = new Timestamp(from.getTime());
+            preStat.setTimestamp(i++, t1);
+            t1 = new Timestamp(to.getTime());
+            preStat.setTimestamp(i++, t1);
+
+            try (ResultSet resultSet = preStat.executeQuery()) {
+                resultSet.first();
+                //gets the data
+                result = resultSet.getInt(1);
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+        response.setResultMessage(msg);
+        response.setItem(result);
         return response;
     }
 

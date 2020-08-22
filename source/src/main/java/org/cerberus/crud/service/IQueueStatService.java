@@ -34,7 +34,6 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IQueueStatService {
 
-
     /**
      *
      * @param from
@@ -42,6 +41,14 @@ public interface IQueueStatService {
      * @return
      */
     AnswerList<QueueStat> readByCriteria(Date from, Date to);
+
+    /**
+     *
+     * @param from
+     * @param to
+     * @return
+     */
+    AnswerItem<Integer> readNbRowsByCriteria(Date from, Date to);
 
     /**
      *

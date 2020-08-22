@@ -24,6 +24,7 @@ import org.cerberus.util.answer.AnswerList;
 
 import java.util.Date;
 import org.cerberus.crud.entity.QueueStat;
+import org.cerberus.util.answer.AnswerItem;
 
 /**
  * Interface that defines the public methods to manage Application data on table
@@ -39,10 +40,19 @@ public interface IQueueStatDAO {
      *
      * @param from
      * @param to
+     * @param modulo allow to sample data retreived taking 1 record out of
+     * modulo.
      * @return
      */
-    AnswerList<QueueStat> readByCriteria(Date from, Date to);
+    AnswerList<QueueStat> readByCriteria(Date from, Date to, int modulo);
 
+    /**
+     *
+     * @param from
+     * @param to
+     * @return
+     */
+    AnswerItem<Integer> readNbRowsByCriteria(Date from, Date to);
     /**
      *
      * @param object

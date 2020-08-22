@@ -26,6 +26,7 @@ import org.apache.logging.log4j.LogManager;
 
 import org.cerberus.crud.dao.IQueueStatDAO;
 import org.cerberus.crud.entity.QueueStat;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
@@ -46,6 +47,8 @@ public class QueueStatService implements IQueueStatService {
 
     @Autowired
     private IQueueStatDAO queueStatDAO;
+    @Autowired
+    private IParameterService parameterService;
 
     private static final Logger LOG = LogManager.getLogger("QueueStat");
 
@@ -53,7 +56,19 @@ public class QueueStatService implements IQueueStatService {
 
     @Override
     public AnswerList<QueueStat> readByCriteria(Date from, Date to) {
-        return queueStatDAO.readByCriteria(from, to);
+        Integer nbRows = readNbRowsByCriteria(from, to).getItem();
+        LOG.debug("Total Rows : " + nbRows);
+        Integer maxRows = parameterService.getParameterIntegerByKey("cerberus_queueshistorystatgraph_maxnbpoints", "", 1000);
+        int modulo = 0;
+        if (nbRows > maxRows) {
+            modulo = nbRows / maxRows;
+        }
+        return queueStatDAO.readByCriteria(from, to, modulo);
+    }
+
+    @Override
+    public AnswerItem<Integer> readNbRowsByCriteria(Date from, Date to) {
+        return queueStatDAO.readNbRowsByCriteria(from, to);
     }
 
     @Override
