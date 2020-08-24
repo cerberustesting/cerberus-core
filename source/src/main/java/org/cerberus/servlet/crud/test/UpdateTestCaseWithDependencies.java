@@ -343,7 +343,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             JSONObject step = stepArray.getJSONObject(i);
 
             boolean delete = step.getBoolean("toDelete");
-            int stepNumber = step.isNull("step") ? -1 : step.getInt("step");
+            int stepNumber = step.isNull("stepId") ? -1 : step.getInt("stepId");
             int sort = step.isNull("sort") ? -1 : step.getInt("sort");
             String loop = step.getString("loop");
             String conditionOperator = step.getString("conditionOperator");
