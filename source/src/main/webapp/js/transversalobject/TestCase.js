@@ -189,7 +189,7 @@ function addHtmlForDependencyLine(id, test, testCase, testCaseTxt, activate, des
             '</td>' +
             '<td>' + test + ' - ' + testCaseTxt + '</td>' +
             '<td style="width: 100px;">  <input type="checkbox"  name="activate" ' + checked + '/></td>' +
-            '<td>  <input class="form-control input-sm" name="description" value="' + description + '"/></td>' +
+            '<td>  <input class="form-control input-sm" name="depDescription" value="' + description + '"/></td>' +
             '</tr>'
             );
 }
@@ -533,7 +533,7 @@ function confirmTestCaseModalHandler(mode) {
     $("#depenencyTable").find("tr")
             .each((t, v) =>
                 testcaseDependencies.push(
-                        {id: $(v).attr("testcaseid"), test: $(v).attr("test"), testcase: $(v).attr("testcase"), description: $(v).find("[name='description']").val(), active: $(v).find("[name='activate']").is(":checked")}
+                        {id: $(v).attr("testcaseid"), test: $(v).attr("test"), testcase: $(v).attr("testcase"), description: $(v).find("[name='depDescription']").val(), active: $(v).find("[name='activate']").is(":checked")}
                 )
             )
 
