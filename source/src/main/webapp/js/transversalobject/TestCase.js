@@ -722,8 +722,8 @@ function fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases
             async: true,
             success: function(data) {
                 data.contentTable.sort(function(a, b) {
-                    var aa = a.testCase.toLowerCase();
-                    var bb = b.testCase.toLowerCase();
+                    var aa = a.testcase.toLowerCase();
+                    var bb = b.testcase.toLowerCase();
                     if (aa > bb) {
                         return 1;
                     } else if (aa < bb) {
@@ -735,7 +735,7 @@ function fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases
 
                 $(selectorTestCaseSelect).prepend("<option value=''>" + doc.getDocLabel("page_testcasescript", "select_testcase") + "</option>");
                 for (var i = 0; i < data.contentTable.length; i++) {
-                    $(selectorTestCaseSelect).append("<option value='" + data.contentTable[i].testCase + "'>" + data.contentTable[i].testCase + " - " + data.contentTable[i].description + "</option>")
+                    $(selectorTestCaseSelect).append("<option value='" + data.contentTable[i].testcase + "'>" + data.contentTable[i].testcase + " - " + data.contentTable[i].description + "</option>")
                 }
                 if (testcase !== null) {
                     $(selectorTestCaseSelect + " option[value='" + testcase + "']").prop('selected', true);
