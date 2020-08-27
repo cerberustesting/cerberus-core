@@ -639,6 +639,7 @@ function filterOnLabel(element) {
 }
 
 function aoColumnsFunc(countries, tableId) {
+    console.log(countries);
     var doc = new Doc();
 
     var countryLen = countries.length;
@@ -651,7 +652,7 @@ function aoColumnsFunc(countries, tableId) {
             "mRender": function(data, type, obj) {
                 var selectBrp = '<input id="selectLine" \n\
                                 class="selectBrp margin-right5" \n\
-                                name="test-' + obj["test"] + 'testcase-' + obj["testCase"] + '" data-line="select" data-id="' + obj["test"] + obj["testCase"] + '" title="' + doc.getDocLabel("page_global", "tooltip_massActionLine") + '" type="checkbox">\n\
+                                name="test-' + obj["test"] + 'testcase-' + obj["testcase"] + '" data-line="select" data-id="' + obj["test"] + obj["testcase"] + '" title="' + doc.getDocLabel("page_global", "tooltip_massActionLine") + '" type="checkbox">\n\
                                 </input>';
                 if (data.hasPermissionsUpdate) { //only draws the options if the user has the correct privileges
                     return '<div class="center btn-group width50">' + selectBrp + '</div>';
@@ -670,32 +671,32 @@ function aoColumnsFunc(countries, tableId) {
             "mRender": function(data, type, obj) {
                 var buttons = "";
 
-                var editEntry = '<button id="editEntry" onclick="openModalTestCase(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\',\'EDIT\');"\n\
+                var editEntry = '<button id="editEntry" onclick="openModalTestCase(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testcase"]) + '\',\'EDIT\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewEntry = '<button id="editEntry" onclick="openModalTestCase(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\',\'EDIT\');"\n\
+                var viewEntry = '<button id="editEntry" onclick="openModalTestCase(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testcase"]) + '\',\'EDIT\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_view") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testcase"]) + '\');"\n\
                                         class="deleteEntry btn btn-default btn-xs margin-right25" \n\
                                         name="deleteEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_delete") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
-                var exportEntry = '<a id="exportEntry" href="./ExportTestCase?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testCase"]) + '"\n\
+                var exportEntry = '<a id="exportEntry" href="./ExportTestCase?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '"\n\
                                         class="editEntry btn btn-default btn-xs margin-right5" \n\
                                         name="exportEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_export") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-export"></span></a>';
-                var duplicateEntry = '<button id="duplicateEntry" onclick="openModalTestCase(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\',\'DUPLICATE\');"\n\
+                var duplicateEntry = '<button id="duplicateEntry" onclick="openModalTestCase(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testcase"]) + '\',\'DUPLICATE\');"\n\
                                         class="duplicateEntry btn btn-default btn-xs margin-right5" \n\
                                         name="duplicateEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_duplicate") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-duplicate"></span></button>';
                 var editScript = '<a id="testCaseLink" class="btn btn-primary btn-xs marginRight5"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + '" href="./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testCase"]) + '">\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + '" href="./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
                 var runTest = '<a id="runTest" class="btn btn-primary btn-xs marginRight5 marginLeft20"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_runTest") + '" href="./RunTests.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testCase"]) + '">\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_runTest") + '" href="./RunTests.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '">\n\
                                     <span class="glyphicon glyphicon-play"></span>\n\
                                     </a>';
 
@@ -736,8 +737,8 @@ function aoColumnsFunc(countries, tableId) {
 
         },
         {
-            "data": "testCase",
-            "sName": "tec.testCase",
+            "data": "testcase",
+            "sName": "tec.testcase",
             "like": true,
             "title": doc.getDocOnline("testcase", "TestCase"),
             "sWidth": "82px",
@@ -762,13 +763,13 @@ function aoColumnsFunc(countries, tableId) {
             "render": function(data, type, full, meta) {
                 var labelValue = '';
                 $.each(data, function(i, e) {
-                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.name + '</span></div> ';
+                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
                 });
                 return labelValue;
             }
         },
         {
-            "data": "labelsSTICKER",
+            "data": "labels.type.STICKER",
             "sName": "lab.labelsSTICKER",
             "title": doc.getDocOnline("label", "labelsSTICKER"),
             "bSortable": false,
@@ -777,7 +778,7 @@ function aoColumnsFunc(countries, tableId) {
             "render": function(data, type, full, meta) {
                 var labelValue = '';
                 $.each(data, function(i, e) {
-                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.name + '</span></div> ';
+                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
                 });
                 return labelValue;
             }
@@ -793,7 +794,7 @@ function aoColumnsFunc(countries, tableId) {
             "render": function(data, type, full, meta) {
                 var labelValue = '';
                 $.each(data, function(i, e) {
-                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.name + '</span></div> ';
+                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
                 });
                 return labelValue;
             }
@@ -809,7 +810,7 @@ function aoColumnsFunc(countries, tableId) {
             "render": function(data, type, full, meta) {
                 var labelValue = '';
                 $.each(data, function(i, e) {
-                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.name + '</span></div> ';
+                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
                 });
                 return labelValue;
             }
@@ -878,16 +879,16 @@ function aoColumnsFunc(countries, tableId) {
             "mRender": function(data, type, obj) {
                 if (obj.hasPermissionsUpdate) {
                     if (data === "Y") {
-                        return '<input type="checkbox" name="' + obj["testCase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" checked/>';
+                        return '<input type="checkbox" name="' + obj["testcase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" checked/>';
                     } else if (data === "N") {
-                        $('[id="runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testCase"]) + '"]').attr("disabled", "disabled");
-                        return '<input type="checkbox" name="' + obj["testCase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" />';
+                        $('[id="runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testcase"]) + '"]').attr("disabled", "disabled");
+                        return '<input type="checkbox" name="' + obj["testcase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" />';
                     }
                 } else {
                     if (data === "Y") {
                         return '<input type="checkbox" checked disabled />';
                     } else {
-                        $('[id="runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testCase"]) + '"]').attr("disabled", "disabled");
+                        $('[id="runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testcase"]) + '"]').attr("disabled", "disabled");
                         return '<input type="checkbox" disabled />';
                     }
                 }
@@ -1000,16 +1001,21 @@ function aoColumnsFunc(countries, tableId) {
 
     for (var index = 0; index < countryLen; index++) {
         var country = countries[index].value;
+        console.log(country);
 
         var column = {
             "data": function(row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
+                console.log(row);
+                console.log("dataTitle : " + dataTitle);
 
                 if (row.hasPermissionsUpdate) {
+                    console.log("hasPermissionUpdate");
                     if (row.hasOwnProperty("countries") && row["countries"].some(item => item.country === dataTitle)) {
-                        return '<input type="checkbox" name="' + dataTitle + '" data-test="' + row.test + '" data-testcase="' + row.testCase + '" onchange="setCountry(this);" checked/>';
+                        console.log("true");
+                        return '<input type="checkbox" name="' + dataTitle + '" data-test="' + row.test + '" data-testcase="' + row.testcase + '" onchange="setCountry(this);" checked/>';
                     } else {
-                        return '<input type="checkbox" name="' + dataTitle + '" data-test="' + row.test + '" data-testcase="' + row.testCase + '" onchange="setCountry(this);"/>';
+                        return '<input type="checkbox" name="' + dataTitle + '" data-test="' + row.test + '" data-testcase="' + row.testcase + '" onchange="setCountry(this);"/>';
                     }
                 } else {
                     if (row.hasOwnProperty("countries") && row["countries"].some(item => item.country === dataTitle)) {

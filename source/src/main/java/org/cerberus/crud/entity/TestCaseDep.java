@@ -187,4 +187,9 @@ public class TestCaseDep {
         }
         return testCaseDependencyJson;
     }
+
+    @Override
+    public String toString() {
+        return "TestCaseDep{" + "id=" + id + ", test=" + test + ", testCase=" + testCase + ", type=" + type + ", depTest=" + depTest + ", depTestCase=" + depTestCase + ", depEvent=" + depEvent + ", active=" + active + ", description=" + description + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", depDescription=" + depDescription + '}';
+    }
 }

@@ -65,13 +65,14 @@ public interface ITestCaseService {
      */
     AnswerItem<TestCase> findTestCaseByKeyWithDependencies(String test, String testCase, boolean withSteps) throws CerberusException;
 
-
     /**
      *
      * @param test
      * @return
      */
     List<TestCase> findTestCaseByTest(String test);
+
+    AnswerList<TestCase> findTestCasesByTestByCriteriaWithDependencies(List<String> system, String test, int startPosition, int length, String sortInformation, String searchParameter, Map<String, List<String>> individualSearch, boolean isCalledFromListPage) throws CerberusException;
 
     /**
      *

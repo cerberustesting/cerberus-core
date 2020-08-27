@@ -63,14 +63,12 @@ public interface IInvariantService {
 
     /**
      *
-     * @param test
-     * @param testCase
      * @param testCaseCountries
      * @param countryInvariants
      * @return
      * @throws CerberusException
      */
-    List<Invariant> findCountryInvariantsFromTestCase(String test, String testCase, HashMap<String, TestCaseCountry> testCaseCountries, HashMap<String, Invariant> countryInvariants) throws CerberusException;
+    List<Invariant> convertCountryPropertiesToCountryInvariants(HashMap<String, TestCaseCountry> testCaseCountries, HashMap<String, Invariant> countryInvariants) throws CerberusException;
 
     /**
      *

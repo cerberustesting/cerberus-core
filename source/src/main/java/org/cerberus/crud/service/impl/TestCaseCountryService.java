@@ -118,11 +118,27 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     }
 
     @Override
-    public HashMap<String, TestCaseCountry> readByTestTestCaseToHash(String test, String testCase) {
+    public HashMap<String, TestCaseCountry> readByTestTestCaseToHashCountryAsKey(String test, String testCase) {
 
         HashMap<String, TestCaseCountry> testCaseCountries = new HashMap<String, TestCaseCountry>();
         for (TestCaseCountry testCaseCountry : this.readByTestTestCase(null, test, testCase, null).getDataList()) {
             testCaseCountries.put(testCaseCountry.getCountry(), testCaseCountry);
+        }
+        return testCaseCountries;
+    }
+
+    @Override
+    public HashMap<String, HashMap<String, TestCaseCountry>> convertListToHashMapTestTestCaseAsKey(List<TestCaseCountry> testCaseCountryList) {
+
+        HashMap<String, HashMap<String, TestCaseCountry>> testCaseCountries = new HashMap<>();
+        for (TestCaseCountry testCaseCountry : testCaseCountryList) {
+            String key = testCaseCountry.getTest() + "_" + testCaseCountry.getTestCase();
+            if (testCaseCountries.containsKey(key)) {
+                testCaseCountries.get(key).put(testCaseCountry.getCountry(), testCaseCountry);
+            } else {
+                testCaseCountries.put(key, new HashMap<String, TestCaseCountry>());
+                testCaseCountries.get(key).put(testCaseCountry.getCountry(), testCaseCountry);
+            }
         }
         return testCaseCountries;
     }
