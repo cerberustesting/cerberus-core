@@ -639,7 +639,6 @@ function filterOnLabel(element) {
 }
 
 function aoColumnsFunc(countries, tableId) {
-    console.log(countries);
     var doc = new Doc();
 
     var countryLen = countries.length;
@@ -769,7 +768,7 @@ function aoColumnsFunc(countries, tableId) {
             }
         },
         {
-            "data": "labels.type.STICKER",
+            "data": "labelsSTICKER",
             "sName": "lab.labelsSTICKER",
             "title": doc.getDocOnline("label", "labelsSTICKER"),
             "bSortable": false,
@@ -1001,24 +1000,19 @@ function aoColumnsFunc(countries, tableId) {
 
     for (var index = 0; index < countryLen; index++) {
         var country = countries[index].value;
-        console.log(country);
 
         var column = {
             "data": function(row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
-                console.log(row);
-                console.log("dataTitle : " + dataTitle);
 
                 if (row.hasPermissionsUpdate) {
-                    console.log("hasPermissionUpdate");
-                    if (row.hasOwnProperty("countries") && row["countries"].some(item => item.country === dataTitle)) {
-                        console.log("true");
+                    if (row.hasOwnProperty("countries") && row["countries"].some(item => item.value === dataTitle)) {
                         return '<input type="checkbox" name="' + dataTitle + '" data-test="' + row.test + '" data-testcase="' + row.testcase + '" onchange="setCountry(this);" checked/>';
                     } else {
                         return '<input type="checkbox" name="' + dataTitle + '" data-test="' + row.test + '" data-testcase="' + row.testcase + '" onchange="setCountry(this);"/>';
                     }
                 } else {
-                    if (row.hasOwnProperty("countries") && row["countries"].some(item => item.country === dataTitle)) {
+                    if (row.hasOwnProperty("countries") && row["countries"].some(item => item.value === dataTitle)) {
                         return '<input type="checkbox" checked disabled/>';
                     } else {
                         return '<input type="checkbox" disabled/>';

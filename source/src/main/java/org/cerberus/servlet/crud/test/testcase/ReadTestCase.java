@@ -92,6 +92,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
     @Override
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
         int sEcho = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("sEcho"), "0"));
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
@@ -117,17 +118,13 @@ public class ReadTestCase extends AbstractCrudTestCase {
         boolean withSteps = ParameterParserUtil.parseBooleanParam(request.getParameter("withSteps"), false);
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
-        // Global boolean on the servlet that define if the user has permition to edit and delete object.
-        boolean userHasPermissions = request.isUserInRole("TestAdmin");
-
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem<>(msg);
+        AnswerItem<JSONObject> answer = new AnswerItem<>(msg);
         JSONObject jsonResponse = new JSONObject();
 
         try {
             if (!Strings.isNullOrEmpty(test) && testCase != null) {
                 answer = findTestCaseByTestTestCase(test, testCase, request, withSteps);
-                jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(test) && getMaxTC) {
                 String max = testCaseService.getMaxNumberTestCase(test);
                 if (max == null) {
@@ -137,21 +134,18 @@ public class ReadTestCase extends AbstractCrudTestCase {
                 answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             } else if (filter) {
                 answer = findTestCaseByVarious(request);
-                jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(campaign)) {
                 answer = findTestCaseByCampaign(campaign);
-                jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(columnName)) {
                 //If columnName is present, then return the distinct value of this column.
                 answer = findDistinctValuesOfColumn(system, test, request, columnName);
-                jsonResponse = (JSONObject) answer.getItem();
-            } else { // Page TestCaseList
+            } else { 
+                // Page TestCaseList
                 answer = findTestCaseByTest(system, test, request);
-                jsonResponse = (JSONObject) answer.getItem();
             }
 
-            if (jsonResponse == null) {
-                jsonResponse = new JSONObject();
+            if (!getMaxTC) {
+                jsonResponse = (answer.getItem() == null) ? new JSONObject() : answer.getItem();
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -247,41 +241,6 @@ public class ReadTestCase extends AbstractCrudTestCase {
         return answer;
     }
 
-    private StringBuilder getSortingInformation(String columnToSort[], HttpServletRequest request) {
-        int numberOfColumnToSort = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortingCols"), "1"));
-        int columnToSortParameter = 0;
-        String sort = "asc";
-        StringBuilder sortInformation = new StringBuilder();
-
-        for (int i = 0; i < numberOfColumnToSort; i++) {
-            columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_" + i), "0"));
-            sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_" + i), "asc");
-            String columnName = columnToSort[columnToSortParameter];
-            sortInformation.append(columnName).append(" ").append(sort);
-
-            if (i != numberOfColumnToSort - 1) {
-                sortInformation.append(" , ");
-            }
-        }
-        return sortInformation;
-    }
-
-    private Map<String, List<String>> getIndivualSearch(HttpServletRequest request, String columnToSort[], List<String> individualLike) {
-        Map<String, List<String>> individualSearch = new HashMap<>();
-
-        for (int i = 0; i < columnToSort.length; i++) {
-            if (null != request.getParameter("sSearch_" + i) && !request.getParameter("sSearch_" + i).isEmpty()) {
-                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + i).split(",")));
-                if (individualLike.contains(columnToSort[i])) {
-                    individualSearch.put(columnToSort[i] + ":like", search);
-                } else {
-                    individualSearch.put(columnToSort[i], search);
-                }
-            }
-        }
-        return individualSearch;
-    }
-
     private AnswerItem<JSONObject> findTestCaseByTestTestCase(String test, String testCase, HttpServletRequest request, boolean withSteps) throws JSONException, CerberusException {
         AnswerItem<JSONObject> answerItem = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
@@ -337,8 +296,8 @@ public class ReadTestCase extends AbstractCrudTestCase {
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (TestCase tc : (List<TestCase>) answer.getDataList()) {
-                JSONObject value = convertToJSONObject(tc);
-                value.put("bugs", tc.getBugs());
+                JSONObject value = tc.toJson();
+                //value.put("bugs", tc.getBugs());
                 dataArray.put(value);
             }
         }
@@ -349,8 +308,8 @@ public class ReadTestCase extends AbstractCrudTestCase {
         return item;
     }
 
-    private AnswerItem findTestCaseByCampaign(String campaign) throws JSONException {
-        AnswerItem<JSONObject> answer = new AnswerItem<>();
+    private AnswerItem<JSONObject> findTestCaseByCampaign(String campaign) throws JSONException {
+        AnswerItem<JSONObject> answerItem = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         JSONArray dataArray = new JSONArray();
 
@@ -375,48 +334,64 @@ public class ReadTestCase extends AbstractCrudTestCase {
         }
 
         jsonResponse.put("contentTable", dataArray);
-        answer.setItem(jsonResponse);
-        answer.setResultMessage(testCases.getResultMessage());
-        return answer;
-    }
-
-   
-
-    private JSONObject convertToJSONObject(TestCase object) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(object));
-        return result;
+        answerItem.setItem(jsonResponse);
+        answerItem.setResultMessage(testCases.getResultMessage());
+        return answerItem;
     }
 
     private AnswerItem<JSONObject> findDistinctValuesOfColumn(List<String> system, String test, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem<JSONObject> answer = new AnswerItem<>();
-        JSONObject object = new JSONObject();
+        AnswerItem<JSONObject> answerItem = new AnswerItem<>();
+        JSONObject jsonResponse = new JSONObject();
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,detailedDescription,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
 
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
+        Map<String, List<String>> individualSearch = getIndivualSearch(request, columnToSort, individualLike);
+        AnswerList testCaseList = testCaseService.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
 
+        jsonResponse.put("distinctValues", testCaseList.getDataList());
+
+        answerItem.setItem(jsonResponse);
+        answerItem.setResultMessage(testCaseList.getResultMessage());
+        return answerItem;
+    }
+    
+    
+    private StringBuilder getSortingInformation(String columnToSort[], HttpServletRequest request) {
+        int numberOfColumnToSort = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortingCols"), "1"));
+        int columnToSortParameter = 0;
+        String sort = "asc";
+        StringBuilder sortInformation = new StringBuilder();
+
+        for (int i = 0; i < numberOfColumnToSort; i++) {
+            columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_" + i), "0"));
+            sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_" + i), "asc");
+            String columnName = columnToSort[columnToSortParameter];
+            sortInformation.append(columnName).append(" ").append(sort);
+
+            if (i != numberOfColumnToSort - 1) {
+                sortInformation.append(" , ");
+            }
+        }
+        return sortInformation;
+    }
+
+    private Map<String, List<String>> getIndivualSearch(HttpServletRequest request, String columnToSort[], List<String> individualLike) {
         Map<String, List<String>> individualSearch = new HashMap<>();
-        for (int a = 0; a < columnToSort.length; a++) {
-            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                if (individualLike.contains(columnToSort[a])) {
-                    individualSearch.put(columnToSort[a] + ":like", search);
+
+        for (int i = 0; i < columnToSort.length; i++) {
+            if (null != request.getParameter("sSearch_" + i) && !request.getParameter("sSearch_" + i).isEmpty()) {
+                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + i).split(",")));
+                if (individualLike.contains(columnToSort[i])) {
+                    individualSearch.put(columnToSort[i] + ":like", search);
                 } else {
-                    individualSearch.put(columnToSort[a], search);
+                    individualSearch.put(columnToSort[i], search);
                 }
             }
         }
-
-        AnswerList testCaseList = testCaseService.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
-
-        object.put("distinctValues", testCaseList.getDataList());
-
-        answer.setItem(object);
-        answer.setResultMessage(testCaseList.getResultMessage());
-        return answer;
+        return individualSearch;
     }
 
 }
