@@ -21,8 +21,8 @@
 
 var testAutomaticModal = "";
 
-$.when($.getScript("js/global/global.js")).then(function() {
-    $(document).ready(function() {
+$.when($.getScript("js/global/global.js")).then(function () {
+    $(document).ready(function () {
         initPage();
     });
 });
@@ -61,7 +61,7 @@ function initPage() {
 function initMassActionModal() {
     $("#massActionTestCaseModal #massStatus").prop("disabled", true);
     $("#statusCheckbox").prop("checked", false);
-    $("#statusCheckbox").change(function() {
+    $("#statusCheckbox").change(function () {
         if ($(this).prop("checked")) {
             $("#massActionTestCaseModal #massStatus").prop("disabled", false);
         } else {
@@ -70,7 +70,7 @@ function initMassActionModal() {
     });
     $("#massActionTestCaseModal #massApplication").prop("disabled", true);
     $("#applicationCheckbox").prop("checked", false);
-    $("#applicationCheckbox").change(function() {
+    $("#applicationCheckbox").change(function () {
         if ($(this).prop("checked")) {
             $("#massActionTestCaseModal #massApplication").prop("disabled", false);
         } else {
@@ -79,7 +79,7 @@ function initMassActionModal() {
     });
     $("#massActionTestCaseModal #massPriority").prop("disabled", true);
     $("#priorityCheckbox").prop("checked", false);
-    $("#priorityCheckbox").change(function() {
+    $("#priorityCheckbox").change(function () {
         if ($(this).prop("checked")) {
             $("#massActionTestCaseModal #massPriority").prop("disabled", false);
         } else {
@@ -88,7 +88,7 @@ function initMassActionModal() {
     });
     $("#massActionTestCaseModal #massExecutor").prop("disabled", true);
     $("#executorCheckbox").prop("checked", false);
-    $("#executorCheckbox").change(function() {
+    $("#executorCheckbox").change(function () {
         if ($(this).prop("checked")) {
             $("#massActionTestCaseModal #massExecutor").prop("disabled", false);
         } else {
@@ -121,7 +121,7 @@ function loadTable(selectTest, sortColumn) {
     //configure and create the dataTable
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
 
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         sortColumn = 2;
 
         var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data, "testCaseTable"), [2, 'asc']);
@@ -165,7 +165,7 @@ function renderOptionsForTestCaseList(data) {
 
             $("#testCaseTable_wrapper #testCaseTable_length").before(contentToAdd);
 
-            $('#testCaseList #createTestCaseButton').click(data, function() {
+            $('#testCaseList #createTestCaseButton').click(data, function () {
                 // Getting the Test from the 1st row of the testcase table.
                 if ($("#testCaseTable td.sorting_1")[0] !== undefined) {
                     var firstRowTest = testAutomaticModal;
@@ -186,7 +186,7 @@ function renderOptionsForTestCaseList(data) {
 /********************************************************
  //DELETE TESTCASE
  /********************************************************
-
+ 
  /* Function called on click on delete button
  * This function display a confirmation modal
  * @param {type} test
@@ -209,7 +209,7 @@ function deleteEntryHandlerClick() {
     var test = $('#confirmationModal').find('#hiddenField1').prop("value");
     var testCase = $('#confirmationModal').find('#hiddenField2').prop("value");
     var jqxhr = $.post("DeleteTestCase", {test: test, testCase: testCase}, "json");
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
             //redraw the datatable
@@ -260,7 +260,7 @@ function massActionModalSaveHandler_addLabel() {
     showLoaderInModal('#massActionTestCaseModal');
 
     var jqxhr = $.post("CreateTestCaseLabel", paramSerialized, "json");
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         // unblock when remote call returns
         hideLoaderInModal('#massActionTestCaseModal');
         if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
@@ -297,7 +297,7 @@ function massActionModalSaveHandler_removeLabel() {
     showLoaderInModal('#massActionTestCaseModal');
 
     var jqxhr = $.post("DeleteTestCaseLabel", paramSerialized, "json");
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         // unblock when remote call returns
         hideLoaderInModal('#massActionTestCaseModal');
         if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
@@ -321,7 +321,7 @@ function massActionModalSaveHandler_update() {
     showLoaderInModal('#massActionTestCaseModal');
 
     var jqxhr = $.post("UpdateTestCaseMass", paramSerialized, "json");
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         // unblock when remote call returns
         hideLoaderInModal('#massActionTestCaseModal');
         if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
@@ -338,7 +338,7 @@ function massActionModalSaveHandler_update() {
 function massActionModalSaveHandler_export() {
     clearResponseMessage($('#massActionTestCaseModal'));
 
-    $("input[data-line=select]:checked").each(function(index, file) {
+    $("input[data-line=select]:checked").each(function (index, file) {
         var t = $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
         var test = t.split("test=")[1].split("&testcase=")[0];
         var testcase = t.split("test=")[1].split("&testcase=")[1];
@@ -370,7 +370,7 @@ function massActionModalSaveHandler_delete() {
     var messageComplete = doc.getDocLabel("page_testcase", "message_delete_all");
     messageComplete += "</br></br>";
 
-    $("input[data-line=select]:checked").each(function(index, file) {
+    $("input[data-line=select]:checked").each(function (index, file) {
         var t = $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
         var test = t.split("test=")[1].split("&testcase=")[0];
         var testcase = t.split("test=")[1].split("&testcase=")[1];
@@ -385,7 +385,7 @@ function deleteMassTestCase() {
     var returnMessage = '{"messageType":"OK","message":"Delete OK"}';
 
     //Loop on TestCase Selected to delete them
-    $("input[data-line=select]:checked").each(function(index, file) {
+    $("input[data-line=select]:checked").each(function (index, file) {
         var t = $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testCase=');
         var url = "DeleteTestCase?" + t;
 
@@ -393,13 +393,13 @@ function deleteMassTestCase() {
             url: url,
             async: true,
             method: "GET",
-            success: function(data) {
+            success: function (data) {
                 data = JSON.parse(data);
                 if (getAlertType(data.messageType) !== "success") {
                     returnMessage = data;
                 }
             },
-            error: function() {
+            error: function () {
                 returnMessage = '{"messageType":"KO","message":"Delete KO"}';
             }
         });
@@ -446,7 +446,7 @@ function massActionClick() {
         // Load Applications.
         $("[name='massApplication']").empty();
         var jqxhr = $.getJSON("ReadApplication");
-        $.when(jqxhr).then(function(data) {
+        $.when(jqxhr).then(function (data) {
             var applicationList = $("[name='massApplication']");
 
             for (var index = 0; index < data.contentTable.length; index++) {
@@ -470,7 +470,7 @@ function importTestCaseClick() {
     $("#importTestCaseButton").off("click");
 
     var fileInput = document.getElementById('files');
-    fileInput.addEventListener('change', function(evnt) {
+    fileInput.addEventListener('change', function (evnt) {
         fileList = [];
         for (var i = 0; i < fileInput.files.length; i++) {
             fileList.push(fileInput.files[i]);
@@ -478,7 +478,7 @@ function importTestCaseClick() {
         renderFileList(fileList);
     });
 
-    $("#importTestCaseButton").click(function() {
+    $("#importTestCaseButton").click(function () {
         confirmImportTestCaseModalHandler();
     });
 
@@ -530,7 +530,7 @@ function confirmImportTestCaseModalHandler() {
         data: formData,
         processData: false,
         contentType: false,
-        success: function(data) {
+        success: function (data) {
             data = JSON.parse(data);
             if (getAlertType(data.messageType) === "success") {
                 var oTable = $("#testCaseTable").dataTable();
@@ -554,7 +554,7 @@ function confirmImportTestCaseModalHandler() {
 function renderFileList(fileList) {
     var fileListDisplay = document.getElementById('file-list-display');
     fileListDisplay.innerHTML = '';
-    fileList.forEach(function(file, index) {
+    fileList.forEach(function (file, index) {
         var fileDisplayEl = document.createElement('p');
         fileDisplayEl.innerHTML = (index + 1) + ': ' + file.name;
         fileListDisplay.appendChild(fileDisplayEl);
@@ -578,7 +578,7 @@ function setActive(checkbox) {
         method: "POST",
         data: {test: test, testCase: testCase, originalTest: test, originalTestCase: testCase, active: active},
         dataType: "json",
-        success: function(data) {
+        success: function (data) {
             if (active === "Y") {
                 $('[id="runTest' + encodeURIComponent(test) + encodeURIComponent(testCase) + '"]').removeAttr("disabled");
             } else {
@@ -605,7 +605,7 @@ function setCountry(checkbox) {
             method: "POST",
             data: "test=" + test + "&testCase=" + testCase + "&country=" + country,
             dataType: "json",
-            success: function(data) {
+            success: function (data) {
                 clearResponseMessageMainPage();
                 var messageType = getAlertType(data.messageType);
                 //show message in the main page
@@ -620,7 +620,7 @@ function setCountry(checkbox) {
             method: "POST",
             data: "test=" + test + "&testCase=" + testCase + "&country=" + country,
             dataType: "json",
-            success: function(data) {
+            success: function (data) {
                 clearResponseMessageMainPage();
                 var messageType = getAlertType(data.messageType);
                 //show message in the main page
@@ -648,7 +648,7 @@ function aoColumnsFunc(countries, tableId) {
             "bSortable": false,
             "sWidth": "30px",
             "bSearchable": false,
-            "mRender": function(data, type, obj) {
+            "mRender": function (data, type, obj) {
                 var selectBrp = '<input id="selectLine" \n\
                                 class="selectBrp margin-right5" \n\
                                 name="test-' + obj["test"] + 'testcase-' + obj["testcase"] + '" data-line="select" data-id="' + obj["test"] + obj["testcase"] + '" title="' + doc.getDocLabel("page_global", "tooltip_massActionLine") + '" type="checkbox">\n\
@@ -667,7 +667,7 @@ function aoColumnsFunc(countries, tableId) {
             "title": doc.getDocOnline("page_global", "columnAction"),
             "sDefaultContent": "",
             "sWidth": "175px",
-            "mRender": function(data, type, obj) {
+            "mRender": function (data, type, obj) {
                 var buttons = "";
 
                 var editEntry = '<button id="editEntry" onclick="openModalTestCase(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testcase"]) + '\',\'EDIT\');"\n\
@@ -727,7 +727,7 @@ function aoColumnsFunc(countries, tableId) {
             "title": doc.getDocOnline("test", "Test"),
             "sWidth": "120px",
             "sDefaultContent": "",
-            "mRender": function(data, type, oObj, full) {
+            "mRender": function (data, type, oObj, full) {
                 if (full.row == 0) {
                     testAutomaticModal = oObj.test;
                 }
@@ -759,57 +759,63 @@ function aoColumnsFunc(countries, tableId) {
             "bSortable": false,
             "sWidth": "170px",
             "sDefaultContent": "",
-            "render": function(data, type, full, meta) {
+            "render": function (data, type, full, meta) {
                 var labelValue = '';
-                $.each(data, function(i, e) {
+                $.each(data, function (i, e) {
                     labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
                 });
                 return labelValue;
             }
         },
         {
-            "data": "labelsSTICKER",
+            "data": "labels",
             "sName": "lab.labelsSTICKER",
             "title": doc.getDocOnline("label", "labelsSTICKER"),
             "bSortable": false,
             "sWidth": "170px",
             "sDefaultContent": "",
-            "render": function(data, type, full, meta) {
+            "render": function (data, type, full, meta) {
                 var labelValue = '';
-                $.each(data, function(i, e) {
-                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
+                $.each(data, function (i, e) {
+                    if (e.type === "STICKER") {
+                        labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
+                    }
                 });
                 return labelValue;
             }
         },
         {
-            "data": "labelsREQUIREMENT",
+            "data": "labels",
             "visible": false,
             "sName": "lab.labelsREQUIREMENT",
             "title": doc.getDocOnline("label", "labelsREQUIREMENT"),
             "bSortable": false,
             "sWidth": "170px",
             "sDefaultContent": "",
-            "render": function(data, type, full, meta) {
+            "render": function (data, type, full, meta) {
                 var labelValue = '';
-                $.each(data, function(i, e) {
-                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
+                $.each(data, function (i, e) {
+                    if (e.type === "REQUIREMENT") {
+                        labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
+                    }
                 });
                 return labelValue;
             }
         },
         {
-            "data": "labelsBATTERY",
+            "data": "labels",
             "visible": false,
             "sName": "lab.labelsBATTERY",
             "title": doc.getDocOnline("label", "labelsBATTERY"),
             "bSortable": false,
             "sWidth": "170px",
             "sDefaultContent": "",
-            "render": function(data, type, full, meta) {
+            "render": function (data, type, full, meta) {
                 var labelValue = '';
-                $.each(data, function(i, e) {
-                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
+                $.each(data, function (i, e) {
+                    if (e.type === "BATTERY") {
+                        labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
+                    }
                 });
                 return labelValue;
             }
@@ -875,7 +881,7 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": "",
             "sWidth": "70px",
             "className": "center",
-            "mRender": function(data, type, obj) {
+            "mRender": function (data, type, obj) {
                 if (obj.hasPermissionsUpdate) {
                     if (data === "Y") {
                         return '<input type="checkbox" name="' + obj["testcase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" checked/>';
@@ -899,32 +905,6 @@ function aoColumnsFunc(countries, tableId) {
             "sName": "tec.priority",
             "title": doc.getDocOnline("invariant", "PRIORITY"),
             "sWidth": "70px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "function",
-            "visible": false,
-            "like": true,
-            "sName": "tec.function",
-            "title": doc.getDocOnline("testcase", "Function"),
-            "sWidth": "100px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "origine",
-            "visible": false,
-            "sName": "tec.origine",
-            "title": doc.getDocOnline("testcase", "Origine"),
-            "sWidth": "70px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "refOrigine",
-            "visible": false,
-            "sName": "tec.refOrigine",
-            "like": true,
-            "title": doc.getDocOnline("testcase", "RefOrigine"),
-            "sWidth": "80px",
             "sDefaultContent": ""
         },
         {
@@ -984,7 +964,7 @@ function aoColumnsFunc(countries, tableId) {
             "title": doc.getDocOnline("transversal", "DateModif"),
             "sWidth": "150px",
             "sDefaultContent": "",
-            "mRender": function(data, type, oObj) {
+            "mRender": function (data, type, oObj) {
                 return getDate(oObj["dateModif"]);
             }
         },
@@ -1002,7 +982,7 @@ function aoColumnsFunc(countries, tableId) {
         var country = countries[index].value;
 
         var column = {
-            "data": function(row, type, val, meta) {
+            "data": function (row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
 
                 if (row.hasPermissionsUpdate) {

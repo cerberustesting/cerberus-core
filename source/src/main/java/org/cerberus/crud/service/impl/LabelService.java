@@ -110,19 +110,20 @@ public class LabelService implements ILabelService {
 
     @Override
     public HashMap<String, List<Label>> findLabelsFromTestCase(String test, String testCase, List<TestCase> testCases) {
-        HashMap<Integer, TestCaseLabel> testCaseLabels = this.testCaseLabelService.readByTestTestCaseToHash(test, testCase, testCases);
+
+        HashMap<String, TestCaseLabel> testCaseLabels = this.testCaseLabelService.readByTestTestCaseToHash(test, testCase, testCases);
         HashMap<Integer, Label> labelsMap = this.readAllToHash();
-        HashMap<String, List<Label>> labels = new HashMap<>();
-        
+        HashMap<String, List<Label>> labelsToReturn = new HashMap<>();
+
         testCaseLabels.forEach((key, value) -> {
-            if (labels.containsKey(value.getTestcase())) {
-                labels.get(value.getTestcase()).add(labelsMap.get(key));
+            if (labelsToReturn.containsKey(value.getTestcase())) {
+                labelsToReturn.get(value.getTestcase()).add(labelsMap.get(value.getLabelId()));
             } else {
-                labels.put(value.getTestcase(), new ArrayList<Label>());
-                labels.get(value.getTestcase()).add(labelsMap.get(key));
+                labelsToReturn.put(value.getTestcase(), new ArrayList<Label>());
+                labelsToReturn.get(value.getTestcase()).add(labelsMap.get(value.getLabelId()));
             }
         });
-        return labels;
+        return labelsToReturn;
     }
 
     @Override

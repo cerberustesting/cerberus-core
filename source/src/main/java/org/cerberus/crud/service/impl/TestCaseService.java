@@ -220,27 +220,25 @@ public class TestCaseService implements ITestCaseService {
     public AnswerList<TestCase> findTestCasesByTestByCriteriaWithDependencies(List<String> system, String test, int startPosition, int length, String sortInformation, String searchParameter, Map<String, List<String>> individualSearch, boolean isCalledFromListPage) throws CerberusException {
 
         AnswerList<TestCase> testCases = this.readByTestByCriteria(system, test, startPosition, length, sortInformation, searchParameter, individualSearch);
-        
-        if (testCases.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && isCalledFromListPage) {//the service was able to perform the query, then we should get all values
-            if (testCases.getDataList().size() > 0) {
-                
-                HashMap<String, Invariant> countryInvariants = invariantService.readByIdNameToHash("COUNTRY");
-                List<TestCaseCountry> testCaseCountries = testCaseCountryService.readByTestTestCase(system, test, null, testCases.getDataList()).getDataList();
-                HashMap<String, HashMap<String, TestCaseCountry>> testCaseCountryHash = testCaseCountryService.convertListToHashMapTestTestCaseAsKey(testCaseCountries);
-                List<TestCaseDep> testCaseDependencies = testCaseDepService.readByTestAndTestCase(testCases.getDataList());
-                HashMap<String, List<TestCaseDep>> testCaseDependenciesHash = testCaseDepService.convertTestCaseDepListToHash(testCaseDependencies);
-                HashMap<String, List<Label>> labels = labelService.findLabelsFromTestCase(test, null, testCases.getDataList());
-                
-                for (TestCase testCase : testCases.getDataList()) {
-                    if (testCaseCountryHash.containsKey(testCase.getTest() + "_" + testCase.getTestCase())) {
-                        testCase.setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(testCaseCountryHash.get(testCase.getTest() + "_" + testCase.getTestCase()), countryInvariants));
-                    }
-                    if (labels.containsKey(testCase.getTestCase())) {
-                        testCase.setLabels(labels.get(testCase.getTestCase()));
-                    }
-                    if (testCaseDependenciesHash.containsKey(testCase.getTestCase())) {
-                        testCase.setDependencies(testCaseDependenciesHash.get(testCase.getTestCase()));
-                    }
+
+        if (testCases.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && testCases.getDataList().size() > 0 && isCalledFromListPage) {//the service was able to perform the query, then we should get all values
+
+            HashMap<String, Invariant> countryInvariants = invariantService.readByIdNameToHash("COUNTRY");
+            List<TestCaseCountry> testCaseCountries = testCaseCountryService.readByTestTestCase(system, test, null, testCases.getDataList()).getDataList();
+            HashMap<String, HashMap<String, TestCaseCountry>> testCaseCountryHash = testCaseCountryService.convertListToHashMapTestTestCaseAsKey(testCaseCountries);
+            List<TestCaseDep> testCaseDependencies = testCaseDepService.readByTestAndTestCase(testCases.getDataList());
+            HashMap<String, List<TestCaseDep>> testCaseDependenciesHash = testCaseDepService.convertTestCaseDepListToHash(testCaseDependencies);
+            HashMap<String, List<Label>> labels = labelService.findLabelsFromTestCase(test, null, testCases.getDataList());
+
+            for (TestCase testCase : testCases.getDataList()) {
+                if (testCaseCountryHash.containsKey(testCase.getTest() + "_" + testCase.getTestCase())) {
+                    testCase.setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(testCaseCountryHash.get(testCase.getTest() + "_" + testCase.getTestCase()), countryInvariants));
+                }
+                if (labels.containsKey(testCase.getTestCase())) {
+                    testCase.setLabels(labels.get(testCase.getTestCase()));
+                }
+                if (testCaseDependenciesHash.containsKey(testCase.getTestCase())) {
+                    testCase.setDependencies(testCaseDependenciesHash.get(testCase.getTestCase()));
                 }
             }
         }

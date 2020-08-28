@@ -60,21 +60,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
     @Autowired
     private ITestCaseService testCaseService;
     @Autowired
-    private ITestCaseCountryService testCaseCountryService;
-    @Autowired
-    private ITestCaseDepService testCaseDepService;
-    @Autowired
-    private ITestCaseStepService testCaseStepService;
-    @Autowired
-    private ITestCaseStepActionService testCaseStepActionService;
-    @Autowired
-    private ITestCaseStepActionControlService testCaseStepActionControlService;
-    @Autowired
-    private ITestCaseLabelService testCaseLabelService;
-    @Autowired
     private ICampaignParameterService campaignParameterService;
-    @Autowired
-    private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
     @Autowired
     private ILabelService labelService;
 
@@ -92,9 +78,6 @@ public class ReadTestCase extends AbstractCrudTestCase {
     @Override
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        int sEcho = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("sEcho"), "0"));
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
@@ -109,6 +92,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         /**
          * Parsing and securing all required parameters.
          */
+        int sEcho = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("sEcho"), "0"));
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
         List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
         String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), null);
@@ -139,7 +123,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
             } else if (!Strings.isNullOrEmpty(columnName)) {
                 //If columnName is present, then return the distinct value of this column.
                 answer = findDistinctValuesOfColumn(system, test, request, columnName);
-            } else { 
+            } else {
                 // Page TestCaseList
                 answer = findTestCaseByTest(system, test, request);
             }
@@ -165,45 +149,6 @@ public class ReadTestCase extends AbstractCrudTestCase {
             // TODO return to the gui
         }
     }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
 
     private AnswerItem<JSONObject> findTestCaseByTest(List<String> system, String test, HttpServletRequest request) throws JSONException, CerberusException {
         AnswerItem<JSONObject> answer = new AnswerItem<>();
@@ -297,7 +242,6 @@ public class ReadTestCase extends AbstractCrudTestCase {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (TestCase tc : (List<TestCase>) answer.getDataList()) {
                 JSONObject value = tc.toJson();
-                //value.put("bugs", tc.getBugs());
                 dataArray.put(value);
             }
         }
@@ -316,7 +260,6 @@ public class ReadTestCase extends AbstractCrudTestCase {
         final AnswerItem<Map<String, List<String>>> parsedCampaignParameters = campaignParameterService.parseParametersByCampaign(campaign);
 
         List<String> countries = parsedCampaignParameters.getItem().get(CampaignParameter.COUNTRY_PARAMETER);
-
         AnswerList<TestCase> testCases = null;
 
         if (countries != null && !countries.isEmpty()) {
@@ -328,7 +271,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         if (testCases.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (TestCase testCase : testCases.getDataList()) {
                 JSONObject jsonTestCase = testCase.toJson();
-                jsonTestCase.put("bugs", testCase.getBugs());
+                //jsonTestCase.put("bugs", testCase.getBugs());
                 dataArray.put(jsonTestCase);
             }
         }
@@ -352,13 +295,11 @@ public class ReadTestCase extends AbstractCrudTestCase {
         AnswerList testCaseList = testCaseService.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
 
         jsonResponse.put("distinctValues", testCaseList.getDataList());
-
         answerItem.setItem(jsonResponse);
         answerItem.setResultMessage(testCaseList.getResultMessage());
         return answerItem;
     }
-    
-    
+
     private StringBuilder getSortingInformation(String columnToSort[], HttpServletRequest request) {
         int numberOfColumnToSort = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortingCols"), "1"));
         int columnToSortParameter = 0;
@@ -394,4 +335,42 @@ public class ReadTestCase extends AbstractCrudTestCase {
         return individualSearch;
     }
 
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
 }
