@@ -195,7 +195,7 @@ function viewEntryClick(param) {
     var doc = new Doc();
     var formEdit = $('#viewTestcampaignModal');
 
-    $("[name='viewTestcampaignField']").html(doc.getDocLabel("page_testcampaign", "viewtestcampaign_field") + " " + param);
+    $("[name='viewTestcampaignField']").html(doc.getDocLabel("page_testcampaign", "viewtestcampaign_field") + " : " + param);
 
     $("#campaignKey").val(param);
 
@@ -240,7 +240,7 @@ function viewStatEntryClick(param) {
     var doc = new Doc();
     var formEdit = $('#viewStatcampaignModal');
 
-    $("[name='viewStatcampaignField']").html(doc.getDocLabel("page_testcampaign", "viewtestcampaign_field") + " " + param);
+    $("[name='viewStatcampaignField']").html(doc.getDocLabel("page_testcampaign", "viewstatcampaign_field") + " : " + param);
 
     $("#campaignKey").val(param);
 

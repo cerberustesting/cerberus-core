@@ -21,6 +21,8 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseStepDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseStep;
@@ -44,6 +46,8 @@ public class TestCaseStepService implements ITestCaseStepService {
     private ITestCaseStepDAO testCaseStepDAO;
     @Autowired
     private TestCaseStepActionService testCaseStepActionService;
+
+    private static final Logger LOG = LogManager.getLogger(TestCaseStepService.class);
 
     @Override
     public List<TestCaseStep> getListOfSteps(String test, String testcase) {

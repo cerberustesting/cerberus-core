@@ -163,15 +163,10 @@ function initPage() {
 }
 
 function displayPageLabel(doc) {
-    $("#pageTitle").html(doc.getDocLabel("page_reportovertime", "title"));
-    $("#title").html(doc.getDocOnline("page_reportovertime", "title"));
+    $("#pageTitle").html(doc.getDocLabel("page_campaignreportovertime", "title"));
+    $("#title").html(doc.getDocOnline("page_campaignreportovertime", "title"));
     $("#loadbutton").html(doc.getDocLabel("page_global", "buttonLoad"));
     $("#filters").html(doc.getDocOnline("page_global", "filters"));
-    $("#lblPerfRequests").html(doc.getDocLabel("page_reportovertime", "lblPerfRequests"));
-    $("#lblPerfSize").html(doc.getDocLabel("page_reportovertime", "lblPerfSize"));
-    $("#lblPerfTime").html(doc.getDocLabel("page_reportovertime", "lblPerfTime"));
-    $("#lblTestStat").html(doc.getDocLabel("page_reportovertime", "lblTestStat"));
-    $("#lblTestStatBar").html(doc.getDocLabel("page_reportovertime", "lblTestStatBar"));
 }
 
 function loadPerfGraph(saveURLtoHistory, countries, environments, robotDeclis, gp1s, gp2s, gp3s) {

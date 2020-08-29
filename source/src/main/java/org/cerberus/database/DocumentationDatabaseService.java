@@ -1628,6 +1628,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_reportovertime','lblTestStat','','fr','Durée et status de cas de test','',NULL)");
         b.append(",('page_reportovertime','lblTestStatBar','','en','Executions per day and status','',NULL)");
         b.append(",('page_reportovertime','lblTestStatBar','','fr','Nombre d\\'Execution par jour et status','',NULL)");
+        b.append(",('page_campaignreportovertime','title','','en','Campaign Execution reporting over Time','This page provide some execution stats over time.',NULL)");
+        b.append(",('page_campaignreportovertime','title','','fr','Rapport d\\'execution des campagnes dans le temps','Cette page génère des rapports d\\'evolution de compteurs d\\'execution sur la durée',NULL)");
         b.append(",('page_robot','button_create','','en','Create new Robot','',NULL)");
         b.append(",('page_robot','button_create','','fr','Créer un nouveau Robot','',NULL)");
         b.append(",('page_robot','button_delete','','en','Delete Robot','',NULL)");
@@ -1942,6 +1944,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcampaign','button_view','','fr','Voir la Campagne','',NULL)");
         b.append(",('page_testcampaign','button_run','','en','Run Campaign','',NULL)");
         b.append(",('page_testcampaign','button_run','','fr','Executer la Campagne','',NULL)");
+        b.append(",('page_testcampaign','button_testcaselist','','en','View Testcase List','',NULL)");
+        b.append(",('page_testcampaign','button_testcaselist','','fr','Voir la liste des cas de test','',NULL)");
+        b.append(",('page_testcampaign','button_taglist','','en','View Campaign execution List','',NULL)");
+        b.append(",('page_testcampaign','button_taglist','','fr','Voir la liste des executions de la campagne','',NULL)");
         b.append(",('page_testcampaign','campaign_field','','en','Campaign','',NULL)");
         b.append(",('page_testcampaign','campaign_field','','fr','Campagne','',NULL)");
         b.append(",('page_testcampaign','close_btn','','en','Close','',NULL)");
@@ -1976,8 +1982,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcampaign','title_remove','','fr','Supprimer la Campagne','',NULL)");
         b.append(",('page_testcampaign','value_col','','en','Value','',NULL)");
         b.append(",('page_testcampaign','value_col','','fr','Valeur','',NULL)");
-        b.append(",('page_testcampaign','viewtestcampaign_field','','en','Campaign','',NULL)");
-        b.append(",('page_testcampaign','viewtestcampaign_field','','fr','Campagne','',NULL)");
+        b.append(",('page_testcampaign','viewtestcampaign_field','','en','List of testcases for Campaign','',NULL)");
+        b.append(",('page_testcampaign','viewtestcampaign_field','','fr','Liste des cas de test pour la Campagne','',NULL)");
+        b.append(",('page_testcampaign','viewstatcampaign_field','','en','List of Executions for Campaign','',NULL)");
+        b.append(",('page_testcampaign','viewstatcampaign_field','','fr','Liste des executions pour la Campagne','',NULL)");
         b.append(",('page_testcase','BugsLink','','en','Link','',NULL)");
         b.append(",('page_testcase','BugsLink','','fr','Lien',NULL,NULL)");
         b.append(",('page_testcase','delete','','en','Dlt','Select this checkbox and then save changes in order to delete the row.',NULL)");

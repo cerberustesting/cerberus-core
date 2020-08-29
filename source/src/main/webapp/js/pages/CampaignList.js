@@ -175,11 +175,11 @@ function aoColumnsFunc(tableId) {
                                         <span class="glyphicon glyphicon-trash"></span></button>';
                 var viewTestcampaign = '<button id="viewTestcampaign" onclick="viewEntryClick(\'' + obj["campaign"] + '\');"\n\
                                         class="viewTestcampaign btn btn-default btn-xs margin-right5" \n\
-                                        name="viewTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_view") + '" type="button">\n\
+                                        name="viewTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_testcaselist") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-list"></span></button>';
                 var viewStatcampaign = '<button id="viewStatcampaign" onclick="viewStatEntryClick(\'' + obj["campaign"] + '\');"\n\
                                         class="viewStatcampaign btn btn-default btn-xs margin-right5" \n\
-                                        name="viewStatcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_view") + '" type="button">\n\
+                                        name="viewStatcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_taglist") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-stats"></span></button>';
                 var Runcampaign = '<a id="runcampaign" class="btn btn-primary btn-xs margin-right5"\n\
                                     href="./RunTests.jsp?campaign=' + encodeURIComponent(obj["campaign"]) + '" title="' + doc.getDocLabel("page_testcampaign", "button_run") + '" >\n\
