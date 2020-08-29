@@ -121,7 +121,7 @@ public interface ILabelService {
      * @param testCases
      * @return
      */
-    List<Label> findLabelsFromTestCase(String test, String testCase, List<TestCase> testCases);
+    HashMap<String, List<Label>> findLabelsFromTestCase(String test, String testCase, List<TestCase> testCases);
 
     /**
      *

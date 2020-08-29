@@ -343,7 +343,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             JSONObject step = stepArray.getJSONObject(i);
 
             boolean delete = step.getBoolean("toDelete");
-            int stepNumber = step.isNull("step") ? -1 : step.getInt("step");
+            int stepNumber = step.isNull("stepId") ? -1 : step.getInt("stepId");
             int sort = step.isNull("sort") ? -1 : step.getInt("sort");
             String loop = step.getString("loop");
             String conditionOperator = step.getString("conditionOperator");
@@ -388,9 +388,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
         for (int i = 0; i < testCaseStepActionJson.length(); i++) {
             JSONObject tcsaJson = testCaseStepActionJson.getJSONObject(i);
-
+            
             boolean delete = tcsaJson.getBoolean("toDelete");
-            int step = tcsaJson.isNull("step") ? -1 : tcsaJson.getInt("step");
+            int step = tcsaJson.isNull("stepId") ? -1 : tcsaJson.getInt("stepId");
             int sequence = tcsaJson.isNull("sequence") ? -1 : tcsaJson.getInt("sequence");
             int sort = tcsaJson.isNull("sort") ? -1 : tcsaJson.getInt("sort");
             String conditionOperator = tcsaJson.getString("conditionOperator");
@@ -423,7 +423,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             JSONObject controlJson = controlArray.getJSONObject(i);
 
             boolean delete = controlJson.getBoolean("toDelete");
-            int step = controlJson.isNull("step") ? -1 : controlJson.getInt("step");
+            int step = controlJson.isNull("stepId") ? -1 : controlJson.getInt("stepId");
             int sequence = controlJson.isNull("sequence") ? -1 : controlJson.getInt("sequence");
             int control = controlJson.isNull("controlSequence") ? -1 : controlJson.getInt("controlSequence");
             int sort = controlJson.isNull("sort") ? -1 : controlJson.getInt("sort");

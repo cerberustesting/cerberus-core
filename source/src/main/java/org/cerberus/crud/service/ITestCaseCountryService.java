@@ -48,8 +48,10 @@ public interface ITestCaseCountryService {
 
     List<String> findListOfCountryByTestTestCase(String test, String testcase);
 
-    HashMap<String, TestCaseCountry> readByTestTestCaseToHash(String test, String testCase);
-
+    HashMap<String, TestCaseCountry> readByTestTestCaseToHashCountryAsKey(String test, String testCase);
+    
+    public HashMap<String, HashMap<String, TestCaseCountry>> convertListToHashMapTestTestCaseAsKey(List<TestCaseCountry> testCaseCountryList);
+    
     void insertTestCaseCountry(TestCaseCountry testCaseCountry) throws CerberusException;
 
     boolean insertListTestCaseCountry(List<TestCaseCountry> testCaseCountryList);

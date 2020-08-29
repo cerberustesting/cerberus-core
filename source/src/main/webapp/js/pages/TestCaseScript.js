@@ -1523,7 +1523,6 @@ function setAllSort() {
 
             // Get step's actions
             var actions = step.stepActionContainer.children(".action-group").children(".action");
-
             // Iterate over actions
             for (var j = 0; j < actions.length; j++) {
                 var action = $(actions[j]).data("item");
@@ -2590,13 +2589,13 @@ function showStepUsesLibraryInConfirmationModal(object) {
         data: {
             test: object.test,
             testcase: object.testcase,
-            step: object.step,
+            step: object.stepId,
             getUses: true
         },
         success: function (data) {
             var content = "";
             for (var i = 0; i < data.step.length; i++) {
-                content += "<a target='_blank' href='./TestCaseScript.jsp?test=" + encodeURI(data.step[i].test) + "&testcase=" + encodeURI(data.step[i].testCase) + "&step=" + encodeURI(data.step[i].sort) + "'>" + data.step[i].test + " - " + data.step[i].testCase + " - " + data.step[i].sort + " - " + data.step[i].description + "</a><br/>"
+                content += "<a target='_blank' href='./TestCaseScript.jsp?test=" + encodeURI(data.step[i].test) + "&testcase=" + encodeURI(data.step[i].testcase) + "&step=" + encodeURI(data.step[i].sort) + "'>" + data.step[i].test + " - " + data.step[i].testcase + " - " + data.step[i].sort + " - " + data.step[i].description + "</a><br/>"
             }
             $("#confirmationModal #otherStepThatUseIt").empty().append(content);
         }
@@ -2756,7 +2755,7 @@ function compareStrings(a, b) {
 function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
     this.stepActionContainer = $("<div></div>").addClass("step-container").css("display", "none");
     this.sort = json.sort;
-    this.step = json.stepId;
+    this.stepId = json.stepId;
     this.description = json.description;
     this.isExecutionForced= json.isExecutionForced;
     this.loop = json.loop;
@@ -3045,12 +3044,12 @@ Step.prototype.setDelete = function () {
     }
 };
 
-Step.prototype.setStep = function (step) {
-    this.step = step;
+Step.prototype.setStep = function (stepId) {
+    this.stepId = stepId;
 };
 
 Step.prototype.getStep = function () {
-    return this.step;
+    return this.stepId;
 };
 
 Step.prototype.setSort = function (sort) {

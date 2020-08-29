@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.HashMap;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseDep;
 import org.cerberus.exception.CerberusException;
@@ -31,6 +32,8 @@ public interface ITestCaseDepService {
 
     List<TestCaseDep> readByTestAndTestCase(String test, String testcase) throws CerberusException;
     List<TestCaseDep> readByTestAndTestCase(List<TestCase> testCaseList) throws CerberusException;
+    
+    HashMap<String, List<TestCaseDep>> convertTestCaseDepListToHash(List<TestCaseDep> testCaseDependencies);
 
     void create(TestCaseDep testCaseDep) throws CerberusException;
 

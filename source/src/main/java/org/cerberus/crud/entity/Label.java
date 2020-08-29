@@ -224,7 +224,6 @@ public class Label {
 
     @Override
     public String toString() {
-        return id + ":" + system + "-" + label;
+        return "Label{" + "id=" + id + ", system=" + system + ", label=" + label + ", type=" + type + ", color=" + color + ", parentLabelID=" + parentLabelID + ", reqType=" + reqType + ", reqStatus=" + reqStatus + ", reqCriticity=" + reqCriticity + ", description=" + description + ", longDesc=" + longDesc + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", counter1=" + counter1 + '}';
     }
-
 }

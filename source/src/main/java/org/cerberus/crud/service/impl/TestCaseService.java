@@ -34,6 +34,7 @@ import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.entity.CampaignLabel;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.Label;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -69,6 +70,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -191,12 +193,12 @@ public class TestCaseService implements ITestCaseService {
         AnswerItem<TestCase> answerTestCase = this.readByKey(test, testCase);
         if (answerTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerTestCase.getItem() != null) {
 
-            testCaseCountries = testCaseCountryService.readByTestTestCaseToHash(test, testCase);
+            testCaseCountries = testCaseCountryService.readByTestTestCaseToHashCountryAsKey(test, testCase);
             countryInvariants = invariantService.readByIdNameToHash("COUNTRY");
 
-            answerTestCase.getItem().setInvariantCountries(invariantService.findCountryInvariantsFromTestCase(test, testCase, testCaseCountries, countryInvariants));
+            answerTestCase.getItem().setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(testCaseCountries, countryInvariants));
             answerTestCase.getItem().setDependencies(testCaseDepService.readByTestAndTestCase(answerTestCase.getItem().getTest(), answerTestCase.getItem().getTestCase()));
-            answerTestCase.getItem().setLabels(labelService.findLabelsFromTestCase(test, testCase, null));
+            answerTestCase.getItem().setLabels(labelService.findLabelsFromTestCase(test, testCase, null).get(testCase));
             List<TestCase> testcases = new ArrayList<>();
             testcases.add(factoryTCase.create(test, testCase));
             answerTestCase.getItem().setTestCaseCountryProperties(testCaseCountryPropertiesService.findDistinctPropertiesOfTestCaseFromTestcaseList(testcases, countryInvariants));
@@ -212,6 +214,35 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public List<TestCase> findTestCaseByTest(String test) {
         return testCaseDao.findTestCaseByTest(test);
+    }
+
+    @Override
+    public AnswerList<TestCase> findTestCasesByTestByCriteriaWithDependencies(List<String> system, String test, int startPosition, int length, String sortInformation, String searchParameter, Map<String, List<String>> individualSearch, boolean isCalledFromListPage) throws CerberusException {
+
+        AnswerList<TestCase> testCases = this.readByTestByCriteria(system, test, startPosition, length, sortInformation, searchParameter, individualSearch);
+
+        if (testCases.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && testCases.getDataList().size() > 0 && isCalledFromListPage) {//the service was able to perform the query, then we should get all values
+
+            HashMap<String, Invariant> countryInvariants = invariantService.readByIdNameToHash("COUNTRY");
+            List<TestCaseCountry> testCaseCountries = testCaseCountryService.readByTestTestCase(system, test, null, testCases.getDataList()).getDataList();
+            HashMap<String, HashMap<String, TestCaseCountry>> testCaseCountryHash = testCaseCountryService.convertListToHashMapTestTestCaseAsKey(testCaseCountries);
+            List<TestCaseDep> testCaseDependencies = testCaseDepService.readByTestAndTestCase(testCases.getDataList());
+            HashMap<String, List<TestCaseDep>> testCaseDependenciesHash = testCaseDepService.convertTestCaseDepListToHash(testCaseDependencies);
+            HashMap<String, List<Label>> labels = labelService.findLabelsFromTestCase(test, null, testCases.getDataList());
+
+            for (TestCase testCase : testCases.getDataList()) {
+                if (testCaseCountryHash.containsKey(testCase.getTest() + "_" + testCase.getTestCase())) {
+                    testCase.setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(testCaseCountryHash.get(testCase.getTest() + "_" + testCase.getTestCase()), countryInvariants));
+                }
+                if (labels.containsKey(testCase.getTestCase())) {
+                    testCase.setLabels(labels.get(testCase.getTestCase()));
+                }
+                if (testCaseDependenciesHash.containsKey(testCase.getTestCase())) {
+                    testCase.setDependencies(testCaseDependenciesHash.get(testCase.getTestCase()));
+                }
+            }
+        }
+        return testCases;
     }
 
     @Override

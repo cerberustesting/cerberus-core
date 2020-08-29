@@ -324,11 +324,11 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
                 if (data.contentTable.length > 1) {
                     for (var i = 0; i < data.contentTable.length; i++) {
 
-                        var text = data.contentTable[i].test + " - " + data.contentTable[i].testCase + " [" + data.contentTable[i].application + "]: " + data.contentTable[i].description;
+                        var text = data.contentTable[i].test + " - " + data.contentTable[i].testcase + " [" + data.contentTable[i].application + "]: " + data.contentTable[i].description;
 
                         testCaseList.append($("<option></option>")
                                 .text(text)
-                                .val(data.contentTable[i].test + "-" + data.contentTable[i].testCase)
+                                .val(data.contentTable[i].test + "-" + data.contentTable[i].testcase)
                                 .data("item", data.contentTable[i]));
                     }
                 } else {
@@ -388,11 +388,11 @@ function loadCampaignContent(campaign) {
                 testCaseList.empty().prop("disabled", "disabled");
 
                 for (var index = 0; index < data.contentTable.length; index++) {
-                    var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].description;
+                    var text = data.contentTable[index].test + " - " + data.contentTable[index].testcase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].description;
 
                     testCaseList.append($("<option></option>")
                             .text(text)
-                            .val(data.contentTable[index].testCase)
+                            .val(data.contentTable[index].testcase)
                             .prop("selected", true)
                             .data("item", data.contentTable[index]));
                 }
@@ -551,7 +551,7 @@ function runTestCase(doRedirect) {
         select.each(function () {
             var item = $(this).data("item");
             if (isEmpty(item.testcase)) {
-                teststring += "&test=" + item.test + "&testcase=" + item.testCase;
+                teststring += "&test=" + item.test + "&testcase=" + item.testcase;
             } else {
                 teststring += "&test=" + item.test + "&testcase=" + item.testcase;
             }

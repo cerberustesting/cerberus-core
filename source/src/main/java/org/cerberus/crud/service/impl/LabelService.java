@@ -108,12 +108,22 @@ public class LabelService implements ILabelService {
         return labelDAO.readBySystemByCriteria(system, strictSystemFilter, type, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
-    public List<Label> findLabelsFromTestCase(String test, String testCase, List<TestCase> testCases) {
-        HashMap<Integer, TestCaseLabel> testCaseLabels = this.testCaseLabelService.readByTestTestCaseToHash(test, testCase, testCases);
+    @Override
+    public HashMap<String, List<Label>> findLabelsFromTestCase(String test, String testCase, List<TestCase> testCases) {
+
+        HashMap<String, TestCaseLabel> testCaseLabels = this.testCaseLabelService.readByTestTestCaseToHash(test, testCase, testCases);
         HashMap<Integer, Label> labelsMap = this.readAllToHash();
-        List<Label> labels = new ArrayList<Label>();
-        testCaseLabels.forEach((key, value) -> labels.add(labelsMap.get(key)));
-        return labels;
+        HashMap<String, List<Label>> labelsToReturn = new HashMap<>();
+
+        testCaseLabels.forEach((key, value) -> {
+            if (labelsToReturn.containsKey(value.getTestcase())) {
+                labelsToReturn.get(value.getTestcase()).add(labelsMap.get(value.getLabelId()));
+            } else {
+                labelsToReturn.put(value.getTestcase(), new ArrayList<Label>());
+                labelsToReturn.get(value.getTestcase()).add(labelsMap.get(value.getLabelId()));
+            }
+        });
+        return labelsToReturn;
     }
 
     @Override

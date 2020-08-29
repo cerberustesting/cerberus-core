@@ -77,12 +77,13 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     }
 
     @Override
-    public HashMap<Integer, TestCaseLabel> readByTestTestCaseToHash(String test, String testCase, List<TestCase> testCases) {
-        HashMap<Integer, TestCaseLabel> testCaseLabels = new HashMap<>();
-        for (TestCaseLabel testCaseLabel : this.readByTestTestCase(test, testCase, testCases).getDataList()) {
-            testCaseLabels.put(testCaseLabel.getLabelId(), testCaseLabel);
+    public HashMap<String, TestCaseLabel> readByTestTestCaseToHash(String test, String testCase, List<TestCase> testCases) {
+        HashMap<String, TestCaseLabel> testCaseLabelsHash = new HashMap<>();
+        List<TestCaseLabel> testCaseLabels = this.readByTestTestCase(test, testCase, testCases).getDataList();
+        for (TestCaseLabel testCaseLabel : testCaseLabels) {
+            testCaseLabelsHash.put(testCaseLabel.getTestcase() + "-" + testCaseLabel.getLabelId(), testCaseLabel);
         }
-        return testCaseLabels;
+        return testCaseLabelsHash;
     }
 
     @Override

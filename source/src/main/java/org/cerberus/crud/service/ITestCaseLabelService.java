@@ -87,7 +87,7 @@ public interface ITestCaseLabelService {
      * @param testCaseList
      * @return
      */
-    HashMap<Integer, TestCaseLabel> readByTestTestCaseToHash(String test, String testCase, List<TestCase> testCaseList);
+    HashMap<String, TestCaseLabel> readByTestTestCaseToHash(String test, String testCase, List<TestCase> testCaseList);
 
     /**
      *

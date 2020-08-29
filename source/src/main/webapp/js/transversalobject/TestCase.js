@@ -189,7 +189,7 @@ function addHtmlForDependencyLine(id, test, testCase, testCaseTxt, activate, des
             '</td>' +
             '<td>' + test + ' - ' + testCaseTxt + '</td>' +
             '<td style="width: 100px;">  <input type="checkbox"  name="activate" ' + checked + '/></td>' +
-            '<td>  <input class="form-control input-sm" name="description" value="' + description + '"/></td>' +
+            '<td>  <input class="form-control input-sm" name="depDescription" value="' + description + '"/></td>' +
             '</tr>'
             );
 }
@@ -533,7 +533,7 @@ function confirmTestCaseModalHandler(mode) {
     $("#depenencyTable").find("tr")
             .each((t, v) =>
                 testcaseDependencies.push(
-                        {id: $(v).attr("testcaseid"), test: $(v).attr("test"), testcase: $(v).attr("testcase"), description: $(v).find("[name='description']").val(), active: $(v).find("[name='activate']").is(":checked")}
+                        {id: $(v).attr("testcaseid"), test: $(v).attr("test"), testcase: $(v).attr("testcase"), description: $(v).find("[name='depDescription']").val(), active: $(v).find("[name='activate']").is(":checked")}
                 )
             )
 
@@ -722,8 +722,8 @@ function fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases
             async: true,
             success: function(data) {
                 data.contentTable.sort(function(a, b) {
-                    var aa = a.testCase.toLowerCase();
-                    var bb = b.testCase.toLowerCase();
+                    var aa = a.testcase.toLowerCase();
+                    var bb = b.testcase.toLowerCase();
                     if (aa > bb) {
                         return 1;
                     } else if (aa < bb) {
@@ -735,7 +735,7 @@ function fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases
 
                 $(selectorTestCaseSelect).prepend("<option value=''>" + doc.getDocLabel("page_testcasescript", "select_testcase") + "</option>");
                 for (var i = 0; i < data.contentTable.length; i++) {
-                    $(selectorTestCaseSelect).append("<option value='" + data.contentTable[i].testCase + "'>" + data.contentTable[i].testCase + " - " + data.contentTable[i].description + "</option>")
+                    $(selectorTestCaseSelect).append("<option value='" + data.contentTable[i].testcase + "'>" + data.contentTable[i].testcase + " - " + data.contentTable[i].description + "</option>")
                 }
                 if (testcase !== null) {
                     $(selectorTestCaseSelect + " option[value='" + testcase + "']").prop('selected', true);

@@ -173,9 +173,6 @@ public class Invariant {
                 invariantJson.put("idName", this.getIdName());
                 invariantJson.put("sort", this.getSort());
                 invariantJson.put("veryShortDesc", this.getVeryShortDesc());
-                invariantJson.put("gp1", this.getGp1());
-                invariantJson.put("gp2", this.getGp2());
-                invariantJson.put("gp3", this.getGp3());
                 invariantJson.put("gp4", this.getGp4());
                 invariantJson.put("gp5", this.getGp5());
                 invariantJson.put("gp6", this.getGp6());
@@ -185,6 +182,9 @@ public class Invariant {
             }
             invariantJson.put("value", this.getValue());
             invariantJson.put("description", this.getDescription());
+            invariantJson.put("gp1", this.getGp1());
+            invariantJson.put("gp2", this.getGp2());
+            invariantJson.put("gp3", this.getGp3());
         } catch (JSONException ex) {
             LOG.error(ex.toString(), ex);
         }
