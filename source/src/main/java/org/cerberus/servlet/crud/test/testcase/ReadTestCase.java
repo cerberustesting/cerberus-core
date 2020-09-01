@@ -60,8 +60,6 @@ public class ReadTestCase extends AbstractCrudTestCase {
     @Autowired
     private ITestCaseService testCaseService;
     @Autowired
-    private ICampaignParameterService campaignParameterService;
-    @Autowired
     private ILabelService labelService;
 
     private static final Logger LOG = LogManager.getLogger(ReadTestCase.class);
@@ -257,21 +255,11 @@ public class ReadTestCase extends AbstractCrudTestCase {
         JSONObject jsonResponse = new JSONObject();
         JSONArray dataArray = new JSONArray();
 
-        final AnswerItem<Map<String, List<String>>> parsedCampaignParameters = campaignParameterService.parseParametersByCampaign(campaign);
-
-        List<String> countries = parsedCampaignParameters.getItem().get(CampaignParameter.COUNTRY_PARAMETER);
-        AnswerList<TestCase> testCases = null;
-
-        if (countries != null && !countries.isEmpty()) {
-            testCases = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()]));
-        } else {
-            testCases = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, null);
-        }
+        AnswerList<TestCase> testCases = testCaseService.findTestCaseByCampaign(campaign);
 
         if (testCases.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (TestCase testCase : testCases.getDataList()) {
                 JSONObject jsonTestCase = testCase.toJson();
-                //jsonTestCase.put("bugs", testCase.getBugs());
                 dataArray.put(jsonTestCase);
             }
         }

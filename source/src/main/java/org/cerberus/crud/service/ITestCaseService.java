@@ -161,6 +161,12 @@ public interface ITestCaseService {
      * @return true if delete is OK
      */
     boolean deleteTestCase(TestCase testCase);
+    
+    /**
+     * @param campaign
+     * @return return list of testCases using findTestCaseByCampaignNameAndCountries service method
+     */
+    AnswerList<TestCase> findTestCaseByCampaign(String campaign);
 
     /**
      * @param campaign the campaign name

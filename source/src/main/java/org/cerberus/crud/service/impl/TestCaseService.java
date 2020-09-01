@@ -351,6 +351,23 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
+    public AnswerList<TestCase> findTestCaseByCampaign(String campaign) {
+
+        final AnswerItem<Map<String, List<String>>> parsedCampaignParameters = campaignParameterService.parseParametersByCampaign(campaign);
+
+        List<String> countries = parsedCampaignParameters.getItem().get(CampaignParameter.COUNTRY_PARAMETER);
+        AnswerList<TestCase> testCases = null;
+
+        if (countries != null && !countries.isEmpty()) {
+            testCases = this.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()]));
+        } else {
+            testCases = this.findTestCaseByCampaignNameAndCountries(campaign, null);
+        }
+        
+        return testCases;
+    }
+
+    @Override
     public AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
         AnswerList<TestCase> result = new AnswerList<>();
         String[] status = null;
