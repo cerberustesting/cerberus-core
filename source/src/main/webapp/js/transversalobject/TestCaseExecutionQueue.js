@@ -309,7 +309,7 @@ function feedTestCase(test, selectElement, defaultTestCase) {
     $.when(jqxhr).then(function (data) {
 
         for (var index = 0; index < data.contentTable.length; index++) {
-            testCList.append($('<option></option>').text(data.contentTable[index].testCase + " - " + data.contentTable[index].description).val(data.contentTable[index].testCase));
+            testCList.append($('<option></option>').text(data.contentTable[index].testcase + " - " + data.contentTable[index].description).val(data.contentTable[index].testcase));
         }
         if (!isEmpty(defaultTestCase)) {
             testCList.prop("value", defaultTestCase);
