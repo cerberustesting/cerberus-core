@@ -769,6 +769,17 @@ In addition to standard HAR structure, Cerberus will add a `stat` json entry in 
         ]
     }
 
+Detail explanation on `time` section :
+|===
+| `totalDuration` | duration in ms between the start of the first request and the end of the last request. |
+| `sum` | sum of duration in ms spent in all requests. |
+| `max` | duration in ms of the longuest request (that correspond to `urlMax`) |
+| `avg` | average duration in ms of all requests. |
+| `firstXXX` | first request definition |
+| `lastXXX` | last request definition |
+|===
+
+
 Cerberus will determine if a hit must be ignored (and appear in *[blue]`ignore`* section) by feeding parameter `cerberus_webperf_ignoredomainlist` with coma separated domains to ignore.
 
 Cerberus will get and guess the `ThirdPartyN` from *[blue]`thirdparty`* section from a json file that can be retrieve from the following https://github.com/patrickhulce/third-party-web/blob/master/data/entities.json5[repo].
