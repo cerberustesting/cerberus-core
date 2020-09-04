@@ -7,7 +7,18 @@ User-friendly automated testing framework.
 
 [![Screenshots](https://raw.githubusercontent.com/cerberustesting/cerberus-source/master/docs/screenshots/CerberusGitHub.gif)](https://cerberus-testing.com/)
 
-# What is it? How to install it? How to use it?
+# What is it?
+
+Cerberus is a lowcode automated testing tool that support Web, IOS, Android and API connectors.
+The tool allow to create some automated testcases via an ergonomic web interface without any need for developpment skills. Automated test management now become available for all your projet, quality and business teams.
+
+All your applications, whether they are API based (REST, SOAP and KAFKA) or web (via Selenium) or even IOS and Android (via Appium) can be tested via Cerberus Web interface.
+
+Group and organize your testcases inside campaigns, shcedule them or trigger them inside CICD pipes via Jenkins or Gitlab connectors and receive notifications via email or slack.
+
+Once installed, and in few clicks, get your automated tests ready in order to either secure your software quality before it is deployed to your production environment or monitor continuously that this quality stays great in production. 
+
+# How to install it? How to use it?
 
 Check out all information about Cerberus from its [dedicated web site](http://www.cerberus-testing.org/)!
 
@@ -19,11 +30,17 @@ A Jenkins Plugin is also available directly from Jenkins. Corresponding repo is 
 
 Docker images are available for [MySQL](https://hub.docker.com/r/cerberustesting/cerberus-db-mysql/), [Tomcat](https://hub.docker.com/r/cerberustesting/cerberus-as-tomcat/) and [Tomcat with Keycloak Adapter](https://hub.docker.com/r/cerberustesting/cerberus-as-tomcat-keycloak/) 
 
-**For Developpers :**
+# They trust us
 
-A Slack channel is available [here](https://cerberustesting.slack.com)
+* [La Redoute](https://www.laredoute.fr)
+* ...
 
-Cerberus Production is available [here](http://prod.cerberus-testing.org)
+
+# For Developpers
+
+A Slack channel is available [here](https://cerberustesting.slack.com) Opensource community is there on top of github.
+
+Cerberus Production is available [here](http://prod.cerberus-testing.org) This is were Cerberus quality is secured. 
 
 Snapshot releases are available [here](http://vm.cerberus-testing.org/delivery/)
 
