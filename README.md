@@ -33,6 +33,7 @@ Docker images are available for [MySQL](https://hub.docker.com/r/cerberustesting
 # They trust us
 
 * [La Redoute](https://www.laredoute.fr)
+* [Auchan Retail International](https://www.auchan-retail.com/)
 * ...
 
 
