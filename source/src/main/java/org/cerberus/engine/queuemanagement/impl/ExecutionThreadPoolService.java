@@ -40,10 +40,12 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.IQueueStatService;
 import org.cerberus.crud.service.IRobotExecutorService;
 import org.cerberus.crud.service.IRobotService;
+import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.servlet.zzpublic.ManageV001;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerList;
@@ -83,6 +85,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     private ITestCaseExecutionQueueDepService queueDepService;
     @Autowired
     private IRetriesService retriesService;
+    @Autowired
+    private ITagService tagService;
     @Autowired
     private IRobotExecutorService robotExecutorService;
     @Autowired
@@ -567,7 +571,10 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                                 newTmpExelist.add(lastRobotExecutor);
                                                 robot_executor.put(robot, newTmpExelist);
                                             }
-                                            task.setCerberusExecutionUrl(parameterService.getParameterStringByKey("cerberus_url", exe.getSystem(), ""));
+                                            task.setCerberusExecutionUrl(StringUtil.addSuffixIfNotAlready(parameterService.getParameterStringByKey("cerberus_url", exe.getSystem(), ""), "/"));
+                                            task.setCerberusTriggerQueueJobUrl(StringUtil.addSuffixIfNotAlready(parameterService.getParameterStringByKey("cerberus_url", exe.getSystem(), ""), "/")
+                                                    + ManageV001.SERVLETNAME + "?token=" + parameterService.getParameterStringByKey("cerberus_manage_token", "", "") + "&action=" + ManageV001.ACTIONRUNQUEUEJOB);
+
                                             task.setQueueId(exe.getId());
                                             task.setRobotExecutor(robotExecutor);
                                             task.setSelectedRobotHost(robotHost);
@@ -576,6 +583,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                             task.setQueueService(queueService);
                                             task.setQueueDepService(queueDepService);
                                             task.setRetriesService(retriesService);
+                                            task.setTagService(tagService);
                                             task.setExecThreadPool(threadQueuePool);
                                             Future<?> future = threadQueuePool.getExecutor().submit(task);
                                             task.setFuture(future);

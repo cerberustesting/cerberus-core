@@ -55,7 +55,11 @@ public class ManageV001 extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ManageV001.class);
 
-    private static final String SERVLETNAME = "ManageV001";
+    public static final String SERVLETNAME = "manageV001";
+    public static final String ACTIONRUNQUEUEJOB = "runQueueJob";
+    public static final String ACTIONSTART = "start";
+    public static final String ACTIONSTOP = "stop";
+    public static final String ACTIONCLEANMEMORY = "cleanMemory";
 
     private IExecutionThreadPoolService executionThreadPoolService;
     private IParameterService parameterService;
@@ -106,13 +110,25 @@ public class ManageV001 extends HttpServlet {
                 int globalQueueingExecutionNb = getNbQueueingExecutions(appContext);
                 boolean globalActive = parameterService.getParameterBooleanByKey("cerberus_queueexecution_enable", "", true);
 
-                if (request.getParameter("action") != null && request.getParameter("action").equals("cleanmemory")) {
+                if (request.getParameter("action") != null && request.getParameter("action").equals("cleanMemory")) {
                     if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
                         logEventService.createForPrivateCalls(SERVLETNAME, "CLEANMEMORY", "Cerberus Instance requested to Garbage collection.", request);
                         System.gc();
                         message = "Memory Cleaned.";
                         returnCode = "OK";
                     }
+                }
+
+                if (request.getParameter("action") != null && request.getParameter("action").equals("runQueueJob")) {
+                    logEventService.createForPrivateCalls(SERVLETNAME, "RUN", "Queue job requested to run.", request);
+                    try {
+                        // Run the Execution pool Job.
+                        executionThreadPoolService.executeNextInQueueAsynchroneously(false);
+                    } catch (CerberusException ex) {
+                        LOG.error("Exception triggering the ThreadPool job.", ex);
+                    }
+                    message = "Queue job trigered.";
+                    returnCode = "OK";
                 }
 
                 if (request.getParameter("action") != null && request.getParameter("action").equals("stop")) {

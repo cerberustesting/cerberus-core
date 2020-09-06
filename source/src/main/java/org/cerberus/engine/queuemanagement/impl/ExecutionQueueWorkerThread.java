@@ -34,6 +34,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.engine.execution.IRetriesService;
@@ -54,6 +55,7 @@ public class ExecutionQueueWorkerThread implements Runnable {
     private ITestCaseExecutionQueueService queueService;
     private IRetriesService retriesService;
     private ITestCaseExecutionQueueDepService queueDepService;
+    private ITagService tagService;
 
     private ExecutionQueueThreadPool execThreadPool;
 
@@ -64,6 +66,7 @@ public class ExecutionQueueWorkerThread implements Runnable {
     private TestCaseExecutionQueue toExecute;
 
     private String cerberusExecutionUrl;
+    private String cerberusTriggerQueueJobUrl;
     private int toExecuteTimeout;
 
     private Future<?> future;
@@ -186,8 +189,24 @@ public class ExecutionQueueWorkerThread implements Runnable {
         this.retriesService = retriesService;
     }
 
+    public ITagService getTagService() {
+        return tagService;
+    }
+
+    public void setTagService(ITagService tagService) {
+        this.tagService = tagService;
+    }
+
     public void setCerberusExecutionUrl(String url) {
         this.cerberusExecutionUrl = url;
+    }
+
+    public String getCerberusTriggerQueueJobUrl() {
+        return cerberusTriggerQueueJobUrl;
+    }
+
+    public void setCerberusTriggerQueueJobUrl(String cerberusTriggerQueueJobUrl) {
+        this.cerberusTriggerQueueJobUrl = cerberusTriggerQueueJobUrl;
     }
 
     public void setQueueId(long queueId) {
@@ -213,7 +232,7 @@ public class ExecutionQueueWorkerThread implements Runnable {
     @Override
     public void run() {
         try {
-            LOG.debug("Start to execute : " + queueId + " with RobotHost : " + selectedRobotHost+ " with RobotExtensionHost : " + selectedRobotExtHost);
+            LOG.debug("Start to execute : " + queueId + " with RobotHost : " + selectedRobotHost + " with RobotExtensionHost : " + selectedRobotExtHost);
 
             // Flag the queue entry to STARTING
             queueService.updateToStarting(queueId, selectedRobotHost, selectedRobotExtHost);
@@ -239,10 +258,58 @@ public class ExecutionQueueWorkerThread implements Runnable {
                 queueService.updateToError(queueId, e.getMessage());
                 queueDepService.manageDependenciesEndOfQueueExecution(queueId);
 
+                // If error, we check that campaign is finished.
+                tagService.manageCampaignEndOfExecution(getToExecute().getTag());
+
+                // Trigger Queue Job
+                LOG.debug("trigger extra job.");
+                triggerQueueJob(cerberusTriggerQueueJobUrl);
+
             } catch (CerberusException again) {
                 LOG.error("Unable to mark execution in queue " + queueId + " as in error", again);
             }
 
+        }
+    }
+
+    /**
+     * Request the queu job to be executed calling the corresponding servlet.
+     *
+     * @return the execution answer from the {@link RunTestCase} servlet
+     * @throws RunQueueProcessException if an error occurred during request
+     * execution
+     * @see #run()
+     */
+    private String triggerQueueJob(String url) {
+        try {
+
+            LOG.debug("Trigger Job Queue calling Service URL : " + url);
+            LOG.debug("Trigger Execution with TimeOut : " + toExecuteTimeout);
+
+            CloseableHttpClient httpclient = HttpClientBuilder.create().disableAutomaticRetries().build();
+            RequestConfig requestConfig = RequestConfig.custom()
+                    .setConnectTimeout(toExecuteTimeout)
+                    .setConnectionRequestTimeout(toExecuteTimeout)
+                    .setSocketTimeout(toExecuteTimeout)
+                    .build();
+
+            HttpGet httpGet = new HttpGet(url);
+            httpGet.setConfig(requestConfig);
+            CloseableHttpResponse response = httpclient.execute(httpGet);
+            HttpEntity entity = response.getEntity();
+            String responseContent = EntityUtils.toString(entity);
+            return responseContent;
+
+        } catch (Exception e) {
+            final StringBuilder errorMessage = new StringBuilder("An unexpected error occurred trigering Queue Job: ");
+            if (e instanceof HttpResponseException) {
+                errorMessage.append(String.format("%d (%s)", ((HttpResponseException) e).getStatusCode(), e.getMessage()));
+            } else {
+                errorMessage.append(e.getMessage());
+                errorMessage.append(". Check server logs");
+            }
+            LOG.error(errorMessage.toString(), e);
+            throw new RunQueueProcessException(errorMessage.toString(), e);
         }
     }
 

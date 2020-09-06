@@ -2,6 +2,8 @@
 [square]
 * Fixed issue when loading 'pre testing' and 'post testing' testcases (activation criteria was inverted).
 * Error on openApp action of an Android application (APK).
+* Campaign execution is now closed even if the last execution is in QE status.
+* Execution that ends in QE status now also trigger the queue job (that bug could end with QUEUED execution not triggered on some cases).
 
 *Improvements / New features*
 [square]
