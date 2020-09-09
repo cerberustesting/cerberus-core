@@ -4,6 +4,7 @@
 * Error on openApp action of an Android application (APK).
 * Campaign execution is now closed even if the last execution is in QE status.
 * Execution that ends in QE status now also trigger the queue job (that bug could end with QUEUED execution not triggered on some cases).
+* Fixed maximum size of pool. Some queue execution constrains could be exceed the maximum #2168
 
 *Improvements / New features*
 [square]

@@ -234,9 +234,6 @@ public class ExecutionQueueWorkerThread implements Runnable {
         try {
             LOG.debug("Start to execute : " + queueId + " with RobotHost : " + selectedRobotHost + " with RobotExtensionHost : " + selectedRobotExtHost);
 
-            // Flag the queue entry to STARTING
-            queueService.updateToStarting(queueId, selectedRobotHost, selectedRobotExtHost);
-
             LOG.debug("Get queue exe to execute : " + queueId);
             // Getting the queue full object.
             setToExecute(queueService.convert(queueService.readByKey(queueId, false)));
@@ -253,6 +250,7 @@ public class ExecutionQueueWorkerThread implements Runnable {
 
         } catch (Exception e) {
             LOG.warn("Execution in queue " + queueId + " has finished with error");
+            LOG.error(e, e);
             try {
 
                 queueService.updateToError(queueId, e.getMessage());
@@ -273,7 +271,7 @@ public class ExecutionQueueWorkerThread implements Runnable {
     }
 
     /**
-     * Request the queu job to be executed calling the corresponding servlet.
+     * Request the queue job to be executed calling the corresponding servlet.
      *
      * @return the execution answer from the {@link RunTestCase} servlet
      * @throws RunQueueProcessException if an error occurred during request
