@@ -87,6 +87,7 @@ public class ServiceService implements IServiceService {
         String decodedOperation;
         String decodedAttachement;
         AnswerItem<AppService> result = new AnswerItem<>();
+        AnswerItem<String> answerDecode = new AnswerItem<>();
         String system = tCExecution.getApplicationObj().getSystem();
         String country = tCExecution.getCountry();
         String environment = tCExecution.getEnvironment();
@@ -123,6 +124,29 @@ public class ServiceService implements IServiceService {
 
                 // We start by calculating the servicePath and decode it.
                 servicePath = appService.getServicePath();
+
+                try {
+
+                    // Decode Service Path
+                    answerDecode = variableService.decodeStringCompletly(servicePath, tCExecution, null, false);
+                    servicePath = (String) answerDecode.getItem();
+                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", "Service Path").getDescription());
+                        LOG.debug("Service Call interupted due to decode 'Service Path'.");
+                        result.setResultMessage(message);
+                        return result;
+                    }
+
+                } catch (CerberusEventException cee) {
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICEWITHPATH);
+                    message.setDescription(message.getDescription().replace("%SERVICENAME%", service));
+                    message.setDescription(message.getDescription().replace("%SERVICEPATH%", decodedServicePath));
+                    message.setDescription(message.getDescription().replace("%DESCRIPTION%", cee.getMessageError().getDescription()));
+                    result.setResultMessage(message);
+                    return result;
+                }
 
                 // Autocomplete of service path is disable for KAFKA service (this is because there could be a list of host).
                 if (!appService.getType().equals(AppService.TYPE_KAFKA)) {
@@ -205,11 +229,10 @@ public class ServiceService implements IServiceService {
                 decodedServicePath = servicePath;
                 decodedRequest = appService.getServiceRequest();
                 LOG.debug("AppService with correct path is  now OK : " + servicePath);
-                AnswerItem<String> answerDecode = new AnswerItem<>();
 
                 try {
 
-                    // Decode Service Path
+                    // Decode Service Path again as the change done by automatic complete of it following application configuration could have inserted some new variables.
                     answerDecode = variableService.decodeStringCompletly(decodedServicePath, tCExecution, null, false);
                     decodedServicePath = (String) answerDecode.getItem();
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
