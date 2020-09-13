@@ -19,7 +19,7 @@ Once installed, and in few clicks, get your automated tests up and running in or
 
 # How to install it? How to use it?
 
-Check out all information about Cerberus Testing in our official website: [Cerberus Testing](http://www.cerberus-testing.org/)
+Check out all information about Cerberus Testing in our official website: [Cerberus Testing](https://www.cerberus-testing.com/)
 
 Documentation is available here: [Cerberus Testing Documentation](https://cerberustesting.github.io/documentation_en.html)
 
