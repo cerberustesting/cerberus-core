@@ -36,6 +36,7 @@ Docker images are available for [MySQL](https://hub.docker.com/r/cerberustesting
 # They trust us
 
 * [La Redoute](https://www.laredoute.fr/)
+* [Damart](https://www.damart.fr)
 * [Auchan Retail International](https://www.auchan-retail.com/)
 * [Decathlon](https://www.decathlon.fr/)
 * [Atecna](https://www.atecna.fr/)
