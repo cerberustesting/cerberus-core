@@ -66,8 +66,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     private static final String CONST_SEPARATOR = "////";
 
-    private boolean instanceActive = true;
-    private boolean splashPageActive = false;
+    private boolean isInstanceActive = true;
+    private boolean isSplashPageActive = false;
 
     @Autowired
     private ITestCaseExecutionQueueService tceiqService;
@@ -100,22 +100,22 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     @Override
     public boolean isInstanceActive() {
-        return instanceActive;
+        return isInstanceActive;
     }
 
     @Override
-    public void setInstanceActive(boolean instanceActive) {
-        this.instanceActive = instanceActive;
+    public void setInstanceActive(boolean isInstanceActive) {
+        this.isInstanceActive = isInstanceActive;
     }
 
     @Override
     public boolean isSplashPageActive() {
-        return this.splashPageActive;
+        return this.isSplashPageActive;
     }
 
     @Override
-    public void setSplashPageActive(boolean splashPageActive) {
-        this.splashPageActive = splashPageActive;
+    public void setSplashPageActive(boolean isSplashPageActive) {
+        this.isSplashPageActive = isSplashPageActive;
     }
 
     @Override
@@ -270,7 +270,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     @Override
     public void executeNextInQueue(boolean forceExecution) throws CerberusException {
 
-        if (!instanceActive) {
+        if (!isInstanceActive) {
             LOG.warn("Queue execution disable on that JVM instance.");
             return;
         }

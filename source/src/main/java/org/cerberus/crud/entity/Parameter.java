@@ -58,6 +58,7 @@ public class Parameter {
     public static final String VALUE_cerberus_smtp_password = "cerberus_smtp_password";
     public static final String VALUE_cerberus_smtp_isSetTls = "cerberus_smtp_isSetTls";
     public static final String VALUE_cerberus_queueexecution_enable = "cerberus_queueexecution_enable";
+    public static final String VALUE_cerberus_splashpage_enable = "cerberus_splashpage_enable";
     public static final String VALUE_cerberus_manage_token = "cerberus_manage_token";
     public static final String VALUE_cerberus_manage_timeout = "cerberus_manage_timeout";
     public static final String VALUE_cerberus_executeCerberusCommand_password = "cerberus_executeCerberusCommand_password";
@@ -67,6 +68,7 @@ public class Parameter {
     public static final String SECUREDPARAMINSQLCLAUSE = "(\"cerberus_accountcreation_defaultpassword\",\"cerberus_proxyauthentification_password\",\"cerberus_jenkinsadmin_password\",\"cerberus_smtp_password\",\"cerberus_executeCerberusCommand_password\")";
 
     public static final Integer CACHE_DURATION = 60;
+    public static final Integer SHORT_CACHE_DURATION = 2;
 
     public LocalDateTime getCacheEntryCreation() {
         return cacheEntryCreation;

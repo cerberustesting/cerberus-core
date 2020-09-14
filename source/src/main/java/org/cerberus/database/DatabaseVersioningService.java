@@ -8659,6 +8659,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
                 + " ('', 'cerberus_queueshistorystatgraph_maxnbpoints', '1000', 'Maximum number of points on the queue history graph.')");
         
+        // ADD Parameter
+        // 1539
+        a.add("INSERT INTO `parameter` VALUES('', 'cerberus_splashpage_enable', 'false', 'Boolean to display for non admin users a splashpage is case of maintenance')");
+        
         return a;
     }
 
