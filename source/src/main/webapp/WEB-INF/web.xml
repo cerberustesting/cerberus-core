@@ -145,10 +145,6 @@
         <servlet-class>org.cerberus.servlet.crud.usermanagement.ChangeUserPasswordAdmin</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>TCEwwwDetail</servlet-name>
-        <servlet-class>org.cerberus.servlet.reporting.TCEwwwDetail</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>GetReportData</servlet-name>
         <servlet-class>org.cerberus.servlet.reporting.GetReportData</servlet-class>
     </servlet>
@@ -359,10 +355,6 @@
         <servlet-class>org.cerberus.servlet.integration.JenkinsDeploy</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ExportListTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.ExportListTestCase</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>ReadBuildRevisionInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.ReadBuildRevisionInvariant</servlet-class>
     </servlet>
@@ -421,22 +413,6 @@
     <servlet>
         <servlet-name>DeleteInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.DeleteInvariant</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ReadProject</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.ReadProject</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CreateProject</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.CreateProject</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DeleteProject</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.DeleteProject</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateProject</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.UpdateProject</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateApplication</servlet-name>
@@ -624,11 +600,6 @@
         <servlet-class>org.cerberus.servlet.administration.GetExecutionsInQueue</servlet-class>
     </servlet>
     <servlet>
-        <description>Get a list of test cases based on criteria.</description>
-        <servlet-name>GetTestCasesV000</servlet-name>
-        <servlet-class>org.cerberus.servlet.zzpublic.GetTestCasesV000</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>DeleteBuildRevisionParameters</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.DeleteBuildRevisionParameters</servlet-class>
     </servlet>
@@ -701,10 +672,6 @@
         <servlet-class>org.cerberus.servlet.crud.test.testcase.ReadTestCase</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ReadTestCaseV2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.testcase.ReadTestCaseV2</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>GeneratePerformanceString</servlet-name>
         <servlet-class>org.cerberus.servlet.reporting.GeneratePerformanceString</servlet-class>
     </servlet>
@@ -769,6 +736,22 @@
         <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTestCaseExecutionByTag</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadExecutionStat</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadExecutionStat</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadQueueStat</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadQueueStat</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadTagStat</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTagStat</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadExecutionTagHistory</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadExecutionTagHistory</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateTestCaseExecution</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.UpdateTestCaseExecution</servlet-class>
     </servlet>
@@ -801,7 +784,7 @@
         <servlet-name>ImportTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.testcase.ImportTestCase</servlet-class>
     </servlet>
-    <!-- 
+    <!--
     <servlet>
         <servlet-name>JerseyWebapp</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
@@ -935,14 +918,6 @@
     <servlet-mapping>
         <servlet-name>ReadTestCase</servlet-name>
         <url-pattern>/ReadTestCase</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ReadTestCaseV2</servlet-name>
-        <url-pattern>/ReadTestCaseV2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>TCEwwwDetail</servlet-name>
-        <url-pattern>/TCEwwwDetail</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetReportData</servlet-name>
@@ -1161,10 +1136,6 @@
         <url-pattern>/JenkinsDeploy</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ExportListTestCase</servlet-name>
-        <url-pattern>/ExportListTestCase</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>ReadBuildRevisionInvariant</servlet-name>
         <url-pattern>/ReadBuildRevisionInvariant</url-pattern>
     </servlet-mapping>
@@ -1223,22 +1194,6 @@
     <servlet-mapping>
         <servlet-name>DeleteInvariant</servlet-name>
         <url-pattern>/DeleteInvariant</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ReadProject</servlet-name>
-        <url-pattern>/ReadProject</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CreateProject</servlet-name>
-        <url-pattern>/CreateProject</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteProject</servlet-name>
-        <url-pattern>/DeleteProject</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateProject</servlet-name>
-        <url-pattern>/UpdateProject</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateApplication</servlet-name>
@@ -1397,10 +1352,6 @@
         <url-pattern>/GetExecutionsInQueue</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetTestCasesV000</servlet-name>
-        <url-pattern>/GetTestCasesV000</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>GeneratePerformanceString</servlet-name>
         <url-pattern>/GeneratePerformanceString</url-pattern>
     </servlet-mapping>
@@ -1529,6 +1480,22 @@
         <url-pattern>/ReadTestCaseExecutionByTag</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadExecutionStat</servlet-name>
+        <url-pattern>/ReadExecutionStat</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadQueueStat</servlet-name>
+        <url-pattern>/ReadQueueStat</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadTagStat</servlet-name>
+        <url-pattern>/ReadTagStat</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadExecutionTagHistory</servlet-name>
+        <url-pattern>/ReadExecutionTagHistory</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateTestCaseExecution</servlet-name>
         <url-pattern>/UpdateTestCaseExecution</url-pattern>
     </servlet-mapping>
@@ -1583,7 +1550,7 @@
         <url-pattern>/ImportTestCase</url-pattern>
     </servlet-mapping>
     <session-config>
-        <session-timeout>60</session-timeout>
+        <session-timeout>600</session-timeout>
     </session-config>
     <error-page>
         <error-code>400</error-code>
@@ -1661,6 +1628,8 @@
             <url-pattern>/TestCaseExecution.jsp</url-pattern>
             <url-pattern>/TestCaseExecutionList.jsp</url-pattern>
             <url-pattern>/ReportingExecutionByTag.jsp</url-pattern>
+            <url-pattern>/ReportingExecutionOverTime.jsp</url-pattern>
+            <url-pattern>/ReportingCampaignOverTime.jsp</url-pattern>
             <url-pattern>/TestCaseExecutionQueueList.jsp</url-pattern>
             <url-pattern>/Test.jsp</url-pattern>
             <url-pattern>/TestCaseScript.jsp</url-pattern>
@@ -1677,7 +1646,6 @@
             <url-pattern>/ReadTestCaseExecutionMedia</url-pattern>
             <url-pattern>/GetTestCase</url-pattern>
             <url-pattern>/TestcaseList</url-pattern>
-            <url-pattern>/ExportListTestCase</url-pattern>
             <url-pattern>/GetDataForTestCaseSearch</url-pattern>
             <url-pattern>/TCEwwwDetail</url-pattern>
             <url-pattern>/GenerateGraph</url-pattern>
@@ -1691,11 +1659,13 @@
             <url-pattern>/GetReport</url-pattern>
             <url-pattern>/GetStepInLibrary</url-pattern>
             <url-pattern>/ReadTestCase</url-pattern>
-            <url-pattern>/ReadTestCaseV2</url-pattern>
             <url-pattern>/ReadTest</url-pattern>
             <url-pattern>/ReadTestCaseStep</url-pattern>
             <url-pattern>/GetReportTest</url-pattern>
             <url-pattern>/ReadTestCaseExecutionByTag</url-pattern>
+            <url-pattern>/ReadExecutionStat</url-pattern>
+            <url-pattern>/ReadQueueStat</url-pattern>
+            <url-pattern>/ReadTagStat</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestRO</description>
@@ -2065,6 +2035,7 @@
             <description>servlet</description>
             <url-pattern>/Homepage</url-pattern>
             <url-pattern>/ReadMyUser</url-pattern>
+            <url-pattern>/ReadExecutionTagHistory</url-pattern>
             <url-pattern>/GetInvariantList</url-pattern>
             <url-pattern>/ReadCerberusInformation</url-pattern>
             <url-pattern>/GeneratePerformanceString</url-pattern>

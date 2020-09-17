@@ -21,9 +21,14 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.cerberus.crud.dao.ICountryEnvironmentParametersDAO;
+import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
+import org.cerberus.crud.factory.IFactoryCountryEnvParam;
+import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.exception.CerberusException;
@@ -35,6 +40,7 @@ import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.cerberus.crud.service.ICountryEnvironmentParametersService;
+import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.util.answer.AnswerUtil;
 
 /**
@@ -47,6 +53,12 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
 
     @Autowired
     private ICountryEnvironmentParametersDAO countryEnvironmentParametersDao;
+    @Autowired
+    private ICountryEnvParamService countryEnvParamService;
+    @Autowired
+    private IFactoryCountryEnvParam factoryCountryEnvParam;
+    @Autowired
+    private ILogEventService logEventService;
 
     @Override
     public AnswerItem<CountryEnvironmentParameters> readByKey(String system, String country, String environment, String application) {
@@ -82,7 +94,18 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
 
     @Override
     public Answer create(CountryEnvironmentParameters object) {
-        Answer answer = countryEnvironmentParametersDao.create(object);
+        Answer answer;
+        if (!countryEnvParamService.exist(object.getSystem(), object.getCountry(), object.getEnvironment())) {
+            CountryEnvParam env = factoryCountryEnvParam.create(object.getSystem(),
+                    object.getCountry(), object.getEnvironment(), "", "", "", "", "", "", "STD", "", "", true, false, "00:00:00", "00:00:00", "");
+            answer = countryEnvParamService.create(env);
+            if (!answer.isCodeStringEquals("OK")) {
+                return answer;
+            } else {
+                logEventService.createForPrivateCalls("", "CREATE", "Create CountryEnvParam : ['" + object.getSystem() + "'|'" + object.getCountry() + "'|'" + object.getEnvironment() + "']");
+            }
+        }
+        answer = countryEnvironmentParametersDao.create(object);
         return answer;
     }
 
@@ -90,7 +113,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
     public Answer createList(List<CountryEnvironmentParameters> objectList) {
         Answer ans = new Answer(null);
         for (CountryEnvironmentParameters objectToCreate : objectList) {
-            ans = countryEnvironmentParametersDao.create(objectToCreate);
+            ans = create(objectToCreate);
         }
         return ans;
     }

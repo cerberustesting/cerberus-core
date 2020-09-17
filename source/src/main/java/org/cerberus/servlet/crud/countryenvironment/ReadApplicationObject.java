@@ -339,7 +339,7 @@ public class ReadApplicationObject extends HttpServlet {
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,detailedDescription,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
 
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));

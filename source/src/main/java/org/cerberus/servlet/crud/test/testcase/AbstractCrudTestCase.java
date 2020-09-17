@@ -112,41 +112,39 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             tc.setExecutor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("executor"), tc.getExecutor(), charset));
             tc.setUsrCreated(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getUserPrincipal().getName(), "", charset));
             tc.setApplication(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), tc.getApplication(), charset));
-            tc.setActiveQA(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeQA"), tc.getActiveQA(), charset));
-            tc.setActiveUAT(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeUAT"), tc.getActiveUAT(), charset));
-            tc.setActivePROD(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeProd"), tc.getActivePROD(), charset));
-            tc.setFromBuild(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromSprint"), tc.getFromBuild(), charset));
-            tc.setFromRev(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromRev"), tc.getFromRev(), charset));
-            tc.setToBuild(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toSprint"), tc.getToBuild(), charset));
-            tc.setToRev(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toRev"), tc.getToRev(), charset));
-            tc.setTcActive(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("active"), tc.getTcActive(), charset));
-            tc.setTargetBuild(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("targetSprint"), tc.getTargetBuild(), charset));
-            tc.setTargetRev(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("targetRev"), tc.getTargetRev(), charset));
+            tc.setActiveQA(ParameterParserUtil.parseBooleanParam(request.getParameter("isActiveQA"), tc.isActiveQA()));
+            tc.setActiveUAT(ParameterParserUtil.parseBooleanParam(request.getParameter("isActiveUAT"), tc.isActiveUAT()));
+            tc.setActivePROD(ParameterParserUtil.parseBooleanParam(request.getParameter("isActivePROD"), tc.isActivePROD()));
+            tc.setFromMajor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromMajor"), tc.getFromMajor(), charset));
+            tc.setFromMinor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromMinor"), tc.getFromMinor(), charset));
+            tc.setToMajor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toMajor"), tc.getToMajor(), charset));
+            tc.setToMinor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toMinor"), tc.getToMinor(), charset));
+            tc.setActive(ParameterParserUtil.parseBooleanParam(request.getParameter("isActive"), tc.isActive()));
+            tc.setTargetMajor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("targetMajor"), tc.getTargetMajor(), charset));
+            tc.setTargetMinor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("targetMinor"), tc.getTargetMinor(), charset));
             tc.setPriority(ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("priority"), tc.getPriority(), charset));
             tc.setTest(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("test"), tc.getTest(), charset));
             tc.setTestCase(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), tc.getTestCase(), charset));
             tc.setOrigine(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("origin"), tc.getOrigine(), charset));
-            tc.setGroup(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), tc.getGroup(), charset));
+            tc.setType(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), tc.getType(), charset));
             tc.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), tc.getStatus(), charset));
-            tc.setDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("shortDesc"), tc.getDescription(), charset));
-            String bug = tc.getBugID() == null ? "" : tc.getBugID().toString();
-            String bugIDString = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugId"), bug, charset);
-            JSONArray bugID = new JSONArray();
+            tc.setDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), tc.getDescription(), charset));
+            String bug = tc.getBugs() == null ? "" : tc.getBugs().toString();
+            String bugsString = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugs"), bug, charset);
+            JSONArray bugs = new JSONArray();
             try {
-                bugID = new JSONArray(bugIDString);
+                bugs = new JSONArray(bugsString);
             } catch (JSONException ex) {
-                LOG.error("Could not convert '" + bugIDString + "' to JSONArray.", ex);
+                LOG.error("Could not convert '" + bugsString + "' to JSONArray.", ex);
             }
-            tc.setBugID(bugID);
+            tc.setBugs(bugs);
             tc.setComment(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("comment"), tc.getComment(), charset));
-            tc.setFunction(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("function"), tc.getFunction(), charset));
             tc.setUserAgent(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("userAgent"), tc.getUserAgent(), charset));
             tc.setScreenSize(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("screenSize"), tc.getScreenSize(), charset));
-            tc.setHowTo(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("howTo"), tc.getHowTo(), charset));
-            tc.setBehaviorOrValueExpected(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("behaviorOrValueExpected"), tc.getBehaviorOrValueExpected(), charset));
+            tc.setDetailedDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("detailedDescription"), tc.getDetailedDescription(), charset));
 
             // TODO verify, this setteer was not call on "create test case"
-            tc.setConditionOper(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("conditionOper"), tc.getConditionOper(), charset));
+            tc.setConditionOperator(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("conditionOperator"), tc.getConditionOperator(), charset));
             // Parameter that we cannot secure as we need the html --> We DECODE them
             tc.setConditionVal1(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionVal1"), tc.getConditionVal1(), charset));
             tc.setConditionVal2(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionVal2"), tc.getConditionVal2(), charset));

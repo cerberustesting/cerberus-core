@@ -184,7 +184,7 @@ public class CerberusCommand implements ICerberusCommand {
             return this.message;
 
         } catch (IOException | InterruptedException e) {
-            this.message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
+            this.message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECERBERUSCOMMAND);
             this.messageDescriptionToReplace = "%EXCEPTION%";
             this.newMessageDescription = e.toString();
             checkNewMessageDescription();
@@ -202,7 +202,7 @@ public class CerberusCommand implements ICerberusCommand {
         if (exitVal != 0) {
             this.messageDescriptionToReplace = "%EXCEPTION%";
             this.newMessageDescription = this.command;
-            throw new CerberusEventException(new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND));
+            throw new CerberusEventException(new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECERBERUSCOMMAND));
         }
     }
 

@@ -30,6 +30,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
@@ -48,6 +50,8 @@ public final class ParameterParserUtil {
     private static final PolicyFactory POLICY = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
     private static final String DEFAULT_SQL_STRING_VALUE = "";
     private static final Pattern PARAMETER_PATTERN = Pattern.compile("&?([^=]+)=([^&]+)");
+
+    private static final Logger LOG = LogManager.getLogger(ParameterParserUtil.class);
 
     /**
      * To avoid instanciation of utility.
@@ -245,6 +249,32 @@ public final class ParameterParserUtil {
      * them
      *
      * @param inParams
+     * @param charset
+     * @param defaultVal
+     * @return
+     */
+    public static List<String> parseListParam(String[] inParams, List<String> defaultVal, String charset) {
+        if (inParams == null) {
+            return defaultVal;
+        }
+
+        List<String> result = new ArrayList<>();
+        for (String item : inParams) {
+            try {
+                result.add(POLICY.sanitize(item));
+            } catch (Exception e) {
+                return defaultVal;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Parses and decode a list from the given inParams one by decoding each of
+     * them
+     *
+     * @param inParams
      * @param defaultVal
      * @param charset
      * @return
@@ -374,10 +404,10 @@ public final class ParameterParserUtil {
         if (inParam == null) {
             return defaultVal;
         }
-        if ((inParam.equalsIgnoreCase(DEFAULT_BOOLEAN_TRUE_VALUE) || inParam.equalsIgnoreCase("yes") || inParam.equalsIgnoreCase("true"))) {
+        if ((inParam.equalsIgnoreCase(DEFAULT_BOOLEAN_TRUE_VALUE) || inParam.equalsIgnoreCase("yes") || inParam.equalsIgnoreCase("true") || inParam.equalsIgnoreCase("1"))) {
             return true;
         }
-        if ((inParam.equalsIgnoreCase(DEFAULT_BOOLEAN_FALSE_VALUE) || inParam.equalsIgnoreCase("no") || inParam.equalsIgnoreCase("false"))) {
+        if ((inParam.equalsIgnoreCase(DEFAULT_BOOLEAN_FALSE_VALUE) || inParam.equalsIgnoreCase("no") || inParam.equalsIgnoreCase("false") || inParam.equalsIgnoreCase("0"))) {
             return false;
         }
         return defaultVal;

@@ -22,18 +22,22 @@ package org.cerberus.crud.service.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.crud.dao.ITestCaseStepActionDAO;
+import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.Test;
-import org.cerberus.crud.entity.TestCaseDep;
 import org.cerberus.crud.service.ITestCaseDepService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.crud.entity.TestCaseStep;
+import org.cerberus.crud.factory.IFactoryTestCase;
+import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
@@ -65,8 +69,13 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     IParameterService parameterService;
     @Autowired
     private DatabaseSpring dbmanager;
+    @Autowired
+    IInvariantService invariantService;
+    @Autowired
+    IFactoryTestCase factoryTestCase;
 
     private final String OBJECT_NAME = "TestCaseCountryProperties";
+    private final String SEPARATOR = "%#/";
 
     private static final Logger LOG = LogManager.getLogger(CountryEnvironmentDatabaseService.class);
 
@@ -76,8 +85,8 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     }
 
     @Override
-    public List<TestCaseCountryProperties> findOnePropertyPerTestTestCase(String test, String testcase, String oneproperty) {
-        return testCaseCountryPropertiesDAO.findOnePropertyPerTestTestCase(test, testcase, oneproperty);
+    public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseProperty(String test, String testcase, String oneproperty) {
+        return testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseProperty(test, testcase, oneproperty);
     }
 
     @Override
@@ -86,8 +95,83 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     }
 
     @Override
-    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase) {
+    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase) throws CerberusException {
         return testCaseCountryPropertiesDAO.findDistinctPropertiesOfTestCase(test, testcase);
+    }
+
+    @Deprecated
+    @Override
+    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase, HashMap<String, Invariant> countryInvariants) throws CerberusException {
+        List<TestCaseCountryProperties> properties = testCaseCountryPropertiesDAO.findDistinctPropertiesOfTestCase(test, testcase);
+        for (TestCaseCountryProperties property : properties) {
+            List<String> countries = testCaseCountryPropertiesDAO.findCountryByProperty(property);
+            property.setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(countries, countryInvariants));
+        }
+        return properties;
+    }
+
+    @Override
+    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCaseFromTestcaseList(List<TestCase> testCaseList, HashMap<String, Invariant> countryInvariants) throws CerberusException {
+        // Getting all properties in the scope of the testcase list.
+        List<TestCaseCountryProperties> allProperties = testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseList(testCaseList);
+        // Now building the distinct values based on distinct information.
+        HashMap<String, TestCaseCountryProperties> testCasePropHash = new HashMap<>();
+        for (TestCaseCountryProperties property : allProperties) {
+            String key = getPropertyDistinctKey(property.getProperty(), property.getType(), property.getDatabase(), property.getValue1(), property.getValue2(), property.getLength(), property.getRowLimit(), property.getNature());
+            testCasePropHash.put(key, property);
+        }
+
+        List<TestCaseCountryProperties> properties = new ArrayList<>();
+        for (Map.Entry<String, TestCaseCountryProperties> entry : testCasePropHash.entrySet()) {
+            // For each distinct found, we get the list of countries that have this definition.
+            // The list of string is then converted to List of invariant that is added to the property that will be added to final result.
+            String key = entry.getKey();
+            TestCaseCountryProperties val = entry.getValue();
+            List<String> countries = new ArrayList<>();
+            for (TestCaseCountryProperties property : allProperties) {
+                if (key.equals(getPropertyDistinctKey(property.getProperty(), property.getType(), property.getDatabase(), property.getValue1(), property.getValue2(), property.getLength(), property.getRowLimit(), property.getNature()))) {
+                    countries.add(val.getCountry());
+                }
+            }
+            val.setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(countries, countryInvariants));
+            properties.add(val);
+        }
+
+        return properties;
+    }
+
+    private String getPropertyDistinctKey(String property, String type, String database, String value1, String value2, String length, int rowLimit, String nature) {
+        return property + SEPARATOR
+                + type + SEPARATOR
+                + database + SEPARATOR
+                + value1 + SEPARATOR
+                + value2 + SEPARATOR
+                + length + SEPARATOR
+                + String.valueOf(rowLimit) + SEPARATOR
+                + nature + SEPARATOR;
+    }
+
+    @Override
+    public List<TestCaseCountryProperties> findDistinctInheritedPropertiesOfTestCase(TestCase testCase, HashMap<String, Invariant> countryInvariants) throws CerberusException {
+        List<TestCaseCountryProperties> inheritedProperties = new ArrayList<>();
+        List<TestCase> testCaseList = new ArrayList<>();
+        HashMap<String, TestCase> testCaseHash = new HashMap<>();
+        // Before getting the list of properties, we first dedup the list of testcase with useStep as many steps from TestCase, could point to the same testCase library.
+        for (TestCaseStep step : testCase.getSteps()) {
+            if (step.getUseStep().equals("Y")) {
+                LOG.debug("Item to add " + step.getUseStepTest() + "#/" + step.getUseStepTestCase());
+                testCaseHash.put(step.getUseStepTest() + "#/" + step.getUseStepTestCase(), factoryTestCase.create(step.getUseStepTest(), step.getUseStepTestCase()));
+            }
+        }
+        LOG.debug("Size " + testCaseHash.size());
+        for (Map.Entry<String, TestCase> entry : testCaseHash.entrySet()) {
+            TestCase val = entry.getValue();
+            testCaseList.add(val);
+        }
+
+        inheritedProperties.addAll(findDistinctPropertiesOfTestCaseFromTestcaseList(testCaseList, countryInvariants));
+        
+        return inheritedProperties;
     }
 
     @Override
@@ -183,7 +267,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
                 tccpMap.put(tccp.getProperty(), tccp);
             }
             //These if/else instructions are done because of the way how the propertyService verifies if
-            //the properties exist for the country. 
+            //the properties exist for the country.
             for (TestCaseCountryProperties tccp : tccpList) {
                 TestCaseCountryProperties p = (TestCaseCountryProperties) tccpMap.get(tccp.getProperty());
                 if (p == null) {

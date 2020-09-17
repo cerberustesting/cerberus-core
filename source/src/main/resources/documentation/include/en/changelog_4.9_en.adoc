@@ -1,0 +1,23 @@
+*Bug fixes*
+[square]
+* Fixed issue when loading 'pre testing' and 'post testing' testcases (activation criteria was inverted).
+* Error on openApp action of an Android application (APK).
+* Campaign execution is now closed even if the last execution is in QE status.
+* Execution that ends in QE status now also trigger the queue job (that bug could end with QUEUED execution not triggered on some cases).
+* Fixed maximum size of pool. Some queue execution constrains could be exceed the maximum #2168
+
+*Improvements / New features*
+[square]
+* [API] Support for Kafka Headers + better error message on Kafka avoiding to analysis of application server logs. #2152
+* [API] New 'setServiceCallContent' action in order to allow controls on full request and response structure (headers, http code,... ) #2088
+* [API] Small modifications on service modal in order to isolate the request information on one single tab. All non request data have moved to 1st tab.
+* [API] "Service Call" JSON body response now display in JSON mode if answer is in JSON (it used to be added in a single line text format).
+* [API] Adding possibility to configure for each service FollowRedirect on REST calls (by default all service will follow redirect). #2049 
+* [QUEUE MANAGEMENT] Added a new dashboard in "Execution in queue" page in order to monitor queue size and nb of simultaneous executions over time.
+* [GUI] Added new dashboard on homepage to follow testcase creation statistics.
+* [GUI] You can now comment and describe a campaign execution in order to keep track of a particular event.
+* [PERF] Speed improvements on TestCaseScript page loading.
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* none

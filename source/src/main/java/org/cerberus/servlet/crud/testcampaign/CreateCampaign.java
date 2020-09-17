@@ -150,7 +150,7 @@ public class CreateCampaign extends HttpServlet {
                  * Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign : " + camp.getCampaign(), request);
+                logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign : ['" + camp.getCampaign() + "']", request);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
 
                 if (request.getParameter("SchedulerList") != null) {
@@ -162,16 +162,8 @@ public class CreateCampaign extends HttpServlet {
                     if (!schList.isEmpty()) {
                         IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
                         schedAns = scheduleentryservice.createListSched(schList);
-                        if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                            /**
-                             * Updating Scheduler Version.
-                             */
-                            IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
-                            myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
-                        }
                     }
-                    if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    } else {
+                    if (!schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         finalAnswer = schedAns;
                     }
                 }
@@ -187,12 +179,6 @@ public class CreateCampaign extends HttpServlet {
                         CampaignParameter co = factoryCampaignParameter.create(0, bat.getString(0), bat.getString(2), bat.getString(3));
                         ans = campaignParameterService.create(co);
                         i++;
-                        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                            /**
-                             * Adding Log entry.
-                             */
-                            logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign Parameter : " + co.getCampaign() + ", " + co.getValue(), request);
-                        }
                     }
                 }
 
@@ -208,12 +194,6 @@ public class CreateCampaign extends HttpServlet {
                     }
 
                     finalAnswer = campaignLabelService.compareListAndUpdateInsertDeleteElements(name, arr);
-                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        /**
-                         * Adding Log entry.
-                         */
-                        logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign Label : " + camp.getCampaign(), request);
-                    }
                 }
 
                 if (ans != null && !ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

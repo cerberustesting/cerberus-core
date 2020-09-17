@@ -51,7 +51,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor,
             int numberOfRetries, String screenSize, Robot robotObj, String robotProvider, String robotSessionId,
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3,
+            String conditionOperator, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3,
             String manualExecution, String userAgent, int testCaseVersion, int testCasePriority, String system,
             String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         TestCaseExecution newTce = new TestCaseExecution();
@@ -109,7 +109,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setScreenSize(screenSize);
         newTce.setRobotObj(robotObj);
         newTce.setLastWebsocketPush(0);
-        newTce.setConditionOper(conditionOper);
+        newTce.setConditionOperator(conditionOperator);
         newTce.setConditionVal1(conditionVal1);
         newTce.setConditionVal1Init(conditionVal1Init);
         newTce.setConditionVal2(conditionVal2);

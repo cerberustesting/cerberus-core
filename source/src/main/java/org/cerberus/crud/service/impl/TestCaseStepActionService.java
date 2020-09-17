@@ -171,7 +171,7 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
         for (Object action : actions.getDataList()) {
             TestCaseStepAction tces = (TestCaseStepAction) action;
             AnswerList<TestCaseStepActionControl> controls = testCaseStepActionControlService.readByVarious1(test, testcase, step, tces.getSequence());
-            tces.setTestCaseStepActionControl((List<TestCaseStepActionControl>) controls.getDataList());
+            tces.setControls((List<TestCaseStepActionControl>) controls.getDataList());
             tcsaList.add(tces);
         }
         response = new AnswerList<>(tcsaList, actions.getTotalRows(), new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));

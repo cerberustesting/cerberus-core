@@ -43,7 +43,7 @@ var actionUIList = {
         {"type": "openUrl", "aval1": "URL à appeler (ex : http://www.domain.com)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "refreshCurrentPage", "aval1": null, "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "executeJS", "aval1": "JavaScript à executer", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "executeCommand", "aval1": "Commande (ex : \"grep\")", "acol1": "col-lg-4", "aval2": "Arguments (ex : \"--name toto\")", "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "executeCommand", "aval1": "Commande Appium (ex : \"mobile:deepLink\")", "acol1": "col-lg-4", "aval2": "Arguments (ex : {url: \"www.site.com\", package: \"com.Package\"})", "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "executeCerberusCommand", "aval1": "Commande (ex : \"grep\")", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "openApp", "aval1": "Nom ou chemin de l'application, package pour android", "acol1": "col-lg-6", "aval2": "[Optionnel, obligatoire pour Android] Activity", "acol2": "col-lg-3", "aval3": null, "acol3": "col-lg-5"},
         {"type": "closeApp", "aval1": "Nom ou chemin de l'application", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
@@ -56,11 +56,13 @@ var actionUIList = {
         {"type": "swipe", "aval1": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "acol1": "col-lg-5", "aval2": "Direction x;y;z;y", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
         {"type": "wait", "aval1": "Valeur(ms) ou élement", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "waitVanish", "aval1": "Element", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "waitNetworkTrafficIdle", "aval1": null, "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "callService", "aval1": "Nom du Service", "acol1": "col-lg-5", "aval2": "Nb Evt à attendre (Kafka)", "acol2": "col-lg-2", "aval3": "Tps d'attente en sec (Kafka)", "acol3": "col-lg-2"},
         {"type": "executeSqlUpdate", "aval1": "Nom de Base de donnée", "acol1": "col-lg-3", "aval2": "Script à executer", "acol2": "col-lg-6", "aval3": null, "acol3": "col-lg-5"},
         {"type": "executeSqlStoredProcedure", "aval1": "Nom de Base de donnée", "acol1": "col-lg-3", "aval2": "Procedure Stoquée à executer", "acol2": "col-lg-6", "aval3": null, "acol3": "col-lg-5"},
         {"type": "calculateProperty", "aval1": "Nom d'une Proprieté", "acol1": "col-lg-5", "aval2": "[opt] Nom d'une autre propriété", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "setNetworkTrafficContent", "aval1": "url à filtrer", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "setNetworkTrafficContent", "aval1": "url à filtrer", "acol1": "col-lg-7", "aval2": "Activation du contenu des reponses http (Y/N)", "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "setServiceCallContent", "aval1": null, "acol1": "col-lg-7", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
         {"type": "scrollTo", "aval1": "element (id, xpath, ..., et text=)", "acol1": "col-lg-5", "aval2": "Nombre maximum de scroll vers le bas (8 par defaut)", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
         {"type": "installApp", "aval1": "Chemin vers l'application (ex : /root/toto.apk)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "removeApp", "aval1": "Package de l'application (ex : com.cerberus.appmobile)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
@@ -86,12 +88,12 @@ var actionUIList = {
         {"type": "openUrl", "aval1": "URL to call (ex : http://www.domain.com)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "refreshCurrentPage", "aval1": null, "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "executeJS", "aval1": "JavaScript to execute", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "executeCommand", "aval1": "Command (ex : \"grep\")", "acol1": "col-lg-4", "aval2": "Arguments (ex : \"--name toto\")", "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "executeCommand", "aval1": "Appium Command (ex : \"mobile:deepLink\")", "acol1": "col-lg-4", "aval2": "Arguments (ex : {url: \"www.site.com\", package: \"com.Package\"})", "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "executeCerberusCommand", "aval1": "Command (ex : \"grep\")", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "openApp", "aval1": "Application name or path or package for Android", "acol1": "col-lg-6", "aval2": "[Optional, required for Android] Activity", "acol2": "col-lg-3", "aval3": null, "acol3": "col-lg-5"},
         {"type": "closeApp", "aval1": "Application name or path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "dragAndDrop", "aval1": "Element path", "acol1": "col-lg-5", "aval2": "Destination Element Path", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "select", "aval1": "Element path", "acol1": "col-lg-5", "aval2": "Option path", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "select", "aval1": "Element path", "acol1": "col-lg-5", "aval2": "Option value", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
         {"type": "keypress", "aval1": "[opt] Target element path", "acol1": "col-lg-7", "aval2": "Key to press", "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
         {"type": "type", "aval1": "Element path", "acol1": "col-lg-5", "aval2": "Text to type", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
         {"type": "hideKeyboard", "aval1": null, "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
@@ -99,11 +101,13 @@ var actionUIList = {
         {"type": "swipe", "aval1": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "acol1": "col-lg-5", "aval2": "Direction x;y;z;y", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
         {"type": "wait", "aval1": "Duration(ms) or Element", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "waitVanish", "aval1": "Element", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "waitNetworkTrafficIdle", "aval1": null, "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "callService", "aval1": "Service Name", "acol1": "col-lg-5", "aval2": "Nb Evt (Kafka)", "acol2": "col-lg-2", "aval3": "Evt Wait sec (Kafka)", "acol3": "col-lg-2"},
         {"type": "executeSqlUpdate", "aval1": "Database Name", "acol1": "col-lg-3", "aval2": "Script", "acol2": "col-lg-6", "aval3": null, "acol3": "col-lg-5"},
         {"type": "executeSqlStoredProcedure", "aval1": "Database Name", "acol1": "col-lg-3", "aval2": "Stored Procedure", "acol2": "col-lg-6", "aval3": null, "acol3": "col-lg-5"},
         {"type": "calculateProperty", "aval1": "Property Name", "acol1": "col-lg-5", "aval2": "[opt] Name of an other property", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "setNetworkTrafficContent", "aval1": "url to filter", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "setNetworkTrafficContent", "aval1": "url to filter", "acol1": "col-lg-7", "aval2": "Activate http response content (Y/N)", "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "setServiceCallContent", "aval1": null, "acol1": "col-lg-7", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
         {"type": "scrollTo", "aval1": "element ('id=ressource-id'. Empty if you want use text)", "acol1": "col-lg-5", "aval2": "text (empty if you want use element)", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
         {"type": "installApp", "aval1": "Application path (ex : /root/toto.apk)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "removeApp", "aval1": "Application package (ex : com.cerberus.appmobile)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
@@ -117,7 +121,7 @@ var propertyUIList = {
     "fr": [
         {
             "type": "text",
-            "value1": "Value",
+            "value1": "Valeur",
             "value1Class": "col-sm-10",
             "value1EditorMode": "ace/mode/cerberus",
             "value2": null,
@@ -131,7 +135,7 @@ var propertyUIList = {
         },
         {
             "type": "getFromSql",
-            "value1": "SQL Query",
+            "value1": "Requete SQL",
             "value1Class": "col-sm-8",
             "value1EditorMode": "ace/mode/sql",
             "value2": null,
@@ -145,7 +149,7 @@ var propertyUIList = {
         },
         {
             "type": "getFromDataLib",
-            "value1": "DataLib name",
+            "value1": "Nom de la DataLib",
             "value1Class": "col-sm-10",
             "value1EditorMode": "ace/mode/cerberus",
             "value2": null,
@@ -159,7 +163,7 @@ var propertyUIList = {
         },
         {
             "type": "getFromHtml",
-            "value1": "Element path",
+            "value1": "Chemin vers l'élément",
             "value1Class": "col-sm-10",
             "value1EditorMode": "ace/mode/xquery",
             "value2": null,
@@ -173,7 +177,7 @@ var propertyUIList = {
         },
         {
             "type": "getFromHtmlVisible",
-            "value1": "Element path",
+            "value1": "Chemin vers l'élément",
             "value1Class": "col-sm-10",
             "value1EditorMode": "ace/mode/xquery",
             "value2": null,
@@ -187,7 +191,7 @@ var propertyUIList = {
         },
         {
             "type": "getFromJS",
-            "value1": "Javascript command",
+            "value1": "Commande Javascript",
             "value1Class": "col-sm-10",
             "value1EditorMode": "ace/mode/javascript",
             "value2": null,
@@ -201,7 +205,7 @@ var propertyUIList = {
         },
         {
             "type": "getAttributeFromHtml",
-            "value1": "Element path",
+            "value1": "Chemin vers l'élément",
             "value1Class": "col-sm-8",
             "value1EditorMode": "ace/mode/xquery",
             "value2": "Attribute name",
@@ -215,7 +219,7 @@ var propertyUIList = {
         },
         {
             "type": "getFromCookie",
-            "value1": "Cookie name",
+            "value1": "Nom du Cookie",
             "value1Class": "col-sm-8",
             "value1EditorMode": "ace/mode/cerberus",
             "value2": "Cookie attribute",
@@ -232,7 +236,7 @@ var propertyUIList = {
             "value1": "Xpath",
             "value1Class": "col-sm-8",
             "value1EditorMode": "ace/mode/xquery",
-            "value2": "[opt] XML or URL to XML file",
+            "value2": "[opt] Contenu XML ou URL vers un fichier XML",
             "database": null,
             "length": null,
             "cacheExpire": "[opt] cache Expire (s)",
@@ -271,10 +275,25 @@ var propertyUIList = {
         },
         {
             "type": "getFromJson",
-            "value1": "JSONPath",
+            "value1": "JSON Path",
             "value1Class": "col-sm-8",
             "value1EditorMode": "ace/mode/json",
-            "value2": "[opt] JSON or URL to JSON file",
+            "value2": "[opt] Contenu JSON ou URL vers un fichier JSON",
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "getFromNetworkTraffic",
+            "value1": "filtre d'URL",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/json",
+            "value2": "JSON Path",
+            "value3": "Activate HTTP response content (Y/N)",
             "database": null,
             "length": null,
             "cacheExpire": "[opt] cache Expire (s)",
@@ -299,10 +318,10 @@ var propertyUIList = {
         },
         {
             "type": "getFromCommand",
-            "value1": "Executer une commande shell",
+            "value1": "Commande Appium (ex : \"mobile:deviceInfo\")",
             "value1Class": "col-sm-8",
             "value1EditorMode": "ace/mode/shell",
-            "value2": null,
+            "value2": "Arguments (ex : {param1: \"val1\", param2: \"val2\"})",
             "database": null,
             "length": null,
             "cacheExpire": "[opt] cache Expire (s)",
@@ -535,6 +554,21 @@ var propertyUIList = {
             "rank": "Rank"
         },
         {
+            "type": "getFromNetworkTraffic",
+            "value1": "URL filter",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/json",
+            "value2": "JSON Path",
+            "value3": "Activate HTTP response content (Y/N)",
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
             "type": "getFromGroovy",
             "value1": "Groovy command",
             "value1Class": "col-sm-8",
@@ -551,10 +585,10 @@ var propertyUIList = {
         },
         {
             "type": "getFromCommand",
-            "value1": "Execute a shell command",
+            "value1": "Appium Command (ex : \"mobile:deviceInfo\")",
             "value1Class": "col-sm-8",
             "value1EditorMode": "ace/mode/shell",
-            "value2": null,
+            "value2": "Arguments (ex : {param1: \"val1\", param2: \"val2\"})",
             "database": null,
             "length": null,
             "cacheExpire": "[opt] cache Expire (s)",
@@ -665,347 +699,347 @@ var controlUIList = {
     "fr": [
         {
             "type": "Unknown",
-            "controlValue": null,
-            "controlProp": null,
+            "value1": null,
+            "value2": null,
             "value3": null,
             "fatal": null
         },
         {
             "type": "verifyStringEqual",
-            "controlValue": "String2",
-            "controlProp": "String1",
-            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "value1": "String1", "acol1": "col-lg-3",
+            "value2": "String2", "acol2": "col-lg-3",
+            "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyStringDifferent",
-            "controlValue": "String2",
-            "controlProp": "String1",
-            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "value1": "String1", "acol1": "col-lg-3",
+            "value2": "String2", "acol2": "col-lg-3",
+            "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyStringGreater",
-            "controlValue": "String2 (ex : AAA)",
-            "controlProp": "String1 (ex: ZZZ)",
-            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "value1": "String1 (ex: ZZZ)", "acol1": "col-lg-3",
+            "value2": "String2 (ex: AAA)", "acol2": "col-lg-3",
+            "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyStringMinor",
-            "controlValue": "String2 (ex : ZZZ)",
-            "controlProp": "String1 (ex: AAA)",
+            "value1": "String1 (ex: AAA)", "acol1": "col-lg-4",
+            "value2": "String2 (ex : ZZZ)", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyStringContains",
-            "controlValue": "String2 (ex : ot)",
-            "controlProp": "String1 (ex : toto)",
-            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "value1": "String1 (ex : toto)", "acol1": "col-lg-4",
+            "value2": "String2 (ex : ot)", "acol2": "col-lg-2",
+            "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyStringNotContains",
-            "controlValue": "String2 (ex : zot)",
-            "controlProp": "String1 (ex : toto)",
-            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "value1": "String1 (ex : toto)", "acol1": "col-lg-4",
+            "value2": "String2 (ex : zot)", "acol2": "col-lg-2",
+            "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyNumericEquals",
-            "controlValue": "Integer2",
-            "controlProp": "Integer1",
+            "value1": "Integer1", "acol1": "col-lg-3",
+            "value2": "Integer2", "acol2": "col-lg-3",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericDifferent",
-            "controlValue": "Integer2",
-            "controlProp": "Integer1",
+            "value1": "Integer1", "acol1": "col-lg-4",
+            "value2": "Integer2", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericGreater",
-            "controlValue": "Integer2 (ex : 10)",
-            "controlProp": "Integer1 (ex : 20)",
+            "value1": "Integer1 (ex : 20)", "acol1": "col-lg-4",
+            "value2": "Integer2 (ex : 10)", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericGreaterOrEqual",
-            "controlValue": "Integer2 (ex : 10)",
-            "controlProp": "Integer1 (ex : 20)",
+            "value1": "Integer1 (ex : 20)", "acol1": "col-lg-4",
+            "value2": "Integer2 (ex : 10)", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericMinor",
-            "controlValue": "Integer2 (ex : 20)",
-            "controlProp": "Integer1 (ex : 10)",
+            "value1": "Integer1 (ex : 10)", "acol1": "col-lg-4",
+            "value2": "Integer2 (ex : 20)", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericMinorOrEqual",
-            "controlValue": "Integer2 (ex : 20)",
-            "controlProp": "Integer1 (ex : 10)",
+            "value1": "Integer1 (ex : 10)", "acol1": "col-lg-4",
+            "value2": "Integer2 (ex : 20)", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementPresent",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementNotPresent",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementVisible",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementNotVisible",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementEquals",
-            "controlValue": "Expected element",
-            "controlProp": "XPath of the element",
-            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "value1": "XPath of the element", "acol1": "col-lg-3",
+            "value2": "Expected element", "acol2": "col-lg-3",
+            "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyElementDifferent",
-            "controlValue": "Not Expected element",
-            "controlProp": "XPath of the element",
-            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "value1": "XPath of the element", "acol1": "col-lg-3",
+            "value2": "Not Expected element", "acol2": "col-lg-3",
+            "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyElementInElement",
-            "controlValue": "Sub Element",
-            "controlProp": "Master Element",
+            "value1": "Master Element", "acol1": "col-lg-4",
+            "value2": "Sub Element", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementClickable",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementNotClickable",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
-        {"type": "verifyElementTextEqual", "controlValue": "Texte", "controlProp": "Chemin vers l'Element", "value3": "[opt] Sensible à la Casse (Y/N)", "fatal": ""},
-        {"type": "verifyElementTextDifferent", "controlValue": "Texte", "controlProp": "Chemin vers l'Element", "value3": "[opt] Sensible à la Casse (Y/N)", "fatal": ""},
-        {"type": "VerifyElementTextMatchRegex", "controlValue": "Regex", "controlProp": "Chemin vers l'Element", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericEqual", "controlValue": "Valeur numerique", "controlProp": "Chemin vers l'Element", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericDifferent", "controlValue": "Valeur numerique", "controlProp": "Chemin vers l'Element", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericGreater", "controlValue": "Valeur numerique", "controlProp": "Chemin vers l'Element", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericGreaterOrEqual", "controlValue": "Valeur numerique", "controlProp": "Chemin vers l'Element", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericMinor", "controlValue": "Valeur numerique", "controlProp": "Chemin vers l'Element", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericMinorOrEqual", "controlValue": "Valeur numerique", "controlProp": "Chemin vers l'Element", "value3": null, "fatal": ""},
-        {"type": "verifyTextInPage", "controlValue": null, "controlProp": "Regex", "value3": null, "fatal": ""},
-        {"type": "verifyTextNotInPage", "controlValue": null, "controlProp": "Regex", "value3": null, "fatal": ""},
-        {"type": "verifyTitle", "controlValue": null, "controlProp": "Title", "value3": "[opt] Sensible à la Casse (Y/N)", "fatal": ""},
-        {"type": "verifyUrl", "controlValue": null, "controlProp": "URL", "value3": null, "fatal": ""},
-        {"type": "verifyTextInDialog", "controlValue": null, "controlProp": "Text", "value3": null, "fatal": ""},
-        {"type": "verifyXmlTreeStructure", "controlValue": "Tree", "controlProp": "XPath", "value3": null, "fatal": ""},
-        {"type": "takeScreenshot", "controlValue": null, "controlProp": "[opt] Cadrer en pixel (gauche,droite,haut,bas)", "value3": null, "fatal": null},
-        {"type": "getPageSource", "controlValue": null, "controlProp": null, "value3": null, "fatal": null}
+        {"type": "verifyElementTextEqual", "value2": "Texte", "acol2": "col-lg-3", "value1": "Chemin vers l'Element", "acol1": "col-lg-3", "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2", "fatal": ""},
+        {"type": "verifyElementTextDifferent", "value2": "Texte", "acol2": "col-lg-3", "value1": "Chemin vers l'Element", "acol1": "col-lg-3", "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2", "fatal": ""},
+        {"type": "verifyElementTextMatchRegex", "value2": "Regex", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericEqual", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericDifferent", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericGreater", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericGreaterOrEqual", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericMinor", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericMinorOrEqual", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
+        {"type": "verifyTextInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8", "value3": null, "fatal": ""},
+        {"type": "verifyTextNotInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8", "value3": null, "fatal": ""},
+        {"type": "verifyTitle", "value2": null, "value1": "Title", "acol1": "col-lg-6", "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2", "fatal": ""},
+        {"type": "verifyUrl", "value2": null, "value1": "URL", "acol1": "col-lg-8", "value3": null, "fatal": ""},
+        {"type": "verifyTextInDialog", "value2": null, "value1": "Text", "acol1": "col-lg-8", "value3": null, "fatal": ""},
+        {"type": "verifyXmlTreeStructure", "value2": "Tree", "acol2": "col-lg-4", "value1": "XPath", "acol1": "col-lg-4", "value3": null, "fatal": ""},
+        {"type": "takeScreenshot", "value2": null, "value1": "[opt] Cadrer en pixel (gauche,droite,haut,bas)", "acol1": "col-lg-8", "value3": null, "fatal": null},
+        {"type": "getPageSource", "value2": null, "value1": null, "value3": null, "fatal": null}
     ], "en": [
         {
             "type": "Unknown",
-            "controlValue": null,
-            "controlProp": null,
+            "value1": null,
+            "value2": null,
             "value3": null,
             "fatal": null
         },
         {
             "type": "verifyStringEqual",
-            "controlValue": "String2",
-            "controlProp": "String1",
-            "value3": "[opt] case sensitive (Y/N)",
+            "value1": "String1", "acol1": "col-lg-3",
+            "value2": "String2", "acol2": "col-lg-3",
+            "value3": "[opt] case sensitive (Y/N)", "acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyStringDifferent",
-            "controlValue": "String2",
-            "controlProp": "String1",
-            "value3": "[opt] case sensitive (Y/N)",
+            "value1": "String1", "acol1": "col-lg-3",
+            "value2": "String2", "acol2": "col-lg-3",
+            "value3": "[opt] case sensitive (Y/N)", "acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyStringGreater",
-            "controlValue": "String2 (ex : AAA)",
-            "controlProp": "String1 (ex: ZZZ)",
+            "value1": "String1 (ex: ZZZ)", "acol1": "col-lg-4",
+            "value2": "String2 (ex : AAA)", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyStringMinor",
-            "controlValue": "String2 (ex : ZZZ)",
-            "controlProp": "String1 (ex: AAA)",
+            "value1": "String1 (ex: AAA)", "acol1": "col-lg-4",
+            "value2": "String2 (ex : ZZZ)", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyStringContains",
-            "controlValue": "String2 (ex : ot)",
-            "controlProp": "String1 (ex : toto)",
-            "value3": "[opt] case sensitive (Y/N)",
+            "value1": "String1 (ex : toto)", "acol1": "col-lg-4",
+            "value2": "String2 (ex : ot)", "acol2": "col-lg-2",
+            "value3": "[opt] case sensitive (Y/N)", "acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyStringNotContains",
-            "controlValue": "String2 (ex : zot)",
-            "controlProp": "String1 (ex : toto)",
-            "value3": "[opt] case sensitive (Y/N)",
+            "value1": "String1 (ex : toto)", "acol1": "col-lg-4",
+            "value2": "String2 (ex : zot)", "acol2": "col-lg-2",
+            "value3": "[opt] case sensitive (Y/N)", "acol3": "col-lg-2",
             "fatal": ""
         },
         {
             "type": "verifyNumericEquals",
-            "controlValue": "Integer2",
-            "controlProp": "Integer1",
+            "value1": "Integer1", "acol1": "col-lg-4",
+            "value2": "Integer2", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericDifferent",
-            "controlValue": "Integer2",
-            "controlProp": "Integer1",
+            "value1": "Integer1", "acol1": "col-lg-4",
+            "value2": "Integer2", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericGreater",
-            "controlValue": "Integer2 (ex : 10)",
-            "controlProp": "Integer1 (ex : 20)",
+            "value1": "Integer1 (ex : 20)", "acol1": "col-lg-4",
+            "value2": "Integer2 (ex : 10)", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericGreaterOrEqual",
-            "controlValue": "Integer2 (ex : 10)",
-            "controlProp": "Integer1 (ex : 20)",
+            "value1": "Integer1 (ex : 20)", "acol1": "col-lg-4",
+            "value2": "Integer2 (ex : 10)", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericMinor",
-            "controlValue": "Integer2 (ex : 20)",
-            "controlProp": "Integer1 (ex : 10)",
+            "value1": "Integer1 (ex : 10)", "acol1": "col-lg-4",
+            "value2": "Integer2 (ex : 20)", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyNumericMinorOrEqual",
-            "controlValue": "Integer2 (ex : 20)",
-            "controlProp": "Integer1 (ex : 10)",
+            "value1": "Integer1 (ex : 10)", "acol1": "col-lg-4",
+            "value2": "Integer2 (ex : 20)", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementPresent",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementNotPresent",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementVisible",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementNotVisible",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementEquals",
-            "controlValue": "Expected element",
-            "controlProp": "XPath of the element",
+            "value1": "XPath of the element", "acol1": "col-lg-4",
+            "value2": "Expected element", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementDifferent",
-            "controlValue": "Not Expected element",
-            "controlProp": "XPath of the element",
+            "value1": "XPath of the element", "acol1": "col-lg-4",
+            "value2": "Not Expected element", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementInElement",
-            "controlValue": "Sub Element",
-            "controlProp": "Master Element",
+            "value1": "Master Element", "acol1": "col-lg-4",
+            "value2": "Sub Element", "acol2": "col-lg-4",
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementClickable",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
         {
             "type": "verifyElementNotClickable",
-            "controlValue": null,
-            "controlProp": "Element (ex : data-cerberus=fieldToto)",
+            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
+            "value2": null,
             "value3": null,
             "fatal": ""
         },
-        {"type": "verifyElementTextEqual", "controlValue": "Text", "controlProp": "Element Path", "value3": "[opt] Case Sensitive (Y/N)", "fatal": ""},
-        {"type": "verifyElementTextDifferent", "controlValue": "Text", "controlProp": "Element Path", "value3": "[opt] Case Sensitive (Y/N)", "fatal": ""},
-        {"type": "VerifyElementTextMatchRegex", "controlValue": "Regex", "controlProp": "Element Path", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericEqual", "controlValue": "Numeric value", "controlProp": "Element Path", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericDifferent", "controlValue": "Numeric value", "controlProp": "Element Path", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericGreater", "controlValue": "Numeric value", "controlProp": "Element Path", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericGreaterOrEqual", "controlValue": "Numeric value", "controlProp": "Element Path", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericMinor", "controlValue": "Numeric value", "controlProp": "Element Path", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericMinorOrEqual", "controlValue": "Numeric value", "controlProp": "Element Path", "value3": null, "fatal": ""},
-        {"type": "verifyTextInPage", "controlValue": null, "controlProp": "Regex", "value3": null, "fatal": ""},
-        {"type": "verifyTextNotInPage", "controlValue": null, "controlProp": "Regex", "value3": null, "fatal": ""},
-        {"type": "verifyTitle", "controlValue": null, "controlProp": "Title", "value3": "[opt] Case Sensitive (Y/N)", "fatal": ""},
-        {"type": "verifyUrl", "controlValue": null, "controlProp": "URL", "value3": null, "fatal": ""},
-        {"type": "verifyTextInDialog", "controlValue": null, "controlProp": "Text", "value3": null, "fatal": ""},
-        {"type": "verifyXmlTreeStructure", "controlValue": "Tree", "controlProp": "XPath", "value3": null, "fatal": ""},
-        {"type": "takeScreenshot", "controlValue": null, "controlProp": "[opt] Crop values in pixels (left,right,top,bottom)", "value3": null, "fatal": null},
-        {"type": "getPageSource", "controlValue": null, "controlProp": null, "value3": null, "fatal": null}
+        {"type": "verifyElementTextEqual", "value2": "Text", "acol2": "col-lg-3", "value1": "Element Path", "acol1": "col-lg-3", "value3": "[opt] Case Sensitive (Y/N)", "acol3": "col-lg-2", "fatal": ""},
+        {"type": "verifyElementTextDifferent", "value2": "Text", "acol2": "col-lg-3", "value1": "Element Path", "acol1": "col-lg-3", "value3": "[opt] Case Sensitive (Y/N)", "acol3": "col-lg-2", "fatal": ""},
+        {"type": "verifyElementTextMatchRegex", "value2": "Regex", "acol2": "col-lg-3", "value1": "Element Path", "acol1": "col-lg-5", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericEqual", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericDifferent", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericGreater", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericGreaterOrEqual", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericMinor", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
+        {"type": "verifyElementNumericMinorOrEqual", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
+        {"type": "verifyTextInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8", "value3": null, "fatal": ""},
+        {"type": "verifyTextNotInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8", "value3": null, "fatal": ""},
+        {"type": "verifyTitle", "value2": null, "value1": "Title", "acol1": "col-lg-6", "value3": "[opt] Case Sensitive (Y/N)", "acol3": "col-lg-2", "fatal": ""},
+        {"type": "verifyUrl", "value2": null, "acol2": null, "value1": "URL", "acol1": "col-lg-8", "value3": null, "acol2": null, "fatal": ""},
+        {"type": "verifyTextInDialog", "value2": null, "value1": "Text", "acol1": "col-lg-8", "value3": null, "fatal": ""},
+        {"type": "verifyXmlTreeStructure", "value2": "Tree", "acol2": "col-lg-4", "value1": "XPath", "acol1": "col-lg-4", "value3": null, "fatal": ""},
+        {"type": "takeScreenshot", "value2": null, "value1": "[opt] Crop values in pixels (left,right,top,bottom)", "acol1": "col-lg-8", "value3": null, "fatal": null},
+        {"type": "getPageSource", "value2": null, "value1": null, "value3": null, "fatal": null}
     ]
 };
 
@@ -1043,9 +1077,11 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
         });
 
         var doc = new Doc();
-        var stepList = [];
+        var steps = [];
 
         // Load invariant list into local storage.
+        getSelectInvariant("SRVTYPE", false, true);
+        getSelectInvariant("SRVMETHOD", false, true);
         getSelectInvariant("ACTION", false, true);
         getSelectInvariant("CONTROL", false, true);
         getSelectInvariant("CTRLFATAL", false, true);
@@ -1054,8 +1090,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
         getSelectInvariant("PROPERTYNATURE", false, true);
         getSelectInvariant("ACTIONFORCEEXESTATUS", false, true);
         getSelectInvariant("STEPLOOP", false, true);
-        getSelectInvariant("STEPCONDITIONOPER", false, true);
-        loadLibraryStep();
+        getSelectInvariant("STEPCONDITIONOPERATOR", false, true);
         bindToggleCollapse();
         var test = GetURLParameter("test");
         var testcase = GetURLParameter("testcase");
@@ -1072,10 +1107,10 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
         fillTestAndTestCaseSelect(".testTestCase #test", "#testCaseSelect", test, testcase, false)
 
         $("#testCaseSelect").bind("change", function (event) {
-            window.location.href = "./TestCaseScript.jsp?test=" + test + "&testcase=" + $(this).val();
+            window.location.href = "./TestCaseScript.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI($(this).val());
         });
         $(".testTestCase #test").bind("change", function (event) {
-            window.location.href = "./TestCaseScript.jsp?test=" + $(this).val();
+            window.location.href = "./TestCaseScript.jsp?test=" + encodeURI($(this).val());
         });
 
         if (test !== null && testcase !== null) {
@@ -1091,7 +1126,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                         if ($('#editTestCaseModal').data("Saved")) {
                             // Modal confirm that change was OK.
                             $('#editTestCaseModal').data("Saved", undefined);
-                            window.location = "./TestCaseScript.jsp?test=" + t.val() + "&testcase=" + tc.val();
+                            window.location = "./TestCaseScript.jsp?test=" + encodeURI(t.val()) + "&testcase=" + encodeURI(tc.val());
                         }
 
                     }
@@ -1101,11 +1136,11 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
             $("#TestCaseButton").show();
             $("#tcBody").show();
 
-            var json;
-            var testcaseinfo;
+            var stepsObject;
+            var testcaseObject;
             $.ajax({
                 url: "ReadTestCase",
-                data: {test: test, testCase: testcase, withStep: true, system: getSys()},
+                data: {test: test, testCase: testcase, withSteps: true, system: getSys()},
                 dataType: "json",
                 success: function (data) {
 
@@ -1116,29 +1151,29 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                     }
 
                     canUpdate = data.hasPermissionsUpdate;
+                    loadLibraryStep(undefined, data.contentTable[0].system);
 
-                    testcaseinfo = data.info;
-                    loadTestCaseInfo(data.info);
-                    json = data.stepList;
-                    sortData(json);
-                    data.inheritedProp.sort(function (a, b) {
+                    testcaseObject = data.contentTable[0];
+                    loadTestCaseInfo(testcaseObject);
+                    stepsObject = testcaseObject.steps;
+                    sortData(stepsObject);
+                    testcaseObject.properties.inheritedProperties.sort(function (a, b) {
                         return compareStrings(a.property, b.property);
-                    })
-                    createStepList(json, stepList, step, data.hasPermissionsUpdate, data.hasPermissionsStepLibrary);
-                    drawInheritedProperty(data.inheritedProp);
+                    });
+                    createSteps(stepsObject, steps, step, data.hasPermissionsUpdate, data.hasPermissionsStepLibrary);
+                    drawInheritedProperty(data.contentTable[0].properties.inheritedProperties);
 
                     var configs = {
                         'system': true,
-                        'object': data.info.application,
+                        'object': testcaseObject.application,
                         'property': data,
                         'identifier': true
-                    }
-                    var context = data
+                    };
+                    var context = data;
                     initTags(configs, context).then(function (tags) {
                         autocompleteAllFields(configs, context, tags);
                     });
-
-                    loadPropertiesAndDraw(test, testcase, data.info, property, data.hasPermissionsUpdate);
+                    loadPropertiesAndDraw(test, testcase, testcaseObject, property, data.hasPermissionsUpdate);
 
                     // Manage authorities when data is fully loadable.
                     $("#deleteTestCase").attr("disabled", !data.hasPermissionsDelete);
@@ -1154,8 +1189,8 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
 
                     // Building full list of country from testcase.
                     var myCountry = [];
-                    $.each(testcaseinfo.countryList, function (index) {
-                        myCountry.push(testcaseinfo.countryList[index].country);
+                    $.each(testcaseObject.countries, function (index) {
+                        myCountry.push(testcaseObject.countries[index].value);
                     });
 
                     // Button Add Property insert a new Property
@@ -1192,7 +1227,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                                 toDelete: false
                             };
 
-                            var prop = drawProperty(newProperty, testcaseinfo, true, document.getElementsByClassName("property").length);
+                            var prop = drawProperty(newProperty, testcaseObject, true, document.getElementsByClassName("property").length);
                             setPlaceholderProperty(prop[0], prop[1]);
 
                             $(prop[0]).find("#propName").focus();
@@ -1215,7 +1250,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
 
 //            $("#propertiesModal [name='buttonSave']").click(editPropertiesModalSaveHandler);
 
-            $("#addStep").click({stepList: stepList}, function (event) {
+            $("#addStep").click({steps: steps}, function (event) {
                 // Store the current saveScript button status and disable it
                 var saveScriptOldStatus = $("#saveScript").attr("disabled");
                 $("#saveScript").attr("disabled", true);
@@ -1242,7 +1277,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
 
             $("#deleteStep").click(function () {
 
-                var step = $("#stepList .active").data("item");
+                var step = $("#steps .active").data("item");
 
                 if (step.isStepInUseByOtherTestCase) {
                     showStepUsesLibraryInConfirmationModal(step);
@@ -1275,9 +1310,9 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
             });
 
             // CONTEXT GOTO & RUN MENU
-            $("#seeLogs").parent().attr("href", "./LogEvent.jsp?Test=" + test + "&TestCase=" + testcase);
-            $("#seeTest").parent().attr("href", "./TestCaseList.jsp?test=" + test);
-            $("#runTestCase").parent().attr("href", "./RunTests.jsp?test=" + test + "&testcase=" + testcase);
+            $("#seeLogs").parent().attr("href", "./LogEvent.jsp?Test=" + encodeURI(test) + "&TestCase=" + encodeURI(testcase));
+            $("#seeTest").parent().attr("href", "./TestCaseList.jsp?test=" + encodeURI(test));
+            $("#runTestCase").parent().attr("href", "./RunTests.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI(testcase));
 
             $.ajax({
                 url: "ReadTestCaseExecution",
@@ -1285,10 +1320,10 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                 dataType: "json",
                 success: function (data) {
                     if (!jQuery.isEmptyObject(data.contentTable)) {
-                        $("#seeLastExecUniq").parent().attr("href", "./TestCaseExecution.jsp?executionId=" + data.contentTable.id);
-                        $("#seeLastExec").parent().attr("href", "./TestCaseExecutionList.jsp?test=" + test + "&testcase=" + testcase);
+                        $("#seeLastExecUniq").parent().attr("href", "./TestCaseExecution.jsp?executionId=" + encodeURI(data.contentTable.id));
+                        $("#seeLastExec").parent().attr("href", "./TestCaseExecutionList.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI(testcase));
                         $("#rerunTestCase").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
-                        $("#rerunTestCase").parent().attr("href", "./RunTests.jsp?test=" + test + "&testcase=" + testcase + "&country=" + data.contentTable.country + "&environment=" + data.contentTable.env);
+                        $("#rerunTestCase").parent().attr("href", "./RunTests.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI(testcase) + "&country=" + encodeURI(data.contentTable.country) + "&environment=" + encodeURI(data.contentTable.env));
                         $("#rerunFromQueue").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
                         if (data.contentTable.queueId > 0) {
                             $("#rerunFromQueue").click(function () {
@@ -1348,7 +1383,8 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
 
 function displayPageLabel(doc) {
     $("h1.page-title-line").html(doc.getDocLabel("page_testcasescript", "testcasescript_title"));
-    $("#nav-execution #list-wrapper #stepListWrapper h3").html(doc.getDocLabel("page_testcasescript", "steps_title"));
+    $("#pageTitle").html(doc.getDocLabel("page_testcasescript", "testcasescript_title"));
+    $("#nav-execution #list-wrapper #stepsWrapper h3").html(doc.getDocLabel("page_testcasescript", "steps_title"));
     $("#nav-execution #list-wrapper #tcButton h3").html(doc.getDocLabel("page_global", "columnAction"));
     $("#nav-execution #list-wrapper #deleteButton h3").html(doc.getDocLabel("page_global", "columnAction") + " " + doc.getDocLabel("page_header", "menuTestCase"));
 
@@ -1370,7 +1406,7 @@ function displayPageLabel(doc) {
 
     $("#addStep").html(doc.getDocLabel("page_testcasescript", "add_step"));
     $("#addActionBottomBtn button").html(doc.getDocLabel("page_testcasescript", "add_action"));
-    $("#stepConditionOper").prev().html(doc.getDocLabel("page_testcasescript", "step_condition_operation"));
+    $("#stepConditionOperator").prev().html(doc.getDocLabel("page_testcasescript", "step_condition_operation"));
     $("#stepConditionVal1").prev().html(doc.getDocLabel("page_testcasescript", "step_condition_value1"));
 
     // TestCase
@@ -1385,28 +1421,27 @@ function displayPageLabel(doc) {
     $("[name='applicationField']").html(doc.getDocOnline("application", "Application"));
     $("[name='statusField']").html(doc.getDocOnline("testcase", "Status"));
     $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
-    $("[name='actQAField']").html(doc.getDocOnline("testcase", "activeQA"));
-    $("[name='actUATField']").html(doc.getDocOnline("testcase", "activeUAT"));
-    $("[name='actUATField']").html(doc.getDocOnline("testcase", "activeUAT"));
-    $("[name='actProdField']").html(doc.getDocOnline("testcase", "activePROD"));
-    $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
-    $("[name='behaviorOrValueExpectedField']").html(doc.getDocOnline("testcase", "BehaviorOrValueExpected"));
-    $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
-    $("[name='howToField']").html(doc.getDocOnline("testcase", "HowTo"));
+    $("[name='isActiveQAField']").html(doc.getDocOnline("testcase", "IsActiveQA"));
+    $("[name='isActiveUATField']").html(doc.getDocOnline("testcase", "IsActiveUAT"));
+    $("[name='isActiveUATField']").html(doc.getDocOnline("testcase", "IsActiveUAT"));
+    $("[name='isActivePRODField']").html(doc.getDocOnline("testcase", "IsActivePROD"));
+    $("[name='testCaseDescriptionField']").html(doc.getDocOnline("testcase", "Description"));
+    $("[name='detailedDescriptionField']").html(doc.getDocOnline("testcase", "detailedDescription"));
+    $("[name='testCaseDescriptionField']").html(doc.getDocOnline("testcase", "Description"));
     $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
     $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
     $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
-    $("[name='groupField']").html(doc.getDocOnline("invariant", "GROUP"));
+    $("[name='groupField']").html(doc.getDocOnline("invariant", "Type"));
     $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
     $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
-    $("[name='activeField']").html(doc.getDocOnline("testcase", "TcActive"));
-    $("[name='fromSprintField']").html(doc.getDocOnline("testcase", "FromBuild"));
-    $("[name='fromRevField']").html(doc.getDocOnline("testcase", "FromRev"));
-    $("[name='toSprintField']").html(doc.getDocOnline("testcase", "ToBuild"));
-    $("[name='toRevField']").html(doc.getDocOnline("testcase", "ToRev"));
-    $("[name='targetSprintField']").html(doc.getDocOnline("testcase", "TargetBuild"));
-    $("[name='targetRevField']").html(doc.getDocOnline("testcase", "TargetRev"));
+    $("[name='isActiveField']").html(doc.getDocOnline("testcase", "IsActive"));
+    $("[name='fromMajorField']").html(doc.getDocOnline("testcase", "FromMajor"));
+    $("[name='fromMinorField']").html(doc.getDocOnline("testcase", "FromMinor"));
+    $("[name='toMajorField']").html(doc.getDocOnline("testcase", "ToMajor"));
+    $("[name='toMinorField']").html(doc.getDocOnline("testcase", "ToMinor"));
+    $("[name='targetMajorField']").html(doc.getDocOnline("testcase", "TargetMajor"));
+    $("[name='targetMinorField']").html(doc.getDocOnline("testcase", "TargetMinor"));
     $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
     $("#filters").html(doc.getDocOnline("page_testcaselist", "filters"));
     $("#testCaseListLabel").html(doc.getDocOnline("page_testcaselist", "testcaselist"));
@@ -1421,7 +1456,7 @@ function displayPageLabel(doc) {
     $("[name='testCaseInfoField']").html(doc.getDocLabel("page_testcaselist", "testCaseInfo"));
     $("[name='testCaseParameterField']").html(doc.getDocLabel("page_testcaselist", "testCaseParameter"));
     $("[name='activationCriteriaField']").html(doc.getDocLabel("page_testcaselist", "activationCriteria"));
-    // Tracability
+    // Traceability
     $("[name='lbl_datecreated']").html(doc.getDocOnline("transversal", "DateCreated"));
     $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
@@ -1441,7 +1476,7 @@ function triggerTestCaseExecutionQueueandSeeFromTC(queueId) {
         success: function (data) {
             if (getAlertType(data.messageType) === "success") {
                 showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
-                var url = "./TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id;
+                var url = "./TestCaseExecution.jsp?executionQueueId=" + encodeURI(data.testCaseExecutionQueueList[0].id);
                 console.info("redir : " + url);
                 window.location.replace(url);
             } else {
@@ -1454,7 +1489,7 @@ function triggerTestCaseExecutionQueueandSeeFromTC(queueId) {
 
 function addAction(action) {
     setModif(true);
-    var step = $("#stepList li.active").data("item");
+    var step = $("#steps li.active").data("item");
     var act = new Action(null, step, true);
     step.setAction(act, action);
     setAllSort();
@@ -1469,17 +1504,17 @@ function addActionAndFocus(action) {
 }
 
 function getTestCase(test, testcase, step) {
-    window.location.href = "./TestCaseScript.jsp?test=" + test + "&testcase=" + testcase + "&step=" + step;
+    window.location.href = "./TestCaseScript.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI(testcase) + "&step=" + encodeURI(step);
 }
 
 function setAllSort() {
-    var stepList = $("#stepList li");
+    var steps = $("#steps li");
     var stepArr = [];
 
     // Construct the step/action/control list:
     // Iterate over steps
-    for (var i = 0; i < stepList.length; i++) {
-        var step = $(stepList[i]).data("item");
+    for (var i = 0; i < steps.length; i++) {
+        var step = $(steps[i]).data("item");
         var actionArr = [];
 
         if (!step.toDelete) {
@@ -1487,11 +1522,10 @@ function setAllSort() {
             step.setSort(i + 1);
 
             // Get step's actions
-            var actionList = step.stepActionContainer.children(".action-group").children(".action");
-
+            var actions = step.stepActionContainer.children(".action-group").children(".action");
             // Iterate over actions
-            for (var j = 0; j < actionList.length; j++) {
-                var action = $(actionList[j]).data("item");
+            for (var j = 0; j < actions.length; j++) {
+                var action = $(actions[j]).data("item");
                 var controlArr = [];
 
                 if (!action.toDelete) {
@@ -1502,11 +1536,11 @@ function setAllSort() {
                     action.setStep(i + 1);
 
                     // Get action's controls
-                    var controlList = action.html.children(".control");
+                    var controls = action.html.children(".control");
 
                     // Iterate over controls
-                    for (var k = 0; k < controlList.length; k++) {
-                        var control = $(controlList[k]).data("item");
+                    for (var k = 0; k < controls.length; k++) {
+                        var control = $(controls[k]).data("item");
 
                         if (!control.toDelete) {
                             // Set the control's sort
@@ -1590,7 +1624,7 @@ function saveScript(property) {
             }),
             success: function () {
 
-                var stepHtml = $("#stepList li.active");
+                var stepHtml = $("#steps li.active");
                 var stepData = stepHtml.data("item");
 
                 var tabActive = $("#tabsScriptEdit li.active a").attr("name");
@@ -1608,9 +1642,9 @@ function saveScript(property) {
 
                 var url_sort = "";
                 if (!(isEmpty(stepData))) {
-                    url_sort = "&step=" + stepData.sort;
+                    url_sort = "&step=" + encodeURI(stepData.sort);
                 }
-                var new_uri = parser.pathname + "?test=" + GetURLParameter("test") + "&testcase=" + GetURLParameter("testcase") + url_sort + tutorialParameters + "&tabactive=" + tabActive;
+                var new_uri = parser.pathname + "?test=" + encodeURI(GetURLParameter("test")) + "&testcase=" + encodeURI(GetURLParameter("testcase")) + url_sort + tutorialParameters + "&tabactive=" + tabActive;
 
                 setModif(false);
 
@@ -1771,7 +1805,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     var row5 = $("<div class='row'></div>");
     var propertyName = $("<div class='col-sm-4 form-group'></div>").append(propertyInput);
     var description = $("<div class='col-sm-8 form-group'></div>").append(descriptionInput);
-    var country = $("<div class='col-sm-10'></div>").append(getTestCaseCountry(testcaseinfo.countryList, property.country, !canUpdate));
+    var country = $("<div class='col-sm-10'></div>").append(getTestCaseCountry(testcaseinfo.countries, property.country, !canUpdate));
     var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "type_field"))).append(selectType.val(property.type));
     var db = $("<div class='col-sm-2 form-group' name='fieldDatabase'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "db_field"))).append(selectDB.val(property.database));
     var value = $("<div class='col-sm-8 form-group' name='fieldValue1'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(valueInput);
@@ -1982,7 +2016,7 @@ function drawInheritedProperty(propList) {
         var testcase = property.fromTestCase;
 
         var moreBtn = $("<button class='btn btn-default add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
-        var editBtn = $("<a href='./TestCaseScript.jsp?test=" + test + "&testcase=" + testcase + "&property=" + property.property + "' class='btn btn-primary add-btn'></a>").append($("<span></span>").addClass("glyphicon glyphicon-pencil"));
+        var editBtn = $("<a href='./TestCaseScript.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI(testcase) + "&property=" + encodeURI(property.property) + "' class='btn btn-primary add-btn'></a>").append($("<span></span>").addClass("glyphicon glyphicon-pencil"));
 
         var propertyInput = $("<input id='propName' name='propName' style='width: 100%; font-size: 16px; font-weight: 600;' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.property);
         var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertydescription") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.description);
@@ -2203,15 +2237,15 @@ function sortSecondaryProperties(identifier) {
     container.append(list);
 }
 
-function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
+function getTestCaseCountry(countries, countryToCheck, isDisabled) {
     var html = [];
     var cpt = 0;
     var div = $("<div></div>").addClass("checkbox");
-
-    $.each(countryList, function (index) {
+    
+    $.each(countries, function (index) {
         var country;
         if (typeof index === "number") {
-            country = countryList[index].country;
+            country = countries[index].value;
         } else if (typeof index === "string") {
             country = index;
         }
@@ -2248,18 +2282,18 @@ function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
 }
 
 function loadTestCaseInfo(info) {
-    $(".testTestCase #description").text(info.shortDescription);
+    $(".testTestCase #description").text(info.description);
 }
 
 function changeLib() {
     setModif(true);
-    var stepHtml = $("#stepList li.active");
+    var stepHtml = $("#steps li.active");
     var stepData = stepHtml.data("item");
-    if (stepData.inLibrary === "Y") {
-        stepData.inLibrary = "N";
+    if (stepData.isLibraryStep === "Y") {
+        stepData.isLibraryStep = "N";
         $(this).removeClass("btn-dark");
     } else {
-        stepData.inLibrary = "Y";
+        stepData.isLibraryStep = "Y";
         $(this).addClass("btn-dark");
     }
 }
@@ -2314,32 +2348,32 @@ function showImportStepDetail(element) {
 
 function initStep() {
     return {
-        "inLibrary": "N",
+        "isLibraryStep": "N",
         "objType": "step",
-        "useStepTest": "",
-        "useStepTestCase": "",
-        "useStep": "N",
+        "libraryStepTest": "",
+        "libraryStepTestCase": "",
+        "isUsedStep": "N",
         "description": "",
-        "useStepStep": -1,
-        "actionList": [],
+        "libraryStepStepId": -1,
+        "actions": [],
         "loop": "onceIfConditionTrue",
-        "conditionOper": "always",
+        "conditionOperator": "always",
         "conditionVal1": "",
         "conditionVal2": "",
         "conditionVal3": "",
-        "forceExe": "N"
+        "isExecutionForced": "N"
     };
 }
 
 
 function addStep(event) {
-    var stepList = event.data.stepList;
+    var steps = event.data.steps;
     $("#addStepModal").modal('show');
 
     // Setting the focus on the Description of the step.
     $('#addStepModal').on('shown.bs.modal', function () {
         $('#description').focus();
-    })
+    });
 
     $("#addStepConfirm").unbind("click").click(function (event) {
         setModif(true);
@@ -2348,14 +2382,11 @@ function addStep(event) {
         if ($("[name='importInfo']").length === 0) { // added a new step
             var step = initStep();
             step.description = $("#addStepModal #description").val();
-
-            var stepObj = new Step(step, stepList, true);
-
+            var stepObj = new Step(step, steps, true);
             stepObj.draw();
-            stepList.push(stepObj);
+            steps.push(stepObj);
             stepObj.html.trigger("click");
         } else {
-
             // added a library step
             $("[name='importInfo']").each(function (idx, importInfo) {
                 var step = initStep();
@@ -2370,56 +2401,60 @@ function addStep(event) {
                         data: {test: useStep.test, testcase: useStep.testCase, step: useStep.step},
                         async: false,
                         success: function (data) {
-                            step.actionList = data.tcsActionList;
+                            step.actions = data.tcsActions;
+                            for (var index = 0; index < data.tcsActionControls.length; index++) {
+                                var control = data.tcsActionControls[index];
 
-                            for (var index = 0; index < data.tcsActionControlList.length; index++) {
-                                var control = data.tcsActionControlList[index];
-
-                                step.actionList[control.sequence - 1].controlList.push(control);
+                                for (var i = 0; i < step.actions.length; i++) {
+                                    if (step.actions[i].actionId === control.actionId) {
+                                        step.actions[i].controls.push(control);
+                                        break;
+                                    }
+                                }
                             }
                             sortStep(step);
                         }
                     });
                     if ($("#" + generateImportInfoId(useStep)).find("[name='useStep']").prop("checked")) {
-                        step.useStep = "Y";
-                        step.useStepTest = useStep.test;
-                        step.useStepTestCase = useStep.testCase;
-                        step.useStepStep = useStep.step;
+                        step.isUsedStep = "Y";
+                        step.libraryStepTest = useStep.test;
+                        step.libraryStepTestCase = useStep.testCase;
+                        step.libraryStepStepId = useStep.step;
                         step.useStepStepSort = useStep.sort;
                     }
                 }
-                var stepObj = new Step(step, stepList, true);
+                var stepObj = new Step(step, steps, true);
 
                 stepObj.draw();
-                stepList.push(stepObj);
+                steps.push(stepObj);
                 stepObj.html.trigger("click");
             });
         }
     });
 }
 
-function createStepList(data, stepList, stepIndex, canUpdate, hasPermissionsStepLibrary) {
+function createSteps(data, steps, stepIndex, canUpdate, hasPermissionsStepLibrary) {
     for (var i = 0; i < data.length; i++) {
         var step = data[i];
-        var stepObj = new Step(step, stepList, canUpdate, hasPermissionsStepLibrary);
+        var stepObj = new Step(step, steps, canUpdate, hasPermissionsStepLibrary);
 
         stepObj.draw();
-        stepList.push(stepObj);
+        steps.push(stepObj);
     }
 
     if (stepIndex !== undefined) {
         var find = false;
-        for (var i = 0; i < stepList.length; i++) {
-            if (stepList[i].sort == stepIndex) {
+        for (var i = 0; i < steps.length; i++) {
+            if (steps[i].sort == stepIndex) {
                 find = true;
-                $(stepList[i].html[0]).click();
+                $(steps[i].html[0]).click();
             }
         }
-        if ((!find) && (stepList.length > 0)) {
-            $(stepList[0].html[0]).click();
+        if ((!find) && (steps.length > 0)) {
+            $(steps[0].html[0]).click();
         }
-    } else if (stepList.length > 0) {
-        $(stepList[0].html[0]).click();
+    } else if (steps.length > 0) {
+        $(steps[0].html[0]).click();
     } else {
         $("#stepHeader").hide();
         $("#addActionBottomBtn").hide();
@@ -2453,7 +2488,7 @@ var getModif, setModif, initModification;
 
 /** LIBRARY STEP UTILY FUNCTIONS * */
 
-function loadLibraryStep(search) {
+function loadLibraryStep(search, system) {
     var search_lower = "";
     if (search !== undefined) {
         search_lower = search.toLowerCase();
@@ -2462,13 +2497,13 @@ function loadLibraryStep(search) {
     showLoaderInModal("#addStepModal");
     $.ajax({
         url: "GetStepInLibrary",
-        data: {system: getUser().defaultSystem},
+        data: {system: system},
         async: true,
         success: function (data) {
             var test = {};
 
-            for (var index = 0; index < data.testCaseStepList.length; index++) {
-                var step = data.testCaseStepList[index];
+            for (var index = 0; index < data.testCaseSteps.length; index++) {
+                var step = data.testCaseSteps[index];
 
                 if (search === undefined || search === "" || step.description.toLowerCase().indexOf(search_lower) > -1 || step.testCase.toLowerCase().indexOf(search_lower) > -1 || step.test.toLowerCase().indexOf(search_lower) > -1) {
                     if (!test.hasOwnProperty(step.test)) {
@@ -2513,7 +2548,7 @@ function loadLibraryStep(search) {
                 // Clear any previously set timer before setting a fresh one
                 window.clearTimeout($(this).data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
-                    loadLibraryStep(search);
+                    loadLibraryStep(search, system);
                 }, 500));
             });
 
@@ -2554,13 +2589,13 @@ function showStepUsesLibraryInConfirmationModal(object) {
         data: {
             test: object.test,
             testcase: object.testcase,
-            step: object.step,
+            step: object.stepId,
             getUses: true
         },
         success: function (data) {
             var content = "";
             for (var i = 0; i < data.step.length; i++) {
-                content += "<a target='_blank' href='./TestCaseScript.jsp?test=" + data.step[i].test + "&testcase=" + data.step[i].testCase + "&step=" + data.step[i].sort + "'>" + data.step[i].test + " - " + data.step[i].testCase + " - " + data.step[i].sort + " - " + data.step[i].description + "</a><br/>"
+                content += "<a target='_blank' href='./TestCaseScript.jsp?test=" + encodeURI(data.step[i].test) + "&testcase=" + encodeURI(data.step[i].testcase) + "&step=" + encodeURI(data.step[i].sort) + "'>" + data.step[i].test + " - " + data.step[i].testcase + " - " + data.step[i].sort + " - " + data.step[i].description + "</a><br/>"
             }
             $("#confirmationModal #otherStepThatUseIt").empty().append(content);
         }
@@ -2683,15 +2718,15 @@ function handleDragEnd(event) {
 /** DATA AGREGATION * */
 
 function sortStep(step) {
-    for (var j = 0; j < step.actionList.length; j++) {
-        var action = step.actionList[j];
+    for (var j = 0; j < step.actions.length; j++) {
+        var action = step.actions[j];
 
-        action.controlList.sort(function (a, b) {
+        action.controls.sort(function (a, b) {
             return a.sort - b.sort;
         });
     }
 
-    step.actionList.sort(function (a, b) {
+    step.actions.sort(function (a, b) {
         return a.sort - b.sort;
     });
 }
@@ -2717,37 +2752,37 @@ function compareStrings(a, b) {
 
 /** JAVASCRIPT OBJECT * */
 
-function Step(json, stepList, canUpdate, hasPermissionsStepLibrary) {
+function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
     this.stepActionContainer = $("<div></div>").addClass("step-container").css("display", "none");
-    this.test = json.test;
-    this.testcase = json.testCase;
-    this.step = json.step;
     this.sort = json.sort;
+    this.stepId = json.stepId;
     this.description = json.description;
-    this.useStep = json.useStep;
-    this.useStepTest = json.useStepTest;
-    this.useStepTestCase = json.useStepTestCase;
-    this.useStepStep = json.useStepStep;
-    this.useStepStepSort = json.useStepStepSort;
+    this.isExecutionForced= json.isExecutionForced;
     this.loop = json.loop;
-    this.conditionOper = json.conditionOper;
+    this.conditionOperator = json.conditionOperator;
     this.conditionVal1 = json.conditionVal1;
     this.conditionVal2 = json.conditionVal2;
     this.conditionVal3 = json.conditionVal3;
-    this.inLibrary = json.inLibrary;
-    this.forceExe = json.forceExe;
+    this.isUsedStep = json.isUsedStep;
+    this.isLibraryStep = json.isLibraryStep;
+    this.libraryStepTest = json.libraryStepTest;
+    this.libraryStepTestCase = json.libraryStepTestCase;
+    this.libraryStepStepId = json.libraryStepStepId;
+    this.useStepStepSort = json.useStepStepSort;
+    this.test = json.test;
+    this.testcase = json.testcase;
     this.isStepInUseByOtherTestCase = json.isStepInUseByOtherTestCase;
-    this.actionList = [];
+    this.actions = [];
     if (canUpdate) {
         // If we can update the testcase we check whether we can still modify
         // following the TestStepLibrary group.
-        if (!hasPermissionsStepLibrary && json.inLibrary === "Y") {
+        if (!hasPermissionsStepLibrary && json.isLibraryStep === "Y") {
             canUpdate = false;
         }
     }
-    this.setActionList(json.actionList, canUpdate);
+    this.setActions(json.actions, canUpdate);
 
-    this.stepList = stepList;
+    this.steps = steps;
     this.toDelete = false;
     this.hasPermissionsUpdate = canUpdate;
     this.hasPermissionsStepLibrary = hasPermissionsStepLibrary;
@@ -2768,11 +2803,11 @@ Step.prototype.draw = function () {
         loopIcon = $("<span class='loopIcon'></span>").addClass("glyphicon glyphicon-refresh loop-Icon");
     }
 
-    if (this.inLibrary == "Y") {
+    if (this.isLibraryStep == "Y") {
         libraryIcon = $("<span class='libraryIcon'></span>").addClass("glyphicon glyphicon-book library-Icon");
     }
 
-    if (this.useStep == "Y") {
+    if (this.isUsedStep == "Y") {
         libraryIcon = $("<span class='libraryIcon'></span>").addClass("glyphicon glyphicon-lock library-Icon");
     }
 
@@ -2800,7 +2835,7 @@ Step.prototype.draw = function () {
         }
     });
 
-    $("#stepList").append(htmlElement);
+    $("#steps").append(htmlElement);
     $("#actionContainer").append(this.stepActionContainer);
     this.refreshSort();
 };
@@ -2811,8 +2846,8 @@ Step.prototype.show = function () {
     $("#stepHeader").show();
     $("#addActionBottomBtn").show();
 
-    for (var i = 0; i < object.stepList.length; i++) {
-        var step = object.stepList[i];
+    for (var i = 0; i < object.steps.length; i++) {
+        var step = object.steps[i];
 
         step.stepActionContainer.hide();
         step.stepActionContainer.find("[data-toggle='tooltip']").tooltip("hide");
@@ -2829,7 +2864,7 @@ Step.prototype.show = function () {
     }
 
     $("#isLib").unbind("click");
-    if (object.inLibrary === "Y") {
+    if (object.isLibraryStep === "Y") {
         $("#isLib").addClass("btn-dark");
         if (object.isStepInUseByOtherTestCase) {
             $("#isLib").click(function () {
@@ -2845,9 +2880,9 @@ Step.prototype.show = function () {
         $("#isLib").click(changeLib);
     }
 
-    if (object.useStep === "Y") {
+    if (object.isUsedStep === "Y") {
         $("#isLib").hide();
-        $("#UseStepRow").html("(" + doc.getDocLabel("page_testcasescript", "imported_from") + " <a href='./TestCaseScript.jsp?test=" + object.useStepTest + "&testcase=" + object.useStepTestCase + "&step=" + object.useStepStepSort + "' >" + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStepSort + "</a>)").show();
+        $("#UseStepRow").html("(" + doc.getDocLabel("page_testcasescript", "imported_from") + " <a href='./TestCaseScript.jsp?test=" + encodeURI(object.libraryStepTest) + "&testcase=" + encodeURI(object.libraryStepTestCase) + "&step=" + encodeURI(object.useStepStepSort) + "' >" + object.libraryStepTest + " - " + object.libraryStepTestCase + " - " + object.useStepStepSort + "</a>)").show();
         $("#UseStepRowButton").html("|").show();
         $("#addAction").prop("disabled", true);
         $("#addActionBottomBtn").hide();
@@ -2877,7 +2912,7 @@ Step.prototype.show = function () {
     $("#stepForceExe").replaceWith(getSelectInvariant("STEPFORCEEXE", true, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepForceExe"));
     $("#stepForceExe").unbind("change").change(function () {
         setModif(true);
-        object.forceExe = $(this).val();
+        object.isExecutionForced= $(this).val();
     });
 
     $("#stepConditionVal1").unbind("change").change(function () {
@@ -2895,11 +2930,11 @@ Step.prototype.show = function () {
         object.conditionVal3 = $(this).val();
     });
 
-    $("#stepConditionOper").replaceWith(getSelectInvariant("STEPCONDITIONOPER", false, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepConditionOper"));
-    $("#stepConditionOper").unbind("change").change(function () {
+    $("#stepConditionOperator").replaceWith(getSelectInvariant("STEPCONDITIONOPERATOR", false, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepConditionOperator"));
+    $("#stepConditionOperator").unbind("change").change(function () {
         setModif(true);
-        object.conditionOper = $(this).val();
-        setPlaceholderCondition($("#stepConditionOper").parent().parent(".row"));
+        object.conditionOperator = $(this).val();
+        setPlaceholderCondition($("#stepConditionOperator").parent().parent(".row"));
     });
 
 
@@ -2911,29 +2946,29 @@ Step.prototype.show = function () {
 
     $("#isUseStep").unbind("click").click(function () {
         setModif(true);
-        if (object.useStep === "Y") {
+        if (object.isUsedStep === "Y") {
             showModalConfirmation(function () {
-                object.useStep = "N";
-                object.useStepStep = -1;
-                object.useStepTest = "";
-                object.useStepTestCase = "";
+                object.isUsedStep = "N";
+                object.libraryStepStepId = -1;
+                object.libraryStepTest = "";
+                object.libraryStepTestCase = "";
                 saveScript();
             }, undefined, doc.getDocLabel("page_testcasescript", "unlink_useStep"), doc.getDocLabel("page_testcasescript", "unlink_useStep_warning"), "", "", "", "");
         }
     });
 
     $("#stepLoop").val(object.loop);
-    $("#stepConditionOper").val(object.conditionOper);
+    $("#stepConditionOperator").val(object.conditionOperator);
     $("#stepConditionVal1").val(object.conditionVal1);
     $("#stepConditionVal2").val(object.conditionVal2);
     $("#stepConditionVal3").val(object.conditionVal3);
     $("#stepDescription").val(object.description);
-    $("#stepForceExe").val(object.forceExe);
+    $("#stepForceExe").val(object.isExecutionForced);
     $("#stepId").text(object.sort);
     $("#stepInfo").show();
     $("#addActionContainer").show();
     $("#stepHeader").show()
-    setPlaceholderCondition($("#stepConditionOper").parent().parent(".row"));
+    setPlaceholderCondition($("#stepConditionOperator").parent().parent(".row"));
 
     // Disable fields if Permission not allowing.
     // Description and unlink the step with UseStep of the Step can be modified
@@ -2947,29 +2982,29 @@ Step.prototype.show = function () {
     $("#isLib").attr("disabled", activateIsLib);
     // Detail of the Step can be modified if hasPermitionUpdate is true and Step
     // is not a useStep.
-    var activateDisableWithUseStep = !(object.hasPermissionsUpdate && !(object.useStep === "Y"));
+    var activateDisableWithUseStep = !(object.hasPermissionsUpdate && !(object.isUsedStep === "Y"));
     $("#stepLoop").attr("disabled", activateDisableWithUseStep);
-    $("#stepConditionOper").attr("disabled", activateDisableWithUseStep);
+    $("#stepConditionOperator").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal1").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal2").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal3").attr("disabled", activateDisableWithUseStep);
 };
 
-Step.prototype.setActionList = function (actionList, canUpdate) {
-    for (var i = 0; i < actionList.length; i++) {
-        this.setAction(actionList[i], undefined, canUpdate);
+Step.prototype.setActions = function (actions, canUpdate) {
+    for (var i = 0; i < actions.length; i++) {
+        this.setAction(actions[i], undefined, canUpdate);
     }
 };
 
 Step.prototype.setAction = function (action, afterAction, canUpdate) {
     if (action instanceof Action) {
         action.draw(afterAction);
-        this.actionList.push(action);
+        this.actions.push(action);
     } else {
         var actionObj = new Action(action, this, canUpdate);
 
         actionObj.draw(afterAction);
-        this.actionList.push(actionObj);
+        this.actions.push(actionObj);
     }
 };
 
@@ -2996,8 +3031,8 @@ Step.prototype.setDelete = function () {
         $("#deleteStep span").addClass("glyphicon glyphicon-trash");
     }
 
-    for (var i = 0; i < this.stepList.length; i++) {
-        var step = this.stepList[i];
+    for (var i = 0; i < this.steps.length; i++) {
+        var step = this.steps[i];
 
         if (step.toDelete) {
             step.html.addClass("list-group-item-danger");
@@ -3009,12 +3044,12 @@ Step.prototype.setDelete = function () {
     }
 };
 
-Step.prototype.setStep = function (step) {
-    this.step = step;
+Step.prototype.setStep = function (stepId) {
+    this.stepId = stepId;
 };
 
 Step.prototype.getStep = function () {
-    return this.step;
+    return this.stepId;
 };
 
 Step.prototype.setSort = function (sort) {
@@ -3032,20 +3067,20 @@ Step.prototype.getJsonData = function () {
     json.toDelete = this.toDelete;
     json.test = this.test;
     json.testcase = this.testcase;
-    json.step = this.step;
+    json.stepId = this.stepId;
     json.sort = this.sort;
     json.description = this.description;
-    json.useStep = this.useStep;
-    json.useStepTest = this.useStepTest;
-    json.useStepTestCase = this.useStepTestCase;
-    json.useStepStep = this.useStepStep;
-    json.inLibrary = this.inLibrary;
+    json.isUsedStep = this.isUsedStep;
+    json.libraryStepTest = this.libraryStepTest;
+    json.libraryStepTestCase = this.libraryStepTestCase;
+    json.libraryStepStepId = this.libraryStepStepId;
+    json.isLibraryStep = this.isLibraryStep;
     json.loop = this.loop;
-    json.conditionOper = this.conditionOper;
+    json.conditionOperator = this.conditionOperator;
     json.conditionVal1 = this.conditionVal1;
     json.conditionVal2 = this.conditionVal2;
     json.conditionVal3 = this.conditionVal3;
-    json.forceExe = this.forceExe;
+    json.isExecutionForced= this.isExecutionForced;
 
     return json;
 };
@@ -3056,16 +3091,18 @@ function Action(json, parentStep, canUpdate) {
 
     if (json !== null) {
         this.test = json.test;
-        this.testcase = json.testCase;
-        this.step = json.step;
-        this.sequence = json.sequence;
+        this.testcase = json.testcase;
+        this.stepId = json.stepId;
+        this.sequence = json.actionId;
         this.sort = json.sort;
         this.description = json.description;
         this.action = json.action;
-        this.object = json.object;
-        this.property = json.property;
-        this.forceExeStatus = json.forceExeStatus;
-        this.conditionOper = json.conditionOper;
+        // A SUPPRIMER
+        //this.object = json.value1;
+        //this.property = json.value2;
+        // FIN SUPPR
+        this.forceExeStatus = json.isFatal;
+        this.conditionOperator = json.conditionOperator;
         this.conditionVal1 = json.conditionVal1;
         this.conditionVal2 = json.conditionVal2;
         this.conditionVal3 = json.conditionVal3;
@@ -3073,18 +3110,18 @@ function Action(json, parentStep, canUpdate) {
         this.value1 = json.value1;
         this.value2 = json.value2;
         this.value3 = json.value3;
-        this.controlList = [];
-        this.setControlList(json.controlList, canUpdate);
+        this.controls = [];
+        this.setControls(json.controls, canUpdate);
     } else {
         this.test = "";
         this.testcase = "";
-        this.step = parentStep.step;
+        this.stepId = parentStep.stepId;
         this.description = "";
         this.action = "doNothing";
         this.object = "";
         this.property = "";
         this.forceExeStatus = "";
-        this.conditionOper = "always";
+        this.conditionOperator = "always";
         this.conditionVal1 = "";
         this.conditionVal2 = "";
         this.conditionVal3 = "";
@@ -3092,7 +3129,7 @@ function Action(json, parentStep, canUpdate) {
         this.value1 = "";
         this.value2 = "";
         this.value3 = "";
-        this.controlList = [];
+        this.controls = [];
     }
 
     this.toDelete = false;
@@ -3111,7 +3148,7 @@ Action.prototype.draw = function (afterAction) {
     var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding", "0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
     var imgGrp = $("<div></div>").addClass("col-lg-1").css("height", "100%").append($("<div style='margin-top:40px;'></div>").append($("<img>").attr("id", "ApplicationObjectImg").css("width", "100%")));
 
-    if ((this.parentStep.useStep === "N") && (action.hasPermissionsUpdate)) {
+    if ((this.parentStep.isUsedStep === "N") && (action.hasPermissionsUpdate)) {
         drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
         drag.on("dragstart", handleDragStart);
         drag.on("dragenter", handleDragEnter);
@@ -3136,7 +3173,6 @@ Action.prototype.draw = function (afterAction) {
     });
 
     var scope = this;
-
     addBtn.click(function () {
         addControlAndFocus(scope);
     });
@@ -3154,7 +3190,6 @@ Action.prototype.draw = function (afterAction) {
             action.html.find(".step-action").removeClass("danger");
         }
     });
-
     row.append(drag);
     row.append(this.generateContent());
     row.append(imgGrp);
@@ -3175,26 +3210,26 @@ Action.prototype.draw = function (afterAction) {
     this.refreshSort();
 };
 
-Action.prototype.setControlList = function (controlList, canUpdate) {
-    for (var i = 0; i < controlList.length; i++) {
-        this.setControl(controlList[i], undefined, canUpdate);
+Action.prototype.setControls = function (controls, canUpdate) {
+    for (var i = 0; i < controls.length; i++) {
+        this.setControl(controls[i], undefined, canUpdate);
     }
 };
 
 Action.prototype.setControl = function (control, afterControl, canUpdate) {
     if (control instanceof Control) {
         control.draw(afterControl);
-        this.controlList.push(control);
+        this.controls.push(control);
     } else {
         var controlObj = new Control(control, this, canUpdate);
 
         controlObj.draw(afterControl);
-        this.controlList.push(controlObj);
+        this.controls.push(controlObj);
     }
 };
 
-Action.prototype.setStep = function (step) {
-    this.step = step;
+Action.prototype.setStep = function (stepId) {
+    this.stepId = stepId;
 };
 
 Action.prototype.setSequence = function (sequence) {
@@ -3227,13 +3262,13 @@ Action.prototype.generateContent = function () {
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelDiv'></span>"));
     descContainer.append(descriptionField);
 
-    var actionList = $("<select></select>").addClass("form-control input-sm");
+    var actions = $("<select></select>").addClass("form-control input-sm");
 
     var value1Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v1");
     var value2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v2");
     var value3Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v3");
 
-    var actionconditionoper = $("<select></select>").addClass("form-control input-sm");
+    var actionconditionoperator = $("<select></select>").addClass("form-control input-sm");
     var actionconditionval1 = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
     var actionconditionval2 = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
     var actionconditionval3 = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
@@ -3247,13 +3282,13 @@ Action.prototype.generateContent = function () {
         obj.description = descriptionField.val();
     });
 
-    actionconditionoper = getSelectInvariant("ACTIONCONDITIONOPER", false, true).css("width", "100%");
-    actionconditionoper.on("change", function () {
-        if (obj.conditionOper !== actionconditionoper.val()) {
+    actionconditionoperator = getSelectInvariant("ACTIONCONDITIONOPERATOR", false, true).css("width", "100%");
+    actionconditionoperator.on("change", function () {
+        if (obj.conditionOperator !== actionconditionoperator.val()) {
             setModif(true);
         }
-        obj.conditionOper = actionconditionoper.val();
-        if ((obj.conditionOper === "always") || (obj.conditionOper === "never")) {
+        obj.conditionOperator = actionconditionoperator.val();
+        if ((obj.conditionOperator === "always") || (obj.conditionOperator === "never")) {
             actionconditionval1.parent().hide();
             actionconditionval2.parent().hide();
             actionconditionval3.parent().hide();
@@ -3264,8 +3299,8 @@ Action.prototype.generateContent = function () {
         }
         setPlaceholderCondition($(this).parents(".action"));
     });
-    actionconditionoper.val(this.conditionOper).trigger("change");
-    actionconditionoper.attr("id", "conditionSelect");
+    actionconditionoperator.val(this.conditionOperator).trigger("change");
+    actionconditionoperator.attr("id", "conditionSelect");
     actionconditionval1.css("width", "100%");
     actionconditionval1.on("change", function () {
         setModif(true);
@@ -3287,13 +3322,13 @@ Action.prototype.generateContent = function () {
     });
     actionconditionval3.val(this.conditionVal3);
 
-    actionList = getSelectInvariant("ACTION", false, true).css("width", "100%").attr("id", "actionSelect");
-    actionList.val(this.action);
-    actionList.off("change").on("change", function () {
+    actions = getSelectInvariant("ACTION", false, true).css("width", "100%").attr("id", "actionSelect");
+    actions.val(this.action);
+    actions.off("change").on("change", function () {
         setModif(true);
-        obj.action = actionList.val();
+        obj.action = actions.val();
         setPlaceholderAction($(this).parents(".action"));
-        $(actionList).parent().parent().find(".input-group-btn").remove();
+        $(actions).parent().parent().find(".input-group-btn").remove();
     });
 
     forceExeStatusList = getSelectInvariant("ACTIONFORCEEXESTATUS", false, true).css("width", "100%");
@@ -3325,7 +3360,7 @@ Action.prototype.generateContent = function () {
     });
 
     firstRow.append(descContainer);
-    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actions));
     secondRow.append($("<div></div>").addClass("v1 col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(value1Field));
     /*
      * if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers
@@ -3333,22 +3368,22 @@ Action.prototype.generateContent = function () {
      */
     secondRow.append($("<div></div>").addClass("v2 col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Field));
     secondRow.append($("<div></div>").addClass("v3 col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value3_field"))).append(value3Field));
-    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoperator));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval2));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval3));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "force_execution_field"))).append(forceExeStatusList));
 
-    actionconditionoper.trigger("change");
+    actionconditionoperator.trigger("change");
 
-    if ((this.parentStep.useStep === "Y") || (!obj.hasPermissionsUpdate)) {
+    if ((this.parentStep.isUsedStep === "Y") || (!obj.hasPermissionsUpdate)) {
         descriptionField.prop("readonly", true);
         value1Field.prop("readonly", true);
         value2Field.prop("readonly", true);
         value3Field.prop("readonly", true);
-        actionList.prop("disabled", "disabled");
+        actions.prop("disabled", "disabled");
         forceExeStatusList.prop("disabled", "disabled");
-        actionconditionoper.prop("disabled", "disabled");
+        actionconditionoperator.prop("disabled", "disabled");
         actionconditionval1.prop("readonly", true);
         actionconditionval2.prop("readonly", true);
         actionconditionval3.prop("readonly", true);
@@ -3362,13 +3397,12 @@ Action.prototype.generateContent = function () {
 };
 
 Action.prototype.getJsonData = function () {
-
     var json = {};
 
     json.toDelete = this.toDelete;
     json.test = this.test;
     json.testcase = this.testcase;
-    json.step = this.step;
+    json.stepId = this.stepId;
     json.sequence = this.sequence;
     json.sort = this.sort;
     json.description = this.description;
@@ -3377,7 +3411,7 @@ Action.prototype.getJsonData = function () {
     json.property = this.value2;
     json.value3 = this.value3;
     json.forceExeStatus = this.forceExeStatus;
-    json.conditionOper = this.conditionOper;
+    json.conditionOperator = this.conditionOperator;
     json.conditionVal1 = this.conditionVal1;
     json.conditionVal2 = this.conditionVal2;
     json.conditionVal3 = this.conditionVal3;
@@ -3389,19 +3423,19 @@ Action.prototype.getJsonData = function () {
 function Control(json, parentAction, canUpdate) {
     if (json !== null) {
         this.test = json.test;
-        this.testcase = json.testCase;
-        this.step = json.step;
-        this.sequence = json.sequence;
+        this.testcase = json.testcase;
+        this.stepId = json.stepId;
+        this.sequence = json.actionId;
         this.control = json.control;
         this.sort = json.sort;
         this.description = json.description;
-        this.objType = json.objType;
-        this.controlSequence = json.controlSequence;
+        //this.objType = json.objType;
+        this.controlSequence = json.controlId;
         this.value1 = json.value1;
         this.value2 = json.value2;
         this.value3 = json.value3;
-        this.fatal = json.fatal;
-        this.conditionOper = json.conditionOper;
+        this.fatal = json.isFatal;
+        this.conditionOperator = json.conditionOperator;
         this.conditionVal1 = json.conditionVal1;
         this.conditionVal2 = json.conditionVal2;
         this.conditionVal3 = json.conditionVal3;
@@ -3409,8 +3443,8 @@ function Control(json, parentAction, canUpdate) {
     } else {
         this.test = "";
         this.testcase = "";
-        this.step = parentAction.step;
-        this.sequence = parentAction.sequence;
+        this.stepId = parentAction.stepId;
+        this.sequence = parentAction.actionId;
         this.control = "Unknown";
         this.description = "";
         this.objType = "Unknown";
@@ -3418,7 +3452,7 @@ function Control(json, parentAction, canUpdate) {
         this.value2 = "";
         this.value3 = "";
         this.fatal = "N";
-        this.conditionOper = "always";
+        this.conditionOperator = "always";
         this.conditionVal1 = "";
         this.conditionVal2 = "";
         this.conditionVal3 = "";
@@ -3448,7 +3482,7 @@ Control.prototype.draw = function (afterControl) {
 
     var content = this.generateContent();
 
-    if ((this.parentAction.parentStep.useStep === "N") && (control.hasPermissionsUpdate)) {
+    if ((this.parentAction.parentStep.isUsedStep === "N") && (control.hasPermissionsUpdate)) {
         drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
         drag.on("dragstart", handleDragStart);
         drag.on("dragenter", handleDragEnter);
@@ -3479,7 +3513,8 @@ Control.prototype.draw = function (afterControl) {
         }
     });
 
-    if ((this.parentStep.useStep === "Y") || (!control.hasPermissionsUpdate)) {
+    if ((this.parentStep.isUsedStep === "Y") || (!control.hasPermissionsUpdate)) {
+
         supprBtn.attr("disabled", true);
         addBtn.attr("disabled", true);
         addABtn.attr("disabled", true);
@@ -3513,8 +3548,8 @@ Control.prototype.draw = function (afterControl) {
     this.refreshSort();
 };
 
-Control.prototype.setStep = function (step) {
-    this.step = step;
+Control.prototype.setStep = function (stepId) {
+    this.stepId = stepId;
 };
 
 Control.prototype.setSequence = function (sequence) {
@@ -3553,10 +3588,10 @@ Control.prototype.generateContent = function () {
     var content = $("<div></div>").addClass("content col-lg-9");
     var firstRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow row form-group");
     var secondRow = $("<div></div>").addClass("fieldRow row secondRow input-group");
-    secondRow.css("width", "100%");
+    secondRow.css("width", "120%");
     var thirdRow = $("<div></div>").addClass("fieldRow row").hide();
 
-    var controlList = $("<select></select>").addClass("form-control input-sm").css("width", "100%");
+    var controls = $("<select></select>").addClass("form-control input-sm").css("width", "100%");
     var descContainer = $("<div class='input-group'></div>");
     var descriptionField = $("<input class='description form-control' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_control") + "'>");
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelDiv'></span>"));
@@ -3566,7 +3601,7 @@ Control.prototype.generateContent = function () {
     var controlValue2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
     var controlValue3Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
 
-    var controlconditionoper = $("<select></select>").addClass("form-control input-sm");
+    var controlconditionoperator = $("<select></select>").addClass("form-control input-sm");
     var controlconditionval1 = $("<input>").attr("type", "text").addClass("form-control input-sm");
     var controlconditionval2 = $("<input>").attr("type", "text").addClass("form-control input-sm");
     var controlconditionval3 = $("<input>").attr("type", "text").addClass("form-control input-sm");
@@ -3579,16 +3614,16 @@ Control.prototype.generateContent = function () {
         obj.description = descriptionField.val();
     });
 
-    controlconditionoper = getSelectInvariant("CONTROLCONDITIONOPER", false, true).css("width", "100%").attr("id", "controlConditionSelect");
-    controlconditionoper.on("change", function () {
-        if (obj.conditionOper !== controlconditionoper.val()) {
+    controlconditionoperator = getSelectInvariant("CONTROLCONDITIONOPERATOR", false, true).css("width", "100%").attr("id", "controlConditionSelect");
+    controlconditionoperator.on("change", function () {
+        if (obj.conditionOperator !== controlconditionoperator.val()) {
             setModif(true);
         }
-        obj.conditionOper = controlconditionoper.val();
+        obj.conditionOperator = controlconditionoperator.val();
         setPlaceholderCondition($(this).parents(".control"));
 
     });
-    controlconditionoper.val(this.conditionOper).trigger("change");
+    controlconditionoperator.val(this.conditionOperator).trigger("change");
 
     controlconditionval1.val(this.conditionVal1);
     controlconditionval1.css("width", "100%");
@@ -3612,12 +3647,12 @@ Control.prototype.generateContent = function () {
     });
 
 
-    controlList = getSelectInvariant("CONTROL", false, true).attr("id", "controlSelect");
-    controlList.val(this.control);
-    controlList.css("width", "100%");
-    controlList.on("change", function () {
+    controls = getSelectInvariant("CONTROL", false, true).attr("id", "controlSelect");
+    controls.val(this.control);
+    controls.css("width", "100%");
+    controls.on("change", function () {
         setModif(true);
-        obj.control = controlList.val();
+        obj.control = controls.val();
         setPlaceholderControl($(this).parents(".control"));
     });
 
@@ -3652,27 +3687,27 @@ Control.prototype.generateContent = function () {
 
     firstRow.append(descContainer);
 
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "control_field"))).append(controlList));
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(controlValue1Field));
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(controlValue2Field));
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value3_field"))).append(controlValue3Field));
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "control_field"))).append(controls));
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(controlValue1Field));
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(controlValue2Field));
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value3_field"))).append(controlValue3Field));
 
-    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval1));
-    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval2));
-    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval3));
-    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "fatal_field"))).append(fatalList));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval1));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval2));
+    thirdRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval3));
+    thirdRow.append($("<div></div>").addClass("col-lg-1 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "fatal_field"))).append(fatalList));
 
-    thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(controlconditionoper));
+    thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(controlconditionoperator));
 
 
-    if ((this.parentStep.useStep === "Y") || (!obj.hasPermissionsUpdate)) {
+    if ((this.parentStep.isUsedStep === "Y") || (!obj.hasPermissionsUpdate)) {
         descriptionField.prop("readonly", true);
         controlValue1Field.prop("readonly", true);
         controlValue2Field.prop("readonly", true);
         controlValue3Field.prop("readonly", true);
-        controlList.prop("disabled", "disabled");
+        controls.prop("disabled", "disabled");
         fatalList.prop("disabled", "disabled");
-        controlconditionoper.prop("disabled", "disabled");
+        controlconditionoperator.prop("disabled", "disabled");
         controlconditionval1.prop("readonly", true);
         controlconditionval2.prop("readonly", true);
         controlconditionval3.prop("readonly", true);
@@ -3691,18 +3726,17 @@ Control.prototype.getJsonData = function () {
     json.toDelete = this.toDelete;
     json.test = this.test;
     json.testcase = this.testcase;
-    json.step = this.step;
+    json.stepId = this.stepId;
     json.sequence = this.sequence;
     json.control = this.control;
     json.sort = this.sort;
     json.description = this.description;
-    json.objType = this.objType;
     json.controlSequence = this.controlSequence;
     json.value1 = this.value1;
     json.value2 = this.value2;
     json.value3 = this.value3;
     json.fatal = this.fatal;
-    json.conditionOper = this.conditionOper;
+    json.conditionOperator = this.conditionOperator;
     json.conditionVal1 = this.conditionVal1;
     json.conditionVal2 = this.conditionVal2;
     json.conditionVal3 = this.conditionVal3;
@@ -3836,7 +3870,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
         }
 
         if (configs !== undefined) {
-            tcInfo = configs.property.info;
+            tcInfo = configs.property.contentTable[0];
         }
 
         if (context !== undefined) {
@@ -3861,12 +3895,12 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                 case 'callService':
                     if (htmlElement.val()) {
                         $.ajax({
-                            url: "ReadAppService?service=" + htmlElement.val(),
+                            url: "ReadAppService?service=" + encodeURI(htmlElement.val()),
                             dataType: "json",
                             success: function (data) {
-                                var dataContent = data.contentTable
-                                if ($(htmlElement).parent().find(".v1").val() != undefined) {
-                                    if (dataContent != undefined) {
+                                var dataContent = data.contentTable;
+                                if ($(htmlElement).parent().find(".v1").val() !== undefined) {
+                                    if (dataContent !== undefined) {
                                         var editEntry = $('<span class="input-group-btn ' + encodeURIComponent(htmlElement.val()) + '"><button id="editEntry" onclick="openModalAppService(\'' + encodeURIComponent(htmlElement.val()) + '\',\'EDIT\'  ,\'TestCase\' );"\n\
         								class="buttonObject btn btn-default input-sm " \n\
         								title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
@@ -3936,7 +3970,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                     $(htmlElement).parent().append(editEntry);
                                 }
                             } else if (betweenPercent[i].startsWith("%property.") && findname !== null && findname.length > 0) {
-                                let data = loadGuiProperties()
+                                let data = loadGuiProperties();
                                 name = findname[0];
                                 name = name.slice(1, name.length - 1);
                                 if (objectIntoTagToUseExist(TagsToUse[2], name)) {
@@ -3945,7 +3979,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 	                                		title="' + name + '" type="button">\n\
 	                                <span class="glyphicon glyphicon-eye-open"></span></button></span>');
                                     if (data[name]) {
-                                        let property = name
+                                        let property = name;
                                         viewEntry.find("button").on("click", function () {
                                             let firstRow = $('<p style="text-align:center" > Type : ' + data[property].type + '</p>');
                                             let secondRow = $('<p style="text-align:center"> Value : ' + data[property].value + '</p>');
@@ -3963,20 +3997,20 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                         }
                     }
             }
-        })
+        });
 
         $(document).on('input', ".content div.fieldRow input:not('.description')", function (e) {
-            let data = loadGuiProperties()
+            let data = loadGuiProperties();
             if ($(this).parent().parent().find("select").val() === "callService") {
-                let url = "ReadAppService?service=" + $(this).val() + "&limit=15";
-                modifyAutocompleteSource($(this), url)
+                let url = "ReadAppService?service=" + encodeURI($(this).val()) + "&limit=15";
+                modifyAutocompleteSource($(this), url);
             } else if ($(this).parent().parent().find("select").val() === "calculateProperty") {
                 modifyAutocompleteSource($(this), null, data);
             }
-            $(this).trigger("settingsButton")
-        })
-        $("div.step-action .content div.fieldRow:nth-child(2) input").trigger("settingsButton")
-    }
+            $(this).trigger("settingsButton");
+        });
+        $("div.step-action .content div.fieldRow:nth-child(2) input").trigger("settingsButton");
+    };
 })();
 
 
@@ -3998,7 +4032,7 @@ function deleteTestCaseHandlerClick() {
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
-            window.location = "./TestCaseScript.jsp?test=" + test;
+            window.location = "./TestCaseScript.jsp?test=" + encodeURI(test);
         }
         // show message in the main page
         showMessageMainPage(messageType, data.message, false);
@@ -4006,70 +4040,6 @@ function deleteTestCaseHandlerClick() {
         $('#confirmationModal').modal('hide');
     }).fail(handleErrorAjaxAfterTimeout);
 }
-
-//function editPropertiesModalSaveHandler() {
-//    clearResponseMessage($('#propertiesModal'));
-//    var doc = new Doc();
-//
-//    var properties = $("#propTable #masterProp");
-//    var propArr = [];
-//    var propertyWithoutCountry = false;
-//    for (var i = 0; i < properties.length; i++) {
-//        if ($(properties[i]).data("property").country.length <= 0) {
-//            propertyWithoutCountry = true;
-//        }
-//        propArr.push($(properties[i]).data("property"));
-//    }
-//    var saveProp = function () {
-//        showLoaderInModal('#propertiesModal');
-//        $.ajax({
-//            url: "UpdateTestCaseProperties",
-//            async: true,
-//            method: "POST",
-//            data: {
-//                informationInitialTest: GetURLParameter("test"),
-//                informationInitialTestCase: GetURLParameter("testcase"),
-//                informationTest: GetURLParameter("test"),
-//                informationTestCase: GetURLParameter("testcase"),
-//                propArr: JSON.stringify(propArr)
-//            },
-//            success: function (data) {
-//                var Tags = getTags();
-//
-//                var array = [];
-//
-//                for (var i = 0; i < propArr.length; i++) {
-//                    array.push(propArr[i].property);
-//                }
-//
-//                for (var i = 0; i < Tags.length; i++) {
-//                    if (Tags[i].regex === "%property\\.") {
-//                        Tags[i].array = array;
-//                    }
-//                }
-//
-//                hideLoaderInModal('#propertiesModal');
-//                if (getAlertType(data.messageType) === 'success') {
-//                    $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("input");
-//                    showMessage(data);
-//                    $('#propertiesModal').modal('hide');
-//                } else {
-//                    showMessage(data, $('#propertiesModal'));
-//                }
-//            },
-//            error: showUnexpectedError
-//        });
-//    };
-//
-//    if (propertyWithoutCountry) {
-//        showModalConfirmation(function () {
-//            $('#confirmationModal').modal('hide');
-//            saveProp();
-//        }, undefined, undefined, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcasescript", "warning_no_country"), "", "", "", "");
-//    } else {
-//        saveProp();
-//    }
-//}
 
 function setPlaceholderAction(actionElement) {
 
@@ -4136,8 +4106,8 @@ function setPlaceholderCondition(conditionElement) {
                 }
             }
         });
-    } else if ($(conditionElement).children().find('select#stepConditionOper option:selected').length) {
-        $(conditionElement).children().find('select#stepConditionOper option:selected').each(function (i, e) {
+    } else if ($(conditionElement).children().find('select#stepConditionOperator option:selected').length) {
+        $(conditionElement).children().find('select#stepConditionOperator option:selected').each(function (i, e) {
             for (var i = 0; i < placeHolders.length; i++) {
                 if (placeHolders[i].type === e.value) {
                     if (placeHolders[i].object !== null) {
@@ -4198,19 +4168,22 @@ function setPlaceholderControl(controlElement) {
 
         for (var i = 0; i < placeHolders.length; i++) {
             if (placeHolders[i].type === e.value) {
-                if (placeHolders[i].controlProp !== null) {
+                if (placeHolders[i].value1 !== null) {
+                    $(e).parent().parent().next().removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders[i].acol1);
                     $(e).parent().parent().next().show();
-                    $(e).parent().parent().next().find('label').text(placeHolders[i].controlProp);
+                    $(e).parent().parent().next().find('label').text(placeHolders[i].value1);
                 } else {
                     $(e).parent().parent().next().hide();
                 }
-                if (placeHolders[i].controlValue !== null) {
+                if (placeHolders[i].value2 !== null) {
+                    $(e).parent().parent().next().next().removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders[i].acol2);
                     $(e).parent().parent().next().next().show();
-                    $(e).parent().parent().next().next().find('label').text(placeHolders[i].controlValue);
+                    $(e).parent().parent().next().next().find('label').text(placeHolders[i].value2);
                 } else {
                     $(e).parent().parent().next().next().hide();
                 }
                 if (placeHolders[i].value3 !== null) {
+                    $(e).parent().parent().next().next().next().removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders[i].acol3);
                     $(e).parent().parent().next().next().next().show();
                     $(e).parent().parent().next().next().next().find('label').text(placeHolders[i].value3);
                 } else {
@@ -4266,20 +4239,20 @@ function setPlaceholderProperty(propertyElement, property) {
                                     var editEntry = $('<div class="input-group col-sm-5 col-sm-offset-3"><label>Choose one data library</label><select class="datalib  form-control"></select><span class="input-group-btn"  style="vertical-align:bottom"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>');
                                     $("#" + editor.container.id).parent().append(editEntry);
 
-                                    displayDataLibList(editor.container.id, undefined, data)
+                                    displayDataLibList(editor.container.id, undefined, data);
                                     $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + $("#" + editor.container.id).parent().find("select").val() + "\','EDIT'," + "'" + escaped + "')");
                                     $("#" + editor.container.id).parent().find("select").unbind("change").change(function () {
                                         $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + $("#" + editor.container.id).parent().find("select").val() + "\','EDIT'," + "'" + escaped + "')");
-                                    })
+                                    });
 
 
                                 } else {
                                     $("#" + editor.container.id).parent().find('.input-group').remove();
                                     $("#" + editor.container.id).parent().parent().find('.col-btn').remove();
-                                    if (service.length == 1) {
+                                    if (service.length === 1) {
                                         var editEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Edit the DataLib</label><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></div>');
                                         var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
-                                        $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8")
+                                        $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8");
                                         $("#" + editor.container.id).parent().parent().append(editEntry);
                                         $("#" + editor.container.id).parent().parent().append(addEntry);
                                         $("#" + editor.container.id).parent().parent().find("button:eq(0)").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + service[0].testDataLibID + "\','EDIT'," + "'" + escaped + "')");
@@ -4287,7 +4260,7 @@ function setPlaceholderProperty(propertyElement, property) {
                                     } else {
                                         var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary ' + escaped + '" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
                                         addEntry.find("button").attr("disabled", !canUpdate);
-                                        $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8")
+                                        $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8");
                                         $("#" + editor.container.id).parent().parent().append(addEntry);
                                         $("#" + editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + escaped + "\','ADD'," + "'" + escaped + "')");
                                     }
@@ -4321,7 +4294,7 @@ function setPlaceholderProperty(propertyElement, property) {
                     configureAceEditor(editor, placeHolders[i].value1EditorMode, property);
 
                     if (placeHolders[i].type === "getFromDataLib") {
-                        if ((editor.getValue() != null)) {
+                        if ((editor.getValue() !== null)) {
                             initChange();
                         }
                         editor.on('change', initChange);
@@ -4400,14 +4373,14 @@ function CompleterForAllDataLib() {
     var staticWordCompleter = {
 
         getCompletions: function (editor, session, pos, prefix, callback) {
-            var escaped = encodeURIComponent(editor.getValue())
+            var escaped = encodeURIComponent(editor.getValue());
             $.getJSON("ReadTestDataLib?name=" + escaped + "&limit=15&like=Y", function (wordList) {
                 callback(null, wordList.contentTable.map(function (ea) {
-                    return {name: ea.name, value: ea.name, meta: "DataLib"}
+                    return {name: ea.name, value: ea.name, meta: "DataLib"};
                 }));
-            })
+            });
         }
-    }
+    };
 
     langTools.addCompleter(staticWordCompleter);
 }
@@ -4427,20 +4400,20 @@ function configureAceEditor(editor, mode, property) {
         var langTools = ace.require('ace/ext/language_tools');
 
 
-        if (e.command.name == "insertstring" || e.command.name == "paste" || e.command.name == "backspace") {
+        if (e.command.name === "insertstring" || e.command.name === "paste" || e.command.name === "backspace") {
             // recreate the array at each loop
 
             if (property.type === "getFromDataLib") {
                 CompleterForAllDataLib();
                 $("pre").off("input").on("input", function (e) {
-                    editor.execCommand("startAutocomplete")
-                })
+                    editor.execCommand("startAutocomplete");
+                });
                 editor.setOptions({maxLines: 15, enableBasicAutocompletion: true, enableLiveAutocompletion: false});
             } else {
                 editor.setOptions({maxLines: 15, enableBasicAutocompletion: true, enableLiveAutocompletion: false});
                 var allKeyword = createAllKeywordList(getKeywordList("object"), getKeywordList("property"));
                 // editor.completers = [allKeyword]
-                if (e.command.name != "backspace") {
+                if (e.command.name !== "backspace") {
                     addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
                     editor.commands.exec(commandNameForAutoCompletePopup);// set
                     // autocomplete
@@ -4636,8 +4609,8 @@ function checkIfTheKeywordIsCorrect(allKeyword, keywordInputByUser, idKeywordToC
  */
 function getPossibleMotherKeyword(keyword, allKeyword) {
     var idmotherKeyword = [];
-    for (i in allKeyword) {
-        for (y in allKeyword[i]["listKeyword"]) {
+    for (var i in allKeyword) {
+        for (var y in allKeyword[i]["listKeyword"]) {
             if (allKeyword[i]["listKeyword"][y] === keyword) {
                 idmotherKeyword.push(allKeyword[i]["motherKeyword"]);
             }
@@ -4684,7 +4657,7 @@ function changeAceCompletionList(keywordList, label, editor) {
             }
             callback(null, completions);
         }
-    }
+    };
 
     langTools.addCompleter(completer);
 }
@@ -4705,9 +4678,9 @@ function addCommandToDetectKeywordIssue(editor, allKeyword, commandName) {
                 var numberOfPercentCaractereAtLine = (editorValueAtTheLine.match(/\%/g) || []).length;
                 if (numberOfPercentCaractereAtLine !== 0 && numberOfPercentCaractereAtLine % 2 === 0) {
                     var editorValueSplit = editorValueAtTheLine.split("%");
-                    var cerberusVarAtLine = []
+                    var cerberusVarAtLine = [];
                     for (var i = 0; i < editorValueSplit.length; i++) {
-                        if (i % 2 == 1)
+                        if (i % 2 === 1)
                             cerberusVarAtLine.push(editorValueSplit[i]);
                     }
                     // Check if each cerberus var is correct
@@ -4783,7 +4756,7 @@ function createAceAnnotationObject(lineNumber, annotationText, annotationType, k
         lineNumber: lineNumber,
         keywordType: keywordTypeVar,
         keywordValue: keywordValueVar
-    }
+    };
 }
 
 // set the list of ace annotion object as annotation
@@ -4823,7 +4796,7 @@ function createGuterCellListenner(editor) {
                 }
             }
             this.className = "ace_gutter-cell";// Remove the warning annotation
-        }
+        };
     }
 }
 
@@ -4837,15 +4810,15 @@ function addPropertyWithAce(keywordValue) {
 
     $.ajax({
         url: "ReadTestCase",
-        data: {test: test, testCase: testcase, withStep: true},
+        data: {test: test, testCase: testcase, withSteps: true},
         dataType: "json",
         success: function (data) {
 
-            testcaseinfo = data.info;
-            loadTestCaseInfo(data.info);
+            testCaseObject = data.contentTable[0];
+            loadTestCaseInfo(testCaseObject);
 
             var myCountry = [];
-            $.each(testcaseinfo.countryList, function (index) {
+            $.each(testCaseObject.countries, function (index) {
                 myCountry.push(index);
             });
             // Store the current saveScript button status and disable it
@@ -4869,7 +4842,7 @@ function addPropertyWithAce(keywordValue) {
                 rank: 1
             };
 
-            var prop = drawProperty(newProperty, testcaseinfo, true, $("div[name='propertyLine']").length);
+            var prop = drawProperty(newProperty, testCaseObject, true, $("div[name='propertyLine']").length);
             setPlaceholderProperty(prop[0], prop[1]);
 
             // Restore the saveScript button status
@@ -4888,14 +4861,14 @@ function addObjectWithAce(keywordValue) {
 
     $.ajax({
         url: "ReadTestCase",
-        data: {test: test, testCase: testcase, withStep: true},
+        data: {test: test, testCase: testcase, withSteps: true},
         dataType: "json",
         success: function (data) {
             // Store the current saveScript button status and disable it
             var saveScriptOldStatus = $("#saveScript").attr("disabled");
             $("#saveScript").attr("disabled", true);
 
-            var applicationName = data.info.application;
+            var applicationName = data.contentTable[0].application;
             addApplicationObjectModalClick(undefined, keywordValue, applicationName);
 
             // Restore the saveScript button status
@@ -4906,7 +4879,7 @@ function addObjectWithAce(keywordValue) {
 
 // Get the CURRENT list of keyword for each type
 function getKeywordList(type) {
-    if (getTags() != undefined && getTags().length > 0) {
+    if (getTags() !== undefined && getTags().length > 0) {
         var idType = -1;
         switch (type) {
             case "object":

@@ -52,6 +52,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.service.appium.IAppiumService;
 import org.cerberus.service.appservice.IServiceService;
 import org.cerberus.service.cerberuscommand.ICerberusCommand;
+import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.har.IHarService;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.service.sikuli.ISikuliService;
@@ -60,6 +61,7 @@ import org.cerberus.service.soap.ISoapService;
 import org.cerberus.service.sql.ISQLService;
 import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONObject;
@@ -114,6 +116,8 @@ public class ActionService implements IActionService {
     private IPropertyService propertyService;
     @Autowired
     private IServiceService serviceService;
+    @Autowired
+    private IExecutorService executorService;
     @Autowired
     private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
     @Autowired
@@ -325,6 +329,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_WAITVANISH:
                     res = this.doActionWaitVanish(tCExecution, value1);
                     break;
+                case TestCaseStepAction.ACTION_WAITNETWORKTRAFFICIDLE:
+                    res = this.doActionWaitNetworkTrafficIdle(tCExecution);
+                    break;
                 case TestCaseStepAction.ACTION_CALLSERVICE:
                     res = this.doActionCallService(testCaseStepActionExecution, value1, value2, value3);
                     break;
@@ -338,7 +345,10 @@ public class ActionService implements IActionService {
                     res = this.doActionCalculateProperty(testCaseStepActionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT:
-                    res = this.doActionSetNetworkTrafficContent(tCExecution, testCaseStepActionExecution, value1);
+                    res = this.doActionSetNetworkTrafficContent(tCExecution, testCaseStepActionExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_SETSERVICECALLCONTENT:
+                    res = this.doActionSetServiceCallContent(tCExecution, testCaseStepActionExecution);
                     break;
                 case TestCaseStepAction.ACTION_DONOTHING:
                     res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
@@ -462,6 +472,7 @@ public class ActionService implements IActionService {
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 return iosAppiumService.scrollTo(tCExecution.getSession(), identifier, text);
+                
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 return webdriverService.scrollTo(tCExecution.getSession(), identifier, text);
             }
@@ -483,7 +494,16 @@ public class ActionService implements IActionService {
         MessageEvent message;
 
         try {
-            return androidAppiumService.executeCommand(tCExecution.getSession(), command, args);
+
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                return androidAppiumService.executeCommand(tCExecution.getSession(), command, args);
+            }
+
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_EXECUTECOMMAND));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
             String messageString = e.getMessage().split("\n")[0];
@@ -962,7 +982,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionWait(TestCaseExecution tCExecution, String object, String property) {
+    private MessageEvent doActionWait(TestCaseExecution tCExecution, String value1, String value2) {
         MessageEvent message;
         String element;
         long timeToWaitInMs = 0;
@@ -972,7 +992,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, null if both are empty
              */
-            element = getElementToUse(object, property, "wait", tCExecution);
+            element = getElementToUse(value1, value2, "wait", tCExecution);
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
@@ -997,7 +1017,13 @@ public class ActionService implements IActionService {
                     return sikuliService.doSikuliActionWait(tCExecution.getSession(), "", identifier.getLocator());
                 } else if (identifier != null) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionWait(tCExecution.getSession(), identifier);
+                    if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                        return androidAppiumService.wait(tCExecution.getSession(), identifier);
+                    } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                        return iosAppiumService.wait(tCExecution.getSession(), identifier);
+                    } else {
+                        return webdriverService.doSeleniumActionWait(tCExecution.getSession(), identifier);
+                    }
                 } else {
                     return this.waitTime(timeToWaitInMs);
                 }
@@ -1119,8 +1145,13 @@ public class ActionService implements IActionService {
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
             return sikuliService.doSikuliActionOpenApp(tCExecution.getSession(), value1);
+
         } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
             return androidAppiumService.openApp(tCExecution.getSession(), value1, value2);
+
+        } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+            return iosAppiumService.openApp(tCExecution.getSession(), value1, value2);
+
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replace("%ACTION%", "OpenApp"));
@@ -1134,14 +1165,20 @@ public class ActionService implements IActionService {
         /**
          * Check value1 is not null or empty
          */
-        if (value1 == null || "".equals(value1)) {
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSEAPP);
-        }
-
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+            if (value1 == null || "".equals(value1)) {
+                return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSEAPP);
+            }
             return sikuliService.doSikuliActionCloseApp(tCExecution.getSession(), value1);
+
+        } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+            return androidAppiumService.closeApp(tCExecution.getSession());
+
+        } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+            return iosAppiumService.closeApp(tCExecution.getSession());
         }
+
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replace("%ACTION%", "CloseApp"));
         message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
@@ -1188,6 +1225,18 @@ public class ActionService implements IActionService {
             }
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action KeyPress :" + ex);
+            return ex.getMessageError();
+        }
+    }
+
+    private MessageEvent doActionWaitNetworkTrafficIdle(TestCaseExecution tCExecution) {
+        try {
+
+            return executorService.waitForIdleNetwork(tCExecution.getRobotExecutorObj().getExecutorExtensionHost(), tCExecution.getRobotExecutorObj().getExecutorExtensionPort(),
+                    tCExecution.getRemoteProxyUUID(), tCExecution.getSystem());
+
+        } catch (CerberusEventException ex) {
+            LOG.fatal("Error doing Action WaitNetworkTrafficIdle :" + ex);
             return ex.getMessageError();
         }
     }
@@ -1325,9 +1374,11 @@ public class ActionService implements IActionService {
         if (lastServiceCalledAnswer.getItem() != null) {
             AppService lastServiceCalled = (AppService) lastServiceCalledAnswer.getItem();
             tCExecution.setLastServiceCalled(lastServiceCalled);
+            tCExecution.setOriginalLastServiceCalled(lastServiceCalled.getResponseHTTPBody());
+            tCExecution.setOriginalLastServiceCalledContent(lastServiceCalled.getResponseHTTPBodyContentType());
 
             /**
-             * Record the Request and Response in filesystem.
+             * Record the Request and Response in file system.
              */
             testCaseStepActionExecution.addFileList(recorderService.recordServiceCall(tCExecution, testCaseStepActionExecution, 0, null, lastServiceCalled));
         }
@@ -1491,7 +1542,7 @@ public class ActionService implements IActionService {
         return message;
     }
 
-    public MessageEvent doActionSetNetworkTrafficContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String urlToFilter) throws IOException {
+    public MessageEvent doActionSetNetworkTrafficContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String urlToFilter, String withResponseContent) throws IOException {
         MessageEvent message;
         try {
             // Check that robot has executor activated
@@ -1504,21 +1555,20 @@ public class ActionService implements IActionService {
             /**
              * Building the url to get the Har file from cerberus-executor
              */
-            String url = "http://" + exe.getRobotExecutorObj().getExecutorExtensionHost() + ":" + exe.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + exe.getRemoteProxyUUID();
-            if (!StringUtil.isNullOrEmpty(urlToFilter)) {
-                url += "&requestUrl=" + urlToFilter;
-            }
+            String url = executorService.getExecutorURL(urlToFilter, ParameterParserUtil.parseBooleanParam(withResponseContent, false),
+                    exe.getRobotExecutorObj().getExecutorExtensionHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID());
 
-            LOG.debug("Getting HAR content from URL : " + url);
+            LOG.debug("Getting Network Traffic content from URL : " + url);
 
             AnswerItem<AppService> result = new AnswerItem<>();
-            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", exe);
+            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, exe);
 
             AppService appSrv = result.getItem();
             JSONObject har = new JSONObject(appSrv.getResponseHTTPBody());
 
-            har = harService.enrichWithStats(har, exe.getCountryEnvironmentParameters().getDomain());
+            har = harService.enrichWithStats(har, exe.getCountryEnvironmentParameters().getDomain(), exe.getSystem());
             appSrv.setResponseHTTPBody(har.toString());
+            appSrv.setResponseHTTPBodyContentType(AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON);
             appSrv.setRecordTraceFile(false);
 
             exe.setLastServiceCalled(appSrv);
@@ -1526,7 +1576,7 @@ public class ActionService implements IActionService {
             /**
              * Record the Request and Response in file system.
              */
-            exe.addFileList(recorderService.recordHarContent(exe, actionexe, 0, null, result.getItem()));
+            actionexe.addFileList(recorderService.recordNetworkTrafficContent(exe, actionexe, 0, null, result.getItem(), true));
 
             // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
             exe.setAppTypeEngine(Application.TYPE_SRV);
@@ -1536,6 +1586,39 @@ public class ActionService implements IActionService {
         } catch (Exception ex) {
             LOG.error("Error doing Action setNetworkTrafficContent :" + ex);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETNETWORKTRAFFICCONTENT);
+            message.setDescription(message.getDescription().replace("%DETAIL%", ex.toString()));
+            return message;
+        }
+    }
+
+    public MessageEvent doActionSetServiceCallContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe) throws IOException {
+        MessageEvent message;
+        try {
+            
+            // Check that robot has executor activated
+            if (exe.getLastServiceCalled() == null) {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETSERVICECALLCONTENT_NOLASTCALLDONE);
+                return message;
+            }
+            
+            // Force last service call content to JSON Service Call Structure & disable file save.
+            exe.getLastServiceCalled().setResponseHTTPBody(exe.getLastServiceCalled().toJSONOnExecution().toString());
+            exe.getLastServiceCalled().setResponseHTTPBodyContentType(AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON);
+            exe.getLastServiceCalled().setRecordTraceFile(false);
+
+            /**
+             * Record the Request and Response in file system.
+             */
+            actionexe.addFileList(recorderService.recordServiceCallContent(exe, actionexe, exe.getLastServiceCalled()));
+
+            // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
+            exe.setAppTypeEngine(Application.TYPE_SRV);
+
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETSERVICECALLCONTENT);
+            return message;
+        } catch (Exception ex) {
+            LOG.error("Error doing Action setServiceCallContent :" + ex);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETSERVICECALLCONTENT);
             message.setDescription(message.getDescription().replace("%DETAIL%", ex.toString()));
             return message;
         }

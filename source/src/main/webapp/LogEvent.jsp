@@ -42,13 +42,10 @@
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/pages/logevent/editLogEvent.html"%> 
-            
+
             <h1 class="page-title-line" id="title">Log Viewer</h1>
+
             <div class="panel panel-default">
-                <div class="panel-heading" id="logViewerListLabel">
-                    <span class="glyphicon glyphicon-list"></span>
-                    Log Viewer
-                </div>
                 <div class="panel-body" id="logViewer">
                     <table id="logViewerTable" class="table table-bordered table-hover display" name="logViewerTable"></table>
                     <div class="marginBottom20"></div>

@@ -20,6 +20,8 @@
 package org.cerberus.servlet.information;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,11 +29,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.IMyVersionService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.database.IDatabaseVersioningService;
+import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.version.Infos;
-import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -43,10 +48,18 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadCerberusInformation extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ReadCerberusInformation.class);
-    
+
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S'Z'";
+
+    @Autowired
     private IDatabaseVersioningService databaseVersionService;
+    @Autowired
     private IMyVersionService myVersionService;
-    
+    @Autowired
+    private IExecutionThreadPoolService executionThreadPoolService;
+    @Autowired
+    private IParameterService parameterService;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -69,8 +82,14 @@ public class ReadCerberusInformation extends HttpServlet {
             data.put("projectName", infos.getProjectName());
             data.put("projectVersion", infos.getProjectVersion());
             data.put("environment", System.getProperty("org.cerberus.environment"));
+            parameterService = appContext.getBean(IParameterService.class);
+            data.put("isGlobalSplashPageActive", parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_splashpage_enable, "", false));
+            executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
+            data.put("isInstanceSplashPageActive", executionThreadPoolService.isSplashPageActive());
             databaseVersionService = appContext.getBean(IDatabaseVersioningService.class);
             data.put("databaseCerberusTargetVersion", databaseVersionService.getSQLScript().size());
+            Date now = new Date();
+            data.put("serverDate", new SimpleDateFormat(DATE_FORMAT).format(now));
 
             myVersionService = appContext.getBean(IMyVersionService.class);
             if (myVersionService.findMyVersionByKey("database") != null) {
@@ -78,9 +97,8 @@ public class ReadCerberusInformation extends HttpServlet {
             } else {
                 data.put("databaseCerberusCurrentVersion", "0");
             }
-
-        } catch (JSONException ex) {
-            LOG.warn(ex);
+        } catch (Exception ex) {
+            LOG.error(ex, ex);
         }
         response.getWriter().print(data.toString());
     }

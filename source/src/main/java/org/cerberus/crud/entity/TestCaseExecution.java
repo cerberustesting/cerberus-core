@@ -72,7 +72,7 @@ public class TestCaseExecution {
     private String crbVersion;
     private String executor;
     private String screenSize;
-    private String conditionOper;
+    private String conditionOperator;
     private String conditionVal1Init;
     private String conditionVal2Init;
     private String conditionVal3Init;
@@ -113,6 +113,7 @@ public class TestCaseExecution {
     // Objects.
     private TestCaseExecutionQueue testCaseExecutionQueue;
     private Application applicationObj;
+    // App Type that is used by the engine to interpret the context. By defaut it is linked to the Type of the application but it can be temporary switch to a different type.
     private String appTypeEngine;
     private Invariant CountryObj;
     private Test testObj;
@@ -147,6 +148,8 @@ public class TestCaseExecution {
     private Robot robotObj;
     private RobotExecutor robotExecutorObj;
     private AppService lastServiceCalled;
+    private String originalLastServiceCalled; // Used in order to save the last call when using the action setServiceCallContent.
+    private String originalLastServiceCalledContent; // Used in order to save the last call when using the action setServiceCallContent.
     private Integer nbExecutions; // Has the nb of execution that was necessary to execute the testcase.
     // Global parameters.
     private Integer cerberus_action_wait_default;
@@ -160,6 +163,8 @@ public class TestCaseExecution {
     private String remoteProxyLastHarMD5;
     // Kafka Consumers
     private HashMap<String, Map<TopicPartition, Long>> kafkaLatestOffset;
+    // Http Stats
+    private TestCaseExecutionHttpStat httpStat;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -185,6 +190,10 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_QE = "QE"; // Test is stuck in Queue.
     public static final String CONTROLSTATUS_QE_COL = "#5C025C"; // Test is stuck in Queue.
 
+    public enum ControlStatus {
+        OK, KO, FA, NA, NE, WE, PE, CA, QU, QE
+    };
+
     public static final String MANUAL_Y = "Y";
     public static final String MANUAL_N = "N";
     public static final String MANUAL_A = "A";
@@ -192,6 +201,14 @@ public class TestCaseExecution {
     public static final String ROBOTPROVIDER_BROWSERSTACK = "BROWSERSTACK";
     public static final String ROBOTPROVIDER_KOBITON = "KOBITON";
     public static final String ROBOTPROVIDER_NONE = "NONE";
+
+    public TestCaseExecutionHttpStat getHttpStat() {
+        return httpStat;
+    }
+
+    public void setHttpStat(TestCaseExecutionHttpStat httpStat) {
+        this.httpStat = httpStat;
+    }
 
     public String getAppTypeEngine() {
         return appTypeEngine;
@@ -377,6 +394,23 @@ public class TestCaseExecution {
         this.lastServiceCalled = lastServiceCalled;
     }
 
+    public String getOriginalLastServiceCalled() {
+        return originalLastServiceCalled;
+    }
+
+    public void setOriginalLastServiceCalled(String originalLastServiceCalled) {
+        LOG.debug("TOTO set.");
+        this.originalLastServiceCalled = originalLastServiceCalled;
+    }
+
+    public String getOriginalLastServiceCalledContent() {
+        return originalLastServiceCalledContent;
+    }
+
+    public void setOriginalLastServiceCalledContent(String originalLastServiceCalledContent) {
+        this.originalLastServiceCalledContent = originalLastServiceCalledContent;
+    }
+
     public long getLastWebsocketPush() {
         return lastWebsocketPush;
     }
@@ -385,12 +419,12 @@ public class TestCaseExecution {
         this.lastWebsocketPush = lastWebsocketPush;
     }
 
-    public String getConditionOper() {
-        return conditionOper;
+    public String getConditionOperator() {
+        return conditionOperator;
     }
 
-    public void setConditionOper(String conditionOper) {
-        this.conditionOper = conditionOper;
+    public void setConditionOperator(String conditionOperator) {
+        this.conditionOperator = conditionOperator;
     }
 
     public String getConditionVal1Init() {
@@ -1067,7 +1101,7 @@ public class TestCaseExecution {
             result.put("crbVersion", this.getCrbVersion());
             result.put("executor", this.getExecutor());
             result.put("screenSize", this.getScreenSize());
-            result.put("conditionOper", this.getConditionOper());
+            result.put("conditionOperator", this.getConditionOperator());
             result.put("conditionVal1Init", this.getConditionVal1Init());
             result.put("conditionVal2Init", this.getConditionVal2Init());
             result.put("conditionVal3Init", this.getConditionVal3Init());
@@ -1137,6 +1171,10 @@ public class TestCaseExecution {
                     }
                 }
                 result.put("fileList", array);
+
+                if (this.getHttpStat() != null) {
+                    result.put("httpStat", this.getHttpStat().toJson());
+                }
 
             }
 

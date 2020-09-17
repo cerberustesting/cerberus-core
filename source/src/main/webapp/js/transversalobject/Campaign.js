@@ -50,7 +50,7 @@ function renderOptionsForCampaign_Label(tableId) {
     $("#" + tableId + "_wrapper #labelSelect").select2();
 
     $("#" + tableId + "_wrapper #labelSelect2").select2(camp_getComboConfigLabel("", "", tableId));
-    $('#labelSelect2').on('select2:select', function(e) {
+    $('#labelSelect2').on('select2:select', function (e) {
         $('#addLabelTestcampaignButton').prop("disabled", false);
     });
 
@@ -66,17 +66,17 @@ function camp_getComboConfigLabel(labelType, system, tableId) {
                     url: "ReadLabel?bStrictSystemFilter=Y&iSortCol_0=0&sSortDir_0=desc&sColumns=type&iDisplayLength=30&sSearch_0=" + labelType + "&system=" + system,
                     dataType: 'json',
                     delay: 250,
-                    data: function(params) {
+                    data: function (params) {
                         params.page = params.page || 1;
                         return {
                             sSearch: params.term, // search term
                             iDisplayStart: (params.page * 30) - 30
                         };
                     },
-                    processResults: function(data, params) {
+                    processResults: function (data, params) {
                         params.page = params.page || 1;
                         return {
-                            results: $.map(data.contentTable, function(obj) {
+                            results: $.map(data.contentTable, function (obj) {
                                 if (!(findValueTableDataByCol(tableId, 4, obj.label))) {
                                     return {id: obj.id, label: obj.label, color: obj.color, description: obj.description, system: obj.system, type: obj.type};
                                 }
@@ -90,7 +90,7 @@ function camp_getComboConfigLabel(labelType, system, tableId) {
                     allowClear: true
                 },
                 width: "100%",
-                escapeMarkup: function(markup) {
+                escapeMarkup: function (markup) {
                     return markup;
                 }, // let our custom formatter work
                 minimumInputLength: 0,
@@ -195,7 +195,7 @@ function viewEntryClick(param) {
     var doc = new Doc();
     var formEdit = $('#viewTestcampaignModal');
 
-    $("[name='viewTestcampaignField']").html(doc.getDocLabel("page_testcampaign", "viewtestcampaign_field") + " " + param);
+    $("[name='viewTestcampaignField']").html(doc.getDocLabel("page_testcampaign", "viewtestcampaign_field") + " : " + param);
 
     $("#campaignKey").val(param);
 
@@ -203,14 +203,14 @@ function viewEntryClick(param) {
 
 
     var jqxhr = $.getJSON("ReadCampaign?testcase=true&", "campaign=" + param);
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
         /* TESTCASE */
 
         var array = [];
 
-        $.each(obj.testcase, function(e) {
+        $.each(obj.testcase, function (e) {
             array.push(
                     [obj.testcase[e].test, obj.testcase[e].testCase, obj.testcase[e].application, obj.testcase[e].description, obj.testcase[e].status]
                     );
@@ -240,7 +240,7 @@ function viewStatEntryClick(param) {
     var doc = new Doc();
     var formEdit = $('#viewStatcampaignModal');
 
-    $("[name='viewStatcampaignField']").html(doc.getDocLabel("page_testcampaign", "viewtestcampaign_field") + " " + param);
+    $("[name='viewStatcampaignField']").html(doc.getDocLabel("page_testcampaign", "viewstatcampaign_field") + " : " + param);
 
     $("#campaignKey").val(param);
 
@@ -248,14 +248,14 @@ function viewStatEntryClick(param) {
 
 
     var jqxhr = $.getJSON("ReadCampaign?tag=true&", "campaign=" + param);
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
         /* TAG */
 
         var array = [];
 
-        $.each(obj.tag, function(e) {
+        $.each(obj.tag, function (e) {
             array.push(
                     [obj.tag[e], obj.tag[e].tag, obj.tag[e].nbExe, obj.tag[e].nbExeUsefull, obj.tag[e].DateCreated, obj.tag[e].DateEndQueue, obj.tag[e].ciResult, obj.tag[e].ciScore]
                     );
@@ -307,7 +307,7 @@ function editEntryClick(param) {
     showLoader("#testcampaignList");
 
     var jqxhr = $.getJSON("ReadCampaign?parameter=true&label=true", "campaign=" + param);
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
         var parameters = []
         var criterias = []
@@ -336,7 +336,7 @@ function editEntryClick(param) {
         formEdit.find("#group1").prop("value", obj["group1"]);
         formEdit.find("#group2").prop("value", obj["group2"]);
         formEdit.find("#group3").prop("value", obj["group3"]);
-        if (tinyMCE.get('longDescription') != null)
+        if (tinyMCE.get('longDescription') !== null)
             tinyMCE.get('longDescription').setContent(obj["longDescription"]);
 
 //        formEdit.find("#longDescription").prop("value", obj["longDescription"]);
@@ -374,7 +374,7 @@ function editEntryClick(param) {
 
         var array = [];
 
-        $.each(obj.label, function(e) {
+        $.each(obj.label, function (e) {
             array.push(
                     [obj.label[e].campaign, obj.label[e].campaignLabelID, obj.label[e].LabelId, obj.label[e].label.system, obj.label[e].label.label, obj.label[e].label.color, obj.label[e].label.description, obj.label[e].label.type]
                     );
@@ -394,7 +394,7 @@ function editEntryClick(param) {
 
         var array = [];
 
-        $.each(parameters, function(e) {
+        $.each(parameters, function (e) {
             array.push([parameters[e].campaign, parameters[e].campaignparameterID, parameters[e].parameter, parameters[e].value])
         });
 
@@ -416,7 +416,7 @@ function editEntryClick(param) {
 
         var array = [];
 
-        $.each(criterias, function(e) {
+        $.each(criterias, function (e) {
             array.push([criterias[e].campaign, criterias[e].campaignparameterID, criterias[e].parameter, criterias[e].value])
         });
 
@@ -536,7 +536,7 @@ function editEntryModalSaveHandler() {
             ManualExecution: data.manualExecution,
             SchedulerList: JSON.stringify(table_scheduler)
         },
-        success: function(data) {
+        success: function (data) {
 //            data = JSON.parse(data);
             hideLoaderInModal('#editTestcampaignModal');
             if (getAlertType(data.messageType) === 'success') {
@@ -698,7 +698,7 @@ function addEntryModalSaveHandler() {
 
 
         },
-        success: function(data) {
+        success: function (data) {
 //            data = JSON.parse(data);
             hideLoaderInModal('#editTestcampaignModal');
             if (getAlertType(data.messageType) === 'success') {
@@ -743,10 +743,10 @@ function addLabelEntryClick(tableId) {
 }
 
 function removeLabelEntryClick(tableId, key) {
-    $('#' + tableId + '_wrapper #removeLabel').filter(function(i, e) {
+    $('#' + tableId + '_wrapper #removeLabel').filter(function (i, e) {
         return $(e).attr("key") == key;
     }).off().prop("disabled", true);
-    $("#" + tableId).DataTable().rows(function(i, d, n) {
+    $("#" + tableId).DataTable().rows(function (i, d, n) {
         return d[2] == key;
     }).remove().draw();
     updateSelectLabel(tableId);
@@ -781,10 +781,10 @@ function addCriteriaEntryClick(tableId) {
 }
 
 function removeParameterEntryClick(tableId, key, key1) {
-    $('#' + tableId + '_wrapper #removeTestbattery').filter(function(i, e) {
+    $('#' + tableId + '_wrapper #removeTestbattery').filter(function (i, e) {
         return $(e).attr("key") == key && $(e).attr("key1") == key1;
     }).off().prop("disabled", true);
-    $("#" + tableId).DataTable().rows(function(i, d, n) {
+    $("#" + tableId).DataTable().rows(function (i, d, n) {
         return d[2] == key && d[3] == key1;
     }).remove().draw()
     updateSelectParameter(tableId);
@@ -805,12 +805,12 @@ function updateSelectParameter(id) {
     } else {
         data = getSelectInvariant(val, false, true);
     }
-
+    console.info(data);
     $("#" + id + "_wrapper #parameterTestSelect2").empty();
     var optionList = "";
     for (var i = 0; i < data.find("option").length; i++) {
         if (!(findValueTableDataByCol(id, 2, val) && findValueTableDataByCol(id, 3, data.find("option")[i].value)))
-            optionList += "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].text + "</option>";
+            optionList += "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].value + "</option>";
     }
     $("#" + id + "_wrapper #parameterTestSelect2").append(optionList);
     if ($("#" + id + '_wrapper #parameterTestSelect2 option').size() <= 0) {
@@ -818,7 +818,7 @@ function updateSelectParameter(id) {
         $("#" + id + '_wrapper #addParameterTestcampaignButton').prop("disabled", true);
     } else {
         $("#" + id + '_wrapper #parameterTestSelect2').parent().show();
-        $("#" + id + '_wrapper #addParameterTestcampaignButton').bind("click", function() {
+        $("#" + id + '_wrapper #addParameterTestcampaignButton').bind("click", function () {
             addParameterEntryClick(id);
         }).prop("disabled", false);
     }
@@ -848,7 +848,7 @@ function updateSelectCriteria(id) {
         $("#" + id + '_wrapper #addCriteriaTestcampaignButton').prop("disabled", true);
     } else {
         $("#" + id + '_wrapper #criteriaTestSelect2').parent().show();
-        $("#" + id + '_wrapper #addCriteriaTestcampaignButton').bind("click", function() {
+        $("#" + id + '_wrapper #addCriteriaTestcampaignButton').bind("click", function () {
             addCriteriaEntryClick(id);
         }).prop("disabled", false);
     }
@@ -857,7 +857,7 @@ function updateSelectCriteria(id) {
 function findValueTableDataByCol(tableId, colIndex, value) {
     var result = false;
     //Iterate all td's in second column
-    $.each($("#" + tableId).DataTable().rows().data(), function(i, v) {
+    $.each($("#" + tableId).DataTable().rows().data(), function (i, v) {
         if (v[colIndex] == value) {
             result = true;
         }
@@ -873,7 +873,7 @@ function aoColumnsFunc_Label(tableId) {
             "bSortable": false,
             "bSearchable": false,
             "title": doc.getDocLabel("page_testcampaign", "button_col"),
-            "mRender": function(data, type, obj) {
+            "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
                 var removeButton = '<button id="removeTestlabel" key="' + obj[2] + '" onclick="removeLabelEntryClick(\'' + tableId + '\',\'' + obj[2] + '\');"\n\
@@ -891,7 +891,7 @@ function aoColumnsFunc_Label(tableId) {
             "data": "4",
             "sName": "label",
             "title": doc.getDocLabel("label", "label"),
-            "mRender": function(data, type, obj) {
+            "mRender": function (data, type, obj) {
                 var result = "<div style='float:left;height: 34px'><span class='label label-primary' style='background-color:"
                         + obj[5] + "' data-toggle='tooltip' data-labelid='"
                         + obj[2] + "' title='"
@@ -914,7 +914,7 @@ function aoColumnsFunc_Parameter(tableId) {
             "bSortable": false,
             "bSearchable": false,
             "title": doc.getDocLabel("page_testcampaign", "button_col"),
-            "mRender": function(data, type, obj) {
+            "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
                 var removeButton = '<button id="removeTestparameter" key="' + obj[2] + '" key1="' + obj[3] + '" onclick="removeParameterEntryClick(\'' + tableId + '\',\'' + obj[2] + '\',\'' + obj[3] + '\');"\n\
                                         class="removeTestparameter btn btn-default btn-xs margin-right5" \n\
@@ -937,7 +937,7 @@ function aoColumnsFunc_TestCase() {
         {"data": "0", "sName": "tbc.Test", "title": doc.getDocLabel("test", "Test")},
         {
             "data": "1", "sName": "tbc.Testcase", "title": doc.getDocLabel("testcase", "TestCase"),
-            "mRender": function(data, type, obj) {
+            "mRender": function (data, type, obj) {
                 return "<a target=\"_blank\" href='TestCaseScript.jsp?test=" + obj[0] + "&testcase=" + obj[1] + "'>" + obj[1] + "</a>";
             }
         },
@@ -957,7 +957,7 @@ function aoColumnsFunc_Tag() {
             "data": "6",
             "sName": "ciresult",
             "sWidth": "40px",
-            "mRender": function(data, type, obj) {
+            "mRender": function (data, type, obj) {
                 if (isEmpty(obj[0].ciResult)) {
                     return "";
                 } else {
@@ -970,7 +970,7 @@ function aoColumnsFunc_Tag() {
             "data": null,
             "sName": "result",
             "sWidth": "150px",
-            "mRender": function(data, type, obj) {
+            "mRender": function (data, type, obj) {
                 return result(obj[0]);
             },
             "title": doc.getDocLabel("page_tag", "result")
@@ -980,7 +980,7 @@ function aoColumnsFunc_Tag() {
             "sName": "duration",
             "sWidth": "40px",
             className: 'dt-body-right',
-            "mRender": function(data, type, obj) {
+            "mRender": function (data, type, obj) {
                 return getDuration(obj[0]);
             },
             "title": doc.getDocOnline("page_tag", "duration")
@@ -990,7 +990,7 @@ function aoColumnsFunc_Tag() {
             "data": null,
             "sName": "reliability",
             "sWidth": "150px",
-            "mRender": function(data, type, obj) {
+            "mRender": function (data, type, obj) {
                 return reliability(obj[0]);
             },
             "title": doc.getDocOnline("page_tag", "reliability")
@@ -999,7 +999,7 @@ function aoColumnsFunc_Tag() {
             "data": null,
             "sName": "exepermin",
             "sWidth": "40px",
-            "mRender": function(data, type, obj) {
+            "mRender": function (data, type, obj) {
                 var dur = getDuration(obj[0]);
                 if (dur > 0) {
                     return Math.round((obj[0].nbExe / dur) * 10) / 10;
@@ -1014,7 +1014,7 @@ function aoColumnsFunc_Tag() {
             "data": "5",
             "sName": "DateEndQueue",
             "sWidth": "150px",
-            "mRender": function(data, type, obj) {
+            "mRender": function (data, type, obj) {
                 return getDate(obj[0].DateEndQueue);
             },
             "title": doc.getDocOnline("tag", "dateendqueue")}
@@ -1078,8 +1078,8 @@ function loadSchedulerTable(name) {
     table.append(row);
 
     var jqxhr = $.getJSON("ReadScheduleEntry", "&name=" + name);
-    $.when(jqxhr).then(function(result) {
-        $.each(result["contentTable"], function(idx, obj) {
+    $.when(jqxhr).then(function (result) {
+        $.each(result["contentTable"], function (idx, obj) {
             obj.toDelete = false;
             appendSchedulerRow(obj);
         });
@@ -1120,7 +1120,7 @@ function appendSchedulerRow(scheduler) {
     var td1 = $("<td class='row form-group'></td>").append(deleteBtn);
     var td2 = $("<td class='row form-group'></td>").append(drow1);
 
-    deleteBtn.click(function() {
+    deleteBtn.click(function () {
         scheduler.toDelete = (scheduler.toDelete) ? false : true;
         if (scheduler.toDelete) {
             row.addClass("danger");
@@ -1129,15 +1129,15 @@ function appendSchedulerRow(scheduler) {
         }
     });
 
-    cronInput.change(function() {
+    cronInput.change(function () {
         scheduler.cronDefinition = $(this).val();
     })
 
-    descInput.change(function() {
+    descInput.change(function () {
         scheduler.description = $(this).val();
     })
 
-    activeInput.change(function() {
+    activeInput.change(function () {
         if ($(this).prop("checked")) {
             scheduler.active = "Y";
         } else {

@@ -19,7 +19,7 @@
  */
 /**
  * get language configuration for dataTable creation
- * @returns {JSONObject} 
+ * @returns {JSONObject}
  */
 function getDataTableLanguage() {
     var doc = new Doc();
@@ -64,7 +64,7 @@ function readDocFromDatabase(lang) {
         data: {lang: lang},
         async: false,
         dataType: 'json',
-        success: function (data) {
+        success: function(data) {
             var doc = data["labelTable"];
             sessionStorage.setItem("doc", JSON.stringify(doc));
         }
@@ -99,7 +99,7 @@ function Doc() {
  * @param {docField} Field of the documentation data.
  * @returns {String} text value of the field name from the documentation
  */
-Doc.prototype.getDocLabel = function (docTable, docField) {
+Doc.prototype.getDocLabel = function(docTable, docField) {
     try {
         if (!(this.table.hasOwnProperty(docTable)))
             throw "docTable " + docTable + " not found";
@@ -109,7 +109,7 @@ Doc.prototype.getDocLabel = function (docTable, docField) {
     } catch (err) {
         var res;
         res = docField + " -- Missing doc !!!";
-        return res;     
+        return res;
     }
 };
 
@@ -119,7 +119,7 @@ Doc.prototype.getDocLabel = function (docTable, docField) {
  * @param {docField} Field of the documentation data.
  * @returns {String} text value of the Description from the documentation
  */
-Doc.prototype.getDocDescription = function (docTable, docField) {
+Doc.prototype.getDocDescription = function(docTable, docField) {
     try {
         if (!(this.table.hasOwnProperty(docTable)))
             throw "docTable " + docTable + " not found";
@@ -139,15 +139,15 @@ Doc.prototype.getDocDescription = function (docTable, docField) {
  * @param {docField} Field of the documentation data.
  * @returns {String} html value of the field name from the documentation
  */
-Doc.prototype.getDocOnline = function (docTable, docField) {
+Doc.prototype.getDocOnline = function(docTable, docField) {
     var res;
     var user = getUser();
 
     try {
-        if (!(this.table.hasOwnProperty(docTable))){
-        	 throw "docTable " + docTable + " not found";
-        }   
-        if (!(this.table[docTable].hasOwnProperty(docField))){
+        if (!(this.table.hasOwnProperty(docTable))) {
+            throw "docTable " + docTable + " not found";
+        }
+        if (!(this.table[docTable].hasOwnProperty(docField))) {
             throw "docField " + docField + " not found";
         }
         if (!(this.table[docTable][docField].havedocDesc)) { // If the entry has no detail documentation, we do not display the ? with access to the detail.
@@ -155,18 +155,18 @@ Doc.prototype.getDocOnline = function (docTable, docField) {
         } else {
             var linkToDoc = "";
             if (this.table[docTable][docField].haveDocAnchor) {
-            	res = this.table[docTable][docField].docLabel +
-                " <a tabindex='1' data-html='true' href='./Documentation.jsp#" + this.table[docTable][docField].docAnchor + "' class=\"docOnline\" onclick=\"window.open=('this.href'); target='_blank';stopPropagation(event)\" \n\
+                res = this.table[docTable][docField].docLabel +
+                        " <a tabindex='1' data-html='true' href='./Documentation.jsp#" + this.table[docTable][docField].docAnchor + "' class=\"docOnline\" onclick=\"window.open=('this.href'); target='_blank';stopPropagation(event)\" \n\
                 data-toggle='popover' \n\
                 data-placement='auto' \n\
                 data-trigger='hover' \n\
                 title='" + this.table[docTable][docField].docLabel + "' \n\
                 data-content='" + $("<div>" + this.table[docTable][docField].docDesc.split("'").join("&#8217;") + "</div>").prop('outerHTML') + "'>\n\
                 <span class=\"glyphicon glyphicon-question-sign\"></span></a>";
-            	//linkToDoc = "</br><br><a href='./Documentation.jsp#" + this.table[docTable][docField].docAnchor + "'><span class=\"glyphicon glyphicon-search\"> Documentation</span></a>";
-            }else{
-            	res = this.table[docTable][docField].docLabel +
-                " <a tabindex='1' data-html='true'  class=\"docOnline\" onclick=\"stopPropagation(event)\" \n\
+                //linkToDoc = "</br><br><a href='./Documentation.jsp#" + this.table[docTable][docField].docAnchor + "'><span class=\"glyphicon glyphicon-search\"> Documentation</span></a>";
+            } else {
+                res = this.table[docTable][docField].docLabel +
+                        " <a tabindex='1' data-html='true'  class=\"docOnline\" onclick=\"stopPropagation(event)\" \n\
                 data-toggle='popover' \n\
                 data-placement='auto' \n\
                 data-trigger='hover' \n\
@@ -174,10 +174,11 @@ Doc.prototype.getDocOnline = function (docTable, docField) {
                 data-content='" + $("<div>" + this.table[docTable][docField].docDesc.split("'").join("&#8217;") + "</div>").prop('outerHTML') + "'>\n\
                 <span class=\"glyphicon glyphicon-question-sign\"></span></a>";
             }
-            
-            
+
+
         }
     } catch (err) {
+        console.error("no doc found for table = " + doctable + " and field = " + docfield);
         res = docField + " <a class=\"nodoc\" onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-exclamation-sign\"></span></a>";
     } finally {
         return res;

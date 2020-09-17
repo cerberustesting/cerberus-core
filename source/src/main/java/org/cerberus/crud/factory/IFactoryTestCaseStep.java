@@ -27,7 +27,7 @@ import org.cerberus.crud.entity.TestCaseStep;
  */
 public interface IFactoryTestCaseStep {
 
-    TestCaseStep create(String test, String testCase, int step, int sort, String loop, String conditionOper, String conditionVal1, String conditionVal2, String conditionVal3, String description,
+    TestCaseStep create(String test, String testCase, int step, int sort, String loop, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String description,
             String useStep, String useStepTest, String useStepTestCase, Integer useStepStep, String inLibrary, String forceExe, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
 }

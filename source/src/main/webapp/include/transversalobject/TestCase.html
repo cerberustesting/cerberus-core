@@ -37,14 +37,14 @@
                             <li><a data-toggle="tab" href="#tabTCLabel" id="editTCLabel" name="tabLabel">Label</a></li>
                             <li><a data-toggle="tab" href="#tabTCBugReport" id="editTCBugReport" name="tabBugReport">Bug Report</a></li>
                             <li><a data-toggle="tab" href="#tabTCDependency" id="editTCDependency" name="tabDependency" class="hideFeatureTCDependencies">Dependency</a></li>
-                            <li><a data-toggle="tab" href="#tabTCTracability" id="editTCtracability" name="tabTracability">Tracability</a></li>
+                            <li><a data-toggle="tab" href="#tabTCTraceability" id="editTCtracability" name="tabTracability">Traceability</a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="center marginTop25 tab-pane fade in active" id="tabTCDefinition">
                                 <div class="row">
                                     <div class="form-group form-group-sm col-sm-12">
-                                        <label for="shortDesc" name="shortDescField">TestCase short description</label>
-                                        <input type="text" class="form-control input-sm" name="shortDesc" id="shortDesc"/>
+                                        <label for="description" name="testCaseDescriptionField">TestCase short description</label>
+                                        <input type="text" class="form-control input-sm" name="description" id="description"/>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -57,8 +57,8 @@
                                         <select type="text" class="form-control input-sm" name="status" id="status"></select>
                                     </div>
                                     <div class="form-group form-group-sm col-sm-3">
-                                        <label for="group" name="typeField">Type</label>
-                                        <select type="text" class="form-control input-sm" name="group" id="group">
+                                        <label for="type" name="typeField">Type</label>
+                                        <select type="text" class="form-control input-sm" name="type" id="type">
                                         </select>
                                     </div>
                                     <div class="form-group form-group-sm col-sm-2">
@@ -68,32 +68,43 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group form-group-sm col-sm-12">
-                                        <label for="behaviorOrValueExpected" name="behaviorOrValueExpectedField">Behavior or value expected</label>
-                                        <textarea id="behaviorOrValueExpected" name="behaviorOrValueExpected" class="form-control wysiwyg" style="height: 200px"></textarea>
+                                        <label for="detailedDescription" name="detailedDescriptionField">Detailed description</label>
+                                        <textarea id="detailedDescription" name="detailedDescription" class="form-control wysiwyg" style="height: 200px"></textarea>
                                     </div>
                                 </div>
                             </div>
                             <div class="center tab-pane fade marginTop25" id="tabTCSettings">
                                 <div class="row">
                                     <div class="form-group form-group-sm col-sm-3">
-                                        <label for="active" name="activeField">Active</label>
-                                        <select type="text" class="form-control input-sm" name="active" id="active"></select>
-                                    </div>
-                                    <div class="form-group form-group-sm col-sm-3">
-                                        <label for="actQA" name="actQAField">Active QA</label>
-                                        <select type="text" class="form-control input-sm" name="activeQA" id="actQA">
+                                        <label for="isActive" name="isActiveField">Active</label>
+                                        <select type="text" class="form-control input-sm" name="isActive" id="isActive">
+                                            <option value="true">true</option>
+                                            <option value="false">false</option>
                                         </select>
                                     </div>
                                     <div class="form-group form-group-sm col-sm-3">
-                                        <label for="actUAT" name="actUATField">Active UAT</label>
-                                        <select type="text" class="form-control input-sm" name="activeUAT" id="actUAT"></select>
+                                        <label for="isActiveQA" name="isActiveQAField">Active QA</label>
+                                        <select type="text" class="form-control input-sm" name="isActiveQA" id="isActiveQA">
+                                            <option value="true">true</option>
+                                            <option value="false">false</option>
+                                        </select>
                                     </div>
                                     <div class="form-group form-group-sm col-sm-3">
-                                        <label for="actProd" name="actProdField">Active Prod</label>
-                                        <select type="text" class="form-control input-sm" name="activeProd" id="actProd"></select>
+                                        <label for="isActiveUAT" name="isActiveUATField">Active UAT</label>
+                                        <select type="text" class="form-control input-sm" name="isActiveUAT" id="isActiveUAT">
+                                            <option value="true">true</option>
+                                            <option value="false">false</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-sm-3">
+                                        <label for="isActivePROD" name="isActivePRODField">Active Prod</label>
+                                        <select type="text" class="form-control input-sm" name="isActivePROD" id="isActivePROD">
+                                            <option value="true">true</option>
+                                            <option value="false">false</option>
+                                        </select>
                                     </div>
                                 </div>
-                                <label name="countryListLabel">Countries :</label>
+                                <label name="countriesLabel">Countries :</label>
                                 <div class="well well-sm">
                                     <div class="row">
                                         <div class="form-group col-xs-1">
@@ -103,7 +114,7 @@
                                             </label>
                                         </div>
                                         <div class="form-group col-xs-11">
-                                            <div id="countryList" name="countryList" >
+                                            <div id="countries" name="countries" >
                                             </div>
                                         </div>
                                     </div>
@@ -112,30 +123,30 @@
                                 <div class="well well-sm">
                                     <div class="row">
                                         <div class="form-group form-group-sm col-sm-3">
-                                            <label for="fromSprint" name="fromSprintField">From Sprint</label>
-                                            <select type="text" class="form-control input-sm" name="fromSprint" id="fromSprint"></select>
+                                            <label for="fromMajor" name="fromMajorField">From Major</label>
+                                            <select type="text" class="form-control input-sm" name="fromMajor" id="fromMajor"></select>
                                         </div>
                                         <div class="form-group form-group-sm col-sm-3">
-                                            <label for="fromRev" name="fromRevField">From Rev</label>
-                                            <select type="text" class="form-control input-sm" name="fromRev" id="fromRev"></select>
+                                            <label for="fromMinor" name="fromMinorField">From Minor</label>
+                                            <select type="text" class="form-control input-sm" name="fromMinor" id="fromMinor"></select>
                                         </div>
                                         <div class="form-group form-group-sm col-sm-3">
-                                            <label for="toSprint" name="toSprintField">To Sprint</label>
-                                            <select type="text" class="form-control input-sm" name="toSprint" id="toSprint"></select>
+                                            <label for="toMajor" name="toMajorField">To Major</label>
+                                            <select type="text" class="form-control input-sm" name="toMajor" id="toMajor"></select>
                                         </div>
                                         <div class="form-group form-group-sm col-sm-3">
-                                            <label for="toRev" name="toRevField">To Rev</label>
-                                            <select type="text" class="form-control input-sm" name="toRev" id="toRev"></select>
+                                            <label for="toMinor" name="toMinorField">To Minor</label>
+                                            <select type="text" class="form-control input-sm" name="toMinor" id="toMinor"></select>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="form-group form-group-sm col-sm-3">
-                                            <label for="targetSprint" name="targetSprintField">Target Sprint</label>
-                                            <select type="text" class="form-control input-sm" name="targetSprint" id="targetSprint"></select>
+                                            <label for="targetMajor" name="targetMajorField">Target Major</label>
+                                            <select type="text" class="form-control input-sm" name="targetMajor" id="targetMajor"></select>
                                         </div>
                                         <div class="form-group form-group-sm col-sm-3">
-                                            <label for="targetRev" name="targetRevField">Target Rev</label>
-                                            <select type="text" class="form-control input-sm" name="targetRev" id="targetRev"></select>
+                                            <label for="targetMinor" name="targetMinorField">Target Minor</label>
+                                            <select type="text" class="form-control input-sm" name="targetMinor" id="targetMinor"></select>
                                         </div>
                                     </div>
                                 </div>
@@ -143,8 +154,8 @@
                                 <div class="well well-sm">
                                     <div class="row">
                                         <div class="form-group form-group-sm col-sm-3">
-                                            <label for="conditionOper" name="conditionOperField">Condition Operator</label>
-                                            <select type="text" class="form-control input-sm" name="conditionOper" id="conditionOper"></select>
+                                            <label for="conditionOperator" name="conditionOperatorField">Condition Operator</label>
+                                            <select type="text" class="form-control input-sm" name="conditionOperator" id="conditionOperator"></select>
                                         </div>
                                         <div class="form-group form-group-sm col-sm-3">
                                             <label for="conditionVal1" name="ConditionVal1Field">Condition Value 1</label>
@@ -209,16 +220,16 @@
                                 </div>
                             </div>
                             <div class="center tab-pane fade marginTop25" id="tabTCBugReport">
-<!--                                <div class="row">
-                                    <div class="form-group form-group-sm col-sm-3">
-                                        <label for="bugId" name="bugIdField">Bug ID</label>
-                                        <input type="text" class="form-control input-sm" name="bugId" id="bugId"/>
-                                    </div>
-                                    <div class="form-group form-group-sm col-sm-3">
-                                        <label for="link" name="linkField">Link to The Bug</label>
-                                        <br><a name="link" id="link" style="display: inline-block;"></a>
-                                    </div>
-                                </div>-->
+                                <!--                                <div class="row">
+                                                                    <div class="form-group form-group-sm col-sm-3">
+                                                                        <label for="bugId" name="bugIdField">Bug ID</label>
+                                                                        <input type="text" class="form-control input-sm" name="bugId" id="bugId"/>
+                                                                    </div>
+                                                                    <div class="form-group form-group-sm col-sm-3">
+                                                                        <label for="link" name="linkField">Link to The Bug</label>
+                                                                        <br><a name="link" id="link" style="display: inline-block;"></a>
+                                                                    </div>
+                                                                </div>-->
                                 <div class="row">
                                     <div class="form-group form-group-sm col-sm-12">
                                         <table class="table table-bordered table-hover nomarginbottom" id="bugTable">
@@ -247,7 +258,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="center tab-pane fade marginTop25" id="tabTCTracability">
+                            <div class="center tab-pane fade marginTop25" id="tabTCTraceability">
                                 <div id="listPanelTraca">
                                     <div class="row">
                                         <div class="col-sm-12">
@@ -261,8 +272,8 @@
                                                     <input class="form-control input-sm"  id="executor" name="executor"/>
                                                 </div>
                                                 <div class="form-group form-group-sm col-sm-2">
-                                                    <label for="testcaseversion" name="testcaseversionField">Version</label>
-                                                    <input class="form-control input-sm"  id="testcaseversion" name="testcaseversion" readonly="readonly"/>
+                                                    <label for="version" name="versionField">Version</label>
+                                                    <input class="form-control input-sm"  id="version" name="version" readonly="readonly"/>
                                                 </div>
                                             </div>
                                             <div class="row">

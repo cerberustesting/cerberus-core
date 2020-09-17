@@ -28,6 +28,7 @@
         <title id="pageTitle">Execution Detail</title>
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
+        <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseExecution.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
@@ -53,115 +54,121 @@
                                     <span class="sr-only"></span>
                                 </div>
                             </div>
-                            <div class="col-lg-7 pull-left">
-                                <div class="text-nowrap">
-                                    <span id="idlabel"></span>
-                                    <span name="Separator">Loading...</span>
-                                    <span id="test"></span>
-                                    <span name="Separator"> </span>
-                                    <span id="testcase"></span>
-                                    <span name="Separator"> </span>
-                                    <span id="country"></span>
-                                    <span name="Separator"> </span>
-                                    <span id="environment"></span>
-                                    <span name="Separator"> </span>
-                                    <span id="controlstatus" style="font-weight: 900"></span>
+                            <div class="row">
+                                <div class="col-lg-7 pull-left">
+                                    <div class="text-nowrap">
+                                        <span id="idlabel"></span>
+                                        <span name="Separator">Loading...</span>
+                                        <span id="test"></span>
+                                        <span name="Separator"> </span>
+                                        <span id="testcase"></span>
+                                        <span name="Separator"> </span>
+                                        <span id="country"></span>
+                                        <span name="Separator"> </span>
+                                        <span id="environment"></span>
+                                        <span name="Separator"> </span>
+                                        <span id="controlstatus" style="font-weight: 900"></span>
+                                    </div>
+                                    <div class="text-wrap">
+                                        <span id="tcDescription" style="font-size:.9em;margin:0px;line-height:1;height:.95em;"></span>
+                                    </div>
+                                    <div class="text-wrap" id="returnMessage">
+                                        <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;font-weight: 900;word-wrap: break-word"></span>
+                                    </div>
                                 </div>
-                                <div class="text-wrap">
-                                    <span id="tcDescription" style="font-size:.9em;margin:0px;line-height:1;height:.95em;"></span>
-                                </div>
-                                <div class="text-wrap" id="returnMessage">
-                                    <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;font-weight: 900;word-wrap: break-word"></span>
-                                </div>
-                            </div>
                             <div class="col-lg-5" style="padding: 0px;">
-                                <div id="RefreshQueueButton">
-                                    <button id="refreshQueue" class="btn btn-default">Refresh</button>
-                                    <button id="editQueue" class="btn btn-default">Edit Queue Entry</button>
-                                </div>
-                                <div id="TestCaseButton">
+                                    <div id="RefreshQueueButton">
+                                        <button id="refreshQueue" class="btn btn-default">Refresh</button>
+                                        <button id="editQueue" class="btn btn-default">Edit Queue Entry</button>
+                                    </div>
+                                    <div id="TestCaseButton">
 
-                                    <div class="btn-group pull-right" role="group" aria-label="Button group with nested dropdown" style="margin-top: 10px;">
+                                        <div class="btn-group pull-right" role="group" aria-label="Button group with nested dropdown" style="margin-top: 10px;">
 
-                                        <div class="btn-group ">
-                                            <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                Go To <span class="caret"></span>
-                                            </button>
-                                            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                <a><button class="btn btn-default pull-left" id="lastExecution" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Last Executions</button></a>
-                                                <a><button class="btn btn-default pull-left" id="lastExecutionwithEnvCountry" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Last Executions With Country Env</button></a>
-                                                <a><button class="btn btn-default pull-left" id="ExecutionByTag" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-tasks"></span> See Execution By Tag</button></a>
-                                                <a><button class="btn btn-default pull-left" id="ExecutionQueue" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-eye-open"></span> See Queue Parameters</button></a>
-                                                <a><button class="btn btn-default pull-left" id="ExecutionQueueByTag" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> See Queue By Tag</button></a>
-                                                <a><button class="btn btn-default pull-left" id="sessionLinkHeader" style="margin-left: 5px; margin-right: 5px;">Link External Provider</button></a>
+                                            <div class="btn-group ">
+                                                <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Go To <span class="caret"></span>
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                    <a><button class="btn btn-default pull-left" id="lastExecution" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Last Executions</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="lastExecutionoT" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Reporting over Time</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="lastExecutionwithEnvCountry" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Last Executions With Country Env</button></a>
+                                                    <!--                                                <a><button class="btn btn-default pull-left" id="lastExecutionoTwithEnvCountry" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Reporting over time With Country Env</button></a>-->
+                                                    <a><button class="btn btn-default pull-left" id="ExecutionByTag" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-tasks"></span> Campaign Report</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="ExecutionQueue" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-eye-open"></span> See Queue Parameters</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="ExecutionQueueByTag" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> See Queue By Tag</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="sessionLinkHeader" style="margin-left: 5px; margin-right: 5px;">Link External Provider</button></a>
+                                                </div>
                                             </div>
+
+                                            <div class="btn-group">
+                                                <button id="btnGroupDrop2" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Run <span class="caret"></span>
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="btnGroupDrop2">
+                                                    <a><button class="btn btn-default pull-left" id="runTestCase" style="margin-left: 5px; margin-left: 5px;" data-toggle="tooltip" ><span class="glyphicon glyphicon-play"></span>Run</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="rerunTestCase" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>ReRun</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="rerunFromQueue" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>From Queue</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="rerunFromQueueandSee" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>From Queue & See</button></a>
+                                                </div>
+                                            </div>
+
+                                            <div class="btn-group">
+                                                <a type="button" class="btn btn-default" id="editTcInfo" ><span class="glyphicon glyphicon-new-window"></span> Edit Test Case</a>
+                                                <button id="btnGroupDrop4" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <span class="caret"></span>
+                                                    <span class="sr-only">Toggle Dropdown</span>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a><button class="btn btn-default" id="editTcStepInfo" style="margin-left: 5px; margin-left: 5px;" ><span class="glyphicon glyphicon-new-window"></span> Edit Test Case from the current Step</button></a>
+                                                    <a><button class="btn btn-default" id="editTcHeader" style="margin-left: 5px; margin-left: 5px;" ><span class="glyphicon glyphicon-pencil"></span> Edit Test Case Header</button></a>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="btn-group ">
+                                                <button class="btn btn-default" id="saveTestCaseExecution" disabled style="margin-left: 1px;"><span class="glyphicon glyphicon-save"></span> Save</button>
+                                                <button id="btnGroupDrop3" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled="">
+                                                    <span class="caret"></span>
+                                                    <span class="sr-only">Toggle Dropdown</span>
+                                                </button>
+                                                <div class="dropdown-menu"  aria-labelledby="btnGroupDrop3">
+                                                    <a><button class="btn btn-default pull-left" id="deleteTestCaseExecution" style="margin-left: 5px; margin-left: 5px;" disabled><span class="glyphicon glyphicon-trash"></span>Delete</button></a>
+                                                </div>
+                                            </div>
+
                                         </div>
 
-                                        <div class="btn-group">
-                                            <button id="btnGroupDrop2" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                Run <span class="caret"></span>
-                                            </button>
-                                            <div class="dropdown-menu" aria-labelledby="btnGroupDrop2">
-                                                <a><button class="btn btn-default pull-left" id="runTestCase" style="margin-left: 5px; margin-left: 5px;" data-toggle="tooltip" ><span class="glyphicon glyphicon-play"></span>Run</button></a>
-                                                <a><button class="btn btn-default pull-left" id="rerunTestCase" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>ReRun</button></a>
-                                                <a><button class="btn btn-default pull-left" id="rerunFromQueue" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>From Queue</button></a>
-                                                <a><button class="btn btn-default pull-left" id="rerunFromQueueandSee" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>From Queue & See</button></a>
-                                            </div>
-                                        </div>
-
-                                        <div class="btn-group">
-                                            <a type="button" class="btn btn-default" id="editTcInfo" ><span class="glyphicon glyphicon-new-window"></span> Edit Test Case</a>
-                                            <button id="btnGroupDrop4" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <span class="caret"></span>
-                                                <span class="sr-only">Toggle Dropdown</span>
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                <a><button class="btn btn-default" id="editTcStepInfo" style="margin-left: 5px; margin-left: 5px;" ><span class="glyphicon glyphicon-new-window"></span> Edit Test Case from the current Step</button></a>
-                                                <a><button class="btn btn-default" id="editTcHeader" style="margin-left: 5px; margin-left: 5px;" ><span class="glyphicon glyphicon-pencil"></span> Edit Test Case Header</button></a>
-                                            </div>
-                                        </div>
-
-
-                                        <div class="btn-group ">
-                                            <button class="btn btn-default" id="saveTestCaseExecution" disabled style="margin-left: 1px;"><span class="glyphicon glyphicon-save"></span> Save</button>
-                                            <button id="btnGroupDrop3" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled="">
-                                                <span class="caret"></span>
-                                                <span class="sr-only">Toggle Dropdown</span>
-                                            </button>
-                                            <div class="dropdown-menu"  aria-labelledby="btnGroupDrop3">
-                                                <a><button class="btn btn-default pull-left" id="deleteTestCaseExecution" style="margin-left: 5px; margin-left: 5px;" disabled><span class="glyphicon glyphicon-trash"></span>Delete</button></a>
-                                            </div>
-                                        </div>
+                                        <div class="side-item pull-right"></div>
 
                                     </div>
-
-                                    <div class="side-item pull-right"></div>
-
                                 </div>
                             </div>
                             <div class="clearfix"></div>
                         </div>
                         <div id="NavtabsScriptEdit" background-color: white">
-                             <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
+                            <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
                                 <li class="active"><a data-toggle="tab" href="#tabSteps" id="editTabStep" name="tabSteps">Steps</a></li>
                                 <li><a data-toggle="tab" href="#tabProperties" id="editTabProperties" name="tabProperties">Properties</a></li>
                                 <li><a data-toggle="tab" href="#tabDetail" id="editTabDetail" name="tabDetail">Execution Details</a></li>
                                 <li><a data-toggle="tab" href="#tabEnv" id="editTabEnv" name="tabEnv">Environment</a></li>
                                 <li><a data-toggle="tab" href="#tabRobot" id="editTabRobot" name="tabRobot">Robot</a></li>
                                 <li><a data-toggle="tab" href="#tabDep" id="editTabDep" name="tabDep">Dependencies</a></li>
-                                <li><a data-toggle="tab" href="#tabTraca" id="editTabTraca" name="tabTraca">Tracability</a></li>
+                                <li><a data-toggle="tab" href="#tabNetwork" id="editTabNetwork" name="tabNetwork" style="display: none;">Network</a></li>
+                                <li><a data-toggle="tab" href="#tabTraca" id="editTabTraca" name="tabTraca">Traceability</a></li>
                             </ul>
                         </div>
                     </div>
                 </div>
                 <div class="panel-body" id="testCaseDetails">
                     <div class="tab-content">
+
                         <div class="center marginTop25 tab-pane fade in active" id="tabSteps">
                             <div id="handler" class="row" style="margin: 0px; margin-top: 10px;">
                                 <nav class="col-lg-3" id="nav-execution" style="z-index:1;">
                                     <div id="list-wrapper" style="top:107px;">
                                         <div id="steps">
-                                            <ul class="list-group step-list side-item" id="stepList" style="max-height: 500px;overflow-y: auto"></ul>
+                                            <ul class="list-group step-list side-item" id="steps" style="max-height: 500px;overflow-y: auto"></ul>
                                         </div>
                                     </div>
                                 </nav>
@@ -203,7 +210,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="row" id="stepRow3">
-                                                        <div class="col-lg-2">                                                          
+                                                        <div class="col-lg-2">
                                                         </div>
                                                         <div class="col-lg-4 form-group">
                                                             <label>Param1 Init</label>
@@ -221,7 +228,7 @@
                                                     <div class="row" id="stepRow4">
                                                         <div class="col-lg-2 form-group">
                                                             <label>Condition Operation</label>
-                                                            <input class="form-control input-sm" readonly id="stepConditionOper">
+                                                            <input class="form-control input-sm" readonly id="stepConditionOperator">
                                                         </div>
                                                         <div class="col-lg-4 form-group">
                                                             <label>Param1</label>
@@ -250,6 +257,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="center marginTop25 tab-pane fade" id="tabProperties">
                             <div id="propertiesModal">
                                 <div class="property-table">
@@ -272,6 +280,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="center marginTop25 tab-pane fade" id="tabDetail">
                             <div class="row">
                                 <div class="col-sm-2">
@@ -296,8 +305,8 @@
                             <div class="row">
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label>Bug ID</label>
-                                        <div id="bugID"></div>
+                                        <label>Bugs</label>
+                                        <div id="bugs"></div>
                                     </div>
                                 </div>
 
@@ -371,7 +380,7 @@
                             <div class="row">
                             </div>
 
-                            <div class="row" id="condrow1"> 
+                            <div class="row" id="condrow1">
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                     </div>
@@ -398,8 +407,8 @@
                             <div class="row" id="condrow2">
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="conditionOperTC">conditionOperTC</label>
-                                        <input type="text" class="form-control" id="conditionOperTC" readonly>
+                                        <label for="conditionOperatorTC">conditionOperatorTC</label>
+                                        <input type="text" class="form-control" id="conditionOperatorTC" readonly>
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
@@ -428,6 +437,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="center marginTop25 tab-pane fade" id="tabRobot">
                             <div class="row">
                                 <div class="col-sm-3">
@@ -581,6 +591,71 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="center marginTop25 tab-pane fade" id="tabNetwork">
+
+                            <div class="panel panel-default" id="NS1Panel">
+                                <div class="panel-heading card" data-toggle="collapse" data-target="#NS1">
+                                    <span class="fa fa-pie-chart fa-fw"></span>
+                                    <label id="ns1Label">Global Statistics</label>
+                                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                </div>
+                                <div class="panel-body collapse in" id="NS1">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <canvas id="myChart1"></canvas>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <canvas id="myChart2"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="panel panel-default" id="NS2Panel">
+                                <div class="panel-heading card" data-toggle="collapse" data-target="#NS2">
+                                    <span class="fa fa-pie-chart fa-fw"></span>
+                                    <label id="ns2Label">Statistics Per Third Party</label>
+                                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                </div>
+                                <div class="panel-body collapse in" id="NS2">
+
+                                    <div class="row" >
+                                        <div class="col-sm-1" id="radioSort">
+                                            <label id="ns2Label"><span class="glyphicon glyphicon-sort"></span> Sort Third Party</label>
+                                            <button class="btn btn-default pull-left" id="sortSize" style="margin-left: 5px; margin-right: 5px;">by Size</button>
+                                            <button class="btn btn-default pull-left" id="sortRequest" style="margin-left: 5px; margin-right: 5px;">by Request</button>
+                                            <button class="btn btn-default pull-left" id="sortTime" style="margin-left: 5px; margin-right: 5px;">by Max Time</button>
+                                        </div>
+                                        <div class="col-sm-11">
+                                            <canvas id="myChart3"></canvas>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" id="detailUnknown">
+                                        <ul class="list-group marginTop25" id="detailUnknownList">
+                                        </ul>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <canvas id="myChart4"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="panel panel-default" id="NS3Panel">
+                                <div class="panel-heading card" data-toggle="collapse" data-target="#NS3">
+                                    <span class="fa fa-pie-chart fa-fw"></span>
+                                    <label id="ns3Label">Requests List</label>
+                                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                </div>
+                                <div class="panel-body collapse in" id="NS3">
+                                    <table id="requestTable" class="table table-bordered table-hover display" name="requestTable"></table>
+                                </div>
+                            </div>
+
                         </div>
 
                         <div class="center marginTop25 tab-pane fade" id="tabTraca">

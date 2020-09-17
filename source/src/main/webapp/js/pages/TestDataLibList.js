@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-$.when($.getScript("js/global/global.js")).then(function () {
-    $(document).ready(function () {
+$.when($.getScript("js/global/global.js")).then(function() {
+    $(document).ready(function() {
         initPage();
 
 
@@ -48,7 +48,7 @@ function initPage() {
     var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "ReadTestDataLib", "contentTable", aoColumnsFuncTestDataLib("listOfTestDataLib"), [2, 'asc']);
 
     //creates the main table and draws the management buttons if the user has the permissions
-    $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataLib, "#testdatalib", undefined, true)).then(function () {
+    $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataLib, "#testdatalib", undefined, true)).then(function() {
         $("#listOfTestDataLib_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");
     });
 
@@ -71,11 +71,11 @@ function initPage() {
 //}
 
 /**
- * After table feeds, 
+ * After table feeds,
  * @returns {undefined}
  */
 function afterTableLoad() {
-    $.each($("pre[name='envelopeField']"), function (i, e) {
+    $.each($("pre[name='envelopeField']"), function(i, e) {
         //Highlight envelop on modal loading
         var editor = ace.edit($(e).get(0));
         editor.setTheme("ace/theme/chrome");
@@ -90,7 +90,7 @@ function afterTableLoad() {
         });
         editor.renderer.$cursorLayer.element.style.opacity = 0;
     });
-    $.each($("pre[name='scriptField']"), function (i, e) {
+    $.each($("pre[name='scriptField']"), function(i, e) {
         //Highlight envelop on modal loading
         var editor = ace.edit($(e).get(0));
         editor.setTheme("ace/theme/chrome");
@@ -141,13 +141,13 @@ function renderOptionsForTestDataLib(data) {
             }
 
             $("#createLibButton").off("click");
-            $('#createLibButton').click(function () {
+            $('#createLibButton').click(function() {
                 openModalDataLib(null, undefined, "ADD");
 
             });
 
             $("#bulkRenameButton").off("click");
-            $('#bulkRenameButton').click(function () {
+            $('#bulkRenameButton').click(function() {
                 openModalDataLibBulk();
             });
 
@@ -177,7 +177,7 @@ function openModalDataLibBulk() {
     }
 
     $("#bulkRenameValidate").off("click");
-    $('#bulkRenameValidate').click(function () {
+    $('#bulkRenameValidate').click(function() {
         confirmDataLibBulkModalHandler();
     });
 
@@ -207,7 +207,7 @@ function confirmDataLibBulkModalHandler() {
     // get the input values
     var old_name = $('#dl_currentname').val();
     var new_name = $('#dl_newname').val();
-    // get 
+    // get
     var formEdit = $('#bulkRenameDataLibModal');
     var old_nameElement = formEdit.find("#dl_currentname");
     var new_nameElement = formEdit.find("#dl_newname");
@@ -242,7 +242,7 @@ function confirmDataLibBulkModalHandler() {
             url: myServlet,
             method: "GET",
             data: 'oldname=' + old_name + '&newname=' + new_name,
-            success: function (data) {
+            success: function(data) {
                 hideLoaderInModal('#bulkRenameDataLibModal');
                 if (getAlertType(data.messageType) === "success") {
                     $('#bulkRenameDataLibModal').modal('hide');
@@ -262,7 +262,7 @@ function confirmDataLibBulkModalHandler() {
 function deleteTestDataLibHandlerClick() {
     var testDataLibID = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteTestDataLib", {testdatalibid: testDataLibID}, "json");
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
             //redraw the datatable
@@ -296,7 +296,7 @@ function deleteTestDataLibClick(testDataLibID, name, system, environment, countr
 }
 
 /**
- * Function that loads all test cases that are associated with the selected entry 
+ * Function that loads all test cases that are associated with the selected entry
  * @param {type} testDataLibID testdatalib id
  * @param {type} name entry name
  * @param {type} country where the entry is available
@@ -310,12 +310,12 @@ function getTestCasesUsing(testDataLibID, name, country) {
 
     var doc = new Doc();
 
-    $.when(jqxhr).then(function (result) {
+    $.when(jqxhr).then(function(result) {
 
         $('#testCaseListModal #totalTestCases').text(doc.getDocLabel("page_testdatalib_m_gettestcases", "nrTests") + " " + result["TestCasesList"].length);
         var htmlContent = "";
 
-        $.each(result["TestCasesList"], function (idx, obj) {
+        $.each(result["TestCasesList"], function(idx, obj) {
 
             var item = '<b><a class="list-group-item ListItem" data-remote="true" href="#sub_cat' + idx + '" id="cat' + idx + '" data-toggle="collapse" \n\
             data-parent="#sub_cat' + idx + '"><span class="pull-left">' + obj[0] + '</span>\n\
@@ -326,13 +326,13 @@ function getTestCasesUsing(testDataLibID, name, country) {
             htmlContent += '<div class="collapse list-group-submenu" id="sub_cat' + idx + '">';
 
 
-            $.each(obj[3], function (idx2, obj2) {
+            $.each(obj[3], function(idx2, obj2) {
                 var hrefTest = 'TestCaseScript.jsp?test=' + obj[0] + '&testcase=' + obj2.TestCaseNumber;
                 htmlContent += '<span class="list-group-item sub-item ListItem" data-parent="#sub_cat' + idx + '" style="padding-left: 78px;height: 50px;">';
                 htmlContent += '<span class="pull-left"><a href="' + hrefTest + '" target="_blank">' + obj2.TestCaseNumber + '- ' + obj2.TestCaseDescription + '</a></span>';
                 htmlContent += '<span class="pull-right">' + doc.getDocLabel("page_testdatalib_m_gettestcases", "nrProperties") + " " + obj2.NrProperties + '</span><br/>';
                 htmlContent += '<span class="pull-left"> ' + doc.getDocLabel("testcase", "Creator") + ": " + obj2.Creator + ' | '
-                        + doc.getDocLabel("testcase", "TcActive") + ": " + obj2.Active + ' | ' + doc.getDocLabel("testcase", "Status") + ": " + obj2.Status + ' | ' +
+                        + doc.getDocLabel("testcase", "IsActive") + ": " + obj2.Active + ' | ' + doc.getDocLabel("testcase", "Status") + ": " + obj2.Status + ' | ' +
                         doc.getDocLabel("invariant", "GROUP") + ": " + obj2.Group + ' | ' + doc.getDocLabel("application", "Application") + ": " + obj2.Application + '</span>';
                 htmlContent += '</span>';
             });
@@ -384,7 +384,7 @@ function aoColumnsFuncTestDataLib(tableId) {
             "bSearchable": false,
             "sWidth": "150px",
             "title": doc.getDocLabel("testdatalib", "actions"),
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
                 var editElement = '<button id="editTestDataLib' + data + '"  onclick="openModalDataLib(' + null + ",'" + obj["testDataLibID"] + '\', \'EDIT\'  );" \n\
                                 class="editTestDataLib btn btn-default btn-xs margin-right5" \n\
@@ -485,12 +485,12 @@ function aoColumnsFuncTestDataLib(tableId) {
             "title": doc.getDocOnline("testdatalib", "database")
         },
         {
-            "data": "script", 
-            "sName": "tdl.Script", 
+            "data": "script",
+            "sName": "tdl.Script",
             "visible": false,
-            "sWidth": "450px", 
+            "sWidth": "450px",
             "title": doc.getDocLabel("testdatalib", "script"),
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 return $("<div></div>").append($("<pre name='scriptField' style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").text(obj['script'])).html();
             }
         },
@@ -525,13 +525,13 @@ function aoColumnsFuncTestDataLib(tableId) {
             "title": doc.getDocOnline("testdatalib", "method")
         },
         {
-            "data": "envelope", 
-            "sName": "tdl.envelope", 
+            "data": "envelope",
+            "sName": "tdl.envelope",
             "visible": false,
-            "like": true, 
-            "title": doc.getDocLabel("testdatalib", "envelope"), 
+            "like": true,
+            "title": doc.getDocLabel("testdatalib", "envelope"),
             "sWidth": "350px",
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 return $("<div></div>").append($("<pre name='envelopeField' style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").text(obj['envelope'])).html();
             }
         },
@@ -579,7 +579,7 @@ function aoColumnsFuncTestDataLib(tableId) {
             "data": "lastModified",
             "sWidth": "150px",
             "title": doc.getDocOnline("testdatalib", "lastmodified"),
-            "mRender": function (data, type, oObj) {
+            "mRender": function(data, type, oObj) {
                 return getDate(oObj["lastModified"]);
             }
         },

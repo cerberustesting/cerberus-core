@@ -57,7 +57,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author vertigo
  */
-@WebServlet(name = "ReadTag1", urlPatterns = {"/ReadTag1"})
+@WebServlet(name = "ReadTag", urlPatterns = {"/ReadTag"})
 public class ReadTag extends HttpServlet {
 
     private ITagService tagService;
@@ -236,7 +236,7 @@ public class ReadTag extends HttpServlet {
 
         ITagService libService = appContext.getBean(ITagService.class);
 
-        //finds the project     
+        //finds the project
         AnswerItem answer = libService.readByKeyTech(id);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -259,7 +259,7 @@ public class ReadTag extends HttpServlet {
 
         ITagService libService = appContext.getBean(ITagService.class);
 
-        //finds the project     
+        //finds the project
         AnswerItem answer = libService.readByKey(tag);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -293,7 +293,7 @@ public class ReadTag extends HttpServlet {
         tagService = appContext.getBean(TagService.class);
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,detailedDescription,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
 
         Map<String, List<String>> individualSearch = new HashMap<>();

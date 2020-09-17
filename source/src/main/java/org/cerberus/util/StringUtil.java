@@ -19,6 +19,10 @@
  */
 package org.cerberus.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -53,7 +57,7 @@ public final class StringUtil {
     private static final Logger LOG = LogManager.getLogger(StringUtil.class);
 
     /**
-     * To avoid instanciation of utility class
+     * To avoid instantiation of utility class
      */
     private StringUtil() {
     }
@@ -63,19 +67,23 @@ public final class StringUtil {
      * @param ex
      * @return
      */
-    public static String getExceptionCause(Exception ex) {
+    public static String getExceptionCauseFromString(Throwable ex) {
+
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String sStackTrace = sw.toString();
+        String[] exString = sStackTrace.split("\n");
+
         StringBuilder result = new StringBuilder();
-        StackTraceElement[] ste = ex.getStackTrace();
-        String[] exString = ex.getMessage().split("\n");
-//        LOG.debug(exString.length);
-//        LOG.debug("toto " + ex.getMessage());
-        for (StackTraceElement string : ste) {
-//            LOG.debug("toto : " + string.toString());
-            if (string.toString().contains("Caused by")) {
-                result.append(string.toString());
+
+        for (String string : exString) {
+            if (string.contains("Caused by")) {
+                result.append(string);
+                result.append(" ");
             }
         }
-        return result.toString();
+        return result.toString().trim();
     }
 
     /**
@@ -417,7 +425,7 @@ public final class StringUtil {
             }
             result += uri;
         }
-        if (!(StringUtil.isURL(result))) { // If still does not look lke an URL, we add protocol string ( ex : http://) by default.
+        if (!(StringUtil.isURL(result))) { // If still does not look like an URL, we add protocol string ( ex : http://) by default.
             result = protocol + result;
         }
         return result;
@@ -545,4 +553,23 @@ public final class StringUtil {
         return result;
     }
 
+    public static String getDomainFromUrl(String appURL) {
+        URL appMyURL = null;
+        try {
+            appMyURL = new URL(StringUtil.getURLFromString(appURL, "", "", "http://"));
+        } catch (MalformedURLException ex) {
+            LOG.warn("Exception when parsing Application URL.", ex);
+        }
+        if (appMyURL != null) {
+            String[] sURL = appMyURL.getHost().split("\\.");
+            if (sURL.length > 2) {
+                String fURL;
+                fURL = sURL[sURL.length - 2] + "." + sURL[sURL.length - 1];
+                return fURL;
+            } else {
+                return appMyURL.getHost();
+            }
+        }
+        return "";
+    }
 }

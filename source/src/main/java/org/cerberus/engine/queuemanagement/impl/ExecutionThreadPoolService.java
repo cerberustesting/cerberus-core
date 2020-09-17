@@ -30,18 +30,22 @@ import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotExecutor;
+import org.cerberus.crud.factory.IFactoryQueueStat;
 import org.cerberus.crud.factory.IFactoryRobotExecutor;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.engine.execution.IRetriesService;
 import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.IQueueStatService;
 import org.cerberus.crud.service.IRobotExecutorService;
 import org.cerberus.crud.service.IRobotService;
+import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.servlet.zzpublic.ManageV001;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerList;
@@ -62,7 +66,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     private static final String CONST_SEPARATOR = "////";
 
-    private boolean instanceActive = true;
+    private boolean isInstanceActive = true;
+    private boolean isSplashPageActive = false;
 
     @Autowired
     private ITestCaseExecutionQueueService tceiqService;
@@ -81,20 +86,36 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     @Autowired
     private IRetriesService retriesService;
     @Autowired
+    private ITagService tagService;
+    @Autowired
     private IRobotExecutorService robotExecutorService;
     @Autowired
     private IRobotService robotService;
     @Autowired
     private IFactoryRobotExecutor factoryRobotExecutor;
+    @Autowired
+    private IFactoryQueueStat factoryQueueStat;
+    @Autowired
+    private IQueueStatService queueStatService;
 
     @Override
     public boolean isInstanceActive() {
-        return instanceActive;
+        return isInstanceActive;
     }
 
     @Override
-    public void setInstanceActive(boolean instanceActive) {
-        this.instanceActive = instanceActive;
+    public void setInstanceActive(boolean isInstanceActive) {
+        this.isInstanceActive = isInstanceActive;
+    }
+
+    @Override
+    public boolean isSplashPageActive() {
+        return this.isSplashPageActive;
+    }
+
+    @Override
+    public void setSplashPageActive(boolean isSplashPageActive) {
+        this.isSplashPageActive = isSplashPageActive;
     }
 
     @Override
@@ -111,6 +132,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
             String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
             String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_APPLICATION + CONST_SEPARATOR + exe.getApplication();
             String const04_key = TestCaseExecutionQueueToTreat.CONSTRAIN4_ROBOT + CONST_SEPARATOR + exe.getSelectedRobotHost();
+            String const05_key = TestCaseExecutionQueueToTreat.CONSTRAIN5_EXECUTOREXTENSION + CONST_SEPARATOR + exe.getSelectedRobotExtensionHost();
 
             if (constrains_current.containsKey(const01_key)) {
                 constrains_current.put(const01_key, constrains_current.get(const01_key) + 1);
@@ -132,6 +154,11 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
             } else {
                 constrains_current.put(const04_key, 1);
             }
+            if (constrains_current.containsKey(const05_key)) {
+                constrains_current.put(const05_key, constrains_current.get(const05_key) + 1);
+            } else {
+                constrains_current.put(const05_key, 1);
+            }
         }
         return constrains_current;
 
@@ -145,11 +172,14 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
         String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
         int poolSizeGeneral = parameterService.getParameterIntegerByKey("cerberus_queueexecution_global_threadpoolsize", "", 12);
         int poolSizeRobot = parameterService.getParameterIntegerByKey("cerberus_queueexecution_defaultrobothost_threadpoolsize", "", 10);
+        int poolSizeExecutorExt = parameterService.getParameterIntegerByKey("cerberus_queueexecution_defaultexecutorexthost_threadpoolsize", "", 2);
         constrains_current.put(const01_key, poolSizeGeneral);
 
         // Getting RobotHost PoolSize
         HashMap<String, Integer> robot_poolsize = new HashMap<String, Integer>();
         robot_poolsize = invariantService.readToHashMapGp1IntegerByIdname("ROBOTHOST", poolSizeRobot);
+        HashMap<String, Integer> robotext_poolsize = new HashMap<String, Integer>();
+        robotext_poolsize = invariantService.readToHashMapGp1IntegerByIdname("EXECUTOREXTENSIONHOST", poolSizeExecutorExt);
 
         // Getting all executions to be treated.
         answer = tceiqService.readQueueToTreatOrRunning();
@@ -159,6 +189,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
             String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
             String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_APPLICATION + CONST_SEPARATOR + exe.getApplication();
             String const04_key = TestCaseExecutionQueueToTreat.CONSTRAIN4_ROBOT + CONST_SEPARATOR + exe.getSelectedRobotHost();
+            String const05_key = TestCaseExecutionQueueToTreat.CONSTRAIN5_EXECUTOREXTENSION + CONST_SEPARATOR + exe.getSelectedRobotExtensionHost();
 
             constrains_current.put(const02_key, exe.getPoolSizeAppEnvironment());
 
@@ -174,6 +205,18 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                 }
             }
             constrains_current.put(const04_key, robot_poolsize_final);
+
+            // Getting Robot Host PoolSize from invariant hashmap.
+            int robotext_poolsize_final = 0;
+            if (!StringUtil.isNullOrEmpty(exe.getSelectedRobotExtensionHost())) {
+                if (robotext_poolsize.containsKey(exe.getSelectedRobotExtensionHost())) {
+                    robotext_poolsize_final = ParameterParserUtil.parseIntegerParam(robotext_poolsize.get(exe.getSelectedRobotExtensionHost()), poolSizeExecutorExt);
+                } else {
+                    robotext_poolsize_final = poolSizeExecutorExt;
+                }
+            }
+            constrains_current.put(const05_key, robotext_poolsize_final);
+
         }
         return constrains_current;
 
@@ -194,6 +237,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
             String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
             String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_APPLICATION + CONST_SEPARATOR + exe.getApplication();
             String const04_key = TestCaseExecutionQueueToTreat.CONSTRAIN4_ROBOT + CONST_SEPARATOR + exe.getQueueRobotHost();
+            String const05_key = TestCaseExecutionQueueToTreat.CONSTRAIN5_EXECUTOREXTENSION + CONST_SEPARATOR + "";
 
             if (constrains_current.containsKey(const01_key)) {
                 constrains_current.put(const01_key, constrains_current.get(const01_key) + 1);
@@ -226,7 +270,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     @Override
     public void executeNextInQueue(boolean forceExecution) throws CerberusException {
 
-        if (!instanceActive) {
+        if (!isInstanceActive) {
             LOG.warn("Queue execution disable on that JVM instance.");
             return;
         }
@@ -237,319 +281,381 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
             return;
         }
 
-        // We first check that another thread of Cerberus already trigger the job. Only 1 instance of the job is necessary.
-        if (!(myVersionService.getMyVersionStringByKey("queueprocessingjobrunning", "N").equals("Y"))
-                || forceExecution) {
+        // Flag in database that job is already running.
+        if (myVersionService.flagMyVersionString("queueprocessingjobrunning") || forceExecution) {
 
-            // Flag in database that job is already running.
-            if (myVersionService.flagMyVersionString("queueprocessingjobrunning") || forceExecution) {
+            // Saving the timestamps when the job start in database.
+            myVersionService.updateMyVersionString("queueprocessingjobstart", String.valueOf(new Date()));
 
-                // Saving the timestamps when the job start in database.
-                myVersionService.updateMyVersionString("queueprocessingjobstart", String.valueOf(new Date()));
+            if (forceExecution) {
+                LOG.debug("Forcing Start of Queue_Processing_Job.");
+            }
 
-                if (forceExecution) {
-                    LOG.debug("Forcing Start of Queue_Processing_Job.");
+            int nbqueuedexe = 0;
+
+            // We try to submit new jobs until the job does not trigger any new execution.
+            // In Other Words : As long as the job trigger new execution, we execute it.
+            do {
+
+                if (!(parameterService.getParameterBooleanByKey("cerberus_queueexecution_enable", "", true))) {
+                    LOG.debug("Queue_Processing_Job disabled by parameter : 'cerberus_queueexecution_enable'.");
+                    // Flag in database that job is finished.
+                    myVersionService.updateMyVersionString("queueprocessingjobrunning", "N");
+                    return;
                 }
 
-                int nbqueuedexe = 0;
+                nbqueuedexe = 0;
+                // Job is not already running, we can trigger it.
 
-                // We try to submit new jobs until the job does not trigger any new execution.
-                // In Other Words : As long as the job trigger new execution, we execute it.
-                do {
+                LOG.debug("Starting Queue_Processing_Job.");
 
-                    if (!(parameterService.getParameterBooleanByKey("cerberus_queueexecution_enable", "", true))) {
-                        LOG.debug("Queue_Processing_Job disabled by parameter : 'cerberus_queueexecution_enable'.");
-                        return;
-                    }
+                // Getting all executions to be treated.
+                AnswerList<TestCaseExecutionQueueToTreat> answer = new AnswerList<>();
+                answer = tceiqService.readQueueToTreat();
+                List<TestCaseExecutionQueueToTreat> executionsInQueue = answer.getDataList();
 
-                    nbqueuedexe = 0;
-                    // Job is not already running, we can trigger it.
+                int poolSizeGeneral = 12;
+                int poolSizeRobot = 10;
+                int poolSizeExecutorExt = 2;
+                int queueTimeout = 600000;
 
-                    LOG.debug("Starting Queue_Processing_Job.");
+                // Init constrain counter (from list of already running execution.).
+                int const01_current = 0;
+                int const02_current = 0;
+                int const03_current = 0;
+                int const04_current = 0;
+                int const05_current = 0;
+                HashMap<String, Integer> constrains_current = new HashMap<>();
+                HashMap<String, Integer> robothost_poolsize = new HashMap<>();
+                HashMap<String, Integer> executorexthost_poolsize = new HashMap<>();
+                HashMap<String, List<RobotExecutor>> robot_executor = new HashMap<>();
+                HashMap<String, Robot> robot_header = new HashMap<>();
 
-                    // Getting all executions to be treated.
-                    AnswerList<TestCaseExecutionQueueToTreat> answer = new AnswerList<>();
-                    answer = tceiqService.readQueueToTreat();
-                    List<TestCaseExecutionQueueToTreat> executionsInQueue = answer.getDataList();
+                poolSizeGeneral = parameterService.getParameterIntegerByKey("cerberus_queueexecution_global_threadpoolsize", "", 12);
 
-                    int poolSizeGeneral = 12;
-                    int poolSizeRobot = 10;
-                    int queueTimeout = 600000;
+                constrains_current = getCurrentlyRunning();
+                LOG.debug("Current Constrains : " + constrains_current);
+
+                if (!executionsInQueue.isEmpty()) {
+
+                    poolSizeRobot = parameterService.getParameterIntegerByKey("cerberus_queueexecution_defaultrobothost_threadpoolsize", "", 10);
+                    poolSizeExecutorExt = parameterService.getParameterIntegerByKey("cerberus_queueexecution_defaultexecutorexthost_threadpoolsize", "", 2);
+                    queueTimeout = parameterService.getParameterIntegerByKey("cerberus_queueexecution_timeout", "", 600000);
 
                     // Init constrain counter (from list of already running execution.).
-                    int const01_current = 0;
-                    int const02_current = 0;
-                    int const03_current = 0;
-                    int const04_current = 0;
-                    HashMap<String, Integer> constrains_current = new HashMap<>();
-                    HashMap<String, Integer> robothost_poolsize = new HashMap<>();
-                    HashMap<String, List<RobotExecutor>> robot_executor = new HashMap<>();
-                    HashMap<String, Robot> robot_header = new HashMap<>();
+                    const01_current = 0;
+                    const02_current = 0;
+                    const03_current = 0;
+                    const04_current = 0;
+                    const05_current = 0;
 
-                    if (!executionsInQueue.isEmpty()) {
+                    // Getting RobotHost PoolSize
+                    robothost_poolsize = invariantService.readToHashMapGp1IntegerByIdname("ROBOTHOST", poolSizeRobot);
 
-                        poolSizeGeneral = parameterService.getParameterIntegerByKey("cerberus_queueexecution_global_threadpoolsize", "", 12);
-                        poolSizeRobot = parameterService.getParameterIntegerByKey("cerberus_queueexecution_defaultrobothost_threadpoolsize", "", 10);
-                        queueTimeout = parameterService.getParameterIntegerByKey("cerberus_queueexecution_timeout", "", 600000);
+                    // Getting CerberusExecutorHost PoolSize
+                    executorexthost_poolsize = invariantService.readToHashMapGp1IntegerByIdname("EXECUTOREXTENSIONHOST", poolSizeExecutorExt);
 
-                        // Init constrain counter (from list of already running execution.).
-                        const01_current = 0;
-                        const02_current = 0;
-                        const03_current = 0;
-                        const04_current = 0;
-                        constrains_current = getCurrentlyRunning();
-                        LOG.debug("Current Constrains : " + constrains_current);
+                    // Getting the list of robot in scope of the queue entries. This is to avoid getting all robots from database.
+                    LOG.debug("Getting List of Robot Executor.");
+                    for (TestCaseExecutionQueueToTreat exe : executionsInQueue) {
+                        if (!StringUtil.isNullOrEmpty(exe.getQueueRobot())) {
+                            robot_executor.put(exe.getQueueRobot(), new ArrayList<>());
+                        }
+                    }
+                    LOG.debug("List of Robot from Queue entries : " + robot_executor);
+                    robot_executor = robotExecutorService.getExecutorListFromRobotHash(robot_executor);
+                    LOG.debug("Robot Executor List : " + robot_executor);
 
-                        // Getting RobotHost PoolSize
-                        robothost_poolsize = invariantService.readToHashMapGp1IntegerByIdname("ROBOTHOST", poolSizeRobot);
+                    LOG.debug("Getting List of Robot (Header).");
+                    List<String> listRobotS = new ArrayList<>();
+                    for (Map.Entry<String, List<RobotExecutor>> entry : robot_executor.entrySet()) {
+                        String key = entry.getKey();
+                        listRobotS.add(key);
+                    }
+                    robot_header = robotService.readToHashMapByRobotList(listRobotS);
+                    LOG.debug("Robot Header List : " + robot_header);
 
-                        // Getting the list of robot in scope of the queue entries. This is to avoid getting all robots from database.
-                        LOG.debug("Getting List of Robot Executor.");
-                        for (TestCaseExecutionQueueToTreat exe : executionsInQueue) {
-                            if (!StringUtil.isNullOrEmpty(exe.getQueueRobot())) {
-                                robot_executor.put(exe.getQueueRobot(), new ArrayList<>());
+                }
+
+                String robot = "";
+                String robotExecutor = "";
+                String robotHost = "";
+                String robotExtHost = "";
+                String robotPort = "";
+                String appType = "";
+                List<RobotExecutor> tmpExelist = new ArrayList<>();
+                List<RobotExecutor> newTmpExelist = new ArrayList<>();
+
+                // Analysing each execution in the database queue.
+                for (TestCaseExecutionQueueToTreat exe : executionsInQueue) {
+
+                    LOG.debug("Starting analysing : " + exe.getId());
+
+                    String notTriggeredExeMessage = "";
+                    boolean triggerExe = false;
+                    robot = exe.getQueueRobot();
+
+                    // Getting here the list of possible executor sorted by prio.
+                    List<RobotExecutor> robotExelist = new ArrayList<>();
+                    appType = exe.getAppType();
+                    if ((appType.equals(Application.TYPE_APK)) || (appType.equals(Application.TYPE_GUI)) || (appType.equals(Application.TYPE_FAT)) || (appType.equals(Application.TYPE_IPA))) {
+                        // Application require a robot so we can get the list of executors.
+                        if (StringUtil.isNullOrEmpty(robot)) {
+                            robotExelist = new ArrayList<>();
+                            robotExelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
+                        } else {
+                            robotExelist = robot_executor.get(robot);
+                            if (robotExelist == null || robotExelist.size() < 1) {
+                                robotExelist = new ArrayList<>();
+                                robotExelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
                             }
                         }
-                        LOG.debug("List of Robot from Queue entries : " + robot_executor);
-                        robot_executor = robotExecutorService.getExecutorListFromRobotHash(robot_executor);
-                        LOG.debug("Robot Executor List : " + robot_executor);
-
-                        LOG.debug("Getting List of Robot (Header).");
-                        List<String> listRobotS = new ArrayList<>();
-                        for (Map.Entry<String, List<RobotExecutor>> entry : robot_executor.entrySet()) {
-                            String key = entry.getKey();
-                            listRobotS.add(key);
-                        }
-                        robot_header = robotService.readToHashMapByRobotList(listRobotS);
-                        LOG.debug("Robot Header List : " + robot_header);
-
+                    } else {
+                        // Application does not require a robot so we create a fake one with empty data.
+                        robotExelist = new ArrayList<>();
+                        robotExelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
                     }
 
-                    String robot = "";
-                    String robotExecutor = "";
-                    String robotHost = "";
-                    String robotPort = "";
-                    String appType = "";
-                    List<RobotExecutor> tmpExelist = new ArrayList<>();
-                    List<RobotExecutor> newTmpExelist = new ArrayList<>();
+                    // Looping other every potential executor on the corresponding robot.
+                    for (RobotExecutor robotExecutor1 : robotExelist) {
 
-                    // Analysing each execution in the database queue.
-                    for (TestCaseExecutionQueueToTreat exe : executionsInQueue) {
-
-                        LOG.debug("Starting analysing : " + exe.getId());
-
-                        String notTriggeredExeMessage = "";
-                        boolean triggerExe = false;
-                        robot = exe.getQueueRobot();
-
-                        // Getting here the list of possible executor sorted by prio.
-                        List<RobotExecutor> exelist = new ArrayList<>();
-                        appType = exe.getAppType();
-                        if ((appType.equals(Application.TYPE_APK)) || (appType.equals(Application.TYPE_GUI)) || (appType.equals(Application.TYPE_FAT)) || (appType.equals(Application.TYPE_IPA))) {
-                            // Application require a robot so we can get the list of executors.
-                            if (StringUtil.isNullOrEmpty(robot)) {
-                                exelist = new ArrayList<>();
-                                exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", "", "", null, "", "",  0,  "", 0, "", "", "", null, "", null));
-                            } else {
-                                exelist = robot_executor.get(robot);
-                                if (exelist == null || exelist.size() < 1) {
-                                    exelist = new ArrayList<>();
-                                    exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
-                                }
+                        if ("Y".equalsIgnoreCase(robotExecutor1.getExecutorProxyActive())) {
+                            robotExtHost = robotExecutor1.getExecutorExtensionHost();
+                            if (StringUtil.isNullOrEmpty(robotExtHost)) {
+                                robotExtHost = robotExecutor1.getHost();
                             }
                         } else {
-                            // Application does not require a robot so we create a fake one with empty data.
-                            exelist = new ArrayList<>();
-                            exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "","",  0, "", 0, "", "", "", null, "", null));
+                            robotExtHost = "";
                         }
 
-                        // Looping other every potential executor on the corresponding robot.
-                        for (RobotExecutor robotExecutor1 : exelist) {
+                        robotHost = robotExecutor1.getHost();
+                        robotPort = robotExecutor1.getPort();
+                        robotExecutor = robotExecutor1.getExecutor();
+                        LOG.debug("Trying with : " + robotHost + " Port : " + robotPort + " From Robot/Executor : " + robotExecutor1.getRobot() + "/" + robotExecutor1.getExecutor() + " Extension : " + robotExtHost);
 
-                            robotHost = robotExecutor1.getHost();
-                            robotPort = robotExecutor1.getPort();
-                            robotExecutor = robotExecutor1.getExecutor();
-                            LOG.debug("Trying with : " + robotHost + " Port : " + robotPort + " From Robot/Executor : " + robotExecutor1.getRobot() + "/" + robotExecutor1.getExecutor());
-
-                            // RobotHost PoolSize if retreived from invariant hashmap.
-                            int robothost_poolsize_final = 0;
-                            if (!StringUtil.isNullOrEmpty(robotHost)) {
-                                if (robothost_poolsize.containsKey(robotHost)) {
-                                    robothost_poolsize_final = ParameterParserUtil.parseIntegerParam(robothost_poolsize.get(robotHost), poolSizeRobot);
-                                } else {
-                                    robothost_poolsize_final = poolSizeRobot;
-                                }
-                            }
-
-                            LOG.debug("Pool Values : poolGen " + poolSizeGeneral + " poolApp " + exe.getPoolSizeAppEnvironment() + " poolRobotHost " + robothost_poolsize_final);
-
-                            String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
-                            String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
-                            String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_APPLICATION + CONST_SEPARATOR + exe.getApplication();
-                            String const04_key = TestCaseExecutionQueueToTreat.CONSTRAIN4_ROBOT + CONST_SEPARATOR + robotHost;
-
-                            // Eval Constrain 1
-                            if (constrains_current.containsKey(const01_key)) {
-                                const01_current = constrains_current.get(const01_key);
+                        // RobotHost PoolSize if retreived from invariant hashmap.
+                        int robothost_poolsize_final = 0;
+                        if (!StringUtil.isNullOrEmpty(robotHost)) {
+                            if (robothost_poolsize.containsKey(robotHost)) {
+                                robothost_poolsize_final = ParameterParserUtil.parseIntegerParam(robothost_poolsize.get(robotHost), poolSizeRobot);
                             } else {
-                                const01_current = 0;
+                                robothost_poolsize_final = poolSizeRobot;
                             }
-                            // Eval Constrain 1
-                            boolean constMatch01;
-                            if (poolSizeGeneral == 0) {
-                                // if poolsize == 0, this means no constrain specified.
-                                constMatch01 = false;
-                            } else {
-                                constMatch01 = (const01_current >= poolSizeGeneral);
-                            }
+                        }
 
-                            // Eval Constrain 2
-                            if (constrains_current.containsKey(const02_key)) {
-                                const02_current = constrains_current.get(const02_key);
+                        // RobotExtensionHost PoolSize if retreived from invariant hashmap.
+                        int robotexthost_poolsize_final = 0;
+                        if (!StringUtil.isNullOrEmpty(robotExtHost)) {
+                            if (executorexthost_poolsize.containsKey(robotExtHost)) {
+                                robotexthost_poolsize_final = ParameterParserUtil.parseIntegerParam(executorexthost_poolsize.get(robotExtHost), poolSizeExecutorExt);
                             } else {
-                                const02_current = 0;
+                                robotexthost_poolsize_final = poolSizeExecutorExt;
                             }
-                            // Eval Constrain 2
-                            boolean constMatch02;
-                            if (exe.getPoolSizeAppEnvironment() == 0) {
-                                // if poolsize == 0, this means no constrain specified.
-                                constMatch02 = false;
-                            } else {
-                                constMatch02 = (const02_current >= exe.getPoolSizeAppEnvironment());
-                            }
+                        }
 
-                            // Eval Constrain 3
-                            if (constrains_current.containsKey(const03_key)) {
-                                const03_current = constrains_current.get(const03_key);
-                            } else {
-                                const03_current = 0;
-                            }
-                            // Eval Constrain 3
-                            boolean constMatch03;
-                            if (exe.getPoolSizeApplication() == 0) {
-                                // if poolsize == 0, this means no constrain specified.
-                                constMatch03 = false;
-                            } else {
-                                constMatch03 = (const03_current >= exe.getPoolSizeApplication());
-                            }
+                        LOG.debug("Pool Values : poolGen " + poolSizeGeneral + " poolAppEnv " + exe.getPoolSizeAppEnvironment() + " poolApp " + exe.getPoolSizeApplication() + " poolRobotHost " + robothost_poolsize_final + " poolRobotExtHost " + robotexthost_poolsize_final);
 
-                            // Eval Constrain 4
-                            if (constrains_current.containsKey(const04_key)) {
-                                const04_current = constrains_current.get(const04_key);
-                            } else {
-                                const04_current = 0;
-                            }
-                            // Eval Constrain 4
-                            boolean constMatch04;
-                            if (robothost_poolsize_final == 0) {
-                                // if poolsize == 0, this means no constrain specified.
-                                constMatch04 = false;
-                            } else {
-                                constMatch04 = (const04_current >= robothost_poolsize_final);
-                            }
+                        String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
+                        String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
+                        String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_APPLICATION + CONST_SEPARATOR + exe.getApplication();
+                        String const04_key = TestCaseExecutionQueueToTreat.CONSTRAIN4_ROBOT + CONST_SEPARATOR + robotHost;
+                        String const05_key = TestCaseExecutionQueueToTreat.CONSTRAIN5_EXECUTOREXTENSION + CONST_SEPARATOR + robotExtHost;
 
-                            if ((!constMatch01 && !constMatch02 && !constMatch03 && !constMatch04)
-                                    || (!constMatch01 && exe.getManualExecution().equals("Y"))) {
-                                // None of the constrains match or exe is manual so we can trigger the execution.
+                        // Eval Constrain 1
+                        if (constrains_current.containsKey(const01_key)) {
+                            const01_current = constrains_current.get(const01_key);
+                        } else {
+                            const01_current = 0;
+                        }
+                        // Eval Constrain 1
+                        boolean constMatch01;
+                        if (poolSizeGeneral == 0) {
+                            // if poolsize == 0, this means no constrain specified.
+                            constMatch01 = false;
+                        } else {
+                            constMatch01 = (const01_current >= poolSizeGeneral);
+                        }
 
-                                // Execution could already been triggered on a different executor.
-                                if (triggerExe == false) {
+                        // Eval Constrain 2
+                        if (constrains_current.containsKey(const02_key)) {
+                            const02_current = constrains_current.get(const02_key);
+                        } else {
+                            const02_current = 0;
+                        }
+                        // Eval Constrain 2
+                        boolean constMatch02;
+                        if (exe.getPoolSizeAppEnvironment() == 0) {
+                            // if poolsize == 0, this means no constrain specified.
+                            constMatch02 = false;
+                        } else {
+                            constMatch02 = (const02_current >= exe.getPoolSizeAppEnvironment());
+                        }
 
-                                    // Adding execution to queue.
-                                    if (queueService.updateToWaiting(exe.getId())) {
-                                        try {
-                                            ExecutionQueueWorkerThread task = new ExecutionQueueWorkerThread();
-                                            // Flag on database that execution has been selected.
-                                            robotExecutorService.updateLastExe(robot, robotExecutor);
-                                            // Update robot_executor HasMap for next queued executions in the current batch. If Algo is based on Ranking, nothing needs to be changed.
-                                            if ((robot_header.get(robot) != null)
-                                                    && (Robot.LOADBALANCINGEXECUTORMETHOD_ROUNDROBIN.equals(robot_header.get(robot).getLbexemethod()))
-                                                    && (exelist.size() > 1)) {
-                                                tmpExelist = robot_executor.get(robot);
-                                                newTmpExelist = new ArrayList<>();
-                                                RobotExecutor lastRobotExecutor = null;
-                                                for (RobotExecutor robotExecutor2 : tmpExelist) {
-                                                    // Update new List with RobotExecutor.LOADBALANCINGMETHOD_ROUNDROBIN Algo puting the Executor that has just been inserted at the end.
-                                                    if (robotExecutor2.getExecutor().equals(robotExecutor)) {
-                                                        lastRobotExecutor = robotExecutor2;
-                                                    } else {
-                                                        newTmpExelist.add(robotExecutor2);
-                                                    }
+                        // Eval Constrain 3
+                        if (constrains_current.containsKey(const03_key)) {
+                            const03_current = constrains_current.get(const03_key);
+                        } else {
+                            const03_current = 0;
+                        }
+                        // Eval Constrain 3
+                        boolean constMatch03;
+                        if (exe.getPoolSizeApplication() == 0) {
+                            // if poolsize == 0, this means no constrain specified.
+                            constMatch03 = false;
+                        } else {
+                            constMatch03 = (const03_current >= exe.getPoolSizeApplication());
+                        }
+
+                        // Eval Constrain 4
+                        if (constrains_current.containsKey(const04_key)) {
+                            const04_current = constrains_current.get(const04_key);
+                        } else {
+                            const04_current = 0;
+                        }
+                        // Eval Constrain 4
+                        boolean constMatch04;
+                        if (robothost_poolsize_final == 0) {
+                            // if poolsize == 0, this means no constrain specified.
+                            constMatch04 = false;
+                        } else {
+                            constMatch04 = (const04_current >= robothost_poolsize_final);
+                        }
+
+                        // Eval Constrain 5
+                        if (constrains_current.containsKey(const05_key)) {
+                            const05_current = constrains_current.get(const05_key);
+                        } else {
+                            const05_current = 0;
+                        }
+                        // Eval Constrain 5
+                        boolean constMatch05;
+                        if (robotexthost_poolsize_final == 0) {
+                            // if poolsize == 0, this means no constrain specified.
+                            constMatch05 = false;
+                        } else {
+                            constMatch05 = (const05_current >= robotexthost_poolsize_final);
+                        }
+
+                        if ((!constMatch01 && !constMatch02 && !constMatch03 && !constMatch04 && !constMatch05)
+                                || (!constMatch01 && exe.getManualExecution().equals("Y"))) {
+                            // None of the constrains match or exe is manual so we can trigger the execution.
+
+                            // Execution could already been triggered on a different executor.
+                            if (triggerExe == false) {
+
+                                // Adding execution to queue.
+                                if (queueService.updateToWaiting(exe.getId())) {
+                                    try {
+                                        ExecutionQueueWorkerThread task = new ExecutionQueueWorkerThread();
+                                        // Flag on database that execution has been selected.
+                                        robotExecutorService.updateLastExe(robot, robotExecutor);
+                                        // Update robot_executor HasMap for next queued executions in the current batch. If Algo is based on Ranking, nothing needs to be changed.
+                                        if ((robot_header.get(robot) != null)
+                                                && (Robot.LOADBALANCINGEXECUTORMETHOD_ROUNDROBIN.equals(robot_header.get(robot).getLbexemethod()))
+                                                && (robotExelist.size() > 1)) {
+                                            tmpExelist = robot_executor.get(robot);
+                                            newTmpExelist = new ArrayList<>();
+                                            RobotExecutor lastRobotExecutor = null;
+                                            for (RobotExecutor robotExecutor2 : tmpExelist) {
+                                                // Update new List with RobotExecutor.LOADBALANCINGMETHOD_ROUNDROBIN Algo puting the Executor that has just been inserted at the end.
+                                                if (robotExecutor2.getExecutor().equals(robotExecutor)) {
+                                                    lastRobotExecutor = robotExecutor2;
+                                                } else {
+                                                    newTmpExelist.add(robotExecutor2);
                                                 }
-                                                newTmpExelist.add(lastRobotExecutor);
-                                                robot_executor.put(robot, newTmpExelist);
                                             }
-                                            task.setCerberusExecutionUrl(parameterService.getParameterStringByKey("cerberus_url", exe.getSystem(), ""));
-                                            task.setQueueId(exe.getId());
-                                            task.setRobotExecutor(robotExecutor);
-                                            task.setSelectedRobotHost(robotHost);
-                                            task.setToExecuteTimeout(queueTimeout);
-                                            task.setQueueService(queueService);
-                                            task.setQueueDepService(queueDepService);
-                                            task.setRetriesService(retriesService);
-                                            task.setExecThreadPool(threadQueuePool);
-                                            Future<?> future = threadQueuePool.getExecutor().submit(task);
-                                            task.setFuture(future);
+                                            newTmpExelist.add(lastRobotExecutor);
+                                            robot_executor.put(robot, newTmpExelist);
+                                        }
+                                        // Flag the queue entry to STARTING
+                                        queueService.updateToStarting(exe.getId(), robotHost, robotExtHost);
 
-                                            triggerExe = true;
-                                            nbqueuedexe++;
+                                        task.setCerberusExecutionUrl(StringUtil.addSuffixIfNotAlready(parameterService.getParameterStringByKey("cerberus_url", exe.getSystem(), ""), "/"));
+                                        task.setCerberusTriggerQueueJobUrl(StringUtil.addSuffixIfNotAlready(parameterService.getParameterStringByKey("cerberus_url", exe.getSystem(), ""), "/")
+                                                + ManageV001.SERVLETNAME + "?token=" + parameterService.getParameterStringByKey("cerberus_manage_token", "", "") + "&action=" + ManageV001.ACTIONRUNQUEUEJOB);
 
-                                            // Debug messages.
-                                            LOG.debug("RESULT : Execution triggered. Const1 " + constMatch01 + " Const2 " + constMatch02 + " Const3 " + constMatch03 + " Const4 " + constMatch04 + " Manual " + exe.getManualExecution());
-                                            LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current + " CurConst4 " + const04_current);
+                                        task.setQueueId(exe.getId());
+                                        task.setRobotExecutor(robotExecutor);
+                                        task.setSelectedRobotHost(robotHost);
+                                        task.setSelectedRobotExtHost(robotExtHost);
+                                        task.setToExecuteTimeout(queueTimeout);
+                                        task.setQueueService(queueService);
+                                        task.setQueueDepService(queueDepService);
+                                        task.setRetriesService(retriesService);
+                                        task.setTagService(tagService);
+                                        task.setExecThreadPool(threadQueuePool);
+                                        Future<?> future = threadQueuePool.getExecutor().submit(task);
+                                        task.setFuture(future);
 
-                                            // Constrains Counter increase
-                                            constrains_current.put(const01_key, const01_current + 1);
-                                            if (!exe.getManualExecution().equals("Y")) {
-                                                // Specific increment only if automatic execution.
-                                                constrains_current.put(const02_key, const02_current + 1);
-                                                constrains_current.put(const03_key, const03_current + 1);
-                                                constrains_current.put(const04_key, const04_current + 1);
-                                            }
+                                        triggerExe = true;
+                                        nbqueuedexe++;
 
-                                        } catch (Exception e) {
-                                            LOG.error("Failed to add Queueid : " + exe.getId() + " into the queue : " + e.getMessage(), e);
+                                        // Debug messages.
+                                        LOG.debug("RESULT : Execution triggered. Const1 " + constMatch01 + " Const2 " + constMatch02 + " Const3 " + constMatch03 + " Const4 " + constMatch04 + " Const5 " + constMatch05 + " Manual " + exe.getManualExecution());
+                                        LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current + " CurConst4 " + const04_current + " CurConst5 " + const05_current);
+
+                                        // Constrains Counter increase
+                                        constrains_current.put(const01_key, const01_current + 1);
+                                        if (!exe.getManualExecution().equals("Y")) {
+                                            // Specific increment only if automatic execution.
+                                            constrains_current.put(const02_key, const02_current + 1);
+                                            constrains_current.put(const03_key, const03_current + 1);
+                                            constrains_current.put(const04_key, const04_current + 1);
+                                            constrains_current.put(const05_key, const05_current + 1);
                                         }
 
+                                    } catch (Exception e) {
+                                        LOG.error("Failed to add Queueid : " + exe.getId() + " into the queue : " + e.getMessage(), e);
                                     }
-                                } else {
-                                    LOG.debug("RESULT : Execution Not triggered. Queueid : " + exe.getId() + " already inserted (on a previous Executor).");
-                                }
 
+                                }
                             } else {
-                                if (constMatch04) {
-                                    notTriggeredExeMessage += "Robot Host contrain on '" + const04_key + "' reached. " + robothost_poolsize_final + " Execution(s) already in pool. ";
-                                }
-                                if (constMatch03) {
-                                    notTriggeredExeMessage += "Application contrain on '" + const03_key + "' reached . " + exe.getPoolSizeApplication() + " Execution(s) already in pool. ";
-                                }
-                                if (constMatch02) {
-                                    notTriggeredExeMessage += "Application Environment contrain on '" + const02_key + "' reached . " + exe.getPoolSizeAppEnvironment() + " Execution(s) already in pool. ";
-                                }
-                                if (constMatch01) {
-                                    notTriggeredExeMessage += "Global contrain reached. " + poolSizeGeneral + " Execution(s) already in pool. ";
-                                }
-                                LOG.debug("RESULT : Execution not triggered. Const1 " + constMatch01 + " Const2 " + constMatch02 + " Const3 " + constMatch03 + " Const4 " + constMatch04 + " Manual " + exe.getManualExecution());
-                                LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current + " CurConst4 " + const04_current);
+                                LOG.debug("RESULT : Execution Not triggered. Queueid : " + exe.getId() + " already inserted (on a previous Executor).");
                             }
-                        }
 
-//                  End of Queue entry analysis accross all Executors.
-                        if ((exe.getDebugFlag() != null) && (exe.getDebugFlag().equalsIgnoreCase("Y"))) {
-                            if (triggerExe == false) {
-                                queueService.updateComment(exe.getId(), notTriggeredExeMessage);
+                        } else {
+                            if (constMatch05) {
+                                notTriggeredExeMessage += "Robot Extension Host contrain on '" + const05_key + "' reached. " + robotexthost_poolsize_final + " Execution(s) already in pool. ";
                             }
-                            LOG.debug("Debug Message : " + notTriggeredExeMessage);
-
+                            if (constMatch04) {
+                                notTriggeredExeMessage += "Robot Host contrain on '" + const04_key + "' reached. " + robothost_poolsize_final + " Execution(s) already in pool. ";
+                            }
+                            if (constMatch03) {
+                                notTriggeredExeMessage += "Application contrain on '" + const03_key + "' reached . " + exe.getPoolSizeApplication() + " Execution(s) already in pool. ";
+                            }
+                            if (constMatch02) {
+                                notTriggeredExeMessage += "Application Environment contrain on '" + const02_key + "' reached . " + exe.getPoolSizeAppEnvironment() + " Execution(s) already in pool. ";
+                            }
+                            if (constMatch01) {
+                                notTriggeredExeMessage += "Global contrain reached. " + poolSizeGeneral + " Execution(s) already in pool. ";
+                            }
+                            LOG.debug("RESULT : Execution not triggered. Const1 " + constMatch01 + " Const2 " + constMatch02 + " Const3 " + constMatch03 + " Const4 " + constMatch04 + " Const5 " + constMatch05 + " Manual " + exe.getManualExecution());
+                            LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current + " CurConst4 " + const04_current + " CurConst5 " + const05_current);
                         }
                     }
 
-                    LOG.debug("Stopping Queue_Processing_Job - TOTAL Released execution(s) : " + nbqueuedexe);
+//                  End of Queue entry analysis accross all Executors.
+                    if ((exe.getDebugFlag() != null) && (exe.getDebugFlag().equalsIgnoreCase("Y"))) {
+                        if (triggerExe == false) {
+                            queueService.updateComment(exe.getId(), notTriggeredExeMessage);
+                        }
+                        LOG.debug("Debug Message : " + notTriggeredExeMessage);
 
-                } while (nbqueuedexe > 0);
-            } else {
-                LOG.debug("Queue_Processing_Job not triggered (already running when updating.)");
-            }
+                    }
+                }
+
+                LOG.debug("Stopping Queue_Processing_Job - TOTAL Released execution(s) : " + nbqueuedexe);
+
+                if (constrains_current.containsKey(TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL)) {
+                    const01_current = constrains_current.get(TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL);
+                } else {
+                    const01_current = 0;
+                }
+                LOG.debug("Stats : GlobalContrain=" + poolSizeGeneral + " - nbRunning=" + const01_current + " - NbQueued=" + executionsInQueue.size());
+
+                queueStatService.create(factoryQueueStat.create(0, poolSizeGeneral, const01_current, executionsInQueue.size(), "", null, null, null));
+
+            } while (nbqueuedexe > 0);
 
             // Flag in database that job is finished.
             myVersionService.updateMyVersionString("queueprocessingjobrunning", "N");

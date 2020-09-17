@@ -39,7 +39,7 @@ import org.cerberus.engine.execution.IRecorderService;
  * videoRecorder.endRecordVideo() }
  *
  * If you forgot to `endRecordVideo`, `VideoRecorder` implements a destructor
- * who end video when object is detructed
+ * who end video when object is destructed
  */
 public abstract class VideoRecorder {
 
@@ -79,12 +79,12 @@ public abstract class VideoRecorder {
         this.recorderService = recorderService;
     }
 
-    @Override
-    public void finalize() {
-        if (running.get()) {
-            endRecordVideo();
-        }
-    }
+//    @Override
+//    public void finalize() {
+//        if (running.get()) {
+//            endRecordVideo();
+//        }
+//    }
 
     public abstract void beginRecordVideo();
 

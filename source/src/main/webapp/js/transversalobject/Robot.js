@@ -91,10 +91,9 @@ function initModalRobot() {
     $("#editRobotModal [name='screensize']").autocomplete({
         source: availableScreenSize
     });
-    var availableHost = getInvariantArray("ROBOTHOST", false);
-    $("#editRobotModal [name='host']").autocomplete({
-        source: availableHost
-    });
+    // Load invariant into cache.
+    getInvariantArray("ROBOTHOST", false);
+    getInvariantArray("EXECUTOREXTENSIONHOST", false);
 
     // Load the select needed in localStorage cache.
     getSelectInvariant("CAPABILITY", true);
@@ -529,18 +528,18 @@ function appendExecutorRow(tableBody, executor) {
     var deviceUdidInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceUdid") + " --\">").addClass("form-control input-sm").val(executor.deviceUdid);
     var deviceNameInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceName") + " --\">").addClass("form-control input-sm").val(executor.deviceName);
     var devicePortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "devicePort") + " --\">").addClass("form-control input-sm").val(executor.devicePort);
-    var deviceLockUnlockInput = $("<input type='checkbox' placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceLockUnlock") + " --\">").addClass("form-control input-sm").prop("checked",executor.deviceLockUnlock);
+    var deviceLockUnlockInput = $("<input type='checkbox' placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceLockUnlock") + " --\">").addClass("form-control input-sm").prop("checked", executor.deviceLockUnlock);
     var executorExtensionHostInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorExtensionHost") + " --\">").addClass("form-control input-sm").val(executor.executorExtensionHost);
     var executorExtensionPortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorExtensionPort") + " --\">").addClass("form-control input-sm").val(executor.executorExtensionPort);
     var executorProxyHostInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorProxyHost") + " --\">").addClass("form-control input-sm").val(executor.executorProxyHost);
     var executorProxyPortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorProxyPort") + " --\">").addClass("form-control input-sm").val(executor.executorProxyPort);
-    var executorProxyActiveInput = $("<input type='checkbox' placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorProxyActive") + " --\">").addClass("form-control input-sm").prop("checked",executor.executorProxyActive);
+    var executorProxyActiveInput = $("<input type='checkbox' placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorProxyActive") + " --\">").addClass("form-control input-sm").prop("checked", executor.executorProxyActive);
     var table = $("#" + tableBody);
 
 
 
     var row = $("<tr></tr>");
-    
+
     var td1 = $("<td></td>").append(deleteBtn);
 
     var name = $("<div class='form-group col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("robotexecutor", "executor") + "</label>").append(nameInput);
@@ -568,7 +567,7 @@ function appendExecutorRow(tableBody, executor) {
     var drow4 = $("<div class='row'></div>").append(dudid).append(dname).append(dport).append(dLockUnlock);
     var drow5 = $("<div class='row'></div>").append(epActive).append(eehost).append(eeport).append(ephost).append(epport);
     var td3 = $("<td></td>").append(drow1).append(drow2).append(drow3).append(drow4).append(drow5);
-    
+
     deleteBtn.click(function () {
         executor.toDelete = (executor.toDelete) ? false : true;
         if (executor.toDelete) {
@@ -627,6 +626,9 @@ function appendExecutorRow(tableBody, executor) {
     });
     hostInput.autocomplete({
         source: getInvariantArray("ROBOTHOST", false)
+    });
+    executorExtensionHostInput.autocomplete({
+        source: getInvariantArray("EXECUTOREXTENSIONHOST", false)
     });
 
     row.append(td1);

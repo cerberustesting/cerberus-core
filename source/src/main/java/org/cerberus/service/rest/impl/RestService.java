@@ -52,6 +52,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -149,7 +150,7 @@ public class RestService implements IRestService {
                 public AppService handleResponse(final HttpResponse response)
                         throws ClientProtocolException, IOException {
                     AppService myResponse = factoryAppService.create("", AppService.TYPE_REST,
-                            AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", "", "", "", null, "", null, null);
+                            AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", true, "", "", "", null, "", null, null);
                     int responseCode = response.getStatusLine().getStatusCode();
                     myResponse.setResponseHTTPCode(responseCode);
                     myResponse.setResponseHTTPVersion(response.getProtocolVersion().toString());
@@ -178,9 +179,9 @@ public class RestService implements IRestService {
     @Override
     public AnswerItem<AppService> callREST(String servicePath, String requestString, String method,
             List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
-            String system, TestCaseExecution tcexecution) {
+            String system, boolean isFollowRedir, TestCaseExecution tcexecution) {
         AnswerItem<AppService> result = new AnswerItem<>();
-        AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "", "", "", "", "",
+        AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "", "", "", true, "", "",
                 "", null, "", null, null);
         serviceREST.setProxy(false);
         serviceREST.setProxyHost(null);
@@ -279,6 +280,14 @@ public class RestService implements IRestService {
                         .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
             }
 
+            // Disable redir if required. 
+            if (isFollowRedir) {
+                serviceREST.setFollowRedir(true);
+            } else {
+                httpclientBuilder.disableRedirectHandling();
+                serviceREST.setFollowRedir(false);
+            }
+
             httpclient = httpclientBuilder.build();
 
             RequestConfig requestConfig;
@@ -341,10 +350,7 @@ public class RestService implements IRestService {
                     // Content
                     if (!(StringUtil.isNullOrEmpty(requestString))) {
                         // If requestString is defined, we POST it.
-                        InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
-                        InputStreamEntity reqEntity = new InputStreamEntity(stream);
-                        reqEntity.setChunked(true);
-                        httpPost.setEntity(reqEntity);
+                        httpPost.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
                         serviceREST.setServiceRequest(requestString);
                     } else {
                         // If requestString is not defined, we POST the list of key/value request.
@@ -398,10 +404,7 @@ public class RestService implements IRestService {
                     // Content
                     if (!(StringUtil.isNullOrEmpty(requestString))) {
                         // If requestString is defined, we POST it.
-                        InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
-                        InputStreamEntity reqEntity = new InputStreamEntity(stream);
-                        reqEntity.setChunked(true);
-                        httpDelete.setEntity(reqEntity);
+                        httpDelete.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
                         serviceREST.setServiceRequest(requestString);
                     } else {
                         // If requestString is not defined, we POST the list of key/value request.
@@ -445,11 +448,8 @@ public class RestService implements IRestService {
 
                     // Content
                     if (!(StringUtil.isNullOrEmpty(requestString))) {
-                        // If requestString is defined, we POST it.
-                        InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
-                        InputStreamEntity reqEntity = new InputStreamEntity(stream);
-                        reqEntity.setChunked(true);
-                        httpPut.setEntity(reqEntity);
+                        // If requestString is defined, we PUT it.
+                        httpPut.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
                         serviceREST.setServiceRequest(requestString);
                     } else {
                         // If requestString is not defined, we PUT the list of key/value request.
@@ -501,14 +501,11 @@ public class RestService implements IRestService {
 
                     // Content
                     if (!(StringUtil.isNullOrEmpty(requestString))) {
-                        // If requestString is defined, we POST it.
-                        InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
-                        InputStreamEntity reqEntity = new InputStreamEntity(stream);
-                        reqEntity.setChunked(true);
-                        httpPatch.setEntity(reqEntity);
+                        // If requestString is defined, we PATCH it.
+                        httpPatch.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
                         serviceREST.setServiceRequest(requestString);
                     } else {
-                        // If requestString is not defined, we PUT the list of key/value request.
+                        // If requestString is not defined, we PATCH the list of key/value request.
                         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
                         for (AppServiceContent contentVal : contentList) {
                             nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));

@@ -49,10 +49,6 @@
             <h1 class="page-title-line" id="title">Test Case List</h1>
 
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-list"></span>
-                    <label id="testCaseListLabel">Test Case List</label>
-                </div>
                 <form id="massActionForm" name="massActionForm"  title="" role="form">
                     <div class="panel-body" id="testCaseList">
                         <table id="testCaseTable" class="table table-bordered table-hover display" name="testCaseTable"></table>
@@ -61,9 +57,9 @@
                 </form>
             </div>
 
-        <footer class="footer">
-            <div class="container-fluid" id="footer"></div>
-        </footer>
-    </div>
-</body>
+            <footer class="footer">
+                <div class="container-fluid" id="footer"></div>
+            </footer>
+        </div>
+    </body>
 </html>

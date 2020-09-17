@@ -89,17 +89,17 @@ public class ScheduledTaskRunner {
     }
 
     private void performBatch1_CancelOldQueueEntries() {
-        LOG.debug("automaticqueuecancellationjob Task triggered.");
+        LOG.info("automaticqueuecancellationjob Task triggered.");
         if (parameterService.getParameterBooleanByKey("cerberus_automaticqueuecancellationjob_active", "", true)) {
             testCaseExecutionQueueService.cancelRunningOldQueueEntries();
         } else {
-            LOG.debug("automaticqueuecancellationjob Task disabled by config (cerberus_automaticqueuecancellationjob_active).");
+            LOG.info("automaticqueuecancellationjob Task disabled by config (cerberus_automaticqueuecancellationjob_active).");
         }
-        LOG.debug("automaticqueuecancellationjob Task ended.");
+        LOG.info("automaticqueuecancellationjob Task ended.");
     }
 
     private void performBatch2_ProcessQueue() {
-        LOG.debug("automaticqueueprocessingjob Task triggered.");
+        LOG.info("automaticqueueprocessingjob Task triggered.");
         if (parameterService.getParameterBooleanByKey("cerberus_automaticqueueprocessingjob_active", "", true)) {
             try {
                 executionThreadPoolService.executeNextInQueue(false);
@@ -107,18 +107,18 @@ public class ScheduledTaskRunner {
                 LOG.error(ex.toString(), ex);
             }
         } else {
-            LOG.debug("automaticqueueprocessingjob Task disabled by config (cerberus_automaticqueueprocessingjob_active).");
+            LOG.info("automaticqueueprocessingjob Task disabled by config (cerberus_automaticqueueprocessingjob_active).");
         }
-        LOG.debug("automaticqueueprocessingjob Task ended.");
+        LOG.info("automaticqueueprocessingjob Task ended.");
     }
 
     private void performBatch3_SchedulerInit() {
         try {
-            LOG.debug("SchedulerInit Task triggered.");
+            LOG.info("SchedulerInit Task triggered.");
             schedulerInit.init();
-            LOG.debug("SchedulerInit Task ended.");
+            LOG.info("SchedulerInit Task ended.");
         } catch (Exception e) {
-            LOG.debug("ScheduleEntry init from scheduletaskrunner failed : " + e);
+            LOG.error("ScheduleEntry init from scheduletaskrunner failed : " + e);
         }
 
     }

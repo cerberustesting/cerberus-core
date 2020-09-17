@@ -19,29 +19,28 @@
  */
 package org.cerberus.service.appium.impl;
 
-import com.google.common.collect.Lists;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
-import java.time.Duration;
-
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.engine.entity.Session;
-import org.cerberus.enums.MessageEventEnum;
-import org.springframework.stereotype.Service;
-
+import java.time.Duration;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.impl.ParameterService;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.entity.SwipeAction;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.JSONUtil;
+import org.cerberus.util.StringUtil;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Specific Android implementation of the {@link AppiumService}
@@ -155,24 +154,30 @@ public class AndroidAppiumService extends AppiumService {
     }
 
     @Override
-    public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException {
-        AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
+    public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException, JSONException {
 
-        Map<String, Object> argss = new HashMap<>();
-        argss.put("command", cmd);
-        argss.put("args", Lists.newArrayList(args));
+        Object value;
+        String valueString = "";
+        if (StringUtil.isNullOrEmpty(args)) {
+            value = session.getAppiumDriver().executeScript(cmd, new HashMap<>());
+        } else {
+            value = session.getAppiumDriver().executeScript(cmd, JSONUtil.convertFromJSONObjectString(args));
+        }
 
-        String value = driver.executeScript("mobile: shell", argss).toString();
-
+        if (value != null) {
+            valueString = value.toString();
+        }
         // execute Script return an \n or \r\n sometimes, so we delete the last occurence of it
-        if (value.endsWith("\r\n")) {
-            value = value.substring(0, value.lastIndexOf("\r\n"));
-        }
-        if (value.endsWith("\n")) {
-            value = value.substring(0, value.lastIndexOf("\n"));
+        if (!StringUtil.isNullOrEmpty(valueString)) {
+            if (valueString.endsWith("\r\n")) {
+                valueString = valueString.substring(0, valueString.lastIndexOf("\r\n"));
+            }
+            if (valueString.endsWith("\n")) {
+                valueString = valueString.substring(0, valueString.lastIndexOf("\n"));
+            }
         }
 
-        return value;
+        return valueString;
     }
 
     @Override
@@ -209,7 +214,22 @@ public class AndroidAppiumService extends AppiumService {
 
     @Override
     public MessageEvent openApp(Session session, String appPackage, String appActivity) {
-        return executeCommand(session, "am start", "-n " + appPackage + "/" + appActivity + "\n");
+        return executeCommand(session, "mobile:shell", "{'command': 'am start', 'args': ['-n " + appPackage + "/" + appActivity + "\n']}");
+    }
+
+    @Override
+    public MessageEvent closeApp(Session session) {
+        try {
+
+            session.getAppiumDriver().closeApp();
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSEAPP_GENERIC);
+
+        } catch (Exception e) {
+            LOG.warn("Unable to close app " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", "Unable to close app : " + e.getMessage());
+        }
     }
 
 }

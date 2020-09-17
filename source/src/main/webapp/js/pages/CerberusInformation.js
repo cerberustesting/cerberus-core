@@ -28,7 +28,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
 });
 
 function initPage() {
+
     displayPageLabel();
+
+    bindToggleCollapse();
+
 }
 
 function displayPageLabel() {
@@ -201,17 +205,31 @@ function feedContent() {
         row.append(cel2);
         table.append(row);
 
+        var table = $("#schedulerDateTableBody");
+        table.empty();
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.scheduler.serverDate);
+        var cel2 = $("<td></td>").append(data.scheduler.serverTimeZone);
+        row.append(cel1);
+        row.append(cel2);
+        table.append(row);
+
         var table = $("#schDetTableBody");
         table.empty();
         $.each(data.scheduler["schedulerTriggers"], function (idx, obj) {
             var row = $("<tr></tr>");
-            var cel1 = $("<td></td>").append(obj.triggerType);
+            var cel1 = $("<td rowspan='2'></td>").append(obj.triggerType);
             row.append(cel1);
-            var cel1 = $("<td></td>").append(obj.triggerName);
+            var cel1 = $("<td rowspan='2'></td>").append(obj.triggerName);
             row.append(cel1);
             var cel1 = $("<td></td>").append(obj.triggerNextFiretime);
+            console.info(obj.triggerNextFiretime);
             row.append(cel1);
             var cel1 = $("<td></td>").append(obj.triggerUserCreated);
+            row.append(cel1);
+            table.append(row);
+            var row = $("<tr></tr>");
+            var cel1 = $("<td colspan='2'></td>").append(obj.triggerCronDefinition);
             row.append(cel1);
             table.append(row);
         });

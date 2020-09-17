@@ -155,9 +155,9 @@
                         <div class="center marginTop25 tab-pane fade in active" id="tabSteps">
                             <nav class="col-lg-3" id="nav-execution" style="z-index:1;">
                                 <div id="list-wrapper" style="top:107px;">
-                                    <div id="stepListWrapper">
+                                    <div id="stepsWrapper">
                                         <!--<h4>Steps</h4>-->
-                                        <ul class="list-group step-list side-item nav nav-pills" id="stepList" style="max-height: 600px;overflow-y: auto"></ul>
+                                        <ul class="list-group step-list side-item nav nav-pills" id="steps" style="max-height: 600px;overflow-y: auto"></ul>
                                     </div>
                                     <div id="tcButton">
                                         <!--<h4>Actions</h4>-->
@@ -183,7 +183,7 @@
                                                     </div>
                                                     <div class="col-lg-3 form-group">
                                                         <label>Step Condition Operation:</label>
-                                                        <select class="form-control input-sm" id="stepConditionOper"></select>
+                                                        <select class="form-control input-sm" id="stepConditionOperator"></select>
                                                     </div>
                                                     <div class="col-lg-3 form-group">
                                                         <label>Step Condition Parameter:</label>

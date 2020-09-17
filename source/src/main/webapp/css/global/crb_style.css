@@ -26,28 +26,28 @@ pre{
 .buttonAddStep{
     height:20px;
     font-weight:bold;
-font-family: Trebuchet MS;
-border-color:orange;
-border-width:1px;
-border-style:solid;
-background-color:white;
-color:orange;
-text-align: center;
-border-radius: 5px;
-    
+    font-family: Trebuchet MS;
+    border-color:orange;
+    border-width:1px;
+    border-style:solid;
+    background-color:white;
+    color:orange;
+    text-align: center;
+    border-radius: 5px;
+
 }
 .buttonSaveChanges{
     height:20px;
     font-weight:bold;
-font-family: Trebuchet MS;
-border-color:#333333;
-border-width:1px;
-border-style:solid;
-background-color:white;
-color:#333333;
-text-align: center;
-border-radius: 5px;
-    
+    font-family: Trebuchet MS;
+    border-color:#333333;
+    border-width:1px;
+    border-style:solid;
+    background-color:white;
+    color:#333333;
+    text-align: center;
+    border-radius: 5px;
+
 }
 select{
     font-size:90%;
@@ -100,29 +100,29 @@ input#wob {
 }
 /**Title of the parts in pages*/
 .dttTitle{
-font-weight:bold;
-font-family: Trebuchet MS;
-color:#555555;
-font-size:14px;
+    font-weight:bold;
+    font-family: Trebuchet MS;
+    color:#555555;
+    font-size:14px;
 }
 
 /** */
 .filters{
-background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC); 
-background-image: -webkit-linear-gradient(top, #ebebeb, #CCCCCC); 
-font-weight:bold;
-font-family: Trebuchet MS;
-color:#555555;
-text-align: center;
+    background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC); 
+    background-image: -webkit-linear-gradient(top, #ebebeb, #CCCCCC); 
+    font-weight:bold;
+    font-family: Trebuchet MS;
+    color:#555555;
+    text-align: center;
 }
 
 .backDiv{
-background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8); 
-background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8); 
-font-weight:bold;
-font-family: Trebuchet MS;
-color:#555555;
-text-align: center;
+    background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8); 
+    background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8); 
+    font-weight:bold;
+    font-family: Trebuchet MS;
+    color:#555555;
+    text-align: center;
 }
 
 div#header {
@@ -133,16 +133,16 @@ div#header {
 }
 
 .tableHeader{
-background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8); 
-background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8); 
-font-weight:bold;
-font-family: Trebuchet MS;
-color:#555555;
-text-align: center;
+    background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8); 
+    background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8); 
+    font-weight:bold;
+    font-family: Trebuchet MS;
+    color:#555555;
+    text-align: center;
 }
 
 .tableContent{
-background-color: white;
+    background-color: white;
 }
 
 .tableBorder{
@@ -372,11 +372,11 @@ input#submitButtonDuplicate {
     padding-left: 1px;
     text-align:center;
     vertical-align: middle;
-    
+
 }
 #navlist li a img{
     text-align: center;
-    
+
 }
 #navlist li a:link, #navlist li a:visited {
     background: url("../images/background.png") repeat-x scroll 0 -90px rgba(0, 0, 0, 0);

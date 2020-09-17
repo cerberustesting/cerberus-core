@@ -19,7 +19,7 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%-- 
+<%--
     Document   : ReportingExecutionByTag2
     Created on : 3 août 2015, 11:02:49
     Author     : cerberus
@@ -140,7 +140,7 @@
                                                 <td style="text-align: center">Test Folder</td>
                                                 <td style="text-align: center">Test Case</td>
                                                 <td style="text-align: center">Status</td>
-                                            </tr>                                    
+                                            </tr>
                                         </thead>
                                         <tbody id="bugTableReportBody"></tbody>
                                     </table>
@@ -165,7 +165,7 @@
                                                 <td style="text-align: center">Total</td>
                                                 <td style="text-align: center">Progress %</td>
                                                 <td style="text-align: center">Still to do</td>
-                                            </tr>                                    
+                                            </tr>
                                         </thead>
                                         <tbody id="manualTableBody"></tbody>
                                     </table>
@@ -197,26 +197,26 @@
                         </div>
                         <div class="panel-body collapse in" id="TagDetail">
                             <div class="row">
-                                <div class="col-lg-12">
+                                <div class="col-sm-6">
                                     <label for="startExe">Start :</label>
                                     <input type="text" class="form-control" name="startExe" id="startExe" readonly aria-describedby="basic-addon1" >
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="endExe">End : <br>(When all execution queue has been closed)</label>
+                                    <input type="text" class="form-control" name="endExe" id="endExe" readonly aria-describedby="basic-addon1" >
                                 </div>
                             </div>
                             <div class="row" id="panelDuration">
                                 <div class="col-sm-6">
-                                    <label for="endExe">End : (When all execution queue has been closed)</label>
-                                    <input type="text" class="form-control" name="endExe" id="endExe" readonly aria-describedby="basic-addon1" >
-                                </div>
-                                <div class="col-sm-6">
                                     <label for="durExe">Duration (Minutes) :</label>
                                     <input type="text" class="form-control" name="durExe" id="durExe" readonly aria-describedby="basic-addon1" >
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12">
+                                <div class="col-sm-6">
                                     <label for="endLastExe">Last Execution :</label>
                                     <input type="text" class="form-control" name="endLastExe" id="endLastExe" readonly aria-describedby="basic-addon1" >
                                 </div>
+                            </div>
+                            <div class="row">
                             </div>
                             <div class="row">
                                 <div class="col-sm-4">
@@ -227,26 +227,40 @@
                                     <label for="Tagcampaign">Campaign :</label>
                                     <input type="text" class="form-control" name="Tagcampaign" id="Tagcampaign" readonly aria-describedby="basic-addon1" >
                                 </div>
-                                <div class="input-group-btn col-sm-4" id="TagcampaignCel2">
-                                    <a id="buttonRunCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;margin-top: 20px;">Run Campaign</button></a>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12" id="TagDescCel">
+                                    <label for="TagDesc">Description :</label>
+                                    <input type="text" class="form-control" name="TagDesc" id="TagDesc" readonly aria-describedby="basic-addon1" >
+                                </div>
+                                <div class="col-sm-12" id="TagCommentCel">
+                                    <label for="TagComment">Comment :</label>
+                                    <input type="text" class="form-control" name="TagComment" id="TagComment" readonly aria-describedby="basic-addon1" >
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-group-btn" id="TagcampaignCel2">
                                     <a id="buttonSeeStatsCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;margin-top: 20px;">See Stats</button></a>
+                                </div>
+                                <div class="input-group-btn" id="TagcampaignCel2">
+                                    <a id="buttonRunCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;margin-top: 20px;">Run Campaign</button></a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row" id="ReportByFunctionPanel">
+            <div class="row" id="ReportByTestFolderPanel">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#functionChart">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#testFolderChart">
                             <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="reportFunction">Report by Function</label>
+                            <label id="reportTestFolder">Report by Test folder</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body collapse in" id="functionChart">
+                        <div class="panel-body collapse in" id="testFolderChart">
                             <div class="row">
-                                <div class="col-xs-12" id="ReportByfunctionChart"></div>
+                                <div class="col-xs-12" id="ReportTestFolderChart"></div>
                             </div>
                         </div>
                     </div>
@@ -311,7 +325,7 @@
                                             <td style="text-align: center">% PE</td>
                                             <td style="text-align: center">% CA</td>
                                             <td class="width80" style="text-align: center">% NOT OK</td>
-                                        </tr>                                    
+                                        </tr>
                                     </thead>
                                     <tbody id="summaryTableBody"></tbody>
                                 </table>

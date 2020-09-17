@@ -23,9 +23,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IMyVersionDAO;
 import org.cerberus.crud.entity.MyVersion;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.IMyVersionService;
-import org.cerberus.exception.CerberusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

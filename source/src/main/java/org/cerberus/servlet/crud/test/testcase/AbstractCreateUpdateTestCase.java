@@ -122,11 +122,15 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
                 TestCase tc = getTestCaseFromRequest(request, getTestCaseBeforeTraitment(originalTest, originalTestCase));
                 updateTestCase(originalTest, originalTestCase, tc);
 
-                fireLogEvent(originalTest, originalTestCase, tc, request, response);
+                if (StringUtil.isNullOrEmpty(originalTest)) {
+                    fireLogEvent(test, testcase, tc, request, response);
+                } else {
+                    fireLogEvent(originalTest, originalTestCase, tc, request, response);
+                }
 
                 // Update labels
-                if (request.getParameter("labelList") != null) {
-                    JSONArray objLabelArray = new JSONArray(request.getParameter("labelList"));
+                if (request.getParameter("labels") != null) {
+                    JSONArray objLabelArray = new JSONArray(request.getParameter("labels"));
                     List<TestCaseLabel> labelList = getLabelListFromRequest(request, test, testcase, objLabelArray);
 
                     // Update the Database with the new list.
@@ -135,8 +139,8 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
                 }
 
                 // Update Countries
-                if (request.getParameter("countryList") != null) {
-                    JSONArray objCountryArray = new JSONArray(request.getParameter("countryList"));
+                if (request.getParameter("countries") != null) {
+                    JSONArray objCountryArray = new JSONArray(request.getParameter("countries"));
                     List<TestCaseCountry> tccList = getCountryListFromRequest(request, test, testcase, objCountryArray);
 
                     // Update the Database with the new list.
@@ -145,8 +149,8 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
                 }
 
                 // Update Countries
-                if (request.getParameter("countryList") != null) {
-                    JSONArray objCountryArray = new JSONArray(request.getParameter("countryList"));
+                if (request.getParameter("countries") != null) {
+                    JSONArray objCountryArray = new JSONArray(request.getParameter("countries"));
                     List<TestCaseCountry> tccList = getCountryListFromRequest(request, test, testcase, objCountryArray);
 
                     // Update the Database with the new list.
@@ -173,7 +177,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
                 }
 
                 // update testcase dependency
-                if (request.getParameter("testcaseDependency") != null) {
+                if (request.getParameter("dependencies") != null) {
                     List<TestCaseDep> tcdList = getDependencyFromRequest(request, tc);
 
                     testCaseDepService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestCase(), tcdList);
@@ -268,7 +272,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
 
     protected List<TestCaseDep> getDependencyFromRequest(HttpServletRequest request, TestCase tc) throws JSONException {
         List<TestCaseDep> res = new LinkedList<>();
-        jsonArrayFoEach(request, "testcaseDependency", (jsonObj) -> {
+        jsonArrayFoEach(request, "dependencies", (jsonObj) -> {
             String testcase = jsonObj.getString("testcase");
             Long testcaseid = jsonObj.getLong("id");
             String test = jsonObj.getString("test");

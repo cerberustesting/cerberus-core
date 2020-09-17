@@ -40,7 +40,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <title>Cerberus Database Maintenance</title>
+        <title id="pageTitle">Cerberus Database Maintenance</title>
         <script type="text/javascript" src="js/pages/DatabaseMaintenance.js"></script>
     </head>
     <body>
@@ -64,7 +64,7 @@
                 // this is used in order to execute only 1 instruction at a time as it make take a lot of time to process.
                 boolean SQLExecuted = false;
                 // SQL that has version equal to SQLLimit will not be executed automatically.
-                Integer SQLLimit = 1469; // 4.5 Version LEVEL.
+                Integer SQLLimit = 1539; // 4.9 Version LEVEL.
                 IFactoryMyversion factoryMyversion;
 
                 try {

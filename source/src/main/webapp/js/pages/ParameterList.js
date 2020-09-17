@@ -39,6 +39,9 @@ function initPage() {
 function displayPageLabel() {
     var doc = new Doc();
 
+    $("#pageTitle").html(doc.getDocLabel("page_parameter", "allParameters"));
+    $("#title").html(doc.getDocOnline("page_parameter", "allParameters"));
+    
     displayHeaderLabel(doc);
 
     displayFooter(doc);

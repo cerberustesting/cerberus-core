@@ -46,7 +46,7 @@ public class Label {
     private String usrModif;
     private Timestamp dateModif;
     // External Database model
-    Integer counter1 ;
+    Integer counter1;
     /**
      * Invariant PROPERTY TYPE String.
      */
@@ -185,19 +185,28 @@ public class Label {
     }
 
     public JSONObject toJson() {
-        JSONObject result = new JSONObject();
+        JSONObject labelJson = new JSONObject();
         try {
-            result.put("description", this.getDescription());
-            result.put("label", this.getLabel());
-            result.put("type", this.getType());
-            result.put("usrCreated", this.getUsrCreated());
-            result.put("dateCreated", this.getDateCreated());
-            result.put("usrModif", this.getUsrModif());
-            result.put("dateModif", this.getDateModif());
+            labelJson.put("id", this.getId());
+            labelJson.put("system", this.getSystem());
+            labelJson.put("label", this.getLabel());
+            labelJson.put("type", this.getType());
+            labelJson.put("color", this.getColor());
+            labelJson.put("parentLabelID", this.getParentLabelID());
+            labelJson.put("requirementStatusType", this.getReqType());
+            labelJson.put("requirementStatus", this.getReqStatus());
+            labelJson.put("requirementStatusCriticity", this.getReqCriticity());
+            labelJson.put("description", this.getDescription());
+            labelJson.put("longDesc", this.getLongDesc());
+            labelJson.put("usrCreated", this.getUsrCreated());
+            labelJson.put("dateCreated", this.getDateCreated());
+            labelJson.put("usrModif", this.getUsrModif());
+            labelJson.put("dateModif", this.getDateModif());
+            labelJson.put("counter1", this.getCounter1());
         } catch (JSONException ex) {
             LOG.error(ex.toString(), ex);
         }
-        return result;
+        return labelJson;
     }
 
     public JSONObject toJsonGUI() {
@@ -215,7 +224,6 @@ public class Label {
 
     @Override
     public String toString() {
-        return id + ":" + system + "-" + label;
+        return "Label{" + "id=" + id + ", system=" + system + ", label=" + label + ", type=" + type + ", color=" + color + ", parentLabelID=" + parentLabelID + ", reqType=" + reqType + ", reqStatus=" + reqStatus + ", reqCriticity=" + reqCriticity + ", description=" + description + ", longDesc=" + longDesc + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", counter1=" + counter1 + '}';
     }
-
 }

@@ -21,6 +21,11 @@ package org.cerberus.crud.entity;
 
 import org.cerberus.engine.entity.MessageEvent;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author bcivel
@@ -49,7 +54,9 @@ public class TestCaseCountryProperties {
      */
     private MessageEvent result;
     private TestCaseCountry testCaseCountry;
+    private List<Invariant> invariantCountries;
     private List<TestCaseCountry> tccList;
+    private static final Logger LOG = LogManager.getLogger(TestCase.class);
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -138,6 +145,14 @@ public class TestCaseCountryProperties {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public List<Invariant> getInvariantCountries() {
+        return invariantCountries;
+    }
+
+    public void setInvariantCountries(List<Invariant> invariantCountries) {
+        this.invariantCountries = invariantCountries;
     }
 
     public String getDatabase() {
@@ -335,7 +350,39 @@ public class TestCaseCountryProperties {
 
     @Override
     public String toString() {
-        return "TestCaseCountryProperties{" + "test=" + test + ", testCase=" + testCase + ", country=" + country + ", property=" + property + ", type=" + type + ", database=" + database + ", value1=" + value1 + ", value2=" + value2 + ", length=" + length + ", rowLimit=" + rowLimit + ", nature=" + nature + '}';
+        return "TestCaseCountryProperties{" + "test=" + test + ", testCase=" + testCase + ", country=" + country + ", property=" + property + ", description=" + description + ", type=" + type + ", database=" + database + ", value1=" + value1 + ", value2=" + value2 + ", length=" + length + ", rowLimit=" + rowLimit + ", nature=" + nature + ", cacheExpire=" + cacheExpire + ", retryNb=" + retryNb + ", retryPeriod=" + retryPeriod + ", Rank=" + Rank + ", result=" + result + ", testCaseCountry=" + testCaseCountry + ", invariantCountries=" + invariantCountries + ", tccList=" + tccList + '}';
+    }
+
+    public JSONObject toJson() {
+        JSONObject testCaseCountryPropertiesJson = new JSONObject();
+        try {
+            testCaseCountryPropertiesJson.put("fromTest", this.getTest());
+            testCaseCountryPropertiesJson.put("fromTestCase", this.getTestCase());
+            testCaseCountryPropertiesJson.put("property", this.getProperty());
+            testCaseCountryPropertiesJson.put("description", this.getDescription());
+            testCaseCountryPropertiesJson.put("type", this.getType());
+            testCaseCountryPropertiesJson.put("dataBase", this.getDatabase());
+            testCaseCountryPropertiesJson.put("value1", this.getValue1());
+            testCaseCountryPropertiesJson.put("value2", this.getValue2());
+            testCaseCountryPropertiesJson.put("length", this.getLength());
+            testCaseCountryPropertiesJson.put("rowLimit", this.getRowLimit());
+            testCaseCountryPropertiesJson.put("nature", this.getNature());
+            testCaseCountryPropertiesJson.put("rank", this.getRank());
+
+            JSONArray countriesJson = new JSONArray();
+            if (this.getInvariantCountries() != null) {
+                for (Invariant countryInv : this.getInvariantCountries()) {
+                    if(countryInv != null) {
+                        countriesJson.put(countryInv.toJson(false));
+                    }
+                }
+            }
+            testCaseCountryPropertiesJson.put("countries", countriesJson);
+
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return testCaseCountryPropertiesJson;
     }
 
 }

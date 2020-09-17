@@ -35,6 +35,7 @@ public class TestCaseExecutionQueueToTreat {
     private String queueRobotPort;
     private String appType;
     private String selectedRobotHost;
+    private String selectedRobotExtensionHost;
 
     /**
      * Invariant Constrains.
@@ -43,6 +44,7 @@ public class TestCaseExecutionQueueToTreat {
     public static final String CONSTRAIN2_APPLIENV = "constrain2_applienvironment";
     public static final String CONSTRAIN3_APPLICATION = "constrain3_application";
     public static final String CONSTRAIN4_ROBOT = "constrain4_robot";
+    public static final String CONSTRAIN5_EXECUTOREXTENSION = "constrain5_executorextension";
 
     public long getId() {
         return id;
@@ -50,6 +52,14 @@ public class TestCaseExecutionQueueToTreat {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getSelectedRobotExtensionHost() {
+        return selectedRobotExtensionHost;
+    }
+
+    public void setSelectedRobotExtensionHost(String selectedRobotExtensionHost) {
+        this.selectedRobotExtensionHost = selectedRobotExtensionHost;
     }
 
     public String getDebugFlag() {

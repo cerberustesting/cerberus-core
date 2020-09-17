@@ -73,6 +73,7 @@ function displayPageLabel() {
     var doc = new Doc();
 
     $("#title").html(doc.getDocLabel("page_sqlLibrary", "allSqlLibrarys"));
+    $("#pageTitle").html(doc.getDocLabel("page_sqlLibrary", "allSqlLibrarys"));
     $("[name='addSqlLibraryField']").html(doc.getDocLabel("page_sqlLibrary", "addSqlLibrary_field"));
     $("[name='editSqlLibraryField']").html(doc.getDocLabel("page_sqlLibrary", "editSqlLibrary_field"));
     $("[name='sqlLibraryField']").html(doc.getDocLabel("page_sqlLibrary", "sqlLibrary_field"));

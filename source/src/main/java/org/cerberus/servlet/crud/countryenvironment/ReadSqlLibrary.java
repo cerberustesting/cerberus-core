@@ -120,6 +120,8 @@ public class ReadSqlLibrary extends HttpServlet {
             LOG.warn(e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+        } catch (Exception e) {
+            LOG.error(e, e);
         }
     }
 
@@ -172,8 +174,9 @@ public class ReadSqlLibrary extends HttpServlet {
         return item;
     }
 
+    
     private AnswerItem<JSONObject> findSqlLibraryBySystemByKey(String key, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
-        AnswerItem<JSONObject> answer = new AnswerItem<>();
+        AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         sqlLibraryService = appContext.getBean(SqlLibraryService.class);
 
@@ -185,7 +188,7 @@ public class ReadSqlLibrary extends HttpServlet {
         JSONObject item = convertSqlLibraryToJSONObject(p);
         item.put("hasPermissions", userHasPermissions);
         answer.setItem(item);
-
+        LOG.debug(item.toString());
         return answer;
     }
 

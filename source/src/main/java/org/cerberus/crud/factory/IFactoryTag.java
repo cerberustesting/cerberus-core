@@ -32,6 +32,7 @@ public interface IFactoryTag {
      * @param id
      * @param tag
      * @param description
+     * @param comment
      * @param campaign
      * @param dateEndQueue
      * @param nbExe
@@ -63,7 +64,7 @@ public interface IFactoryTag {
      * @param ciScore
      * @return
      */
-    Tag create(long id, String tag, String description, String campaign, Timestamp dateEndQueue,
+    Tag create(long id, String tag, String description, String comment, String campaign, Timestamp dateEndQueue,
             int nbExe, int nbExeUsefull, int nbOK, int nbKO, int nbFA, int nbNA, int nbNE, int nbWE, int nbPE, int nbQU, int nbQE, int nbCA,
             int ciScore, int ciScoreThreshold, String ciResult,
             String environmentList, String countryList, String robotDecliList, String systemList, String applicationList,

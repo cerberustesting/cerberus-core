@@ -60,7 +60,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class GetTestCase extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(GetTestCase.class);
-    
+
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         try {
@@ -88,29 +88,28 @@ public class GetTestCase extends HttpServlet {
                 jsonObject.put("executor", tcInfo.getExecutor());
                 jsonObject.put("lastModifier", tcInfo.getUsrModif());
                 jsonObject.put("application", tcInfo.getApplication());
-                jsonObject.put("runQA", tcInfo.getActiveQA());
-                jsonObject.put("runUAT", tcInfo.getActiveUAT());
-                jsonObject.put("runPROD", tcInfo.getActivePROD());
+                jsonObject.put("isActiveQA", tcInfo.isActiveQA());
+                jsonObject.put("isActiveUAT", tcInfo.isActiveUAT());
+                jsonObject.put("isActivePROD", tcInfo.isActivePROD());
                 jsonObject.put("priority", tcInfo.getPriority());
-                jsonObject.put("group", tcInfo.getGroup());
+                jsonObject.put("group", tcInfo.getType());
                 jsonObject.put("status", tcInfo.getStatus());
                 JSONArray countryList = new JSONArray();
-                for (TestCaseCountry tcc : tcInfo.getTestCaseCountry()) {
+                for (TestCaseCountry tcc : tcInfo.getTestCaseCountries()) {
                     countryList.put(tcc.getCountry());
                 }
-                jsonObject.put("countriesList", countryList);
-                jsonObject.put("shortDescription", tcInfo.getDescription());
-                jsonObject.put("description", tcInfo.getBehaviorOrValueExpected());
-                jsonObject.put("howTo", tcInfo.getHowTo());
-                jsonObject.put("active", tcInfo.getTcActive());
-                jsonObject.put("fromSprint", tcInfo.getFromBuild());
-                jsonObject.put("fromRevision", tcInfo.getFromRev());
-                jsonObject.put("toSprint", tcInfo.getToBuild());
-                jsonObject.put("toRevision", tcInfo.getToRev());
+                jsonObject.put("countries", countryList);
+                jsonObject.put("description", tcInfo.getDescription());
+                jsonObject.put("detailedDescription", tcInfo.getDetailedDescription());
+                jsonObject.put("isActive", tcInfo.isActive());
+                jsonObject.put("fromMajor", tcInfo.getFromMajor());
+                jsonObject.put("fromMinor", tcInfo.getFromMinor());
+                jsonObject.put("toMajor", tcInfo.getToMajor());
+                jsonObject.put("toMinor", tcInfo.getToMinor());
                 jsonObject.put("lastExecutionStatus", tcInfo.getLastExecutionStatus());
-                jsonObject.put("bugID", tcInfo.getBugID());
-                jsonObject.put("targetSprint", tcInfo.getTargetBuild());
-                jsonObject.put("targetRevision", tcInfo.getTargetRev());
+                jsonObject.put("bugs", tcInfo.getBugs());
+                jsonObject.put("targetMajor", tcInfo.getTargetMajor());
+                jsonObject.put("targetMinor", tcInfo.getTargetMinor());
                 jsonObject.put("comment", tcInfo.getComment());
                 jsonObject.put("test", tcInfo.getTest());
                 jsonObject.put("testcase", tcInfo.getTestCase());
@@ -131,7 +130,7 @@ public class GetTestCase extends HttpServlet {
                     property.put("rowLimit", prop.getRowLimit());
                     property.put("nature", prop.getNature());
                     List<String> countriesSelected = testCaseDAO.findCountryByProperty(prop);
-                    for (TestCaseCountry tcc : tcInfo.getTestCaseCountry()) {
+                    for (TestCaseCountry tcc : tcInfo.getTestCaseCountries()) {
                         if (!(countriesSelected == null) && (countriesSelected.contains(tcc.getCountry()))) {
                             property.put(tcc.getCountry(), true);
                         } else {
@@ -154,7 +153,7 @@ public class GetTestCase extends HttpServlet {
                     JSONArray controlList = new JSONArray();
                     JSONArray sequenceList = new JSONArray();
 
-                    for (TestCaseStepAction action : step.getTestCaseStepAction()) {
+                    for (TestCaseStepAction action : step.getActions()) {
                         JSONObject actionObject = new JSONObject();
                         actionObject.put("sequence", i);
                         actionObject.put("action", action.getAction());
@@ -164,7 +163,7 @@ public class GetTestCase extends HttpServlet {
                         actionList.put(actionObject);
                         sequenceList.put(actionObject);
 
-                        for (TestCaseStepActionControl control : action.getTestCaseStepActionControl()) {
+                        for (TestCaseStepActionControl control : action.getControls()) {
                             JSONObject controlObject = new JSONObject();
                             controlObject.put("step", control.getStep());
                             controlObject.put("sequence", control.getSequence());

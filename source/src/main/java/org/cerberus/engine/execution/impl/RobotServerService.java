@@ -23,16 +23,13 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.LocksDevice;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,9 +53,11 @@ import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.crud.factory.IFactoryRobotCapability;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITestCaseExecutionHttpStatService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.execution.IRecorderService;
@@ -66,9 +65,13 @@ import org.cerberus.engine.execution.IRobotServerService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.executor.IExecutorService;
+import org.cerberus.service.har.IHarService;
 import org.cerberus.service.proxy.IProxyService;
+import org.cerberus.service.rest.IRestService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.Capabilities;
@@ -92,6 +95,8 @@ import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
 import org.openqa.selenium.remote.internal.OkHttpClient;
 import org.openqa.selenium.safari.SafariOptions;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.opera.OperaOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -110,13 +115,20 @@ public class RobotServerService implements IRobotServerService {
     private ISikuliService sikuliService;
     @Autowired
     IProxyService proxyService;
-
+    @Autowired
+    ITestCaseExecutionHttpStatService testCaseExecutionHttpStatService;
     @Autowired
     private IExecutionThreadPoolService executionThreadPoolService;
     @Autowired
     private IRecorderService recorderService;
     @Autowired
     private IFactoryRobotCapability factoryRobotCapability;
+    @Autowired
+    private IRestService restService;
+    @Autowired
+    private IHarService harService;
+    @Autowired
+    private IExecutorService executorService;
 
     private static Map<String, Boolean> apkAlreadyPrepare = new HashMap<>();
     private static int totocpt = 0;
@@ -200,7 +212,7 @@ public class RobotServerService implements IRobotServerService {
              */
             if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
                 LOG.debug("Start Remote Proxy");
-                this.startRemoteProxy(tCExecution);
+                executorService.startRemoteProxy(tCExecution);
                 LOG.debug("Started Remote Proxy on port:" + tCExecution.getRemoteProxyPort());
             }
 
@@ -414,6 +426,9 @@ public class RobotServerService implements IRobotServerService {
                 driver.manage().timeouts().implicitlyWait(cerberus_selenium_implicitlyWait, TimeUnit.MILLISECONDS);
                 driver.manage().timeouts().setScriptTimeout(cerberus_selenium_setScriptTimeout, TimeUnit.MILLISECONDS);
             }
+            if (appiumDriver != null) {
+                appiumDriver.manage().timeouts().implicitlyWait(cerberus_appium_wait_element, TimeUnit.MILLISECONDS);
+            }
             tCExecution.getSession().setDriver(driver);
             tCExecution.getSession().setAppiumDriver(appiumDriver);
 
@@ -481,7 +496,7 @@ public class RobotServerService implements IRobotServerService {
             LOG.error(exception.toString(), exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
             mes.setDescription(mes.getDescription().replace("%MES%", exception.toString()));
-            this.stopRemoteProxy(tCExecution);
+            executorService.stopRemoteProxy(tCExecution);
             throw new CerberusException(mes, exception);
         } finally {
             executionThreadPoolService.executeNextInQueueAsynchroneously(false);
@@ -644,7 +659,7 @@ public class RobotServerService implements IRobotServerService {
         switch (tCExecution.getRobotProvider()) {
             case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
                 if (!StringUtil.isNullOrEmpty(tCExecution.getTag()) && isNotAlreadyDefined(caps, "build")) {
-                    caps.setCapability("build", tCExecution.getTag()); // use UIAutomator2 by default
+                    caps.setCapability("build", tCExecution.getTag());
                 }
                 if (isNotAlreadyDefined(caps, "project")) {
                     caps.setCapability("project", tCExecution.getApplication());
@@ -705,7 +720,7 @@ public class RobotServerService implements IRobotServerService {
     }
 
     /**
-     * Instanciate DesiredCapabilities regarding the browser
+     * Instantiate DesiredCapabilities regarding the browser
      *
      * @param capabilities
      * @param browser
@@ -715,141 +730,165 @@ public class RobotServerService implements IRobotServerService {
      */
     private MutableCapabilities setCapabilityBrowser(MutableCapabilities capabilities, String browser, TestCaseExecution tCExecution) throws CerberusException {
         try {
-            if (browser.equalsIgnoreCase("firefox")) {
-                FirefoxOptions options = new FirefoxOptions();
-//                capabilities = DesiredCapabilities.firefox();
+            // Get User Agent to use.
+            String usedUserAgent;
+            usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
 
-                FirefoxProfile profile = new FirefoxProfile();
-                profile.setPreference("app.update.enabled", false);
-                try {
-                    Invariant invariant = invariantService.convert(invariantService.readByKey("COUNTRY", tCExecution.getCountry()));
-                    if (invariant.getGp2() == null) {
-                        LOG.warn("Country selected (" + tCExecution.getCountry() + ") has no value of GP2 in Invariant table, default language set to English (en)");
+            switch (browser) {
+
+                case "firefox":
+                    FirefoxOptions optionsFF = new FirefoxOptions();
+                    FirefoxProfile profile = new FirefoxProfile();
+                    profile.setPreference("app.update.enabled", false);
+                    try {
+                        Invariant invariant = invariantService.convert(invariantService.readByKey("COUNTRY", tCExecution.getCountry()));
+                        if (invariant.getGp2() == null) {
+                            LOG.warn("Country selected (" + tCExecution.getCountry() + ") has no value of GP2 in Invariant table, default language set to English (en)");
+                            profile.setPreference("intl.accept_languages", "en");
+                        } else {
+                            profile.setPreference("intl.accept_languages", invariant.getGp2());
+                        }
+                    } catch (CerberusException ex) {
+                        LOG.warn("Country selected (" + tCExecution.getCountry() + ") not in Invariant table, default language set to English (en)");
                         profile.setPreference("intl.accept_languages", "en");
-                    } else {
-                        profile.setPreference("intl.accept_languages", invariant.getGp2());
                     }
-                } catch (CerberusException ex) {
-                    LOG.warn("Country selected (" + tCExecution.getCountry() + ") not in Invariant table, default language set to English (en)");
-                    profile.setPreference("intl.accept_languages", "en");
-                }
 
-                // Set UserAgent if testCaseUserAgent or robotUserAgent is defined
-                String usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
-                if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
-                    profile.setPreference("general.useragent.override", usedUserAgent);
-                }
+                    // Set UserAgent if testCaseUserAgent or robotUserAgent is defined
+                    if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
+                        profile.setPreference("general.useragent.override", usedUserAgent);
+                    }
 
-//                capabilities.setCapability(FirefoxDriver.PROFILE, profile);
-                if (tCExecution.getVerbose() <= 0) {
-                    options.setHeadless(true);
-                }
-                // Add the WebDriver proxy capability.
-                if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
-                    Proxy proxy = new Proxy();
-                    proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    options.setProxy(proxy);
-                }
+                    if (tCExecution.getVerbose() <= 0) {
+                        optionsFF.setHeadless(true);
+                    }
+                    // Add the WebDriver proxy capability.
+                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setProxyType(Proxy.ProxyType.MANUAL);
+                        LOG.debug("Setting Firefox proxy to : " + proxy.toString());
+                        optionsFF.setProxy(proxy);
+                    }
 
-                options.setProfile(profile);
+                    optionsFF.setProfile(profile);
 
-                // Accept Insecure Certificates.
-                options.setAcceptInsecureCerts(true);
+                    // Accept Insecure Certificates.
+                    optionsFF.setAcceptInsecureCerts(true);
+                    return optionsFF;
 
-                return options;
-//                capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, options);
+                case "chrome":
+                    ChromeOptions optionsCH = new ChromeOptions();
+                    // Maximize windows for chrome browser
+                    String targetScreensize = getScreenSizeToUse(tCExecution.getTestCaseObj().getScreenSize(), tCExecution.getScreenSize());
+                    if ((!StringUtil.isNullOrEmpty(targetScreensize)) && targetScreensize.contains("*")) {
+                        Integer screenWidth = Integer.valueOf(targetScreensize.split("\\*")[0]);
+                        Integer screenLength = Integer.valueOf(targetScreensize.split("\\*")[1]);
+                        String sizeOpts = "--window-size=" + screenWidth + "," + screenLength;
+                        optionsCH.addArguments(sizeOpts);
+                        LOG.debug("Selenium resolution (for Chrome) Activated : " + screenWidth + "*" + screenLength);
 
-            } else if (browser.equalsIgnoreCase("IE")) {
-                InternetExplorerOptions options = new InternetExplorerOptions();
-                // Add the WebDriver proxy capability.
-                if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
-                    Proxy proxy = new Proxy();
-                    proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    options.setCapability("proxy", proxy);
-                }
-                return options;
-//                capabilities = DesiredCapabilities.internetExplorer();
+                    }
+                    optionsCH.addArguments("start-maximized");
+                    if (tCExecution.getVerbose() <= 0) {
+                        optionsCH.addArguments("--headless");
+                    }
+                    // Set UserAgent if necessary
+                    if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
+                        optionsCH.addArguments("--user-agent=" + usedUserAgent);
+                    }
+                    // Add the WebDriver proxy capability.
+                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setNoProxy("");
+                        proxy.setProxyType(Proxy.ProxyType.MANUAL);
+                        LOG.debug("Setting Chrome proxy to : " + proxy.toString());
+                        optionsCH.setCapability("proxy", proxy);
+                    }
+                    // Accept Insecure Certificates.
+                    optionsCH.setAcceptInsecureCerts(true);
 
-            } else if (browser.equalsIgnoreCase("chrome")) {
+                    return optionsCH;
 
-                /**
-                 * Add custom capabilities
-                 */
-                ChromeOptions options = new ChromeOptions();
-//                capabilities = DesiredCapabilities.chrome();
+                case "safari":
+                    SafariOptions optionsSA = new SafariOptions();
+                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        optionsSA.setProxy(proxy);
+                    }
+                    return optionsSA;
 
-                // Maximize windows for chrome browser
-                String targetScreensize = getScreenSizeToUse(tCExecution.getTestCaseObj().getScreenSize(), tCExecution.getScreenSize());
-                if ((!StringUtil.isNullOrEmpty(targetScreensize)) && targetScreensize.contains("*")) {
-                    Integer screenWidth = Integer.valueOf(targetScreensize.split("\\*")[0]);
-                    Integer screenLength = Integer.valueOf(targetScreensize.split("\\*")[1]);
-                    String sizeOpts = "--window-size=" + screenWidth + "," + screenLength;
-                    options.addArguments(sizeOpts);
-                    LOG.debug("Selenium resolution (for Chrome) Activated : " + screenWidth + "*" + screenLength);
+                case "IE":
+                    InternetExplorerOptions optionsIE = new InternetExplorerOptions();
+                    // Add the WebDriver proxy capability.
+                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setProxyType(Proxy.ProxyType.MANUAL);
+                        LOG.debug("Setting IE proxy to : " + proxy.toString());
+                        optionsIE.setCapability("proxy", proxy);
+                    }
+                    return optionsIE;
 
-                }
-                options.addArguments("start-maximized");
-                if (tCExecution.getVerbose() <= 0) {
-                    options.addArguments("--headless");
-                }
-                // Set UserAgent if necessary
-                String usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
-                if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
-                    options.addArguments("--user-agent=" + usedUserAgent);
-                }
+                case "edge":
+                    EdgeOptions optionsED = new EdgeOptions();
+                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        optionsED.setProxy(proxy);
+                    }
+                    return optionsED;
 
-                // Add the WebDriver proxy capability.
-                if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
-                    Proxy proxy = new Proxy();
-                    proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    proxy.setNoProxy("");
-                    options.setCapability("proxy", proxy);
-                }
+                case "opera":
+                    OperaOptions optionsOP = new OperaOptions();
+                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        optionsOP.setProxy(proxy);
+                    }
+                    optionsOP.setCapability("browser", "opera");
+                    // Forcing a profile in order to force UserAgent. This has been commented because it fail when using BrowserStack that does not allow to create the correcponding profile folder.
+//                    if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
+//                        optionsOP.setCapability("opera.profile", "{profileName: \"foo\",userAgent: \"" + usedUserAgent + "\"}");
+//                    }
+                    return optionsOP;
 
-                // Accept Insecure Certificates.
-                options.setAcceptInsecureCerts(true);
+                case "android":
+                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                    }
+                    capabilities = DesiredCapabilities.android();
+                    break;
 
-                return options;
-//                capabilities.setCapability(ChromeOptions.CAPABILITY, options);
-//                additionalCapabilities.add(factoryRobotCapability.create(0, "", ChromeOptions.CAPABILITY, options.toString()));
+                case "ipad":
+                    capabilities = DesiredCapabilities.ipad();
+                    break;
 
-            } else if (browser.contains("android")) {
+                case "iphone":
+                    capabilities = DesiredCapabilities.iphone();
+                    break;
 
-                if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
-                    Proxy proxy = new Proxy();
-                    proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                }
-
-                capabilities = DesiredCapabilities.android();
-
-            } else if (browser.contains("ipad")) {
-                capabilities = DesiredCapabilities.ipad();
-
-            } else if (browser.contains("iphone")) {
-                capabilities = DesiredCapabilities.iphone();
-
-            } else if (browser.contains("safari")) {
-                SafariOptions options = new SafariOptions();
-                
-                if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
-                    Proxy proxy = new Proxy();
-                    proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    options.setProxy(proxy);
-                }
-                
-                return options;
-
-            } else {
-                LOG.warn("Not supported Browser : " + browser);
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription(mes.getDescription().replace("%MES%", "Browser '" + browser + "' is not supported"));
-                mes.setDescription("Not supported Browser : " + browser);
-                throw new CerberusException(mes);
+                // Unfortunatly Yandex is not yet supported on BrowserStack. Once it will be it should look like that:
+//                case "yandex":
+//                    capabilities = new DesiredCapabilities();
+//                    capabilities.setCapability("browser", "Yandex");
+//                    capabilities.setCapability("browser_version", "14.12");
+//                    break;
+                default:
+                    LOG.warn("Not supported Browser : " + browser);
+                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+                    mes.setDescription(mes.getDescription().replace("%MES%", "Browser '" + browser + "' is not supported"));
+                    mes.setDescription("Not supported Browser : " + browser);
+                    throw new CerberusException(mes);
             }
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
@@ -923,10 +962,10 @@ public class RobotServerService implements IRobotServerService {
             switch (tce.getRobotProvider()) {
                 case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
                     try {
-                        tce.addFileList(recorderService.recordSeleniumLog(tce));
-                    } catch (Exception ex) {
-                        LOG.error("Exception Getting Selenium Logs " + tce.getId(), ex);
-                    }
+                    tce.addFileList(recorderService.recordSeleniumLog(tce));
+                } catch (Exception ex) {
+                    LOG.error("Exception Getting Selenium Logs " + tce.getId(), ex);
+                }
 //                    try {
 //                        tce.addFileList(recorderService.recordBrowserstackSeleniumLog(tce));
 //                    } catch (Exception ex) {
@@ -935,11 +974,11 @@ public class RobotServerService implements IRobotServerService {
 //                    break;
                 case TestCaseExecution.ROBOTPROVIDER_NONE:
                     try {
-                        tce.addFileList(recorderService.recordSeleniumLog(tce));
-                    } catch (Exception ex) {
-                        LOG.error("Exception Getting Selenium Logs " + tce.getId(), ex);
-                    }
-                    break;
+                    tce.addFileList(recorderService.recordSeleniumLog(tce));
+                } catch (Exception ex) {
+                    LOG.error("Exception Getting Selenium Logs " + tce.getId(), ex);
+                }
+                break;
                 default:
             }
 
@@ -964,10 +1003,35 @@ public class RobotServerService implements IRobotServerService {
                 // If proxy started and parameter verbose >= 1 activated
                 if ("Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())
                         && tce.getVerbose() >= 1) {
-                    String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + tce.getRemoteProxyUUID();
-                    LOG.debug("Url to get HAR : " + url);
-                    tce.addFileList(recorderService.recordHarLog(tce, url));
-                    LOG.debug("Retrieved Har file by calling : " + url);
+
+                    if (parameterService.getParameterBooleanByKey("cerberus_networkstatsave_active", tce.getSystem(), false)) {
+
+                        // Before collecting the stats, we wait the network idles for few minutes
+                        executorService.waitForIdleNetwork(tce.getRobotExecutorObj().getExecutorExtensionHost(), tce.getRobotExecutorObj().getExecutorExtensionPort(), tce.getRemoteProxyUUID(), tce.getSystem());
+
+                        // We now get the har data.
+                        JSONObject har = executorService.getHar(null, false, tce.getRobotExecutorObj().getExecutorExtensionHost(), tce.getRobotExecutorObj().getExecutorExtensionPort(), tce.getRemoteProxyUUID(), tce.getSystem());
+
+                        // and enrich it with stat entry.
+                        har = harService.enrichWithStats(har, tce.getCountryEnvironmentParameters().getDomain(), tce.getSystem());
+
+                        /**
+                         * We convert the har to database record HttpStat and
+                         * save it to database.
+                         */
+                        try {
+
+                            AnswerItem<TestCaseExecutionHttpStat> answHttpStat = testCaseExecutionHttpStatService.convertFromHarWithStat(tce, har);
+                            tce.setHttpStat(answHttpStat.getItem());
+
+                            testCaseExecutionHttpStatService.create(answHttpStat.getItem());
+
+                        } catch (Exception ex) {
+                            LOG.warn("Exception collecting and saving stats for execution " + tce.getId() + " Exception : " + ex.toString());
+                        }
+
+                    }
+
                 }
             } catch (Exception ex) {
                 LOG.error("Exception Getting Har File from Cerberus Executor " + tce.getId(), ex);
@@ -1060,66 +1124,6 @@ public class RobotServerService implements IRobotServerService {
         }
 
         return baseurl;
-    }
-
-    private void startRemoteProxy(TestCaseExecution tce) {
-
-        String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/startProxy";
-        if (tce.getRobotExecutorObj().getExecutorProxyPort() != 0) {
-            url += "?port=" + tce.getRobotExecutorObj().getExecutorProxyPort();
-        }
-        LOG.debug("Starting Proxy on Cerberus Executor calling : " + url);
-
-        try ( InputStream is = new URL(url).openStream()) {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-            StringBuilder sb = new StringBuilder();
-            int cp;
-            while ((cp = rd.read()) != -1) {
-                sb.append((char) cp);
-            }
-            String jsonText = sb.toString();
-
-            JSONObject json = new JSONObject(jsonText);
-            tce.setRemoteProxyPort(json.getInt("port"));
-            tce.setRemoteProxyUUID(json.getString("uuid"));
-            tce.setRemoteProxyStarted(true);
-
-            LOG.debug("Cerberus Executor Proxy extention started on port : " + tce.getRemoteProxyPort() + " (uuid : " + tce.getRemoteProxyUUID() + ")");
-
-        } catch (Exception ex) {
-            LOG.error("Exception Starting Remote Proxy " + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString(), ex);
-        }
-
-    }
-
-    @Override
-    public void stopRemoteProxy(TestCaseExecution tce) {
-
-        if (tce.isRemoteProxyStarted()) {
-            tce.setRemoteProxyStarted(false);
-            /**
-             * We Stop the Proxy on Cerberus Executor.
-             */
-            try {
-                // Ask the Proxy to stop.
-                if (tce.getRobotExecutorObj() != null && "Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())) {
-
-                    String urlStop = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/stopProxy?uuid=" + tce.getRemoteProxyUUID();
-
-                    LOG.debug("Shutting down of Proxy on Cerberus Executor calling : " + urlStop);
-
-                    InputStream is = new URL(urlStop).openStream();
-                    is.close();
-
-                    LOG.debug("Cerberus Executor Proxy extention shutdown done (uuid : " + tce.getRemoteProxyUUID() + ").");
-
-                }
-
-            } catch (Exception ex) {
-                LOG.error("Exception when asking Cerberus Executor proxy to stop " + tce.getId(), ex);
-            }
-        }
-
     }
 
 }

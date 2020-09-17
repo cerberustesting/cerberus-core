@@ -29,7 +29,7 @@ function readCerberusInformation() {
     $.ajax({url: "ReadCerberusInformation",
         async: false,
         dataType: 'json',
-        success: function(data) {
+        success: function (data) {
             var pi = data;
             sessionStorage.setItem("cerberusInformation", JSON.stringify(pi));
         }
@@ -42,9 +42,9 @@ function readCerberusInformation() {
 function getCerberusInformation() {
     var pi;
 
-    if (sessionStorage.getItem("cerberusInformation") === null) {
-        readCerberusInformation();
-    }
+//    if (sessionStorage.getItem("cerberusInformation") === null) {
+    readCerberusInformation();
+//    }
     pi = sessionStorage.getItem("cerberusInformation");
     pi = JSON.parse(pi);
     return pi;

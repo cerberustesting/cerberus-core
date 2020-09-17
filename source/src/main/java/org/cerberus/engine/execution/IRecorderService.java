@@ -80,12 +80,22 @@ public interface IRecorderService {
      *
      * @param testCaseExecution
      * @param testCaseStepActionExecution
-     * @param control
-     * @param property
      * @param service
      * @return
      */
-    List<TestCaseExecutionFile> recordHarContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, AppService service);
+    List<TestCaseExecutionFile> recordServiceCallContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, AppService service);
+    
+    /**
+     *
+     * @param testCaseExecution
+     * @param testCaseStepActionExecution
+     * @param control
+     * @param property
+     * @param service
+     * @param withDetail
+     * @return
+     */
+    List<TestCaseExecutionFile> recordNetworkTrafficContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, AppService service, boolean withDetail);
 
     /**
      *
@@ -155,7 +165,7 @@ public interface IRecorderService {
      * @param url
      * @return
      */
-    TestCaseExecutionFile recordHarLog(TestCaseExecution testCaseExecution, String url);
+    TestCaseExecutionFile recordNetworkTrafficLog(TestCaseExecution testCaseExecution, String url);
 
     /**
      *

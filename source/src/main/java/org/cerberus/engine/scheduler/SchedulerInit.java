@@ -79,6 +79,10 @@ public class SchedulerInit {
         return instanceSchedulerVersion;
     }
 
+    public void setInstanceSchedulerVersion(String version) {
+        this.instanceSchedulerVersion = version;
+    }
+
     public boolean isIsRunning() {
         return isRunning;
     }
@@ -93,12 +97,11 @@ public class SchedulerInit {
             MyVersion databaseSchedulerVersion;
             try {
                 databaseSchedulerVersion = MyversionService.findMyVersionByKey("scheduler_version");
-                LOG.debug("Current version scheduler in Cerberus : " + instanceSchedulerVersion);
-                LOG.debug("Current version scheduler in DB       : " + databaseSchedulerVersion.getValueString());
+                LOG.debug("Instance scheduler version : " + instanceSchedulerVersion + " / DB scheduler version : " + databaseSchedulerVersion.getValueString());
 
                 //Compare version between database and instance
                 if (databaseSchedulerVersion.getValueString() == null || instanceSchedulerVersion.equalsIgnoreCase(databaseSchedulerVersion.getValueString())) {
-                    LOG.debug("the current version is up to date");
+                    LOG.debug("Instance scheduler version is up to date.");
                 } else {
                     if (isRunning == false) {
                         isRunning = true;
@@ -117,7 +120,7 @@ public class SchedulerInit {
                                     String cron = sched.getCronDefinition();
                                     String name = sched.getName();
                                     String type = sched.getType();
-                                    String id = String.valueOf(sched.getID()); 
+                                    String id = String.valueOf(sched.getID());
                                     long schedulerId = sched.getID();
 
                                     String user = "";
@@ -127,7 +130,17 @@ public class SchedulerInit {
                                         user = sched.getUsrCreated();
                                     }
                                     //Build trigger with cron settings name and type
-                                    Trigger myTrigger = TriggerBuilder.newTrigger().withIdentity(id, "group1").usingJobData("schedulerId", schedulerId).usingJobData("name", name).usingJobData("type", type).usingJobData("user", user).withSchedule(CronScheduleBuilder.cronSchedule(cron).inTimeZone(TimeZone.getTimeZone("UTC+2"))).forJob(scheduledJob).build();
+                                    Trigger myTrigger = TriggerBuilder.newTrigger()
+                                            .withIdentity(id, "group1")
+                                            .usingJobData("schedulerId", schedulerId)
+                                            .usingJobData("name", name)
+                                            .usingJobData("type", type)
+                                            .usingJobData("user", user)
+                                            .usingJobData("cronDefinition", cron)
+                                            .withSchedule(CronScheduleBuilder.cronSchedule(cron)
+                                            //                                                    .inTimeZone(TimeZone.getTimeZone("UTC+2"))
+                                            )
+                                            .forJob(scheduledJob).build();
 
                                     //Add trigger to list of trigger
                                     myTriggersSetList.add(myTrigger);
@@ -178,15 +191,16 @@ public class SchedulerInit {
     @PreDestroy
     public void closeScheduler() {
         try {
-            LOG.debug("Removing all Schedule entries.");
+            LOG.info("Removing all Schedule entries.");
             Collection<Scheduler> myCollectionScheduller = schFactory.getAllSchedulers();
             Iterator it = myCollectionScheduller.iterator();
             for (Scheduler mySched : myCollectionScheduller) {
                 mySched.clear();
+                mySched.shutdown(true);
             }
-            LOG.debug("end of Removing all Schedule entries.");
+            LOG.info("end of Removing all Schedule entries.");
         } catch (Exception e) {
-            LOG.error("Failed to clear");
+            LOG.error("Failed to clear Scheduler entries.");
             LOG.error(e);
         }
     }

@@ -20,6 +20,7 @@
 package org.cerberus.crud.service;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.TestCase;
@@ -107,6 +108,20 @@ public interface ITestCaseExecutionService {
      */
     List<TestCaseExecution> findTCExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException;
 
+    /**
+     *
+     * @param system
+     * @param from
+     * @param countries
+     * @param robotDecli
+     * @param testcases
+     * @param environments
+     * @param to
+     * @return
+     * @throws CerberusException
+     */
+    List<TestCaseExecution> readByCriteria(List<String> system, List<String> countries, List<String> environments, List<String> robotDecli, List<TestCase> testcases, Date from, Date to) throws CerberusException;
+    
     /**
      *
      * @param tCExecution

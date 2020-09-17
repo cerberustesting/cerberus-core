@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.servlet.crud.usermanagement;
 
 import java.io.IOException;
@@ -62,7 +61,7 @@ import org.cerberus.crud.factory.IFactoryUserGroup;
 public class UpdateUser extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(UpdateUser.class);
-    
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
@@ -71,135 +70,123 @@ public class UpdateUser extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, IndexOutOfBoundsException {
         //TODO create class Validator to validate all parameter from page
-    	
-    	 JSONObject jsonResponse = new JSONObject();
-    	 MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
-    	 Answer ans = new Answer();
-         Answer finalAnswer = new Answer(msg1);
-         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-         ans.setResultMessage(msg);
-    	
-    	 String id = request.getParameter("id");
-    	 String login = request.getParameter("login");
-         String name = request.getParameter("name");
-         String email = request.getParameter("email");
-         String team = request.getParameter("team");
-         String systems = request.getParameter("systems");
-         String requests = request.getParameter("request");
-         String groups = request.getParameter("groups");
-         String defaultSystem = request.getParameter("defaultSystem");
-         
-         if (StringUtil.isNullOrEmpty(login) || StringUtil.isNullOrEmpty(id)) {
-             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-             msg.setDescription(msg.getDescription().replace("%ITEM%", "User")
-                     .replace("%OPERATION%", "Update")
-                     .replace("%REASON%", "User login is missing."));
-             ans.setResultMessage(msg);
-             
-         }else {
- 	        LOG.info("Updating user "+login);
-	
-	        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-	        IUserService userService = appContext.getBean(UserService.class);
-	        IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
-	        IFactoryUserSystem userSystemFactory = appContext.getBean(IFactoryUserSystem.class);
-	        IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
-	
-	        IFactoryUserGroup factoryGroup = new FactoryUserGroup();
-	
-	        User myUser;
-	        List<UserGroup> newGroups = null;
-	        List<UserSystem> newSystems = null;
-	        try {
-	            myUser = userService.findUserByKey(id);
-	            
-	            List<String> listGroup = new ArrayList<String>();
-	            JSONArray GroupArray = new JSONArray(request.getParameter("groups"));
-	            for(int i = 0; i < GroupArray.length(); i++){
-	                listGroup.add(GroupArray.getString(i));
-	            }
-	           
-	            newGroups = new ArrayList<UserGroup>();
-	            for (String group : listGroup) {
-	            	newGroups.add(factoryGroup.create(group));
-	            }
-	                  
-	            myUser.setLogin(login);                 
-	            myUser.setName(name);                 
-	            myUser.setTeam(team);
-	            newSystems = new ArrayList<UserSystem>();
-	
-	            JSONArray SystemArray = new JSONArray(request.getParameter("systems"));
-	            
-	            List<String> listSystem = new ArrayList<String>();
-	            for(int i = 0; i < SystemArray.length(); i++){
-	                listSystem.add(SystemArray.getString(i));
-	            }
-	            
-	            for (String system :  listSystem) {
-	                newSystems.add(userSystemFactory.create(login, system));
-	            }
-	            	                 
-	            myUser.setDefaultSystem(defaultSystem);
-	            myUser.setRequest(requests);                    
-	            myUser.setEmail(email);                             
-	                           
-	            try {
-	                	                    
-	                    ans = userService.update(myUser);
-	                    AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-	                    
-	                    if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-	                        /**
-	                         * Update was successful. Adding Log entry.
-	                         */
-	                    	ILogEventService logEventService = appContext.getBean(LogEventService.class);
-	                        logEventService.createForPrivateCalls("/UpdateUser", "UPDATE", "Updated user : " + login, request);	                        
-	                        
-	                        if (!newGroups.isEmpty()) {
-	    	                	
-	    	                    userGroupService.updateUserGroups(myUser, newGroups);
-	    	
-	    	                    /**
-	    	                     * Adding Log entry.
-	    	                     */
-	    	                     logEventService = appContext.getBean(LogEventService.class);
-	    	                    logEventService.createForPrivateCalls("/UpdateUser", "UPDATE", "Updated user groups : " + login, request);
-	    	                }
-	    	                    if (!newSystems.isEmpty()) {	
-	    	                    	request.getSession().setAttribute("MySystem", newSystems.get(0).getSystem());  
-	    	                    	userSystemService.updateUserSystems(myUser, newSystems);
-	    	
-	    	                    /**
-	    	                     * Adding Log entry.
-	    	                     */
-	    	                    	logEventService = appContext.getBean(LogEventService.class);
-	    	                    	logEventService.createForPrivateCalls("/UpdateUser", "UPDATE", "Updated user system : " + login, request);
-	    	                    } 
-	                    }
-	
-	                    /**
-	                     * Adding Log entry.
-	                     */
-	                    
-	                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-	                    AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-	                                        
-	                    jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
-	                    jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
-	
-	                response.getWriter().print(jsonResponse);
-	                
-	            } catch (CerberusException ex) {
-	                response.getWriter().print(ex.getMessageError().getDescription());
-	            }
-	        } catch (CerberusException ex) {
-	            response.getWriter().print(ex.getMessageError().getDescription());
-	        } catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	     }
+
+        JSONObject jsonResponse = new JSONObject();
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer ans = new Answer();
+        Answer finalAnswer = new Answer(msg1);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
+
+        String id = request.getParameter("id");
+        String login = request.getParameter("login");
+        String name = request.getParameter("name");
+        String email = request.getParameter("email");
+        String team = request.getParameter("team");
+        String systems = request.getParameter("systems");
+        String requests = request.getParameter("request");
+        String groups = request.getParameter("groups");
+        String defaultSystem = request.getParameter("defaultSystem");
+
+        if (StringUtil.isNullOrEmpty(login) || StringUtil.isNullOrEmpty(id)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "User")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "User login is missing."));
+            ans.setResultMessage(msg);
+
+        } else {
+            LOG.info("Updating user " + login);
+
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            IUserService userService = appContext.getBean(UserService.class);
+            IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
+            IFactoryUserSystem userSystemFactory = appContext.getBean(IFactoryUserSystem.class);
+            IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
+
+            IFactoryUserGroup factoryGroup = new FactoryUserGroup();
+
+            User myUser;
+            List<UserGroup> newGroups = null;
+            List<UserSystem> newSystems = null;
+            try {
+                myUser = userService.findUserByKey(id);
+
+                List<String> listGroup = new ArrayList<String>();
+                JSONArray GroupArray = new JSONArray(request.getParameter("groups"));
+                for (int i = 0; i < GroupArray.length(); i++) {
+                    listGroup.add(GroupArray.getString(i));
+                }
+
+                newGroups = new ArrayList<UserGroup>();
+                for (String group : listGroup) {
+                    newGroups.add(factoryGroup.create(group));
+                }
+
+                myUser.setLogin(login);
+                myUser.setName(name);
+                myUser.setTeam(team);
+                newSystems = new ArrayList<UserSystem>();
+
+                JSONArray SystemArray = new JSONArray(request.getParameter("systems"));
+
+                List<String> listSystem = new ArrayList<String>();
+                for (int i = 0; i < SystemArray.length(); i++) {
+                    listSystem.add(SystemArray.getString(i));
+                }
+
+                for (String system : listSystem) {
+                    newSystems.add(userSystemFactory.create(login, system));
+                }
+
+                myUser.setDefaultSystem(defaultSystem);
+                myUser.setRequest(requests);
+                myUser.setEmail(email);
+
+                try {
+
+                    ans = userService.update(myUser);
+                    AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+
+                    if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Update was successful. Adding Log entry.
+                         */
+                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                        logEventService.createForPrivateCalls("/UpdateUser", "UPDATE", "Updated user : ['" + login + "']", request);
+
+                        if (!newGroups.isEmpty()) {
+
+                            userGroupService.updateUserGroups(myUser, newGroups);
+
+                        }
+                        if (!newSystems.isEmpty()) {
+                            request.getSession().setAttribute("MySystem", newSystems.get(0).getSystem());
+                            userSystemService.updateUserSystems(myUser, newSystems);
+                        }
+                    }
+
+                    /**
+                     * Adding Log entry.
+                     */
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+
+                    jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
+                    jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
+
+                    response.getWriter().print(jsonResponse);
+
+                } catch (CerberusException ex) {
+                    response.getWriter().print(ex.getMessageError().getDescription());
+                }
+            } catch (CerberusException ex) {
+                response.getWriter().print(ex.getMessageError().getDescription());
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 }

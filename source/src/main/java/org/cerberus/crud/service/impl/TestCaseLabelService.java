@@ -20,6 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
@@ -74,11 +75,21 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     public AnswerList<TestCaseLabel> readByTestTestCase(String test, String testCase, List<TestCase> testCaseList) {
         return testCaseLabelDAO.readByTestTestCase(test, testCase, testCaseList);
     }
+
+    @Override
+    public HashMap<String, TestCaseLabel> readByTestTestCaseToHash(String test, String testCase, List<TestCase> testCases) {
+        HashMap<String, TestCaseLabel> testCaseLabelsHash = new HashMap<>();
+        List<TestCaseLabel> testCaseLabels = this.readByTestTestCase(test, testCase, testCases).getDataList();
+        for (TestCaseLabel testCaseLabel : testCaseLabels) {
+            testCaseLabelsHash.put(testCaseLabel.getTestcase() + "-" + testCaseLabel.getLabelId(), testCaseLabel);
+        }
+        return testCaseLabelsHash;
+    }
+
     @Override
     public AnswerList<TestCaseLabel> readByTypeSystem(String type, String system) {
         return testCaseLabelDAO.readByTypeSystem(type, system);
     }
-
 
     @Override
     public AnswerList readAll() {

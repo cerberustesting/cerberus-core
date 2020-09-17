@@ -74,9 +74,8 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
 
             StringBuilder contentSQLSB = new StringBuilder("SELECT b.`Build`, b.`Revision`, b.`Release` , b.`Link` , ")
                     .append(" b.`Application`, b.`ReleaseOwner`, b.`BugIDFixed`, b.`TicketIDFixed`, b.`subject`, b.`Project`")
-                    .append(", p.`VCCode`, u.Name, a.BugTrackerUrl ")
+                    .append(", u.Name, a.BugTrackerUrl ")
                     .append(" from buildrevisionparameters b ")
-                    .append(" left outer join project p on p.idproject=b.project ")
                     .append(" left outer join user u on u.Login=b.ReleaseOwner ")
                     .append(" left outer join application a on a.application=b.application ")
                     .append(" join buildrevisioninvariant bri on bri.versionname = b.revision and bri.`system` = '").append(system).append("'  and bri.`level` = 2 ")
@@ -116,7 +115,6 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                         String BugIDFixed = " ";
                         String TicketIDFixed = " ";
                         String Project = " ";
-                        String ProjectVC = " ";
 
                         if (rsBC.getString("a.BugTrackerUrl") != null) {
                             contentBugURL = rsBC.getString("a.BugTrackerUrl");
@@ -153,16 +151,11 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                         if (rsBC.getString("Project") != null) {
                             Project = rsBC.getString("Project");
                         }
-                        if (!StringUtil.isNullOrEmpty(rsBC.getString("p.VCCode"))) {
-                            ProjectVC = Project + " (" + rsBC.getString("p.VCCode") + ")";
-                        } else {
-                            ProjectVC = Project;
-                        }
 
                         buildContentTable = buildContentTable + "<tr style=\"background-color:" + bckColor + "; font-size:80%\">"
                                 + "<td  rowspan=\"2\">" + contentBuild + "/" + contentRev + "</td>"
                                 + "<td>" + contentAppli + "</td>"
-                                + "<td>" + ProjectVC + "</td>";
+                                + "<td>" + Project + "</td>";
                         if (StringUtil.isNullOrEmpty(contentBugURL)) {
                             buildContentTable = buildContentTable + "<td>" + BugIDFixed + "</td>";
                         } else {

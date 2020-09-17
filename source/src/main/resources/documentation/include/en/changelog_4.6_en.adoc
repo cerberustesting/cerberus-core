@@ -1,21 +1,26 @@
 *Bug fixes*
 [square]
-* added link on bug on reportbytag page.
+* Added links on bug on reportbytag page.
+* Issues when sending message content when making REST calls for POST,PUT,PATCH,DELETE methods.
+* Fixed Export/Import feature.
 
 *Improvements / New features*
 [square]
 * New property 'getRawFromXml' in order to get a raw XML content.
 * Hide non active bug link on reportbytag screen.  
 * Removed support of fr version of documentation.
-* new Action 'setNetworkTrafficContent' that allow to get the full Network traffic information and stats of every calls in a json files that can be verified on the attached controls.
-* new Controls 'verifyElementNumericEqual', 'verifyElementNumericDifferent', 'verifyElementNumericGreater', 'verifyElementNumericGreaterOrEqual', 'verifyElementNumericMinor', 'verifyElementNumericMinorOrEqual'
-* renamed Control 'verifyRegexInElement' to 'verifyElementTextMatchRegex'
-* renamed Control 'verifyTextNotInElement' to 'verifyElementTextDifferent'
-* renamed Control 'verifyTextInElement' to 'verifyElementTextEqual'
+* New Action 'setNetworkTrafficContent' that allow to get the full Network traffic information and stats of every calls in a json files that can be verified on the attached controls.
+* New Controls 'verifyElementNumericEqual', 'verifyElementNumericDifferent', 'verifyElementNumericGreater', 'verifyElementNumericGreaterOrEqual', 'verifyElementNumericMinor', 'verifyElementNumericMinorOrEqual'
+* Renamed Control 'verifyRegexInElement' to 'verifyElementTextMatchRegex'
+* Renamed Control 'verifyTextNotInElement' to 'verifyElementTextDifferent'
+* Renamed Control 'verifyTextInElement' to 'verifyElementTextEqual'
 * Various documentation improvements.
 * By default Cerberus now allow untrusted certificates. #2069
 * Add ExecutorExtensionHost parameter in RobotExecutor in order to run extension in other server than Robot Executor (Selenium or Appium). If not defined, value default to Robot Executor (Selenium or Appium) host.
+* Added New Network tab on execution detail with nice charts on Network Traffic.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* REST call engine has been modified. Make sure to test your testcases that have callService actions using REST services with POST,PUT,PATCH,DELETE methods.
+* Make sure to clean your browser cache before editing a script that contains any renamed control
+* Removed public API GetTestCasesV000

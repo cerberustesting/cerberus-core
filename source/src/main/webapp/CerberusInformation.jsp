@@ -308,12 +308,26 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-xs-12">
+                                        <table class="table table-bordered table-hover nomarginbottom dataTable" id="schedulerDateTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Server Date</th>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Server Timezone</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="schedulerDateTableBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
                                         <table class="table table-bordered table-hover nomarginbottom dataTable" id="schDetTable">
                                             <thead>
                                                 <tr>
                                                     <th class="text-center" id="systemHeader" name="systemHeader">Type</th>
                                                     <th class="text-center" id="systemHeader" name="systemHeader">Name</th>
-                                                    <th class="text-center" id="systemHeader" name="systemHeader">Next Fire Time</th>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">Next Fire Time<br>Cron definition</th>
                                                     <th class="text-center" id="systemHeader" name="systemHeader">User Created</th>
                                                 </tr>
                                             </thead>

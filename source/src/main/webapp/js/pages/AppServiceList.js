@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-$.when($.getScript("js/global/global.js")).then(function () {
-    $(document).ready(function () {
+$.when($.getScript("js/global/global.js")).then(function() {
+    $(document).ready(function() {
         initPage();
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
@@ -43,7 +43,8 @@ function initPage() {
 function displayPageLabel() {
     var doc = new Doc();
 
-    $("#title").html(doc.getDocLabel("appservice", "service"));
+    $("#title").html(doc.getDocLabel("page_appservice", "title"));
+    $("#pageTitle").html(doc.getDocLabel("page_appservice", "title"));
     displayHeaderLabel(doc);
     displayFooter(doc);
     displayGlobalLabel(doc);
@@ -61,7 +62,7 @@ function renderOptionsForAppService(data) {
             $("#soapLibrarysTable_wrapper div#soapLibrarysTable_length")
                     .before(contentToAdd);
             $('#soapLibraryList #createSoapLibraryButton').off("click");
-            $('#soapLibraryList #createSoapLibraryButton').click(function () {
+            $('#soapLibraryList #createSoapLibraryButton').click(function() {
                 openModalAppService(undefined, "ADD");
             });
         }
@@ -76,14 +77,14 @@ function renderOptionsForAppService(data) {
 
 function removeEntryClick(service) {
     var doc = new Doc();
-    showModalConfirmation(function (ev) {
+    showModalConfirmation(function(ev) {
         var name = $('#confirmationModal #hiddenField1').prop("value");
         $.ajax({
             url: "DeleteAppService?service=" + name,
             async: true,
             dataType: "json",
             method: "GET",
-            success: function (data) {
+            success: function(data) {
 
                 var messageType = getAlertType(data.messageType);
                 if (messageType === "success") {
@@ -116,7 +117,7 @@ function getTestCasesUsingModalCloseHandler() {
 }
 
 /**
- * Function that loads all test cases that are associated with the selected entry 
+ * Function that loads all test cases that are associated with the selected entry
  * @param {type} service service name
  */
 function getTestCasesUsingService(service) {
@@ -128,13 +129,13 @@ function getTestCasesUsingService(service) {
 
     $("#testCaseListModalLabel").text("List of test cases affected by the service : " + service)
 
-    $.when(jqxhr).then(function (result) {
+    $.when(jqxhr).then(function(result) {
 
         $('#testCaseListModal #totalTestCases').text(doc.getDocLabel("page_testdatalib_m_gettestcases", "nrTests") + " " + result["TestCasesList"].length);
 
         var htmlContent = "";
 
-        $.each(result["TestCasesList"], function (idx, obj) {
+        $.each(result["TestCasesList"], function(idx, obj) {
 
             var item = '<b><a class="list-group-item ListItem" data-remote="true" href="#sub_cat' + idx + '" id="cat' + idx + '" data-toggle="collapse" \n\
             data-parent="#sub_cat' + idx + '"><span class="pull-left">' + obj[0] + '</span>\n\
@@ -145,13 +146,13 @@ function getTestCasesUsingService(service) {
             htmlContent += '<div class="collapse list-group-submenu" id="sub_cat' + idx + '">';
 
 
-            $.each(obj[3], function (idx2, obj2) {
+            $.each(obj[3], function(idx2, obj2) {
                 var hrefTest = 'TestCaseScript.jsp?test=' + obj[0] + '&testcase=' + obj2.TestCaseNumber;
                 htmlContent += '<span class="list-group-item sub-item ListItem" data-parent="#sub_cat' + idx + '" style="padding-left: 78px;height: 50px;">';
                 htmlContent += '<span class="pull-left"><a href="' + hrefTest + '" target="_blank">' + obj2.TestCaseNumber + '- ' + obj2.TestCaseDescription + '</a></span></br>';
                 htmlContent += '<span class="pull-left"> ' + doc.getDocLabel("testcase", "Creator") + ": " + obj2.Creator + ' | '
-                        + doc.getDocLabel("testcase", "TcActive") + ": " + obj2.Active + ' | ' + doc.getDocLabel("testcase", "Status") + ": " + obj2.Status + ' | ' +
-                        doc.getDocLabel("invariant", "GROUP") + ": " + obj2.Group + ' | ' + doc.getDocLabel("application", "Application") + ": " + obj2.Application + '</span>';
+                        + doc.getDocLabel("testcase", "IsActive") + ": " + obj2.Active + ' | ' + doc.getDocLabel("testcase", "Status") + ": " + obj2.Status + ' | ' +
+                        doc.getDocLabel("invariant", "Type") + ": " + obj2.Group + ' | ' + doc.getDocLabel("application", "Application") + ": " + obj2.Application + '</span>';
                 htmlContent += '</span>';
             });
 
@@ -177,7 +178,7 @@ function aoColumnsFunc(tableId) {
             "bSearchable": false,
             "sWidth": "150px",
             "title": doc.getDocLabel("page_global", "columnAction"),
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 var hasPermissions = $("#" + tableId)
                         .attr("hasPermissions");
 
@@ -193,7 +194,7 @@ function aoColumnsFunc(tableId) {
 					                    	 name="duplicateApplicationObject" title="'
                         + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry")
                         + '" type="button" onclick="openModalAppService(\'' + obj["service"] + '\', \'DUPLICATE\'  )">\n\
-					                        <span class="glyphicon glyphicon-duplicate"></span></button>'; 
+					                        <span class="glyphicon glyphicon-duplicate"></span></button>';
                 var viewEntry = '<button id="editEntry" onclick="openModalAppService(\''
                         + obj["service"]
                         + '\',\'EDIT\');"\n\
@@ -218,7 +219,7 @@ function aoColumnsFunc(tableId) {
                         onclick="getTestCasesUsingService(' + "'" + obj.service + '\')"><span class="glyphicon glyphicon-list"></span></button>';
 
 
-                if (hasPermissions === "true") { 
+                if (hasPermissions === "true") {
                     return '<div class="center btn-group width250">'
                             + editEntry + duplicateEntry + deleteEntry + viewTestCase
                             + '</div>';
@@ -260,7 +261,7 @@ function aoColumnsFunc(tableId) {
             "data": "serviceRequest",
             "title": doc.getDocLabel("appservice", "srvRequest"),
             "sWidth": "350px",
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 return $("<div></div>")
                         .append(
                                 $(
@@ -330,7 +331,7 @@ function deleteEntryHandlerClick() {
     var jqxhr = $.post("DeleteApplicationService", {
         service: service
     }, "json");
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
             // redraw the datatable
@@ -360,11 +361,11 @@ function deleteEntryClick(service) {
 
 /**
  * After table feeds,
- * 
+ *
  * @returns {undefined}
  */
 function afterTableLoad() {
-    $.each($("pre[name='envelopeField']"), function (i, e) {
+    $.each($("pre[name='envelopeField']"), function(i, e) {
         // Highlight envelop on modal loading
         var editor = ace.edit($(e).get(0));
         editor.setTheme("ace/theme/chrome");

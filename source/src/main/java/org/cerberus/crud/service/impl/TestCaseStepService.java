@@ -21,6 +21,8 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseStepDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseStep;
@@ -45,6 +47,8 @@ public class TestCaseStepService implements ITestCaseStepService {
     @Autowired
     private TestCaseStepActionService testCaseStepActionService;
 
+    private static final Logger LOG = LogManager.getLogger(TestCaseStepService.class);
+
     @Override
     public List<TestCaseStep> getListOfSteps(String test, String testcase) {
         return testCaseStepDAO.findTestCaseStepByTestCase(test, testcase);
@@ -59,10 +63,10 @@ public class TestCaseStepService implements ITestCaseStepService {
     public TestCaseStep modifyTestCaseStepDataFromUsedStep(TestCaseStep masterStep) {
         if (masterStep.getUseStep().equals("Y")) {
             TestCaseStep usedStep = findTestCaseStep(masterStep.getUseStepTest(), masterStep.getUseStepTestCase(), masterStep.getUseStepStep());
-            // Copy the usedStep property to main step. Loop and conditionoper are taken from used step.
+            // Copy the usedStep property to main step. Loop and conditionOperator are taken from used step.
             if (usedStep != null) {
                 masterStep.setLoop(usedStep.getLoop());
-                masterStep.setConditionOper(usedStep.getConditionOper());
+                masterStep.setConditionOperator(usedStep.getConditionOperator());
                 masterStep.setConditionVal1(usedStep.getConditionVal1());
                 masterStep.setConditionVal2(usedStep.getConditionVal2());
                 masterStep.setConditionVal3(usedStep.getConditionVal3());
@@ -197,17 +201,23 @@ public class TestCaseStepService implements ITestCaseStepService {
     }
 
     @Override
-    public AnswerList<TestCaseStep> readByTestTestCaseWithDependency(String test, String testcase) {
-        AnswerList<TestCaseStep> steps = this.readByTestTestCase(test, testcase);
+    public AnswerList<TestCaseStep> readByTestTestCaseStepsWithDependencies(String test, String testcase) {
+        AnswerList<TestCaseStep> answerSteps = this.readByTestTestCase(test, testcase);
         AnswerList<TestCaseStep> response = null;
-        List<TestCaseStep> tcseList = new ArrayList<>();
-        for (Object step : steps.getDataList()) {
-            TestCaseStep tces = (TestCaseStep) step;
-            AnswerList<TestCaseStepAction> actions = testCaseStepActionService.readByVarious1WithDependency(test, testcase, tces.getStep());
-            tces.setTestCaseStepAction(actions.getDataList());
-            tcseList.add(tces);
+        AnswerList<TestCaseStepAction> actions;
+        List<TestCaseStep> steps = new ArrayList<>();
+        for (TestCaseStep step : answerSteps.getDataList()) {
+            if (step.getUseStep().equals("Y")) {
+                TestCaseStep usedStep = this.findTestCaseStep(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
+                step.setUseStepStepSort(usedStep.getSort());
+                actions = testCaseStepActionService.readByVarious1WithDependency(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
+            } else {
+                actions = testCaseStepActionService.readByVarious1WithDependency(test, testcase, step.getStep());
+            }
+            step.setActions(actions.getDataList());
+            steps.add(step);
         }
-        response = new AnswerList<>(tcseList, steps.getTotalRows(), new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        response = new AnswerList<>(steps, answerSteps.getTotalRows(), new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         return response;
     }
 

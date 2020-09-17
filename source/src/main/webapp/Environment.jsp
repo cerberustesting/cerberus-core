@@ -42,9 +42,6 @@
             <h1 class="page-title-line" id="title">Environment</h1>
 
             <div class="panel panel-default">
-                <div class="panel-heading card">
-                    <label id="shortcuts" name="listField">Environment List</label>
-                </div>
                 <div class="panel-body" id="environmentList">
                     <table id="environmentsTable" class="table table-hover display" name="environmentsTable"></table>
                     <div class="marginBottom20"></div>

@@ -20,6 +20,8 @@
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author bcivel
@@ -131,7 +133,7 @@ public class TestCaseLabel {
         }
         return true;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 3;
@@ -161,7 +163,9 @@ public class TestCaseLabel {
         }
         return true;
     }
-    
-    
-    
+
+    @Override
+    public String toString() {
+        return "TestCaseLabel{" + "id=" + id + ", test=" + test + ", testcase=" + testcase + ", labelId=" + labelId + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", label=" + label + '}';
+    }
 }

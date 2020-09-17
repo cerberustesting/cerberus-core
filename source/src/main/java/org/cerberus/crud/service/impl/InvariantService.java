@@ -28,7 +28,11 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IInvariantDAO;
 import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
+import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
@@ -47,6 +51,10 @@ public class InvariantService implements IInvariantService {
 
     @Autowired
     IInvariantDAO invariantDao;
+    @Autowired
+    ITestCaseCountryService testCaseCountryService;
+    @Autowired
+    ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
 
     private static final Logger LOG = LogManager.getLogger(InvariantService.class);
 
@@ -70,6 +78,15 @@ public class InvariantService implements IInvariantService {
     @Override
     public List<Invariant> readByIdName(String idName) throws CerberusException {
         return invariantDao.readByIdname(idName);
+    }
+
+    @Override
+    public HashMap<String, Invariant> readByIdNameToHash(String idName) throws CerberusException {
+        HashMap<String, Invariant> invariants = new HashMap<>();
+        for (Invariant invariant : this.readByIdName(idName)) {
+            invariants.put(invariant.getValue(), invariant);
+        }
+        return invariants;
     }
 
     @Override
@@ -100,6 +117,23 @@ public class InvariantService implements IInvariantService {
             LOG.error("Exception catched when getting invariant list.", ex);
         }
         return result;
+    }
+
+    @Override
+    public List<Invariant> convertCountryPropertiesToCountryInvariants(HashMap<String, TestCaseCountry> testCaseCountries, HashMap<String, Invariant> countryInvariants) throws CerberusException {
+
+        List<Invariant> countryInvariantsToReturn = new ArrayList<>();
+        testCaseCountries.forEach((key, value) -> countryInvariantsToReturn.add(countryInvariants.get(key)));
+        return countryInvariantsToReturn;
+    }
+
+    @Override
+    public List<Invariant> convertCountryPropertiesToCountryInvariants(List<String> countries, HashMap<String, Invariant> countryInvariants) throws CerberusException {
+        List<Invariant> countryInvariantsToReturn = new ArrayList<>();
+        for (String country : countries) {
+            countryInvariantsToReturn.add(countryInvariants.get(country));
+        }
+        return countryInvariantsToReturn;
     }
 
     @Override
@@ -190,7 +224,7 @@ public class InvariantService implements IInvariantService {
     @Override
     public AnswerList<Invariant> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         //gets all invariants
-        return invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, "");//no filter public or private is sent        
+        return invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, "");//no filter public or private is sent
     }
 
     @Override

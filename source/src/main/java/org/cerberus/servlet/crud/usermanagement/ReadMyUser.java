@@ -37,6 +37,7 @@ import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.crud.factory.IFactoryUser;
 import org.cerberus.crud.service.*;
+import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.impl.UserGroupService;
 import org.cerberus.crud.service.impl.UserService;
@@ -59,6 +60,8 @@ public class ReadMyUser extends HttpServlet {
     private IFactoryUser userFactory;
     private IUserSystemService userSystemService;
     private IUserGroupService userGroupService;
+    private ILogEventService logEventService;
+    private IParameterService parameterService;
 
     private static final Logger LOG = LogManager.getLogger(ReadMyUser.class);
 
@@ -79,6 +82,8 @@ public class ReadMyUser extends HttpServlet {
         invariantService = appContext.getBean(IInvariantService.class);
         userSystemService = appContext.getBean(IUserSystemService.class);
         userGroupService = appContext.getBean(UserGroupService.class);
+        logEventService = appContext.getBean(ILogEventService.class);
+        parameterService = appContext.getBean(IParameterService.class);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
@@ -90,7 +95,7 @@ public class ReadMyUser extends HttpServlet {
             String user = request.getUserPrincipal().getName();
             LOG.debug("Getting user data for (request.getUserPrincipal().getName()) : " + user);
 
-            // In case we activated KeyCloak, we create the user on the fly in order to allow to administer the system list. 
+            // In case we activated KeyCloak, we create the user on the fly in order to allow to administer the system list.
             String authMode = "";
             if (System.getProperty(Property.AUTHENTIFICATION) != null) {
                 authMode = System.getProperty(Property.AUTHENTIFICATION);
@@ -101,6 +106,8 @@ public class ReadMyUser extends HttpServlet {
                         LOG.debug("Create User.");
                         userService.insertUserNoAuth(myUser);
                         userSystemService.createSystemAutomatic(user);
+                        logEventService.createForPrivateCalls("/ReadMyUser", "CREATE", "Create User automaticaly: ['" + user + "']", request);
+
                     }
                 }
             }
@@ -171,11 +178,13 @@ public class ReadMyUser extends HttpServlet {
             List<UserSystem> userSysList = userSystemService.findUserSystemByUser(myUser.getLogin());
             if (request.isUserInRole("Administrator")) {
                 // If user is Administrator, he has access to all groups.
+                data.put("isAdmin", true);
                 List<Invariant> invList = invariantService.readByIdName("SYSTEM");
                 for (Invariant invariant : invList) {
                     systems.put(invariant.getValue());
                 }
             } else {
+                data.put("isAdmin", false);
                 for (UserSystem sys : userSysList) {
                     systems.put(sys.getSystem());
                 }

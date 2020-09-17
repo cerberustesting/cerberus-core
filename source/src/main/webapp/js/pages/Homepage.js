@@ -19,12 +19,19 @@
  */
 
 var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"];
+var configTcBar = {};
+var nbTagLoaded = 0;
+var nbTagLoadedTarget = 0;
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         displayPageLabel();
 
         bindToggleCollapse();
+
+        initHPGraph();
+        loadTagHistoBar();
+        loadTcHistoBar();
 
         $('body').tooltip({
             selector: '[data-toggle="tooltip"]'
@@ -114,7 +121,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 }
             }
 
-
         }).fail(handleErrorAjaxAfterTimeout);
 
         loadTagExec();
@@ -122,10 +128,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
         loadBuildRevTable();
 
         // Display Changelog;
-        $("#documentationFrame").attr("src", "./documentation/changelog_4.6_en.html");
+        $("#documentationFrame").attr("src", "./documentation/changelog_4.10_en.html");
         var windowsHeight = $(window).height() + 'px';
         $('#documentationFrame').css('height', '400px');
-        $("#changelogLabel").html("Changelog 4.6");
+        $("#changelogLabel").html("Changelog 4.10");
 
         //close all sidebar menu
         closeEveryNavbarMenu();
@@ -191,6 +197,242 @@ function generateTagLink(tagName) {
     return link;
 }
 
+
+function loadTagHistoBar() {
+    showLoader($("#panelHistory"));
+
+    fromD = new Date();
+    fromD.setMonth(fromD.getMonth() - 3);
+    toD = new Date();
+//    toD.setMonth(fromD.getMonth() - 1);
+
+    $.ajax({
+        url: "ReadExecutionTagHistory?from=" + fromD.toISOString() + "&to=" + toD.toISOString() + getUser().defaultSystemsQuery,
+        method: "GET",
+        async: true,
+        dataType: 'json',
+        success: function (data) {
+            buildExeBar(data);
+            hideLoader($("#panelHistory"));
+        }
+    });
+}
+
+function buildExeBar(data) {
+
+    let curves = data.curvesNb;
+
+    // Sorting values by nb of requests.
+    sortedCurves = curves.sort(function (a, b) {
+        let a1 = a.key.nbExe;
+        let b1 = b.key.nbExe;
+        return b1 - a1;
+    });
+
+
+    var len = sortedCurves.length;
+
+    let timedatasets = [];
+
+    for (var i = 0; i < len; i++) {
+
+        let c = sortedCurves[i];
+        let d = [];
+        lend = c.points.length;
+        for (var j = 0; j < lend; j++) {
+            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus};
+            d.push(p);
+        }
+        let lab = c.key.key;
+        var dataset = {
+            label: lab,
+            categoryPercentage: 1.0,
+            barPercentage: 1.0,
+            backgroundColor: getExeStatusRowColor(c.key.key),
+            borderColor: getExeStatusRowColor(c.key.key),
+            data: c.points
+        };
+        timedatasets.push(dataset);
+    }
+
+    configHistoExeBar.data.datasets = timedatasets;
+    configHistoExeBar.data.labels = data.curvesDatesNb;
+
+    window.myLineExeHistoBar.update();
+}
+
+function loadTcHistoBar() {
+    showLoader($("#panelTcHistory"));
+
+    fromD = new Date();
+    fromD.setMonth(fromD.getMonth() - 3);
+    toD = new Date();
+//    toD.setMonth(fromD.getMonth() - 1);
+
+    $.ajax({
+        url: "ReadTestCaseStat?from=" + fromD.toISOString() + "&to=" + toD.toISOString() + getUser().defaultSystemsQuery,
+        method: "GET",
+        async: true,
+        dataType: 'json',
+        success: function (data) {
+            buildTcBar(data);
+            hideLoader($("#panelTcHistory"));
+        }
+    });
+}
+
+function buildTcBar(data) {
+
+    let curves = data.curvesNb;
+
+    // Sorting values by nb of requests.
+    sortedCurves = curves.sort(function (a, b) {
+        let a1 = a.key.nbExe;
+        let b1 = b.key.nbExe;
+        return b1 - a1;
+    });
+
+
+    var len = sortedCurves.length;
+
+    let timedatasets = [];
+
+    for (var i = 0; i < len; i++) {
+
+        let c = sortedCurves[i];
+        let d = [];
+        lend = c.points.length;
+        for (var j = 0; j < lend; j++) {
+            let p = {x: c.points[j].x, y: c.points[j].y};
+            d.push(p);
+        }
+        let lab = c.key.key;
+
+        var dataset = {
+            label: lab,
+            backgroundColor: "white",
+            borderColor: get_Color_fromindex(i),
+            pointBackgroundColor: get_Color_fromindex(i),
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            hitRadius: 10,
+            fill: false,
+            data: c.points
+        };
+
+        timedatasets.push(dataset);
+    }
+
+    configHistoTcBar.data.datasets = timedatasets;
+    configHistoTcBar.data.labels = data.curvesDatesNb;
+
+    window.myLineTcHistoBar.update();
+}
+
+
+function initHPGraph() {
+
+    var exebaroption = getHPOptionsExeBar("Executions", "nb");
+    var tcgraphoption = getHPOptionsTcGraph("Testcases", "nb");
+
+    let exebardatasets = [];
+    let tcgraphdatasets = [];
+
+    configHistoExeBar = {
+        type: 'bar',
+        data: {
+            datasets: exebardatasets
+        },
+        options: exebaroption
+    };
+    configHistoTcBar = {
+        type: 'line',
+        data: {
+            datasets: tcgraphdatasets
+        },
+        options: tcgraphoption
+    };
+
+    var ctx = document.getElementById('canvasHistExePerStatus').getContext('2d');
+    window.myLineExeHistoBar = new Chart(ctx, configHistoExeBar);
+
+    var ctx = document.getElementById('canvasHistTcPerStatus').getContext('2d');
+    window.myLineTcHistoBar = new Chart(ctx, configHistoTcBar);
+
+}
+
+function getHPOptionsExeBar(title, unit) {
+    let option = {
+        title: {
+            text: title
+        },
+        scales: {
+            xAxes: [{
+                    offset: true,
+                    type: 'time',
+                    stacked: true,
+                    time: {
+                        tooltipFormat: 'll',
+                        unit: 'day',
+                        round: 'day',
+                        displayFormats: {
+                            day: 'MMM D'
+                        }},
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Date'
+                    }
+                }],
+            yAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+        }
+    };
+    return option;
+}
+
+function getHPOptionsTcGraph(title, unit) {
+    let option = {
+        hover: {
+            mode: 'nearest',
+            intersect: true
+        },
+        title: {
+            text: title
+        },
+        scales: {
+            xAxes: [{
+                    offset: false,
+                    type: 'time',
+                    stacked: false,
+                    time: {
+                        tooltipFormat: 'll',
+                        unit: 'day',
+                        round: 'day',
+                        displayFormats: {
+                            day: 'MMM D'
+                        }},
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Date'
+                    }
+                }],
+            yAxes: [{
+                    stacked: false,
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+        }
+    };
+    return option;
+}
+
+
+
 function generateTooltip(data, tag) {
     var htmlRes;
     var len = statusOrder.length;
@@ -216,7 +458,7 @@ function generateTagReport(data, tag, rowId) {
     var tooltip = generateTooltip(data, tag);
     var len = statusOrder.length;
 
-    buildBar = '<div>' + generateTagLink(tag) + '</div><div class="xs-only" style="display: inline;">Total executions : ' + data.total + '</div>\n\
+    buildBar = '<div><table style="width: 100%"><tr><td><div>' + generateTagLink(tag) + '</div></td><td style="text-align:right;"><div class="xs-only" style="display: inline;align-text:right;">Total executions : ' + data.total + '</td></tr></table></div></div>\n\
                                                         <div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
     for (var index = 0; index < len; index++) {
         var status = statusOrder[index];
@@ -236,8 +478,11 @@ function generateTagReport(data, tag, rowId) {
 
 function loadTagExec() {
 
+    showLoader($("#LastTagExecPanel"));
+
     var reportArea = $("#tagExecStatus");
     reportArea.empty();
+    nbTagLoaded = 0;
 
     //Get the last tag to display
     var tagList = JSON.parse(localStorage.getItem("tagList"));
@@ -247,22 +492,33 @@ function loadTagExec() {
         tagList = readLastTagExec(searchTag);
     }
 
-    for (var index = 0; index < tagList.length; index++) {
-        var idDiv = '<div id="tagExecStatusRow' + index + '"></div>';
-        reportArea.append(idDiv);
+    if (tagList.length > 0) {
+        for (var index = 0; index < tagList.length; index++) {
+            var idDiv = '<div id="tagExecStatusRow' + index + '"></div>';
+            reportArea.append(idDiv);
+        }
+        for (var index = 0; index < tagList.length; index++) {
+            let : tagName = tagList[index];
+            //TODO find a way to remove the use for resendTag
+            var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + tagName + "&" + "outputReport=totalStatsCharts" + "&" + "outputReport=resendTag" + "&" + "sEcho=" + index;
+            var jqxhr = $.get(requestToServlet, null, "json");
+
+            $.when(jqxhr).then(function (data) {
+                generateTagReport(data.statsChart.contentTable.total, data.tag, data.sEcho);
+                nbTagLoaded++;
+                hideLoaderTag();
+            });
+        }
+    } else {
+        hideLoader($("#LastTagExecPanel"));
     }
 
-    for (var index = 0; index < tagList.length; index++) {
-        let tagName = tagList[index];
-        //TODO find a way to remove the use for resendTag
-        var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + tagName + "&" + "outputReport=totalStatsCharts" + "&" + "outputReport=resendTag" + "&" + "sEcho=" + index;
-        var jqxhr = $.get(requestToServlet, null, "json");
+}
 
-        $.when(jqxhr).then(function (data) {
-            generateTagReport(data.statsChart.contentTable.total, data.tag, data.sEcho);
-        });
+function hideLoaderTag() {
+    if (nbTagLoaded >= nbTagLoadedTarget) {
+        hideLoader($("#LastTagExecPanel"));
     }
-
 }
 
 function readLastTagExec(searchString) {
@@ -274,6 +530,7 @@ function readLastTagExec(searchString) {
     if (!((paramExe >= 0) && (paramExe <= 20))) {
         paramExe = 5;
     }
+    nbTagLoadedTarget = paramExe;
 
     var myUrl = "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=" + paramExe + getUser().defaultSystemsQuery;
     if (!isEmpty(searchString)) {
@@ -287,6 +544,7 @@ function readLastTagExec(searchString) {
         async: false,
         dataType: 'json',
         success: function (data) {
+            nbTagLoadedTarget = data.contentTable.length;
             for (var s = 0; s < data.contentTable.length; s++) {
                 tagList.push(data.contentTable[s].tag);
             }

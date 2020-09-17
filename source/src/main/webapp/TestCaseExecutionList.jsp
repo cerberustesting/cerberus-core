@@ -38,10 +38,6 @@
             
             <h1 class="page-title-line" id="title">TestCase Execution</h1>
             <div class="panel panel-default">
-                <div class="panel-heading" id="testCaseExecutionListLabel">
-                    <span class="glyphicon glyphicon-list"></span>
-                    TestCase Execution List
-                </div>
                 <div class="panel-body" id="testCaseExecution">
                     <table id="testCaseExecutionTable" class="table table-bordered table-hover display" name="testCaseExecutionTable"></table>
                     <div class="marginBottom20"></div>

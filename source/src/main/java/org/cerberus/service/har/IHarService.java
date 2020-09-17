@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.har;
 
+import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
 import org.json.JSONObject;
 
 /**
@@ -31,8 +32,18 @@ public interface IHarService {
      *
      * @param har
      * @param domains
+     * @param system
      * @return
      */
-    JSONObject enrichWithStats(JSONObject har, String domains);
+    JSONObject enrichWithStats(JSONObject har, String domains, String system);
 
+    /**
+     *
+     * @param stat
+     * @param party
+     * @param type
+     * @param unit
+     * @return
+     */
+    int getValue(TestCaseExecutionHttpStat stat, String party, String type, String unit);
 }

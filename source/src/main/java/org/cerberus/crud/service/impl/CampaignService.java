@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,9 @@ import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ICampaignService;
+import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.scheduler.SchedulerInit;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.util.answer.Answer;
@@ -45,9 +48,13 @@ public class CampaignService implements ICampaignService {
 
     @Autowired
     ICampaignDAO campaignDAO;
-
+    @Autowired
+    private SchedulerInit schedulerInit;
     @Autowired
     ICampaignParameterDAO campaignParameterDAO;
+    @Autowired
+    IMyVersionService myVersionService;
+    
 
     @Override
     public List<CampaignParameter> findCampaignParametersByCampaignName(String campaign) throws CerberusException {
@@ -86,7 +93,16 @@ public class CampaignService implements ICampaignService {
 
     @Override
     public Answer delete(Campaign object) {
-        return campaignDAO.delete(object);
+        Answer ans = campaignDAO.delete(object);
+        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            /**
+             * Updating Scheduler Version.
+             */
+            myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
+            schedulerInit.init();
+        }
+        return ans;
+
     }
 
     @Override
@@ -115,5 +131,5 @@ public class CampaignService implements ICampaignService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
-    
+
 }

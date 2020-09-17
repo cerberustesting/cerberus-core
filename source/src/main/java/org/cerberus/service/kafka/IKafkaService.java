@@ -25,7 +25,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import org.apache.kafka.common.TopicPartition;
 import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.crud.entity.AppServiceHeader;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerItem;
@@ -51,24 +53,26 @@ public interface IKafkaService {
      * @param eventMessage
      * @param bootstrapServers
      * @param serviceHeader
+     * @param serviceContent
+     * @param token
+     * @param timeoutMs
      * @return
-     * @throws InterruptedException
-     * @throws ExecutionException
      */
     public AnswerItem<AppService> produceEvent(String topic, String key, String eventMessage,
-            String bootstrapServers, List<AppServiceHeader> serviceHeader) throws InterruptedException, ExecutionException;
+            String bootstrapServers, List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, int timeoutMs);
 
     /**
      *
      * @param topic
      * @param bootstrapServers
      * @param serviceHeader
+     * @param timeoutMs
      * @return
      * @throws InterruptedException
      * @throws ExecutionException
      */
     public AnswerItem<Map<TopicPartition, Long>> seekEvent(String topic, String bootstrapServers,
-            List<AppServiceHeader> serviceHeader) throws InterruptedException, ExecutionException;
+            List<AppServiceContent> serviceHeader, int timeoutMs) throws InterruptedException, ExecutionException;
 
     /**
      *
@@ -76,25 +80,23 @@ public interface IKafkaService {
      * @param topic
      * @param bootstrapServers
      * @param filterPath
+     * @param serviceContent
      * @param filterValue
      * @param serviceHeader
      * @param targetNbEventsInt
      * @param targetNbSecInt
      * @return
-     * @throws InterruptedException
-     * @throws ExecutionException
      */
     public AnswerItem<String> searchEvent(Map<TopicPartition, Long> mapOffsetPosition, String topic, String bootstrapServers,
-            List<AppServiceHeader> serviceHeader, String filterPath, String filterValue, int targetNbEventsInt, int targetNbSecInt) throws InterruptedException, ExecutionException;
+            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String filterPath, String filterValue, int targetNbEventsInt, int targetNbSecInt);
 
     /**
      *
      * @param mainExecutionTestCaseStepList
+     * @param tCExecution
      * @return
      * @throws CerberusException
-     * @throws InterruptedException
-     * @throws ExecutionException
      */
-    public HashMap<String, Map<TopicPartition, Long>> getAllConsumers(List<TestCaseStep> mainExecutionTestCaseStepList) throws CerberusException, InterruptedException, ExecutionException;
+    public HashMap<String, Map<TopicPartition, Long>> getAllConsumers(List<TestCaseStep> mainExecutionTestCaseStepList, TestCaseExecution tCExecution) throws CerberusException;
 
 }

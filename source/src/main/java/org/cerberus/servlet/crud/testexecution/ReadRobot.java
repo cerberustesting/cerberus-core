@@ -252,7 +252,7 @@ public class ReadRobot extends HttpServlet {
 
         IRobotService libService = appContext.getBean(IRobotService.class);
 
-        //finds the project     
+        //finds the project
         AnswerItem answer = libService.readByKeyTech(id);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -317,7 +317,7 @@ public class ReadRobot extends HttpServlet {
         robotService = appContext.getBean(RobotService.class);
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,detailedDescription,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
 
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));

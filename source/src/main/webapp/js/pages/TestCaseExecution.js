@@ -19,14 +19,29 @@
  */
 var paramActivatewebsocketpush = "N";
 var paramWebsocketpushperiod = 5000;
+var networkStat = {};
+var configDo = {};
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
-        var stepList = [];
+        var steps = [];
         var doc = new Doc();
         displayHeaderLabel(doc);
         displayFooter(doc);
         displayPageLabel(doc);
+
+        bindToggleCollapse();
+
+        $("#sortSize").click(function () {
+            update_thirdParty_Chart(1);
+        });
+        $("#sortRequest").click(function () {
+            update_thirdParty_Chart(2);
+        });
+        $("#sortTime").click(function () {
+            update_thirdParty_Chart(3);
+        });
+
 
         var availableUsers = getUserArray(true);
         $("#tabDetail input#executor").autocomplete({
@@ -56,7 +71,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             $("#RefreshQueueButton").hide();
             /* global */ sockets = [];
             initPage(executionId);
-            loadExecutionInformation(executionId, stepList, sockets);
+            loadExecutionInformation(executionId, steps, sockets);
 
             $('[data-toggle="popover"]').popover({
                 'placement': 'auto',
@@ -134,14 +149,15 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
                     window.location.replace(url);
                 }
             }
-        }
+        },
+        error: showUnexpectedError
     });
 }
 
 
 //global bool that say if the execution is manual
 var isTheExecutionManual = false;
-function loadExecutionInformation(executionId, stepList, sockets) {
+function loadExecutionInformation(executionId, steps, sockets) {
 
     $.ajax({
         url: "ReadTestCaseExecution",
@@ -158,7 +174,7 @@ function loadExecutionInformation(executionId, stepList, sockets) {
             //store in a global var if the manualExecution is set to yes to double check with the control status
             if (tce.manualExecution === "Y")
                 isTheExecutionManual = true;
-            updatePage(tce, stepList);
+            updatePage(tce, steps);
 
             if (tce.controlStatus === "PE") {
                 if (paramActivatewebsocketpush === "Y") {
@@ -178,13 +194,13 @@ function loadExecutionInformation(executionId, stepList, sockets) {
                     } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
                     socket.onmessage = function (e) {
                         var data = JSON.parse(e.data);
-                        updatePage(data, stepList);
+                        updatePage(data, steps);
                     } //on récupère les messages provenant du serveur websocket
                     socket.onclose = function (e) {
                     } //on est informé lors de la fermeture de la connexion vers le serveur
                     socket.onerror = function (e) {
                         setTimeout(function () {
-                            loadExecutionInformation(executionId, stepList);
+                            loadExecutionInformation(executionId, steps);
                         }, 5000);
                     } //on traite les cas d'erreur*/
 
@@ -194,7 +210,7 @@ function loadExecutionInformation(executionId, stepList, sockets) {
                 } else {
 
                     setTimeout(function () {
-                        loadExecutionInformation(executionId, stepList);
+                        loadExecutionInformation(executionId, steps);
                     }, paramWebsocketpushperiod);
 
                 }
@@ -225,6 +241,7 @@ function initPage(id) {
     $("#runTestCase").attr("disabled", true);
     $("#rerunTestCase").attr("disabled", true);
     $("#lastExecution").attr("disabled", true);
+    $("#lastExecutionoT").attr("disabled", true);
 
     $("#runOld").click(function () {
         window.location = "TestCaseExecution.jsp?executionId=" + id;
@@ -297,7 +314,7 @@ function displayPageLabel(doc) {
     $("#testCaseDetails label[for='tag']").text(doc.getDocLabel("page_executiondetail", "tag"));
     $("#testCaseDetails label[for='exetest']").text(doc.getDocLabel("test", "Test"));
     $("#testCaseDetails label[for='exetestcase']").text(doc.getDocLabel("testcase", "TestCase"));
-    $("#testCaseDetails label[for='testcaseversion']").text(doc.getDocLabel("testcase", "TestCaseVersion"));
+    $("#testCaseDetails label[for='version']").text(doc.getDocLabel("testcase", "version"));
     $("#testCaseDetails label[for='system']").text(doc.getDocLabel("invariant", "SYSTEM"));
     $("#testCaseDetails label[for='robot']").text(doc.getDocLabel("robot", "robot"));
     $("#testCaseDetails label[for='robotexe']").text(doc.getDocLabel("robotexecutor", "executor"));
@@ -310,6 +327,8 @@ function displayPageLabel(doc) {
     $("#btnGroupDrop1").html(doc.getDocLabel("page_executiondetail", "goto") + " <span class='caret'></span>");
     $("#lastExecution").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_executiondetail", "lastexecution"));
     $("#lastExecutionwithEnvCountry").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_executiondetail", "lastexecutionwithenvcountry"));
+    $("#lastExecutionoT").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_executiondetail", "lastexecutionoT"));
+    $("#lastExecutionoTwithEnvCountry").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_executiondetail", "lastexecutionoTwithenvcountry"));
     $("#ExecutionByTag").html("<span class='glyphicon glyphicon-tag'></span> " + doc.getDocLabel("page_executiondetail", "see_execution_tag"));
     $("#ExecutionQueue").html("<span class='glyphicon glyphicon-eye-open'></span> " + doc.getDocLabel("page_executiondetail", "see_executionq"));
     $("#ExecutionQueueByTag").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_executiondetail", "see_executionq_tag"));
@@ -324,7 +343,12 @@ function displayPageLabel(doc) {
     $("#editTcStepInfo").html("<span class='glyphicon glyphicon-new-window'></span> " + doc.getDocLabel("page_executiondetail", "edittcstep"));
     $("#saveTestCaseExecution").html("<span class='glyphicon glyphicon-save'></span> " + doc.getDocLabel("page_executiondetail", "save"));
 
-    // Tracability
+    $("#ns1Label").text(doc.getDocLabel("page_executiondetail", "ns1"));
+    $("#ns2Label").text(doc.getDocLabel("page_executiondetail", "ns2"));
+    $("#ns3Label").text(doc.getDocLabel("page_executiondetail", "ns3"));
+
+
+    // Traceability
     $("[name='lbl_datecreated']").html(doc.getDocOnline("transversal", "DateCreated"));
     $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
@@ -332,7 +356,7 @@ function displayPageLabel(doc) {
 
 }
 
-function updatePage(data, stepList) {
+function updatePage(data, steps) {
 
     sortData(data.testCaseStepExecutionList);
 
@@ -366,6 +390,10 @@ function updatePage(data, stepList) {
     $("#lastExecution").parent().attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase);
     $("#lastExecutionwithEnvCountry").attr("disabled", false);
     $("#lastExecutionwithEnvCountry").parent().attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application);
+    $("#lastExecutionoT").attr("disabled", false);
+    $("#lastExecutionoT").parent().attr("href", "ReportingExecutionOverTime.jsp?tests=" + data.test + "&testcases=" + data.testcase);
+    $("#lastExecutionoTwithEnvCountry").attr("disabled", false);
+    $("#lastExecutionoTwithEnvCountry").parent().attr("href", "ReportingExecutionOverTime.jsp?tests=" + data.test + "&testcases=" + data.testcase + "&countrys=" + data.country + "&environments=" + data.environment);
     if (!isEmpty(data.tag)) {
         $("#ExecutionByTag").parent().attr("href", "ReportingExecutionByTag.jsp?Tag=" + data.tag);
         $("#ExecutionQueueByTag").parent().attr("href", "TestCaseExecutionQueueList.jsp?tag=" + data.tag);
@@ -403,7 +431,7 @@ function updatePage(data, stepList) {
     var fileContainer = $("#testCaseConfig #tcFileContentField");
     addFileLink(data.fileList, fileContainer, isTheExecutionManual);
 
-    var myURL = $("#bugID").data("appBugURL");
+    var myURL = $("#bugs").data("appBugURL");
     if (myURL === undefined) {
         // We only refresh the bugURL and call readApplication if the information is not already filed.
         $.ajax({
@@ -416,8 +444,8 @@ function updatePage(data, stepList) {
                 if (data.testCaseObj !== undefined) {
 
                     // Display already existing bugs.
-                    link = getBugIdList(data.testCaseObj.bugId, dataApp.contentTable.bugTrackerUrl);
-                    $("#bugID").append(link);
+                    link = getBugIdList(data.testCaseObj.bugs, dataApp.contentTable.bugTrackerUrl);
+                    $("#bugs").append(link);
 
                     // Adding a button to create a new bug.
                     var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
@@ -433,37 +461,563 @@ function updatePage(data, stepList) {
                         newBugURL = newBugURL.replace(/%REV%/g, data.revision);
                         newBugURL = newBugURL.replace(/%BROWSER%/g, data.browser);
                         newBugURL = newBugURL.replace(/%BROWSERFULLVERSION%/g, data.browser + ' ' + data.version + ' ' + data.platform);
-                        link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block marginTop5'>").text("Open a new bug"));
+                        link = $('<a target="_blank" id="bugs">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block marginTop5'>").text("Open a new bug"));
                     } else {
-                        link = $('<a id="bugID">').attr("href", "#").append($("<button class='btn btn-default btn-block'>").text("No 'New Bug' URL Specified.").attr("title", "Please specify 'New Bug' URL on application '" + data.application + "'."));
+                        link = $('<a id="bugs">').attr("href", "#").append($("<button class='btn btn-default btn-block'>").text("No 'New Bug' URL Specified.").attr("title", "Please specify 'New Bug' URL on application '" + data.application + "'."));
                     }
-                    $("#bugID").append(link);
-                    link = $('<a id="bugID">').append($("<button class='btn btn-default btn-block marginTop5' id='editTcHeaderBug'>").text("Assign to Test Case"));
-                    $("#bugID").append(link);
+                    $("#bugs").append(link);
+                    link = $('<a id="bugs">').append($("<button class='btn btn-default btn-block marginTop5' id='editTcHeaderBug'>").text("Assign to Test Case"));
+                    $("#bugs").append(link);
                     $("#editTcHeaderBug").unbind("click").click(function () {
                         openModalTestCase(data.test, data.testcase, "EDIT", "tabTCBugReport")
-                    })
+                    });
 
 
                 }
-                $("#bugID").data("appBugURL", "true");
+                $("#bugs").data("appBugURL", "true");
 
             }
         });
     }
     setConfigPanel(data);
 
-    createStepList(data.testCaseStepExecutionList, stepList);
+    createStepList(data.testCaseStepExecutionList, steps);
     createProperties(data.testCaseExecutionDataList);
     createVideo(data.videos);
     setUpClickFunctionToSaveTestCaseExecutionButton(data);
     drawDependencies(data.testCaseExecutionQueueDepList, "depTableBody", "editTabDep");
+
+    if (data.httpStat !== undefined) {
+        drawNetworkCharts(data.httpStat.stat);
+    }
 }
 
 
+function drawNetworkCharts(data) {
+    var doc = new Doc();
+
+    $("#editTabNetwork").show();
+
+    var title = [doc.getDocLabel("page_executiondetail", "hits"), 'total : ' + data.total.requests.nb];
+    drawChart_HttpStatus(data, title, 'myChart1');
+
+    var title = [doc.getDocLabel("page_executiondetail", "size"), 'total : ' + formatNumber(Math.round(data.total.size.sum / 1024)) + ' Kb'];
+    drawChart_SizePerType(data, title, 'myChart2');
+
+    networkStat = data;
+    drawChart_PerThirdParty(networkStat, 'myChart3');
+
+    var title = [doc.getDocLabel("page_executiondetail", "thirdPartygantt")];
+    drawChart_GanttPerThirdParty(data, title, 'myChart4');
+
+    drawTable_Requests(data, "requestTable", "#NS3Panel")
+
+}
+
+
+function drawTable_Requests(data, targetTable, targetPanel) {
+    var configurations = new TableConfigurationsClientSide(targetTable, data.requests, aoColumnsFunc(), true, [0, 'asc']);
+    configurations.lengthMenu = [10, 25, 50, 100, 10000];
+
+    if ($('#' + targetTable).hasClass('dataTable') === false) {
+        createDataTableWithPermissions(configurations, undefined, targetPanel);
+        showTitleWhenTextOverflow();
+    } else {
+        var oTable = $("#requestTable").dataTable();
+        oTable.fnClearTable();
+        if (data.requests.length > 0) {
+            oTable.fnAddData(data.requests);
+        }
+    }
+}
+
+function aoColumnsFunc() {
+    var doc = new Doc();
+
+    var aoColumns = [
+        {"data": "start", "bSortable": true, "sName": "start", "title": doc.getDocOnline("page_executiondetail", "t_start"), "sWidth": "70px"},
+        {"data": "provider", "bSortable": true, "sName": "provider", "title": doc.getDocOnline("page_executiondetail", "t_provider"), "sWidth": "100px"},
+        {"data": "domain", "bSortable": true, "visible": false, "sName": "domain", "title": doc.getDocOnline("page_executiondetail", "t_domain"), "sWidth": "70px"},
+        {"data": "url", "bSortable": true, "sName": "url", "title": doc.getDocOnline("page_executiondetail", "t_url"), "sWidth": "200px"},
+        {"data": "contentType", "bSortable": true, "sName": "contentType", "title": doc.getDocOnline("page_executiondetail", "t_contentType"), "sWidth": "70px"},
+        {"data": "httpStatus", "bSortable": true, "sName": "httpStatus", "title": doc.getDocOnline("page_executiondetail", "t_httpStatus"), "sWidth": "50px"},
+        {"data": "size", "bSortable": true, "sName": "size", "title": doc.getDocOnline("page_executiondetail", "t_size"), "sWidth": "50px"},
+        {"data": "time", "bSortable": true, "sName": "time", "title": doc.getDocOnline("page_executiondetail", "t_time"), "sWidth": "50px"}
+    ];
+
+    return aoColumns;
+}
+
+
+function drawChart_HttpStatus(data, titletext, target) {
+
+    var dataArray = [];
+    var labelArray = [];
+    var bgColorArray = [];
+
+    if (data.hasOwnProperty("total")) {
+
+        var newDataArray = [];
+        for (var key in data.total.requests) {
+            if ((!key.includes("XX") && key.includes("nb") && (key !== "nb")) && (data.total.requests[key] > 0)) {
+                var entry = {
+                    nb: data.total.requests[key],
+                    name: key,
+                    color: drawChart_HttpStatus_Color(key)
+                };
+                newDataArray.push(entry);
+            }
+        }
+        // Sorting values by nb of requests.
+        sortedArrayOfObj = newDataArray.sort(function (a, b) {
+            return b.nb - a.nb;
+        });
+
+        sortedArrayOfObj.forEach(function (d) {
+            dataArray.push(d.nb);
+            labelArray.push(d.name);
+            bgColorArray.push(d.color);
+        });
+
+        var config = {
+            type: 'pie',
+            data: {
+                datasets: [{
+                        data: dataArray,
+                        backgroundColor: bgColorArray,
+                        label: 'Hits'
+                    }],
+                labels: labelArray
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: titletext
+                }
+            }
+        };
+
+        var ctx = document.getElementById(target).getContext('2d');
+        let chart = new Chart(ctx, config);
+
+    }
+
+}
+
+function drawChart_HttpStatus_Color(i) {
+    if (i !== undefined) {
+        if (i.includes("nbE")) {
+            return "purple";
+        } else if (i.includes("nb2")) {
+            return "green";
+        } else if (i.includes("nb3")) {
+            return "lightgreen";
+        } else if (i.includes("nb4")) {
+            return "orange";
+        } else if (i.includes("nb5")) {
+            return "red";
+        }
+    }
+    return "grey";
+}
+
+
+function drawChart_SizePerType(data, titletext, target) {
+
+    if (data.hasOwnProperty("total")) {
+
+        var dataArray = [];
+        var labelArray = [];
+        var bgColorArray = [];
+
+        var newDataArray = [];
+        drawChart_SizePerType_Data(data.total.type.html.sizeSum, "html", newDataArray, "html");
+        drawChart_SizePerType_Data(data.total.type.img.sizeSum, "img", newDataArray, "img");
+        drawChart_SizePerType_Data(data.total.type.js.sizeSum, "js", newDataArray, "js");
+        drawChart_SizePerType_Data(data.total.type.css.sizeSum, "css", newDataArray, "css");
+        drawChart_SizePerType_Data(data.total.type.content.sizeSum, "content", newDataArray, "content");
+        drawChart_SizePerType_Data(data.total.type.font.sizeSum, "font", newDataArray, "font");
+        drawChart_SizePerType_Data(data.total.type.other.sizeSum, "other", newDataArray, "other");
+        drawChart_SizePerType_Data(data.total.type.media.sizeSum, "media", newDataArray, "media");
+
+        // Sorting values by nb of requests.
+        sortedArrayOfObj = newDataArray.sort(function (a, b) {
+            return b.nb - a.nb;
+        });
+
+        sortedArrayOfObj.forEach(function (d) {
+            dataArray.push(d.nb);
+            labelArray.push(d.name);
+            bgColorArray.push(d.color);
+        });
+
+        var config = {
+            type: 'pie',
+            data: {
+                datasets: [{
+                        data: dataArray,
+                        backgroundColor: bgColorArray,
+                        label: 'Size'
+                    }],
+                labels: labelArray
+            },
+            options: {
+                responsive: true,
+                tooltips: {
+                    enabled: true,
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            var label = data.labels[tooltipItem.index] + " " + data.datasets[0].label;
+                            label += ': ';
+                            let tmp = data.datasets[0].data[tooltipItem.index];
+                            label += formatNumber(Math.round(tmp / 1024)) + " Kb";
+                            return label;
+                        }
+                    }},
+                title: {
+                    display: true,
+                    text: titletext
+                }
+            }
+        };
+
+        var ctx = document.getElementById(target).getContext('2d');
+        let chart = new Chart(ctx, config);
+
+    }
+
+}
+
+function drawChart_SizePerType_Data(nb, key, newDataArray, label) {
+    if (nb > 0) {
+        var entry = {
+            nb: nb,
+            name: label,
+            color: drawChart_SizePerType_Color(key)
+        };
+        newDataArray.push(entry);
+    }
+}
+
+function drawChart_SizePerType_Color(i) {
+    if (i !== undefined) {
+        if (i.includes("img")) {
+            return "purple";
+        } else if (i.includes("html")) {
+            return "green";
+        } else if (i.includes("content")) {
+            return "lightgreen";
+        } else if (i.includes("js")) {
+            return "orange";
+        } else if (i.includes("css")) {
+            return "blue";
+        } else if (i.includes("font")) {
+            return "lightblue";
+        } else if (i.includes("other")) {
+            return "grey";
+        }
+    }
+    return "black";
+}
+
+
+function drawChart_PerThirdParty(data, target) {
+    var doc = new Doc();
+
+    var titletext = [doc.getDocLabel("page_executiondetail", "thirdPartychart"), 'total : ' + data.nbThirdParty];
+
+    var labelArray = [];
+
+    configDo = {
+        type: 'pie',
+        data: {
+            datasets: [],
+            labels: labelArray
+        },
+        options: {
+            circumference: Math.PI,
+            rotation: Math.PI,
+            responsive: true,
+            tooltips: {
+                enabled: true,
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var label = data.datasets[0].labels[tooltipItem.index] + " " + data.datasets[tooltipItem.datasetIndex].label;
+                        label += ': ';
+                        if (tooltipItem.datasetIndex === 0) {
+                            let tmp = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            label += formatNumber(Math.round(tmp / 1024)) + " Kb";
+                        } else {
+                            label += formatNumber(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
+                        }
+                        return label;
+                    }
+                }},
+            title: {
+                display: true,
+                text: titletext
+            }
+        }
+    };
+
+    var ctx = document.getElementById(target).getContext('2d');
+    window.graph1 = new Chart(ctx, configDo);
+
+    update_thirdParty_Chart(1);
+}
+
+function update_thirdParty_Chart(sortCol) {
+
+    var newDataArray = [];
+    var dataArray1 = [];
+    var dataArray2 = [];
+    var dataArray3 = [];
+    var labelArray = [];
+    var bgColorArray = [];
+
+    $("#sortSize").removeClass("btn-default");
+    $("#sortRequest").removeClass("btn-default");
+    $("#sortTime").removeClass("btn-default");
+    $("#sortSize").removeClass("btn-primary");
+    $("#sortRequest").removeClass("btn-primary");
+    $("#sortTime").removeClass("btn-primary");
+
+    drawChart_GetThirdPartyDataset(networkStat, newDataArray);
+
+    // Sorting values by nb of requests.
+    if (sortCol === 2) {
+        sortedArrayOfObj = newDataArray.sort(function (a, b) {
+            return b.nb2 - a.nb2;
+        });
+        $("#sortSize").addClass("btn-default");
+        $("#sortRequest").addClass("btn-primary");
+        $("#sortTime").addClass("btn-default");
+    } else if (sortCol === 3) {
+        sortedArrayOfObj = newDataArray.sort(function (a, b) {
+            return b.nb3 - a.nb3;
+        });
+        $("#sortSize").addClass("btn-default");
+        $("#sortRequest").addClass("btn-default");
+        $("#sortTime").addClass("btn-primary");
+    } else {
+        sortedArrayOfObj = newDataArray.sort(function (a, b) {
+            return b.nb1 - a.nb1;
+        });
+        $("#sortSize").addClass("btn-primary");
+        $("#sortRequest").addClass("btn-default");
+        $("#sortTime").addClass("btn-default");
+    }
+    sortedArrayOfObj.forEach(function (d) {
+        dataArray1.push(d.nb1);
+        dataArray2.push(d.nb2);
+        dataArray3.push(d.nb3);
+        labelArray.push(d.name);
+        bgColorArray.push(d.color);
+    });
+
+    configDo.data.datasets = [];
+    configDo.data.datasets.push({
+        data: dataArray1,
+        backgroundColor: bgColorArray,
+        label: 'Size',
+        labels: labelArray
+    });
+    configDo.data.datasets.push({
+        data: dataArray2,
+        backgroundColor: bgColorArray,
+        label: 'Request',
+        labels: labelArray
+    });
+    configDo.data.datasets.push({
+        data: dataArray3,
+        backgroundColor: bgColorArray,
+        label: 'Max Time',
+        labels: labelArray
+    });
+
+    configDo.data.labels = labelArray;
+
+    window.graph1.update();
+}
+
+function drawChart_GetThirdPartyDataset(data, newDataArray) {
+
+    // Internal stat.
+    if (data.hasOwnProperty("internal")) {
+        drawChart_PerThirdParty_data(data.internal.size.sum, data.internal.requests.nb, data.internal.time.max, "internal", newDataArray, "INTERNAL", "blue")
+    }
+
+    // ThirdParty stat.
+    if (data.hasOwnProperty("thirdparty")) {
+        for (var key in data.thirdparty) {
+            drawChart_PerThirdParty_data(data.thirdparty[key].size.sum, data.thirdparty[key].requests.nb, data.thirdparty[key].time.max, key, newDataArray, key, get_Color_fromindex(newDataArray.length))
+        }
+    }
+
+    // Unknown stat.
+    if (data.hasOwnProperty("unknown") && data.unknown.requests.nb > 0) {
+        drawChart_PerThirdParty_data(data.unknown.size.sum, data.unknown.requests.nb, data.unknown.time.max, "unknown", newDataArray, "UNKNOWN", "black")
+        $("#detailUnknownList").empty();
+        let entryUnknown = $('<li class="list-group-item">').text("Unknown Hosts/Domains:");
+        $("#detailUnknownList").append(entryUnknown);
+        for (var key in data.unknown.hosts) {
+            let entryUnknown = $('<li class="list-group-item list-group-item-danger">').text(data.unknown.hosts[key]);
+            $("#detailUnknownList").append(entryUnknown);
+        }
+
+    }
+
+}
+
+function drawChart_PerThirdParty_data(nb1, nb2, nb3, key, newDataArray, label, color) {
+    if (nb1 > 0) {
+        var entry = {
+            nb1: nb1,
+            nb2: nb2,
+            nb3: nb3,
+            name: label,
+            color: color
+        };
+        newDataArray.push(entry);
+    }
+}
+
+function drawChart_GanttPerThirdParty_data(start, end, key, newDataArray, label, color) {
+    var entry = {
+        start: start,
+        end: end,
+        name: label,
+        color: color
+    };
+    newDataArray.push(entry);
+}
+
+function drawChart_GanttPerThirdParty(data, titletext, target) {
+
+    var dataArray1 = [];
+    var dataArray2 = [];
+    var labelArray = [];
+    var bgColorArray = [];
+
+    var newDataArray = [];
+
+
+
+
+
+    // Internal stat.
+    if (data.hasOwnProperty("internal")) {
+        drawChart_GanttPerThirdParty_data(data.internal.time.firstStartR, data.internal.time.lastEndR - data.internal.time.firstStartR, "internal", newDataArray, "INTERNAL", "blue");
+    }
+
+    // ThirdParty stat.
+    if (data.hasOwnProperty("thirdparty")) {
+        for (var key in data.thirdparty) {
+            drawChart_GanttPerThirdParty_data(data.thirdparty[key].time.firstStartR, data.thirdparty[key].time.lastEndR - data.thirdparty[key].time.firstStartR, key, newDataArray, key, get_Color_fromindex(newDataArray.length));
+        }
+    }
+
+    // Unknown stat.
+    if (data.hasOwnProperty("unknown") && data.unknown.requests.nb > 0) {
+        drawChart_GanttPerThirdParty_data(data.unknown.time.firstStartR, data.unknown.time.lastEndR - data.unknown.time.firstStartR, "unknown", newDataArray, "UNKNOWN", "black");
+    }
+
+
+    // Sorting values by nb of requests.
+    sortedArrayOfObj = newDataArray.sort(function (a, b) {
+        return a.start - b.start;
+    });
+
+    sortedArrayOfObj.forEach(function (d) {
+        dataArray1.push(d.start);
+        dataArray2.push(d.end);
+        labelArray.push(d.name);
+        bgColorArray.push(d.color);
+    });
+
+    var barOptions_stacked = {
+        hover: {
+            animationDuration: 10
+        },
+        scales: {
+            xAxes: [{
+                    label: "Duration",
+                    ticks: {
+                        beginAtZero: true,
+                        fontFamily: "'Open Sans Bold', sans-serif",
+                        fontSize: 11
+                    },
+                    scaleLabel: {
+                        display: false
+                    },
+                    gridLines: {
+                    },
+                    stacked: true
+                }],
+            yAxes: [{
+                    gridLines: {
+                        display: false,
+                        color: "#fff",
+                        zeroLineColor: "#fff",
+                        zeroLineWidth: 0
+                    },
+                    ticks: {
+                        fontFamily: "'Open Sans Bold', sans-serif",
+                        fontSize: 11
+                    },
+                    stacked: true
+                }]
+        },
+        legend: {
+            display: true
+        },
+        title: {
+            display: true,
+            text: titletext
+        }
+    };
+
+    var config = {
+        type: 'horizontalBar',
+        data: {
+            labels: labelArray,
+
+            datasets: [{
+                    label: "Start",
+                    data: dataArray1,
+                    backgroundColor: "rgba(63,103,126,0)",
+                    hoverBackgroundColor: "rgba(50,90,100,0)"
+
+                },
+                {
+                    label: "Duration",
+                    data: dataArray2,
+                    backgroundColor: bgColorArray,
+                }]
+        },
+        options: barOptions_stacked,
+    }
+
+    var ctx = document.getElementById(target).getContext('2d');
+    let chart = new Chart(ctx, config);
+
+    // this part to make the tooltip only active on your real dataset
+    var originalGetElementAtEvent = chart.getElementAtEvent;
+    chart.getElementAtEvent = function (e) {
+        return originalGetElementAtEvent.apply(this, arguments).filter(function (e) {
+            return e._datasetIndex === 1;
+        });
+    }
+}
+
+function formatNumber(num) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+}
+
 function createVideo(videos) {
 
-    if (videos == undefined || videos.length == 0)
+    if (videos === undefined || videos.length === 0)
         return;
 
     $("#tabsScriptEdit").append("<li><a data-toggle=\"tab\" href=\"#tabVideo\" id=\"editTabVideo\" name=\"tabVideo\">Video</a></li>");
@@ -581,8 +1135,14 @@ function setConfigPanel(data) {
 
     if (isTheExecutionManual) {
         var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnMessageEx' placeholder='Execution Result Message'>");
+        var setToNAButtonField = $("<button class='btn statusNA btn-inverse' type='button'>set to NA</button>");
+        setToNAButtonField.click(function () { // automaticaly play video when you arrive on the video page
+            setTestCaseReturnCodeToNA();
+        });
+
         returnMessageField.val(data.controlMessage);
-        $("#returnMessage").html(returnMessageField);
+        $("#returnMessage").html(returnMessageField).append(setToNAButtonField);
+
     }
 
     $("#editTcHeader").unbind("click").click(function () {
@@ -624,7 +1184,7 @@ function setConfigPanel(data) {
     configPanel.find("input#url").val(data.url);
     configPanel.find("input#exetest").val(data.test);
     configPanel.find("input#exetestcase").val(data.testcase);
-    configPanel.find("input#testcaseversion").val(data.testCaseVersion);
+    configPanel.find("input#version").val(data.version);
     configPanel.find("input#system").val(data.system);
     configPanel.find("input#robotdecli").val(data.robotDecli);
     configPanel.find("input#robotsessionid").val(data.robotSessionId);
@@ -652,11 +1212,11 @@ function setConfigPanel(data) {
     }
     configPanel.find("input#version").val(data.version);
 
-    if (data.conditionOper === "always" || data.conditionOper === "") {
+    if (data.conditionOperator === "always" || data.conditionOperator === "") {
         configPanel.find("#condrow1").hide();
         configPanel.find("#condrow2").hide();
     } else {
-        configPanel.find("input#conditionOperTC").val(data.conditionOper);
+        configPanel.find("input#conditionOperatorTC").val(data.conditionOperator);
         configPanel.find("input#conditionVal1InitTC").val(data.conditionVal1Init);
         configPanel.find("input#conditionVal2InitTC").val(data.conditionVal2Init);
         configPanel.find("input#conditionVal3InitTC").val(data.conditionVal3Init);
@@ -714,16 +1274,16 @@ function setLinkOnEditTCStepInfoButton() {
 function setLoadBar(data) {
     var total = 0;
     var ended = 0;
-    if (data.testCaseObj !== undefined && data.testCaseObj.testCaseStepList !== undefined) {
-        for (var i = 0; i < data.testCaseObj.testCaseStepList.length; i++) {
-            var step = data.testCaseObj.testCaseStepList[i];
+    if (data.testCaseObj !== undefined && data.testCaseObj.testCaseSteps !== undefined) {
+        for (var i = 0; i < data.testCaseObj.testCaseSteps.length; i++) {
+            var step = data.testCaseObj.testCaseSteps[i];
             var stepExec = data.testCaseStepExecutionList[i];
             if (stepExec !== undefined && stepExec.returnCode !== "PE") {
                 ended += 1;
             }
             total += 1;
-            for (var j = 0; j < step.testCaseStepActionList.length; j++) {
-                var action = step.testCaseStepActionList[j];
+            for (var j = 0; j < step.actions.length; j++) {
+                var action = step.actions[j];
                 if (stepExec !== undefined) {
                     var actionExec = stepExec.testCaseStepActionExecutionList[j];
                     if (actionExec !== undefined && actionExec.returnCode !== "PE") {
@@ -731,8 +1291,8 @@ function setLoadBar(data) {
                     }
                 }
                 total += 1;
-                for (var k = 0; k < action.testCaseStepActionControlList.length; k++) {
-                    var control = action.testCaseStepActionControlList[k];
+                for (var k = 0; k < action.controls.length; k++) {
+                    var control = action.controls[k];
                     if (stepExec !== undefined && actionExec !== undefined) {
                         var controlExec = actionExec.testCaseStepActionControlExecutionList[k];
                         if (controlExec !== undefined && controlExec.returnCode !== "PE") {
@@ -758,16 +1318,19 @@ function updateDataBarVisual(controlStatus, progress = 100) {
     });
 
     if (controlStatus !== "PE") {
+        $("#progress-bar").removeClass("progress-bar statusOK statusKO statusNE statusNA statusWE statusFA progress-bar-warning");
         if (controlStatus === "OK") {
-            $("#progress-bar").addClass("progress-bar-success");
+            $("#progress-bar").addClass("progress-bar statusOK");
         } else if (controlStatus === "KO") {
-            $("#progress-bar").addClass("progress-bar-danger");
+            $("#progress-bar").addClass("progress-bar statusKO");
         } else if (controlStatus === "NE") {
-            $("#progress-bar").addClass("progress-bar-grey");
+            $("#progress-bar").addClass("progress-bar statusNE");
+        } else if (controlStatus === "NA") {
+            $("#progress-bar").addClass("progress-bar statusNA");
         } else if (controlStatus === "WE" && isTheExecutionManual) {
-            $("#progress-bar").addClass("progress-bar-black");
+            $("#progress-bar").addClass("progress-bar statusWE");
         } else {
-            $("#progress-bar").addClass("progress-bar-warning");
+            $("#progress-bar").addClass("progress-bar statusFA");
         }
         $("#progress-bar").empty().append($("<span style='font-weight:900;'>").append(controlStatus));
         progress = 100;
@@ -985,7 +1548,7 @@ function getPropertyContent(property) {
     var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>" + doc.getDocLabel("page_executiondetail", "return_code") + "</label>")).append(returnCodeField);
     var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>" + doc.getDocLabel("page_executiondetail", "return_message") + "</label>")).append(returnMessageField);
     var indexGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("testcaseexecutiondata", "index") + "</label>")).append(indexField);
-    var natureGroup = $("<div class='form-group'></div>").append($("<label for='conditionOper'>" + doc.getDocLabel("testcaseexecutiondata", "nature") + "</label>")).append(natureField);
+    var natureGroup = $("<div class='form-group'></div>").append($("<label for='conditionOperator'>" + doc.getDocLabel("testcaseexecutiondata", "nature") + "</label>")).append(natureField);
     var lengthGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1Init'>" + doc.getDocLabel("testcaseexecutiondata", "length") + "</label>")).append(lengthField);
     var databaseGroup = $("<div class='form-group'></div>").append($("<label for='database'>" + doc.getDocLabel("testcaseexecutiondata", "database") + "</label>")).append(databaseField);
     var rowLimitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal2Init'>" + doc.getDocLabel("testcaseexecutiondata", "rowlimit") + "</label>")).append(rowLimitField);
@@ -1197,53 +1760,53 @@ function createPropertiesOld(propList) {
     return propertyArray;
 }
 
-function createStepList(data, stepList) {
+function createStepList(data, steps) {
     $("#actionContainer").empty();
-    $("#stepList").empty();
+    $("#steps").empty();
 
     for (var i = 0; i < data.length; i++) {
         if (data[i].test === "Pre Testing") {
             var step = data[i];
-            var stepObj = new Step(step, stepList, i);
+            var stepObj = new Step(step, steps, i);
             $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
             stepObj.addElements();
             stepObj.draw();
-            stepList.push(stepObj);
+            steps.push(stepObj);
         }
     }
 
     for (var i = 0; i < data.length; i++) {
         if ((data[i].test !== "Pre Testing") && (data[i].test !== "Post Testing")) {
             var step = data[i];
-            var stepObj = new Step(step, stepList, i);
+            var stepObj = new Step(step, steps, i);
             $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
             stepObj.addElements();
             stepObj.draw();
-            stepList.push(stepObj);
+            steps.push(stepObj);
         }
     }
 
     for (var i = 0; i < data.length; i++) {
         if (data[i].test === "Post Testing") {
             var step = data[i];
-            var stepObj = new Step(step, stepList, i);
+            var stepObj = new Step(step, steps, i);
             $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
             stepObj.addElements();
             stepObj.draw();
-            stepList.push(stepObj);
+            steps.push(stepObj);
         }
     }
 
 
-    if (stepList.length > 0) {
-        $("#stepList a:last-child").trigger("click");
+    if (steps.length > 0) {
+        $("#steps a:last-child").trigger("click");
     }
-    $("#stepList").data("listOfStep", stepList);
+    $("#steps").data("listOfStep", steps);
 }
 
 /** JAVASCRIPT OBJECT **/
 
-function Step(json, stepList, id) {
+function Step(json, steps, id) {
     this.stepActionContainer = $("<div></div>").addClass("list-group").css("display", "none");
     this.description = json.description;
     this.end = json.end;
@@ -1260,7 +1823,7 @@ function Step(json, stepList, id) {
     this.test = json.test;
     this.testcase = json.testcase;
     this.timeElapsed = json.timeElapsed;
-    this.conditionOper = json.conditionOper;
+    this.conditionOperator = json.conditionOperator;
     this.conditionVal1 = json.conditionVal1;
     this.conditionVal2 = json.conditionVal2;
     this.conditionVal3 = json.conditionVal3;
@@ -1273,10 +1836,10 @@ function Step(json, stepList, id) {
     this.useStepTestCaseStep = json.useStepTestCaseStep;
     this.useStepStep = json.useStepStep;
     this.inLibrary = json.inLibrary;
-    this.actionList = [];
-    this.setActionList(json.testCaseStepActionExecutionList, id);
+    this.actions = [];
+    this.setActions(json.testCaseStepActionExecutionList, id);
 
-    this.stepList = stepList;
+    this.steps = steps;
     this.toDelete = false;
 
     this.html = $("<a href='#'></a>").addClass("list-group-item row").css("margin-left", "0px").css("margin-right", "0px");
@@ -1299,7 +1862,7 @@ Step.prototype.addElements = function () {
     htmlElement.click(this.show);
 
     htmlElement.append(this.textArea);
-    $("#stepList").append(htmlElement);
+    $("#steps").append(htmlElement);
     $("#actionContainer").append(this.stepActionContainer);
 
 };
@@ -1386,8 +1949,8 @@ Step.prototype.show = function () {
     var stepDesc = $("<div>").addClass("col-xs-10");
     var stepButton = $("<div id='stepPlus'></a>").addClass("col-xs-1").addClass("paddingLeft0").addClass("paddingTop30").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
 
-    for (var i = 0; i < object.stepList.length; i++) {
-        var step = object.stepList[i];
+    for (var i = 0; i < object.steps.length; i++) {
+        var step = object.steps[i];
         step.stepActionContainer.hide();
         step.html.removeClass("active");
     }
@@ -1423,7 +1986,7 @@ Step.prototype.show = function () {
     $("#stepLoop").val(object.loop);
     $("#stepIndex").val(object.index);
     $("#stepElapsed").val(object.timeElapsed);
-    $("#stepConditionOper").val(object.conditionOper);
+    $("#stepConditionOperator").val(object.conditionOperator);
     $("#stepConditionVal1").val(object.conditionVal1);
     $("#stepConditionVal2").val(object.conditionVal2);
     $("#stepConditionVal3").val(object.conditionVal3);
@@ -1437,7 +2000,7 @@ Step.prototype.show = function () {
         $("#stepRow4").hide();
     }
 
-    if (object.conditionOper === "always") {
+    if (object.conditionOperator === "always") {
         $("#stepRow3").hide();
         $("#stepRow4").hide();
     }
@@ -1456,9 +2019,9 @@ Step.prototype.show = function () {
     return false;
 };
 
-Step.prototype.setActionList = function (actionList, idMotherStep) {
-    for (var i = 0; i < actionList.length; i++) {
-        this.setAction(actionList[i], idMotherStep, i);
+Step.prototype.setActions = function (actions, idMotherStep) {
+    for (var i = 0; i < actions.length; i++) {
+        this.setAction(actions[i], idMotherStep, i);
     }
 };
 
@@ -1470,11 +2033,11 @@ Step.prototype.setAction = function (action, idMotherStep, idAction) {
         actionObj = new Action(action, this);
     }
 
-    this.actionList.push(actionObj);
+    this.actions.push(actionObj);
 
     actionObj.draw(idMotherStep, idAction);
 
-    actionObj.setControlList(actionObj.controlListJson, idMotherStep, idAction);
+    actionObj.setControls(actionObj.controlsJson, idMotherStep, idAction);
 };
 
 Step.prototype.setDescription = function (description) {
@@ -1518,7 +2081,7 @@ function returnMessageWritableForStep(object, field) {
 //Get the json data from the input of the field
 Step.prototype.getJsonData = function () {
     var json = {};
-    json.conditionOper = this.conditionOper;
+    json.conditionOperator = this.conditionOperator;
     json.conditionVal1 = this.conditionVal1;
     json.conditionVal1Init = this.conditionVal1Init;
     json.conditionVal2 = this.conditionVal2;
@@ -1580,10 +2143,10 @@ function Action(json, parentStep) {
         this.value2init = json.value2init;
         this.value3init = json.value3init;
         this.screenshotFileName = json.screenshotFileName;
-        this.controlListJson = json.testCaseStepActionControlExecutionList;
-        this.controlList = [];
+        this.controlsJson = json.testCaseStepActionControlExecutionList;
+        this.controls = [];
         this.fileList = json.fileList;
-        this.conditionOper = json.conditionOper;
+        this.conditionOperator = json.conditionOperator;
         this.conditionVal1Init = json.conditionVal1Init;
         this.conditionVal2Init = json.conditionVal2Init;
         this.conditionVal3Init = json.conditionVal3Init;
@@ -1614,10 +2177,10 @@ function Action(json, parentStep) {
         this.value2init = "";
         this.value3init = "";
         this.screenshotFileName = "";
-        this.controlListJson = "";
-        this.controlList = [];
+        this.controlsJson = "";
+        this.controls = [];
         this.fileList = [];
-        this.conditionOper = "always";
+        this.conditionOperator = "always";
         this.conditionVal1Init = "";
         this.conditionVal2Init = "";
         this.conditionVal3Init = "";
@@ -1704,21 +2267,21 @@ Action.prototype.draw = function (idMotherStep, id) {
     addFileLink(this.fileList, $(header).find(".row"), isTheExecutionManual, idMotherStep);
 };
 
-Action.prototype.setControlList = function (controlList, idMotherStep, idMotherAction) {
-    for (var i = 0; i < controlList.length; i++) {
-        this.setControl(controlList[i], idMotherStep, idMotherAction, i);
+Action.prototype.setControls = function (controls, idMotherStep, idMotherAction) {
+    for (var i = 0; i < controls.length; i++) {
+        this.setControl(controls[i], idMotherStep, idMotherAction, i);
     }
 };
 
 Action.prototype.setControl = function (control, idMotherStep, idMotherAction, id) {
     if (control instanceof Control) {
         control.draw(idMotherStep, idMotherAction, id);
-        this.controlList.push(control);
+        this.controls.push(control);
     } else {
         var controlObj = new Control(control, this);
 
         controlObj.draw(idMotherStep, idMotherAction, id);
-        this.controlList.push(controlObj);
+        this.controls.push(controlObj);
     }
 };
 
@@ -1773,8 +2336,8 @@ Action.prototype.generateHeader = function (id) {
      */
     if (isTheExecutionManual) {
 
-        var buttonFA = $($("<button>").addClass("btn btn-warning btn-inverse").attr("type", "button").text("FA"));
-        var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
+        var buttonFA = $($("<button>").addClass("btn btn statusFA btn-inverse").attr("type", "button").text("FA"));
+        var buttonOK = $($("<button>").addClass("btn btn statusOK btn-inverse").attr("type", "button").text("OK"));
         var buttonUpload = $($("<button>").addClass("btn btn-upload btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
 
         buttonOK.click(function (event) {
@@ -1796,8 +2359,8 @@ Action.prototype.generateHeader = function (id) {
             openModalFile(true, currentActionOrControl, "ADD", idex)
             event.preventDefault()
             event.stopPropagation()
-        })
-        $(buttonUpload).css("float", "right")
+        });
+        $(buttonUpload).css("float", "right");
 
         contentField.append($("<div class='col-xs-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
         contentField.append(buttonUpload);
@@ -1822,14 +2385,14 @@ function triggerActionExecution(element, id, status) {
     var newReturnCode = "WE";
     if (status === "OK") {
         currentElement.removeClass(function (index, className) {
-            return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
+            return (className.match(/(^|\s)list-group-item\S+/g) || []).join(' ');
         }).addClass("row list-group-item list-group-item-success");
         $(currentElement.find("span")[0]).removeClass(function (index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-ok");
         $(currentElement).next("div").find("input[id='returncode']").val("OK").change();
         newReturnCode = "OK";
-    } else {
+    } else if (status === "FA") {
         currentElement.removeClass(function (index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
         }).addClass("row list-group-item list-group-item-warning");
@@ -1840,7 +2403,7 @@ function triggerActionExecution(element, id, status) {
         newReturnCode = "FA";
     }
     $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
-    $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
+    //$(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
 
     //Modify style of all previous action and control of the current step that have not been modified yet
     var prevElementCurrentStep = $($($(element).closest(".action")[0]).parent().prevAll().find(".list-group-item-black"));
@@ -1853,7 +2416,7 @@ function triggerActionExecution(element, id, status) {
     }).addClass("glyphicon-ok");
     //Modify Status of all previous action and control of the current step that have not been modified yet
     //$(prevElementCurrentStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
-    $(prevElementCurrentStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
+    //$(prevElementCurrentStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
 
     //Modify style of all previous action and control of the previous steps that have not been modified yet
     var prevElementPreviousStep = $($($(element).closest(".action")[0]).parent().parent().prevAll().find(".list-group-item-black"));
@@ -1867,7 +2430,7 @@ function triggerActionExecution(element, id, status) {
 
     //Modify Status of all previous action and control of the previous step that have not been modified yet
     //$(prevElementPreviousStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
-    $(prevElementPreviousStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
+    //$(prevElementPreviousStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
     //update return code
     updateActionControlReturnCode(id, newReturnCode);
 }
@@ -1879,7 +2442,6 @@ function triggerActionExecution(element, id, status) {
  * @returns {void}
  */
 function updateActionControlReturnCode(idElementTriggers, returnCodeElementTrigger) {
-
     //go though every action or control to update them
     $(".itemContainer").each(function () {
 
@@ -1927,7 +2489,7 @@ function updateActionControlReturnCode(idElementTriggers, returnCodeElementTrigg
                 updateStepExecutionReturnCode(idElementTriggers.stepId, returnCodeElementTrigger, true);
                 //then update all the previous step if they are untouched
                 for (var idStep = 0; idStep < idElementTriggers.stepId; idStep++) {// update all the step below the element trigger
-                    var currentStep = $("#stepList").data("listOfStep")[ idStep ];
+                    var currentStep = $("#steps").data("listOfStep")[ idStep ];
                     //if previous element are untouch
                     if (currentStep.returnCode === "WE") {
                         updateStepExecutionReturnCode(idStep, "OK", false);
@@ -1952,7 +2514,7 @@ function updateActionControlReturnCode(idElementTriggers, returnCodeElementTrigg
 function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, isStepDisplayed) {
 
     var newStepReturnCode = null;
-    var currentStep = $("#stepList").data("listOfStep")[stepId]
+    var currentStep = $("#steps").data("listOfStep")[stepId]
     if (returnCodeActionControlTrigger !== currentStep.returnCode) {
         if (returnCodeActionControlTrigger === "KO") {
             newStepReturnCode = "KO";
@@ -1991,7 +2553,7 @@ function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, i
         }
         if (newStepReturnCode !== null) {
             //update step return code
-            var stepUpdated = $("#stepList").data("listOfStep")[ stepId ];
+            var stepUpdated = $("#steps").data("listOfStep")[ stepId ];
             stepUpdated.returnCode = newStepReturnCode;
 
             //update step visual
@@ -2036,16 +2598,26 @@ function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, i
     }
 }
 
+
+function setTestCaseReturnCodeToNA() {
+    var testCaseNewReturnCode = "NA";
+    var configPanel = $("#testCaseConfig");
+
+    configPanel.find("#controlstatus").text(testCaseNewReturnCode);
+//        configPanel.find("#returnMessageEx").text(controlMessage);
+    configPanel.find("input#controlstatus2").val(testCaseNewReturnCode);
+    updateDataBarVisual(testCaseNewReturnCode);
+
+}
 /*
  * * Update the testCase focus if needed
  * @returns {void}
  */
 function updateTestCaseReturnCode() {
-
     var testCaseNewReturnCode = null;
     // go tough every step to see if the testCase need to be update
-    for (var idStep = 0; idStep < $("#stepList").data("listOfStep").length; idStep++) {
-        var currentStep = $("#stepList").data("listOfStep")[idStep];
+    for (var idStep = 0; idStep < $("#steps").data("listOfStep").length; idStep++) {
+        var currentStep = $("#steps").data("listOfStep")[idStep];
         //a step is not complete no need to go further in the list of step
         if (currentStep.returnCode === "WE") {
             if (testCaseNewReturnCode !== "FA" && testCaseNewReturnCode !== "KO")
@@ -2064,32 +2636,32 @@ function updateTestCaseReturnCode() {
     if (testCaseNewReturnCode !== null && testCaseNewReturnCode !== configPanel.find("#controlstatus").val()) {
 
         removeColorClass(configPanel.find("#controlstatus"));
-        removeColorClass(configPanel.find("#exReturnMessage"));
-        var controlMessage = null;
+//        removeColorClass(configPanel.find("#exReturnMessage"));
+//        var controlMessage = null;
 
         if (testCaseNewReturnCode === "PE") {
             configPanel.find("#controlstatus").addClass("text-primary");
-            configPanel.find("#exReturnMessage").addClass("text-primary");
-            controlMessage = "";
+//            configPanel.find("#exReturnMessage").addClass("text-primary");
+//            controlMessage = "";
         } else if (testCaseNewReturnCode === "OK") {
             configPanel.find("#controlstatus").addClass("text-success");
-            configPanel.find("#exReturnMessage").addClass("text-success");
-            controlMessage = "The test case finished successfully."
+//            configPanel.find("#exReturnMessage").addClass("text-success");
+//            controlMessage = "The test case finished successfully."
         } else if (testCaseNewReturnCode === "KO") {
             configPanel.find("#controlstatus").addClass("text-danger");
-            configPanel.find("#exReturnMessage").addClass("text-danger");
-            controlMessage = "The test case failed on validations."
+//            configPanel.find("#exReturnMessage").addClass("text-danger");
+//            controlMessage = "The test case failed on validations."
         } else if (testCaseNewReturnCode === "WE") {
             configPanel.find("#controlstatus").addClass("text-black");
-            configPanel.find("#exReturnMessage").addClass("text-black");
-            controlMessage = "The test case has not been executed.";
+//            configPanel.find("#exReturnMessage").addClass("text-black");
+//            controlMessage = "The test case has not been executed.";
         } else if (testCaseNewReturnCode === "FA") {
             configPanel.find("#controlstatus").addClass("text-black");
-            configPanel.find("#exReturnMessage").addClass("text-black");
-            controlMessage = "The test case failed to be executed because of an action.";
+//            configPanel.find("#exReturnMessage").addClass("text-black");
+//            controlMessage = "The test case failed to be executed because of an action.";
         }
         configPanel.find("#controlstatus").text(testCaseNewReturnCode);
-        configPanel.find("#exReturnMessage").text(controlMessage);
+//        configPanel.find("#returnMessageEx").text(controlMessage);
         configPanel.find("input#controlstatus2").val(testCaseNewReturnCode);
         updateDataBarVisual(testCaseNewReturnCode);
     }
@@ -2108,7 +2680,7 @@ Action.prototype.generateContent = function () {
             hideOnDoNothing = " hide";
         }
     } else {
-        if (this.conditionOper === "always") {
+        if (this.conditionOperator === "always") {
             hideCondition = " hide";
         }
     }
@@ -2121,7 +2693,7 @@ Action.prototype.generateContent = function () {
     var row6 = $("<div></div>").addClass("row" + hideOnManual + hideCondition);
     var row7 = $("<div></div>").addClass("row" + hideOnManual + hideCondition);
     var container = $("<div id='content-container'></div>").addClass("action-group row list-group-item");
-    var actionList = $("<input type='text' class='form-control' id='action'>").prop("readonly", true);
+    var actions = $("<input type='text' class='form-control' id='action'>").prop("readonly", true);
     var descField = $("<textarea type='text' rows='1' class='form-control' id='description'>").prop("readonly", true);
     var value1Field = $("<textarea type='text' rows='1' class='form-control' id='value1'>").prop("readonly", true);
     var value1InitField = $("<textarea type='text' rows='1' class='form-control' id='value1init'>").prop("readonly", true);
@@ -2137,7 +2709,7 @@ Action.prototype.generateContent = function () {
     returnMessageWritable(this, returnMessageField);
 
     var sortField = $("<input type='text' class='form-control' id='sort'>").prop("readonly", true);
-    var conditionOperField = $("<textarea type='text' rows='1' class='form-control' id='conditionOper'>").prop("readonly", true);
+    var conditionOperatorField = $("<textarea type='text' rows='1' class='form-control' id='conditionOperator'>").prop("readonly", true);
     var conditionVal1InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal1Init'>").prop("readonly", true);
     var conditionVal2InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal2Init'>").prop("readonly", true);
     var conditionVal3InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal3Init'>").prop("readonly", true);
@@ -2145,18 +2717,20 @@ Action.prototype.generateContent = function () {
     var conditionVal2Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal2'>").prop("readonly", true);
     var conditionVal3Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal3'>").prop("readonly", true);
 
-    var actionGroup = $("<div class='form-group'></div>").append($("<label for='action'>" + doc.getDocLabel("page_executiondetail", "action") + "</label>")).append(actionList);
+    var actionGroup = $("<div class='form-group'></div>").append($("<label for='action'>" + doc.getDocLabel("page_executiondetail", "action") + "</label>")).append(actions);
     var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
-    var objectGroup = $("<div class='form-group'></div>").append($("<label for='value1'>" + doc.getDocLabel("page_executiondetail", "value1") + "</label>")).append(value1Field);
-    var objectGroupInit = $("<div class='form-group'></div>").append($("<label for='value1init'>" + doc.getDocLabel("page_executiondetail", "value1init") + "</label>")).append(value1InitField);
+    var value1Group = $("<div class='form-group'></div>").append($("<label for='value1'>" + doc.getDocLabel("page_executiondetail", "value1") + "</label>")).append(value1Field);
+    var value1GroupInit = $("<div class='form-group'></div>").append($("<label for='value1init'>" + doc.getDocLabel("page_executiondetail", "value1init") + "</label>")).append(value1InitField);
     var timeGroup = $("<div class='form-group'></div>").append($("<label for='time'>" + doc.getDocLabel("page_executiondetail", "time") + "</label>")).append(timeField);
     var forceexecGroup = $("<div class='form-group'></div>").append($("<label for='forceexec'>" + doc.getDocLabel("page_executiondetail", "forceexec") + "</label>")).append(forceexecField);
-    var propertyGroup = $("<div class='form-group'></div>").append($("<label for='value2'>" + doc.getDocLabel("page_executiondetail", "value2") + "</label>")).append(value2Field);
-    var propertyGroupInit = $("<div class='form-group'></div>").append($("<label for='value2init'>" + doc.getDocLabel("page_executiondetail", "value2init") + "</label>")).append(value2InitField);
+    var value2Group = $("<div class='form-group'></div>").append($("<label for='value2'>" + doc.getDocLabel("page_executiondetail", "value2") + "</label>")).append(value2Field);
+    var value2GroupInit = $("<div class='form-group'></div>").append($("<label for='value2init'>" + doc.getDocLabel("page_executiondetail", "value2init") + "</label>")).append(value2InitField);
+    var value3Group = $("<div class='form-group'></div>").append($("<label for='value3'>" + doc.getDocLabel("page_executiondetail", "value3") + "</label>")).append(value3Field);
+    var value3GroupInit = $("<div class='form-group'></div>").append($("<label for='value3init'>" + doc.getDocLabel("page_executiondetail", "value3init") + "</label>")).append(value3InitField);
     var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>" + doc.getDocLabel("page_executiondetail", "return_code") + "</label>")).append(returnCodeField);
     var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>" + doc.getDocLabel("page_executiondetail", "return_message") + "</label>")).append(returnMessageField);
     var sortGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("page_executiondetail", "sort") + "</label>")).append(sortField);
-    var conditionOperGroup = $("<div class='form-group'></div>").append($("<label for='conditionOper'>" + doc.getDocLabel("page_executiondetail", "conditionOper") + "</label>")).append(conditionOperField);
+    var conditionOperatorGroup = $("<div class='form-group'></div>").append($("<label for='conditionOperator'>" + doc.getDocLabel("page_executiondetail", "conditionOperator") + "</label>")).append(conditionOperatorField);
     var conditionVal1InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal1Init") + "</label>")).append(conditionVal1InitField);
     var conditionVal2InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal2Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal2Init") + "</label>")).append(conditionVal2InitField);
     var conditionVal3InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal3Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal3Init") + "</label>")).append(conditionVal3InitField);
@@ -2165,7 +2739,7 @@ Action.prototype.generateContent = function () {
     var conditionVal3Group = $("<div class='form-group'></div>").append($("<label for='conditionVal3'>" + doc.getDocLabel("page_executiondetail", "conditionVal3") + "</label>")).append(conditionVal3Field);
 
     descField.val(this.description);
-    actionList.val(this.action);
+    actions.val(this.action);
     value1Field.val(this.value1);
     value1InitField.val(this.value1init);
     value2Field.val(this.value2);
@@ -2181,7 +2755,7 @@ Action.prototype.generateContent = function () {
     returnCodeField.val(this.returnCode);
     returnMessageField.val(this.returnMessage);
     sortField.val(this.sort);
-    conditionOperField.val(this.conditionOper);
+    conditionOperatorField.val(this.conditionOperator);
     conditionVal1InitField.val(this.conditionVal1Init);
     conditionVal2InitField.val(this.conditionVal2Init);
     conditionVal3InitField.val(this.conditionVal3Init);
@@ -2192,11 +2766,21 @@ Action.prototype.generateContent = function () {
     row1.append($("<div></div>").addClass("col-sm-2").append(returncodeGroup));
     row1.append($("<div></div>").addClass("col-sm-10").append(descGroup));
     row2.append($("<div></div>").addClass("col-sm-2"));
-    row2.append($("<div></div>").addClass("col-sm-5").append(objectGroupInit));
-    row2.append($("<div></div>").addClass("col-sm-5").append(propertyGroupInit));
+    row2.append($("<div></div>").addClass("col-sm-5").append(value1GroupInit));
+    if (this.value3 === "") {
+        row2.append($("<div></div>").addClass("col-sm-5").append(value2GroupInit));
+    } else {
+        row2.append($("<div></div>").addClass("col-sm-3").append(value2GroupInit));
+        row2.append($("<div></div>").addClass("col-sm-2").append(value3GroupInit));
+    }
     row3.append($("<div></div>").addClass("col-sm-2").append(actionGroup));
-    row3.append($("<div></div>").addClass("col-sm-5").append(objectGroup));
-    row3.append($("<div></div>").addClass("col-sm-5").append(propertyGroup));
+    row3.append($("<div></div>").addClass("col-sm-5").append(value1Group));
+    if (this.value3 === "") {
+        row3.append($("<div></div>").addClass("col-sm-5").append(value2Group));
+    } else {
+        row3.append($("<div></div>").addClass("col-sm-3").append(value2Group));
+        row3.append($("<div></div>").addClass("col-sm-2").append(value3Group));
+    }
     row4.append($("<div></div>").addClass("col-sm-2").append(sortGroup));
     row4.append($("<div></div>").addClass("col-sm-5").append(forceexecGroup));
     row4.append($("<div></div>").addClass("col-sm-5").append(timeGroup));
@@ -2205,7 +2789,7 @@ Action.prototype.generateContent = function () {
     row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal1InitGroup));
     row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal2InitGroup));
     row6.append($("<div></div>").addClass("col-sm-2").append(conditionVal3InitGroup));
-    row7.append($("<div></div>").addClass("col-sm-2").append(conditionOperGroup));
+    row7.append($("<div></div>").addClass("col-sm-2").append(conditionOperatorGroup));
     row7.append($("<div></div>").addClass("col-sm-4").append(conditionVal1Group));
     row7.append($("<div></div>").addClass("col-sm-4").append(conditionVal2Group));
     row7.append($("<div></div>").addClass("col-sm-2").append(conditionVal3Group));
@@ -2226,7 +2810,7 @@ Action.prototype.getJsonData = function () {
     var json = {};
 
     json.action = this.action;
-    json.conditionOper = this.conditionOper;
+    json.conditionOperator = this.conditionOperator;
     json.conditionVal1 = this.conditionVal1;
     json.conditionVal1Init = this.conditionVal1Init;
     json.conditionVal2 = this.conditionVal2;
@@ -2287,7 +2871,7 @@ function Control(json, parentAction) {
         this.test = json.test;
         this.testcase = json.testcase;
         this.fileList = json.fileList;
-        this.conditionOper = json.conditionOper;
+        this.conditionOperator = json.conditionOperator;
         this.conditionVal1Init = json.conditionVal1Init;
         this.conditionVal2Init = json.conditionVal2Init;
         this.conditionVal3Init = json.conditionVal3Init;
@@ -2321,7 +2905,7 @@ function Control(json, parentAction) {
         this.test = "";
         this.testcase = "";
         this.fileList = [];
-        this.conditionOper = "always";
+        this.conditionOperator = "always";
         this.conditionVal1Init = "";
         this.conditionVal2Init = "";
         this.conditionVal3Init = "";
@@ -2566,7 +3150,7 @@ Control.prototype.generateContent = function () {
             hideOnDoNothing = " hide";
         }
     } else {
-        if (this.conditionOper === "always") {
+        if (this.conditionOperator === "always") {
             hideCondition = " hide";
         }
     }
@@ -2596,7 +3180,7 @@ Control.prototype.generateContent = function () {
 
     var fatalField = $("<input type='text' class='form-control' id='fatal'>").prop("readonly", true);
     var sortField = $("<input type='text' class='form-control' id='sort'>").prop("readonly", true);
-    var conditionOperField = $("<textarea type='text' rows='1' class='form-control' id='conditionOper'>").prop("readonly", true);
+    var conditionOperatorField = $("<textarea type='text' rows='1' class='form-control' id='conditionOperator'>").prop("readonly", true);
     var conditionVal1InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal1Init'>").prop("readonly", true);
     var conditionVal2InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal2Init'>").prop("readonly", true);
     var conditionVal3InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal3Init'>").prop("readonly", true);
@@ -2617,7 +3201,7 @@ Control.prototype.generateContent = function () {
     var controlValue3InitGroup = $("<div class='form-group'></div>").append($("<label for='controlvalue3init'>" + doc.getDocLabel("page_executiondetail", "value3init") + "</label>")).append(value3InitField);
     var fatalGroup = $("<div class='form-group'></div>").append($("<label for='fatal'>" + doc.getDocLabel("page_executiondetail", "fatal") + "</label>")).append(fatalField);
     var sortGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("page_executiondetail", "sort") + "</label>")).append(sortField);
-    var conditionOperGroup = $("<div class='form-group'></div>").append($("<label for='conditionOper'>" + doc.getDocLabel("page_executiondetail", "conditionOper") + "</label>")).append(conditionOperField);
+    var conditionOperatorGroup = $("<div class='form-group'></div>").append($("<label for='conditionOperator'>" + doc.getDocLabel("page_executiondetail", "conditionOperator") + "</label>")).append(conditionOperatorField);
     var conditionVal1InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal1Init") + "</label>")).append(conditionVal1InitField);
     var conditionVal2InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal2Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal2Init") + "</label>")).append(conditionVal2InitField);
     var conditionVal3InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal3Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal3Init") + "</label>")).append(conditionVal3InitField);
@@ -2643,7 +3227,7 @@ Control.prototype.generateContent = function () {
     value3InitField.val(this.value3init);
     fatalField.val(this.fatal);
     sortField.val(this.sort);
-    conditionOperField.val(this.conditionOper);
+    conditionOperatorField.val(this.conditionOperator);
     conditionVal1InitField.val(this.conditionVal1Init);
     conditionVal2InitField.val(this.conditionVal2Init);
     conditionVal3InitField.val(this.conditionVal3Init);
@@ -2669,7 +3253,7 @@ Control.prototype.generateContent = function () {
     row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal1InitGroup));
     row6.append($("<div></div>").addClass("col-sm-4").append(conditionVal2InitGroup));
     row6.append($("<div></div>").addClass("col-sm-2").append(conditionVal3InitGroup));
-    row7.append($("<div></div>").addClass("col-sm-2").append(conditionOperGroup));
+    row7.append($("<div></div>").addClass("col-sm-2").append(conditionOperatorGroup));
     row7.append($("<div></div>").addClass("col-sm-4").append(conditionVal1Group));
     row7.append($("<div></div>").addClass("col-sm-4").append(conditionVal2Group));
     row7.append($("<div></div>").addClass("col-sm-2").append(conditionVal3Group));
@@ -2688,7 +3272,7 @@ Control.prototype.generateContent = function () {
 Control.prototype.getJsonData = function () {
     var json = {};
 
-    json.conditionOper = this.conditionOper;
+    json.conditionOperator = this.conditionOperator;
     json.conditionVal1 = this.conditionVal1;
     json.conditionVal1Init = this.conditionVal1Init;
     json.conditionVal2 = this.conditionVal2;
@@ -2888,7 +3472,7 @@ function saveExecution(data) {
             }),
             success: function () {
 
-                /*var stepHtml = $("#stepList li.active");
+                /*var stepHtml = $("#steps li.active");
                  var stepData = stepHtml.data("item");
                  var tabActive = $("#tabsScriptEdit li.active a").attr("name");*/
 
@@ -2916,34 +3500,34 @@ function saveExecution(data) {
 
 /*
  *
- * @param {type} stepListData
+ * @param {type} stepsData
  * @returns {Array}
  */
 
 function getScriptInformationOfStep() {
-    var stepList = $("#stepList a");
+    var steps = $("#steps a");
     var stepArr = [];
 
     // Construct the step/action/control list:
     // Iterate over steps
-    for (var i = 0; i < stepList.length; i++) {
-        var step = $(stepList[i]).data("item");
+    for (var i = 0; i < steps.length; i++) {
+        var step = $(steps[i]).data("item");
         var actionArr = [];
         // Get step's actions
-        var actionList = step.stepActionContainer.find("[name='fullActionDiv']");
+        var actions = step.stepActionContainer.find("[name='fullActionDiv']");
 
         // Iterate over actions
-        for (var j = 0; j < actionList.length; j++) {
+        for (var j = 0; j < actions.length; j++) {
 
             var controlArr = [];
-            var action = $(actionList[j]).find("div.itemContainer").data("item");
+            var action = $(actions[j]).find("div.itemContainer").data("item");
 
             // Get action's controls
-            var controlList = $(actionList[j]).find("a.control");
+            var controls = $(actions[j]).find("a.control");
 
             // Iterate over controls
-            for (var k = 0; k < controlList.length; k++) {
-                var control = $(controlList[k]).find("div.itemContainer").data("item");
+            for (var k = 0; k < controls.length; k++) {
+                var control = $(controls[k]).find("div.itemContainer").data("item");
                 controlArr.push(control.getJsonData());
             }
             var actionJson = action.getJsonData();

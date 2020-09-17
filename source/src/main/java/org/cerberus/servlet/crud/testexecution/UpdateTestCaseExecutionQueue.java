@@ -232,7 +232,7 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
 
                         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                             /**
-                             * Update was successfull. Adding Log entry.
+                             * Update was successful. Adding Log entry.
                              */
                             ILogEventService logEventService = appContext.getBean(LogEventService.class);
                             logEventService.createForPrivateCalls("/UpdateTestCaseExecutionQueue", "UPDATE", "Updated ExecutionQueue : ['" + id + "']", request);

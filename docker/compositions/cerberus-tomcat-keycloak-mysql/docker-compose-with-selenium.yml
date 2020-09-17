@@ -63,6 +63,8 @@ services:
       HUB_HOST: selenium-hub
     expose:
       - "5900"
+    depends_on:
+      - selenium-hub
     ports:
       - "15900:5900"
 #    volumes:
@@ -74,6 +76,8 @@ services:
       HUB_HOST: selenium-hub
     expose:
       - "5900"
+    depends_on:
+      - selenium-hub
     ports:
       - "15901:5900"
 #    volumes:

@@ -468,17 +468,7 @@ public class RecorderService implements IRecorderService {
             // Service Call META data information.
             Recorder recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "call", "json", false);
 
-            switch (se.getType()) {
-                case AppService.TYPE_FTP:
-                    recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toFTPJSONOnExecution().toString());
-                    break;
-                case AppService.TYPE_KAFKA:
-                    recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toKAFKAOnExecution().toString());
-                    break;
-                default:
-                    recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toJSONOnExecution().toString());
-                    break;
-            }
+            recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toJSONOnExecution().toString());
 
             // Index file created to database.
             object = testCaseExecutionFileFactory.create(0, runId, recorderRequest.getLevel(), "Service Call", recorderRequest.getRelativeFilenameURL(), "JSON", "", null, "", null);
@@ -550,7 +540,50 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
-    public List<TestCaseExecutionFile> recordHarContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, AppService se) {
+    public List<TestCaseExecutionFile> recordServiceCallContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, AppService se) {
+        // Used for logging purposes
+        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
+
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
+
+        if (!se.isRecordTraceFile()) {
+            return objectFileList;
+        }
+        TestCaseExecutionFile object = null;
+        String test = null;
+        String testCase = null;
+        String step = null;
+        String index = null;
+        String sequence = null;
+        if (testCaseStepActionExecution != null) {
+            test = testCaseExecution.getTest();
+            testCase = testCaseExecution.getTestCase();
+            step = String.valueOf(testCaseStepActionExecution.getStep());
+            index = String.valueOf(testCaseStepActionExecution.getIndex());
+            sequence = String.valueOf(testCaseStepActionExecution.getSequence());
+        }
+        long runId = testCaseExecution.getId();
+
+        try {
+
+            // Service Call META data information.
+            Recorder recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, null, null, 0, "call", "json", false);
+
+            recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toJSONOnExecution().toString());
+
+            // Index file created to database.
+            object = testCaseExecutionFileFactory.create(0, runId, recorderRequest.getLevel(), "Service Call", recorderRequest.getRelativeFilenameURL(), "JSON", "", null, "", null);
+            testCaseExecutionFileService.save(object);
+            objectFileList.add(object);
+
+        } catch (Exception ex) {
+            LOG.error(logPrefix + ex.toString(), ex);
+        }
+        return objectFileList;
+    }
+
+    @Override
+    public List<TestCaseExecutionFile> recordNetworkTrafficContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, AppService se, boolean withDetail) {
         List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
         TestCaseExecutionFile object = null;
         String test = null;
@@ -573,28 +606,39 @@ public class RecorderService implements IRecorderService {
         }
         try {
 
-            // Full Har.
-            if (!(StringUtil.isNullOrEmpty(se.getResponseHTTPBody()))) {
-                Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "har_content", "json", false);
-                recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), se.getResponseHTTPBody());
+            // Full Network Traffic.
+            if (withDetail) {
+                if (!(StringUtil.isNullOrEmpty(se.getResponseHTTPBody()))) {
+                    Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "networktraffic_content", "json", false);
+                    recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), se.getResponseHTTPBody());
 
-                // Index file created to database.
-                object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "HAR Content", recorderResponse.getRelativeFilenameURL(), TestCaseExecutionFile.FILETYPE_JSON, "", null, "", null);
-                testCaseExecutionFileService.save(object);
-                objectFileList.add(object);
+                    // Index file created to database.
+                    object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "Network Content", recorderResponse.getRelativeFilenameURL(), TestCaseExecutionFile.FILETYPE_JSON, "", null, "", null);
+                    testCaseExecutionFileService.save(object);
+                    objectFileList.add(object);
 
+                }
             }
 
             // Stat.
-            if (!(StringUtil.isNullOrEmpty(se.getResponseHTTPBody()))) {
+            LOG.debug("Size of HAR message : " + se.getResponseHTTPBody().length());
+            // If JSON Size is higher than 1 Meg, we save the stat.
+            if (!(StringUtil.isNullOrEmpty(se.getResponseHTTPBody())) && se.getResponseHTTPBody().length() > 1000000) {
                 JSONObject stat = new JSONObject(se.getResponseHTTPBody());
-                Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "har_stat", "json", false);
-                recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), stat.getString("stat"));
+                Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "networktraffic_stat", "json", false);
+                if (stat.has("stat")) {
+                    if (stat.has("log")) {
+                        stat.remove("log");
+                    }
+                    recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), stat.toString(1));
 
-                // Index file created to database.
-                object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "HAR Stat", recorderResponse.getRelativeFilenameURL(), TestCaseExecutionFile.FILETYPE_JSON, "", null, "", null);
-                testCaseExecutionFileService.save(object);
-                objectFileList.add(object);
+                    // Index file created to database.
+                    object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "Stat Only", recorderResponse.getRelativeFilenameURL(), TestCaseExecutionFile.FILETYPE_JSON, "", null, "", null);
+                    testCaseExecutionFileService.save(object);
+                    objectFileList.add(object);
+                } else {
+                    LOG.warn("Could not write stat entry of JSON HAR for execution :" + runId);
+                }
 
             }
 
@@ -682,7 +726,7 @@ public class RecorderService implements IRecorderService {
 
             // RESULT.
             Recorder recorder = this.initFilenames(testCaseExecution.getId(), null, null, null, null, null, null, null, 0, "robot_caps", "json", false);
-            recordFile(recorder.getFullPath(), recorder.getFileName(), outputMessage.toString());
+            recordFile(recorder.getFullPath(), recorder.getFileName(), outputMessage.toString(4));
 
             // Index file created to database.
             object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Robot Caps", recorder.getRelativeFilenameURL(), "JSON", "", null, "", null);
@@ -724,7 +768,7 @@ public class RecorderService implements IRecorderService {
 
             // RESULT.
             Recorder recorder = this.initFilenames(testCaseExecution.getId(), null, null, null, null, null, null, null, 0, "robot_server_caps", "json", false);
-            recordFile(recorder.getFullPath(), recorder.getFileName(), outputMessage.toString());
+            recordFile(recorder.getFullPath(), recorder.getFileName(), outputMessage.toString(4));
 
             // Index file created to database.
             object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Robot Server Caps", recorder.getRelativeFilenameURL(), "JSON", "", null, "", null);
@@ -802,49 +846,49 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
-    public TestCaseExecutionFile recordHarLog(TestCaseExecution testCaseExecution, String url) {
+    public TestCaseExecutionFile recordNetworkTrafficLog(TestCaseExecution testCaseExecution, String url) {
         TestCaseExecutionFile object = null;
 
-        if (testCaseExecution.getSeleniumLog() == 2
-                || (testCaseExecution.getSeleniumLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
-            LOG.debug("Starting to save Har log file.");
+//        if (testCaseExecution.getSeleniumLog() == 2
+//                || (testCaseExecution.getSeleniumLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
+        LOG.debug("Starting to save Network Traffic log file.");
 
-            try {
-                Recorder recorder = this.initFilenames(testCaseExecution.getId(), null, null, null, null, null, null, null, 0, "har_log", "json", false);
+        try {
+            Recorder recorder = this.initFilenames(testCaseExecution.getId(), null, null, null, null, null, null, null, 0, "networktraffic_log", "json", false);
 
-                File dir = new File(recorder.getFullPath());
-                dir.mkdirs();
+            File dir = new File(recorder.getFullPath());
+            dir.mkdirs();
 
-                File file = new File(recorder.getFullFilename());
+            File file = new File(recorder.getFullFilename());
 
-                try (InputStream initialStream = new URL(url).openStream(); OutputStream outStream = new FileOutputStream(file)) {
+            try (InputStream initialStream = new URL(url).openStream(); OutputStream outStream = new FileOutputStream(file)) {
 
-                    byte[] buffer = new byte[8 * 1024];
-                    int bytesRead;
-                    while ((bytesRead = initialStream.read(buffer)) != -1) {
-                        outStream.write(buffer, 0, bytesRead);
-                    }
-                    //IOUtils.closeQuietly(initialStream);
-                    //IOUtils.closeQuietly(outStream);
-
-                    LOG.info("File saved : " + recorder.getFullFilename());
-
-                    // Index file created to database.
-                    object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Har log", recorder.getRelativeFilenameURL(), "JSON", "", null, "", null);
-                    testCaseExecutionFileService.save(object);
-
-                } catch (FileNotFoundException ex) {
-                    LOG.error("Exception in Har log recording.", ex);
-                } catch (IOException ex) {
-                    LOG.error("Exception in Har log recording.", ex);
+                byte[] buffer = new byte[8 * 1024];
+                int bytesRead;
+                while ((bytesRead = initialStream.read(buffer)) != -1) {
+                    outStream.write(buffer, 0, bytesRead);
                 }
+                //IOUtils.closeQuietly(initialStream);
+                //IOUtils.closeQuietly(outStream);
 
-                LOG.debug("Har log recorded in : " + recorder.getRelativeFilenameURL());
+                LOG.info("File saved : " + recorder.getFullFilename());
 
-            } catch (CerberusException ex) {
-                LOG.error("Exception in Har log recording.", ex);
+                // Index file created to database.
+                object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Network log", recorder.getRelativeFilenameURL(), "JSON", "", null, "", null);
+                testCaseExecutionFileService.save(object);
+
+            } catch (FileNotFoundException ex) {
+                LOG.error("Exception in Network Traffic log recording.", ex);
+            } catch (IOException ex) {
+                LOG.error("Exception in Network Traffic log recording.", ex);
             }
+
+            LOG.debug("Network Traffic log recorded in : " + recorder.getRelativeFilenameURL());
+
+        } catch (CerberusException ex) {
+            LOG.error("Exception in Network Traffic log recording.", ex);
         }
+//        }
         return object;
     }
 

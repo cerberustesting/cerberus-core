@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
- *//* 
+ *//*
     Created on : May 18, 2015, 2:18:04 PM
     Author     : Ronpiche
 */
@@ -27,7 +27,7 @@
 }
 
 #burger-item{
-	width:30px;
+    width:30px;
 }
 
 /* side navbarbar */
@@ -165,12 +165,12 @@
     position: fixed;
     left: 220px;
     bottom: 5%;
-    
+
     border-radius: 5px 5px 5px 5px;
     cursor: pointer;
     margin-top: 20px;
     font-size: 19px;
-    
+
     border-bottom: 1px solid black;
     /*transition: all .1s linear 0s;*/
 }
@@ -195,7 +195,7 @@
 .navbar-default.collapsed .controlToggleIcon{
     margin-top: 5px;
     display: block;
-} 
+}
 
 /*topbar right part style */
 .navbar-right>li>a {
@@ -220,7 +220,7 @@
 }
 /*space */
 .navbar-header{
-  margin-left: 15px;
+    margin-left: 15px;
 }
 .sidebar .nav-second-level li a.active {
     padding-left: 37px;
@@ -253,7 +253,7 @@
 }
 
 #burger{
-	display: none;	
+    display: none;
 }
 
 @media (min-width: 768px){
@@ -340,47 +340,47 @@
 
 @media (max-width: 768px){
     .navbar-static-top{
-    	margin-left:0px;
-    	z-index:99;
+        margin-left:0px;
+        z-index:99;
     }
-    
+
     #side-menu li:not(.MainItem){
-    	display:none;
+        display:none;
     }
-    
+
     .navbar-header,.nav.navbar-top-links.navbar-right{
-    	display:none;
+        display:none;
     }
-    
+
     #tabsScriptEdit{
-    	background-color:white;
+        background-color:white;
     }
 
     #burger{
-    	display:inline-block;
-    	position:absolute;
-    	right:20px;
-    	top:6px;
-    	background-color:white;
+        display:inline-block;
+        position:absolute;
+        right:20px;
+        top:6px;
+        background-color:white;
     }
-    
+
     #burger-setting{
-    	display:inline-block!important;
-    	position:absolute;
-    	right:100px;
-    	width:56px;
-    	height:44px;
-    	top:6px;
-    	background-color:white;
+        display:inline-block!important;
+        position:absolute;
+        right:100px;
+        width:56px;
+        height:44px;
+        top:6px;
+        background-color:white;
     }
-    
+
     .titleCase{
-	    color: whitesmoke !important;
-	    width:50%;
-	    display:inline-block!important;
-	}
-	
-	#stepList{
-		overflow-y:initial!important;
-	}
+        color: whitesmoke !important;
+        width:50%;
+        display:inline-block!important;
+    }
+
+    #steps{
+        overflow-y:initial!important;
+    }
 }

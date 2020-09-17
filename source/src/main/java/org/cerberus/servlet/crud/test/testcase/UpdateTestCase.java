@@ -64,7 +64,7 @@ public class UpdateTestCase extends AbstractCreateUpdateTestCase {
 
     @Override
     protected void fireLogEvent (String keyTest, String keyTestCase, TestCase tc, HttpServletRequest request, HttpServletResponse response) {
-        logEventService.createForPrivateCalls("/UpdateTestCase", "UPDATE", "Update testcase : ['" + keyTest + "'|'" + keyTestCase + "'] " + "version : "+tc.getTestCaseVersion(), request);
+        logEventService.createForPrivateCalls("/UpdateTestCase", "UPDATE", "Update TestCase Header : ['" + keyTest + "'|'" + keyTestCase + "'] " + "version : "+tc.getVersion(), request);
     }
 
     @Override

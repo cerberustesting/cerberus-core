@@ -25,6 +25,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             'placement': 'auto',
             'container': 'body'}
         );
+
     });
 });
 
@@ -33,8 +34,43 @@ function initPage() {
     var myTag = GetURLParameter("tag");
 
     displayPageLabel();
+    initGraph();
 
-    displayAndRefresh_followup();
+    //Queue History tab
+    moment.locale("fr");
+
+    $('#frompicker').datetimepicker();
+    $('#topicker').datetimepicker({
+        useCurrent: false //Important! See issue #1075
+    });
+
+    $("#frompicker").on("dp.change", function (e) {
+        $('#topicker').data("DateTimePicker").minDate(e.date);
+    });
+    $("#topicker").on("dp.change", function (e) {
+        $('#frompicker').data("DateTimePicker").maxDate(e.date);
+    });
+
+    var from = GetURLParameter("from");
+    var to = GetURLParameter("to");
+
+    let fromD;
+    let toD;
+    if (from === null) {
+        fromD = new Date();
+        fromD.setHours(fromD.getHours() - 1);
+    } else {
+        fromD = new Date(from);
+    }
+    if (to === null) {
+        toD = new Date();
+        toD.setHours(23);
+        toD.setMinutes(59);
+    } else {
+        toD = new Date(to);
+    }
+    $('#frompicker').data("DateTimePicker").date(moment(fromD));
+    $('#topicker').data("DateTimePicker").date(moment(toD));
 
 
     // Display table
@@ -70,8 +106,19 @@ function initPage() {
     $("#massActionExeQButtonPrio").click(massActionModalSaveHandler_changePrio);
     $('#massActionExeQModal').on('hidden.bs.modal', massActionModalCloseHandler);
 
+    var tab = sessionStorage.getItem("TestCaseExecutionQueueList-TAB")
+    if (isEmpty(tab)) {
+        tab = "#tabDetails";
+    }
+
+//    if (tab === "#tabDetails") {
+//        refreshTable();
+//    }
+
     // React on tab changes
-    $('#executionList a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    $('#tabsScriptEdit a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        sessionStorage.setItem("TestCaseExecutionQueueList-TAB", $(e.target).attr("href"));
+
         switch ($(e.target).attr("href")) {
             case "#tabDetails":
                 refreshTable();
@@ -82,8 +129,13 @@ function initPage() {
             case "#tabJobStatus":
                 displayAndRefresh_jobStatus();
                 break;
+            case "#tabQueueHistory":
+                loadStatGraph();
+                break;
         }
     });
+    $('.nav-tabs a[href="' + tab + '"]').tab('show');
+
 }
 
 function displayAndRefresh_followup() {
@@ -140,7 +192,7 @@ function displayAndRefresh_jobStatus() {
             $("#jobActiveStatus").removeClass("glyphicon-refresh spin");
             $("#jobActiveStatus").addClass("glyphicon-pause blink");
             $("#modifyParambutton").html("<span class='glyphicon glyphicon-play'></span> Start Queue Job");
-            
+
         }
 
         if (data["jobActiveHasPermissionsUpdate"]) {
@@ -206,6 +258,8 @@ function displayPageLabel() {
     var doc = new Doc();
 
     $("#title").html(doc.getDocLabel("page_testcaseexecutionqueue", "allExecution"));
+    $("#pageTitle").html(doc.getDocLabel("page_testcaseexecutionqueue", "allExecution"));
+
 
     displayHeaderLabel(doc);
 
@@ -276,7 +330,7 @@ function massActionModalSaveHandler_copy() {
             $("#selectAll").prop("checked", false);
             $('#massActionExeQModal').modal('hide');
             if (data.addedEntries === 1) {
-                data.message = data.message + "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
+                data.message = data.message + "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id + "'><button class='btn btn-primary' id='goToExecution'>Open Execution</button></a>";
             }
             showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
         } else {
@@ -400,17 +454,18 @@ function resetTableFilters() {
 }
 
 function refreshTable() {
+    console.info("refresh");
     getTable().fnDraw();
 }
 
-function filterAndDisplayTable(poolId) {
-    filterTable(poolId);
-    displayTable();
-}
-
-function displayTable() {
-    $('.nav-tabs a[href="#tabDetails"]').tab('show');
-}
+//function filterAndDisplayTable(poolId) {
+//    filterTable(poolId);
+//    displayTable();
+//}
+//
+//function displayTable() {
+//    $('.nav-tabs a[href="#tabDetails"]').tab('show');
+//}
 
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
@@ -782,6 +837,18 @@ function aoColumnsFunc_followUp() {
                                 class="btn btn-default btn-xs margin-right5" \n\
                             name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_create") + '" type="button">\n\
                             <span class="glyphicon glyphicon-plus"></span></button>';
+                var editRobotExtParam = '<button id="editExeQ' + data + '"  onclick="openModalParameter(\'cerberus_queueexecution_defaultexecutorexthost_threadpoolsize\',\'' + getSys() + '\');" \n\
+                                class="btn btn-default btn-xs margin-right5" \n\
+                            name="editExecutionQueue" title="' + doc.getDocLabel("page_parameter", "editparameter_field") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-pencil"></span></button>';
+                var editRobotExtInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'EXECUTOREXTENSIONHOST\',\'' + data[5] + '\',\'EDIT\',\'tabInvAdvanced\');" \n\
+                                class="btn btn-default btn-xs margin-right5" \n\
+                            name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_edit") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-pencil"></span></button>';
+                var addRobotExtInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'EXECUTOREXTENSIONHOST\',\'' + data[5] + '\',\'ADD\',\'tabInvAdvanced\');" \n\
+                                class="btn btn-default btn-xs margin-right5" \n\
+                            name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_create") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-plus"></span></button>';
 
                 var buttons = "";
                 if ((data[0] === "constrain1_global") && (data[9])) {
@@ -797,6 +864,17 @@ function aoColumnsFunc_followUp() {
                         //Invariant does not exist and is not null or empty. We can either create it or change default parameter.
                         buttons += editRobotParam;
                         buttons += addRobotInvariant;
+                    }
+                }
+                if ((data[0] === "constrain5_executorextension") && (data[9])) {
+                    // Constrain is global and hasPermitionUpdate is true.
+                    if (data[10]) {
+                        // Invariant exist. We can edit it.
+                        buttons += editRobotExtInvariant;
+                    } else if (!isEmpty(data[5]) && data[5] !== "null") {
+                        //Invariant does not exist and is not null or empty. We can either create it or change default parameter.
+                        buttons += editRobotExtParam;
+                        buttons += addRobotExtInvariant;
                     }
                 }
                 return '<div class="center btn-group width100">' + buttons + '</div>';
@@ -845,4 +923,196 @@ function aoColumnsFunc_followUp() {
         }
     ];
     return aoColumns;
+}
+
+function getOptions(title, unit) {
+    let option = {
+        responsive: true,
+        maintainAspectRatio: false,
+        hover: {
+            mode: 'nearest',
+            intersect: true
+        },
+        tooltips: {
+            callbacks: {
+                label: function (t, d) {
+                    var xLabel = d.datasets[t.datasetIndex].label;
+                    return xLabel + ': ' + t.yLabel;
+                }
+            },
+        },
+        title: {
+            text: title
+        },
+        scales: {
+            xAxes: [{
+                    type: 'time',
+                    time: {
+                        tooltipFormat: 'll HH:mm:ss'
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Date'
+                    }
+                }],
+            yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: title
+                    },
+                    ticks: {
+                        callback: function (value, index, values) {
+                            return value;
+                        }}
+
+                }]
+        }
+    };
+    return option;
+}
+
+function initGraph() {
+
+    var queueStatoption = getOptions("", "nb");
+
+    let queueStatdatasets = [];
+
+    configQueueStat = {
+        type: 'line',
+        data: {
+            datasets: queueStatdatasets
+        },
+        options: queueStatoption
+    };
+
+    var ctx = document.getElementById('canvasQueueStat').getContext('2d');
+    window.myLineQueueStat = new Chart(ctx, configQueueStat);
+}
+
+
+function loadStatGraph() {
+    showLoader($("#qsFilterPanel"));
+
+    let from = new Date($('#frompicker').data("DateTimePicker").date());
+    let to = new Date($('#topicker').data("DateTimePicker").date());
+
+    let qS = "from=" + from.toISOString() + "&to=" + to.toISOString();
+//    let qS = "from=2020-08-07T01:01:01.0Z&to=2020-08-07T16:14:01.0Z";
+
+    $.ajax({
+        url: "ReadQueueStat?" + qS,
+        method: "GET",
+        async: true,
+        dataType: 'json',
+        success: function (data) {
+            var messageType = getAlertType(data.messageType);
+
+            if (data.messageType === "OK") {
+                buildGraphs(data);
+            } else {
+                showMessageMainPage(messageType, data.message, false);
+            }
+            hideLoader($("#qsFilterPanel"));
+        },
+        error: showUnexpectedError
+    });
+}
+
+
+function buildGraphs(data) {
+
+    let curves = data.datasetQueueStat;
+
+    // Sorting values by nb of requests.
+    sortedCurves = curves.sort(function (a, b) {
+//        let a1 = a.key.testcase.test + "-" + a.key.testcase.testcase + "-" + a.key.unit + "-" + a.key.country + "-" + a.key.environment + "-" + a.key.robotdecli;
+//        let b1 = b.key.testcase.test + "-" + b.key.testcase.testcase + "-" + b.key.unit + "-" + b.key.country + "-" + b.key.environment + "-" + a.key.robotdecli;
+//        return b1.localeCompare(a1);
+        return true;
+    });
+
+    var len = sortedCurves.length;
+
+    let timedatasets = [];
+
+    for (var i = 0; i < len; i++) {
+
+        let c = sortedCurves[i];
+        let d = [];
+        lend = c.points.length;
+        for (var j = 0; j < lend; j++) {
+            let p = {x: c.points[j].x, y: c.points[j].y};
+            d.push(p);
+        }
+        let lab = c.key.key;
+        let doFill = false;
+        if (c.key.key === "CurrentlyRunning") {
+            doFill = true;
+        }
+        var dataset = {
+            label: lab,
+            backgroundColor: "white",
+            borderColor: getColorQueueStat(c.key.key),
+            pointBackgroundColor: getColorQueueStat(c.key.key),
+            pointRadius: 1,
+            pointHoverRadius: 6,
+            hitRadius: 10,
+            fill: doFill,
+            lineTension: 0,
+            data: d
+        };
+        timedatasets.push(dataset);
+    }
+
+    if (timedatasets.length > 0) {
+        $("#panelQueueStat").show();
+    } else {
+        $("#panelQueueStat").hide();
+    }
+    configQueueStat.data.datasets = timedatasets;
+
+    window.myLineQueueStat.update();
+}
+
+function getColorQueueStat(name) {
+    switch (name) {
+        case "CurrentlyRunning":
+            return "green";
+        case "GlobalConstrain":
+            return "red";
+        case "QueueSize":
+            return "darkblue";
+    }
+    return "red";
+
+}
+function setTimeRange(id) {
+    let fromD;
+    let toD = new Date();
+    toD.setHours(23);
+    toD.setMinutes(59);
+    fromD = new Date();
+    fromD.setHours(23);
+    fromD.setMinutes(59);
+    if (id === 1) { // 1 month
+        fromD.setMonth(fromD.getMonth() - 1);
+    } else if (id === 2) { // 3 months
+        fromD.setMonth(fromD.getMonth() - 3);
+    } else if (id === 3) { // 6 months
+        fromD.setMonth(fromD.getMonth() - 6);
+    } else if (id === 4) { //
+        fromD.setMonth(fromD.getMonth() - 12);
+    } else if (id === 5) {
+        fromD.setHours(fromD.getHours() - 168);
+    } else if (id === 6) {
+        fromD.setHours(fromD.getHours() - 24);
+    } else if (id === 7) {
+        fromD = new Date();
+        fromD.setHours(fromD.getHours() - 6);
+    } else if (id === 8) {
+        fromD = new Date();
+        fromD.setHours(fromD.getHours() - 1);
+    }
+    $('#frompicker').data("DateTimePicker").date(moment(fromD));
+    $('#topicker').data("DateTimePicker").date(moment(toD));
 }

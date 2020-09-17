@@ -21,6 +21,7 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.TestCase;
@@ -52,7 +53,7 @@ public interface ITestCaseDAO {
 
     List<TestCase> findTestCaseByApplication(String application);
 
-    List<TestCase> findTestCaseByCriteria(String test, String application, String country, String active);
+    List<TestCase> findTestCaseByCriteria(String test, String application, String country, String isActive);
 
     /**
      * @param testCase
@@ -84,13 +85,13 @@ public interface ITestCaseDAO {
      * @param system arrays of system to filter
      * @param application arrays of application to filter
      * @param priority arrays of priority to filter
-     * @param group arrays of group to filter
+     * @param type arrays of type to filter
      * @param maxReturn nd max of records to return. (Prevent from returning too
      * large list)
      * @return the list of TCase used in the campaign
      * @since 1.0.2
      */
-    AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, List<Integer> labelIdList, String[] status, String[] system, String[] application, String[] priority, String[] group, Integer maxReturn);
+    AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, List<Integer> labelIdList, String[] status, String[] system, String[] application, String[] priority, String[] type, Integer maxReturn);
 
     public void updateTestCase(TestCase tc) throws CerberusException;
 
@@ -102,19 +103,18 @@ public interface ITestCaseDAO {
      *
      * @param test
      * @param app
-     * @param active
+     * @param isActive
      * @param priority
      * @param status
-     * @param group
-     * @param targetBuild
-     * @param targetRev
+     * @param type
+     * @param targetMajor
+     * @param targetMinor
      * @param creator
      * @param implementer
-     * @param function
      * @param campaign
      * @return
      */
-    List<TestCase> findTestCaseByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign);
+    List<TestCase> findTestCaseByCriteria(String[] test, String[] app, String[] isActive, String[] priority, String[] status, String[] type, String[] targetMajor, String[] targetMinor, String[] creator, String[] implementer, String[] campaign);
 
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException;
 
@@ -143,13 +143,13 @@ public interface ITestCaseDAO {
      * @param campaign
      * @param labelid
      * @param priority
-     * @param group
+     * @param type
      * @param status
      * @param length
      * @return
      */
     public AnswerList<TestCase> readByVarious(String[] test, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] campaign, List<Integer> labelid, String[] priority, String[] group, String[] status, int length);
+            String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length);
 
     /**
      *
@@ -169,6 +169,14 @@ public interface ITestCaseDAO {
      * @return
      */
     public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    /**
+     *
+     * @param systems
+     * @param to
+     * @return
+     */
+    public AnswerList<TestCase> readStatsBySystem(List<String> systems, Date to);
 
     /**
      *

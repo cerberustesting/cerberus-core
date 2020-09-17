@@ -19,7 +19,10 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.HashMap;
 import java.util.List;
+import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.dto.TestListDTO;
 import org.cerberus.exception.CerberusException;
@@ -31,28 +34,131 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestCaseCountryPropertiesService {
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param country
+     * @return
+     */
     List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseCountry(String test, String testCase, String country);
 
-    List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) throws CerberusException ;
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @return
+     * @throws CerberusException
+     */
+    List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) throws CerberusException;
 
-    List<TestCaseCountryProperties> findOnePropertyPerTestTestCase(String test, String testcase, String oneproperty);
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param oneproperty
+     * @return
+     */
+    List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseProperty(String test, String testcase, String oneproperty);
 
-    List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase);
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @return
+     * @throws CerberusException
+     */
+    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase) throws CerberusException;
 
+    /**
+     * Prefer to use the findDistinctPropertiesOfTestCaseFromTestcaseList as it generate a lot less SQL.
+     * @param test
+     * @param testcase
+     * @param countryInvariants
+     * @return
+     * @throws CerberusException
+     */
+    @Deprecated
+    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase, HashMap<String, Invariant> countryInvariants) throws CerberusException;
+
+    /**
+     *
+     * @param testCaseList
+     * @param countryInvariants
+     * @return
+     * @throws CerberusException
+     */
+    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCaseFromTestcaseList(List<TestCase> testCaseList, HashMap<String, Invariant> countryInvariants) throws CerberusException;
+
+    /**
+     *
+     * @param testCase
+     * @param countryInvariants
+     * @return
+     * @throws CerberusException
+     */
+    public List<TestCaseCountryProperties> findDistinctInheritedPropertiesOfTestCase(TestCase testCase, HashMap<String, Invariant> countryInvariants) throws CerberusException;
+
+    /**
+     *
+     * @param testCaseCountryProperties
+     * @return
+     */
     List<String> findCountryByProperty(TestCaseCountryProperties testCaseCountryProperties);
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param country
+     * @param property
+     * @return
+     * @throws CerberusException
+     */
     TestCaseCountryProperties findTestCaseCountryPropertiesByKey(String test, String testCase, String country, String property) throws CerberusException;
 
+    /**
+     *
+     * @param testCaseCountryProperties
+     * @throws CerberusException
+     */
     void insertTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException;
 
+    /**
+     *
+     * @param testCaseCountryProperties
+     * @throws CerberusException
+     */
     void updateTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException;
 
+    /**
+     *
+     * @param testCaseCountryPropertiesList
+     * @return
+     */
     boolean insertListTestCaseCountryProperties(List<TestCaseCountryProperties> testCaseCountryPropertiesList);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param property
+     * @return
+     */
     List<String> findCountryByPropertyNameAndTestCase(String test, String testcase, String property);
 
+    /**
+     *
+     * @param tccpToDelete
+     * @throws CerberusException
+     */
     void deleteListTestCaseCountryProperties(List<TestCaseCountryProperties> tccpToDelete) throws CerberusException;
 
+    /**
+     *
+     * @param tccp
+     * @throws CerberusException
+     */
     void deleteTestCaseCountryProperties(TestCaseCountryProperties tccp) throws CerberusException;
 
     /**
@@ -134,7 +240,7 @@ public interface ITestCaseCountryPropertiesService {
      * @return
      * @throws CerberusException
      */
-    Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountryProperties> newList) throws CerberusException ;
+    Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountryProperties> newList) throws CerberusException;
 
     /**
      *

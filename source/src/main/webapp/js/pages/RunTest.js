@@ -42,7 +42,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
         //check if Extended Test Case Filters is collapse and load the data if it is not
         var filterPanelDataLoaded = false;
         var filterPanel = document.getElementById("filtersPanel");
-        if (filterPanel.className === "panel-body collapse in") {
+
+        if (filterPanel.className === "panel-body collapse defaultNotExpanded in") {
             loadTestCaseFilterData(system);
             filterPanelDataLoaded = true;
             updateUserPreferences();
@@ -51,7 +52,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $("#FilterPanelHeader").click(function () {
             if (!filterPanelDataLoaded) {
                 loadTestCaseFilterData(system);
-                filterPanelDataLoaded = true
+                filterPanelDataLoaded = true;
                 updateUserPreferences();
             }
         });
@@ -59,8 +60,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $("#robotSettings #robot").change(function () {
             loadRobotInfo($(this).val());
         });
-
-        var system = getUser().defaultSystem;
 
         $("#SelectionManual").on("click", function () {
             selectionManual();
@@ -163,6 +162,8 @@ function loadRequestContext() {
 
 function displayPageLabel() {
     var doc = new Doc();
+    $("#pageTitle").html(doc.getDocLabel("page_runtest", "title"));
+    $("#title").html(doc.getDocOnline("page_runtest", "title"));
     $("h1.page-title-line").text(doc.getDocLabel("page_runtest", "title"));
     $("#selectionPanel div.panel-heading").text(doc.getDocLabel("page_runtest", "selection_type"));
     $("#selectionPanel input[value='filters']").next().text(doc.getDocLabel("page_runtest", "select_list_test"));
@@ -171,16 +172,16 @@ function displayPageLabel() {
     $("#ChooseTestHeader").text(doc.getDocLabel("page_runtest", "ChooseTest"));
     $("#FilterHeader").text(doc.getDocLabel("page_runtest", "filters"));
     $("#lbl_test").text(doc.getDocLabel("page_runtest", "test"));
-    $("#lbl_project").text(doc.getDocLabel("page_runtest", "project"));
+//    $("#lbl_project").text(doc.getDocLabel("page_runtest", "project"));
     $("#lbl_application").text(doc.getDocLabel("page_runtest", "application"));
     $("#lbl_creator").text(doc.getDocLabel("page_runtest", "creator"));
     $("#lbl_implementer").text(doc.getDocLabel("page_runtest", "implementer"));
-    $("#lbl_group").text(doc.getDocLabel("page_runtest", "group"));
+    $("#lbl_type").text(doc.getDocLabel("invariant", "Type"));
     $("#lbl_campaign").text(doc.getDocLabel("page_runtest", "campaign"));
     $("#lbl_priority").text(doc.getDocLabel("page_runtest", "priority"));
     $("#lbl_status").text(doc.getDocLabel("page_runtest", "status"));
-    $("#lbl_targetRev").text(doc.getDocLabel("page_runtest", "targetrev"));
-    $("#lbl_targetSprint").text(doc.getDocLabel("page_runtest", "targetsprint"));
+    $("#lbl_targetMinor").text(doc.getDocLabel("page_runtest", "TargetMinor"));
+    $("#lbl_targetMajor").text(doc.getDocLabel("page_runtest", "TargetMajor"));
     $("#lbl_size").text(doc.getDocLabel("page_runtest", "size"));
     $("input[name='envSettings'][value='auto']").next().text(doc.getDocLabel("page_runtest", "automatic"));
     $("input[name='envSettings'][value='manual']").next().text(doc.getDocLabel("page_runtest", "manual"));
@@ -191,13 +192,13 @@ function displayPageLabel() {
     $("#testcaseListLabel").text(doc.getDocLabel("page_runtest", "testcaseList"));
     $("#countryListLabel").text(doc.getDocLabel("page_runtest", "countryList"));
     $("#envListLabel").text(doc.getDocLabel("page_runtest", "envList"));
-    $("#RobotPanel .panel-heading").text(doc.getDocLabel("page_runtest", "robot_settings"));
+    $("#rbtLabel").text(doc.getDocLabel("page_runtest", "robot_settings"));
     $("#RobotPanel label[for='robot']").text(doc.getDocLabel("page_runtest", "select_robot"));
     $("#RobotPanel label[for='seleniumIP']").text(doc.getDocLabel("page_runtest", "selenium_ip"));
     $("#RobotPanel label[for='seleniumPort']").text(doc.getDocLabel("page_runtest", "selenium_port"));
     $("#RobotPanel label[for='browser']").text(doc.getDocLabel("page_runtest", "browser"));
     $("#saveRobotPreferences").text(doc.getDocLabel("page_runtest", "saverobotpref"));
-    $("#executionPanel .panel-heading").text(doc.getDocLabel("page_runtest", "execution_settings"));
+    $("#exeLabel").text(doc.getDocLabel("page_runtest", "execution_settings"));
     $("#executionPanel label[for='tag']").text(doc.getDocOnline("page_runtest", "tag"));
     $("#executionPanel label[for='verbose']").text(doc.getDocOnline("page_runtest", "verbose"));
     $("#executionPanel label[for='screenshot']").text(doc.getDocOnline("page_runtest", "screenshot"));
@@ -253,7 +254,7 @@ function selectionManual(test, testcase, environment, country) {
         $("#envSettingsAuto select").prop("disabled", false).val("");
         var mysize = $("#countryList input.countrycb").length;
         $("#countryList input.countrycb").each(function () {
-            if (($(this).attr("name") == country) || (mysize <= 1)) { // We select the the country if it is the one from the URL or if there is only 1 country.
+            if (($(this).attr("name") === country) || (mysize <= 1)) { // We select the country if it is the one from the URL or if there is only 1 country.
                 $(this).prop("disabled", false).prop("checked", true);
             } else {
                 $(this).prop("disabled", false).prop("checked", false);
@@ -320,23 +321,23 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
             if (data.contentTable === undefined) {
                 showMessageMainPage("danger", "Test Case : " + defTest + " - " + defTestcase + " does not exist !", true);
             } else {
-                if (data.contentTable.length > 0) {
+                if (data.contentTable.length > 1) {
                     for (var i = 0; i < data.contentTable.length; i++) {
 
-                        var text = data.contentTable[i].test + " - " + data.contentTable[i].testCase + " [" + data.contentTable[i].application + "]: " + data.contentTable[i].description;
+                        var text = data.contentTable[i].test + " - " + data.contentTable[i].testcase + " [" + data.contentTable[i].application + "]: " + data.contentTable[i].description;
 
                         testCaseList.append($("<option></option>")
                                 .text(text)
-                                .val(data.contentTable[i].test + "-" + data.contentTable[i].testCase)
+                                .val(data.contentTable[i].test + "-" + data.contentTable[i].testcase)
                                 .data("item", data.contentTable[i]));
                     }
                 } else {
-                    var text = data.contentTable.test + " - " + data.contentTable.testCase + " [" + data.contentTable.application + "]: " + data.contentTable.description;
+                    var text = data.contentTable[0].test + " - " + data.contentTable[0].testcase + " [" + data.contentTable[0].application + "]: " + data.contentTable[0].description;
 
                     testCaseList.append($("<option></option>")
                             .text(text)
-                            .val(data.contentTable.test + "-" + data.contentTable.testCase)
-                            .data("item", data.contentTable));
+                            .val(data.contentTable[0].test + "-" + data.contentTable[0].testcase)
+                            .data("item", data.contentTable[0]));
                 }
             }
             hideLoader("#chooseTest");
@@ -387,11 +388,11 @@ function loadCampaignContent(campaign) {
                 testCaseList.empty().prop("disabled", "disabled");
 
                 for (var index = 0; index < data.contentTable.length; index++) {
-                    var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].description;
+                    var text = data.contentTable[index].test + " - " + data.contentTable[index].testcase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].description;
 
                     testCaseList.append($("<option></option>")
                             .text(text)
-                            .val(data.contentTable[index].testCase)
+                            .val(data.contentTable[index].testcase)
                             .prop("selected", true)
                             .data("item", data.contentTable[index]));
                 }
@@ -549,7 +550,11 @@ function runTestCase(doRedirect) {
         var select = $("#testCaseList option:selected");
         select.each(function () {
             var item = $(this).data("item");
-            teststring += "&test=" + item.test + "&testcase=" + item.testCase;
+            if (isEmpty(item.testcase)) {
+                teststring += "&test=" + item.test + "&testcase=" + item.testcase;
+            } else {
+                teststring += "&test=" + item.test + "&testcase=" + item.testcase;
+            }
         });
     }
 
@@ -602,7 +607,7 @@ function runTestCase(doRedirect) {
 
     var jqxhr = $.post("AddToExecutionQueueV003", paramSerialized + teststring + environmentstring + countriesstring + robotsstring);
     $.when(jqxhr).then(function (data) {
-        // unblock when remote call returns 
+        // unblock when remote call returns
         hideLoader('#page-layout');
         data.message = data.message.replace(/\n/g, '<br>');
         if (getAlertType(data.messageType) === "success") {
@@ -628,7 +633,7 @@ function handleAddToQueueResponse(data, doRedirect) {
         data.message = data.message + "<br>" + data.nbErrorEnvNotExistOrNotActive + " Executions not added due to <b>Environment/Country not active or don't exist</b>.";
     }
     if (data.nbExe === 1) {
-        data.message = data.message + "<br><a href='TestCaseExecution.jsp?executionQueueId=" + data.queueList[0].queueId + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
+        data.message = data.message + "<br><a href='TestCaseExecution.jsp?executionQueueId=" + data.queueList[0].queueId + "'><button class='btn btn-primary' id='goToExecution'>Open Execution</button></a>";
     }
     if (data.nbExe > 1) {
         data.message = data.message + "<br><a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-primary' id='goToTagReport'>Report by Tag</button></a>"
@@ -692,9 +697,9 @@ function loadMultiSelect(url, urlParams, selectName, textItem, valueItem) {
 
             select.multiselect(new multiSelectConf(selectName));
 
-            if (selectName == "test") {
+            if (selectName === "test") {
                 var test = GetURLParameter("test");
-                if (test != undefined && test != null && test != "") {
+                if (test !== undefined && test !== null && test !== "") {
                     $("#filters").find("select[id='testFilter'] option[value='" + test + "']").attr("selected", "selected");
                     select.multiselect("rebuild");
                 }
@@ -1007,17 +1012,17 @@ function loadTestCaseFilterData(system) {
     showLoader("#filtersPanelContainer");
     $.when(
             loadMultiSelect("ReadTest", "", "test", ["test", "description"], "test"),
-            loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
+//            loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
             loadMultiSelect("ReadApplication", "e=1" + getUser().defaultSystemsQuery, "application", ["application"], "application"),
             loadMultiSelect("ReadUserPublic", "", "creator", ["login"], "login"),
             loadMultiSelect("ReadUserPublic", "", "implementer", ["login"], "login"),
             loadMultiSelect("ReadCampaign", "", "campaign", ["campaign"], "campaign"),
-            loadMultiSelect("ReadBuildRevisionInvariant", "level=1" + getUser().defaultSystemsQuery, "targetSprint", ["versionName"], "versionName"),
-            loadMultiSelect("ReadBuildRevisionInvariant", "level=2" + getUser().defaultSystemsQuery, "targetRev", ["versionName"], "versionName"),
+            loadMultiSelect("ReadBuildRevisionInvariant", "level=1" + getUser().defaultSystemsQuery, "targetMajor", ["versionName"], "versionName"),
+            loadMultiSelect("ReadBuildRevisionInvariant", "level=2" + getUser().defaultSystemsQuery, "targetMinor", ["versionName"], "versionName"),
             loadMultiSelect("ReadLabel", "e=1" + getUser().defaultSystemsQuery, "labelid", ["label"], "id"),
             loadInvariantMultiSelect("system", "SYSTEM"),
             loadInvariantMultiSelect("priority", "PRIORITY"),
-            loadInvariantMultiSelect("group", "GROUP"),
+            loadInvariantMultiSelect("type", "TESTCASE_TYPE"),
             loadInvariantMultiSelect("status", "TCSTATUS")
             ).then(function () {
         hideLoader("#filtersPanelContainer");
@@ -1056,6 +1061,13 @@ function bindToggleCollapseCustom() {
                     updateUserPreferences();
                 $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
             });
+
+            // pannel that has class defaultNotExpanded are not expanded by defaault. All others are.
+            if (localStorage.getItem(this.id) === null || localStorage.getItem(this.id) === undefined) {
+                if ($(this).hasClass("defaultNotExpanded")) {
+                    localStorage.setItem(this.id, false);
+                }
+            }
 
             if (localStorage.getItem(this.id) === "false") {
                 $(this).removeClass('in');

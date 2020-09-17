@@ -30,7 +30,7 @@ import org.cerberus.engine.entity.SwipeAction.Direction;
  * @author bcivel
  */
 public interface IAppiumService {
-    
+
     /**
      *
      * @param session
@@ -38,16 +38,24 @@ public interface IAppiumService {
      * @return
      */
     MessageEvent switchToContext(Session session, Identifier identifier);
-    
+
     /**
      *
      * @param session
      * @param identifier
-     * @param property
+     * @return
+     */
+    MessageEvent wait(Session session, Identifier identifier);
+
+    /**
+     *
+     * @param session
+     * @param identifier
+     * @param valueToType
      * @param propertyName
      * @return
      */
-    MessageEvent type(Session session, Identifier identifier, String property, String propertyName);
+    MessageEvent type(Session session, Identifier identifier, String valueToType, String propertyName);
 
     /**
      *
@@ -79,7 +87,7 @@ public interface IAppiumService {
      * @return
      */
     MessageEvent swipe(Session session, SwipeAction swipeAction);
-    
+
     /**
      *
      * @param session
@@ -101,6 +109,7 @@ public interface IAppiumService {
 
     /**
      * Scroll to an element or a text
+     *
      * @param session
      * @param element if not null or not empty, switch to this element
      * @param text if not null or not empty, switch to this text
@@ -109,9 +118,9 @@ public interface IAppiumService {
      */
     MessageEvent scrollTo(Session session, Identifier element, String text) throws IllegalArgumentException;
 
-
     /**
      * install an application on mobile devices
+     *
      * @param session
      * @param appPath
      * @return
@@ -121,6 +130,7 @@ public interface IAppiumService {
 
     /**
      * uninstall an application on mobile devices
+     *
      * @param session
      * @param appPackage
      * @return
@@ -130,12 +140,21 @@ public interface IAppiumService {
 
     /**
      * Open application
+     *
      * @param session
      * @param appPackage
      * @param appActivity
      * @return
      */
     MessageEvent openApp(Session session, String appPackage, String appActivity);
+
+    /**
+     * Open application
+     *
+     * @param session
+     * @return
+     */
+    MessageEvent closeApp(Session session);
 
     /**
      *

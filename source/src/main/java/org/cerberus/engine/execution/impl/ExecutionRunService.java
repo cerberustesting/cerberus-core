@@ -81,6 +81,7 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.enums.Screenshot;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.kafka.IKafkaService;
 import org.cerberus.service.robotproviders.IBrowserstackService;
 import org.cerberus.service.robotproviders.IKobitonService;
@@ -173,6 +174,8 @@ public class ExecutionRunService implements IExecutionRunService {
     private IKafkaService kafkaService;
     @Autowired
     private IAppServiceService appServiceService;
+    @Autowired
+    private IExecutorService executorService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
@@ -239,6 +242,11 @@ public class ExecutionRunService implements IExecutionRunService {
                         || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)
                         || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
 
+                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_PREPARINGROBOTSERVER);
+                    mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getRobotHost()));
+                    tCExecution.setResultMessage(mes);
+                    updateTCExecutionWebSocketOnly(tCExecution, true);
+
                     // Decoding Robot capabilities.
                     if (tCExecution.getRobotObj() != null) {
                         List<RobotCapability> caps = tCExecution.getRobotObj().getCapabilities();
@@ -291,11 +299,10 @@ public class ExecutionRunService implements IExecutionRunService {
                         tCExecution.getRobotObj().setCapabilitiesDecoded(capsDecoded);
                     }
 
-                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_STARTINGROBOTSERVER);
+                    mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_STARTINGROBOTSERVER);
                     mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getRobotHost()));
                     tCExecution.setResultMessage(mes);
-
-                    updateTCExecution(tCExecution, false);
+                    updateTCExecution(tCExecution, true);
 
                     if (tCExecution.getRobotHost().equalsIgnoreCase("")) {
                         mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
@@ -332,7 +339,7 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
             /**
-             * For BrowserStack only, we try to enrish the Tag with build hash.
+             * For BrowserStack only, we try to enrich the Tag with build hash.
              */
             if (TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK.equals(tCExecution.getRobotProvider())) {
                 String newBuildHash = tagService.enrichTagWithBrowserStackBuild(tCExecution.getSystem(), tCExecution.getTag(), tCExecution.getRobotExecutorObj().getHostUser(), tCExecution.getRobotExecutorObj().getHostPassword());
@@ -373,6 +380,8 @@ public class ExecutionRunService implements IExecutionRunService {
              * Load Pre TestCase information
              */
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDETAILEDDATA));
+            updateTCExecutionWebSocketOnly(tCExecution, true);
+
             LOG.debug(logPrefix + "Loading Pre-testcases.");
             List<TestCase> preTests = testCaseService.getTestCaseForPrePostTesting(Test.TEST_PRETESTING, tCExecution.getTestCaseObj().getApplication(), tCExecution.getCountry(),
                     tCExecution.getSystem(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision());
@@ -395,7 +404,6 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Load Post TestCase information
              */
-            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDETAILEDDATA));
             LOG.debug(logPrefix + "Loading Post-testcases.");
             List<TestCase> postTests = testCaseService.getTestCaseForPrePostTesting(Test.TEST_POSTTESTING, tCExecution.getTestCaseObj().getApplication(), tCExecution.getCountry(),
                     tCExecution.getSystem(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision());
@@ -421,8 +429,8 @@ public class ExecutionRunService implements IExecutionRunService {
             LOG.debug(logPrefix + "Loading all Steps information of Main testcase.");
             List<TestCaseStep> testCaseStepList;
             testCaseStepList = this.loadTestCaseService.loadTestCaseStep(tCExecution.getTestCaseObj());
-            tCExecution.getTestCaseObj().setTestCaseStep(testCaseStepList);
-            LOG.debug(logPrefix + "Steps information of Main testcase Loaded : " + tCExecution.getTestCaseObj().getTestCaseStep().size() + " Step(s) found.");
+            tCExecution.getTestCaseObj().setSteps(testCaseStepList);
+            LOG.debug(logPrefix + "Steps information of Main testcase Loaded : " + tCExecution.getTestCaseObj().getSteps().size() + " Step(s) found.");
 
             /**
              * Load All properties of the testcase
@@ -463,7 +471,9 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Open Kafka Consumers
              */
-            tCExecution.setKafkaLatestOffset(kafkaService.getAllConsumers(mainExecutionTestCaseStepList));
+            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGKAFKACONSUMERS));
+            updateTCExecutionWebSocketOnly(tCExecution, true);
+            tCExecution.setKafkaLatestOffset(kafkaService.getAllConsumers(mainExecutionTestCaseStepList, tCExecution));
 
             /**
              * Initialize the global TestCaseExecution Data List.
@@ -532,7 +542,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
             if (!conditionDecodeError) {
 
-                conditionAnswerTc = this.conditionService.evaluateCondition(tCExecution.getConditionOper(), tCExecution.getConditionVal1(), tCExecution.getConditionVal2(), tCExecution.getConditionVal3(), tCExecution);
+                conditionAnswerTc = this.conditionService.evaluateCondition(tCExecution.getConditionOperator(), tCExecution.getConditionVal1(), tCExecution.getConditionVal2(), tCExecution.getConditionVal3(), tCExecution);
                 boolean execute_TestCase = (boolean) conditionAnswerTc.getItem();
 
                 if (execute_TestCase || tCExecution.getManualExecution().equals("Y")) {
@@ -566,8 +576,8 @@ public class ExecutionRunService implements IExecutionRunService {
                                         .resolveDescription("STEPINDEX", String.valueOf(step_index));
                                 testCaseStepExecution = factoryTestCaseStepExecution.create(
                                         runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
-                                        testCaseStep.getStep(), step_index, testCaseStep.getSort(), testCaseStep.getLoop(), testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal3(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal3(), null,
-                                        startStep, 0, startStep, 0, new BigDecimal("0"), null, stepMess, testCaseStep, tCExecution,
+                                        testCaseStep.getStep(), step_index, testCaseStep.getSort(), testCaseStep.getLoop(), testCaseStep.getConditionOperator(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal3(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal3(), null,
+                                        startStep, startStep, startStep, startStep, new BigDecimal("0"), null, stepMess, testCaseStep, tCExecution,
                                         testCaseStep.getUseStep(), testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), testCaseStep.getDescription());
                                 testCaseStepExecution.setLoop(testCaseStep.getLoop());
                                 testCaseStepExecutionService.insertTestCaseStepExecution(testCaseStepExecution);
@@ -663,7 +673,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                     }
                                     if (!(descriptionOrConditionStepDecodeError)) {
 
-                                        conditionAnswer = this.conditionService.evaluateCondition(testCaseStepExecution.getConditionOper(), testCaseStepExecution.getConditionVal1(), testCaseStepExecution.getConditionVal2(), testCaseStepExecution.getConditionVal3(), tCExecution);
+                                        conditionAnswer = this.conditionService.evaluateCondition(testCaseStepExecution.getConditionOperator(), testCaseStepExecution.getConditionVal1(), testCaseStepExecution.getConditionVal2(), testCaseStepExecution.getConditionVal3(), tCExecution);
                                         execute_Step = (boolean) conditionAnswer.getItem();
                                         if (conditionAnswer.getResultMessage().getMessage().getCodeString().equals("PE")) {
                                             // There were no error when performing the condition evaluation.
@@ -693,14 +703,14 @@ public class ExecutionRunService implements IExecutionRunService {
                                             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CONDITION);
                                             mes.setDescription(mes.getDescription()
                                                     .replace("%AREA%", "step ")
-                                                    .replace("%COND%", testCaseStepExecution.getConditionOper())
+                                                    .replace("%COND%", testCaseStepExecution.getConditionOperator())
                                                     .replace("%MES%", conditionAnswer.getResultMessage().getDescription()));
                                             tCExecution.setResultMessage(mes);
                                             testCaseStepExecution.setExecutionResultMessage(mes);
 
                                             testCaseStepExecution.setStepResultMessage(new MessageEvent(MessageEventEnum.CONDITION_TESTCASESTEP_FAILED)
                                                     .resolveDescription("AREA", "")
-                                                    .resolveDescription("COND", testCaseStepExecution.getConditionOper())
+                                                    .resolveDescription("COND", testCaseStepExecution.getConditionOperator())
                                                     .resolveDescription("MESSAGE", conditionAnswer.getResultMessage().getDescription())
                                             );
 
@@ -783,7 +793,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                     MessageEvent stepMes = new MessageEvent(MessageEventEnum.CONDITION_TESTCASESTEP_NOTEXECUTED);
                                     testCaseStepExecution.setStepResultMessage(stepMes);
                                     testCaseStepExecution.setReturnMessage(testCaseStepExecution.getReturnMessage()
-                                            .replace("%COND%", testCaseStepExecution.getConditionOper())
+                                            .replace("%COND%", testCaseStepExecution.getConditionOperator())
                                             .replace("%LOOP%", testCaseStepExecution.getLoop())
                                             .replace("%MESSAGE%", conditionAnswer.getResultMessage().getDescription())
                                     );
@@ -851,7 +861,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     } else {
                         mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CONDITION);
                     }
-                    mes.setDescription(mes.getDescription().replace("%COND%", tCExecution.getConditionOper())
+                    mes.setDescription(mes.getDescription().replace("%COND%", tCExecution.getConditionOperator())
                             .replace("%MES%", conditionAnswerTc.getResultMessage().getDescription()));
                     tCExecution.setResultMessage(mes);
                 }
@@ -990,15 +1000,6 @@ public class ExecutionRunService implements IExecutionRunService {
         }
 
         /**
-         * Collecting and calculating Statistics.
-         */
-        try {
-//            this.collectExecutionStats(tCExecution);
-        } catch (Exception ex) {
-            LOG.warn("Exception collecting stats for execution " + tCExecution.getId() + " Exception:" + ex.toString());
-        }
-
-        /**
          * Saving TestCaseExecution object.
          */
         tCExecution.setEnd(new Date().getTime());
@@ -1031,7 +1032,7 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Iterate Actions
          */
-        List<TestCaseStepAction> testCaseStepActionList = testCaseStepExecution.getTestCaseStep().getTestCaseStepAction();
+        List<TestCaseStepAction> testCaseStepActionList = testCaseStepExecution.getTestCaseStep().getActions();
         LOG.debug("Getting list of actions of the step. " + testCaseStepActionList.size() + " action(s) to perform.");
 
         for (TestCaseStepAction testCaseStepAction : testCaseStepActionList) {
@@ -1047,11 +1048,11 @@ public class ExecutionRunService implements IExecutionRunService {
             TestCaseStepActionExecution testCaseStepActionExecution = factoryTestCaseStepActionExecution.create(
                     testCaseStepExecution.getId(), testCaseStepAction.getTest(), testCaseStepAction.getTestCase(),
                     testCaseStepAction.getStep(), testCaseStepExecution.getIndex(), testCaseStepAction.getSequence(), testCaseStepAction.getSort(), null, null,
-                    testCaseStepAction.getConditionOper(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), testCaseStepAction.getConditionVal3(),
+                    testCaseStepAction.getConditionOperator(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), testCaseStepAction.getConditionVal3(),
                     testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), testCaseStepAction.getConditionVal3(),
                     testCaseStepAction.getAction(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(), testCaseStepAction.getValue3(), testCaseStepAction.getValue1(),
                     testCaseStepAction.getValue2(), testCaseStepAction.getValue3(),
-                    testCaseStepAction.getForceExeStatus(), startAction, 0, startAction, 0, new MessageEvent(MessageEventEnum.ACTION_PENDING),
+                    testCaseStepAction.getForceExeStatus(), startAction, startAction, startAction, startAction, new MessageEvent(MessageEventEnum.ACTION_PENDING),
                     testCaseStepAction.getDescription(), testCaseStepAction, testCaseStepExecution);
             this.testCaseStepActionExecutionService.insertTestCaseStepActionExecution(testCaseStepActionExecution);
 
@@ -1120,7 +1121,7 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
             if (!(conditionDecodeError)) {
-                conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionExecution.getConditionOper(), testCaseStepActionExecution.getConditionVal1(), testCaseStepActionExecution.getConditionVal2(), testCaseStepActionExecution.getConditionVal3(), tcExecution);
+                conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionExecution.getConditionOperator(), testCaseStepActionExecution.getConditionVal1(), testCaseStepActionExecution.getConditionVal2(), testCaseStepActionExecution.getConditionVal3(), tcExecution);
                 boolean execute_Action = (boolean) conditionAnswer.getItem();
 
                 /**
@@ -1169,7 +1170,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         MessageEvent actionMes = new MessageEvent(MessageEventEnum.CONDITION_TESTCASEACTION_NOTEXECUTED);
                         testCaseStepActionExecution.setActionResultMessage(actionMes);
                         testCaseStepActionExecution.setReturnMessage(testCaseStepActionExecution.getReturnMessage()
-                                .replace("%COND%", testCaseStepActionExecution.getConditionOper())
+                                .replace("%COND%", testCaseStepActionExecution.getConditionOperator())
                                 .replace("%MESSAGE%", conditionAnswer.getResultMessage().getDescription())
                         );
 
@@ -1182,7 +1183,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     // Error when performing the condition evaluation. We force no execution (false)
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CONDITION);
                     mes.setDescription(mes.getDescription()
-                            .replace("%COND%", testCaseStepActionExecution.getConditionOper())
+                            .replace("%COND%", testCaseStepActionExecution.getConditionOperator())
                             .replace("%AREA%", "action ")
                             .replace("%MES%", conditionAnswer.getResultMessage().getDescription()));
                     testCaseStepActionExecution.setExecutionResultMessage(mes);
@@ -1190,12 +1191,12 @@ public class ExecutionRunService implements IExecutionRunService {
 
                     testCaseStepActionExecution.setActionResultMessage(new MessageEvent(MessageEventEnum.CONDITION_TESTCASEACTION_FAILED)
                             .resolveDescription("AREA", "")
-                            .resolveDescription("COND", testCaseStepActionExecution.getConditionOper())
+                            .resolveDescription("COND", testCaseStepActionExecution.getConditionOperator())
                             .resolveDescription("MESSAGE", conditionAnswer.getResultMessage().getDescription()));
 
                     testCaseStepExecution.setStepResultMessage(new MessageEvent(MessageEventEnum.CONDITION_TESTCASESTEP_FAILED)
                             .resolveDescription("AREA", "action ")
-                            .resolveDescription("COND", testCaseStepActionExecution.getConditionOper())
+                            .resolveDescription("COND", testCaseStepActionExecution.getConditionOperator())
                             .resolveDescription("MESSAGE", conditionAnswer.getResultMessage().getDescription()));
 
                     if (testCaseStepActionExecution.getForceExeStatus().equals("PE")) {
@@ -1289,8 +1290,9 @@ public class ExecutionRunService implements IExecutionRunService {
             return actionExe;
         }
 
-        // If Action setNetworkTrafficContent is not executed, we don't execute the corresponding controls.
-        if (actionExe.getActionResultMessage().getCodeString().equals("NE") && actionExe.getAction().equals(TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT)) {
+        // If Action setNetworkTrafficContent or setServiceCallContent is not executed, we don't execute the corresponding controls.
+        if (actionExe.getActionResultMessage().getCodeString().equals("NE")
+                && (actionExe.getAction().equals(TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT) || actionExe.getAction().equals(TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT))) {
             return actionExe;
         }
         //As controls are associated with an action, the current state for the action is stored in order to restore it
@@ -1300,7 +1302,7 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Iterate Control
          */
-        List<TestCaseStepActionControl> tcsacList = actionExe.getTestCaseStepAction().getTestCaseStepActionControl();
+        List<TestCaseStepActionControl> tcsacList = actionExe.getTestCaseStepAction().getControls();
         for (TestCaseStepActionControl control : tcsacList) {
 
             /**
@@ -1316,7 +1318,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     = factoryTestCaseStepActionControlExecution.create(actionExe.getId(), control.getTest(), control.getTestCase(),
                             control.getStep(), actionExe.getIndex(), control.getSequence(), control.getControlSequence(), control.getSort(),
                             null, null,
-                            control.getConditionOper(), control.getConditionVal1(), control.getConditionVal2(), control.getConditionVal3(), control.getConditionVal1(), control.getConditionVal2(), control.getConditionVal3(),
+                            control.getConditionOperator(), control.getConditionVal1(), control.getConditionVal2(), control.getConditionVal3(), control.getConditionVal1(), control.getConditionVal2(), control.getConditionVal3(),
                             control.getControl(), control.getValue1(), control.getValue2(), control.getValue3(), control.getValue1(), control.getValue2(),
                             control.getValue3(), control.getFatal(), startControl, 0, 0, 0,
                             control.getDescription(), actionExe, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
@@ -1386,7 +1388,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
             if (!(conditionDecodeError)) {
 
-                conditionAnswer = this.conditionService.evaluateCondition(controlExe.getConditionOper(), controlExe.getConditionVal1(), controlExe.getConditionVal2(), controlExe.getConditionVal3(), exe);
+                conditionAnswer = this.conditionService.evaluateCondition(controlExe.getConditionOperator(), controlExe.getConditionVal1(), controlExe.getConditionVal2(), controlExe.getConditionVal3(), exe);
                 boolean execute_Control = (boolean) conditionAnswer.getItem();
                 /**
                  * If condition OK or if manual execution, then execute the
@@ -1444,7 +1446,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         MessageEvent controlMes = new MessageEvent(MessageEventEnum.CONDITION_TESTCASECONTROL_NOTEXECUTED);
                         controlExe.setControlResultMessage(controlMes);
                         controlExe.setReturnMessage(controlExe.getReturnMessage()
-                                .replace("%COND%", controlExe.getConditionOper())
+                                .replace("%COND%", controlExe.getConditionOperator())
                                 .replace("%MESSAGE%", conditionAnswer.getResultMessage().getDescription())
                         );
 
@@ -1460,7 +1462,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     // Error when performing the condition evaluation. We force no execution (false)
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CONDITION);
                     mes.setDescription(mes.getDescription()
-                            .replace("%COND%", controlExe.getConditionOper())
+                            .replace("%COND%", controlExe.getConditionOperator())
                             .replace("%AREA%", "control ")
                             .replace("%MES%", conditionAnswer.getResultMessage().getDescription()));
                     controlExe.setExecutionResultMessage(mes);
@@ -1468,12 +1470,12 @@ public class ExecutionRunService implements IExecutionRunService {
 
                     controlExe.setControlResultMessage(new MessageEvent(MessageEventEnum.CONDITION_TESTCASECONTROL_FAILED)
                             .resolveDescription("AREA", "")
-                            .resolveDescription("COND", controlExe.getConditionOper())
+                            .resolveDescription("COND", controlExe.getConditionOperator())
                             .resolveDescription("MESSAGE", conditionAnswer.getResultMessage().getDescription()));
 
                     actionExe.setActionResultMessage(new MessageEvent(MessageEventEnum.CONDITION_TESTCASEACTION_FAILED)
                             .resolveDescription("AREA", "control ")
-                            .resolveDescription("COND", controlExe.getConditionOper())
+                            .resolveDescription("COND", controlExe.getConditionOperator())
                             .resolveDescription("MESSAGE", conditionAnswer.getResultMessage().getDescription()));
 
                     controlExe.setEnd(new Date().getTime());
@@ -1504,8 +1506,19 @@ public class ExecutionRunService implements IExecutionRunService {
 
         }
 
-        // All controls of the actions are done, we now put back the AppTypeEngine value to the one from the application.
+        /**
+         *
+         * All controls of the actions are done. We now put back the
+         * AppTypeEngine value to the one from the application. and also put
+         * back the last service called content and format.
+         *
+         */
         exe.setAppTypeEngine(exe.getApplicationObj().getType());
+        if (exe.getLastServiceCalled() != null) {
+            exe.getLastServiceCalled().setResponseHTTPBody(exe.getOriginalLastServiceCalled());
+            exe.getLastServiceCalled().setResponseHTTPBodyContentType(exe.getOriginalLastServiceCalledContent());
+            exe.getLastServiceCalled().setRecordTraceFile(true);
+        }
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         updateTCExecutionWebSocketOnly(exe, false);
@@ -1556,14 +1569,14 @@ public class ExecutionRunService implements IExecutionRunService {
             case Application.TYPE_APK:
             case Application.TYPE_IPA:
                 try {
-                    this.robotServerService.stopServer(tCExecution);
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Stop server for execution " + tCExecution.getId());
-                    }
-                } catch (WebDriverException exception) {
-                    LOG.warn("Selenium/Appium didn't manage to close connection for execution " + tCExecution.getId(), exception);
+                this.robotServerService.stopServer(tCExecution);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Stop server for execution " + tCExecution.getId());
                 }
-                break;
+            } catch (WebDriverException exception) {
+                LOG.warn("Selenium/Appium didn't manage to close connection for execution " + tCExecution.getId(), exception);
+            }
+            break;
             case Application.TYPE_FAT:
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Stop Sikuli server for execution " + tCExecution.getId() + " closing application " + tCExecution.getCountryEnvironmentParameters().getIp());
@@ -1579,7 +1592,7 @@ public class ExecutionRunService implements IExecutionRunService {
          * Stopping remote proxy.
          */
         try {
-            this.robotServerService.stopRemoteProxy(tCExecution);
+            this.executorService.stopRemoteProxy(tCExecution);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Stop Cerberus Executor Proxy for execution " + tCExecution.getId());
             }

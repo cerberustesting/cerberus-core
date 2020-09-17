@@ -271,7 +271,10 @@ public class UpdateRobot extends HttpServlet {
             }
             String executorProxyActive = reJson.getBoolean("executorProxyActive") ? "Y" : "N";
             Integer executorExtensionPort = null;
-            String executorExtensionHost = reJson.getString("executorExtensionHost");
+            String executorExtensionHost = "";
+            if (reJson.has("executorExtensionHost")) {
+                executorExtensionHost = reJson.getString("executorExtensionHost");
+            }
             if (reJson.has("executorExtensionPort") && !StringUtil.isNullOrEmpty(reJson.getString("executorExtensionPort"))) {
                 executorExtensionPort = reJson.getInt("executorExtensionPort");
             }

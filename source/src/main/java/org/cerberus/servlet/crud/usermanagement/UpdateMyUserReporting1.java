@@ -49,14 +49,13 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class UpdateMyUserReporting1 extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(UpdateMyUserReporting1.class);
-    
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         JSONObject jsonResponse = new JSONObject();
-        
+
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-        
 
         String login = request.getUserPrincipal().getName();
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
@@ -65,13 +64,13 @@ public class UpdateMyUserReporting1 extends HttpServlet {
          */
         List<String> tcstatusList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("tcstatus"), null, charset);
         List<String> groupList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("group"), null, charset);
-        List<String> tcactiveList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("tcactive"), null, charset);
+        List<String> isActiveList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("isActive"), null, charset);
         List<String> priorityList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("priority"), null, charset);
-        
+
         List<String> countryList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("country"), null, charset);
         List<String> browserList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("browser"), null, charset);
         List<String> tcestatusList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("tcestatus"), null, charset);
-        
+
         //environment
         List<String> environmentList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("environment"), null, charset);
         List<String> projectList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("project"), null, charset);
@@ -91,19 +90,19 @@ public class UpdateMyUserReporting1 extends HttpServlet {
             User user = userService.findUserByKey(login);
             if (user != null) {
                 JSONObject preferences = new JSONObject();
-                
+
                 if (tcstatusList != null) {
                     preferences.put("s", tcstatusList);
                 }
                 if (groupList != null) {
                     preferences.put("g", groupList);
                 }
-                if (tcactiveList != null) {
-                    preferences.put("a", tcactiveList);
+                if (isActiveList != null) {
+                    preferences.put("a", isActiveList);
                 }
                 if (priorityList != null) {
                     preferences.put("pr", priorityList);
-                }                
+                }
                 if (countryList != null) {
                     preferences.put("co", countryList);
                 }
@@ -119,8 +118,7 @@ public class UpdateMyUserReporting1 extends HttpServlet {
                 if (projectList != null) {
                     preferences.put("prj", projectList);
                 }
-                
-                
+
                 if (!StringUtil.isNullOrEmpty(ip)) {
                     preferences.put("ip", ip);
                 }
@@ -136,21 +134,20 @@ public class UpdateMyUserReporting1 extends HttpServlet {
                 if (!StringUtil.isNullOrEmpty(comment)) {
                     preferences.put("cm", comment);
                 }
-                
+
                 user.setReportingFavorite(preferences.toString());
                 userService.updateUser(user); //TODO: when converting to the new standard this should return an answer
-                //re-send the updated preferences 
+                //re-send the updated preferences
 
                 jsonResponse.put("preferences", preferences);
 
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Execution reporting filters ").replace("%OPERATION%", "Update"));
 
-
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 logEventService.createForPrivateCalls("/UpdateMyUserReporting1", "UPDATE", "Update user reporting preference for user: " + login, request);
-            }else{
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to update User was not found!"));               
+            } else {
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to update User was not found!"));
             }
 
             jsonResponse.put("messageType", msg.getMessage().getCodeString());
@@ -158,7 +155,7 @@ public class UpdateMyUserReporting1 extends HttpServlet {
         } catch (JSONException ex) {
             LOG.warn(ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
-            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());            
+            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         } catch (CerberusException ex) {
             LOG.warn(ex);
             //returns a default error message with the json format that is able to be parsed by the client-side

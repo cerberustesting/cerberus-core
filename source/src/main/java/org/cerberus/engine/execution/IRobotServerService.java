@@ -54,10 +54,4 @@ public interface IRobotServerService {
      */
     Capabilities getUsedCapabilities(Session session);
 
-    /**
-     *
-     * @param tce
-     */
-    void stopRemoteProxy (TestCaseExecution tce);
-
 }

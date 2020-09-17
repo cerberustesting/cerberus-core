@@ -107,7 +107,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     private static final int DEFAULT_VALUE_SCREENSHOT = 1;
     private static final int DEFAULT_VALUE_MANUAL_URL = 0;
     private static final int DEFAULT_VALUE_VERBOSE = 1;
-    private static final long DEFAULT_VALUE_TIMEOUT = 300;
+    private static final String DEFAULT_VALUE_TIMEOUT = "30000";
     private static final int DEFAULT_VALUE_PAGE_SOURCE = 1;
     private static final int DEFAULT_VALUE_SELENIUM_LOG = 1;
     private static final int DEFAULT_VALUE_RETRIES = 0;
@@ -230,7 +230,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
 
         int screenshot = DEFAULT_VALUE_SCREENSHOT;
         int verbose = DEFAULT_VALUE_VERBOSE;
-        String timeout = request.getParameter(PARAMETER_TIMEOUT);
+        String timeout = DEFAULT_VALUE_TIMEOUT;
         int pageSource = DEFAULT_VALUE_PAGE_SOURCE;
         int seleniumLog = DEFAULT_VALUE_SELENIUM_LOG;
         int retries = DEFAULT_VALUE_RETRIES;
@@ -250,6 +250,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_VERBOSE), DEFAULT_VALUE_VERBOSE, charset);
             pageSource = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_PAGE_SOURCE), DEFAULT_VALUE_PAGE_SOURCE, charset);
             seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SELENIUM_LOG), DEFAULT_VALUE_SELENIUM_LOG, charset);
+            timeout = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_TIMEOUT), DEFAULT_VALUE_TIMEOUT, charset);
             retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_RETRIES), DEFAULT_VALUE_RETRIES, charset);
             manualExecution = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION, charset);
             priority = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_EXEPRIORITY), DEFAULT_VALUE_PRIORITY, charset);
@@ -265,6 +266,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getPageSource(), DEFAULT_VALUE_PAGE_SOURCE, charset), charset);
             seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SELENIUM_LOG),
                     ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getRobotLog(), DEFAULT_VALUE_SELENIUM_LOG, charset), charset);
+            timeout = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_TIMEOUT),
+                    ParameterParserUtil.parseStringParamAndDecode(mCampaign.getTimeout(), DEFAULT_VALUE_TIMEOUT, charset), charset);
             retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_RETRIES),
                     ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getRetries(), DEFAULT_VALUE_RETRIES, charset), charset);
             manualExecution = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION),
@@ -481,16 +484,16 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     String testCase = selectTestCase.get(i);
                     TestCase tc = testCaseService.convert(testCaseService.readByKey(test, testCase));
                     // TestCases that are not active are not inserted into queue.
-                    if (tc.getTcActive().equals("Y")) {
+                    if (tc.isActive()) {
                         // We only insert testcase that exist for the given country.
                         for (TestCaseCountry country : testCaseCountryService.convert(testCaseCountryService.readByTestTestCase(null, test, testCase, null))) {
                             if (countries.contains(country.getCountry())) {
                                 // for each environment we test that correspondng gp1 is compatible with testcase environment flag activation.
                                 for (String environment : environments) {
                                     String envGp1 = invariantEnvMap.get(environment);
-                                    if (((envGp1.equals("PROD")) && (tc.getActivePROD().equalsIgnoreCase("Y")))
-                                            || ((envGp1.equals("UAT")) && (tc.getActiveUAT().equalsIgnoreCase("Y")))
-                                            || ((envGp1.equals("QA")) && (tc.getActiveQA().equalsIgnoreCase("Y")))
+                                    if (((envGp1.equals("PROD")) && tc.isActivePROD())
+                                            || ((envGp1.equals("UAT")) && tc.isActiveUAT())
+                                            || ((envGp1.equals("QA")) && tc.isActiveQA())
                                             || (envGp1.equals("DEV"))
                                             || (envGp1.equals(""))) {
                                         // Getting Application in order to check application type against browser.

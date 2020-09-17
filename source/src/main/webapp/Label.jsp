@@ -32,8 +32,6 @@
     </head>
     <body>
 
-    <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>
-
         <%@ include file="include/global/header.html" %>
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/global/messagesArea.html"%>
@@ -42,24 +40,26 @@
             <%@ include file="include/pages/label/editLabel.html"%> 
 
             <h1 class="page-title-line" id="title">Label</h1>
-            <div class="panel panel-default">
-                <div class="panel-heading" id="labelListLabel">
-                    <span class="glyphicon glyphicon-list"></span>
-                    Label List
-                </div>
-                <div class="panel-body" id="labelList">
-                    <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
-                        <li class="active"><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">List</a></li>
-                        <li><a data-toggle="tab" href="#tabTreeR" id="editTabTressR" name="tabTree">Requirement Tree</a></li>
-                        <li><a data-toggle="tab" href="#tabTreeS" id="editTabTressS" name="tabTree">Sticker Tree</a></li>
-                        <li><a data-toggle="tab" href="#tabTreeB" id="editTabTressB" name="tabTree">Battery Tree</a></li>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="center marginTop25 tab-pane fade in active" id="tabDetails">
+
+            <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
+                <li class="active"><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">List</a></li>
+                <li><a data-toggle="tab" href="#tabTreeR" id="editTabTressR" name="tabTree">Requirement Tree</a></li>
+                <li><a data-toggle="tab" href="#tabTreeS" id="editTabTressS" name="tabTree">Sticker Tree</a></li>
+                <li><a data-toggle="tab" href="#tabTreeB" id="editTabTressB" name="tabTree">Battery Tree</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="center tab-pane fade in active" id="tabDetails">
+                    <div class="panel panel-default">
+                        <div class="panel-body" id="labelList">
                             <table id="labelsTable" class="table table-bordered table-hover display" name="labelsTable"></table>
-                            <div class="marginBottom20"></div>
+                            <!--                            <div class="marginBottom20"></div>-->
                         </div>
-                        <div class="center marginTop25 tab-pane fade in" id="tabTreeR">
+                    </div>
+                </div>
+                <div class="center tab-pane fade in" id="tabTreeR">
+                    <div class="panel panel-default">
+                        <div class="panel-body" id="labelRList">
                             <div class="row">
                                 <div class='marginBottom20 marginLeft30'>
                                     <button id='refreshButtonTreeR' type='button' class='btn btn-default pull-left marginLeft15'>
@@ -72,9 +72,13 @@
                                         <span class='glyphicon glyphicon-collapse-down'></span> Expand All</button>
                                 </div>
                             </div>
-                            <div class='marginTop20' id="mainTreeR"></div>
                         </div>
-                        <div class="center marginTop25 tab-pane fade in" id="tabTreeS">
+                        <div class='marginTop20' id="mainTreeR"></div>
+                    </div>
+                </div>
+                <div class="center tab-pane fade in" id="tabTreeS">
+                    <div class="panel panel-default">
+                        <div class="panel-body" id="labelSList">
                             <div class="row">
                                 <div class='marginBottom20 marginLeft20'>
                                     <button id='refreshButtonTreeS' type='button' class='btn btn-default pull-left marginLeft15'>
@@ -89,7 +93,11 @@
                             </div>
                             <div class='marginTop20' id="mainTreeS"></div>
                         </div>
-                        <div class="center marginTop25 tab-pane fade in" id="tabTreeB">
+                    </div>
+                </div>
+                <div class="center tab-pane fade in" id="tabTreeB">
+                    <div class="panel panel-default">
+                        <div class="panel-body" id="labelBList">
                             <div class="row">
                                 <div class='marginBottom20 marginLeft20'>
                                     <button id='refreshButtonTreeB' type='button' class='btn btn-default pull-left marginLeft15'>
@@ -107,6 +115,8 @@
                     </div>
                 </div>
             </div>
+            <!--                </div>-->
+            <!--            </div>-->
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>

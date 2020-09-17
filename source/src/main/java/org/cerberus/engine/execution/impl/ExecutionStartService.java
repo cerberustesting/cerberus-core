@@ -19,7 +19,10 @@
  */
 package org.cerberus.engine.execution.impl;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
+import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
@@ -53,6 +56,7 @@ import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.engine.execution.IRobotServerService;
+import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 
 /**
  *
@@ -91,6 +95,8 @@ public class ExecutionStartService implements IExecutionStartService {
     private IRobotService robotService;
     @Autowired
     private IRobotExecutorService robotExecutorService;
+    @Autowired
+    private IExecutionThreadPoolService executionThreadPoolService;
 
     private static final Logger LOG = LogManager.getLogger(ExecutionStartService.class);
 
@@ -102,6 +108,13 @@ public class ExecutionStartService implements IExecutionStartService {
         long executionStart = new Date().getTime();
         LOG.debug("Initializing Start Timestamp : " + executionStart);
         tCExecution.setStart(executionStart);
+
+        // Checking is the instance allow to open a new execution. It may be in the process to restart.
+        if (!executionThreadPoolService.isInstanceActive()) {
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_INSTANCE_INACTIVE);
+            LOG.debug(mes.getDescription());
+            throw new CerberusException(mes);
+        }
 
         /**
          * Checking the parameters.
@@ -147,14 +160,14 @@ public class ExecutionStartService implements IExecutionStartService {
             if (tCase != null) {
                 tCExecution.setTestCaseObj(tCase);
                 tCExecution.setDescription(tCase.getDescription());
-                tCExecution.setConditionOper(tCase.getConditionOper());
+                tCExecution.setConditionOperator(tCase.getConditionOperator());
                 tCExecution.setConditionVal1(tCase.getConditionVal1());
                 tCExecution.setConditionVal1Init(tCase.getConditionVal1());
                 tCExecution.setConditionVal2(tCase.getConditionVal2());
                 tCExecution.setConditionVal2Init(tCase.getConditionVal2());
                 tCExecution.setConditionVal3(tCase.getConditionVal3());
                 tCExecution.setConditionVal3Init(tCase.getConditionVal3());
-                tCExecution.setTestCaseVersion(tCase.getTestCaseVersion());
+                tCExecution.setTestCaseVersion(tCase.getVersion());
                 tCExecution.setTestCasePriority(tCase.getPriority());
             } else {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -256,10 +269,16 @@ public class ExecutionStartService implements IExecutionStartService {
                 cea = this.factorycountryEnvironmentParameters.create(tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication(), tCExecution.getMyHost(), "", tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL(), "", "", "", "", CountryEnvironmentParameters.DEFAULT_POOLSIZE, "", "");
                 cea.setIp(tCExecution.getMyHost());
                 cea.setUrl(tCExecution.getMyContextRoot());
-                tCExecution.setUrl(StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", ""));
+                String appURL = StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", "");
+                tCExecution.setUrl(appURL);
+                // If domain is empty we guess it from URL.
+                if (StringUtil.isNullOrEmpty(cea.getDomain())) {
+                    cea.setDomain(StringUtil.getDomainFromUrl(appURL));
+                }
                 cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
                 tCExecution.setCountryEnvironmentParameters(cea);
                 LOG.debug(" -> Execution will be done with manual application connectivity setting. IP/URL/LOGIN : " + cea.getIp() + "-" + cea.getUrl() + "-" + cea.getUrlLogin());
+                LOG.debug(" Domain : " + cea.getDomain());
             }
             /**
              * If execution is manual, we force the env at 'MANUAL-ENVDATA'
@@ -282,9 +301,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 cea = this.countryEnvironmentParametersService.convert(this.countryEnvironmentParametersService.readByKey(
                         tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication()));
                 if (cea != null) {
-                    tCExecution.setCountryEnvironmentParameters(cea);
                     tCExecution.setUrl(StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", ""));
-
                     // add possibility to override URL with MyHost if MyHost is available
                     if (!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
                         String contextRoot = !StringUtil.isNullOrEmpty(tCExecution.getMyContextRoot()) ? tCExecution.getMyContextRoot() : "";
@@ -293,6 +310,11 @@ public class ExecutionStartService implements IExecutionStartService {
                     if (!StringUtil.isNullOrEmpty(tCExecution.getMyLoginRelativeURL())) {
                         cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
                     }
+                    // If domain is empty we guess it from URL.
+                    if (StringUtil.isNullOrEmpty(cea.getDomain())) {
+                        cea.setDomain(StringUtil.getDomainFromUrl(tCExecution.getUrl()));
+                    }
+                    tCExecution.setCountryEnvironmentParameters(cea);
                 } else {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND);
                     mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
@@ -315,6 +337,7 @@ public class ExecutionStartService implements IExecutionStartService {
             }
             LOG.debug("Country/Environment/Application Information Loaded. " + tCExecution.getCountry() + " - " + tCExecution.getEnvironment() + " - " + tCExecution.getApplicationObj().getApplication());
             LOG.debug(" -> Execution will be done with automatic application connectivity setting. IP/URL/LOGIN : " + cea.getIp() + "-" + cea.getUrl() + "-" + cea.getUrlLogin());
+            LOG.debug(" Domain : " + cea.getDomain());
             tCExecution.setEnvironmentData(tCExecution.getEnvironment());
         }
 
@@ -490,8 +513,8 @@ public class ExecutionStartService implements IExecutionStartService {
          * Changing Automatic execution flag depending on test case information.
          */
         if (tCExecution.getManualExecution().equals(TestCaseExecution.MANUAL_A)) {
-            if (tCExecution.getTestCaseObj().getGroup().equals(TestCase.GROUP_AUTOMATED)
-                    || tCExecution.getTestCaseObj().getGroup().equals(TestCase.GROUP_PRIVATE)) {
+            if (tCExecution.getTestCaseObj().getType().equals(TestCase.TESTCASE_TYPE_AUTOMATED)
+                    || tCExecution.getTestCaseObj().getType().equals(TestCase.TESTCASE_TYPE_PRIVATE)) {
                 tCExecution.setManualExecution(TestCaseExecution.MANUAL_N);
 
             } else {

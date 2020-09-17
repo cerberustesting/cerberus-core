@@ -183,10 +183,6 @@ public class UpdateCampaign extends HttpServlet {
 
                 IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
                 schedAns = scheduleentryservice.compareSchedListAndUpdateInsertDeleteElements(c, schList);
-                if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
-                    myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
-                }
 
                 if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     finalAnswer = campaignService.update(camp);
@@ -195,7 +191,7 @@ public class UpdateCampaign extends HttpServlet {
                          * Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign : " + c, request);
+                        logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign : ['" + c + "']", request);
                     }
 
                     if (parameter != null) {
@@ -210,13 +206,6 @@ public class UpdateCampaign extends HttpServlet {
                         }
 
                         finalAnswer = campaignParameterService.compareListAndUpdateInsertDeleteElements(c, arr);
-                        if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                            /**
-                             * Adding Log entry.
-                             */
-                            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                            logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign Parameter : " + camp.getCampaign(), request);
-                        }
                     }
 
                     if (label != null) {
@@ -231,13 +220,6 @@ public class UpdateCampaign extends HttpServlet {
                         }
 
                         finalAnswer = campaignLabelService.compareListAndUpdateInsertDeleteElements(c, arr);
-                        if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                            /**
-                             * Adding Log entry.
-                             */
-                            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                            logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign Label : " + camp.getCampaign(), request);
-                        }
                     }
 
                 } else {

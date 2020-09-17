@@ -209,7 +209,13 @@ https://github.com
 Reload the current page.
 
 ==== executeJS
-Execute a JS script (no output can be retrieved)
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Execute a JS script (no output can be retrieved).
+
 
 *[blue]#Value1#*	Javascript to execute.
 
@@ -220,31 +226,56 @@ Execute a JS script (no output can be retrieved)
 ====
 
 ==== executeCommand
-Execute a Command on the robot side.
+|=== 
 
-*[blue]#Value1#*	Command to execute.
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
 
-*[blue]#Value2#*	Arguments of the command.
+|=== 
+Execute a Command on the robot side. You can follow the Appium instructions http://appium.io/docs/en/commands/mobile-command/[here].
+
+*[blue]#Value1#*	Command to execute. Ex : mobile:deepLink
+
+*[blue]#Value2#*	Arguments of the command. Ex : {url: "https://www.site.com/", package: "com.site.SomeAndroidPackage"}
 
 ==== executeCerberusCommand
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
 Execute a Command from the Cerberus Server side. The command will be executed using the user defined in the parameter `cerberus_executeCerberusCommand_user`, password defined in `cerberus_executeCerberusCommand_password` and script from the path `cerberus_executeCerberusCommand_path` 
 
 *[blue]#Value1#*	Command to execute.
 
 ==== openApp
-Open an Application.
+|=== 
 
-*[blue]#Value1#*	Application to Open.
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
 
-*[blue]#Value2#*	Activity.
+|=== 
+Open an Application. For *[green]#GUI#* and *[green]#FAT#*, this action require the Cerberus Sikuli extention.
+
+*[blue]#Value1#*	Application to Open. BundleId for *[green]#IPA#* (activateApp() method is used), if empty, launchApp() method is used). App Package for *[green]#APK#* ('am start' command is used).  
+
+*[blue]#Value2#*	App Activity for *[green]#APK#*.
 
 
 ==== closeApp
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Close an application.
 
 *[blue]#Value1#*	Application to Open.
 
 ==== dragAndDrop
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Will Drag from an _Element_ to another __Element__.
 
 *[blue]#Value1#*	Identifier and name of the element to drag in the form of : identifier=html_reference.
@@ -252,11 +283,16 @@ Will Drag from an _Element_ to another __Element__.
 *[blue]#Value2#*	Identifier and name of the element where to drop in the form of : identifier=html_reference..
 
 ==== select
-Select an option in a <select> Element. this 'text' must be defined : <option value="text">
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Select an option in a <select> Element. this 'text' must be defined : <option value="text">. For APK and IPA, action only works in a web mode.
 
 *[blue]#Value1#*	Identifier and name of the element of the select in the form of : identifier=html_reference.
 
-*[blue]#Value2#*	Element to drop.
+*[blue]#Value2#*	Element to select.
 
 .Title
 ====
@@ -264,6 +300,11 @@ Select an option in a <select> Element. this 'text' must be defined : <option va
 ====
 
 ==== keypress
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
 will allow you to press any key in the current web page.
 
 *[blue]#Value1#* : Identifier and name of the element where the key is pressed in the form of : identifier=html_reference.
@@ -299,6 +340,11 @@ Following KEYNAME values can be used : ENTER, TAB, ESC, BACKSPACE, DELETE, INSER
 
 
 ==== type
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
 Type a data in an Element.
 
 *[blue]#Value1#* : Identifier and name of the element where the data is entered in the form of : identifier=html_reference.
@@ -306,14 +352,29 @@ Type a data in an Element.
 *[blue]#Value2#* : data to enter in the field.
 
 ==== clearField
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Clear (Empty) an Element.
 
 *[blue]#Value1#* : Identifier and name of the element to be cleared in the form of : identifier=html_reference.
 
 ==== hidekeyboard
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Hide the currently visible keyboard
 
 ==== swipe
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 The action simulates a user pressing down on the screen, sliding to another position, and removing their finger from the screen. Swipe action can be used neither with unique parameter *[red]#UP#*, *[red]#DOWN#*, *[red]#LEFT#* or *[red]#RIGHT#* or with combination of parameter *[red]#CUSTOM#* and *[red]#x1;y1;x2;y2#*, which are coordinates of origin point (x1;y1) and *relatives* coordinates of destination point (x2;y2)
 
 *[blue]#Value1#* : *[red]#UP#*, *[red]#DOWN#*, *[red]#LEFT#*, *[red]#RIGHT#* or *[red]#CUSTOM#*.
@@ -340,17 +401,28 @@ Will swipe from the point (100;100) to the point (100;200)
 ====
 
 ==== scrollTo
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Scroll to either an element or a text.
 
 *[blue]#Value1#* : Identifier and name of the element where the scroll will move the screen to in the form of : identifier=html_reference.
 
 *[blue]#Value2#* : text in the screen where the scroll will move.
+
 [NOTE]
 ====
 Use either Value1 or Value2. If both are feed, the Value2 scroll will be used first.
 ====
 
 ==== installApp
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Install an application on the mobile.
 
 *[blue]#Value1#* : Path to the application to install.
@@ -361,6 +433,11 @@ Install an application on the mobile.
 ====
 
 ==== removeApp
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Remove an application from the mobile.
 
 *[blue]#Value1#* : Application package name to remove.
@@ -372,9 +449,14 @@ com.cerberus.appmobile
 
 
 ==== wait
-Wait for a certain amount of time Feed a number (ms) or wait for element present feed an element (xpath)
+|=== 
 
-*[blue]#Value1#* : Either an interger that represent a duration in ms, either an Element that we will wait to exist in the form of : identifier=html_reference.
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Wait for a certain amount of time or for an element to be present on a page.
+
+*[blue]#Value1#* : Either an integer that represent a duration in ms, either an Element that we will wait to exist in the form of : identifier=html_reference.
 
 .Title
 ====
@@ -387,11 +469,16 @@ Will wait 10 seconds
 ====
 id=userName
 
-Will that element with id equal to userName is loaded on the current screen.
+Will wait that element with id equal to userName is loaded on the current screen.
 ====
 
 
 ==== waitVanish
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
 Wait that an element is removed from the page.
 
 *[blue]#Value1#* : Element that we will wait to be removed from the screen in the form of : identifier=html_reference.
@@ -400,20 +487,47 @@ Wait that an element is removed from the page.
 ====
 id=userName
 
-Will that Element with id equal to userName is removed from the current screen.
+Will wait that Element with id equal to userName is removed from the current screen.
+====
+
+
+==== waitNetworkTrafficIdle
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Wait that network traffic idle. Cerberus will wait until requests are no longer performed. That can be used in order to secure that all page components are fully loaded and does not miss some important resource hits. In order to do so, Cerberus will check periodically the number of hits generated from the application since the beginning of the test case. When the number of hits stops to grow during that period, Cerberus stop waiting and continue the test case.
+
+Parameter 'cerberus_networkstatsave_idleperiod_ms' can be used to change the period in millisecond and 'cerberus_networkstatsave_idlemaxloop_nb' can be used in order to limit those checks after a maximum of iteration.
+
+[NOTE]
+====
+This action is only possible when Robot has the Cerberus executor activated and fully working.
+It also require at least version 1.1 of the executor.
 ====
 
 
 ==== callService
-Call a service (REST, FTP, KAFKA,...) defined the Service Library and provide the output within the execution.
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Call a service (REST, FTP, KAFKA,...) defined on the Service Library and provide the output within the execution.
 
 *[blue]#Value1#* : Name of the service to call.
 
-*[blue]#Value2#* : Nb of Event until the action finish. It is only used if the Service is a KAFKA service with a SEARCH method.
+*[blue]#Value2#* : Nb of Event until the action finish. It is only used if the Service is a KAFKA service with a SEARCH method. It correspond to the nb of event the action will wait until it resume to the following controls or actions.
 
-*[blue]#Value3#* : Time in second until the action finish.It is only used if the Service is a KAFKA service with a SEARCH method.
+*[blue]#Value3#* : Time in second until the action finish.It is only used if the Service is a KAFKA service with a SEARCH method. It correspond to maximum time in second the action will wait until it resume to the following controls or actions.
 
 ==== executeSqlUpdate
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
 Will allow you to execute SQL update (insert,delete,update).
 
 *[blue]#Value1#* : Name of the database where the SQL will be executed. Database needs to be created into the invariant `PROPERTYDATABASE` and configured on the corresponding environment.
@@ -421,6 +535,11 @@ Will allow you to execute SQL update (insert,delete,update).
 *[blue]#Value2#* : SQL to be executed.
 
 ==== executeSqlStoredProcedure
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
 Will allow you to execute SQL stored procedure.
 
 *[blue]#Value1#* : Name of the database where the SQL will be executed. Database needs to be created into the invariant `PROPERTYDATABASE` and configured on the corresponding environment.
@@ -428,21 +547,49 @@ Will allow you to execute SQL stored procedure.
 *[blue]#Value2#* : SQL to be executed.
 
 ==== calculateProperty
+|=== 
 
-Will allow you to calculate a *[red]#Property#* defined in the property section of the test case and optionaly update the content with another property.
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Will allow you to calculate a *[red]#Property#* defined in the property section of the test case and optionally update the content with another property. That action should only be used if you need to force a calculation at a precise timing or if you want to recalculate it with the latest value. A property calculation is automatically triggered when using a property without being forced to use that action.
 
 *[blue]#Value1#* : Name of the property to calculate. If the property is already calculated, it will be forced to be calculated again.
 
 *[blue]#Value2#* : [Optional] Name of a second property that will affect the property in *Value1*.
 
-
 ==== setNetworkTrafficContent
-Retrieve the network traffic from Cerberus Executor (when activated at robot level) and calculate a json message that can be used for direct controls on all attached controls. If Robot Executor is not activated, Action will end in NA Status and all attached controls ignored.
+|=== 
 
-*[blue]#Value1#* : URL to filter.
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
 
+|=== 
+Retrieve the network traffic from Cerberus Executor (when activated at robot level) and calculate a json message that can be used for direct controls on all attached controls. If Robot Executor is not activated, Action will end in NE Status and all attached controls ignored. Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
+
+*[blue]#Value1#* : URL to filter. Network requests will be filtered based on that value. Any url that contain the value1 will be included in the network traffic.
+
+*[blue]#Value2#* : [Optional] Flag in order to include the response content of every requests. For speed and performance reason, Cerberus by default will not retrieve the content of every requests. If you want to get them in order to perform some controls on them, you can use that flag.
+
+[NOTE]
+====
+This action is only possible when Robot has the Cerberus executor activated and fully working.
+It also require at least version 1.1 of the executor.
+====
+
+==== setServiceCallContent
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Force current content of the test case on the last service call in a JSON format. That JSON will allow controls on the structure of the last call for both Request and Response including information such as http header, http protocol version, or return code. Any control attached to that action will take json path as element syntax for direct controls. If no calls were performed before that action, action will end in NE Status and all attached controls ignored. Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
 
 ==== doNothing
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
 Just perform no action. No action will be executed and engine will go to the next action or control
 
 ==== removeDifference
@@ -453,9 +600,54 @@ DEPRECATED Action that should no longuer used.
 
 ==== Global Identifiers Definition
 
-Syntax in order to identify a field or element inside a page. Syntax has the form :
+Syntax in order to identify a field or element inside a page has the form :
 
 identifier=html_reference
+
+identifier can take the various values :
+
+ - id= 
+
+id of the field will be used.
+
+ - name=
+ 
+ - class=
+ 
+ - css=
+ 
+ - xpath= 
+ 
+You can specify an xpath value. Additional documentation on xpath syntax can be found https://www.w3schools.com/xml/xpath_syntax.asp[here].
+Xpath can be tested live on Web pages from Chrome Developer extention (accessible via F12).
+
+Via Element tab, you just have to hit CTRL+F in order to find inside the DOM.
+
+image:chromeXPathElement1.png[XPath Chrome Console,align="center"] 
+
+In the search field, typing the xpath will point you to the element.
+
+image:chromeXPathElement2.png[XPath Chrome Console,align="center"]
+
+XPath can also be tested from the console tab.
+
+image:chromeXPathConsole1.png[XPath Chrome Console,align="center"]
+
+Just type 
+
+    $x("//div");
+
+And it will report the Element found. [] is returned in case no element are found.
+
+image:chromeXPathConsole2.png[XPath Chrome Console,align="center"]
+
+ - link=
+ 
+ - data-cerberus=
+
+ - coord=
+ 
+ - picture=
 
 .by Id
 ====
@@ -482,28 +674,42 @@ image:sikuliclick1.png[SikuliClick1]
 
 Standard JSON format can by found in  https://w3c.github.io/web-performance/specs/HAR/Overview.html[w3c repo].
 
-Additionally, Cerberus will add a `stat` json entry with the following format. That section will be feed by checking every hit performed by the application. Every hit will enrish the `total` section but also one of the following section : either `internal`, either one of `ThirdPartyN` inside `thirdparty` or `unknown` if the hit cannot match one of the application domain or one of the Third Party domain.
+In addition to standard HAR structure, Cerberus will add a `stat` json entry in top level containing some agregated data in order to make controls easier. That `stat` section will be feed by checking every hit performed by the tested application. Every hit will enrish the `total` section (excepted ingnored entries that will feed `ignore` section). They will also feed one of the following section : either `internal`, either  `thirdparty` (each will then be spread per thirdparty `ThirdPartyN`) or `unknown` if the hit cannot match one of the application domain or one of the Third Party domain.
 
     "stat": {
         "total":{
+            "hosts": [
+                "www.laredoute.fr",
+                "fonts.googleapis.com",
+                "laredoutemobile.commander1.com",
+                "privacy.trustcommander.net"
+            ],
             "size":{
-                "max": 125109,
                 "sum": 2286467,
+                "max": 125109,
                 "urlMax": "https://www.laredoute.com/mar/toto.jpg"
             },
-            "httpReq":{
-                "nbRequests": 117,
-                "urlError": [ "https://www.laredoute.com/mar/to.jpg"],
-                "nbError": 1,
+            "requests":{
+                "nb": 117,
+                "nb100": 0,
+                "nb101": 0,
+                "nb1xx": 0,
                 "nb200": 111,
+                "nb201": 0,
+                "nb2xx": 111,
                 "nb300": 0,
                 "nb301": 2,
                 "nb302": 2,
                 "nb307": 0,
+                "nb3xx": 4,
                 "nb400": 0,
                 "nb403": 0,
                 "nb404": 1,
-                "nb500": 0
+                "nb4xx": 1,
+                "nb500": 0,
+                "nb5xx": 0,
+                "nbError": 1,
+                "urlError": [ "https://www.lrd.co/mar/to.jpg"]
             },
             "time":{
                 "totalDuration": 18062,
@@ -511,47 +717,84 @@ Additionally, Cerberus will add a `stat` json entry with the following format. T
                 "urlMax": "https://latem.commander1.com/dc3/?chn=D",
                 "avg": 455,
                 "sum": 53249,
-                "firstDuration": 47,
-                "firstStart": "2020-02-25T20:15:16.048Z",
-                "firstEnd": "20-02-25T20:15:16.95Z",
                 "firstURL": "http://www.laredoute.fr/",
-                "lastDuration": 4455,
+                "firstStart": "2020-02-25T20:15:16.048Z",
+                "firstStartR": 0,
+                "firstEnd": "2020-02-25T20:15:16.95Z",
+                "firstEndR": 47,
+                "firstDuration": 47,
+                "lastURL": "https://p.trust.net/p-c/?id=1&site=12",
                 "lastStart": "2020-02-25T20:15:29.655Z",
-                "lastEnd": "20-02-25T20:15:34.110Z",
-                "lastURL": "https://p.trust.net/p-c/?id=1&site=12"
+                "lastStartR": 13607,
+                "lastEnd": "2020-02-25T20:15:34.110Z",
+                "lastEndR": 18062,
+                "lastDuration": 4455
             },
             "type":{
                 "css":{
+                    "requests": 2,
                     "sizeSum": 125109,
                     "sizeMax": 2286467,
                     "urlMax": "https://www.laredoute.com/mar/12.css"
-                    "url": [ "https://www.laredoute.com/mar/13.css" ]
                 },
                 "img":{...},
                 "other":{...},
                 "js":{...},
                 "html":{...},
                 "content":{...},
+                "media":{...},
                 "font":{...}
             }
         },
         "internal":{...},
-        "unknown":{...},
+        "nbThirdParty":2,
         "thirdparty":{
             "ThirdParty1":{...},
             "ThirdParty2":{...}
-        }
+        },
+        "ignore":{...},
+        "unknown":{...},
+        "requests": [
+            {
+                "size": 79565,
+                "provider": "internal",
+                "domain": "www.domain.com",
+                "httpStatus": 200,
+                "start": 0,
+                "time": 325,
+                "contentType": "html",
+                "url": "https://www.domain.com/"
+            },
+            {...}
+        ]
     }
 
-Cerberus will get and guess the `ThirdPartyN` from a json file that can be retrieve from the following https://github.com/patrickhulce/third-party-web/blob/master/data/entities.json5[repo].
+Detail explanation on `time` section :
+|===
+| `totalDuration` | duration in ms between the start of the first request and the end of the last request. |
+| `sum` | sum of duration in ms spent in all requests. |
+| `max` | duration in ms of the longuest request (that correspond to `urlMax`) |
+| `avg` | average duration in ms of all requests. |
+| `firstXXX` | first request definition |
+| `lastXXX` | last request definition |
+|===
+
+
+Cerberus will determine if a hit must be ignored (and appear in *[blue]`ignore`* section) by feeding parameter `cerberus_webperf_ignoredomainlist` with coma separated domains to ignore.
+
+Cerberus will get and guess the `ThirdPartyN` from *[blue]`thirdparty`* section from a json file that can be retrieve from the following https://github.com/patrickhulce/third-party-web/blob/master/data/entities.json5[repo].
 
 The file should be available from Cerberus from the location provided by the parameter `cerberus_webperf_thirdpartyfilepath`.
 
 If parameter is empty or file not found by Cerberus, no third party will be guess.
 
-`internal` is determined from the URL provided by the corresponding domain list defined on the corresponding application / environment. all hosts should be defined on the domain field with coma separated format.
+You can also add extra third party from the Cerberus GUI by adding a public invariant `WEBPERFTHIRDPARTY` with first attribute with the list of domain with coma separated format.
 
-Any host URL that does not patch either the ThirdParty definition file or list of application domain will appear in `unknown` section.
+*[blue]`internal`* section is populated from the URL domain list defined on the corresponding application / environment. all hosts should be defined on the domain field with coma separated format. In case the domain field is empty, Cerberus will guess it from the application URL.
+
+Any host URL that does not match either the `cerberus_webperf_ignoredomainlist` parameter, the ThirdParty definition file from parameter `cerberus_webperf_thirdpartyfilepath`, the `WEBPERFTHIRDPARTY` public invariant or list of application domain will appear in the *[blue]`unknown`* section.
+
+At the end of the execution, Cerberus will automatically execute 'waitNetworkTrafficIdle' action in order to secure that requests are no longer performed. This is used in order to secure that the collected stats are complete and does not miss some important hits. 
 
 === Test Case Control
 

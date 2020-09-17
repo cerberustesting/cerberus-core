@@ -840,7 +840,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("  KEY `ix_TestcaseExecution` (`Test`,`TestCase`,`Build`,`Revision`,`Environment`,`Country`,`ID`),");
         b.append("  CONSTRAINT `FK_testcaseexecution_1` FOREIGN KEY (`Test`, `TestCase`) REFERENCES `testcase` (`Test`, `TestCase`) ON DELETE CASCADE ON UPDATE CASCADE,");
         b.append("  CONSTRAINT `FK_testcaseexecution_3` FOREIGN KEY (`Application`) REFERENCES `application` (`Application`) ON DELETE CASCADE ON UPDATE CASCADE");
-        b.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        b.append(") ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8;");
         a.add(b.toString());
 
         b = new StringBuilder();
@@ -1150,7 +1150,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
 
-//-- Test and TestCase information inside the execution tables. That will allow to have the full tracability on the pretestcase executed.
+//-- Test and TestCase information inside the execution tables. That will allow to have the full traceability on the pretestcase executed.
 //--------------------------
         b = new StringBuilder();
         b.append("ALTER TABLE `testcasestepexecution` ADD COLUMN `Test` VARCHAR(45) NULL DEFAULT NULL  AFTER `Step` , ADD COLUMN `TestCase` VARCHAR(45) NULL DEFAULT NULL  AFTER `Test` ;");
@@ -4229,7 +4229,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
 
-        // Tracability on Testdatalib object.
+        // Traceability on Testdatalib object.
         // 668
         b = new StringBuilder();
         b.append("ALTER TABLE `testdatalib` ");
@@ -5687,7 +5687,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("INSERT INTO `parameter` VALUES ('','cerberus_executiondetail_use','Y','Do you want to use the new Execution Detail Page (Y or N)')");
         a.add(b.toString());
 
-        // Add tracability fields in testcasestep table.
+        // Add traceability fields in testcasestep table.
         // 964
         b = new StringBuilder();
         b.append("ALTER TABLE `testcasestep` ");
@@ -6273,7 +6273,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("  ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `Active`;");
         a.add(b.toString());
 
-        // Added tracability on application table.
+        // Added traceability on application table.
         // 1071
         b = new StringBuilder();
         b.append("ALTER TABLE `application` ");
@@ -6631,7 +6631,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("UPDATE `parameter` SET `param`='cerberus_proxyauthentification_user' WHERE `param`='cerberus_callservicerest_proxyuser';");
         a.add(b.toString());
 
-        // Add tracability fields in campaignlabel table.
+        // Add traceability fields in campaignlabel table.
         // 1145
         b = new StringBuilder();
         b.append("ALTER TABLE `campaignlabel` ");
@@ -8435,6 +8435,234 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("('CONTROLCONDITIONOPER', 'ifElementNotVisible', 265, 'Only execute if Element is not visible.', '')");
         a.add(b.toString());
 
+        // ADD parameters to define third party definition file.
+        // 1481-1482
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_webperf_ignoredomainlist', '', 'coma separated domain that should be ignored when building webperf stats from Network Traffic. ex : gvt1.com,domain.fr,toto.com')");
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `gp1`, `sort`, `description`, `VeryShortDesc`) VALUES "
+                + " ('WEBPERFTHIRDPARTY', 'TrustCommander', 'trustcommander.net,privacy.trustcommander.net', 100, 'Trustcommander third party.', ''),"
+                + " ('INVARIANTPUBLIC','WEBPERFTHIRDPARTY', '', '850','Webperf ThirdParty.', '')");
+
+        // ADD parameters to define third party definition file.
+        // 1483
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_networkstatsave_active', 'N', 'Boolean in order to activate the saving of the file at execution level.')");
+
+        // Remove deprecated tables.
+        // 1484-85
+        a.add("DROP TABLE `testcaseexecutionwwwdet`, `testcaseexecutionwwwsum`");
+        a.add("DROP TABLE `project`");
+
+        // create table testcaseexecutionhttpstat, store http statistics details
+        //1486
+        a.add("CREATE TABLE `testcaseexecutionhttpstat` ("
+                + "`ID` bigint(20) unsigned,"
+                + "`Start` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',"
+                + "`ControlStatus` varchar(2) NOT NULL,"
+                + "`System` varchar(45) NOT NULL,"
+                + "`Application` varchar(200) DEFAULT NULL,"
+                + "`Test` varchar(45) NULL,"
+                + "`TestCase` varchar(45) NULL,"
+                + "`Country` varchar(45) NOT NULL,"
+                + "`Environment` varchar(45) NOT NULL,"
+                + "`RobotDecli` varchar(100) NOT NULL,"
+                + "`total_hits` int(10) DEFAULT 0,"
+                + "`total_size` int(10) DEFAULT 0,"
+                + "`total_time` int(10) DEFAULT 0,"
+                + "`internal_hits` int(10) DEFAULT 0,"
+                + "`internal_size` int(10) DEFAULT 0,"
+                + "`internal_time` int(10) DEFAULT 0,"
+                + "`img_size` int(10) DEFAULT 0,"
+                + "`img_size_max` int(10) DEFAULT 0,"
+                + "`img_hits` int(10) DEFAULT 0,"
+                + "`js_size` int(10) DEFAULT 0,"
+                + "`js_size_max` int(10) DEFAULT 0,"
+                + "`js_hits` int(10) DEFAULT 0,"
+                + "`css_size` int(10) DEFAULT 0,"
+                + "`css_size_max` int(10) DEFAULT 0,"
+                + "`css_hits` int(10) DEFAULT 0,"
+                + "`html_size` int(10) DEFAULT 0,"
+                + "`html_size_max` int(10) DEFAULT 0,"
+                + "`html_hits` int(10) DEFAULT 0,"
+                + "`media_size` int(10) DEFAULT 0,"
+                + "`media_size_max` int(10) DEFAULT 0,"
+                + "`media_hits` int(10) DEFAULT 0,"
+                + "`nb_thirdparty` int(10) DEFAULT 0,"
+                + "`CrbVersion` varchar(45) ,"
+                + "`statdetail` MEDIUMTEXT ,"
+                + "`UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',"
+                + "`DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+                + "`UsrModif` VARCHAR(45) NOT NULL DEFAULT '',"
+                + "`DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01', "
+                + " PRIMARY KEY (`id`),"
+                + " KEY `IX_testcaseexecutionhttpstat_01` (`ControlStatus`, `Test`,`TestCase`,`Environment`,`Country`,`RobotDecli` ),"
+                + " KEY `IX_testcaseexecutionhttpstat_02` (`Start`),"
+                + " INDEX `IX_testcaseexecutionhttpstat_03` (`Application`),"
+                + " INDEX `IX_testcaseexecutionhttpstat_04` (`Test`,`TestCase`),"
+                + " CONSTRAINT `FK_testcaseexecutionhttpstat_03` FOREIGN KEY (`Application`) REFERENCES `application` (`Application`) ON DELETE SET NULL ON UPDATE CASCADE,"
+                + " CONSTRAINT `FK_testcaseexecutionhttpstat_04` FOREIGN KEY (`Test` , `TestCase`) REFERENCES `testcase` (`Test` , `TestCase`) ON DELETE SET NULL ON UPDATE CASCADE"
+                + ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+        // ADD parameters to define third party definition file.
+        // 1487-1488
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_executorproxy_timeoutms', '3600000', 'Timeout in ms second used for Cerberus Executor proxy session.')");
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_networkstatsave_idleperiod_ms', '5000', 'Period between every checks in ms (default to 5000). No network requests withing that period means that Network is idle and stats can be saved.'),"
+                + " ('', 'cerberus_networkstatsave_idlemaxloop_nb', '20', 'Maximum nb of loop before idle checks stops. After that max amount of checks, stats will be saved even if hits are still detected.')");
+
+        // 1489
+        a.add("ALTER TABLE `tag` ADD INDEX `IX_tag_03` (`DateCreated` ASC) ;");
+
+        // ADD waitNetworkTrafficIdle Action.
+        // 1490-1491
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES('ACTION', 'waitNetworkTrafficIdle', 16700, 'Wait until there are no more Network Traffic.', 'Wait Network Idle');");
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES('PROPERTYTYPE', 'getFromNetworkTraffic', 45, 'Get stats from Network Trafic JSON data structure.', 'Get Network Stats');");
+
+        // convert executeCommand Action.
+        // 1492-1493
+        a.add("UPDATE testcasestepaction set Value2=concat(\"{'command': '\", Value1, \"', 'args': ['\", Value2, \"']}\"), Value1=\"mobile: shell\" where Action='executeCommand';");
+        a.add("UPDATE testcasecountryproperties set Value2=concat(\"{'command': '\", Value1, \"', 'args': ['']}\"), Value1=\"mobile: shell\" where Type='getFromCommand';");
+
+        // 1494
+        // Alter  TestCase Column name from group to type
+        a.add("ALTER TABLE testcase CHANGE testcase.`Group` `Type` VARCHAR(45)");
+
+        // 1495 - 1497
+        // Update invariant name GROUP to TESTCASE_TYPE
+        a.add("UPDATE invariant SET idname='TESTCASE_TYPE', description='Type of interactive tests' WHERE idname='GROUP' AND value='AUTOMATED'");
+        a.add("UPDATE invariant SET idname='TESTCASE_TYPE', description='Type of test which cannot be automatized' WHERE idname='GROUP' AND value='MANUAL'");
+        a.add("UPDATE invariant SET idname='TESTCASE_TYPE', description='Type of tests which not appear in Cerberus' WHERE idname='GROUP' AND value='PRIVATE'");
+
+        // 1498
+        a.add("ALTER TABLE testcase CHANGE BehaviorOrValueExpected DetailedDescription TEXT");
+
+        //1499
+        a.add("ALTER TABLE testcase "
+                + "CHANGE TestCaseVersion Version INT(10),"
+                + "CHANGE ConditionOper ConditionOperator VARCHAR(45),"
+                + "CHANGE FromBuild FromMajor VARCHAR(10),"
+                + "CHANGE ToBuild ToMajor VARCHAR(10),"
+                + "CHANGE TargetBuild TargetMajor VARCHAR(10),"
+                + "CHANGE FromRev FromMinor VARCHAR(20),"
+                + "CHANGE ToRev ToMinor VARCHAR(20),"
+                + "CHANGE TargetRev TargetMinor VARCHAR(20)");
+
+        //1500 - 1506
+        a.add("ALTER TABLE testcaseexecution CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestep CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestepexecution CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestepaction CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestepactionexecution CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestepactioncontrol CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+        a.add("ALTER TABLE testcasestepactioncontrolexecution CHANGE ConditionOper ConditionOperator VARCHAR(45)");
+
+        //1507 - 1510
+        a.add("UPDATE invariant set idname = 'TESTCASECONDITIONOPERATOR' WHERE idname = 'TESTCASECONDITIONOPER'");
+        a.add("UPDATE invariant set idname = 'STEPCONDITIONOPERATOR' WHERE idname = 'STEPCONDITIONOPER'");
+        a.add("UPDATE invariant set idname = 'ACTIONCONDITIONOPERATOR' WHERE idname = 'ACTIONCONDITIONOPER'");
+        a.add("UPDATE invariant set idname = 'CONTROLCONDITIONOPERATOR' WHERE idname = 'CONTROLCONDITIONOPER'");
+
+        // 1511
+        // Drop the column function from testcase table
+        a.add("ALTER TABLE testcase DROP function");
+
+        // 1512
+        a.add("ALTER TABLE testcase "
+                + "CHANGE TcActive isActive VARCHAR(1),"
+                + "CHANGE activeQA isActiveQA VARCHAR(1),"
+                + "CHANGE activeUAT isActiveUAT VARCHAR(1),"
+                + "CHANGE activePROD isActivePROD VARCHAR(1)");
+
+        // 1513 - 1516
+        // Updating all Y in pseudo boolean columns for testcase table to 1
+        a.add("UPDATE testcase SET isActive = 1 WHERE isActive = 'Y'");
+        a.add("UPDATE testcase SET isActiveQA = 1 WHERE isActiveQA = 'Y'");
+        a.add("UPDATE testcase SET isActiveUAT = 1 WHERE isActiveUAT = 'Y'");
+        a.add("UPDATE testcase SET isActivePROD = 1 WHERE isActivePROD = 'Y'");
+
+        // 1517 - 1520
+        // Updating all non 1 in pseudo boolean columns for testcase table to 0
+        a.add("UPDATE testcase SET isActive = 0 WHERE isActive != '1'");
+        a.add("UPDATE testcase SET isActiveQA = 0 WHERE isActiveQA != '1'");
+        a.add("UPDATE testcase SET isActiveUAT = 0 WHERE isActiveUAT != '1'");
+        a.add("UPDATE testcase SET isActivePROD = 0 WHERE isActivePROD != '1'");
+
+        // 1521 - 1524
+        // Modify pseudo boolean columns to boolean type for the testcase table
+        a.add("ALTER TABLE testcase MODIFY isActive BOOLEAN");
+        a.add("ALTER TABLE testcase MODIFY isActiveQA BOOLEAN");
+        a.add("ALTER TABLE testcase MODIFY isActiveUAT BOOLEAN");
+        a.add("ALTER TABLE testcase MODIFY isActivePROD BOOLEAN");
+
+        // 1525
+        // Deleting TCACTIVE invariants
+        a.add("DELETE FROM invariant WHERE idname = 'TCACTIVE'");
+
+        // 1526
+        // Deleting HowTo Column
+        a.add("ALTER TABLE testcase DROP HowTo");
+
+        // 1527
+        a.add("ALTER TABLE testcase CHANGE BugID Bugs TEXT");
+
+        // 1528-1530
+        a.add("ALTER TABLE `testcaseexecutionqueue` ADD COLUMN `SelectedExtensionHost` VARCHAR(150) NULL DEFAULT '' AFTER `SelectedRobotHost`;");
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_queueexecution_defaultexecutorexthost_threadpoolsize', '2', 'Default number of simultaneous execution allowed for Robot execution extension host constrain (only used when host entry does not exist in EXECUTOREXTENSIONHOST invariant table).')");
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc, gp1) "
+                + "VALUES('EXECUTOREXTENSIONHOST', 'localhost', 100, 'Localhost Extension', '', '2')"
+                + ",('INVARIANTPUBLIC', 'EXECUTOREXTENSIONHOST', 900, '', '', '');");
+
+        // 1531
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES('BROWSER', 'edge', 100, 'Edge Browser', '');");
+
+        // 1532-1533
+        a.add("INSERT INTO appservicecontent select asr.* from appserviceheader asr join appservice app ON app.Service=asr.Service where `type`='KAFKA';");
+        a.add("DELETE FROM appserviceheader USING appserviceheader join appservice ON appservice.Service = appserviceheader.Service where appservice.`type` = 'KAFKA';");
+
+        // Create Table Application Object
+        // 1534
+        b = new StringBuilder();
+        b.append("CREATE TABLE `queuestat` ("
+                + "  `ID` int(11) NOT NULL AUTO_INCREMENT,"
+                + "  `GlobalConstrain` int(10) DEFAULT 0,"
+                + "  `CurrentlyRunning` int(10) DEFAULT 0,"
+                + "  `QueueSize` int(10) DEFAULT 0,"
+                + "`UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',"
+                + "`DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+                + "`UsrModif` VARCHAR(45) NOT NULL DEFAULT '',"
+                + "`DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',"
+                + "  PRIMARY KEY (`ID`),"
+                + "  KEY `IX_queuestat_01` (`DateCreated`)"
+                + ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        a.add(b.toString());
+
+        // ADD setServiceCallContent Action.
+        // 1535
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES('ACTION', 'setServiceCallContent', 24910, 'Set JSON Service Call to current content', 'Set Call content');");
+
+        // ADD setServiceCallContent Action.
+        // 1536
+        a.add("ALTER TABLE `appservice` ADD COLUMN `isFollowRedir` BOOLEAN DEFAULT 1 AFTER `ServicePath`;");
+
+        // ADD setServiceCallContent Action.
+        // 1537
+        a.add("ALTER TABLE `tag` ADD COLUMN `Comment` VARCHAR(1000) DEFAULT '' AFTER `Description`;");
+
+        // ADD Parameter.
+        // 1538
+        a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
+                + " ('', 'cerberus_queueshistorystatgraph_maxnbpoints', '1000', 'Maximum number of points on the queue history graph.')");
+        
+        // ADD Parameter
+        // 1539
+        a.add("INSERT INTO `parameter` VALUES('', 'cerberus_splashpage_enable', 'false', 'Boolean to display for non admin users a splashpage is case of maintenance')");
+        
         return a;
     }
 

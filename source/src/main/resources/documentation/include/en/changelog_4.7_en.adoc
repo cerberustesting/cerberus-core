@@ -1,0 +1,32 @@
+*Bug fixes*
+[square]
+* Fixed some issue when selecting a new step from library. (The selection of library steps was not taken from the test case system but from the 1st system from gui header combo)
+
+*Improvements / New features*
+[square]
+* [GUI] New Report page over Time (in reporting menu). That page display http stats history of an execution.
+* [GUI] New bar graph on homepage that display the execution history over the last 3 months.
+* [GUI] Inside ReportByTag page, rows that are in QUEUED state but with a previous execution are now also displayed by default.
+* [GUI] On RunTest page, TestCase filters are now hidden by default (that speedup the page loading for new users).
+* [GUI] We can now add an environment at application level without being forced to create it before (it will be created automatically).
+* [GUI] Control layout improvement on test case script page.
+* [GUI] Secure next Fire Time of scheduled campaign in 'Monitoring Page' is in the future.
+* [ENGINE] Added decode on topic, header and hosts for KAFKA SEARCH service #2119
+* [ENGINE] Better message when Kafka topic is not found.
+* [ENGINE] Service responses that have no Content-Type header defined and start by [ are now also considered as JSON
+* [ENGINE] Support for OpenApp action for IOS.
+* [ENGINE] new action 'waitNetworkTrafficIdle' in order to wait until the nb or request on application side settle.
+* [ADMINISTRATION] ManageV001 API now also clean Quartz scheduled entries when scope=instance and action=stop.
+* [ADMINISTRATION] ManageV001 API now also stop any executions requested directly calling RunTestCase servlets.
+* [ADMINISTRATION] Campaign Scheduler definition is now immediately reloaded.
+* [NETWORKTRAFFIC] Support cerberus-executor 1.1 new feature of timeout of proxy session (with new parameter 'cerberus_executorproxy_timeoutms') but also filtering out the response content of every http request. That optimize a lot the size of har produced.
+* [NETWORKTRAFFIC] setNetworkTrafficContent action now take a new parameter in order to get the response content (by default it not longer take it).
+* [NETWORKTRAFFIC] http calls stats are now saved into database in order to allow building of graph of performance over time.
+* [NETWORKTRAFFIC] Domain is automatically guess from application url when empty (Domain is used in order to qualify the http requests as internal requests).
+* [NETWORKTRAFFIC] New parameter : 'cerberus_networkstatsave_active' in order to activate the automatic saving of network stat at the end of each execution.
+* [NETWORKTRAFFIC] Implemented idle detection mechanism in order to secure collected http stats are complete vs async http calls. parameters 'cerberus_networkstatsave_idleperiod_ms' and 'cerberus_networkstatsave_idlemaxloop_nb' can be used to tune the behavior.
+* [ADMINISTRATION] Improved and clean lots of logevent creation (adding logs to manage API).
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* removed deprecated tables 'testcaseexecutionwwwdet', 'testcaseexecutionwwwsum' and 'project'.

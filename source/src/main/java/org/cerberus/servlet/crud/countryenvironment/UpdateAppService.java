@@ -133,6 +133,7 @@ public class UpdateAppService extends HttpServlet {
         String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("method"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String servicePath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("servicePath"), null, charset);
+        boolean isFollowRedir = ParameterParserUtil.parseBooleanParam(fileData.get("isFollowRedir"), true);
         String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(fileData.get("srvRequest"), null, charset);
         String kafkaTopic = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaTopic"), "", charset);
         String kafkaKey = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaKey"), "", charset);
@@ -201,6 +202,7 @@ public class UpdateAppService extends HttpServlet {
                 appService.setKafkaTopic(kafkaTopic);
                 appService.setKafkaFilterPath(kafkaFilterPath);
                 appService.setKafkaFilterValue(kafkaFilterValue);
+                appService.setFollowRedir(isFollowRedir);
                 ans = appServiceService.update(appService.getService(), appService);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 

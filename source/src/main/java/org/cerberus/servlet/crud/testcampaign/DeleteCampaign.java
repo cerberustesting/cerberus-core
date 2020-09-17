@@ -136,7 +136,7 @@ public class DeleteCampaign extends HttpServlet {
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/DeleteCampaign", "DELETE", "Delete Campaign : " + key, request);
+                    logEventService.createForPrivateCalls("/DeleteCampaign", "DELETE", "Delete Campaign : ['" + key + "']", request);
 
                 }
 

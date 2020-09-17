@@ -53,7 +53,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class GetInvariantsForTest extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(GetInvariantsForTest.class);
-    
+
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
@@ -65,41 +65,40 @@ public class GetInvariantsForTest extends HttpServlet {
             values.add("RUNUAT");
             values.add("RUNPROD");
             values.add("PRIORITY");
-            values.add("GROUP");
+            values.add("TYPE");
             values.add("TCSTATUS");
-            values.add("TCACTIVE");
             values.add("BUILD");
             values.add("REVISION");
 
             JSONObject jsonResponse = new JSONObject();
 
-            HashMap<String,List<String>> invariants = new HashMap<String,List<String>>();
-            List<Invariant> l = invariantService.readByPrivateByCriteria(0, 0, "sort", "ASC", "%", "idname "+SqlUtil.getInSQLClause(values)).getDataList();
+            HashMap<String, List<String>> invariants = new HashMap<String, List<String>>();
+            List<Invariant> l = invariantService.readByPrivateByCriteria(0, 0, "sort", "ASC", "%", "idname " + SqlUtil.getInSQLClause(values)).getDataList();
             for (Invariant myInvariant : l) {
-                if(invariants.containsKey(myInvariant.getIdName())) {
+                if (invariants.containsKey(myInvariant.getIdName())) {
                     invariants.get(myInvariant.getIdName()).add(myInvariant.getValue());
                 } else {
                     List<String> list = new ArrayList<String>();
                     list.add(myInvariant.getValue());
-                    invariants.put(myInvariant.getIdName(),list);
+                    invariants.put(myInvariant.getIdName(), list);
                 }
             }
 
-            l = invariantService.readByPublicByCriteria(0, 0, "sort", "ASC", "%", "idname "+SqlUtil.getInSQLClause(values)).getDataList();
+            l = invariantService.readByPublicByCriteria(0, 0, "sort", "ASC", "%", "idname " + SqlUtil.getInSQLClause(values)).getDataList();
             for (Invariant myInvariant : l) {
-                if(invariants.containsKey(myInvariant.getIdName())) {
+                if (invariants.containsKey(myInvariant.getIdName())) {
                     invariants.get(myInvariant.getIdName()).add(myInvariant.getValue());
                 } else {
                     List<String> list = new ArrayList<String>();
                     list.add(myInvariant.getValue());
-                    invariants.put(myInvariant.getIdName(),list);
+                    invariants.put(myInvariant.getIdName(), list);
                 }
             }
 
-            for(Map.Entry<String,List<String>> key: invariants.entrySet()) {
+            for (Map.Entry<String, List<String>> key : invariants.entrySet()) {
                 JSONArray jSONArray = new JSONArray(key.getValue());
 
-                jsonResponse.put(key.getKey(),jSONArray);
+                jsonResponse.put(key.getKey(), jSONArray);
             }
 
             httpServletResponse.setContentType("application/json");

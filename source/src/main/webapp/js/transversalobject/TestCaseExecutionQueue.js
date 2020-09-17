@@ -44,7 +44,7 @@ function initModalTestcaseExecutionQueue() {
     var doc = new Doc();
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
-    // Tracability
+    // Traceability
     $("[name='lbl_created']").html(doc.getDocOnline("transversal", "DateCreated"));
     $("[name='lbl_creator']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_lastModified']").html(doc.getDocOnline("transversal", "DateModif"));
@@ -160,7 +160,6 @@ function confirmExecutionQueueModalHandler(mode, queueAction, saveAction) {
     }
 
     showLoaderInModal('#editExecutionQueueModal');
-
     $.ajax({
         url: myServlet,
         async: true,
@@ -205,7 +204,7 @@ function confirmExecutionQueueModalHandler(mode, queueAction, saveAction) {
                 $('#editExecutionQueueModal').data("Saved", true);
                 $('#editExecutionQueueModal').modal('hide');
                 if (data.addedEntries === 1) {
-                    data.message = data.message + "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
+                    data.message = data.message + "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id + "'><button class='btn btn-primary' id='goToExecution'>Open Execution</button></a>";
                 }
                 showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
             } else {
@@ -286,7 +285,7 @@ function feedExecutionQueueModal(queueid, modalId, mode) {
 
                 formEdit.modal('show');
             } else {
-                showUnexpectedError();
+                showUnexpectedError(null, "ERROR", data.message);
             }
         },
         error: showUnexpectedError
@@ -310,7 +309,7 @@ function feedTestCase(test, selectElement, defaultTestCase) {
     $.when(jqxhr).then(function (data) {
 
         for (var index = 0; index < data.contentTable.length; index++) {
-            testCList.append($('<option></option>').text(data.contentTable[index].testCase + " - " + data.contentTable[index].description).val(data.contentTable[index].testCase));
+            testCList.append($('<option></option>').text(data.contentTable[index].testcase + " - " + data.contentTable[index].description).val(data.contentTable[index].testcase));
         }
         if (!isEmpty(defaultTestCase)) {
             testCList.prop("value", defaultTestCase);
@@ -330,7 +329,6 @@ function feedTestCase(test, selectElement, defaultTestCase) {
 function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) {
 
     // Message on entry to go.
-    console.info(exeQ.nbEntryInQueueToGo);
     var target = $("#messageArea2");
     if (exeQ.nbEntryInQueueToGo > 0) {
         target.empty();

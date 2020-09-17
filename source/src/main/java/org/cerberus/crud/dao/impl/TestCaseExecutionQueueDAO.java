@@ -98,6 +98,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     private static final String COLUMN_PRIORITY = "Priority";
     private static final String COLUMN_DEBUGFLAG = "DebugFlag";
     private static final String COLUMN_SELECTEDROBOTHOST = "SelectedRobotHost";
+    private static final String COLUMN_SELECTEDROBOTEXTHOST = "SelectedExtensionHost";
     private static final String COLUMN_EXEID = "ExeId";
     private static final String COLUMN_USRCREATED = "UsrCreated";
     private static final String COLUMN_DATECREATED = "DateCreated";
@@ -264,7 +265,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             query.append("and (exq.`test` like ? ");
             query.append(" or exq.`testCase` like ? ");
             query.append(" or tec.`application` like ? ");
-            query.append(" or tec.`bugid` like ? ");
+            query.append(" or tec.`bugs` like ? ");
             query.append(" or tec.`priority` like ? ");
             query.append(" or tec.`description` like ? )");
         }
@@ -451,7 +452,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
         final StringBuilder query = new StringBuilder();
 
-        query.append("SELECT exq.id, exq.manualexecution, app.System, app.poolSize, cea.environment, cea.country, cea.application, cea.poolsize, exq.robot, exq.robotIP, exq.robotPort, exq.DebugFlag, exq.selectedRobotHost, app.type ");
+        query.append("SELECT exq.id, exq.manualexecution, app.System, app.poolSize, cea.environment, cea.country, cea.application, cea.poolsize, exq.robot, exq.robotIP, exq.robotPort, exq.DebugFlag, exq.selectedRobotHost, exq.selectedExtensionHost, app.type ");
         query.append("from testcaseexecutionqueue exq ");
         query.append("left join testcase tec on tec.test=exq.test and tec.testcase=exq.testcase ");
         query.append("left join application app on app.application=tec.application ");
@@ -1089,7 +1090,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList<TestCaseExecutionQueue> readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
+    public AnswerList<TestCaseExecutionQueue> readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> tcstatusList, List<String> typeList, List<String> isActiveList, List<String> priorityList, List<String> targetMajorList, List<String> targetMinorList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugs, String ticket) {
         AnswerList<TestCaseExecutionQueue> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<TestCaseExecutionQueue> tceqList = new ArrayList<>();
@@ -1121,15 +1122,15 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             whereClauses.add(tcsClause);
         }
 
-        //group 
-        String groupClause = SqlUtil.generateInClause("tec.group", groupList);
-        if (!StringUtil.isNullOrEmpty(groupClause)) {
-            whereClauses.add(groupClause);
+        //type
+        String typeClause = SqlUtil.generateInClause("tec.type", typeList);
+        if (!StringUtil.isNullOrEmpty(typeClause)) {
+            whereClauses.add(typeClause);
         }
         //test case active
-        String tcactiveClause = SqlUtil.generateInClause("tec.tcactive", tcactiveList);
-        if (!StringUtil.isNullOrEmpty(tcactiveClause)) {
-            whereClauses.add(tcactiveClause);
+        String isActiveClause = SqlUtil.generateInClause("tec.isActive", isActiveList);
+        if (!StringUtil.isNullOrEmpty(isActiveClause)) {
+            whereClauses.add(isActiveClause);
         }
 
         //test case active
@@ -1139,15 +1140,15 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         }
 
         //target sprint
-        String targetsprintClause = SqlUtil.generateInClause("tec.TargetBuild", targetsprintList);
-        if (!StringUtil.isNullOrEmpty(targetsprintClause)) {
-            whereClauses.add(targetsprintClause);
+        String targetMajorClause = SqlUtil.generateInClause("tec.TargetMajor", targetMajorList);
+        if (!StringUtil.isNullOrEmpty(targetMajorClause)) {
+            whereClauses.add(targetMajorClause);
         }
 
         //target revision
-        String targetrevisionClause = SqlUtil.generateInClause("tec.TargetRev", targetrevisionList);
-        if (!StringUtil.isNullOrEmpty(targetrevisionClause)) {
-            whereClauses.add(targetrevisionClause);
+        String targetMinorClause = SqlUtil.generateInClause("tec.TargetMinor", targetMinorList);
+        if (!StringUtil.isNullOrEmpty(targetMinorClause)) {
+            whereClauses.add(targetMinorClause);
         }
 
         //creator
@@ -1211,8 +1212,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         if (!StringUtil.isNullOrEmpty(comment)) {
             whereClauses.add(" exq.comment like ? ");
         }
-        if (!StringUtil.isNullOrEmpty(bugid)) {
-            whereClauses.add(" tec.BugID like ? ");
+        if (!StringUtil.isNullOrEmpty(bugs)) {
+            whereClauses.add(" tec.bugs like ? ");
         }
         if (!StringUtil.isNullOrEmpty(ticket)) {
             whereClauses.add(" tec.Ticket like ? ");
@@ -1245,14 +1246,14 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     preStat.setString(++paramNumber, param);
                 }
             }
-            if (groupList != null) {
-                for (String param : groupList) {
+            if (typeList != null) {
+                for (String param : typeList) {
                     preStat.setString(++paramNumber, param);
                 }
             }
 
-            if (tcactiveList != null) {
-                for (String param : tcactiveList) {
+            if (isActiveList != null) {
+                for (String param : isActiveList) {
                     preStat.setString(++paramNumber, param);
                 }
             }
@@ -1261,13 +1262,13 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     preStat.setString(++paramNumber, param);
                 }
             }
-            if (targetsprintList != null) {
-                for (String param : targetsprintList) {
+            if (targetMajorList != null) {
+                for (String param : targetMajorList) {
                     preStat.setString(++paramNumber, param);
                 }
             }
-            if (targetrevisionList != null) {
-                for (String param : targetrevisionList) {
+            if (targetMinorList != null) {
+                for (String param : targetMinorList) {
                     preStat.setString(++paramNumber, param);
                 }
             }
@@ -1303,7 +1304,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     preStat.setString(++paramNumber, param);
                 }
             }
-            //browser            
+            //browser
             if (browserList != null) {
                 for (String param : browserList) {
                     preStat.setString(++paramNumber, param);
@@ -1335,8 +1336,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             if (!StringUtil.isNullOrEmpty(comment)) {
                 preStat.setString(++paramNumber, "%" + comment + "%");
             }
-            if (!StringUtil.isNullOrEmpty(bugid)) {
-                preStat.setString(++paramNumber, "%" + bugid + "%");
+            if (!StringUtil.isNullOrEmpty(bugs)) {
+                preStat.setString(++paramNumber, "%" + bugs + "%");
             }
             if (!StringUtil.isNullOrEmpty(ticket)) {
                 preStat.setString(++paramNumber, "%" + ticket + "%");
@@ -2004,9 +2005,9 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public void updateToStarting(long id, String selectedRobot) throws CerberusException {
+    public void updateToStarting(long id, String selectedRobot, String selectedRobotExt) throws CerberusException {
         String queryUpdate = "UPDATE `" + TABLE + "` "
-                + "SET `" + COLUMN_STATE + "` = 'STARTING', `" + COLUMN_SELECTEDROBOTHOST + "` = ?, `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
+                + "SET `" + COLUMN_STATE + "` = 'STARTING', `" + COLUMN_SELECTEDROBOTHOST + "` = ?, `" + COLUMN_SELECTEDROBOTEXTHOST + "` = ?, `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
                 + "WHERE `" + COLUMN_ID + "` = ? "
                 + "AND `" + COLUMN_STATE + "` = 'WAITING'";
 
@@ -2021,7 +2022,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 PreparedStatement updateStateStatement = connection.prepareStatement(queryUpdate)) {
 
             updateStateStatement.setString(1, selectedRobot);
-            updateStateStatement.setLong(2, id);
+            updateStateStatement.setString(2, selectedRobotExt);
+            updateStateStatement.setLong(3, id);
 
             int updateResult = updateStateStatement.executeUpdate();
             if (updateResult <= 0) {
@@ -2519,6 +2521,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             inQueue.setQueueRobotHost(queueRobotHost);
             inQueue.setQueueRobotPort(queueRobotPort);
             inQueue.setSelectedRobotHost(resultSet.getString("exq.SelectedRobotHost"));
+            inQueue.setSelectedRobotExtensionHost(resultSet.getString("exq.SelectedExtensionHost"));
 
         } catch (Exception e) {
             LOG.debug("Exception in load queue from resultset : " + e.toString());

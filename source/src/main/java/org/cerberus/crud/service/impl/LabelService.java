@@ -30,7 +30,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ILabelDAO;
 import org.cerberus.crud.entity.Label;
+import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.service.ILabelService;
+import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.dto.TreeNode;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -55,6 +58,8 @@ public class LabelService implements ILabelService {
     private ILabelDAO labelDAO;
     @Autowired
     private ILabelService labelService;
+    @Autowired
+    private ITestCaseLabelService testCaseLabelService;
 
     private static final Logger LOG = LogManager.getLogger("LabelService");
 
@@ -68,6 +73,14 @@ public class LabelService implements ILabelService {
     @Override
     public AnswerList<Label> readAll() {
         return readByVariousByCriteria(new ArrayList<>(), false, new ArrayList<>(), 0, 0, "Label", "asc", null, null);
+    }
+
+    public HashMap<Integer, Label> readAllToHash() {
+        HashMap<Integer, Label> labels = new HashMap<>();
+        for (Label label : this.readAll().getDataList()) {
+            labels.put(label.getId(), label);
+        }
+        return labels;
     }
 
     @Override
@@ -93,6 +106,24 @@ public class LabelService implements ILabelService {
     @Override
     public AnswerList<Label> readByVariousByCriteria(List<String> system, boolean strictSystemFilter, List<String> type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return labelDAO.readBySystemByCriteria(system, strictSystemFilter, type, startPosition, length, columnName, sort, searchParameter, individualSearch);
+    }
+
+    @Override
+    public HashMap<String, List<Label>> findLabelsFromTestCase(String test, String testCase, List<TestCase> testCases) {
+
+        HashMap<String, TestCaseLabel> testCaseLabels = this.testCaseLabelService.readByTestTestCaseToHash(test, testCase, testCases);
+        HashMap<Integer, Label> labelsMap = this.readAllToHash();
+        HashMap<String, List<Label>> labelsToReturn = new HashMap<>();
+
+        testCaseLabels.forEach((key, value) -> {
+            if (labelsToReturn.containsKey(value.getTestcase())) {
+                labelsToReturn.get(value.getTestcase()).add(labelsMap.get(value.getLabelId()));
+            } else {
+                labelsToReturn.put(value.getTestcase(), new ArrayList<Label>());
+                labelsToReturn.get(value.getTestcase()).add(labelsMap.get(value.getLabelId()));
+            }
+        });
+        return labelsToReturn;
     }
 
     @Override
@@ -383,8 +414,8 @@ public class LabelService implements ILabelService {
     }
 
     class SortbyLabel implements Comparator<TreeNode> {
-        // Used for sorting in ascending order of 
-        // Label name. 
+        // Used for sorting in ascending order of
+        // Label name.
 
         @Override
         public int compare(TreeNode a, TreeNode b) {

@@ -24,17 +24,23 @@ import java.io.Serializable;
 /**
  *
  * @author memiks
-@Entity
-@Table(catalog = "cerberus", schema = "", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"campaign", "Parameter"})})
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "CampaignParameter.findAll", query = "SELECT c FROM campaignparameter c"),
-    @NamedQuery(name = "CampaignParameter.findByCampaignparameterID", query = "SELECT c FROM campaignparameter c WHERE c.campaignparameterID = :campaignparameterID"),
-    @NamedQuery(name = "CampaignParameter.findByParameter", query = "SELECT c FROM campaignparameter c WHERE c.parameter = :parameter"),
-    @NamedQuery(name = "CampaignParameter.findByValue", query = "SELECT c FROM campaignparameter c WHERE c.value = :value")})
+ * @Entity
+ * @Table(catalog = "cerberus", schema = "", uniqueConstraints = {
+ * @UniqueConstraint(columnNames = {"campaign", "Parameter"})})
+ * @XmlRootElement
+ * @NamedQueries({
+ * @NamedQuery(name = "CampaignParameter.findAll", query = "SELECT c FROM
+ * campaignparameter c"),
+ * @NamedQuery(name = "CampaignParameter.findByCampaignparameterID", query =
+ * "SELECT c FROM campaignparameter c WHERE c.campaignparameterID =
+ * :campaignparameterID"),
+ * @NamedQuery(name = "CampaignParameter.findByParameter", query = "SELECT c
+ * FROM campaignparameter c WHERE c.parameter = :parameter"),
+ * @NamedQuery(name = "CampaignParameter.findByValue", query = "SELECT c FROM
+ * campaignparameter c WHERE c.value = :value")})
  */
 public class CampaignParameter implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     public static final String BROWSER_PARAMETER = "BROWSER";
@@ -45,7 +51,7 @@ public class CampaignParameter implements Serializable {
     public static final String APPLICATION_PARAMETER = "APPLICATION";
     public static final String SYSTEM_PARAMETER = "SYSTEM";
     public static final String PRIORITY_PARAMETER = "PRIORITY";
-    public static final String GROUP_PARAMETER = "GROUP";
+    public static final String TESTCASE_TYPE_PARAMETER = "TESTCASE_TYPE";
 
     private Integer campaignparameterID;
     private String parameter;

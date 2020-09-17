@@ -25,12 +25,13 @@
 
     <groupId>org.cerberus</groupId>
     <artifactId>cerberus</artifactId>
-    <version>4.6-SNAPSHOT</version>
+    <version>4.10-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>Cerberus</name>
 
     <properties>
+        
         <!-- Project properties -->
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,13 +40,13 @@
 
         <!-- Version management -->
         <!-- Spring Version -->
-        <spring.version>5.2.1.RELEASE</spring.version>
+        <spring.version>5.2.4.RELEASE</spring.version>
+        <spring-webmvc.version>5.2.3.RELEASE</spring-webmvc.version>
+        
         <!-- JSON Lib Version -->
         <json.version>20080701</json.version>
         <gson.version>2.8.0</gson.version>
-        <jackson-databind.version>2.9.10.1</jackson-databind.version>
-        <jackson-core-asl.version>1.7.1</jackson-core-asl.version>
-        <jackson-mapper-asl.version>1.7.1</jackson-mapper-asl.version>
+        <jackson-databind.version>2.11.0</jackson-databind.version>
         <!-- Groovy Version -->
         <groovy.version>2.4.7</groovy.version>
         <groovy-sandbox.version>1.10</groovy-sandbox.version>
@@ -53,15 +54,17 @@
         <appium.version>7.2.0</appium.version>
         <selenium.version>3.141.59</selenium.version>
         <jna.version>4.1.0</jna.version>
+        <!-- quaartz -->
+        <quartz.version>2.3.2</quartz.version>
         <!-- Log4J Version -->
-        <log4j.version>2.9.1</log4j.version>
+        <log4j.version>2.13.3</log4j.version>
         <!-- jsonpath -->
         <jsonxpath.version>2.4.0</jsonxpath.version>
         <!-- Compile scope -->
         <javaee-web-api>8.0</javaee-web-api>
         <javax.servlet-api.version>4.0.0</javax.servlet-api.version>
         <javax.websocket-api>1.1</javax.websocket-api>
-        <guava.version>23.0</guava.version>
+<!--        <guava.version>23.0</guava.version>-->
         <xmlunit.version>1.5</xmlunit.version>
         <owasp-java-html-sanitizer.version>r239</owasp-java-html-sanitizer.version>
         <jcommon.version>1.0.16</jcommon.version>
@@ -96,12 +99,9 @@
         <asciidoctor-maven-plugin.version>1.6.0</asciidoctor-maven-plugin.version>
         <license-maven-plugin.version>2.0</license-maven-plugin.version>
         
-        <!-- Quartz version -->
-        <quartz.version>2.3.0</quartz.version>
-        <quartzSecond.version>2.1.7</quartzSecond.version>
-        <c3p0.version>0.9.1.2</c3p0.version>
         <!-- Sonar Exclusion -->
         <sonar.exclusions>src/main/webapp/dependencies/Ace-1.2.6/worker-xquery.js</sonar.exclusions>
+        
     </properties>
 
     <dependencies>
@@ -125,7 +125,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
+            <version>${spring-webmvc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -138,10 +138,10 @@
             <version>${spring.version}</version>
         </dependency>
         <dependency>
-        <groupId>org.springframework.security</groupId>
-        <artifactId>spring-security-config</artifactId>
-        <version>${spring.version}</version>
-    </dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
@@ -169,16 +169,6 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson-databind.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-            <version>${jackson-core-asl.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>${jackson-mapper-asl.version}</version>
         </dependency>
         
         <!-- Groovy -->
@@ -311,11 +301,11 @@
             <version>${javax.websocket-api}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>xmlunit</groupId>
             <artifactId>xmlunit</artifactId>
@@ -375,12 +365,14 @@
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj</artifactId>
             <version>${asciidoctor.version}</version>
-            <!--            <exclusions>
+            <!--            
+            <exclusions>
                 <exclusion>
                     <groupId>org.jruby</groupId>
                     <artifactId>jruby-complete</artifactId>
                 </exclusion>
-            </exclusions>-->
+            </exclusions>
+            -->
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
@@ -398,47 +390,6 @@
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
             <version>${quartz.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-jobs</artifactId>
-            <version>${quartz.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-parent</artifactId>
-            <version>2.3.0</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-backward-compat</artifactId>
-            <version>${quartzSecond.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-commonj</artifactId>
-            <version>${quartzSecond.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-weblogic</artifactId>
-            <version>${quartzSecond.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-oracle</artifactId>
-            <version>${quartzSecond.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-jboss</artifactId>
-            <version>${quartzSecond.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>c3p0</groupId>
-            <artifactId>c3p0</artifactId>
-            <version>${c3p0.version}</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
@@ -504,6 +455,7 @@
         <version>2.28</version>
     </dependency>
         --> 
+        
     </dependencies>
 
     <build>
@@ -693,6 +645,7 @@
     </build>
 
     <profiles>
+        
         <!-- Disable java8 Doclint -->
         <profile>
             <id>doclint-java8-disable</id>
@@ -738,7 +691,7 @@
                         <artifactId>maven-antrun-plugin</artifactId>
                         <version>${maven-antrun-plugin.version}</version>
                         <executions>
-                            <!-- Upload built artifacts into our SourceForge account during the deploy phase -->
+                            <!-- Upload built artifacts into our infra during the deploy phase -->
                             <execution>
                                 <id>qa-demo-deploy</id>
                                 <phase>deploy</phase>
@@ -773,5 +726,6 @@
                 </plugins>
             </build>
         </profile>
+        
     </profiles>
 </project>

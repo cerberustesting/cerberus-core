@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-$.when($.getScript("js/global/global.js")).then(function () {
-    $(document).ready(function () {
+$.when($.getScript("js/global/global.js")).then(function() {
+    $(document).ready(function() {
         initPage();
 
         $('[data-toggle="popover"]').popover({
@@ -88,7 +88,7 @@ function aoColumnsFunc() {
             "title": doc.getDocOnline("page_global", "columnAction"),
             "sDefaultContent": "",
             "sWidth": "150px",
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 var buttons = "";
 
                 var viewExecution = '<button id="viewExecution" onclick="window.location = \'./TestCaseExecution.jsp?executionId=' + obj.id + '\';"\n\
@@ -130,7 +130,7 @@ function aoColumnsFunc() {
             "sWidth": "100px",
             "sDefaultContent": "",
             "sClass": "center",
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 if (obj !== "") {
                     var executionLink = "./TestCaseExecution.jsp?executionId=" + obj.id;
                     var glyphClass = getRowClass(obj.controlStatus);
@@ -170,10 +170,10 @@ function aoColumnsFunc() {
             "sDefaultContent": ""
         },
         {
-            "data": "testCaseVersion",
+            "data": "version",
             "visible": false,
-            "sName": "exe.testCaseVersion",
-            "title": doc.getDocOnline("testcase", "TestCaseVersion"),
+            "sName": "exe.version",
+            "title": doc.getDocOnline("testcase", "version"),
             "sWidth": "50px",
             "sDefaultContent": ""
         },
@@ -272,7 +272,7 @@ function aoColumnsFunc() {
             "title": doc.getDocOnline("page_executiondetail", "start"),
             "sWidth": "70px",
             "sDefaultContent": "",
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 return new Date(obj.start);
 //                    return new Date(obj);
             }
@@ -285,7 +285,7 @@ function aoColumnsFunc() {
             "title": doc.getDocOnline("page_executiondetail", "end"),
             "sWidth": "70px",
             "sDefaultContent": "",
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 return new Date(obj.end);
 //                    return new Date(obj);
             }
@@ -321,7 +321,7 @@ function aoColumnsFunc() {
             "title": doc.getDocOnline("page_executiondetail", "tag"),
             "sWidth": "170px",
             "sDefaultContent": "",
-            "mRender": function (data, type, obj) {
+            "mRender": function(data, type, obj) {
                 if (data !== "") {
                     return data;
                 } else {

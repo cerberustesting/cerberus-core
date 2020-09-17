@@ -152,8 +152,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 jsonResponse.put("manualExecutionList", generateManualExecutionTable(appContext, testCaseExecutions, statusFilter, countryFilter));
             }
             // Executions per Function (or Test).
-            if (outputReport.isEmpty() || outputReport.contains("functionChart")) {
-                jsonResponse.put("functionChart", generateFunctionChart(testCaseExecutions, Tag, statusFilter, countryFilter));
+            if (outputReport.isEmpty() || outputReport.contains("testFolderChart")) {
+                jsonResponse.put("testFolderChart", generateTestFolderChart(testCaseExecutions, Tag, statusFilter, countryFilter));
             }
             // Global executions stats per Status
             if (outputReport.isEmpty() || outputReport.contains("statsChart")) {
@@ -231,37 +231,6 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             result.put("QueueState", JavaScriptUtils.javaScriptEscape(testCaseExecution.getQueueState()));
         }
 
-//        if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
-//                && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugID() != null) {
-//            result.put("AppBugURL", testCaseExecution.getApplicationObj().getBugTrackerUrl());
-//                bugId = testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID());
-//                bugId = new StringBuffer("<a href='")
-//                        .append(bugId)
-//                        .append("' target='reportBugID'>")
-//                        .append(testCaseExecution.getTestCaseObj().getBugID())
-//                        .append("</a>")
-//                        .toString();
-//        }
-//        String comment;
-//        String function;
-//        String shortDesc;
-//        JSONArray bugId = new JSONArray();
-//        if ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getTest() != null)) {
-//            bugId = testCaseExecution.getTestCaseObj().getBugID();
-//            comment = JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getComment());
-//            function = JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getFunction());
-//            shortDesc = testCaseExecution.getTestCaseObj().getDescription();
-//        } else {
-//            comment = "";
-//            function = "";
-//            shortDesc = "";
-//        }
-//        result.put("BugID", bugId);
-//        result.put("Priority", JavaScriptUtils.javaScriptEscape(String.valueOf(testCaseExecution.getTestCaseObj().getPriority())));
-//        result.put("Comment", comment);
-//        result.put("Function", function);
-//        result.put("ShortDescription", shortDesc);
-//        result.put("Application", JavaScriptUtils.javaScriptEscape(testCaseExecution.getApplication()));
         List<JSONObject> testCaseDep = new ArrayList<>();
 
         if (testCaseExecution.getTestCaseExecutionQueueDepList() != null) {
@@ -320,6 +289,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             try {
                 String controlStatus = testCaseExecution.getControlStatus();
+                String previousControlStatus = testCaseExecution.getPreviousExeStatus();
 
                 // We check is Country and status is inside the fitered values.
                 if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseExecution.getCountry()).equals("on")) {
@@ -350,7 +320,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         ttcObject.put("NbExeUsefull", nbExeUsefullTot);
                         // Nb Total Usefull Executions in QU or OK status
                         Integer nbExeTmp;
-                        if (isToHide(controlStatus)) {
+                        if (isToHide(controlStatus, previousControlStatus)) {
                             nbExeTmp = (Integer) ttcObject.get("NbExeUsefullToHide");
                             ttcObject.put("NbExeUsefullToHide", ++nbExeTmp);
                         }
@@ -374,23 +344,21 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         ttcObject.put("status", testCaseExecution.getStatus());
                         ttcObject.put("application", testCaseExecution.getApplication());
                         if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
-                                && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugID() != null) {
+                                && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugs() != null) {
                             ttcObject.put("AppBugURL", testCaseExecution.getApplicationObj().getBugTrackerUrl());
                         }
                         boolean testExist = ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getTest() != null));
                         if (testExist) {
-
-                            ttcObject.put("function", testCaseExecution.getTestCaseObj().getFunction());
                             ttcObject.put("priority", testCaseExecution.getTestCaseObj().getPriority());
                             ttcObject.put("comment", testCaseExecution.getTestCaseObj().getComment());
-                            ttcObject.put("bugId", testCaseExecution.getTestCaseObj().getBugIDActive());
+                            ttcObject.put("bugs", testCaseExecution.getTestCaseObj().getBugsActive());
 
                         } else {
 
                             ttcObject.put("function", "");
                             ttcObject.put("priority", 0);
                             ttcObject.put("comment", "");
-                            ttcObject.put("bugId", new JSONArray());
+                            ttcObject.put("bugs", new JSONArray());
 
                         }
 
@@ -407,7 +375,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         ttcObject.put("NbExeUsefull", 1);
 
                         // Nb Total Usefull Executions in QU or OK status
-                        if (isToHide(controlStatus)) {
+                        if (isToHide(controlStatus, previousControlStatus)) {
                             ttcObject.put("NbExeUsefullToHide", 1);
                         } else {
                             ttcObject.put("NbExeUsefullToHide", 0);
@@ -471,7 +439,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 // building Bug Status.
                 for (Map.Entry<String, JSONObject> entry : ttc.entrySet()) {
                     JSONObject val = entry.getValue();
-                    JSONArray bugA = new JSONArray(val.getString("bugId"));
+                    JSONArray bugA = new JSONArray(val.getString("bugs"));
                     int nbBug = bugA.length();
                     if (nbBug > 0) {
                         for (int i = 0; i < nbBug; i++) {
@@ -539,7 +507,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         String key = entry.getKey();
                         JSONObject val = entry.getValue();
                         if ((val.getInt("NbExeUsefullToHide") != val.getInt("NbExeUsefull")) // One of the execution of the test case has a status <> QU and OK
-                                || (val.getJSONArray("bugId").length() > 0) // At least 1 bug has been assigned to the testcase.
+                                || (val.getJSONArray("bugs").length() > 0) // At least 1 bug has been assigned to the testcase.
                                 ) {
                             newttc.put(key, val);
                         }
@@ -560,8 +528,10 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         return testCaseExecutionTable;
     }
 
-    private boolean isToHide(String controlStatus) {
-        return (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_QU) || controlStatus.equals(TestCaseExecution.CONTROLSTATUS_OK));
+    // We hide is status is QU of OK and there were no previous execution.
+    private boolean isToHide(String controlStatus, String previousControlStatus) {
+        return (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_QU) && (StringUtil.isNullOrEmpty(previousControlStatus))
+                || controlStatus.equals(TestCaseExecution.CONTROLSTATUS_OK));
     }
 
     private boolean isPending(String controlStatus) {
@@ -650,7 +620,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         return manualExecutionTable;
     }
 
-    private JSONObject generateFunctionChart(List<TestCaseExecution> testCaseExecutions, String tag, JSONObject statusFilter, JSONObject countryFilter) throws JSONException {
+    private JSONObject generateTestFolderChart(List<TestCaseExecution> testCaseExecutions, String tag, JSONObject statusFilter, JSONObject countryFilter) throws JSONException {
         JSONObject jsonResult = new JSONObject();
         Map<String, JSONObject> axisMap = new HashMap<String, JSONObject>();
         String globalStart = "";
@@ -666,11 +636,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
             String controlStatus = testCaseExecution.getControlStatus();
             if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseExecution.getCountry()).equals("on")) {
-                if (testCaseExecution.getTestCaseObj() != null && testCaseExecution.getTestCaseObj().getFunction() != null && !"".equals(testCaseExecution.getTestCaseObj().getFunction())) {
-                    key = testCaseExecution.getTestCaseObj().getFunction();
-                } else {
-                    key = testCaseExecution.getTest();
-                }
+
+                key = testCaseExecution.getTest();
 
                 controlStatus = testCaseExecution.getControlStatus();
 
@@ -725,8 +692,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
     }
 
     class SortExecution implements Comparator<JSONObject> {
-        // Used for sorting in ascending order of 
-        // name value. 
+        // Used for sorting in ascending order of
+        // name value.
 
         @Override
         public int compare(JSONObject a, JSONObject b) {
@@ -803,8 +770,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 if (bugsToReport.contains(testCaseExecution.getControlStatus())) {
                     totalBugToReport++;
                 }
-                if ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getBugID().length() > 0)) {
-                    JSONArray arr = testCaseExecution.getTestCaseObj().getBugID();
+                if ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getBugs().length() > 0)) {
+                    JSONArray arr = testCaseExecution.getTestCaseObj().getBugs();
                     for (int i = 0; i < arr.length(); i++) {
                         JSONObject bug = (JSONObject) arr.get(i);
                         key = bug.getString("id");

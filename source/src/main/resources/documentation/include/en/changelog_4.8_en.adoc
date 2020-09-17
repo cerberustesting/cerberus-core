@@ -1,0 +1,18 @@
+*Bug fixes*
+[square]
+* Forcing Cerberus to retry getting BrowserStack build hash when unsuccessful result.
+* Improved Appium timeout support and fixed timeout setup at campaign level.
+* Allow space and special characters on service name (there were some issue editing them from testcase script page) #2147
+
+*Improvements / New features*
+[square]
+* Make 'executeCommand' actions and 'getFromCommand' properties more generic in order to trigger any Appium command. That allow for example to perform deeplink tests. #2092
+* New page in order to follow-up campaign execution over time (duration, Status, coverage,...).
+* New queue constrain on executor extension in order to secure performance of proxy layer. #2133
+* Lots of refactors in order to provide cleaner JSON services (in preparation for Angular Version of Cerberus UI)
+* Added support for EDGE Browser
+* Optimized memory consumption on ExecutionOverTime reporting page.
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* Make sure to tests all your Application (Appium) testcases that use 'getFromCommand' properties or 'executeCommand' action before upgrade.

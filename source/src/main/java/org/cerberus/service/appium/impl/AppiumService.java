@@ -33,6 +33,7 @@ import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.entity.SwipeAction;
+import org.cerberus.engine.entity.SwipeAction.Direction;
 import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.appium.IAppiumService;
@@ -45,11 +46,11 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.geom.Line2D;
-import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
+import java.util.Set;
 import java.time.Duration;
-import org.cerberus.engine.entity.SwipeAction.Direction;
+import org.json.JSONException;
 
 /**
  * @author bcivel
@@ -98,28 +99,49 @@ public abstract class AppiumService implements IAppiumService {
     }
 
     @Override
-    public MessageEvent type(Session session, Identifier identifier, String property, String propertyName) {
+    public MessageEvent wait(Session session, Identifier identifier) {
         MessageEvent message;
         try {
-            if (!StringUtil.isNull(property)) {
+            WebElement elmt = this.getElement(session, identifier, false, false);
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            return message;
+
+        } catch (NoSuchElementException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            LOG.debug(exception.toString());
+            return message;
+
+        } catch (WebDriverException exception) {
+            LOG.error("Exception during Appium Wait Operation.", exception);
+            return parseWebDriverException(exception);
+        }
+    }
+
+    @Override
+    public MessageEvent type(Session session, Identifier identifier, String valueToType, String propertyName) {
+        MessageEvent message;
+        try {
+            if (!StringUtil.isNull(valueToType)) {
                 WebElement elmt = this.getElement(session, identifier, false, false);
                 if (elmt instanceof MobileElement) {
-                    ((MobileElement) this.getElement(session, identifier, false, false)).setValue(property);
+                    ((MobileElement) this.getElement(session, identifier, false, false)).setValue(valueToType);
                 } else { // FIXME See if we can delete it ??
                     TouchAction action = new TouchAction(session.getAppiumDriver());
                     action.press(ElementOption.element(this.getElement(session, identifier, false, false))).release().perform();
                     try {
                         Thread.sleep(3000);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        LOG.error("Exception during Appium Type action.", e);
                     }
-                    session.getAppiumDriver().getKeyboard().sendKeys(property);
+                    session.getAppiumDriver().getKeyboard().sendKeys(valueToType);
                 }
             }
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-            if (!StringUtil.isNull(property)) {
-                message.setDescription(message.getDescription().replace("%DATA%", ParameterParserUtil.securePassword(property, propertyName)));
+            if (!StringUtil.isNull(valueToType)) {
+                message.setDescription(message.getDescription().replace("%DATA%", ParameterParserUtil.securePassword(valueToType, propertyName)));
             } else {
                 message.setDescription(message.getDescription().replace("%DATA%", "No property"));
             }
@@ -130,7 +152,7 @@ public abstract class AppiumService implements IAppiumService {
             LOG.debug(exception.toString());
             return message;
         } catch (WebDriverException exception) {
-            LOG.fatal(exception.toString());
+            LOG.error(exception.toString());
             return parseWebDriverException(exception);
         }
     }
@@ -165,7 +187,7 @@ public abstract class AppiumService implements IAppiumService {
      */
     private MessageEvent parseWebDriverException(WebDriverException exception) {
         MessageEvent mes;
-        LOG.fatal(exception.toString());
+        LOG.error(exception.toString(), exception);
         mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
         mes.setDescription(mes.getDescription().replace("%ERROR%", exception.getMessage().split("\n")[0]));
         return mes;
@@ -391,7 +413,7 @@ public abstract class AppiumService implements IAppiumService {
 
     }
 
-    public abstract String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException;
+    public abstract String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException, JSONException;
 
     public String getElementPosition(Session session, Identifier identifier) {
         AppiumDriver driver = session.getAppiumDriver();

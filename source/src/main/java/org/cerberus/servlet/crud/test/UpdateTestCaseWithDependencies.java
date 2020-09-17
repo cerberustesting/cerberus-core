@@ -179,27 +179,27 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                         tcs.setStep(++nextStepNumber);
                     }
 
-                    if (tcs.getTestCaseStepAction() != null) {
-                        int nextSequenceNumber = getMaxSequenceNumber(tcs.getTestCaseStepAction());
-                        for (TestCaseStepAction tcsa : tcs.getTestCaseStepAction()) {
+                    if (tcs.getActions() != null) {
+                        int nextSequenceNumber = getMaxSequenceNumber(tcs.getActions());
+                        for (TestCaseStepAction tcsa : tcs.getActions()) {
                             if (tcsa.getSequence() == -1) {
                                 tcsa.setSequence(++nextSequenceNumber);
                             }
                             tcsa.setStep(tcs.getStep());
 
-                            if (tcsa.getTestCaseStepActionControl() != null) {
-                                int nextControlNumber = getMaxControlNumber(tcsa.getTestCaseStepActionControl());
-                                for (TestCaseStepActionControl tscac : tcsa.getTestCaseStepActionControl()) {
+                            if (tcsa.getControls() != null) {
+                                int nextControlNumber = getMaxControlNumber(tcsa.getControls());
+                                for (TestCaseStepActionControl tscac : tcsa.getControls()) {
                                     if (tscac.getControlSequence() == -1) {
                                         tscac.setControlSequence(++nextControlNumber);
                                     }
                                     tscac.setStep(tcs.getStep());
                                     tscac.setSequence(tcsa.getSequence());
                                 }
-                                tcsacFromPage.addAll(tcsa.getTestCaseStepActionControl());
+                                tcsacFromPage.addAll(tcsa.getControls());
                             }
                         }
-                        tcsaFromPage.addAll(tcs.getTestCaseStepAction());
+                        tcsaFromPage.addAll(tcs.getActions());
                     }
                 }
 
@@ -216,7 +216,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 tcsacService.compareListAndUpdateInsertDeleteElements(tcsacFromPage, tcsacFromDtb, duplicate);
 
                 tc.setUsrModif(request.getUserPrincipal().getName());
-                tc.setTestCaseVersion(tc.getTestCaseVersion() + 1);
+                tc.setVersion(tc.getVersion() + 1);
 
                 testCaseService.update(tc.getTest(), tc.getTestCase(), tc);
 
@@ -228,7 +228,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                      * Update was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateTestCaseWithDependencies1", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "'] version : " + tc.getTestCaseVersion(), request);
+                    logEventService.createForPrivateCalls("/UpdateTestCaseWithDependencies", "UPDATE", "Update TestCase Script : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "'] version : " + tc.getVersion(), request);
                 }
 
             }
@@ -343,32 +343,32 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             JSONObject step = stepArray.getJSONObject(i);
 
             boolean delete = step.getBoolean("toDelete");
-            int stepNumber = step.isNull("step") ? -1 : step.getInt("step");
+            int stepNumber = step.isNull("stepId") ? -1 : step.getInt("stepId");
             int sort = step.isNull("sort") ? -1 : step.getInt("sort");
             String loop = step.getString("loop");
-            String conditionOper = step.getString("conditionOper");
+            String conditionOperator = step.getString("conditionOperator");
             String conditionVal1 = step.getString("conditionVal1");
             String conditionVal2 = step.getString("conditionVal2");
             String conditionVal3 = step.getString("conditionVal3");
             String description = step.getString("description");
-            String useStep = step.getString("useStep");
-            String useStepTest = step.getString("useStepTest");
-            String useStepTestCase = step.getString("useStepTestCase");
-            int useStepStep = step.getInt("useStepStep");
-            String inLibrary = step.getString("inLibrary");
-            String forceExe = step.getString("forceExe");
+            String isUsedStep = step.getString("isUsedStep");
+            String libraryStepTest = step.getString("libraryStepTest");
+            String libraryStepTestCase = step.getString("libraryStepTestCase");
+            int libraryStepStepId = step.getInt("libraryStepStepId");
+            String isLibraryStep = step.getString("isLibraryStep");
+            String isExecutionForced  = step.getString("isExecutionForced");
             JSONArray stepActions = step.getJSONArray("actionArr");
 
             if (!delete) {
-                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, sort, loop, conditionOper, conditionVal1, conditionVal2, conditionVal3, description, useStep, useStepTest,
-                        useStepTestCase, useStepStep, inLibrary, forceExe, null, null, request.getUserPrincipal().getName(), null);
+                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, sort, loop, conditionOperator, conditionVal1, conditionVal2, conditionVal3, description, isUsedStep, libraryStepTest,
+                        libraryStepTestCase, libraryStepStepId, isLibraryStep, isExecutionForced , null, null, request.getUserPrincipal().getName(), null);
 
-                if (useStep.equals("N")) {
-                    tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, stepActions));
+                if (isUsedStep.equals("N")) {
+                    tcStep.setActions(getTestCaseStepActionFromParameter(request, appContext, test, testCase, stepActions));
                 } else {
                     TestCaseStep tcs = null;
-                    if (useStepStep != -1 && !useStepTest.equals("") && !useStepTestCase.equals("")) {
-                        tcs = tcsService.findTestCaseStep(useStepTest, useStepTestCase, useStepStep);
+                    if (libraryStepStepId != -1 && !libraryStepTest.equals("") && !libraryStepTestCase.equals("")) {
+                        tcs = tcsService.findTestCaseStep(libraryStepTest, libraryStepTestCase, libraryStepStepId);
                         if (tcs != null) {
                             tcStep.setUseStepTest(tcs.getTest());
                             tcStep.setUseStepTestCase(tcs.getTestCase());
@@ -388,12 +388,12 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
         for (int i = 0; i < testCaseStepActionJson.length(); i++) {
             JSONObject tcsaJson = testCaseStepActionJson.getJSONObject(i);
-
+            
             boolean delete = tcsaJson.getBoolean("toDelete");
-            int step = tcsaJson.isNull("step") ? -1 : tcsaJson.getInt("step");
+            int step = tcsaJson.isNull("stepId") ? -1 : tcsaJson.getInt("stepId");
             int sequence = tcsaJson.isNull("sequence") ? -1 : tcsaJson.getInt("sequence");
             int sort = tcsaJson.isNull("sort") ? -1 : tcsaJson.getInt("sort");
-            String conditionOper = tcsaJson.getString("conditionOper");
+            String conditionOperator = tcsaJson.getString("conditionOperator");
             String conditionVal1 = tcsaJson.getString("conditionVal1");
             String conditionVal2 = tcsaJson.getString("conditionVal2");
             String conditionVal3 = tcsaJson.getString("conditionVal3");
@@ -407,8 +407,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             JSONArray controlArray = tcsaJson.getJSONArray("controlArr");
 
             if (!delete) {
-                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, sort, conditionOper, conditionVal1, conditionVal2, conditionVal3, action, object, property, value3, forceExeStatus, description, screenshot);
-                tcsa.setTestCaseStepActionControl(getTestCaseStepActionControlFromParameter(request, appContext, test, testCase, controlArray));
+                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, sort, conditionOperator, conditionVal1, conditionVal2, conditionVal3, action, object, property, value3, forceExeStatus, description, screenshot);
+                tcsa.setControls(getTestCaseStepActionControlFromParameter(request, appContext, test, testCase, controlArray));
                 testCaseStepAction.add(tcsa);
             }
         }
@@ -423,15 +423,15 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             JSONObject controlJson = controlArray.getJSONObject(i);
 
             boolean delete = controlJson.getBoolean("toDelete");
-            int step = controlJson.isNull("step") ? -1 : controlJson.getInt("step");
+            int step = controlJson.isNull("stepId") ? -1 : controlJson.getInt("stepId");
             int sequence = controlJson.isNull("sequence") ? -1 : controlJson.getInt("sequence");
             int control = controlJson.isNull("controlSequence") ? -1 : controlJson.getInt("controlSequence");
             int sort = controlJson.isNull("sort") ? -1 : controlJson.getInt("sort");
-            String conditionOper = controlJson.isNull("conditionOper") ? "always" : controlJson.getString("conditionOper");
+            String conditionOperator = controlJson.isNull("conditionOperator") ? "always" : controlJson.getString("conditionOperator");
             String conditionVal1 = controlJson.isNull("conditionVal1") ? "" : controlJson.getString("conditionVal1");
             String conditionVal2 = controlJson.isNull("conditionVal2") ? "" : controlJson.getString("conditionVal2");
             String conditionVal3 = controlJson.isNull("conditionVal3") ? "" : controlJson.getString("conditionVal3");
-            String type = controlJson.getString("objType");
+            //String type = controlJson.getString("objType");
             String controlValue = controlJson.getString("control");
             String value1 = controlJson.getString("value1");
             String value2 = controlJson.getString("value2");
@@ -440,7 +440,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");
             if (!delete) {
-                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, sort, conditionOper, conditionVal1, conditionVal2, conditionVal3, controlValue, value1, value2, value3, fatal, description, screenshot));
+                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, sort, conditionOperator, conditionVal1, conditionVal2, conditionVal3, controlValue, value1, value2, value3, fatal, description, screenshot));
             }
         }
         return testCaseStepActionControl;

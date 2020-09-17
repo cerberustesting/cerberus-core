@@ -1,32 +1,61 @@
-# Cerberus 
+# Cerberus Testing
+
+Easy to use test automation platform.
 
 [![Build Status](https://travis-ci.org/cerberustesting/cerberus-source.svg?branch=master)](//travis-ci.org/cerberustesting/cerberus-source)
 [![Test Status](https://prod.cerberus-testing.org/ResultCIV003?campaign=Cerberus_campaign&outputformat=svg&t=180131)](https://prod.cerberus-testing.org/)
 
-User-friendly automated testing framework.
+[![Screenshots](https://raw.githubusercontent.com/cerberustesting/cerberus-source/master/docs/screenshots/CerberusGitHub.gif)](https://cerberus-testing.com/)
 
-# What is it? How to install it? How to use it?
+# What is it?
 
-Check out all information about Cerberus from its [dedicated web site](http://www.cerberus-testing.org/)!
+Cerberus Testing is a low-code test automation platform that supports testing Web, iOS, Android and API (REST, SOAP and Kafka) applications.
 
-Full Documentation is available [here](https://cerberustesting.github.io/documentation_en.html) and a youtube channel [here](https://www.youtube.com/channel/UCkG4csTjR0V5gl77BHhldBQ)
+The platform allows the creation of automated testcases through an easy to use web interface without any need for development skills - automated tests implementation and management now becomes available for all elements of the development, quality and business teams.
 
-A demo site is available [here](http://demo.cerberus-testing.org)
+Group and organize your testcases in campaigns, schedule them or trigger them in CI/CD pipelines through Jenkins/Gitlab/Bitbucket connectors and receive notifications by email or Slack.
 
-A Jenkins Plugin is also available directly from Jenkins. Corresponding repo is [here](https://github.com/jenkinsci/cerberus-testing-plugin)
+Once installed, and in few clicks, get your automated tests up and running in order to either secure your software quality before it is deployed to production or to continuously monitor that the quality in production is maintained. 
 
-Docker images are available for [MySQL](https://hub.docker.com/r/cerberustesting/cerberus-db-mysql/), [Tomcat](https://hub.docker.com/r/cerberustesting/cerberus-as-tomcat/) and [Tomcat with Keycloak Adapter](https://hub.docker.com/r/cerberustesting/cerberus-as-tomcat-keycloak/) 
+# How to install it? How to use it?
 
-**For Developpers :**
+Check out all information about Cerberus Testing in our official website: [Cerberus Testing](https://www.cerberus-testing.com/)
 
-A Slack channel is available [here](https://cerberustesting.slack.com)
+Documentation is available here: [Cerberus Testing Documentation](https://cerberustesting.github.io/documentation_en.html)
 
-Cerberus Production is available [here](http://prod.cerberus-testing.org)
+Our YouTube channel is: [Cerberus Testing YouTube Channel](https://www.youtube.com/channel/UCkG4csTjR0V5gl77BHhldBQ)
 
+Our LinkedIn page is: [Cerberus Testing LinkedIn Page](https://www.linkedin.com/company/cerberus-testing/)
+
+A demo is available here: [Cerberus Testing Demo](http://demo.cerberus-testing.org)
+
+A Jenkins Plugin is available directly from Jenkins, here is the repository: [Cerberus Testing Jenkins Plugin](https://github.com/jenkinsci/cerberus-testing-plugin)
+
+Docker images are available for [MySQL](https://hub.docker.com/r/cerberustesting/cerberus-db-mysql/), [Tomcat](https://hub.docker.com/r/cerberustesting/cerberus-as-tomcat/) and [Tomcat with Keycloak Adapter](https://hub.docker.com/r/cerberustesting/cerberus-as-tomcat-keycloak/).
+
+# They trust us
+
+* [La Redoute](https://www.laredoute.fr/)
+* [Damart](https://www.damart.fr)
+* [Auchan Retail International](https://www.auchan-retail.com/)
+* [Decathlon](https://www.decathlon.fr/)
+* [Atecna](https://www.atecna.fr/)
+* [TF1](https://www.tf1.fr/)
+* [atale.io](https://atale.io/)
+* [sarahaccp.com](https://sarahaccp.com/)
+* ...
+
+# For Developers
+
+A Slack channel is available [here](https://cerberustesting.slack.com). The open source community is [here](https://github.com/cerberustesting).
+
+Cerberus Testing production is available [here](http://prod.cerberus-testing.org) - this is where Cerberus Testing quality is secured. 
+
+Snapshot releases are available [here](http://vm.cerberus-testing.org/delivery/).
 
 # License
 
-Cerberus Copyright (C) 2013 - 2019 cerberustesting
+Cerberus Copyright (C) 2013 - 2020 cerberustesting
 
 This file is part of Cerberus.
 

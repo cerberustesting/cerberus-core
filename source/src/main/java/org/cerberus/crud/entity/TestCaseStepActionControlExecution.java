@@ -41,7 +41,7 @@ public class TestCaseStepActionControlExecution {
     private int sequence;
     private int controlSequence;
     private int sort;
-    private String conditionOper;
+    private String conditionOperator;
     private String conditionVal1Init;
     private String conditionVal2Init;
     private String conditionVal3Init;
@@ -144,12 +144,12 @@ public class TestCaseStepActionControlExecution {
         this.sort = sort;
     }
 
-    public String getConditionOper() {
-        return conditionOper;
+    public String getConditionOperator() {
+        return conditionOperator;
     }
 
-    public void setConditionOper(String conditionOper) {
-        this.conditionOper = conditionOper;
+    public void setConditionOperator(String conditionOperator) {
+        this.conditionOperator = conditionOperator;
     }
 
     public String getConditionVal1() {
@@ -393,7 +393,7 @@ public class TestCaseStepActionControlExecution {
             result.put("sequence", this.getSequence());
             result.put("control", this.getControlSequence());
             result.put("sort", this.getSort());
-            result.put("conditionOper", this.getConditionOper());
+            result.put("conditionOperator", this.getConditionOperator());
             result.put("conditionVal1Init", this.getConditionVal1Init());
             result.put("conditionVal2Init", this.getConditionVal2Init());
             result.put("conditionVal3Init", this.getConditionVal3Init());

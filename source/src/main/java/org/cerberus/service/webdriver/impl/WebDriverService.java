@@ -85,7 +85,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class WebDriverService implements IWebDriverService {
 
-    private static final int TIMEOUT_MILLIS = 30000;
     private static final int TIMEOUT_WEBELEMENT = 300;
     private static final int TIMEOUT_FOCUS = 1000;
 
@@ -800,7 +799,7 @@ public class WebDriverService implements IWebDriverService {
     private boolean checkIfExpectedWindow(Session session, String identifier, String value) {
 
         boolean result = false;
-        WebDriverWait wait = new WebDriverWait(session.getDriver(), TIMEOUT_WEBELEMENT);
+        WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
         String title;
 
         switch (identifier) {
@@ -936,7 +935,7 @@ public class WebDriverService implements IWebDriverService {
     public MessageEvent doSeleniumActionWait(Session session, Identifier identifier) {
         MessageEvent message;
         try {
-            WebDriverWait wait = new WebDriverWait(session.getDriver(), TIMEOUT_WEBELEMENT);
+            WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
             wait.until(ExpectedConditions.presenceOfElementLocated(this.getBy(identifier)));
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
@@ -953,7 +952,7 @@ public class WebDriverService implements IWebDriverService {
     public MessageEvent doSeleniumActionWaitVanish(Session session, Identifier identifier) {
         MessageEvent message;
         try {
-            WebDriverWait wait = new WebDriverWait(session.getDriver(), TIMEOUT_WEBELEMENT);
+            WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
             wait.until(ExpectedConditions.invisibilityOfElementLocated(this.getBy(identifier)));
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAITVANISH_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));

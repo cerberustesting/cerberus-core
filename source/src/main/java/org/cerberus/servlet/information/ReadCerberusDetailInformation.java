@@ -21,6 +21,7 @@ package org.cerberus.servlet.information;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -66,6 +68,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadCerberusDetailInformation extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ReadCerberusDetailInformation.class);
+
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S'Z'";
 
     private ICerberusInformationDAO cerberusDatabaseInformation;
     private IDatabaseVersioningService databaseVersionService;
@@ -126,12 +130,16 @@ public class ReadCerberusDetailInformation extends HttpServlet {
                     objectTrig.put("triggerName", triggerSet.getJobDataMap().getString("name"));
                     objectTrig.put("triggerType", triggerSet.getJobDataMap().getString("type"));
                     objectTrig.put("triggerUserCreated", triggerSet.getJobDataMap().getString("user"));
-                    objectTrig.put("triggerNextFiretime", triggerSet.getNextFireTime());
+                    objectTrig.put("triggerNextFiretime", triggerSet.getFireTimeAfter(new Date()));
+                    objectTrig.put("triggerCronDefinition", triggerSet.getJobDataMap().getString("cronDefinition"));
                     triggerList.add(objectTrig);
                 }
                 Collections.sort(triggerList, new SortTriggers());
                 JSONArray object1 = new JSONArray(triggerList);
                 object.put("schedulerTriggers", object1);
+                Date now = new Date();
+                object.put("serverDate", new SimpleDateFormat(DATE_FORMAT).format(now));
+                object.put("serverTimeZone", TimeZone.getDefault().getDisplayName());
             }
             jsonResponse.put("scheduler", object);
 
@@ -221,10 +229,9 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             objCache.put("cacheTagSystemEntry", cacheValuesArray);
 
             jsonResponse.put("cache", objCache);
-            
+
             executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
             jsonResponse.put("executionThreadPoolInstanceActive", executionThreadPoolService.isInstanceActive());
-            
 
         } catch (JSONException ex) {
             LOG.warn(ex);

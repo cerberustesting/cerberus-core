@@ -21,6 +21,7 @@ package org.cerberus.crud.service.impl;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,8 +30,10 @@ import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.cerberus.crud.dao.IScheduleEntryDAO;
+import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IScheduleEntryService;
 import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.scheduler.SchedulerInit;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
@@ -45,6 +48,11 @@ public class ScheduleEntryService implements IScheduleEntryService {
 
     @Autowired
     IScheduleEntryDAO schedulerDao;
+    @Autowired
+    private SchedulerInit schedulerInit;
+    @Autowired
+    private IMyVersionService myVersionService;
+
     private static final Logger LOG = LogManager.getLogger(ScheduleEntryService.class);
 
     @Override
@@ -134,6 +142,7 @@ public class ScheduleEntryService implements IScheduleEntryService {
     @Override
     public Answer createListSched(List<ScheduleEntry> objectList) {
         Answer ans = new Answer(null);
+        boolean changed = false;
         if (objectList.isEmpty()) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unvalid SchedulerEntry data"));
@@ -157,7 +166,19 @@ public class ScheduleEntryService implements IScheduleEntryService {
                     ans.setResultMessage(msg);
                 } else {
                     ans = schedulerDao.create(objectToCreate);
+                    if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Updating Scheduler Version.
+                         */
+                        myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
+                        changed = true;
+                    }
+
                 }
+            }
+            if (changed) {
+                // Reload Cheduler Version.
+                schedulerInit.init();
             }
         }
         return ans;
@@ -213,6 +234,12 @@ public class ScheduleEntryService implements IScheduleEntryService {
             ans = this.createListSched(listToUpdateOrInsert);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
         }
+
+        if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
+            schedulerInit.init();
+        }
+
         return finalAnswer;
     }
 

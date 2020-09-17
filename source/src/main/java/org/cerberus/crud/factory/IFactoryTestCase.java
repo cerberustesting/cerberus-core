@@ -44,30 +44,28 @@ public interface IFactoryTestCase {
      * @param implementer
      * @param executor
      * @param usrModif
-     * @param function
      * @param application
-     * @param activeQA
-     * @param activeUAT
-     * @param activePROD
+     * @param isActiveQA
+     * @param isActiveUAT
+     * @param isActivePROD
      * @param priority
-     * @param group
+     * @param type
      * @param status
      * @param description
-     * @param behavior
-     * @param howTo
-     * @param tcActive
-     * @param conditionOper
+     * @param detailedDescription
+     * @param isActive
+     * @param conditionOperator
      * @param conditionVal1
      * @param conditionVal2
      * @param conditionVal3
-     * @param fromBuild
-     * @param fromRev
-     * @param toBuild
-     * @param toRev
+     * @param fromMajor
+     * @param fromMinor
+     * @param toMajor
+     * @param toMinor
      * @param lastExecutionStatus
-     * @param bugID
-     * @param targetBuild
-     * @param targetRev
+     * @param bugs
+     * @param targetMajor
+     * @param targetMinor
      * @param comment
      * @param userAgent
      * @param screenSize
@@ -78,11 +76,11 @@ public interface IFactoryTestCase {
      * @return
      */
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
-            String implementer, String executor, String usrModif, String function, String application,
-            String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
-            String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String conditionVal3, String fromBuild,
-            String fromRev, String toBuild, String toRev, String lastExecutionStatus, JSONArray bugID,
-            String targetBuild, String targetRev, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry,
+            String implementer, String executor, String usrModif, String application,
+            boolean isActiveQA, boolean isActiveUAT, boolean isActivePROD, int priority, String type, String status,
+            String description, String detailedDescription, boolean isActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor,
+            String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugs,
+            String targetMajor, String targetMinor, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry,
             List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep,
             List<TestCaseStepBatch> testCaseStepBatch);
 
@@ -96,44 +94,42 @@ public interface IFactoryTestCase {
      * @param implementer
      * @param executor
      * @param usrModif
-     * @param function
      * @param application
-     * @param activeQA
-     * @param activeUAT
-     * @param activePROD
+     * @param isActiveQA
+     * @param isActiveUAT
+     * @param isActivePROD
      * @param priority
-     * @param group
+     * @param type
      * @param status
      * @param description
-     * @param behavior
-     * @param howTo
-     * @param tcActive
-     * @param conditionOper
+     * @param detailedDescription
+     * @param isActive
+     * @param conditionOperator
      * @param conditionVal1
      * @param conditionVal2
      * @param conditionVal3
-     * @param fromBuild
-     * @param fromRev
-     * @param toBuild
-     * @param toRev
+     * @param fromMajor
+     * @param fromMinor
+     * @param toMajor
+     * @param toMinor
      * @param lastExecutionStatus
-     * @param bigID
-     * @param targetBuild
-     * @param targetRev
+     * @param bugs
+     * @param targetMajor
+     * @param targetMinor
      * @param comment
      * @param dateCreated
      * @param userAgent
      * @param screenSize
      * @param dateModif
-     * @param testCaseVersion
+     * @param version
      * @return
      */
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
-            String implementer, String executor, String usrModif, String function, String application,
-            String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
-            String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String conditionVal3, String fromBuild,
-            String fromRev, String toBuild, String toRev, String lastExecutionStatus, JSONArray bigID,
-            String targetBuild, String targetRev, String comment, String dateCreated, String userAgent, String screenSize, Timestamp dateModif, int testCaseVersion);
+            String implementer, String executor, String usrModif, String application,
+            boolean isActiveQA, boolean isActiveUAT, boolean isActivePROD, int priority, String type, String status,
+            String description, String detailedDescription, boolean isActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor,
+            String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugs,
+            String targetMajor, String targetMinor, String comment, Timestamp dateCreated, String userAgent, String screenSize, Timestamp dateModif, int version);
 
     /**
      *

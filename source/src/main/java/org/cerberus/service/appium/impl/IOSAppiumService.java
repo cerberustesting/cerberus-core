@@ -20,23 +20,26 @@
 package org.cerberus.service.appium.impl;
 
 import io.appium.java_client.TouchAction;
+import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.IOSTouchAction;
-import java.time.Duration;
-import java.util.HashMap;
-
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
-import org.apache.logging.log4j.Logger;
+import java.time.Duration;
+import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.entity.SwipeAction;
 import org.cerberus.engine.entity.SwipeAction.Direction;
 import org.cerberus.enums.MessageEventEnum;
-import org.openqa.selenium.JavascriptExecutor;
+import org.cerberus.util.JSONUtil;
+import org.cerberus.util.StringUtil;
+import org.json.JSONException;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.JavascriptExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +67,8 @@ public class IOSAppiumService extends AppiumService {
 
     /**
      * The default Appium swipe duration if no
-     * {@link AppiumService#CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER} has been defined
+     * {@link AppiumService#CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER} has been
+     * defined
      */
     private static final int DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION = 2000;
 
@@ -120,11 +124,6 @@ public class IOSAppiumService extends AppiumService {
                 : MessageEventEnum.ACTION_FAILED_HIDEKEYBOARD);
     }
 
-    @Override
-    public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException {
-        return null;
-    }
-
     /**
      * The only valid IOS key codes to be able to be pressed
      * <p>
@@ -171,7 +170,6 @@ public class IOSAppiumService extends AppiumService {
 //            swipeObject.put("endY", direction.getY2());
 //            swipeObject.put("duration", myduration);
 //            js.executeScript("mobile: swipe", swipeObject);
-
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE).resolveDescription("DIRECTION", action.getActionType().name());
         } catch (IllegalArgumentException e) {
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
@@ -187,7 +185,42 @@ public class IOSAppiumService extends AppiumService {
 
     @Override
     public MessageEvent executeCommand(Session session, String cmd, String args) throws IllegalArgumentException {
-        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+        try {
+            String message = executeCommandString(session, cmd, args);
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTECOMMAND).resolveDescription("LOG", message);
+        } catch (Exception e) {
+            LOG.warn("Unable to execute command screen due to " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND)
+                    .resolveDescription("EXCEPTION", e.getMessage());
+        }
+    }
+
+    @Override
+    public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException, JSONException {
+
+        Object value;
+        String valueString = "";
+        if (StringUtil.isNullOrEmpty(args)) {
+            value = session.getAppiumDriver().executeScript(cmd, new HashMap<>());
+        } else {
+            value = session.getAppiumDriver().executeScript(cmd, JSONUtil.convertFromJSONObjectString(args));
+        }
+
+        if (value != null) {
+            valueString = value.toString();
+        }
+        // execute Script return an \n or \r\n sometimes, so we delete the last occurence of it
+        if (!StringUtil.isNullOrEmpty(valueString)) {
+            if (valueString.endsWith("\r\n")) {
+                valueString = valueString.substring(0, valueString.lastIndexOf("\r\n"));
+            }
+            if (valueString.endsWith("\n")) {
+                valueString = valueString.substring(0, valueString.lastIndexOf("\n"));
+            }
+        }
+
+        return valueString;
     }
 
     @Override
@@ -202,6 +235,36 @@ public class IOSAppiumService extends AppiumService {
 
     @Override
     public MessageEvent openApp(Session session, String appPackage, String appActivity) {
-        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+        try {
+
+            if (StringUtil.isNullOrEmpty(appPackage)) {
+                session.getAppiumDriver().launchApp();
+            } else {
+                session.getAppiumDriver().activateApp(appPackage);
+            }
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENAPP).resolveDescription("APP", appPackage);
+
+        } catch (Exception e) {
+            LOG.warn("Unable to open app. " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", "Unable to open app " + e.getMessage());
+        }
     }
+
+    @Override
+    public MessageEvent closeApp(Session session) {
+        try {
+
+            session.getAppiumDriver().closeApp();
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSEAPP_GENERIC);
+
+        } catch (Exception e) {
+            LOG.warn("Unable to close app " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", "Unable to close app : " + e.getMessage());
+        }
+    }
+
 }

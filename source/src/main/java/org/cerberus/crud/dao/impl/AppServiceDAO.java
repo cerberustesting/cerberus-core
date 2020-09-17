@@ -111,8 +111,9 @@ public class AppServiceDAO implements IAppServiceDAO {
                         String kafkaKey = resultSet.getString("KafkaKey");
                         String kafkaFilterPath = resultSet.getString("KafkaFilterPath");
                         String kafkaFilterValue = resultSet.getString("KafkaFilterValue");
+                        boolean isFollowRedir = resultSet.getBoolean("isFollowRedir");
 
-                        result = this.factoryAppService.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, description, servicePath, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif, fileName);
+                        result = this.factoryAppService.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, description, servicePath, isFollowRedir, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif, fileName);
                     } else {
                         throwEx = true;
                     }
@@ -567,11 +568,11 @@ public class AppServiceDAO implements IAppServiceDAO {
     public Answer create(AppService object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `Operation`, `ServiceRequest`, `KafkaTopic`, `KafkaKey`, `KafkaFilterPath`, `KafkaFilterValue`, `AttachementURL`, `Description`, `FileName`) ");
+        query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `isFollowRedir`, `Operation`, `ServiceRequest`, `KafkaTopic`, `KafkaKey`, `KafkaFilterPath`, `KafkaFilterValue`, `AttachementURL`, `Description`, `FileName`) ");
         if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
-            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         } else {
-            query.append("VALUES (?,?,null,?,?,?,?,?,?,?,?,?,?,?,?)");
+            query.append("VALUES (?,?,null,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         }
 
         // Debug message on SQL.
@@ -591,6 +592,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                 preStat.setString(i++, object.getType());
                 preStat.setString(i++, object.getMethod());
                 preStat.setString(i++, object.getServicePath());
+                preStat.setBoolean(i++, object.isFollowRedir());
                 preStat.setString(i++, object.getOperation());
                 preStat.setString(i++, object.getServiceRequest());
                 preStat.setString(i++, object.getKafkaTopic());
@@ -637,7 +639,7 @@ public class AppServiceDAO implements IAppServiceDAO {
     @Override
     public Answer update(String service, AppService object) {
         MessageEvent msg = null;
-        String query = "UPDATE appservice srv SET `Service` = ?, `Group` = ?, `ServicePath` = ?, `Operation` = ?, ServiceRequest = ?, KafkaTopic = ?, KafkaKey = ?, KafkaFilterPath = ?, KafkaFilterValue = ?, AttachementURL = ?, "
+        String query = "UPDATE appservice srv SET `Service` = ?, `Group` = ?, `ServicePath` = ?, `isFollowRedir` = ?, `Operation` = ?, ServiceRequest = ?, KafkaTopic = ?, KafkaKey = ?, KafkaFilterPath = ?, KafkaFilterValue = ?, AttachementURL = ?, "
                 + "Description = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW(), `FileName` = ?";
         if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
             query += " ,Application = ?";
@@ -659,6 +661,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                 preStat.setString(i++, object.getService());
                 preStat.setString(i++, object.getGroup());
                 preStat.setString(i++, object.getServicePath());
+                preStat.setBoolean(i++, object.isFollowRedir());
                 preStat.setString(i++, object.getOperation());
                 preStat.setString(i++, object.getServiceRequest());
                 preStat.setString(i++, object.getKafkaTopic());
@@ -804,8 +807,9 @@ public class AppServiceDAO implements IAppServiceDAO {
         String kafkaKey = ParameterParserUtil.parseStringParam(rs.getString("srv.kafkaKey"), "");
         String kafkaFilterPath = ParameterParserUtil.parseStringParam(rs.getString("srv.kafkaFilterPath"), "");
         String kafkaFilterValue = ParameterParserUtil.parseStringParam(rs.getString("srv.kafkaFilterValue"), "");
+        boolean isFollowRedir = rs.getBoolean("srv.isFollowRedir");
         factoryAppService = new FactoryAppService();
-        return factoryAppService.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, description, servicePath, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif, fileName);
+        return factoryAppService.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, description, servicePath, isFollowRedir, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif, fileName);
     }
 
     private static void deleteFolder(File folder, boolean deleteit) {

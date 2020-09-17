@@ -37,7 +37,7 @@ public class TestCaseStepAction {
     private int step;
     private int sequence;
     private int sort;
-    private String conditionOper;
+    private String conditionOperator;
     private String conditionVal1;
     private String conditionVal2;
     private String conditionVal3;
@@ -52,7 +52,7 @@ public class TestCaseStepAction {
     /**
      * From here are data outside database model.
      */
-    List<TestCaseStepActionControl> testCaseStepActionControl;
+    List<TestCaseStepActionControl> controls;
 
     /**
      * Invariant ACTION String.
@@ -91,13 +91,15 @@ public class TestCaseStepAction {
     public static final String ACTION_REMOVEAPP = "removeApp";
     public static final String ACTION_WAIT = "wait";
     public static final String ACTION_WAITVANISH = "waitVanish";
+    public static final String ACTION_WAITNETWORKTRAFFICIDLE = "waitNetworkTrafficIdle";
     public static final String ACTION_CALLSERVICE = "callService";
     public static final String ACTION_EXECUTESQLUPDATE = "executeSqlUpdate";
     public static final String ACTION_EXECUTESQLSTOREPROCEDURE = "executeSqlStoredProcedure";
     public static final String ACTION_CALCULATEPROPERTY = "calculateProperty";
     public static final String ACTION_SETNETWORKTRAFFICCONTENT = "setNetworkTrafficContent";
+    public static final String ACTION_SETSERVICECALLCONTENT = "setServiceCallContent";
     public static final String ACTION_DONOTHING = "doNothing";
-    
+
     // ??? TODO. Clean this unused action.
     public static final String ACTION_PERFORMEDITORACTION = "performEditorAction";
 
@@ -110,37 +112,37 @@ public class TestCaseStepAction {
      */
     public static final String FORCEEXESTATUS_PE = "PE";
     /**
-     * Invariant CONDITIONOPER String.
+     * Invariant CONDITIONOPERATOR String.
      */
-    public static final String CONDITIONOPER_ALWAYS = "always";
-    public static final String CONDITIONOPER_IFELEMENTPRESENT = "ifElementPresent";
-    public static final String CONDITIONOPER_IFELEMENTNOTPRESENT = "ifElementNotPresent";
-    public static final String CONDITIONOPER_IFELEMENTVISIBLE = "ifElementVisible";
-    public static final String CONDITIONOPER_IFELEMENTNOTVISIBLE = "ifElementNotVisible";
-    public static final String CONDITIONOPER_IFPROPERTYEXIST = "ifPropertyExist";
-    public static final String CONDITIONOPER_IFPROPERTYNOTEXIST = "ifPropertyNotExist";
-    public static final String CONDITIONOPER_IFNUMERICEQUAL = "ifNumericEqual";
-    public static final String CONDITIONOPER_IFNUMERICDIFFERENT = "ifNumericDifferent";
-    public static final String CONDITIONOPER_IFNUMERICGREATER = "ifNumericGreater";
-    public static final String CONDITIONOPER_IFNUMERICGREATEROREQUAL = "ifNumericGreaterOrEqual";
-    public static final String CONDITIONOPER_IFNUMERICMINOR = "ifNumericMinor";
-    public static final String CONDITIONOPER_IFNUMERICMINOROREQUAL = "ifNumericMinorOrEqual";
-    public static final String CONDITIONOPER_IFSTRINGEQUAL = "ifStringEqual";
-    public static final String CONDITIONOPER_IFSTRINGDIFFERENT = "ifStringDifferent";
-    public static final String CONDITIONOPER_IFSTRINGGREATER = "ifStringGreater";
-    public static final String CONDITIONOPER_IFSTRINGMINOR = "ifStringMinor";
-    public static final String CONDITIONOPER_IFSTRINGCONTAINS = "ifStringContains";
-    public static final String CONDITIONOPER_IFSTRINGNOTCONTAINS = "ifStringNotContains";
-    public static final String CONDITIONOPER_IFTEXTINELEMENT = "ifTextInElement";
-    public static final String CONDITIONOPER_IFTEXTNOTINELEMENT = "ifTextNotInElement";
-    public static final String CONDITIONOPER_NEVER = "never";
+    public static final String CONDITIONOPERATOR_ALWAYS = "always";
+    public static final String CONDITIONOPERATOR_IFELEMENTPRESENT = "ifElementPresent";
+    public static final String CONDITIONOPERATOR_IFELEMENTNOTPRESENT = "ifElementNotPresent";
+    public static final String CONDITIONOPERATOR_IFELEMENTVISIBLE = "ifElementVisible";
+    public static final String CONDITIONOPERATOR_IFELEMENTNOTVISIBLE = "ifElementNotVisible";
+    public static final String CONDITIONOPERATOR_IFPROPERTYEXIST = "ifPropertyExist";
+    public static final String CONDITIONOPERATOR_IFPROPERTYNOTEXIST = "ifPropertyNotExist";
+    public static final String CONDITIONOPERATOR_IFNUMERICEQUAL = "ifNumericEqual";
+    public static final String CONDITIONOPERATOR_IFNUMERICDIFFERENT = "ifNumericDifferent";
+    public static final String CONDITIONOPERATOR_IFNUMERICGREATER = "ifNumericGreater";
+    public static final String CONDITIONOPERATOR_IFNUMERICGREATEROREQUAL = "ifNumericGreaterOrEqual";
+    public static final String CONDITIONOPERATOR_IFNUMERICMINOR = "ifNumericMinor";
+    public static final String CONDITIONOPERATOR_IFNUMERICMINOROREQUAL = "ifNumericMinorOrEqual";
+    public static final String CONDITIONOPERATOR_IFSTRINGEQUAL = "ifStringEqual";
+    public static final String CONDITIONOPERATOR_IFSTRINGDIFFERENT = "ifStringDifferent";
+    public static final String CONDITIONOPERATOR_IFSTRINGGREATER = "ifStringGreater";
+    public static final String CONDITIONOPERATOR_IFSTRINGMINOR = "ifStringMinor";
+    public static final String CONDITIONOPERATOR_IFSTRINGCONTAINS = "ifStringContains";
+    public static final String CONDITIONOPERATOR_IFSTRINGNOTCONTAINS = "ifStringNotContains";
+    public static final String CONDITIONOPERATOR_IFTEXTINELEMENT = "ifTextInElement";
+    public static final String CONDITIONOPERATOR_IFTEXTNOTINELEMENT = "ifTextNotInElement";
+    public static final String CONDITIONOPERATOR_NEVER = "never";
 
-    public String getConditionOper() {
-        return conditionOper;
+    public String getConditionOperator() {
+        return conditionOperator;
     }
 
-    public void setConditionOper(String conditionOper) {
-        this.conditionOper = conditionOper;
+    public void setConditionOperator(String conditionOperator) {
+        this.conditionOperator = conditionOperator;
     }
 
     public String getConditionVal1() {
@@ -175,12 +177,12 @@ public class TestCaseStepAction {
         this.screenshotFilename = screenshotFilename;
     }
 
-    public List<TestCaseStepActionControl> getTestCaseStepActionControl() {
-        return testCaseStepActionControl;
+    public List<TestCaseStepActionControl> getControls() {
+        return controls;
     }
 
-    public void setTestCaseStepActionControl(List<TestCaseStepActionControl> testCaseStepActionControl) {
-        this.testCaseStepActionControl = testCaseStepActionControl;
+    public void setControls(List<TestCaseStepActionControl> controls) {
+        this.controls = controls;
     }
 
     public String getAction() {
@@ -302,7 +304,7 @@ public class TestCaseStepAction {
         hash = 79 * hash + this.step;
         hash = 79 * hash + this.sequence;
         hash = 79 * hash + this.sort;
-        hash = 79 * hash + (this.conditionOper != null ? this.conditionOper.hashCode() : 0);
+        hash = 79 * hash + (this.conditionOperator != null ? this.conditionOperator.hashCode() : 0);
         hash = 79 * hash + (this.conditionVal1 != null ? this.conditionVal1.hashCode() : 0);
         hash = 79 * hash + (this.conditionVal2 != null ? this.conditionVal2.hashCode() : 0);
         hash = 79 * hash + (this.conditionVal3 != null ? this.conditionVal3.hashCode() : 0);
@@ -339,7 +341,7 @@ public class TestCaseStepAction {
         if (this.sort != other.sort) {
             return false;
         }
-        if ((this.conditionOper == null) ? (other.conditionOper != null) : !this.conditionOper.equals(other.conditionOper)) {
+        if ((this.conditionOperator == null) ? (other.conditionOperator != null) : !this.conditionOperator.equals(other.conditionOperator)) {
             return false;
         }
         if ((this.conditionVal1 == null) ? (other.conditionVal1 != null) : !this.conditionVal1.equals(other.conditionVal1)) {
@@ -377,35 +379,37 @@ public class TestCaseStepAction {
 
     @Override
     public String toString() {
-        return "TestCaseStepAction{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", action=" + action + ", object=" + value1 + ", property=" + value2 + ",value3= " + value3 + ", description=" + description + ", testCaseStepActionControl=" + testCaseStepActionControl + '}';
+        return "TestCaseStepAction{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", action=" + action + ", object=" + value1 + ", property=" + value2 + ",value3= " + value3 + ", description=" + description + ", testCaseStepActionControl=" + controls + '}';
     }
 
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
-            result.put("test", this.getTest());
-            result.put("testcase", this.getTestCase());
-            result.put("step", this.getStep());
-            result.put("sequence", this.getSequence());
             result.put("sort", this.getSort());
-            result.put("conditionOper", this.getConditionOper());
-            result.put("conditionVal1", this.getConditionVal1());
-            result.put("conditionVal2", this.getConditionVal2());
-            result.put("conditionVal3", this.getConditionVal3());
+            result.put("stepId", this.getStep());
+            result.put("actionId", this.getSequence());
+            result.put("description", this.getDescription());
             result.put("action", this.getAction());
             result.put("value1", this.getValue1());
             result.put("value2", this.getValue2());
             result.put("value3", this.getValue3());
-            result.put("forceExeStatus", this.getForceExeStatus());
-            result.put("description", this.getDescription());
+            result.put("conditionOperator", this.getConditionOperator());
+            result.put("conditionVal1", this.getConditionVal1());
+            result.put("conditionVal2", this.getConditionVal2());
+            result.put("conditionVal3", this.getConditionVal3());
+            result.put("isFatal", this.getForceExeStatus());
             result.put("screenshotFilename", this.getScreenshotFilename());
-            JSONArray array = new JSONArray();
-            if (this.getTestCaseStepActionControl() != null) {
-                for (Object testCaseStepActionControlExecution : this.getTestCaseStepActionControl()) {
-                    array.put(((TestCaseStepActionControl) testCaseStepActionControlExecution).toJson());
+            result.put("test", this.getTest());
+            result.put("testcase", this.getTestCase());
+
+            JSONArray controlsJson = new JSONArray();
+            if (this.getControls() != null) {
+                for (TestCaseStepActionControl control : this.getControls()) {
+                    controlsJson.put(control.toJson());
                 }
             }
-            result.put("testCaseStepActionControlList", array);
+            result.put("controls", controlsJson);
+
         } catch (JSONException ex) {
             Logger LOG = LogManager.getLogger(TestCaseStepAction.class);
             LOG.warn(ex);

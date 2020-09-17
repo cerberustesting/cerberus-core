@@ -184,7 +184,7 @@ function getInvariantArray(idName, forceReload, addValue1, asyn) {
         async = asyn;
     }
 
-    var cacheEntryName = "INVARIANT_" + idName ;
+    var cacheEntryName = "INVARIANT_" + idName;
     if (forceReload) {
         sessionStorage.removeItem(cacheEntryName);
     }
@@ -534,7 +534,8 @@ function getUserArray(forceReload, addValue1, asyn) {
                     var item = list[index].login;
                     result.push(item);
                 }
-            }
+            },
+            error: showUnexpectedError
         });
     } else {
         for (var index = 0; index < list.length; index++) {
@@ -614,7 +615,8 @@ function getSelectInvariant(idName, forceReload, notAsync, addValue) {
 
                     select.append($("<option></option>").text(item).val(item));
                 }
-            }
+            },
+            error: showUnexpectedError
         });
     } else {
         for (var index = 0; index < list.length; index++) {
@@ -670,7 +672,8 @@ function getSelectRobot(forceReload, notAsync) {
                     select.append($("<option></option>").text(text).val(item));
 //                    console.info(item + " - " + text)
                 }
-            }
+            },
+            error: showUnexpectedError
         });
     } else {
         for (var index = 0; index < list.length; index++) {
@@ -719,7 +722,8 @@ function getSelectLabel(system, forceReload, notAsync) {
                     var item = list[index].label + " - " + list[index].color;
                     select.append($("<option></option>").text(item).val(list[index].id));
                 }
-            }
+            },
+            error: showUnexpectedError
         });
     } else {
         for (var index = 0; index < list.length; index++) {
@@ -744,7 +748,7 @@ function getSelectApplication(system, forceReload) {
         $.ajax({
             url: "ReadApplication",
             data: {system: system},
-            async: true,
+            async: false,
             success: function (data) {
                 list = data.contentTable;
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(list));
@@ -753,7 +757,8 @@ function getSelectApplication(system, forceReload) {
 
                     select.append($("<option></option>").text(item).val(item));
                 }
-            }
+            },
+            error: showUnexpectedError
         });
     } else {
         for (var index = 0; index < list.length; index++) {
@@ -781,7 +786,8 @@ function getSelectApplicationWithoutSystem() {
                 var item = list[index].application;
                 select.append($("<option></option>").text(item).val(item));
             }
-        }
+        },
+        error: showUnexpectedError
     });
 
     return select;
@@ -1382,11 +1388,6 @@ function returnMessageHandler(response) {
 
 function showUnexpectedError(jqXHR, textStatus, errorThrown) {
 
-    console.log(jqXHR.responseText);
-    console.log(jqXHR.statusText);
-    console.log(textStatus);
-    console.log(errorThrown);
-
     clearResponseMessageMainPage();
     var type = getAlertType(textStatus);
     var message = "";
@@ -1906,7 +1907,7 @@ function displayGlobalLabel(doc) {
  */
 function displayFooter(doc) {
     var cerberusInformation = getCerberusInformation();
-    if (cerberusInformation != null) {
+    if (cerberusInformation !== null) {
         var footerString = doc.getDocLabel("page_global", "footer_text");
         var footerBugString = doc.getDocLabel("page_global", "footer_bug");
         var date = new Date();
@@ -1916,6 +1917,7 @@ function displayFooter(doc) {
         footerString = footerString.replace("%ENV%", cerberusInformation.environment);
         footerString = footerString.replace("%DATE%", date.toISOString());
         footerString = footerString.replace("%TIMING%", loadTime);
+        footerString = footerString.replace("%SERVERDATE%", cerberusInformation.serverDate);
         footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + cerberusInformation.projectVersion + "-" + cerberusInformation.databaseCerberusTargetVersion);
         $("#footer").html(footerString + " - " + footerBugString);
 
@@ -2114,6 +2116,32 @@ function getRowClass(status) {
         rowClass["glyph"] = "";
     }
     return rowClass;
+}
+
+function getExeStatusRowColor(status) {
+    if (status === "OK") {
+        return '#5CB85C';
+    } else if (status === "KO") {
+        return '#D9534F';
+    } else if (status === "FA") {
+        return '#F0AD4E';
+    } else if (status === "CA") {
+        return '#F0AD4E';
+    } else if (status === "PE") {
+        return '#3498DB';
+    } else if (status === "NE") {
+        return '#aaa';
+    } else if (status === "WE") {
+        return '#34495E';
+    } else if (status === "NA") {
+        return '#F1C40F';
+    } else if (status === "QU") {
+        return '#BF00BF';
+    } else if (status === "QE") {
+        return '#5C025C';
+    } else {
+        return 'lightgrey';
+    }
 }
 
 /**
@@ -2742,3 +2770,7 @@ function getBugIdList(data, appurl) {
     return link;
 }
 
+function get_Color_fromindex(index) {
+    var colors = ['#3366FF', '#3498DB', 'blueviolet', 'midnightblue', 'salmon', 'olive', 'teal', 'grey', '#cad3f1', 'yellow', 'magenta', 'lightgreen', 'lightgrey', 'coral', 'violet', '#B91D0D', 'olive'];
+    return colors[index % colors.length];
+}

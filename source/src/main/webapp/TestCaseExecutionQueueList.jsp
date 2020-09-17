@@ -25,14 +25,16 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <title>Executions in Queue</title>
-        <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecutionQueue.css"/>
-        <script type="text/javascript" src="dependencies/D3js-3.x.x/js/d3.min.js"></script>
-        <script type="text/javascript" src="dependencies/D3-tip-0.6.7/js/index.js"></script>
+        <script type="text/javascript" src="dependencies/Moment-2.24.0/moment.min.js"></script>
+        <script type="text/javascript" src="dependencies/Moment-2.24.0/locale/fr.js"></script>
+        <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
+        <script type="text/javascript" src="dependencies/Bootstrap-datetimepicker-4.17.47/bootstrap-datetimepicker.min.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseExecutionQueueList.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <script type="text/javascript" src="js/transversalobject/Parameter.js"></script>
         <script type="text/javascript" src="js/transversalobject/Invariant.js"></script>
+        <title id="pageTitle">Executions in Queue</title>
+        <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecutionQueue.css"/>
     </head>
     <body>
         <%@ include file="include/global/header.html" %>
@@ -45,24 +47,31 @@
             <%@ include file="include/transversalobject/Invariant.html"%>
 
             <h1 class="page-title-line" id="title">Executions in Queue</h1>
-            <div class="panel panel-default">
-                <div class="panel-heading" id="executionListLabel">
-                    <span class="glyphicon glyphicon-list"></span>
-                    Executions in Queue
-                </div>
-                <div class="panel-body" id="executionList">
-                    <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
-                        <li class="active"><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">Executions in queue</a></li>
-                        <li><a data-toggle="tab" href="#tabFollowUp" id="editTabFollowUp" name="tabFollowUp">Pools Follow Up</a></li>
-                        <li><a data-toggle="tab" href="#tabJobStatus" id="editTabJobStatus" name="tabJobStatus">Queue Job Status</a></li>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="center marginTop25 tab-pane fade in active" id="tabDetails">
+
+            <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
+                <li><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">Executions in queue</a></li>
+                <li><a data-toggle="tab" href="#tabFollowUp" id="editTabFollowUp" name="tabFollowUp">Pools Follow Up</a></li>
+                <li><a data-toggle="tab" href="#tabQueueHistory" id="editTabQueueHistory" name="tabQueueHistory">Queue History</a></li>
+                <li><a data-toggle="tab" href="#tabJobStatus" id="editTabJobStatus" name="tabJobStatus">Queue Job Status</a></li>
+            </ul>
+
+
+            <div class="tab-content">
+
+                <div class="center tab-pane fade" id="tabDetails">
+                    <div class="panel panel-default">
+                        <div class="panel-body" id="executionList">
                             <form id="massActionForm" name="massActionForm"  title="" role="form">
                                 <table id="executionsTable" class="table table-bordered table-hover display" name="executionsTable"></table>
                             </form>
+                            <div class="marginBottom20"></div>
                         </div>
-                        <div class="center marginTop25 tab-pane fade" id="tabFollowUp">
+                    </div>
+                </div>
+
+                <div class="center tab-pane fade" id="tabFollowUp">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
                             <div class='marginBottom10'>
                                 <button type="button" class="btn btn-default" style="margin-left: 10px;" id="refreshFollowUpbutton" onclick="displayAndRefresh_followup()"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
                             </div>
@@ -71,7 +80,12 @@
                                 <div class="marginBottom20"></div>
                             </div>
                         </div>
-                        <div class="center marginTop25 tab-pane fade" id="tabJobStatus">
+                    </div>
+                </div>
+
+                <div class="center tab-pane fade" id="tabJobStatus">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
                             <div class='marginBottom10'>
                                 <button type="button" class="btn btn-default" style="margin-left: 10px;" id="refreshJobStatusbutton" onclick="displayAndRefresh_jobStatus()"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
                             </div>
@@ -117,12 +131,102 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="center tab-pane fade" id="tabQueueHistory">
+                    <div class="" id="FiltersPanel">
+
+                        <div class="panel panel-default">
+
+                            <div class="panel-heading card">
+                                <span class="fa fa-tag fa-fw"></span>
+                                <label id="filters">Filters</label>
+                            </div>
+
+                            <div class="panel-body" id="qsFilterPanel">
+
+                                <div class="row">
+                                    <div class='col-sm-4 col-md-4'>
+                                        <div class="form-group">
+                                            <label for="frompicker">From</label>
+                                            <div class='input-group date' id='frompicker'>
+                                                <input type='text' class="form-control" />
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-4 col-md-4'>
+                                        <div class="form-group">
+                                            <label for="topicker">To</label>
+                                            <div class='input-group date' id='topicker'>
+                                                <input type='text' class="form-control" />
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-2 col-md-2 btn-group marginTop20">
+                                        <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Preset Range<span class="caret"></span>
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                            <button class="btn btn-default pull-left" id="last2Hours" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(8)"><span class=""></span> Previous Hour</button>
+                                            <button class="btn btn-default pull-left" id="last6Hours" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(7)"><span class=""></span> Previous 6 Hours</button>
+                                            <button class="btn btn-default pull-left" id="currentDay" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(6)"><span class=""></span> Current Day</button>
+                                            <button class="btn btn-default pull-left" id="last1Week" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(5)"><span class=""></span> Previous Week</button>
+                                            <button class="btn btn-default pull-left" id="last1Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(1)"><span class=""></span> Previous Month</button>
+                                            <button class="btn btn-default pull-left" id="last3Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(2)"><span class=""></span> Previous 3 Months</button>
+                                            <button class="btn btn-default pull-left" id="last6Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(3)"><span class=""></span> Previous 6 Months</button>
+                                            <button class="btn btn-default pull-left" id="last12Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(4)"><span class=""></span> Previous Year</button>
+                                        </div>
+                                    </div>
+
+                                    <div class='col-sm-2 col-md-2'>
+                                        <div class="input-group-btn ">
+                                            <button type="button" class="btn btn-primary marginTop20" style="margin-left: 10px;min-height: " id="loadbutton" onclick="loadStatGraph();">Load</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
 
                         </div>
                     </div>
-                    <div class="marginBottom20"></div>
+
+                    <div class="row" id="ReportQueueStatPanel">
+                        <div class="col-lg-12">
+
+                            <div id="panelQueueStat" class="panel panel-default" style="display: none">
+                                <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart1">
+                                    <span class="fa fa-bar-chart fa-fw"></span>
+                                    <label id="lblQueueStat">Queue Execution Status</label>
+                                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                </div>
+                                <div class="panel-body collapse in" id="perfChart1">
+                                    <div class="row">
+                                        <div class="col-xs-12" id="ChartQueueStat" style="height: 400px">
+                                            <canvas id="canvasQueueStat"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
                 </div>
+
+
             </div>
+
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>

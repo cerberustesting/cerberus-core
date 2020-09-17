@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
@@ -37,6 +38,7 @@ import org.cerberus.database.IDatabaseVersioningService;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
+import org.cerberus.engine.scheduler.SchedulerInit;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONException;
@@ -53,9 +55,17 @@ public class ManageV001 extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ManageV001.class);
 
+    public static final String SERVLETNAME = "manageV001";
+    public static final String ACTIONRUNQUEUEJOB = "runQueueJob";
+    public static final String ACTIONSTART = "start";
+    public static final String ACTIONSTOP = "stop";
+    public static final String ACTIONCLEANMEMORY = "cleanMemory";
+
     private IExecutionThreadPoolService executionThreadPoolService;
     private IParameterService parameterService;
     private ITestCaseExecutionQueueService tceiqService;
+    private SchedulerInit cerberusScheduler;
+    private ILogEventService logEventService;
 
     private IDatabaseVersioningService databaseVersionService;
     private IMyVersionService myVersionService;
@@ -76,6 +86,7 @@ public class ManageV001 extends HttpServlet {
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
+        String resultS = "";
 
         try {
 
@@ -83,9 +94,14 @@ public class ManageV001 extends HttpServlet {
 
             executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
             parameterService = appContext.getBean(IParameterService.class);
+            cerberusScheduler = appContext.getBean(SchedulerInit.class);
+            logEventService = appContext.getBean(ILogEventService.class);
 
             String token = parameterService.getParameterStringByKey("cerberus_manage_token", "", UUID.randomUUID().toString());
             String message = "";
+            String returnCode = "OK";
+            
+            boolean isSplashPageActive = false;
 
             if (token.equals(request.getParameter("token"))) {
 
@@ -93,14 +109,55 @@ public class ManageV001 extends HttpServlet {
                 int cntIteration = 0;
                 int instancePendingExecutionNb = euuid.size();
                 int globalPendingExecutionNb = getNbPendingExecutions(appContext);
+                int globalQueueingExecutionNb = getNbQueueingExecutions(appContext);
                 boolean globalActive = parameterService.getParameterBooleanByKey("cerberus_queueexecution_enable", "", true);
+
+                if (request.getParameter("action") != null && request.getParameter("action").equals("cleanMemory")) {
+                    if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
+                        logEventService.createForPrivateCalls(SERVLETNAME, "CLEANMEMORY", "Cerberus Instance requested to Garbage collection.", request);
+                        System.gc();
+                        message = "Memory Cleaned.";
+                        returnCode = "OK";
+                    }
+                }
+
+                if (request.getParameter("action") != null && request.getParameter("action").equals("runQueueJob")) {
+                    logEventService.createForPrivateCalls(SERVLETNAME, "RUN", "Queue job requested to run.", request);
+                    try {
+                        // Run the Execution pool Job.
+                        executionThreadPoolService.executeNextInQueueAsynchroneously(false);
+                    } catch (CerberusException ex) {
+                        LOG.error("Exception triggering the ThreadPool job.", ex);
+                    }
+                    message = "Queue job trigered.";
+                    returnCode = "OK";
+                }
 
                 if (request.getParameter("action") != null && request.getParameter("action").equals("stop")) {
                     if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
+                        logEventService.createForPrivateCalls(SERVLETNAME, "STOP", "Cerberus Instance requested to stop.", request);
+
+                        // ajouter boolean setSplashPageActive
+                        executionThreadPoolService.setSplashPageActive(true);
+                        isSplashPageActive = true;
+
                         /**
-                         * We desactivate the instance to process new execution.
+                         * We deactivate the instance to process new execution.
                          */
                         executionThreadPoolService.setInstanceActive(false);
+                        /**
+                         * We clean all scheduler entries.
+                         */
+                        cerberusScheduler.closeScheduler();
+                        /**
+                         * Now that we stopped the submissions of new executions
+                         * and also stopped the scheduler, no more executions
+                         * should be triggered on that instance. We now wait a
+                         * bit until we check the pending executions. Some
+                         * executions could be submitted but not yet visible
+                         * from the instance yet.
+                         */
+                        Thread.sleep(10000);
                         /**
                          * We loop every second until maxIteration session in
                          * order to wait until no more executions are running on
@@ -113,10 +170,17 @@ public class ManageV001 extends HttpServlet {
                             LOG.info("Stopping instance : Check " + cntIteration + "/" + maxIteration + " on pending executions on that instance. Still running : " + instancePendingExecutionNb);
                         }
                         data.put("waitedIterations", cntIteration);
+                        message = "Instance Stopped.";
+                        returnCode = "OK";
 
                     } else if (request.getParameter("scope") != null && request.getParameter("scope").equals("global")) {
+                        logEventService.createForPrivateCalls(SERVLETNAME, "STOP", "Cerberus (global system) requested to stop.", request);
+
+                        // global splashpage : true => ATTENTION CACHE 60s utiliser short_cache
+                        parameterService.setParameter("cerberus_splashpage_enable", "", "true");
+                        isSplashPageActive = true;
                         /**
-                         * We desactivate globally the queue processing accross
+                         * We deactivate globally the queue processing accross
                          * all instances.
                          */
                         parameterService.setParameter("cerberus_queueexecution_enable", "", "N");
@@ -132,32 +196,61 @@ public class ManageV001 extends HttpServlet {
                             LOG.info("Stopping global : Check " + cntIteration + "/" + maxIteration + " on global pending executions. Still running : " + globalPendingExecutionNb);
                         }
                         data.put("waitedIterations", cntIteration);
+                        message = "Cerberus Stopped.";
+                        returnCode = "OK";
 
                     } else {
-                        message += "Scope parameter 'scope' not defined.";
+                        message += "Parameter 'scope' not defined.";
+                        returnCode = "KO";
                     }
                 }
+
                 if (request.getParameter("action") != null && request.getParameter("action").equals("start")) {
                     if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
+                        logEventService.createForPrivateCalls(SERVLETNAME, "START", "Instance requested to start.", request);
+
+                        executionThreadPoolService.setSplashPageActive(false);
+                        isSplashPageActive = false;
                         /**
                          * We activate the instance to process queue and start
                          * new executions.
                          */
                         executionThreadPoolService.setInstanceActive(true);
+                        /**
+                         * We reactivate and force reload all scheduler entries.
+                         */
+                        cerberusScheduler.setInstanceSchedulerVersion("INIT");
+                        cerberusScheduler.init();
+                        /**
+                         * We run the execution pool.
+                         */
                         try {
-                            // Run the Execution pool Job.
                             executionThreadPoolService.executeNextInQueueAsynchroneously(false);
                         } catch (CerberusException ex) {
                             LOG.error("Exception triggering the ThreadPool job.", ex);
                         }
+                        message = "Instance Started.";
+                        returnCode = "OK";
+
                     } else if (request.getParameter("scope") != null && request.getParameter("scope").equals("global")) {
+                        logEventService.createForPrivateCalls(SERVLETNAME, "START", "Cerberus (global system)  requested to start.", request);
+
+                        // global splashpage : false
+                        parameterService.setParameter("cerberus_splashpage_enable", "", "false");
+                        isSplashPageActive = false;
+                        
                         /**
                          * We activate the parameter to process queue (that will
                          * start new executions).
                          */
                         parameterService.setParameter("cerberus_queueexecution_enable", "", "Y");
+
+                        message = "Cerberus Started.";
+                        returnCode = "OK";
+
                     } else {
                         message += "Scope parameter 'scope' not defined.";
+                        returnCode = "KO";
                     }
 
                 }
@@ -168,11 +261,26 @@ public class ManageV001 extends HttpServlet {
                 instance.put("active", executionThreadPoolService.isInstanceActive());
                 instance.put("runningExecutions", instancePendingExecutionNb);
                 instance.put("readyToStop", (instancePendingExecutionNb <= 0));
+                JSONObject memory = new JSONObject();
+                Runtime instance1 = Runtime.getRuntime();
+                int mb = 1024 * 1024;
+                long usedMem = (instance1.totalMemory() - instance1.freeMemory()) / mb;
+                long totalMem = instance1.maxMemory() / mb;
+                memory.put("javaFreeMemory", instance1.freeMemory() / mb);
+                memory.put("javaTotalMemory", instance1.totalMemory() / mb);
+                memory.put("javaUsedMemory", usedMem);
+                memory.put("javaMaxMemory", totalMem);
+                memory.put("perUsed", usedMem * 100 / totalMem);
+
+                data.put("memory", memory);
+
                 data.put("instance", instance);
 
                 global.put("active", globalActive);
                 global.put("runningExecutions", globalPendingExecutionNb);
                 global.put("readyToStop", (globalPendingExecutionNb <= 0));
+                global.put("queuedExecutions", globalQueueingExecutionNb);
+
                 data.put("global", global);
 
                 JSONObject fsSize = new JSONObject();
@@ -185,14 +293,18 @@ public class ManageV001 extends HttpServlet {
 
             } else {
                 message = "Invalid Token";
+                returnCode = "KO";
             }
 
             data.put("message", message);
+            data.put("returnCode", returnCode);
+            data.put("isSplashPageActive", isSplashPageActive);
+            resultS = data.toString(1);
 
         } catch (JSONException | InterruptedException ex) {
             LOG.error(ex);
         }
-        response.getWriter().print(data.toString());
+        response.getWriter().print(resultS);
     }
 
     private int getNbPendingExecutions(ApplicationContext appContext) {
@@ -201,6 +313,21 @@ public class ManageV001 extends HttpServlet {
             tceiqService = appContext.getBean(ITestCaseExecutionQueueService.class);
             // Getting all executions already running in the queue.
             AnswerList<TestCaseExecutionQueueToTreat> answer = tceiqService.readQueueRunning();
+            List<TestCaseExecutionQueueToTreat> executionsRunning = answer.getDataList();
+            return executionsRunning.size();
+
+        } catch (CerberusException ex) {
+            LOG.error(ex);
+        }
+        return 0;
+    }
+
+    private int getNbQueueingExecutions(ApplicationContext appContext) {
+        try {
+
+            tceiqService = appContext.getBean(ITestCaseExecutionQueueService.class);
+            // Getting all executions already running in the queue.
+            AnswerList<TestCaseExecutionQueueToTreat> answer = tceiqService.readQueueToTreat();
             List<TestCaseExecutionQueueToTreat> executionsRunning = answer.getDataList();
             return executionsRunning.size();
 

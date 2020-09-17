@@ -49,7 +49,7 @@ public class ExecutionQueueThreadPool {
         executor = Executors.newCachedThreadPool();
         totalNumberOfThread = 0;
         inExecution = 0;
-        LOG.debug("Starting ExecutionQueueThreadPool.");
+        LOG.debug("Starting Execution Queueing !! (ExecutionQueueThreadPool).");
     }
 
     public ExecutorService getExecutor() {
@@ -76,7 +76,6 @@ public class ExecutionQueueThreadPool {
     public void setSize(Integer size) {
         this.size = size;
     }
-
 
     public void reset() {
         this.stop();

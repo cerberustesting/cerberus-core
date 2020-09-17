@@ -20,8 +20,11 @@
 package org.cerberus.service.har.entity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import org.json.JSONObject;
 
 /**
  * @author vertigo17
@@ -30,16 +33,23 @@ public class HarStat {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(HarStat.class);
 
+    public enum Types {
+        TOTAL, JS, CSS, HTML, IMG, CONTENT, FONT, MEDIA, OTHER
+    };
+
+    public enum Parties {
+        TOTAL, INTERNAL
+    };
+
+    public enum Units {
+        REQUEST, TOTALSIZE, SIZEMAX, TOTALTIME, TIMEMAX, NBTHIRDPARTY
+    };
+
+    private HashMap<String, String> hosts;
+    private List<JSONObject> urlList;
+
     private int nbRequests;
-    private int nb200;
-    private int nb300;
-    private int nb301;
-    private int nb302;
-    private int nb307;
-    private int nb400;
-    private int nb403;
-    private int nb404;
-    private int nb500;
+    private HashMap<Integer, Integer> httpStatusCode;
     private int nbError;
     private List<String> urlError;
 
@@ -47,17 +57,20 @@ public class HarStat {
     private int sizeSum;
     private int sizeMax;
     private String urlSizeMax;
+
     // timing requests.
     private Date firstStart;
     private String firstStartS;
     private Date firstEnd;
     private int firstDuration;
     private String firstURL;
+
     private Date lastStart;
     private String lastStartS;
     private Date lastEnd;
     private int lastDuration;
     private String lastURL;
+
     private int timeSum;
     private int timeAvg;
     private int timeMax;
@@ -67,42 +80,58 @@ public class HarStat {
     // per type.
     private int jsSizeSum;
     private int jsSizeMax;
+    private int jsRequests;
     private String urlJsSizeMax;
     private List<String> jsList;
 
     private int cssSizeSum;
     private int cssSizeMax;
+    private int cssRequests;
     private String urlCssSizeMax;
     private List<String> cssList;
 
     private int htmlSizeSum;
     private int htmlSizeMax;
+    private int htmlRequests;
     private String urlHtmlSizeMax;
     private List<String> htmlList;
 
     private int imgSizeSum;
     private int imgSizeMax;
+    private int imgRequests;
     private String urlImgSizeMax;
     private List<String> imgList;
 
     private int contentSizeSum;
     private int contentSizeMax;
+    private int contentRequests;
     private String urlContentSizeMax;
     private List<String> contentList;
 
     private int fontSizeSum;
     private int fontSizeMax;
+    private int fontRequests;
     private String urlFontSizeMax;
     private List<String> fontList;
 
+    private int mediaSizeSum;
+    private int mediaSizeMax;
+    private int mediaRequests;
+    private String urlMediaSizeMax;
+    private List<String> mediaList;
+
     private int otherSizeSum;
     private int otherSizeMax;
+    private int otherRequests;
     private String urlOtherSizeMax;
     private List<String> otherList;
 
     public HarStat() {
         LOG.debug("Init HarStat Object.");
-        urlError = new ArrayList<>();
+
+        hosts = new HashMap<>();
+        urlList = new ArrayList<>();
+
         jsList = new ArrayList<>();
         cssList = new ArrayList<>();
         htmlList = new ArrayList<>();
@@ -110,53 +139,159 @@ public class HarStat {
         contentList = new ArrayList<>();
         fontList = new ArrayList<>();
         otherList = new ArrayList<>();
+
+        List<Integer> httpRetList = Arrays.asList(200, 300, 301, 302, 303, 304, 400, 401, 402, 403, 404, 500);
+
+        httpStatusCode = new HashMap<>();
+        for (Integer tmpInteger : httpRetList) {
+            httpStatusCode.put(tmpInteger, 0);
+        }
         nbRequests = 0;
-        nb200 = 0;
-        nb300 = 0;
-        nb301 = 0;
-        nb302 = 0;
-        nb307 = 0;
-        nb400 = 0;
-        nb403 = 0;
-        nb404 = 0;
-        nb500 = 0;
         nbError = 0;
+        urlError = new ArrayList<>();
+
         sizeSum = 0;
         sizeMax = 0;
         urlSizeMax = null;
+
         timeSum = 0;
         timeAvg = 0;
         timeMax = 0;
         timeTotalDuration = 0;
         urlTimeMax = null;
+
         firstStartS = null;
         firstDuration = 0;
         firstURL = null;
+
         lastStartS = null;
         lastDuration = 0;
         lastURL = null;
+
         jsSizeSum = 0;
         jsSizeMax = 0;
+        jsRequests = 0;
         urlJsSizeMax = null;
+
         cssSizeSum = 0;
         cssSizeMax = 0;
+        cssRequests = 0;
         urlCssSizeMax = null;
+
         htmlSizeSum = 0;
         htmlSizeMax = 0;
+        htmlRequests = 0;
         urlHtmlSizeMax = null;
+
         imgSizeSum = 0;
         imgSizeMax = 0;
+        imgRequests = 0;
         urlImgSizeMax = null;
+
         contentSizeSum = 0;
         contentSizeMax = 0;
+        contentRequests = 0;
         urlContentSizeMax = null;
+
         fontSizeSum = 0;
         fontSizeMax = 0;
+        fontRequests = 0;
         urlFontSizeMax = null;
+
+        mediaSizeSum = 0;
+        mediaSizeMax = 0;
+        mediaRequests = 0;
+        urlMediaSizeMax = null;
+
         otherSizeSum = 0;
         otherSizeMax = 0;
+        otherRequests = 0;
         urlOtherSizeMax = null;
 
+    }
+
+    public List<JSONObject> getUrlList() {
+        return urlList;
+    }
+
+    public void setUrlList(List<JSONObject> urlList) {
+        this.urlList = urlList;
+    }
+
+    public void appendUrlList(JSONObject urlEntry) {
+        this.urlList.add(urlEntry);
+    }
+
+    public HashMap<String, String> getHosts() {
+        return hosts;
+    }
+
+    public void setHosts(HashMap<String, String> domains) {
+        this.hosts = domains;
+    }
+
+    public int getJsRequests() {
+        return jsRequests;
+    }
+
+    public void setJsRequests(int jssRequests) {
+        this.jsRequests = jssRequests;
+    }
+
+    public int getCssRequests() {
+        return cssRequests;
+    }
+
+    public void setCssRequests(int cssRequests) {
+        this.cssRequests = cssRequests;
+    }
+
+    public int getHtmlRequests() {
+        return htmlRequests;
+    }
+
+    public void setHtmlRequests(int htmlRequests) {
+        this.htmlRequests = htmlRequests;
+    }
+
+    public int getImgRequests() {
+        return imgRequests;
+    }
+
+    public void setImgRequests(int imgRequests) {
+        this.imgRequests = imgRequests;
+    }
+
+    public int getContentRequests() {
+        return contentRequests;
+    }
+
+    public void setContentRequests(int contentRequests) {
+        this.contentRequests = contentRequests;
+    }
+
+    public int getFontRequests() {
+        return fontRequests;
+    }
+
+    public void setFontRequests(int fontRequests) {
+        this.fontRequests = fontRequests;
+    }
+
+    public int getOtherRequests() {
+        return otherRequests;
+    }
+
+    public void setOtherRequests(int otherRequests) {
+        this.otherRequests = otherRequests;
+    }
+
+    public HashMap<Integer, Integer> getHttpStatusCode() {
+        return httpStatusCode;
+    }
+
+    public void setHttpStatusCode(HashMap<Integer, Integer> httpStatusCode) {
+        this.httpStatusCode = httpStatusCode;
     }
 
     public int getNbRequests() {
@@ -165,78 +300,6 @@ public class HarStat {
 
     public void setNbRequests(int nbRequests) {
         this.nbRequests = nbRequests;
-    }
-
-    public int getNb200() {
-        return nb200;
-    }
-
-    public void setNb200(int nb200) {
-        this.nb200 = nb200;
-    }
-
-    public int getNb300() {
-        return nb300;
-    }
-
-    public int getNb307() {
-        return nb307;
-    }
-
-    public void setNb307(int nb307) {
-        this.nb307 = nb307;
-    }
-
-    public int getNb403() {
-        return nb403;
-    }
-
-    public void setNb403(int nb403) {
-        this.nb403 = nb403;
-    }
-
-    public void setNb300(int nb300) {
-        this.nb300 = nb300;
-    }
-
-    public int getNb301() {
-        return nb301;
-    }
-
-    public void setNb301(int nb301) {
-        this.nb301 = nb301;
-    }
-
-    public int getNb302() {
-        return nb302;
-    }
-
-    public void setNb302(int nb302) {
-        this.nb302 = nb302;
-    }
-
-    public int getNb400() {
-        return nb400;
-    }
-
-    public void setNb400(int nb400) {
-        this.nb400 = nb400;
-    }
-
-    public int getNb404() {
-        return nb404;
-    }
-
-    public void setNb404(int nb404) {
-        this.nb404 = nb404;
-    }
-
-    public int getNb500() {
-        return nb500;
-    }
-
-    public void setNb500(int nb500) {
-        this.nb500 = nb500;
     }
 
     public int getNbError() {
@@ -621,6 +684,46 @@ public class HarStat {
 
     public void setOtherList(List<String> otherList) {
         this.otherList = otherList;
+    }
+
+    public int getMediaSizeSum() {
+        return mediaSizeSum;
+    }
+
+    public void setMediaSizeSum(int mediaSizeSum) {
+        this.mediaSizeSum = mediaSizeSum;
+    }
+
+    public int getMediaSizeMax() {
+        return mediaSizeMax;
+    }
+
+    public void setMediaSizeMax(int mediaSizeMax) {
+        this.mediaSizeMax = mediaSizeMax;
+    }
+
+    public int getMediaRequests() {
+        return mediaRequests;
+    }
+
+    public void setMediaRequests(int mediaRequests) {
+        this.mediaRequests = mediaRequests;
+    }
+
+    public String getUrlMediaSizeMax() {
+        return urlMediaSizeMax;
+    }
+
+    public void setUrlMediaSizeMax(String urlMediaSizeMax) {
+        this.urlMediaSizeMax = urlMediaSizeMax;
+    }
+
+    public List<String> getMediaList() {
+        return mediaList;
+    }
+
+    public void setMediaList(List<String> mediaList) {
+        this.mediaList = mediaList;
     }
 
 }
