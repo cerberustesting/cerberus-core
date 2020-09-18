@@ -27,12 +27,41 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title>Cerberus Application Maintenance</title>
+        <style>
+            #logo-cerberus {
+                width: 100px;
+                margin: 2em 0 2em 2em;
+            }
+
+            #reloadButton {
+                margin: 1em 0 2em 0;
+            }
+
+            #page-layout {
+                position: relative;
+            }
+
+            footer {
+                position: absolute;
+                bottom: 0;
+            }
+        </style>
     </head>
     <body>
-        <h1>Cerberus is on maintenance</h1>
-        <h2>Please come back later</h2>
-        <p>If any issue, contact your Cerberus administrator at : <a id="adminMailLink" href=""></a></p>
-        <p><img src="images/Logo-cerberus_250.png"></p>
-        <button>rafaichir</button>
+        <div class="container-fluid center" id="page-layout">
+            <%@ include file="include/global/messagesArea.html"%>
+            <h1 class="page-title-line" id="title">Cerberus is on maintenance</h1>
+            <p><img src="images/Logo-cerberus_250.png" id="logo-cerberus"></p>
+            <h2>Please come back later</h2>
+
+            <button name="reloadButton" id="reloadButton" type="button" class="btn btn-default">
+                Reload
+            </button>
+            <p>If any issue, contact your Cerberus administrator at : <a id="adminMailLink" href=""></a></p>
+
+            <footer class="footer">
+                <div class="container-fluid" id="footer"></div>
+            </footer>
+        </div>
     </body>
 </html>

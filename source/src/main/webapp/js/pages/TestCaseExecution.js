@@ -106,7 +106,7 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
             if (data.messageType === "OK") {
                 var tceq = data.contentTable;
 
-                var tc = tceq.testCase;
+                var tc = tceq.testcase;
                 updatePageTitle(tc);
 
                 var configPanel = $("#testCaseConfig");

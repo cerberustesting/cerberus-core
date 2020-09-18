@@ -86,6 +86,8 @@ public class ReadCerberusInformation extends HttpServlet {
             data.put("isGlobalSplashPageActive", parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_splashpage_enable, "", false));
             executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
             data.put("isInstanceSplashPageActive", executionThreadPoolService.isSplashPageActive());
+            data.put("messageInformation", parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_messageinfo_text, "", ""));
+            data.put("isMessageInformationEnabled", parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_messageinfo_enable, "", false));
             databaseVersionService = appContext.getBean(IDatabaseVersioningService.class);
             data.put("databaseCerberusTargetVersion", databaseVersionService.getSQLScript().size());
             Date now = new Date();
