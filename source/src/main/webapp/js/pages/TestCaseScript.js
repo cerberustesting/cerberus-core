@@ -93,7 +93,7 @@ var actionUIList = {
         {"type": "openApp", "aval1": "Application name or path or package for Android", "acol1": "col-lg-6", "aval2": "[Optional, required for Android] Activity", "acol2": "col-lg-3", "aval3": null, "acol3": "col-lg-5"},
         {"type": "closeApp", "aval1": "Application name or path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "dragAndDrop", "aval1": "Element path", "acol1": "col-lg-5", "aval2": "Destination Element Path", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "select", "aval1": "Element path", "acol1": "col-lg-5", "aval2": "Option path", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "select", "aval1": "Element path", "acol1": "col-lg-5", "aval2": "Option value", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
         {"type": "keypress", "aval1": "[opt] Target element path", "acol1": "col-lg-7", "aval2": "Key to press", "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
         {"type": "type", "aval1": "Element path", "acol1": "col-lg-5", "aval2": "Text to type", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
         {"type": "hideKeyboard", "aval1": null, "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},

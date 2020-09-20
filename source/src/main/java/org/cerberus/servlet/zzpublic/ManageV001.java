@@ -100,6 +100,8 @@ public class ManageV001 extends HttpServlet {
             String token = parameterService.getParameterStringByKey("cerberus_manage_token", "", UUID.randomUUID().toString());
             String message = "";
             String returnCode = "OK";
+            
+            boolean isSplashPageActive = false;
 
             if (token.equals(request.getParameter("token"))) {
 
@@ -134,6 +136,11 @@ public class ManageV001 extends HttpServlet {
                 if (request.getParameter("action") != null && request.getParameter("action").equals("stop")) {
                     if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
                         logEventService.createForPrivateCalls(SERVLETNAME, "STOP", "Cerberus Instance requested to stop.", request);
+
+                        // ajouter boolean setSplashPageActive
+                        executionThreadPoolService.setSplashPageActive(true);
+                        isSplashPageActive = true;
+
                         /**
                          * We deactivate the instance to process new execution.
                          */
@@ -168,6 +175,10 @@ public class ManageV001 extends HttpServlet {
 
                     } else if (request.getParameter("scope") != null && request.getParameter("scope").equals("global")) {
                         logEventService.createForPrivateCalls(SERVLETNAME, "STOP", "Cerberus (global system) requested to stop.", request);
+
+                        // global splashpage : true => ATTENTION CACHE 60s utiliser short_cache
+                        parameterService.setParameter("cerberus_splashpage_enable", "", "true");
+                        isSplashPageActive = true;
                         /**
                          * We deactivate globally the queue processing accross
                          * all instances.
@@ -197,6 +208,9 @@ public class ManageV001 extends HttpServlet {
                 if (request.getParameter("action") != null && request.getParameter("action").equals("start")) {
                     if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
                         logEventService.createForPrivateCalls(SERVLETNAME, "START", "Instance requested to start.", request);
+
+                        executionThreadPoolService.setSplashPageActive(false);
+                        isSplashPageActive = false;
                         /**
                          * We activate the instance to process queue and start
                          * new executions.
@@ -220,6 +234,11 @@ public class ManageV001 extends HttpServlet {
 
                     } else if (request.getParameter("scope") != null && request.getParameter("scope").equals("global")) {
                         logEventService.createForPrivateCalls(SERVLETNAME, "START", "Cerberus (global system)  requested to start.", request);
+
+                        // global splashpage : false
+                        parameterService.setParameter("cerberus_splashpage_enable", "", "false");
+                        isSplashPageActive = false;
+                        
                         /**
                          * We activate the parameter to process queue (that will
                          * start new executions).
@@ -279,6 +298,7 @@ public class ManageV001 extends HttpServlet {
 
             data.put("message", message);
             data.put("returnCode", returnCode);
+            data.put("isSplashPageActive", isSplashPageActive);
             resultS = data.toString(1);
 
         } catch (JSONException | InterruptedException ex) {

@@ -85,9 +85,6 @@ public class ReadMyUser extends HttpServlet {
         logEventService = appContext.getBean(ILogEventService.class);
         parameterService = appContext.getBean(IParameterService.class);
 
-        //boolean isDeploymentOn = parameterService.getParameterBooleanByKey("cerberus_deploymentmode_isdeploymentmodeenabled", "", false);
-        //LOG.debug("========================================");
-        //LOG.debug("IS ON DEPLOYMENT : " + isDeploymentOn);
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
 
@@ -131,7 +128,6 @@ public class ReadMyUser extends HttpServlet {
             data.put("reportingFavorite", myUser.getReportingFavorite());
             data.put("userPreferences", myUser.getUserPreferences());
             data.put("isKeycloak", Property.isKeycloak());
-            //data.put("isDeploymentMode", parameterService.getParameterBooleanByKey("cerberus_deploymentmode_isdeploymentmodeenabled", "", false));
 
             // Define submenu entries
             JSONObject menu = new JSONObject();
@@ -182,11 +178,13 @@ public class ReadMyUser extends HttpServlet {
             List<UserSystem> userSysList = userSystemService.findUserSystemByUser(myUser.getLogin());
             if (request.isUserInRole("Administrator")) {
                 // If user is Administrator, he has access to all groups.
+                data.put("isAdmin", true);
                 List<Invariant> invList = invariantService.readByIdName("SYSTEM");
                 for (Invariant invariant : invList) {
                     systems.put(invariant.getValue());
                 }
             } else {
+                data.put("isAdmin", false);
                 for (UserSystem sys : userSysList) {
                     systems.put(sys.getSystem());
                 }
