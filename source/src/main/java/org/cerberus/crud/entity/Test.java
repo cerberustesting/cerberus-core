@@ -28,7 +28,7 @@ public class Test {
 
     private String test;
     private String description;
-    private String active;
+    private boolean isActive;
     private String parentTest;
     private String usrCreated;
     private Timestamp dateCreated;
@@ -41,12 +41,12 @@ public class Test {
     public static final String TEST_PRETESTING = "Pre Testing"; // Test that contain all testcases that will automaticly executed before the testcase.
     public static final String TEST_POSTTESTING = "Post Testing"; // Test that contain all testcases that will be automaticly executed after the testcase.
 
-    public String getActive() {
-        return this.active;
+    public boolean getActive() {
+        return this.isActive;
     }
 
-    public void setActive(String active) {
-        this.active = active;
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     public String getParentTest() {

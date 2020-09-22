@@ -83,7 +83,7 @@ public class UpdateTest extends HttpServlet {
         String originalTest = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("originalTest"), "");
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
         String description = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Description"), "");
-        String active = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Active"), "");
+        boolean isActive = ParameterParserUtil.parseBooleanParam(request.getParameter("Active"), false);
         String automated = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Automated"), "");
 
         /**
@@ -122,7 +122,7 @@ public class UpdateTest extends HttpServlet {
                 Test testData = (Test) resp.getItem();
                 testData.setTest(test);
                 testData.setDescription(description);
-                testData.setActive(active);
+                testData.setActive(isActive);
                 ans = testService.update(originalTest, testData);
                 
                   if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

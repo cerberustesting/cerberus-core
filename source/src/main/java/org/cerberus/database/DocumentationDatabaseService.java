@@ -462,8 +462,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('tag','ciscorethreshold','','fr','Seuil du Score CI','Score maximum au dela duquel le resultat est KO.',NULL)");
         b.append(",('tag','ciresult','','en','CI Result','OK if CI Score is lower than Threshold.',NULL)");
         b.append(",('tag','ciresult','','fr','CI Result','OK si le score CI est inférieur au seuil.',NULL)");
-        b.append(",('test','Active','','en','Active','Define if the <code class=\\'doc-crbvvoca\\'>test</code> is active.<br>If <code class=\\'doc-crbvvoca\\'>test</code> is not active, no execution is possible on any of the associated <code class=\\'doc-crbvvoca\\'>test case</code>.','_test')");
-        b.append(",('test','Active','','fr','Actif','Booléen qui définit si le <code class=\\'doc-crbvvoca\\'>test</code> est actif.<br>Si le <code class=\\'doc-crbvvoca\\'>test</code> n\\'est pas actif, aucune execution des <code class=\\'doc-crbvvoca\\'>Cas de tests</code> n\\'est possible.','_test')");
+        b.append(",('test','isActive','','en','is active','Define if the <code class=\\'doc-crbvvoca\\'>test</code> is active.<br>If <code class=\\'doc-crbvvoca\\'>test</code> is not active, no execution is possible on any of the associated <code class=\\'doc-crbvvoca\\'>test case</code>.','_test')");
+        b.append(",('test','isActive','','fr','est actif','Booléen qui définit si le <code class=\\'doc-crbvvoca\\'>test</code> est actif.<br>Si le <code class=\\'doc-crbvvoca\\'>test</code> n\\'est pas actif, aucune execution des <code class=\\'doc-crbvvoca\\'>Cas de tests</code> n\\'est possible.','_test')");
         b.append(",('test','Automated','','en','Automated','Define if the test is automated or not.','_test')");
         b.append(",('test','Automated','','fr','Automatisé','Boléen qui définit si le test est automatisé ou non','_test')");
         b.append(",('test','dateCreation','','en','Creation date','The date when the test have been created','_test')");
