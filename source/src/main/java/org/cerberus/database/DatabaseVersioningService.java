@@ -8658,16 +8658,27 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1538
         a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
                 + " ('', 'cerberus_queueshistorystatgraph_maxnbpoints', '1000', 'Maximum number of points on the queue history graph.')");
-        
+
         // ADD Parameter
         // 1539
         a.add("INSERT INTO `parameter` VALUES('', 'cerberus_splashpage_enable', 'false', 'Boolean to display for non admin users a splashpage is case of maintenance')");
-        
+
         // ADD Parameters to display a message info on cerberus GUI
         // 1540 -1541
         a.add("INSERT INTO `parameter` VALUES('', 'cerberus_messageinfo_text', 'your text here', 'text that will be displayed in case paramater \"cerberus_messageinfo_enable\" is set on true')");
         a.add("INSERT INTO `parameter` VALUES('', 'cerberus_messageinfo_enable', 'false', 'Boolean to display a message info to all Cerberus users')");
+
+        // Modify active varchar column to isActive boolean column and update data
+        // 1542 - 1545
+        a.add("ALTER TABLE test CHANGE Active isActive VARCHAR(1)");
+        a.add("UPDATE test SET isActive = 1 WHERE isActive = 'Y'");
+        a.add("UPDATE test SET isActive = 0 WHERE isActive != '1'");
+        a.add("ALTER TABLE test MODIFY isActive BOOLEAN");
         
+        // Update TESTACTIVE invariant
+        a.add("UPDATE invariant SET value = 'true' WHERE idname = 'TESTACTIVE' AND value ='Y'");
+        a.add("UPDATE invariant SET value = 'false' WHERE idname = 'TESTACTIVE' AND value ='N'");
+
         return a;
     }
 

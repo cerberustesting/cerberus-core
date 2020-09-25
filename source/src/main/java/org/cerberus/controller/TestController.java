@@ -37,6 +37,7 @@ import org.cerberus.crud.service.ITestService;
 import org.cerberus.crud.service.impl.TestCaseExecutionService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -106,7 +107,7 @@ public class TestController {
             ServletUtil.servletStart(request);
 
             test = policy.sanitize(test);
-            active = policy.sanitize(active);
+            boolean isActive = (ParameterParserUtil.parseBooleanParam(policy.sanitize(active), false));
             parentTest = policy.sanitize(parentTest);
             description = policy.sanitize(description);
 
@@ -115,7 +116,7 @@ public class TestController {
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
             ans.setResultMessage(msg);
 
-            Test testData = factoryTest.create(test, description, active, parentTest, request.getUserPrincipal().getName(), null, null, null);
+            Test testData = factoryTest.create(test, description, isActive, parentTest, request.getUserPrincipal().getName(), null, null, null);
             ans = testService.create(testData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -343,7 +344,7 @@ public class TestController {
 
             Test testObj = new Test();
             testObj.setTest(test);
-            testObj.setActive(active);
+            testObj.setActive(ParameterParserUtil.parseBooleanParam(active, false));
             testObj.setDescription(description);
 
             ans = testService.updateIfExists(originalTest, testObj);

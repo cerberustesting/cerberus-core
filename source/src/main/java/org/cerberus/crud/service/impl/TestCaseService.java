@@ -535,7 +535,7 @@ public class TestCaseService implements ITestCaseService {
         // We first create the corresponding test if it doesn,'t exist.
         if (testCase.getTest() != null) {
             if (!testService.exist(testCase.getTest())) {
-                testService.create(factoryTest.create(testCase.getTest(), "", "Y", null, testCase.getUsrModif(), null, "", null));
+                testService.create(factoryTest.create(testCase.getTest(), "", true, null, testCase.getUsrModif(), null, "", null));
             }
         }
         return testCaseDao.update(keyTest, keyTestCase, testCase);
@@ -546,7 +546,7 @@ public class TestCaseService implements ITestCaseService {
         // We first create the corresponding test if it doesn,'t exist.
         if (testCase.getTest() != null) {
             if (!testService.exist(testCase.getTest())) {
-                testService.create(factoryTest.create(testCase.getTest(), "", "Y", null, testCase.getUsrCreated(), null, "", null));
+                testService.create(factoryTest.create(testCase.getTest(), "", true, null, testCase.getUsrCreated(), null, "", null));
             }
         }
         return testCaseDao.create(testCase);

@@ -40,5 +40,5 @@ public interface IFactoryTest {
      * @param dateModif
      * @return Test Object Created
      */
-    Test create(String test, String description, String active, String parentTest, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
+    Test create(String test, String description, boolean isActive, String parentTest, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 }
