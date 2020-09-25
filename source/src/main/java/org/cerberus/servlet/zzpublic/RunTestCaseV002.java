@@ -68,12 +68,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @version 1.0, 25/01/2013
  * @since 0.9.0
  */
-@WebServlet(name = "RunTestCaseV001", urlPatterns = {"/RunTestCaseV001"})
-public class RunTestCaseV001 extends HttpServlet {
+@WebServlet(name = "RunTestCaseV002", urlPatterns = {"/RunTestCaseV002"})
+public class RunTestCaseV002 extends HttpServlet {
 
-    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(RunTestCaseV001.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(RunTestCaseV002.class);
 
-    public static final String SERVLET_URL = "/RunTestCaseV001";
+    public static final String SERVLET_URL = "/RunTestCaseV002";
 
     public static final String PARAMETER_TEST = "Test";
     public static final String PARAMETER_TEST_CASE = "TestCase";
@@ -121,7 +121,7 @@ public class RunTestCaseV001 extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-            logEventService.createForPublicCalls("/RunTestCaseV001", "CALL", "RunTestCaseV001 called : " + request.getRequestURL(), request);
+            logEventService.createForPublicCalls("/RunTestCaseV002", "CALL", "RunTestCaseV002 called : " + request.getRequestURL(), request);
 
             //Tool
             String robot = "";
@@ -146,7 +146,7 @@ public class RunTestCaseV001 extends HttpServlet {
             String environment = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter(PARAMETER_ENVIRONMENT), "");
 
             //Test Dev Environment
-            boolean manualURL = ParameterParserUtil.parseBooleanParam(request.getParameter(PARAMETER_MANUAL_URL), false);
+            int manualURL = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_MANUAL_URL), 0);
             String myHost = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter(PARAMETER_MANUAL_HOST), "");
             String myContextRoot = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter(PARAMETER_MANUAL_CONTEXT_ROOT), "");
             String myLoginRelativeURL = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter(PARAMETER_MANUAL_LOGIN_RELATIVE_URL), "");
@@ -192,11 +192,11 @@ public class RunTestCaseV001 extends HttpServlet {
                     + "- " + PARAMETER_BROWSER_VERSION + " : Version to use for the execution. (Can be overwriten if robot is defined) [" + version + "]\n"
                     + "- " + PARAMETER_PLATFORM + " : Platform to use for the execution. (Can be overwriten if robot is defined) [" + platform + "]\n"
                     + "- " + PARAMETER_SCREEN_SIZE + " : Size of the screen to set for the execution. [" + screenSize + "]\n"
-                    + "- " + PARAMETER_MANUAL_URL + " : Activate or not the Manual URL of the application to execute. If activated the 4 parameters after (myhost, mycontextroot, myloginrelativeurl, myenvdata) are necessary. [" + manualURL + "]\n"
-                    + "- " + PARAMETER_MANUAL_HOST + " : Host of the application to test (only used when manualURL is feed). [" + myHost + "]\n"
-                    + "- " + PARAMETER_MANUAL_CONTEXT_ROOT + " : Context root of the application to test (only used when manualURL is feed). [" + myContextRoot + "]\n"
-                    + "- " + PARAMETER_MANUAL_LOGIN_RELATIVE_URL + " : Relative login URL of the application (only used when manualURL is feed). [" + myLoginRelativeURL + "]\n"
-                    + "- " + PARAMETER_MANUAL_ENV_DATA + " : Environment where to get the test data when a manualURL is defined. (only used when manualURL is feed) [" + myEnvData + "]\n"
+                    + "- " + PARAMETER_MANUAL_URL + " : Activate (1) or not (0) or Override (2) the Manual URL of the application to execute. If Activated (1) the 4 parameters after are necessary. If Override (2) at least 1 parameters after are necessary (other parameters will use cerberus values) [" + manualURL + "]\n"
+                    + "- " + PARAMETER_MANUAL_HOST + " : Host of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated or override). [" + myHost + "].\n"
+                    + "- " + PARAMETER_MANUAL_CONTEXT_ROOT + " : Context root of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated or override). [" + myContextRoot + "]\n"
+                    + "- " + PARAMETER_MANUAL_LOGIN_RELATIVE_URL + " : Relative login URL of the application (only used when " + PARAMETER_MANUAL_URL + " is activated or override). [" + myLoginRelativeURL + "]\n"
+                    + "- " + PARAMETER_MANUAL_ENV_DATA + " : Environment where to get the test data when a " + PARAMETER_MANUAL_URL + " is defined. (only used when manualURL is active or override). [" + myEnvData + "]\n"
                     + "- " + PARAMETER_TAG + " : Tag that will be stored on the execution. [" + tag + "]\n"
                     + "- " + PARAMETER_OUTPUT_FORMAT + " : Format of the output of the execution. [" + outputFormat + "]\n"
                     + "- " + PARAMETER_SCREENSHOT + " : Activate or not the screenshots. [" + screenshot + "]\n"
@@ -230,12 +230,12 @@ public class RunTestCaseV001 extends HttpServlet {
                 error = true;
             }
             // environment is mandatory when manualURL is not activated.
-            if (StringUtil.isNullOrEmpty(environment) && !manualURL) {
+            if (StringUtil.isNullOrEmpty(environment) && ((manualURL == 0) || (manualURL == 2))) {
                 errorMessage += "Error - Parameter Environment is mandatory (or activate the manualURL parameter). ";
                 error = true;
             }
             // myenv is mandatory when manualURL is activated.
-            if (StringUtil.isNullOrEmpty(myEnvData) && manualURL) {
+            if (StringUtil.isNullOrEmpty(myEnvData) && ((manualURL == 1) || (manualURL == 2))) {
                 if (StringUtil.isNullOrEmpty(environment)) {
                     errorMessage += "Error - Parameter myenvdata is mandatory (when manualURL parameter is activated). ";
                     error = true;
@@ -296,7 +296,7 @@ public class RunTestCaseV001 extends HttpServlet {
                 // Building Execution Object.
                 TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, robot, robotExecutor, robotHost, robotPort, "", browser, version, platform,
                         0, 0, "", "", "", null, null, tag, verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
-                        Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL ? 1 : 0, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort,
+                        Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort,
                         null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, null, "", "",
                         "", "", "", "", "", "", "", manualExecution, "", 0, 0, "", executor, null, executor, null);
 
@@ -442,56 +442,56 @@ public class RunTestCaseV001 extends HttpServlet {
                     case "verbose-json":
                     case "json":
                         try {
-                            JSONObject jsonResponse = new JSONObject();
-                            response.setContentType("application/json");
-                            response.setCharacterEncoding("utf8");
+                        JSONObject jsonResponse = new JSONObject();
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("utf8");
 
-                            jsonResponse.put("id", runID);
-                            jsonResponse.put("queueID", idFromQueue);
-                            jsonResponse.put("test", test);
-                            jsonResponse.put("testcase", testCase);
-                            jsonResponse.put("country", country);
-                            jsonResponse.put("environment", environment);
-                            jsonResponse.put("Time Start", new Timestamp(tCExecution.getStart()));
-                            jsonResponse.put("Time End", new Timestamp(tCExecution.getEnd()));
-                            jsonResponse.put("OutputFormat", outputFormat);
-                            jsonResponse.put("Verbose", verbose);
-                            jsonResponse.put("Screenshot", screenshot);
-                            jsonResponse.put("PageSource", getPageSource);
-                            jsonResponse.put("SeleniumLog", getSeleniumLog);
-                            jsonResponse.put("Robot", robot);
-                            jsonResponse.put("Robot Server IP", robotHost);
-                            jsonResponse.put("Robot Server Port", robotPort);
-                            jsonResponse.put("Timeout", timeout);
-                            jsonResponse.put("Synchroneous", synchroneous);
-                            jsonResponse.put("Browser", browser);
-                            jsonResponse.put("Version", version);
-                            jsonResponse.put("Platform", platform);
-                            jsonResponse.put("ScreenSize", screenSize);
-                            jsonResponse.put("Nb Of Retry", numberOfRetries);
-                            jsonResponse.put("ManualURL", manualURL);
-                            jsonResponse.put("MyHost", myHost);
-                            jsonResponse.put("MyContextRoot", myContextRoot);
-                            jsonResponse.put("MyLoginRelativeURL", myLoginRelativeURL);
-                            jsonResponse.put("myEnvironmentData", myEnvData);
-                            jsonResponse.put("ReturnCode", tCExecution.getResultMessage().getCode());
-                            jsonResponse.put("controlStatus", tCExecution.getResultMessage().getCodeString());
-                            jsonResponse.put("controlMessage", tCExecution.getResultMessage().getDescription());
-                            if (runID > 0) { // Execution has been created.
-                                // Detail of the execution is returned from memory.
-                                jsonResponse.put("executionDetail", tCExecution.toJson(true));
+                        jsonResponse.put("id", runID);
+                        jsonResponse.put("queueID", idFromQueue);
+                        jsonResponse.put("test", test);
+                        jsonResponse.put("testcase", testCase);
+                        jsonResponse.put("country", country);
+                        jsonResponse.put("environment", environment);
+                        jsonResponse.put("Time Start", new Timestamp(tCExecution.getStart()));
+                        jsonResponse.put("Time End", new Timestamp(tCExecution.getEnd()));
+                        jsonResponse.put("OutputFormat", outputFormat);
+                        jsonResponse.put("Verbose", verbose);
+                        jsonResponse.put("Screenshot", screenshot);
+                        jsonResponse.put("PageSource", getPageSource);
+                        jsonResponse.put("SeleniumLog", getSeleniumLog);
+                        jsonResponse.put("Robot", robot);
+                        jsonResponse.put("Robot Server IP", robotHost);
+                        jsonResponse.put("Robot Server Port", robotPort);
+                        jsonResponse.put("Timeout", timeout);
+                        jsonResponse.put("Synchroneous", synchroneous);
+                        jsonResponse.put("Browser", browser);
+                        jsonResponse.put("Version", version);
+                        jsonResponse.put("Platform", platform);
+                        jsonResponse.put("ScreenSize", screenSize);
+                        jsonResponse.put("Nb Of Retry", numberOfRetries);
+                        jsonResponse.put("ManualURL", manualURL);
+                        jsonResponse.put("MyHost", myHost);
+                        jsonResponse.put("MyContextRoot", myContextRoot);
+                        jsonResponse.put("MyLoginRelativeURL", myLoginRelativeURL);
+                        jsonResponse.put("myEnvironmentData", myEnvData);
+                        jsonResponse.put("ReturnCode", tCExecution.getResultMessage().getCode());
+                        jsonResponse.put("controlStatus", tCExecution.getResultMessage().getCodeString());
+                        jsonResponse.put("controlMessage", tCExecution.getResultMessage().getDescription());
+                        if (runID > 0) { // Execution has been created.
+                            // Detail of the execution is returned from memory.
+                            jsonResponse.put("executionDetail", tCExecution.toJson(true));
 //                            TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(runID).getItem();
 //                            jsonResponse.put("executionDetail", t.toJson(true));
-                            }
-                            response.getWriter().print(jsonResponse.toString());
-                        } catch (JSONException e) {
-                            LOG.warn(e);
-                            //returns a default error message with the json format that is able to be parsed by the client-side
-                            response.setContentType("application/json");
-                            response.setCharacterEncoding("utf8");
-                            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
                         }
-                        break;
+                        response.getWriter().print(jsonResponse.toString());
+                    } catch (JSONException e) {
+                        LOG.warn(e);
+                        //returns a default error message with the json format that is able to be parsed by the client-side
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("utf8");
+                        response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+                    }
+                    break;
 
                     default:
                         response.setContentType("text/plain");
@@ -548,51 +548,51 @@ public class RunTestCaseV001 extends HttpServlet {
                     case "json":
                     case "verbose-json":
                         try {
-                            JSONObject jsonResponse = new JSONObject();
-                            jsonResponse.put("OutputFormat", outputFormat);
-                            jsonResponse.put("Verbose", verbose);
-                            jsonResponse.put("Screenshot", screenshot);
-                            jsonResponse.put("PageSource", getPageSource);
-                            jsonResponse.put("SeleniumLog", getSeleniumLog);
-                            jsonResponse.put("Robot", robot);
-                            jsonResponse.put("Robot Server IP", robotHost);
-                            jsonResponse.put("Robot Server Port", robotPort);
-                            jsonResponse.put("Timeout", timeout);
-                            jsonResponse.put("Synchroneous", synchroneous);
-                            jsonResponse.put("Browser", browser);
-                            jsonResponse.put("Version", version);
-                            jsonResponse.put("Platform", platform);
-                            jsonResponse.put("ScreenSize", screenSize);
-                            jsonResponse.put("Nb Of Retry", numberOfRetries);
-                            jsonResponse.put("ManualURL", manualURL);
-                            jsonResponse.put("MyHost", myHost);
-                            jsonResponse.put("MyContextRoot", myContextRoot);
-                            jsonResponse.put("MyLoginRelativeURL", myLoginRelativeURL);
-                            jsonResponse.put("myEnvironmentData", myEnvData);
-                            jsonResponse.put("ReturnCode", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCode());
-                            jsonResponse.put("helpMessage", helpMessage);
+                        JSONObject jsonResponse = new JSONObject();
+                        jsonResponse.put("OutputFormat", outputFormat);
+                        jsonResponse.put("Verbose", verbose);
+                        jsonResponse.put("Screenshot", screenshot);
+                        jsonResponse.put("PageSource", getPageSource);
+                        jsonResponse.put("SeleniumLog", getSeleniumLog);
+                        jsonResponse.put("Robot", robot);
+                        jsonResponse.put("Robot Server IP", robotHost);
+                        jsonResponse.put("Robot Server Port", robotPort);
+                        jsonResponse.put("Timeout", timeout);
+                        jsonResponse.put("Synchroneous", synchroneous);
+                        jsonResponse.put("Browser", browser);
+                        jsonResponse.put("Version", version);
+                        jsonResponse.put("Platform", platform);
+                        jsonResponse.put("ScreenSize", screenSize);
+                        jsonResponse.put("Nb Of Retry", numberOfRetries);
+                        jsonResponse.put("ManualURL", manualURL);
+                        jsonResponse.put("MyHost", myHost);
+                        jsonResponse.put("MyContextRoot", myContextRoot);
+                        jsonResponse.put("MyLoginRelativeURL", myLoginRelativeURL);
+                        jsonResponse.put("myEnvironmentData", myEnvData);
+                        jsonResponse.put("ReturnCode", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCode());
+                        jsonResponse.put("helpMessage", helpMessage);
 
-                            // Correct format. Previous entries will have to be removed in an earlier version.
-                            jsonResponse.put("id", 0);
-                            jsonResponse.put("queueID", idFromQueue);
-                            jsonResponse.put("test", test);
-                            jsonResponse.put("testcase", testCase);
-                            jsonResponse.put("country", country);
-                            jsonResponse.put("environment", environment);
-                            jsonResponse.put("controlStatus", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCodeString());
-                            jsonResponse.put("controlMessage", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage);
+                        // Correct format. Previous entries will have to be removed in an earlier version.
+                        jsonResponse.put("id", 0);
+                        jsonResponse.put("queueID", idFromQueue);
+                        jsonResponse.put("test", test);
+                        jsonResponse.put("testcase", testCase);
+                        jsonResponse.put("country", country);
+                        jsonResponse.put("environment", environment);
+                        jsonResponse.put("controlStatus", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCodeString());
+                        jsonResponse.put("controlMessage", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage);
 
-                            response.setContentType("application/json");
-                            response.setCharacterEncoding("utf8");
-                            response.getWriter().print(jsonResponse.toString());
-                        } catch (JSONException e) {
-                            LOG.warn(e);
-                            //returns a default error message with the json format that is able to be parsed by the client-side
-                            response.setContentType("application/json");
-                            response.setCharacterEncoding("utf8");
-                            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
-                        }
-                        break;
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("utf8");
+                        response.getWriter().print(jsonResponse.toString());
+                    } catch (JSONException e) {
+                        LOG.warn(e);
+                        //returns a default error message with the json format that is able to be parsed by the client-side
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("utf8");
+                        response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+                    }
+                    break;
 
                     default:
                         // In case of errors, we display the help message.

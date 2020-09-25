@@ -1558,7 +1558,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         TestCaseExecution result = factoryTCExecution.create(id, test, testcase, description, build, revision, environment,
                 country, robot, robotExecutor, robotHost, robotPort, robotDecli, browser, version, platform, start, end, controlStatus, controlMessage, application, null, url,
                 tag, 0, 0, 0, 0, true, "", "", status, crbVersion, null, null, null,
-                false, null, null, null, environmentData, null, null, null, null, executor, 0, screenSize, null, robotProvider, robotSessionId,
+                0, null, null, null, environmentData, null, null, null, null, executor, 0, screenSize, null, robotProvider, robotSessionId,
                 conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, manualExecution, userAgent, testCaseVersion, testCasePriority, system,
                 usrCreated, dateCreated, usrModif, dateModif);
         result.setQueueID(queueId);

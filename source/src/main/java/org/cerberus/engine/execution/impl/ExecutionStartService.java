@@ -257,8 +257,8 @@ public class ExecutionStartService implements IExecutionStartService {
          * forced to MANUAL if execution is manual.
          *
          */
-        LOG.debug("Checking if connectivity parameters are manual or automatic from the database. '" + tCExecution.isManualURL() + "'");
-        if (tCExecution.isManualURL()) {
+        LOG.debug("Checking if connectivity parameters are manual or automatic from the database. '" + tCExecution.getManualURL() + "'");
+        if (tCExecution.getManualURL() == 1) {
             LOG.debug("Execution will be done with manual application connectivity setting.");
             if (StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_MANUALURL_INVALID);
@@ -301,15 +301,21 @@ public class ExecutionStartService implements IExecutionStartService {
                 cea = this.countryEnvironmentParametersService.convert(this.countryEnvironmentParametersService.readByKey(
                         tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication()));
                 if (cea != null) {
+
+                    if (tCExecution.getManualURL() == 2) {
+                        // add possibility to override URL with MyHost if MyHost is available
+                        if (!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
+                            cea.setIp(tCExecution.getMyHost());
+                        }
+                        if (!StringUtil.isNullOrEmpty(tCExecution.getMyContextRoot())) {
+                            cea.setUrl(tCExecution.getMyContextRoot());
+                        }
+                        if (!StringUtil.isNullOrEmpty(tCExecution.getMyLoginRelativeURL())) {
+                            cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
+                        }
+                    }
+
                     tCExecution.setUrl(StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", ""));
-                    // add possibility to override URL with MyHost if MyHost is available
-                    if (!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
-                        String contextRoot = !StringUtil.isNullOrEmpty(tCExecution.getMyContextRoot()) ? tCExecution.getMyContextRoot() : "";
-                        tCExecution.setUrl(StringUtil.getURLFromString(tCExecution.getMyHost(), contextRoot, "", ""));
-                    }
-                    if (!StringUtil.isNullOrEmpty(tCExecution.getMyLoginRelativeURL())) {
-                        cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
-                    }
                     // If domain is empty we guess it from URL.
                     if (StringUtil.isNullOrEmpty(cea.getDomain())) {
                         cea.setDomain(StringUtil.getDomainFromUrl(tCExecution.getUrl()));
@@ -348,7 +354,7 @@ public class ExecutionStartService implements IExecutionStartService {
         try {
             tCExecution.setEnvironmentDataObj(invariantService.convert(invariantService.readByKey("ENVIRONMENT", tCExecution.getEnvironmentData())));
         } catch (CerberusException ex) {
-            if (tCExecution.isManualURL()) {
+            if (tCExecution.getManualURL() >= 1) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST_MAN);
                 mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
                 LOG.debug(mes.getDescription());

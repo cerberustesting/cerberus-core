@@ -39,7 +39,7 @@ import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.engine.execution.IRetriesService;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.servlet.zzpublic.RunTestCaseV001;
+import org.cerberus.servlet.zzpublic.RunTestCaseV002;
 import org.cerberus.util.ParamRequestMaker;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
@@ -78,42 +78,45 @@ public class ExecutionQueueWorkerThread implements Runnable {
     private ParamRequestMaker makeParamRequest() {
         ParamRequestMaker paramRequestMaker = new ParamRequestMaker();
         try {
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_TEST, URLEncoder.encode(getToExecute().getTest(), "UTF-8"));
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_TEST_CASE, URLEncoder.encode(getToExecute().getTestCase(), "UTF-8"));
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_COUNTRY, getToExecute().getCountry());
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_ENVIRONMENT, getToExecute().getEnvironment());
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_ROBOT, getToExecute().getRobot());
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_ROBOTEXECUTOR, getRobotExecutor());
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_ROBOT_IP, getToExecute().getRobotIP());
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_ROBOT_PORT, getToExecute().getRobotPort());
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_BROWSER, getToExecute().getBrowser());
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_BROWSER_VERSION, getToExecute().getBrowserVersion());
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_PLATFORM, getToExecute().getPlatform());
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_SCREEN_SIZE, getToExecute().getScreenSize());
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_TEST, URLEncoder.encode(getToExecute().getTest(), "UTF-8"));
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_TEST_CASE, URLEncoder.encode(getToExecute().getTestCase(), "UTF-8"));
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_COUNTRY, getToExecute().getCountry());
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_ENVIRONMENT, getToExecute().getEnvironment());
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_ROBOT, getToExecute().getRobot());
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_ROBOTEXECUTOR, getRobotExecutor());
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_ROBOT_IP, getToExecute().getRobotIP());
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_ROBOT_PORT, getToExecute().getRobotPort());
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_BROWSER, getToExecute().getBrowser());
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_BROWSER_VERSION, getToExecute().getBrowserVersion());
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_PLATFORM, getToExecute().getPlatform());
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_SCREEN_SIZE, getToExecute().getScreenSize());
 
-            if (getToExecute().getManualURL() >= 1) { // 1 (Activate) or 2 (Override)
-                if (getToExecute().getManualURL() == 1) { // set manual url only if 1. if 2, manual url == false and, we ovveride host, contextroot, login and env data if attributs available
-                    paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_MANUAL_URL, ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE);
-                }
-
-                addIfNotNullOrEmpty(paramRequestMaker, RunTestCaseV001.PARAMETER_MANUAL_HOST, getToExecute().getManualHost(), true);
-                addIfNotNullOrEmpty(paramRequestMaker, RunTestCaseV001.PARAMETER_MANUAL_CONTEXT_ROOT, getToExecute().getManualContextRoot(), true);
-                addIfNotNullOrEmpty(paramRequestMaker, RunTestCaseV001.PARAMETER_MANUAL_LOGIN_RELATIVE_URL, getToExecute().getManualLoginRelativeURL(), true);
-                addIfNotNullOrEmpty(paramRequestMaker, RunTestCaseV001.PARAMETER_MANUAL_ENV_DATA, getToExecute().getManualEnvData(), false);
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_MANUAL_URL, String.valueOf(getToExecute().getManualURL()));
+            if (getToExecute().getManualHost() != null) {
+                paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_MANUAL_HOST, URLEncoder.encode(getToExecute().getManualHost(), "UTF-8"));
+            }
+            if (getToExecute().getManualContextRoot() != null) {
+                paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_MANUAL_CONTEXT_ROOT, URLEncoder.encode(getToExecute().getManualContextRoot(), "UTF-8"));
+            }
+            if (getToExecute().getManualLoginRelativeURL() != null) {
+                paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_MANUAL_LOGIN_RELATIVE_URL, URLEncoder.encode(getToExecute().getManualLoginRelativeURL(), "UTF-8"));
+            }
+            if (getToExecute().getManualEnvData() != null) {
+                paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_MANUAL_ENV_DATA, URLEncoder.encode(getToExecute().getManualEnvData(), "UTF-8"));
             }
 
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_TAG, URLEncoder.encode(getToExecute().getTag(), "UTF-8"));
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_SCREENSHOT, Integer.toString(getToExecute().getScreenshot()));
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_VERBOSE, Integer.toString(getToExecute().getVerbose()));
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_TIMEOUT, getToExecute().getTimeout());
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_PAGE_SOURCE, Integer.toString(getToExecute().getPageSource()));
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_SELENIUM_LOG, Integer.toString(getToExecute().getSeleniumLog()));
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_EXECUTION_QUEUE_ID, Long.toString(getToExecute().getId()));
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_NUMBER_OF_RETRIES, Long.toString(getToExecute().getRetries()));
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_EXECUTOR, getToExecute().getUsrCreated());
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_MANUAL_EXECUTION, getToExecute().getManualExecution());
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_OUTPUT_FORMAT, PARAMETER_OUTPUT_FORMAT_VALUE);
-            paramRequestMaker.addParam(RunTestCaseV001.PARAMETER_SYNCHRONEOUS, ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE);
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_TAG, URLEncoder.encode(getToExecute().getTag(), "UTF-8"));
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_SCREENSHOT, Integer.toString(getToExecute().getScreenshot()));
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_VERBOSE, Integer.toString(getToExecute().getVerbose()));
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_TIMEOUT, getToExecute().getTimeout());
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_PAGE_SOURCE, Integer.toString(getToExecute().getPageSource()));
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_SELENIUM_LOG, Integer.toString(getToExecute().getSeleniumLog()));
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_EXECUTION_QUEUE_ID, Long.toString(getToExecute().getId()));
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_NUMBER_OF_RETRIES, Long.toString(getToExecute().getRetries()));
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_EXECUTOR, getToExecute().getUsrCreated());
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_MANUAL_EXECUTION, getToExecute().getManualExecution());
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_OUTPUT_FORMAT, PARAMETER_OUTPUT_FORMAT_VALUE);
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_SYNCHRONEOUS, ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE);
 
         } catch (UnsupportedEncodingException ex) {
             LOG.error("Error when encoding string in URL : ", ex);
@@ -240,13 +243,13 @@ public class ExecutionQueueWorkerThread implements Runnable {
 
             StringBuilder url = new StringBuilder();
             url.append(cerberusExecutionUrl);
-            url.append(RunTestCaseV001.SERVLET_URL);
+            url.append(RunTestCaseV002.SERVLET_URL);
             url.append("?");
             url.append(makeParamRequest().mkString().replace(" ", "+"));
 
             LOG.debug("Make http call : " + queueId);
             // Make the http call and parse the output.
-            runParseAnswer(runExecution(url), cerberusExecutionUrl + RunTestCaseV001.SERVLET_URL, url.toString());
+            runParseAnswer(runExecution(url), cerberusExecutionUrl + RunTestCaseV002.SERVLET_URL, url.toString());
 
         } catch (Exception e) {
             LOG.warn("Execution in queue " + queueId + " has finished with error");
@@ -396,9 +399,4 @@ public class ExecutionQueueWorkerThread implements Runnable {
         return this.cerberusExecutionUrl;
     }
 
-    private void addIfNotNullOrEmpty(ParamRequestMaker paramRequestMaker, String key, String value, boolean encode) throws UnsupportedEncodingException {
-        if (!StringUtil.isNullOrEmpty(value)) {
-            paramRequestMaker.addParam(key, encode ? URLEncoder.encode(value, "UTF-8") : value);
-        }
-    }
 }

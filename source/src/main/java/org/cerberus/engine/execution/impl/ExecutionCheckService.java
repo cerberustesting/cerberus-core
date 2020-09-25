@@ -71,7 +71,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
 
     @Override
     public MessageGeneral checkTestCaseExecution(TestCaseExecution tCExecution) {
-        if (tCExecution.isManualURL()) {
+        if (tCExecution.getManualURL() >= 1) {
             /**
              * Manual application connectivity parameter
              */

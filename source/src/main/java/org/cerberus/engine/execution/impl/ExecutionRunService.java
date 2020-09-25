@@ -191,7 +191,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
             AnswerItem<String> answerDecode = new AnswerItem<>();
 
-            if (!(tCExecution.isManualURL())) {
+            if (!(tCExecution.getManualURL() >=1)) {
                 /**
                  * Insert SystemVersion in Database
                  */

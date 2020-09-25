@@ -97,7 +97,7 @@ public class TestCaseExecution {
     private int verbose;
     private int screenshot;
     private String outputFormat;
-    private boolean manualURL;
+    private int manualURL;
     private String myHost;
     private String myContextRoot;
     private String myLoginRelativeURL;
@@ -639,11 +639,11 @@ public class TestCaseExecution {
         this.environmentData = environmentData;
     }
 
-    public boolean isManualURL() {
+    public int getManualURL() {
         return manualURL;
     }
 
-    public void setManualURL(boolean manualURL) {
+    public void setManualURL(int manualURL) {
         this.manualURL = manualURL;
     }
 

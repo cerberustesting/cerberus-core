@@ -427,7 +427,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         String timeout = testCaseExecutionInQueue.getTimeout();
         String outputFormat = "";
         TestCase tCase = testCaseExecutionInQueue.getTestCaseObj();
-        boolean manualURL = (testCaseExecutionInQueue.getManualURL() >= 1);
+        int manualURL = (testCaseExecutionInQueue.getManualURL());
         String manualExecution = testCaseExecutionInQueue.getManualExecution();
         String myHost = testCaseExecutionInQueue.getManualHost();
         String myContextRoot = testCaseExecutionInQueue.getManualContextRoot();
