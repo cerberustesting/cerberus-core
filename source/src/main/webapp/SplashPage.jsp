@@ -26,11 +26,11 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <title>Cerberus Application Maintenance</title>
+        <title>Cerberus Under Maintenance</title>
         <style>
             #logo-cerberus {
                 width: 100px;
-                margin: 2em 0 2em 2em;
+                margin: 2em 2em 2em 2em;
             }
 
             #reloadButton {
@@ -48,15 +48,17 @@
         </style>
     </head>
     <body>
-        <div class="container-fluid center" id="page-layout">
+        <div class="container-fluid center" id="">
             <%@ include file="include/global/messagesArea.html"%>
-            <h1 class="page-title-line" id="title">Cerberus is on maintenance</h1>
-            <p><img src="images/Logo-cerberus_250.png" id="logo-cerberus"></p>
-            <h2>Please come back later</h2>
+            <h1 class="page-title-line" style="text-align: center" id="title">Cerberus is down for maintenance</h1>
+            <table style="width: 100%"><tbody ><tr><td style="text-align: center"><a href="."><img style="align-content: center;" src="images/Logo-cerberus_250.png" id="logo-cerberus"></a></td></tr></tbody></table>
+            
+            <h2 style="text-align: center" >Please come back later</h2>
 
-            <button name="reloadButton" id="reloadButton" type="button" class="btn btn-default">
+            <table style="width: 100%"><tbody ><tr><td style="text-align: center">            <button name="reloadButton" id="reloadButton" type="button" class="btn btn-default">
                 Reload
             </button>
+</td></tr></tbody></table>
             <p>If any issue, contact your Cerberus administrator at : <a id="adminMailLink" href=""></a></p>
 
             <footer class="footer">

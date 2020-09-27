@@ -116,8 +116,10 @@ public class CreateCampaign extends HttpServlet {
         String tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
         String verbose = ParameterParserUtil.parseStringParam(request.getParameter("Verbose"), "");
         String screenshot = ParameterParserUtil.parseStringParam(request.getParameter("Screenshot"), "");
+        String video = ParameterParserUtil.parseStringParam(request.getParameter("Video"), "");
         String pageSource = ParameterParserUtil.parseStringParam(request.getParameter("PageSource"), "");
         String robotLog = ParameterParserUtil.parseStringParam(request.getParameter("RobotLog"), "");
+        String consoleLog = ParameterParserUtil.parseStringParam(request.getParameter("ConsoleLog"), "");
         String timeout = ParameterParserUtil.parseStringParam(request.getParameter("Timeout"), "");
         String retries = ParameterParserUtil.parseStringParam(request.getParameter("Retries"), "");
         String priority = ParameterParserUtil.parseStringParam(request.getParameter("Priority"), "");
@@ -136,7 +138,7 @@ public class CreateCampaign extends HttpServlet {
             Campaign camp = factoryCampaign.create(0, name, distribList, notifyStart, notifyEnd,
                     slackNotifyStartTagExecution, slackNotifyEndTagExecution, slackWebhook, slackChannel,
                     cIScoreThreshold,
-                    tag, verbose, screenshot, pageSource, robotLog, timeout, retries, priority, manualExecution,
+                    tag, verbose, screenshot, video, pageSource, robotLog, consoleLog, timeout, retries, priority, manualExecution,
                     desc, longDesc, group1, group2, group3,
                     request.getRemoteUser(), null, null, null);
 

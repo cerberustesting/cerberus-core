@@ -115,8 +115,10 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
 
         int verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("verbose"), 1, charset);
         int screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("screenshot"), 0, charset);
+        int video = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("video"), 0, charset);
         int pageSource = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("pageSource"), 0, charset);
-        int seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("seleniumLog"), 0, charset);
+        int robotLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("robotLog"), 0, charset);
+        int consoleLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("consoleLog"), 0, charset);
         String timeout = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("timeout"), "", charset);
         int retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("retries"), 0, charset);
         String manualExecution = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("manualExecution"), "", charset);
@@ -219,8 +221,10 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
                         executionQueueData.setScreenSize(ParameterParserUtil.parseStringParam(screenSize, executionQueueData.getScreenSize()));
                         executionQueueData.setVerbose(ParameterParserUtil.parseIntegerParam(verbose, executionQueueData.getVerbose()));
                         executionQueueData.setScreenshot(screenshot);
+                        executionQueueData.setVideo(video);
                         executionQueueData.setPageSource(pageSource);
-                        executionQueueData.setSeleniumLog(seleniumLog);
+                        executionQueueData.setRobotLog(robotLog);
+                        executionQueueData.setConsoleLog(consoleLog);
                         executionQueueData.setTimeout(timeout);
                         executionQueueData.setRetries(retries);
                         executionQueueData.setManualExecution(manualExecution);

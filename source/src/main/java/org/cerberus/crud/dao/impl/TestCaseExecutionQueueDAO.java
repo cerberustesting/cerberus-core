@@ -86,10 +86,12 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     private static final String COLUMN_MANUAL_ENV_DATA = "ManualEnvData";
     private static final String COLUMN_TAG = "Tag";
     private static final String COLUMN_SCREENSHOT = "Screenshot";
+    private static final String COLUMN_VIDEO = "Video";
     private static final String COLUMN_VERBOSE = "Verbose";
     private static final String COLUMN_TIMEOUT = "Timeout";
     private static final String COLUMN_PAGE_SOURCE = "PageSource";
-    private static final String COLUMN_SELENIUM_LOG = "SeleniumLog";
+    private static final String COLUMN_ROBOT_LOG = "RobotLog";
+    private static final String COLUMN_CONSOLE_LOG = "ConsoleLog";
     private static final String COLUMN_REQUEST_DATE = "RequestDate";
     private static final String COLUMN_COMMENT = "Comment";
     private static final String COLUMN_RETRIES = "Retries";
@@ -1431,10 +1433,10 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         query.append("INSERT INTO `" + TABLE + "` (`" + COLUMN_SYSTEM + "`, `" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `" + COLUMN_ROBOT
                 + "`, `" + COLUMN_ROBOTDECLI + "`, `" + COLUMN_ROBOT_IP + "`, `" + COLUMN_ROBOT_PORT + "`, `" + COLUMN_BROWSER + "`, `" + COLUMN_BROWSER_VERSION + "`, `" + COLUMN_PLATFORM
                 + "`, `" + COLUMN_SCREENSIZE + "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `"
-                + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VERBOSE + "`, `"
-                + COLUMN_TIMEOUT + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_SELENIUM_LOG + "`, `" + COLUMN_RETRIES + "`, `"
+                + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VIDEO + "`, `" + COLUMN_VERBOSE + "`, `"
+                + COLUMN_TIMEOUT + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_ROBOT_LOG + "`, `" + COLUMN_CONSOLE_LOG + "`, `" + COLUMN_RETRIES + "`, `"
                 + COLUMN_MANUAL_EXECUTION + "`, `" + COLUMN_USRCREATED + "`, `" + COLUMN_STATE + "`, `" + COLUMN_COMMENT + "`, `" + COLUMN_DEBUGFLAG + "`, `" + COLUMN_PRIORITY + "`) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1471,10 +1473,12 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             preStat.setString(i++, object.getManualEnvData());
             preStat.setString(i++, object.getTag());
             preStat.setInt(i++, object.getScreenshot());
+            preStat.setInt(i++, object.getVideo());
             preStat.setInt(i++, object.getVerbose());
             preStat.setString(i++, object.getTimeout());
             preStat.setInt(i++, object.getPageSource());
-            preStat.setInt(i++, object.getSeleniumLog());
+            preStat.setInt(i++, object.getRobotLog());
+            preStat.setInt(i++, object.getConsoleLog());
             preStat.setInt(i++, object.getRetries());
             preStat.setString(i++, object.getManualExecution() == null ? "N" : object.getManualExecution());
             String user = object.getUsrCreated() == null ? "" : object.getUsrCreated();
@@ -1525,8 +1529,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         String query = "UPDATE testcaseexecutionqueue exq SET `System` = ?, `Test` = ?, `TestCase` = ?, `Country` = ?, Environment = ?, Robot = ?, RobotDecli = ?, "
                 + "RobotIP = ?, `RobotPort` = ?, Browser = ?, BrowserVersion = ?, `Platform`= ?, `ScreenSize` = ?, "
                 + "ManualURL = ?, `ManualHost` = ?, ManualContextRoot = ?, `ManualLoginRelativeUrl`= ?, `ManualEnvData` = ?, "
-                + "Tag = ?, `Screenshot` = ?, Verbose = ?, `Timeout`= ?, `PageSource` = ?, `debugFlag` = ?, `priority` = ?, "
-                + "SeleniumLog = ?, `Retries`= ?, `ManualExecution` = ?, "
+                + "Tag = ?, `Screenshot` = ?, `Video` = ?, Verbose = ?, `Timeout`= ?, `PageSource` = ?, `debugFlag` = ?, `priority` = ?, "
+                + "RobotLog = ?, ConsoleLog = ?, `Retries`= ?, `ManualExecution` = ?, "
                 + "`UsrModif`= ?, `DateModif` = now() ";
         query += " WHERE `ID` = ?";
 
@@ -1560,12 +1564,14 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 preStat.setString(i++, object.getManualEnvData());
                 preStat.setString(i++, object.getTag());
                 preStat.setInt(i++, object.getScreenshot());
+                preStat.setInt(i++, object.getVideo());
                 preStat.setInt(i++, object.getVerbose());
                 preStat.setString(i++, object.getTimeout());
                 preStat.setInt(i++, object.getPageSource());
                 preStat.setString(i++, object.getDebugFlag());
                 preStat.setInt(i++, object.getPriority());
-                preStat.setInt(i++, object.getSeleniumLog());
+                preStat.setInt(i++, object.getRobotLog());
+                preStat.setInt(i++, object.getConsoleLog());
                 preStat.setInt(i++, object.getRetries());
                 preStat.setString(i++, object.getManualExecution());
                 preStat.setString(i++, object.getUsrModif());
@@ -2463,10 +2469,12 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 resultSet.getString(COLUMN_MANUAL_ENV_DATA),
                 resultSet.getString(COLUMN_TAG),
                 resultSet.getInt(COLUMN_SCREENSHOT),
+                resultSet.getInt(COLUMN_VIDEO),
                 resultSet.getInt(COLUMN_VERBOSE),
                 resultSet.getString(COLUMN_TIMEOUT),
                 resultSet.getInt(COLUMN_PAGE_SOURCE),
-                resultSet.getInt(COLUMN_SELENIUM_LOG),
+                resultSet.getInt(COLUMN_ROBOT_LOG),
+                resultSet.getInt(COLUMN_CONSOLE_LOG),
                 new Date(resultSet.getTimestamp(COLUMN_REQUEST_DATE).getTime()),
                 TestCaseExecutionQueue.State.valueOf(resultSet.getString(COLUMN_STATE)),
                 resultSet.getInt(COLUMN_PRIORITY),

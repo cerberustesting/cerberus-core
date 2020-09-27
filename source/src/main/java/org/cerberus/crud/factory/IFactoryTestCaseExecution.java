@@ -63,7 +63,7 @@ public interface IFactoryTestCaseExecution {
      * @param verbose
      * @param screenshot
      * @param pageSource
-     * @param seleniumLog
+     * @param robotLog
      * @param synchroneous
      * @param timeout
      * @param outputFormat
@@ -109,7 +109,7 @@ public interface IFactoryTestCaseExecution {
     TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment, String country,
             String robot, String robotExecutor, String ip, String port, String robotDecli,
             String browser, String version, String platform, long start, long end, String controlStatus, String controlMessage,
-            String application, Application applicationObj, String url, String tag, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous, String timeout,
+            String application, Application applicationObj, String url, String tag, int verbose, int screenshot, int video, int pageSource, int robotLog, int consoleLog, boolean synchroneous, String timeout,
             String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
             CountryEnvironmentParameters countryEnvironmentParameters, int manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage,

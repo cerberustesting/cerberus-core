@@ -119,8 +119,10 @@ public class UpdateCampaign extends HttpServlet {
         String tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
         String verbose = ParameterParserUtil.parseStringParam(request.getParameter("Verbose"), "");
         String screenshot = ParameterParserUtil.parseStringParam(request.getParameter("Screenshot"), "");
+        String video = ParameterParserUtil.parseStringParam(request.getParameter("Video"), "");
         String pageSource = ParameterParserUtil.parseStringParam(request.getParameter("PageSource"), "");
         String robotLog = ParameterParserUtil.parseStringParam(request.getParameter("RobotLog"), "");
+        String consoleLog = ParameterParserUtil.parseStringParam(request.getParameter("ConsoleLog"), "");
         String timeout = ParameterParserUtil.parseStringParam(request.getParameter("Timeout"), "");
         String retries = ParameterParserUtil.parseStringParam(request.getParameter("Retries"), "");
         String priority = ParameterParserUtil.parseStringParam(request.getParameter("Priority"), "");
@@ -169,8 +171,10 @@ public class UpdateCampaign extends HttpServlet {
                 camp.setTag(tag);
                 camp.setVerbose(verbose);
                 camp.setScreenshot(screenshot);
+                camp.setVideo(video);
                 camp.setPageSource(pageSource);
                 camp.setRobotLog(robotLog);
+                camp.setConsoleLog(consoleLog);
                 camp.setTimeout(timeout);
                 camp.setRetries(retries);
                 camp.setPriority(priority);

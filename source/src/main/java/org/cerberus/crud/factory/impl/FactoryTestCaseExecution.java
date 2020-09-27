@@ -46,7 +46,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
     public TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment, String country,
             String robot, String robotExecutor, String robotHost, String robotPort, String robotDecli,
             String browser, String version, String platform, long start, long end, String controlStatus, String controlMessage,
-            String application, Application applicationObj, String url, String tag, int verbose, int screenshot, int pageSource, int seleniumLog,
+            String application, Application applicationObj, String url, String tag, int verbose, int screenshot, int video, int pageSource, int robotLog, int consoleLog,
             boolean synchroneous, String timeout, String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
             CountryEnvironmentParameters countryEnvironmentParameters, int manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor,
@@ -85,6 +85,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setUrl(url);
         newTce.setVerbose(verbose);
         newTce.setScreenshot(screenshot);
+        newTce.setVideo(video);
         newTce.setTestCaseObj(tCase);
         newTce.setCountryEnvParam(countryEnvParam);
         newTce.setCountryEnvironmentParameters(countryEnvironmentParameters);
@@ -103,7 +104,8 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setTimeout(timeout);
         newTce.setSynchroneous(synchroneous);
         newTce.setPageSource(pageSource);
-        newTce.setSeleniumLog(seleniumLog);
+        newTce.setRobotLog(robotLog);
+        newTce.setConsoleLog(consoleLog);
         newTce.setExecutor(executor);
         newTce.setNumberOfRetries(numberOfRetries);
         newTce.setScreenSize(screenSize);

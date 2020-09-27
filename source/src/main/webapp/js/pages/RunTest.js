@@ -199,13 +199,15 @@ function displayPageLabel() {
     $("#RobotPanel label[for='browser']").text(doc.getDocLabel("page_runtest", "browser"));
     $("#saveRobotPreferences").text(doc.getDocLabel("page_runtest", "saverobotpref"));
     $("#exeLabel").text(doc.getDocLabel("page_runtest", "execution_settings"));
-    $("#executionPanel label[for='tag']").text(doc.getDocOnline("page_runtest", "tag"));
+    $("#executionPanel label[for='tag']").html(doc.getDocOnline("page_runtest", "tag")+ "&nbsp;<span class='toggle glyphicon glyphicon-tag pull-right'></span>");
     $("#executionPanel label[for='verbose']").text(doc.getDocOnline("page_runtest", "verbose"));
-    $("#executionPanel label[for='screenshot']").text(doc.getDocOnline("page_runtest", "screenshot"));
-    $("#executionPanel label[for='pageSource']").text(doc.getDocOnline("page_runtest", "pagesource"));
-    $("#executionPanel label[for='seleniumLog']").text(doc.getDocOnline("page_runtest", "seleniumlog"));
-    $("#executionPanel label[for='timeout']").text(doc.getDocOnline("page_runtest", "timeout"));
-    $("#executionPanel label[for='retries']").text(doc.getDocOnline("page_runtest", "retries"));
+    $("#executionPanel label[for='screenshot']").html(doc.getDocOnline("page_runtest", "screenshot") + "&nbsp;<span class='toggle glyphicon glyphicon-picture pull-right'></span>");
+    $("#executionPanel label[for='video']").html(doc.getDocOnline("page_runtest", "video") + "&nbsp;<span class='toggle glyphicon glyphicon-film pull-right'></span>");
+    $("#executionPanel label[for='pageSource']").html(doc.getDocOnline("page_runtest", "pagesource")+ "&nbsp;<span class='toggle glyphicon glyphicon-list pull-right'></span>");
+    $("#executionPanel label[for='seleniumLog']").html(doc.getDocOnline("page_runtest", "seleniumlog")+ "&nbsp;<span class='toggle glyphicon glyphicon-list pull-right'></span>");
+    $("#executionPanel label[for='consoleLog']").html(doc.getDocOnline("page_runtest", "consolelog")+ "&nbsp;<span class='toggle glyphicon glyphicon-console pull-right'></span>");
+    $("#executionPanel label[for='timeout']").html(doc.getDocOnline("page_runtest", "timeout")+ "&nbsp;<span class='toggle glyphicon glyphicon-time pull-right'></span>");
+    $("#executionPanel label[for='retries']").html(doc.getDocOnline("page_runtest", "retries")+ "&nbsp;<span class='toggle glyphicon glyphicon-repeat pull-right'></span>");
     $("#executionPanel label[for='manualExecution']").text(doc.getDocOnline("page_runtest", "manual_execution"));
     $("#executionPanel label[for='priority']").text(doc.getDocOnline("page_runtest", "priority"));
     $("#saveExecutionParams").text(doc.getDocLabel("page_runtest", "save_execution_params"));
@@ -474,40 +476,48 @@ function loadCampaignParameter(campaign) {
             datatype: "json",
             async: true,
             success: function (data) {
-                if (data.contentTable != null) {
-                    if (data.contentTable.Screenshot != null && data.contentTable.Screenshot != "") {
+                if (data.contentTable !== null) {
+                    if (data.contentTable.Screenshot !== null && data.contentTable.Screenshot !== "") {
                         $('#screenshot option[value="' + data.contentTable.Screenshot + '"]').prop('selected', true);
                     }
 
-                    if (data.contentTable.Verbose != null && data.contentTable.Verbose != "") {
+                    if (data.contentTable.Video !== null && data.contentTable.Video !== "") {
+                        $('#video option[value="' + data.contentTable.Video + '"]').prop('selected', true);
+                    }
+
+                    if (data.contentTable.Verbose !== null && data.contentTable.Verbose !== "") {
                         $('#verbose option[value="' + data.contentTable.Verbose + '"]').prop('selected', true);
                     }
 
-                    if (data.contentTable.Tag != null && data.contentTable.Tag != "") {
+                    if (data.contentTable.Tag !== null && data.contentTable.Tag !== "") {
                         $("#tag").val(data.contentTable.Tag);
                     }
 
-                    if (data.contentTable.Priority != null && data.contentTable.Priority != "") {
+                    if (data.contentTable.Priority !== null && data.contentTable.Priority !== "") {
                         $("#priority").val(data.contentTable.Priority);
                     }
 
-                    if (data.contentTable.PageSource != null && data.contentTable.PageSource != "") {
+                    if (data.contentTable.PageSource !== null && data.contentTable.PageSource !== "") {
                         $('#pageSource option[value="' + data.contentTable.PageSource + '"]').prop('selected', true);
                     }
 
-                    if (data.contentTable.RobotLog != null && data.contentTable.RobotLog != "") {
+                    if (data.contentTable.RobotLog !== null && data.contentTable.RobotLog !== "") {
                         $('#seleniumLog option[value="' + data.contentTable.RobotLog + '"]').prop('selected', true);
                     }
 
-                    if (data.contentTable.Timeout != null && data.contentTable.Timeout != "") {
+                    if (data.contentTable.ConsoleLog !== null && data.contentTable.ConsoleLog !== "") {
+                        $('#consoleLog option[value="' + data.contentTable.ConsoleLog + '"]').prop('selected', true);
+                    }
+
+                    if (data.contentTable.Timeout !== null && data.contentTable.Timeout !== "") {
                         $("#timeout").val(data.contentTable.Timeout);
                     }
 
-                    if (data.contentTable.Retries != null && data.contentTable.Retries != "") {
+                    if (data.contentTable.Retries !== null && data.contentTable.Retries !== "") {
                         $('#retries option[value="' + data.contentTable.Retries + '"]').prop('selected', true);
                     }
 
-                    if (data.contentTable.ManualExecution != null && data.contentTable.ManualExecution != "") {
+                    if (data.contentTable.ManualExecution !== null && data.contentTable.ManualExecution !== "") {
                         $('#manualExecution option[value="' + data.contentTable.ManualExecution + '"]').prop('selected', true);
                     }
                 }
@@ -536,10 +546,12 @@ function runTestCase(doRedirect) {
     }
     paramSerialized += "&tag=" + encodeURIComponent($("#executionSettingsForm #tag").val());
     paramSerialized += "&screenshot=" + $("#executionSettingsForm #screenshot").val();
+    paramSerialized += "&video=" + $("#executionSettingsForm #video").val();
     paramSerialized += "&verbose=" + $("#executionSettingsForm #verbose").val();
     paramSerialized += "&timeout=" + $("#executionSettingsForm #timeout").val();
     paramSerialized += "&pagesource=" + $("#executionSettingsForm #pageSource").val();
     paramSerialized += "&seleniumlog=" + $("#executionSettingsForm #seleniumLog").val();
+    paramSerialized += "&consolelog=" + $("#executionSettingsForm #consoleLog").val();
     paramSerialized += "&manualexecution=" + $("#executionSettingsForm #manualExecution").val();
     paramSerialized += "&retries=" + $("#executionSettingsForm #retries").val();
     paramSerialized += "&priority=" + $("#executionSettingsForm #priority").val();
@@ -917,7 +929,9 @@ function loadExecForm(tag) {
     return $.when(
             loadSelect("VERBOSE", "Verbose", false, ""),
             loadSelect("SCREENSHOT", "Screenshot", false, ""),
-            loadSelect("SELENIUMLOG", "SeleniumLog", false, ""),
+            loadSelect("VIDEO", "Video", false, ""),
+            loadSelect("ROBOTLOG", "SeleniumLog", false, ""),
+            loadSelect("CONSOLELOG", "ConsoleLog", false, ""),
             loadSelect("MANUALEXECUTION", "manualExecution", false, ""),
             loadSelect("PAGESOURCE", "PageSource", false, ""),
             loadSelect("RETRIES", "retries", false, "")
@@ -952,8 +966,10 @@ function applyExecPref(tag) {
         }
         $("#verbose").val(pref.Verbose);
         $("#screenshot").val(pref.Screenshot);
+        $("#video").val(pref.Video);
         $("#pageSource").val(pref.PageSource);
         $("#seleniumLog").val(pref.SeleniumLog);
+        $("#consoleLog").val(pref.ConsoleLog);
         $("#timeout").val(pref.timeout);
         $("#retries").val(pref.retries);
         $("#priority").val(pref.priority);

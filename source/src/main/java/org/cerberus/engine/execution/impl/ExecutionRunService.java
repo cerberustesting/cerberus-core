@@ -78,7 +78,7 @@ import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.enums.Screenshot;
+import org.cerberus.enums.Video;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.executor.IExecutorService;
@@ -326,7 +326,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                         // Start video
                         try {
-                            if (Screenshot.recordVideo(tCExecution.getScreenshot())) {
+                            if (Video.recordVideo(tCExecution.getVideo())) {
                                 videoRecorder = VideoRecorder.getInstance(tCExecution, recorderService);
                                 videoRecorder.beginRecordVideo();
                             }

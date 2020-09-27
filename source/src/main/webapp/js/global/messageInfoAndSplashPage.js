@@ -23,8 +23,12 @@
 window.onload = function () {
     var user = getUser();
     var cerberusInformation = getCerberusInformation();
-    if ((cerberusInformation.isGlobalSplashPageActive || cerberusInformation.isInstanceSplashPageActive) && !user.isAdmin) {
-        redirectionToSplashPage();
+    if ((cerberusInformation.isGlobalSplashPageActive || cerberusInformation.isInstanceSplashPageActive)) {
+        if (!user.isAdmin) {
+            redirectionToSplashPage();
+        } else {
+            showMessageMainPage("warning", "Cerberus maintenance is in progress !! Splash page activated for non admin users.", false, 10000);
+        }
     }
 };
 
@@ -38,7 +42,7 @@ $(document).ready(function () {
 
     if (getPageName(window.location.pathname) === "SplashPage.jsp") {
         displayAdminEmailOnSplashPage();
-        addRedictionSpalshPageButton();
+        addRedictionSplashPageButton();
         var doc = new Doc();
         displayFooter(doc)
     }
@@ -59,9 +63,9 @@ function displayAdminEmailOnSplashPage() {
     $('#adminMailLink').attr("href", ('mailto:' + adminEmail.value)).text(adminEmail.value);
 }
 
-function addRedictionSpalshPageButton() {
-    var cerberusInformation = getCerberusInformation();
+function addRedictionSplashPageButton() {
     $('#reloadButton').click(function () {
+        var cerberusInformation = getCerberusInformation();
         if (!cerberusInformation.isGlobalSplashPageActive && !cerberusInformation.isInstanceSplashPageActive) {
             window.location.replace("Homepage.jsp");
         } else {

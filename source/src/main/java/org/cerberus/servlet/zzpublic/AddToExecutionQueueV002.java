@@ -410,8 +410,8 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                                                     try {
                                                         LOG.debug("Insert Queue Entry.");
                                                         toInserts.add(inQueueFactoryService.create("", test, testCase, country.getCountry(), environment, robot, robot, robotIP, robotPort, browser, browserVersion,
-                                                                platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
-                                                                timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
+                                                                platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, screenshot == 3 ? 1 : screenshot == 4 ? 2 : 0, verbose,
+                                                                timeout, pageSource, seleniumLog, 0, 0, retries, manualExecution, priority, user, null, null, null));
                                                     } catch (FactoryCreationException e) {
                                                         LOG.error("Unable to insert record due to: " + e, e);
                                                         LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robot);
@@ -423,8 +423,8 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                                                 try {
                                                     LOG.debug("Insert Queue Entry.");
                                                     toInserts.add(inQueueFactoryService.create("", test, testCase, country.getCountry(), environment, robot, robot, robotIP, robotPort, "", browserVersion,
-                                                            platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
-                                                            timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
+                                                            platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, screenshot == 3 ? 1 : screenshot == 4 ? 2 : 0, verbose,
+                                                            timeout, pageSource, seleniumLog, 0, 0, retries, manualExecution, priority, user, null, null, null));
                                                 } catch (FactoryCreationException e) {
                                                     LOG.error("Unable to insert record due to: " + e, e);
                                                     LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robot);
@@ -516,28 +516,28 @@ public class AddToExecutionQueueV002 extends HttpServlet {
         switch (outputFormat) {
             case "json":
                 try {
-                    JSONObject jsonResponse = new JSONObject();
-                    jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
-                    jsonResponse.put("message", errorMessage.toString());
-                    jsonResponse.put("helpMessage", helpMessage);
-                    jsonResponse.put("tag", tag);
-                    jsonResponse.put("nbExe", nbExe);
-                    jsonResponse.put("nbErrorTCNotActive", nbtestcasenotactive);
-                    jsonResponse.put("nbErrorTCNotAllowedOnEnv", nbtestcaseenvgroupnotallowed);
-                    jsonResponse.put("nbErrorEnvNotExistOrNotActive", nbenvnotexist);
-                    jsonResponse.put("queueList", jsonArray);
+                JSONObject jsonResponse = new JSONObject();
+                jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+                jsonResponse.put("message", errorMessage.toString());
+                jsonResponse.put("helpMessage", helpMessage);
+                jsonResponse.put("tag", tag);
+                jsonResponse.put("nbExe", nbExe);
+                jsonResponse.put("nbErrorTCNotActive", nbtestcasenotactive);
+                jsonResponse.put("nbErrorTCNotAllowedOnEnv", nbtestcaseenvgroupnotallowed);
+                jsonResponse.put("nbErrorEnvNotExistOrNotActive", nbenvnotexist);
+                jsonResponse.put("queueList", jsonArray);
 
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("utf8");
-                    response.getWriter().print(jsonResponse.toString());
-                } catch (JSONException e) {
-                    LOG.warn(e);
-                    //returns a default error message with the json format that is able to be parsed by the client-side
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("utf8");
-                    response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
-                }
-                break;
+                response.setContentType("application/json");
+                response.setCharacterEncoding("utf8");
+                response.getWriter().print(jsonResponse.toString());
+            } catch (JSONException e) {
+                LOG.warn(e);
+                //returns a default error message with the json format that is able to be parsed by the client-side
+                response.setContentType("application/json");
+                response.setCharacterEncoding("utf8");
+                response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+            }
+            break;
             default:
                 response.setContentType("text");
                 response.setCharacterEncoding("utf8");

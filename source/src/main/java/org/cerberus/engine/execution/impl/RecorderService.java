@@ -120,7 +120,7 @@ public class RecorderService implements IRecorderService {
          * correct doScreenshot flag on the last action MessageEvent.
          */
         if (Screenshot.printScreenSystematicaly(myExecution.getScreenshot())
-                || Screenshot.printScreenOnError(myExecution.getScreenshot()) && (doScreenshot)) {
+                || (Screenshot.printScreenOnError(myExecution.getScreenshot()) && (doScreenshot))) {
             if (applicationType.equals(Application.TYPE_GUI)
                     || applicationType.equals(Application.TYPE_APK)
                     || applicationType.equals(Application.TYPE_IPA)
@@ -791,7 +791,7 @@ public class RecorderService implements IRecorderService {
 
         if (testCaseExecution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
 
-            if (testCaseExecution.getSeleniumLog() == 2 || (testCaseExecution.getSeleniumLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
+            if (testCaseExecution.getRobotLog() == 2 || (testCaseExecution.getRobotLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
                 LOG.debug("Starting to save Selenium log file.");
 
                 try {
@@ -889,6 +889,66 @@ public class RecorderService implements IRecorderService {
             LOG.error("Exception in Network Traffic log recording.", ex);
         }
 //        }
+        return object;
+    }
+
+    @Override
+    public TestCaseExecutionFile recordConsoleLog(TestCaseExecution testCaseExecution) {
+        TestCaseExecutionFile object = null;
+
+        if (testCaseExecution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
+
+            if (testCaseExecution.getConsoleLog() == 2 || (testCaseExecution.getConsoleLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
+                LOG.debug("Starting to save Console log file.");
+
+                try {
+                    Recorder recorder = this.initFilenames(testCaseExecution.getId(), null, null, null, null, null, null, null, 0, "console_log", "txt", false);
+
+                    File dir = new File(recorder.getFullPath());
+                    dir.mkdirs();
+
+                    File file = new File(recorder.getFullFilename());
+
+                    try (FileOutputStream fileOutputStream = new FileOutputStream(file);) {
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        DataOutputStream out = new DataOutputStream(baos);
+                        for (String element : this.webdriverService.getConsoleLog(testCaseExecution.getSession())) {
+                            out.writeBytes(element);
+                        }
+                        byte[] bytes = baos.toByteArray();
+                        fileOutputStream.write(bytes);
+                        out.close();
+                        baos.close();
+                        fileOutputStream.close();
+
+                        LOG.info("File saved : " + recorder.getFullFilename());
+
+                        // Index file created to database.
+                        object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Console Log", recorder.getRelativeFilenameURL(), "TXT", "", null, "", null);
+                        testCaseExecutionFileService.save(object);
+
+                    } catch (FileNotFoundException ex) {
+                        LOG.error("Exception on recording Console log file.", ex);
+
+                    } catch (IOException ex) {
+                        LOG.error("Exception on recording Console log file.", ex);
+
+                    } catch (WebDriverException ex) {
+                        LOG.debug("Exception recording Console Log on execution : " + testCaseExecution.getId(), ex);
+                        object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Console Log [ERROR]", recorder.getRelativeFilenameURL(), "TXT", "", null, "", null);
+                        testCaseExecutionFileService.save(object);
+
+                    }
+
+                    LOG.debug("Console log recorded in : " + recorder.getRelativeFilenameURL());
+
+                } catch (CerberusException ex) {
+                    LOG.error("Exception on recording Console log file.", ex);
+                }
+            }
+        } else {
+            LOG.debug("Console Log not recorded because test on non GUI application");
+        }
         return object;
     }
 

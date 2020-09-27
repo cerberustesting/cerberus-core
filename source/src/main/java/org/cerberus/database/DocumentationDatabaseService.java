@@ -1699,7 +1699,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_runtest','outputformat','','en','Output Format','',NULL)");
         b.append(",('page_runtest','outputformat','','fr','Format de sortie','',NULL)");
         b.append(",('page_runtest','pagesource','','en','Page Source','',NULL)");
-        b.append(",('page_runtest','pagesource','','fr','Page Source','',NULL)");
+        b.append(",('page_runtest','pagesource','','fr','Source de la Page','',NULL)");
         b.append(",('page_runtest','platform','','en','Platform','',NULL)");
         b.append(",('page_runtest','platform','','fr','Plateforme','',NULL)");
         b.append(",('page_runtest','potential','','en','Potential','',NULL)");
@@ -1723,7 +1723,9 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_runtest','save_execution_params','','en','Save Execution Parameters','',NULL)");
         b.append(",('page_runtest','save_execution_params','','fr','Sauvegarder les paramètres d\\'execution','',NULL)");
         b.append(",('page_runtest','screenshot','','en','Screenshot','',NULL)");
-        b.append(",('page_runtest','screenshot','','fr','Screenshot','',NULL)");
+        b.append(",('page_runtest','screenshot','','fr','Copie d''écran','',NULL)");
+        b.append(",('page_runtest','video','','en','Video','',NULL)");
+        b.append(",('page_runtest','video','','fr','Video','',NULL)");
         b.append(",('page_runtest','screensize','','en','Screen size','',NULL)");
         b.append(",('page_runtest','screensize','','fr','Taille d\\'écran','',NULL)");
         b.append(",('page_runtest','selection_type','','en','Selection type','',NULL)");
@@ -1744,6 +1746,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_runtest','select_robot','','fr','Sélectionner un robot','',NULL)");
         b.append(",('page_runtest','seleniumlog','','en','Robot Log','',NULL)");
         b.append(",('page_runtest','seleniumlog','','fr','Log du Robot','',NULL)");
+        b.append(",('page_runtest','consolelog','','en','Console Log','',NULL)");
+        b.append(",('page_runtest','consolelog','','fr','Log de la Console','',NULL)");
         b.append(",('page_runtest','selenium_ip','','en','Robot Server IP','',NULL)");
         b.append(",('page_runtest','selenium_ip','','fr','IP du Robot','',NULL)");
         b.append(",('page_runtest','selenium_port','','en','Robot Server Port','',NULL)");

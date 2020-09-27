@@ -141,7 +141,7 @@ public class RunTestCase extends HttpServlet {
         String screenSize = "";
         boolean synchroneous = true;
         int getPageSource = 0;
-        int getSeleniumLog = 0;
+        int getRobotLog = 0;
         String manualExecution = "N";
 
         //Test
@@ -167,7 +167,7 @@ public class RunTestCase extends HttpServlet {
         timeout = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("timeout"), "");
         synchroneous = ParameterParserUtil.parseBooleanParam(request.getParameter("synchroneous"), false);
         getPageSource = ParameterParserUtil.parseIntegerParam(request.getParameter("pageSource"), 1);
-        getSeleniumLog = ParameterParserUtil.parseIntegerParam(request.getParameter("seleniumLog"), 1);
+        getRobotLog = ParameterParserUtil.parseIntegerParam(request.getParameter("seleniumLog"), 1);
         manualExecution = ParameterParserUtil.parseStringParam(request.getParameter("manualExecution"), "N");
         int numberOfRetries = ParameterParserUtil.parseIntegerParam(request.getParameter("retries"), 0);
         screenSize = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("screenSize"), "");
@@ -208,7 +208,7 @@ public class RunTestCase extends HttpServlet {
                 + "- timeout : Timeout used for the action. If empty, the default value will be the one configured in parameter table. [" + timeout + "]\n"
                 + "- synchroneous : Synchroneous define if the servlet wait for the end of the execution to report its execution. [" + synchroneous + "\n"
                 + "- pageSource : Record Page Source during the execution. [" + getPageSource + "]\n"
-                + "- seleniumLog : Get the SeleniumLog at the end of the execution. [" + getSeleniumLog + "]\n"
+                + "- seleniumLog : Get the SeleniumLog at the end of the execution. [" + getRobotLog + "]\n"
                 + "- manualExecution : Execute testcase in manual mode. [" + manualExecution + "]\n"
                 + "- retries : Number of tries if the result is not OK. [" + numberOfRetries + "]\n";
 
@@ -322,7 +322,7 @@ public class RunTestCase extends HttpServlet {
 
             // Building Execution Object.
             TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, robot, "", robotHost, robotPort, robotDecli, browser, version, platform,
-                    0, 0, "", "", "", null, null, tag, verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
+                    0, 0, "", "", "", null, null, tag, verbose, screenshot, 0, getPageSource, getRobotLog, 0, synchroneous, timeout, outputFormat, null,
                     Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL ? 1 : 0, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort,
                     null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, robObj, "", "",
                     "", "", "", "", "", "", "", manualExecution, userAgent, 0, 0, "", executor, null, executor, null);
@@ -336,7 +336,7 @@ public class RunTestCase extends HttpServlet {
                 tCExecution.setQueueID(idFromQueue);
 
                 TestCaseExecutionQueue queueExecution = factoryTCExecutionQueue.create(idFromQueue, "", test, testCase, country, environment, robot, robotDecli, robotHost, robotPort, browser, version,
-                        platform, screenSize, 0, myHost, myContextRoot, myLoginRelativeURL, myEnvData, tag, screenshot, verbose, timeout, getPageSource, getSeleniumLog, 0, numberOfRetries,
+                        platform, screenSize, 0, myHost, myContextRoot, myLoginRelativeURL, myEnvData, tag, screenshot, 0, verbose, timeout, getPageSource, getRobotLog, 0, 0, numberOfRetries,
                         manualExecution, executor, null, null, null);
                 tCExecution.setTestCaseExecutionQueue(queueExecution);
             } catch (FactoryCreationException ex) {
@@ -398,7 +398,7 @@ public class RunTestCase extends HttpServlet {
                         out.println("<tr><td>Verbose</td><td><span id='Verbose'>" + verbose + "</span></td></tr>");
                         out.println("<tr><td>Screenshot</td><td><span id='Screenshot'>" + screenshot + "</span></td></tr>");
                         out.println("<tr><td>PageSource</td><td><span id='PageSource'>" + getPageSource + "</span></td></tr>");
-                        out.println("<tr><td>SeleniumLog</td><td><span id='SeleniumLog'>" + getSeleniumLog + "</span></td></tr>");
+                        out.println("<tr><td>SeleniumLog</td><td><span id='SeleniumLog'>" + getRobotLog + "</span></td></tr>");
                         out.println("<tr><td>Robot</td><td><span id='Robot'>" + robot + "</span></td></tr>");
                         out.println("<tr><td>Selenium Server IP</td><td><span id='SeleniumIP'>" + robotHost + "</span></td></tr>");
                         out.println("<tr><td>Selenium Server Port</td><td><span id='SeleniumPort'>" + robotPort + "</span></td></tr>");
@@ -445,7 +445,7 @@ public class RunTestCase extends HttpServlet {
                     out.println("Verbose" + separator + verbose);
                     out.println("Screenshot" + separator + screenshot);
                     out.println("PageSource" + separator + getPageSource);
-                    out.println("SeleniumLog" + separator + getSeleniumLog);
+                    out.println("SeleniumLog" + separator + getRobotLog);
                     out.println("Robot" + separator + robot);
                     out.println("Selenium Server IP" + separator + robotHost);
                     out.println("Selenium Server Port" + separator + robotPort);
@@ -488,7 +488,7 @@ public class RunTestCase extends HttpServlet {
                         jsonResponse.put("Verbose", verbose);
                         jsonResponse.put("Screenshot", screenshot);
                         jsonResponse.put("PageSource", getPageSource);
-                        jsonResponse.put("SeleniumLog", getSeleniumLog);
+                        jsonResponse.put("SeleniumLog", getRobotLog);
                         jsonResponse.put("Robot", robot);
                         jsonResponse.put("Selenium Server IP", robotHost);
                         jsonResponse.put("Selenium Server Port", robotPort);
@@ -552,7 +552,7 @@ public class RunTestCase extends HttpServlet {
                     out.println("Verbose" + separator + verbose);
                     out.println("Screenshot" + separator + screenshot);
                     out.println("PageSource" + separator + getPageSource);
-                    out.println("SeleniumLog" + separator + getSeleniumLog);
+                    out.println("SeleniumLog" + separator + getRobotLog);
                     out.println("Robot" + separator + robot);
                     out.println("Selenium Server IP" + separator + robotHost);
                     out.println("Selenium Server Port" + separator + robotPort);
@@ -586,7 +586,7 @@ public class RunTestCase extends HttpServlet {
                     jsonResponse.put("Verbose", verbose);
                     jsonResponse.put("Screenshot", screenshot);
                     jsonResponse.put("PageSource", getPageSource);
-                    jsonResponse.put("SeleniumLog", getSeleniumLog);
+                    jsonResponse.put("SeleniumLog", getRobotLog);
                     jsonResponse.put("Robot", robot);
                     jsonResponse.put("Selenium Server IP", robotHost);
                     jsonResponse.put("Selenium Server Port", robotPort);

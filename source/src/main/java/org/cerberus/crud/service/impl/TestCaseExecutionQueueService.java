@@ -420,8 +420,10 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         String tag = testCaseExecutionInQueue.getTag();
         int verbose = testCaseExecutionInQueue.getVerbose();
         int screenshot = testCaseExecutionInQueue.getScreenshot();
+        int video = testCaseExecutionInQueue.getVideo();
         int pageSource = testCaseExecutionInQueue.getPageSource();
-        int seleniumLog = testCaseExecutionInQueue.getSeleniumLog();
+        int robotLog = testCaseExecutionInQueue.getRobotLog();
+        int consoleLog = testCaseExecutionInQueue.getConsoleLog();
         int retry = testCaseExecutionInQueue.getRetries();
         boolean synchroneous = true;
         String timeout = testCaseExecutionInQueue.getTimeout();
@@ -441,8 +443,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         }
         TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, description, null, null, environment, country, "", "", robotHost, robotPort, robotDecli,
                 browser, version, platform,
-                start, end, controlStatus, controlMessage, application, applicationObj, "", tag, verbose, screenshot, pageSource,
-                seleniumLog, synchroneous, timeout, outputFormat, "", "", tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
+                start, end, controlStatus, controlMessage, application, applicationObj, "", tag, verbose, screenshot, video, pageSource,
+                robotLog, consoleLog, synchroneous, timeout, outputFormat, "", "", tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
                 myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", "", "", "", "", manualExecution, "", 0, 0, "", "", null, "", null);
         result.setQueueID(testCaseExecutionInQueue.getId());
         result.setQueueState(testCaseExecutionInQueue.getState().name());

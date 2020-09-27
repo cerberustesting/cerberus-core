@@ -30,12 +30,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -53,6 +55,9 @@ import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
@@ -70,6 +75,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.Logs;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -165,7 +171,7 @@ public class WebDriverService implements IWebDriverService {
 
     }
 
-    private void scrollText(Session session,  WebElement element) {
+    private void scrollText(Session session, WebElement element) {
         // Create instance of Javascript executor
         JavascriptExecutor je = (JavascriptExecutor) session.getDriver();
 
@@ -1455,9 +1461,46 @@ public class WebDriverService implements IWebDriverService {
 
         for (String logType : logs.getAvailableLogTypes()) {
             LogEntries logEntries = logs.get(logType);
-            result.add("********************" + logType + "********************\n");
+            result.add("******************** " + logType + " ********************\n");
             for (LogEntry logEntry : logEntries) {
-                result.add(new Date(logEntry.getTimestamp()) + " : " + logEntry.getLevel() + " : " + logEntry.getMessage() + "\n");
+                result.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").format(new Date(logEntry.getTimestamp())) + " " + logEntry.getLevel() + " " + logEntry.getMessage() + "\n");
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<String> getConsoleLog(Session session) {
+
+        LogEntries logEntries = session.getDriver().manage().logs().get(LogType.BROWSER);
+
+        List<String> result = new ArrayList<>();
+
+        for (LogEntry logEntry : logEntries) {
+            result.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").format(new Date(logEntry.getTimestamp())) + " " + logEntry.getLevel() + " " + logEntry.getMessage() + "\n");
+        }
+
+        return result;
+    }
+
+    @Override
+    public JSONArray getJSONConsoleLog(Session session) {
+
+        LogEntries logEntries = session.getDriver().manage().logs().get(LogType.BROWSER);
+
+        JSONArray result = new JSONArray();
+        JSONObject entry;
+
+        for (LogEntry logEntry : logEntries) {
+            try {
+                entry = new JSONObject();
+                entry.put("timestamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").format(new Date(logEntry.getTimestamp())));
+                entry.put("level", logEntry.getLevel());
+                entry.put("message", logEntry.getMessage());
+                result.put(entry);
+            } catch (JSONException ex) {
+                LOG.error("Exception when collecting the Console Logs", ex);
             }
         }
 

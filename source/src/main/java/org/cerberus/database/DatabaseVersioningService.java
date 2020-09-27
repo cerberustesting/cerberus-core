@@ -8674,10 +8674,34 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("UPDATE test SET isActive = 1 WHERE isActive = 'Y'");
         a.add("UPDATE test SET isActive = 0 WHERE isActive != '1'");
         a.add("ALTER TABLE test MODIFY isActive BOOLEAN");
-        
+
         // Update TESTACTIVE invariant
         a.add("UPDATE invariant SET value = 'true' WHERE idname = 'TESTACTIVE' AND value ='Y'");
         a.add("UPDATE invariant SET value = 'false' WHERE idname = 'TESTACTIVE' AND value ='N'");
+
+        a.add("ALTER TABLE `testcaseexecutionqueue` ADD COLUMN `Video` INT(11) NOT NULL DEFAULT '0' AFTER `Screenshot`, CHANGE COLUMN `SeleniumLog` `RobotLog` INT(11) NOT NULL DEFAULT '1', ADD COLUMN `ConsoleLog` INT(11) NOT NULL DEFAULT '0' AFTER `RobotLog`, CHANGE COLUMN `Verbose` `Verbose` INT(11) NOT NULL DEFAULT '0' AFTER `Tag`, CHANGE COLUMN `Timeout` `Timeout` MEDIUMTEXT NULL DEFAULT NULL AFTER `ConsoleLog` ;");
+        a.add("ALTER TABLE `campaign` ADD COLUMN `Video` VARCHAR(5) NULL DEFAULT NULL AFTER `Screenshot`,ADD COLUMN `ConsoleLog` VARCHAR(5) NULL DEFAULT NULL AFTER `RobotLog`;");
+        a.add("UPDATE campaign SET Video = '1', Screenshot = '1' WHERE Screenshot = '3'");
+        a.add("UPDATE campaign SET Video = '2', Screenshot = '2' WHERE Screenshot = '4'");
+
+        a.add("DELETE FROM invariant where idname in ('SELENIUMLOG','SCREENSHOT');");
+        a.add("DELETE FROM invariant where idname in ('PRIVATEINVARIANT') and value in ('SELENIUMLOG');");
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `gp1`, `sort`, `description`, `VeryShortDesc`) VALUES "
+                + " ('ROBOTLOG', '0', NULL, 10, 'Never record Robot Log (Selenium, Appium, ...)', ''),"
+                + " ('ROBOTLOG', '1', NULL, 20, 'Record Robot Log on error only (Selenium, Appium, ...)', ''),"
+                + " ('ROBOTLOG', '2', NULL, 30, 'Always record Robot Log (Selenium, Appium, ...)', ''),"
+                + " ('CONSOLELOG', '0', NULL, 10, 'Never record Console Log', ''),"
+                + " ('CONSOLELOG', '1', NULL, 20, 'Record Console Log on error only', ''),"
+                + " ('CONSOLELOG', '2', NULL, 30, 'Always record Console Log', ''),"
+                + " ('VIDEO', '0', NULL, 10, 'Never record Video', ''),"
+                + " ('VIDEO', '1', NULL, 20, 'Record Video on error only', ''),"
+                + " ('VIDEO', '2', NULL, 30, 'Always record Video', ''),"
+                + " ('SCREENSHOT', '0', NULL, 10, 'No Screenshots', ''),"
+                + " ('SCREENSHOT', '1', NULL, 20, 'Automatic Screenshots on error', ''),"
+                + " ('SCREENSHOT', '2', NULL, 30, 'Systematic Screenshots', ''),"
+                + " ('INVARIANTPRIVATE','ROBOTLOG', '', '850','.', ''),"
+                + " ('INVARIANTPRIVATE','CONSOLELOG', '', '850','.', ''),"
+                + " ('INVARIANTPRIVATE','VIDEO', '', '850','.', '')");
 
         return a;
     }

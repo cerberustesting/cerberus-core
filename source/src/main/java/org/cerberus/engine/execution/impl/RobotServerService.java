@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import okhttp3.Credentials;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -96,7 +97,10 @@ import org.openqa.selenium.remote.http.HttpClient.Factory;
 import org.openqa.selenium.remote.internal.OkHttpClient;
 import org.openqa.selenium.safari.SafariOptions;
 import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.opera.OperaOptions;
+import org.openqa.selenium.remote.CapabilityType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -654,7 +658,7 @@ public class RobotServerService implements IRobotServerService {
         }
 
         /**
-         * We record Selenium log at the end of the execution.
+         * Setting specific capabilities of external cloud providers.
          */
         switch (tCExecution.getRobotProvider()) {
             case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
@@ -734,6 +738,9 @@ public class RobotServerService implements IRobotServerService {
             String usedUserAgent;
             usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
 
+            LoggingPreferences logPrefs = new LoggingPreferences();
+            logPrefs.enable(LogType.BROWSER, Level.ALL);
+
             switch (browser) {
 
                 case "firefox":
@@ -775,6 +782,10 @@ public class RobotServerService implements IRobotServerService {
 
                     // Accept Insecure Certificates.
                     optionsFF.setAcceptInsecureCerts(true);
+
+                    // Collect Logs on Selenium side.
+                    optionsFF.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
+
                     return optionsFF;
 
                 case "chrome":
@@ -809,6 +820,9 @@ public class RobotServerService implements IRobotServerService {
                     }
                     // Accept Insecure Certificates.
                     optionsCH.setAcceptInsecureCerts(true);
+
+                    // Collect Logs on Selenium side.
+                    optionsCH.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
                     return optionsCH;
 
@@ -977,6 +991,32 @@ public class RobotServerService implements IRobotServerService {
                     tce.addFileList(recorderService.recordSeleniumLog(tce));
                 } catch (Exception ex) {
                     LOG.error("Exception Getting Selenium Logs " + tce.getId(), ex);
+                }
+                break;
+                default:
+            }
+
+            /**
+             * We record Console log at the end of the execution.
+             */
+            switch (tce.getRobotProvider()) {
+                case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
+                    try {
+                    tce.addFileList(recorderService.recordConsoleLog(tce));
+                } catch (Exception ex) {
+                    LOG.error("Exception Getting Console Logs " + tce.getId(), ex);
+                }
+//                    try {
+//                        tce.addFileList(recorderService.recordBrowserstackSeleniumLog(tce));
+//                    } catch (Exception ex) {
+//                        LOG.error("Exception Getting Browserstack Selenium Logs " + tce.getId(), ex);
+//                    }
+//                    break;
+                case TestCaseExecution.ROBOTPROVIDER_NONE:
+                    try {
+                    tce.addFileList(recorderService.recordConsoleLog(tce));
+                } catch (Exception ex) {
+                    LOG.error("Exception Getting Console Logs " + tce.getId(), ex);
                 }
                 break;
                 default:

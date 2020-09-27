@@ -19,27 +19,23 @@
  */
 package org.cerberus.enums;
 
-public enum Screenshot {
+public enum Video {
 
-    NO_SCREENSHOTS(0),
-    AUTOMATIC_SCREENSHOTS_ON_ERROR(1),
-    SYSTEMATIC_SCREENSHOTS(2);
+    NO_VIDEO (0),
+    AUTOMATIC_VIDEO_ON_ERROR (1),
+    SYSTEMATIC_VIDEO (2);
 
     private int value;
-
-    Screenshot(int value) {
-        this.value = value;
+    Video(int value) {
+        this.value=value;
     }
 
     public int getValue() {
         return value;
     }
 
-    public static boolean printScreenOnError(int value) {
-        return value == AUTOMATIC_SCREENSHOTS_ON_ERROR.getValue();
-    }
 
-    public static boolean printScreenSystematicaly(int value) {
-        return value == SYSTEMATIC_SCREENSHOTS.getValue();
+    public static boolean recordVideo(int value) {
+        return value == AUTOMATIC_VIDEO_ON_ERROR.getValue() || value == SYSTEMATIC_VIDEO.getValue();
     }
 }

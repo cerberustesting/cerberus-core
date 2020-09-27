@@ -169,6 +169,13 @@ public interface IRecorderService {
 
     /**
      *
+     * @param testCaseExecution
+     * @return
+     */
+    TestCaseExecutionFile recordConsoleLog(TestCaseExecution testCaseExecution);
+
+    /**
+     *
      * @param executionId
      * @param tcsae
      * @param uploadedFile

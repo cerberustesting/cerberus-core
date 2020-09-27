@@ -314,6 +314,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="verbose" class="col-sm-3 control-label bold">Verbose</label>
+<!--                                            <span class="toggle glyphicon glyphicon-list pull-left"></span>-->
                                             <div class="col-sm-9">
                                                 <select class="form-control input-sm" id="verbose" name="Verbose"></select>
                                             </div>
@@ -325,15 +326,27 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
+                                            <label for="video" class="col-sm-3 control-label bold">Video</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control input-sm" id="video" name="Video"></select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
                                             <label for="pageSource" class="col-sm-3 control-label bold">Page Source</label>
                                             <div class="col-sm-9">
                                                 <select class="form-control input-sm" id="pageSource" name="PageSource"></select>
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="seleniumLog" class="col-sm-3 control-label bold">Selenium Log</label>
+                                            <label for="seleniumLog" class="col-sm-3 control-label bold">Robot Log</label>
                                             <div class="col-sm-9">
                                                 <select class="form-control input-sm" id="seleniumLog" name="SeleniumLog"></select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="consoleLog" class="col-sm-3 control-label bold">Console Log</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control input-sm" id="consoleLog" name="ConsoleLog"></select>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -388,8 +401,10 @@
                         <input type="hidden" name="outputformat" id="outputformatATQ" value="gui">
                         <input type="hidden" name="verbose" id="verboseATQ">
                         <input type="hidden" name="screenshot" id="screenshotATQ">
+                        <input type="hidden" name="video" id="videoATQ">
                         <input type="hidden" name="pageSource" id="pageSourceATQ">
                         <input type="hidden" name="seleniumLog" id="seleniumLogATQ">
+                        <input type="hidden" name="consoleLog" id="consoleLogATQ">
                         <input type="hidden" name="timeout" id="timeoutATQ">
                         <input type="hidden" name="retries" id="retriesATQ">
                         <input type="hidden" name="manualExecution" id="manualExecutionATQ">

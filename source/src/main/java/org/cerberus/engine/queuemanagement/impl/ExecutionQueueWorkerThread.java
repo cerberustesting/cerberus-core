@@ -84,7 +84,7 @@ public class ExecutionQueueWorkerThread implements Runnable {
             paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_ENVIRONMENT, getToExecute().getEnvironment());
             paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_ROBOT, getToExecute().getRobot());
             paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_ROBOTEXECUTOR, getRobotExecutor());
-            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_ROBOT_IP, getToExecute().getRobotIP());
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_ROBOT_HOST, getToExecute().getRobotIP());
             paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_ROBOT_PORT, getToExecute().getRobotPort());
             paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_BROWSER, getToExecute().getBrowser());
             paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_BROWSER_VERSION, getToExecute().getBrowserVersion());
@@ -107,10 +107,12 @@ public class ExecutionQueueWorkerThread implements Runnable {
 
             paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_TAG, URLEncoder.encode(getToExecute().getTag(), "UTF-8"));
             paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_SCREENSHOT, Integer.toString(getToExecute().getScreenshot()));
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_VIDEO, Integer.toString(getToExecute().getVideo()));
             paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_VERBOSE, Integer.toString(getToExecute().getVerbose()));
             paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_TIMEOUT, getToExecute().getTimeout());
             paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_PAGE_SOURCE, Integer.toString(getToExecute().getPageSource()));
-            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_SELENIUM_LOG, Integer.toString(getToExecute().getSeleniumLog()));
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_ROBOT_LOG, Integer.toString(getToExecute().getRobotLog()));
+            paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_CONSOLE_LOG, Integer.toString(getToExecute().getConsoleLog()));
             paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_EXECUTION_QUEUE_ID, Long.toString(getToExecute().getId()));
             paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_NUMBER_OF_RETRIES, Long.toString(getToExecute().getRetries()));
             paramRequestMaker.addParam(RunTestCaseV002.PARAMETER_EXECUTOR, getToExecute().getUsrCreated());

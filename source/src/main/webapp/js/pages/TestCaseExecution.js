@@ -1153,8 +1153,8 @@ function setConfigPanel(data) {
     configPanel.find("#country").text(data.country);
     configPanel.find("#tcDescription").text(data.description);
     configPanel.find("input#application").val(data.application);
-    configPanel.find("input#browser").val(data.browser);
     configPanel.find("input#build").val(data.build);
+    configPanel.find("input#revision").val(data.revision);
     configPanel.find("input#country").val(data.country);
     configPanel.find("input#environment").val(data.environment);
     configPanel.find("input#environmentData").val(data.environmentData);
@@ -1170,7 +1170,8 @@ function setConfigPanel(data) {
     configPanel.find("input#robothost").val(data.robotHost);
     configPanel.find("input#robotport").val(data.robotPort);
     configPanel.find("input#platform").val(data.platform);
-    configPanel.find("input#revision").val(data.revision);
+    configPanel.find("input#browser").val(data.browser);
+    configPanel.find("input#version").val(data.version);
     configPanel.find("input#cerberusversion").val(data.crbVersion);
     if (isTheExecutionManual) {
         $("input#executor").prop("readonly", false);
@@ -1184,7 +1185,7 @@ function setConfigPanel(data) {
     configPanel.find("input#url").val(data.url);
     configPanel.find("input#exetest").val(data.test);
     configPanel.find("input#exetestcase").val(data.testcase);
-    configPanel.find("input#version").val(data.version);
+    configPanel.find("input#testcaseversion").val(data.testCaseVersion);
     configPanel.find("input#system").val(data.system);
     configPanel.find("input#robotdecli").val(data.robotDecli);
     configPanel.find("input#robotsessionid").val(data.robotSessionId);
