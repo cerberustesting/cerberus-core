@@ -21,15 +21,17 @@ Once installed, and in few clicks, get your automated tests up and running in or
 
 Check out all information about Cerberus Testing in our official website: [Cerberus Testing](https://www.cerberus-testing.com/)
 
-Documentation is available here: [Cerberus Testing Documentation](https://cerberustesting.github.io/documentation_en.html)
+Various ressources are available :
 
-Our YouTube channel is: [Cerberus Testing YouTube Channel](https://www.youtube.com/channel/UCkG4csTjR0V5gl77BHhldBQ)
+[Cerberus Testing Documentation](https://cerberustesting.github.io/documentation_en.html)
 
-Our LinkedIn page is: [Cerberus Testing LinkedIn Page](https://www.linkedin.com/company/cerberus-testing/)
+[Cerberus Testing YouTube Channel](https://www.youtube.com/channel/UCkG4csTjR0V5gl77BHhldBQ/videos)
 
-A demo is available here: [Cerberus Testing Demo](http://demo.cerberus-testing.org)
+[Cerberus Testing LinkedIn Page](https://www.linkedin.com/company/cerberus-testing/)
 
-A Jenkins Plugin is available directly from Jenkins, here is the repository: [Cerberus Testing Jenkins Plugin](https://github.com/jenkinsci/cerberus-testing-plugin)
+[Cerberus Testing Demo](http://demo.cerberus-testing.org)
+
+[Cerberus Testing Jenkins Plugin](https://github.com/jenkinsci/cerberus-testing-plugin)
 
 Docker images are available for [MySQL](https://hub.docker.com/r/cerberustesting/cerberus-db-mysql/), [Tomcat](https://hub.docker.com/r/cerberustesting/cerberus-as-tomcat/) and [Tomcat with Keycloak Adapter](https://hub.docker.com/r/cerberustesting/cerberus-as-tomcat-keycloak/).
 
