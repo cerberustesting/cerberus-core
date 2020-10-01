@@ -28,7 +28,7 @@ $(document).ready(function () {
     }
     console.info(displayWelcomeTuto);
     if (displayWelcomeTuto === "true") {
-//        displayTuto();
+        displayTuto();
     }
 
     $("#byPassTuto").off("click");
