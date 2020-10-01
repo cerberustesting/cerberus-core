@@ -27,6 +27,9 @@ import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.exception.CerberusEventException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -89,6 +92,10 @@ public interface IWebDriverService {
     BufferedImage takeScreenShot(Session session);
 
     List<String> getSeleniumLog(Session session);
+
+    List<String> getConsoleLog(Session session);
+
+    JSONArray getJSONConsoleLog(Session session);
 
     MessageEvent scrollTo(Session session, Identifier identifier, String text);
 

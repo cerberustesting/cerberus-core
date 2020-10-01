@@ -19,26 +19,33 @@
  */
 
 $(document).ready(function () {
-    $("#openInteractiveTutoModal").off("click");
-    $("#openInteractiveTutoModal").click(function () {
-        // remove all into the modal
-        $("#interactiveTutoList").html("");
 
-        $.get('api/interactiveTuto/list',
-            function (data, status) {
-                if(status==='success') {
-                    data.forEach(function (data) {
-                        createNewButtonOnTutoShowroom(data.id, data.title, data.description, data.role, data.level);
-                    });
-                } else {
-                    console.error('api/interactiveTuto/list respond with error' + status);
-                }
-            });
+    let displayWelcomeTuto = localStorage.getItem("displayWelcomeTuto");
+    console.info(displayWelcomeTuto);
+    if (displayWelcomeTuto === null) {
+        displayWelcomeTuto = "true";
+        localStorage.setItem("displayWelcomeTuto", "true");
+    }
+    console.info(displayWelcomeTuto);
+    if (displayWelcomeTuto === "true") {
+//        displayTuto();
+    }
 
-        $('#interactiveTutoModal').modal();
+    $("#byPassTuto").off("click");
+    $("#byPassTuto").click(function () {
+        console.info("byPass");
+        localStorage.setItem("displayWelcomeTuto", "false");
+        $('#interactiveTutoModal').modal('hide')
     });
 
-    if(getUrlParameter("tutorielId") !== undefined) {
+
+
+    $("#openInteractiveTutoModal").off("click");
+    $("#openInteractiveTutoModal").click(function () {
+        displayTuto();
+    });
+
+    if (getUrlParameter("tutorielId") !== undefined) {
         let tutorielId = getUrlParameter("tutorielId");
         let startStep = getUrlParameter("startStep");
         interractiveTutorial(tutorielId, startStep);
@@ -46,30 +53,57 @@ $(document).ready(function () {
 
 });
 
+function displayTuto() {
+    // remove all into the modal
+    $("#interactiveTutoList").html("");
+
+    $.get('api/interactiveTuto/list',
+            function (data, status) {
+                if (status === 'success') {
+                    data.forEach(function (data) {
+                        createNewButtonOnTutoShowroom(data.id, data.title, data.description, data.role, data.level);
+                    });
+
+
+                } else {
+                    console.error('api/interactiveTuto/list respond with error' + status);
+                }
+            });
+
+    $('#interactiveTutoModal').modal();
+
+}
+
 function createNewButtonOnTutoShowroom(id, title, description, role, level) {
 
-    if($('#'+role).length === 0) { // verify if element exit
-        $("#interactiveTutoList").append("<div id="+role+"><h3>"+role+"</h3></div>");
+    if ($('#' + role).length === 0) { // verify if element exit
+        $("#interactiveTutoList").append("<div id=" + role + "><h3>" + role + "</h3></div>");
     }
 
     let levelstr = "easy";
-    let badgecolor="success";
-    if(level==2)  { levelstr = "medium"; badgecolor="warning";}
-    if(level==3)  { levelstr = "hard"; badgecolor="danger";}
+    let badgecolor = "success";
+    if (level == 2) {
+        levelstr = "medium";
+        badgecolor = "warning";
+    }
+    if (level == 3) {
+        levelstr = "hard";
+        badgecolor = "danger";
+    }
 
     // populate the modal
-    $('#'+role).append(
-        "<div class='row' style='margin-top:5px;'>" +
-        "   <div class='col-xs-5'>" +
-        "       <button id='tuto"+id+"' type=\"button\" class=\"btn btn-default col-xs-12\" data-dismiss=\"modal\" " + "name=\"buttonClose\">"+title+"</button>" +
-        "   </div>" +
-        "   <div class='col-xs-1 label label-"+badgecolor+"' style='margin-top: 8px;font-size:100%'>"+levelstr+"</div>" +
-        "   <div class=\"col-xs-6\">" +
-        "       <span class='col-xs-12' style='margin-top: 8px;padding:0pxs'>"+description+"" + "</span>" +
-        "   </div>" +
-        "</div>");
+    $('#' + role).append(
+            "<div class='row' style='margin-top:5px;'>" +
+            "   <div class='col-xs-5'>" +
+            "       <button id='tuto" + id + "' type=\"button\" class=\"btn btn-default col-xs-12\" data-dismiss=\"modal\" " + "name=\"buttonClose\">" + title + "</button>" +
+            "   </div>" +
+            "   <div class='col-xs-1 label label-" + badgecolor + "' style='margin-top: 8px;font-size:100%'>" + levelstr + "</div>" +
+            "   <div class=\"col-xs-6\">" +
+            "       <span class='col-xs-12' style='margin-top: 8px;padding:0pxs'>" + description + "" + "</span>" +
+            "   </div>" +
+            "</div>");
 
-    $('#tuto'+id).click(function() {
+    $('#tuto' + id).click(function () {
         interractiveTutorial(id);
     })
 
@@ -77,18 +111,18 @@ function createNewButtonOnTutoShowroom(id, title, description, role, level) {
 
 var currentInteractiveTuto;
 
-function interractiveTutorial(id, startStep=1) {
+function interractiveTutorial(id, startStep = 1) {
 
     $.get('api/interactiveTuto/get', {
-        id : id
+        id: id
     }, function (data, status) {
-        if(status!='success') {
+        if (status != 'success') {
             console.error('api/interactiveTuto/get respond with error' + status);
             return;
         }
         let cerberusTuto = new CerberusTuto(data.id);
-        currentInteractiveTuto=cerberusTuto;
-        if(data.steps == null || data.steps.length <= 0) {
+        currentInteractiveTuto = cerberusTuto;
+        if (data.steps == null || data.steps.length <= 0) {
             cerberusTuto.addGeneralMessage("Tutoriel is being written  ...");
         } else {
             data.steps.forEach(function (step) {
@@ -117,16 +151,16 @@ function firstConnexion() {
 
     cerberusTuto.addGeneralMessage("Bienvenue dans Cerberus ! Je vois que c'est ta première connexion, veux tu que je te guide dans tes premiers pas ?");
     cerberusTuto.addGeneralMessage("Bienvenue sur la page d'accueil de cerberus ! <b>Sur cette page d’accueil, tu trouveras des informations sur</b>" +
-        "<ul>" +
-        "   <li>les cas de tests par application regroupés par status</li>" +
-        "   <li>les dernières executions par tag</li>" +
-        "   <li>les versions des applications déployées par environnement</li>" +
-        "</ul>");
+            "<ul>" +
+            "   <li>les cas de tests par application regroupés par status</li>" +
+            "   <li>les dernières executions par tag</li>" +
+            "   <li>les versions des applications déployées par environnement</li>" +
+            "</ul>");
 
     cerberusTuto.addGeneralMessage("TODO, 2 choix = rediriger sur tuto admin ou tuto création dun cas de test. Pour le moment juste l'admin est créé");
 
     cerberusTuto.addMessageAndChangePageAfterClick("#sidebar", "Vous êtes administrateur ! La 1ere étape de configuration est de créer un système. " +
-        "Un <strong>système</strong> est une application métier ou CI. Rendez vous dans le menu <b>Administration/Invariants.</b>","#menuInvariants");
+            "Un <strong>système</strong> est une application métier ou CI. Rendez vous dans le menu <b>Administration/Invariants.</b>", "#menuInvariants");
 
     // Page invariant
     cerberusTuto.addMessage("#createInvariantButton", "Clique sur Creer un invariant");
@@ -134,8 +168,8 @@ function firstConnexion() {
     cerberusTuto.addMessage("#value", "Donne un nom à ton systeme");
     cerberusTuto.addMessage("#addInvariantButton", "Et valide ton nouveau systeme");
     cerberusTuto.addMessageAndChangePageAfterClick("#sidebar", "Voilà, ton sytème est créé ! Prochaine étape : il faut créez un environnement. L'<b>environement</b>" +
-        " represente une plateforme de test, ex : INTEGRATION ou PREPRODUCTION." +
-        " Rendez-vous dans le menu <b>Integration/Environment</b>", "#menuEnvironments");
+            " represente une plateforme de test, ex : INTEGRATION ou PREPRODUCTION." +
+            " Rendez-vous dans le menu <b>Integration/Environment</b>", "#menuEnvironments");
 
     cerberusTuto.start(startStep);
 
@@ -144,18 +178,18 @@ function firstConnexion() {
 class CerberusTuto {
 
     constructor(tutorialId) {
-        this.tutorialId=tutorialId;
+        this.tutorialId = tutorialId;
         this.listMessage = new Array();
-        this.cpt=1;
-        this.working=false;
-        this.startStep=0;
+        this.cpt = 1;
+        this.working = false;
+        this.startStep = 0;
     }
 
     addGeneralMessage(messageStr) {
         let message = {
-            intro : messageStr,
-            step : this.cpt,
-            type : 'general'
+            intro: messageStr,
+            step: this.cpt,
+            type: 'general'
         };
         this.listMessage.push(message);
 
@@ -164,11 +198,11 @@ class CerberusTuto {
 
     addMessage(jqueryId, messageStr) {
         let message = {
-            element : jqueryId,
-            elementStr : jqueryId,
-            intro : messageStr,
-            step : this.cpt,
-            type : 'default'
+            element: jqueryId,
+            elementStr: jqueryId,
+            intro: messageStr,
+            step: this.cpt,
+            type: 'default'
         };
 
 
@@ -178,8 +212,8 @@ class CerberusTuto {
 
     addMessageAndChangePageAfterClick(jqueryId, messageStr, idLink) {
         this.addMessage(jqueryId, messageStr);
-        this.listMessage[this.listMessage.length-1].type='changeAfterClick';
-        this.listMessage[this.listMessage.length-1].idLink=idLink;
+        this.listMessage[this.listMessage.length - 1].type = 'changeAfterClick';
+        this.listMessage[this.listMessage.length - 1].idLink = idLink;
     }
 
     isWorking() {
@@ -195,46 +229,47 @@ class CerberusTuto {
     }
 
     getCurrentStep() {
-        return parseInt(this.currentStep) +  parseInt(this.startStep);
+        return parseInt(this.currentStep) + parseInt(this.startStep);
     }
     getNextStep() {
-        return this.getCurrentStep()  +  parseInt(this.startStep)  + 1;
+        return this.getCurrentStep() + parseInt(this.startStep) + 1;
     }
     isLastStep() {
-        return this.currentStep == this.intro._options.length-1;
+        return this.currentStep == this.intro._options.length - 1;
     }
 
-    start(startStep=1) {
-        if(startStep<=0)startStep=0;
-        this.startStep=startStep;
-        this.currentStep=startStep;
+    start(startStep = 1) {
+        if (startStep <= 0)
+            startStep = 0;
+        this.startStep = startStep;
+        this.currentStep = startStep;
         this.intro = introJs();
-        this.listMessageToUse = this.listMessage.slice(startStep-1);
-        this.intro.setOptions({steps:this.listMessageToUse});
+        this.listMessageToUse = this.listMessage.slice(startStep - 1);
+        this.intro.setOptions({steps: this.listMessageToUse});
 
-        let _this=this;
+        let _this = this;
 
         // correct a bug into introJs. If element use "nth-child" selector,  we have to
         // initialize and find it manually it before a change
         this.intro.onbeforechange(function (targetElement) {
 
-            if(this._options.steps[this._currentStep].element != undefined && this._options.steps[this._currentStep].element.indexOf("nth-child") !== -1 ||
-                this._introItems[this._currentStep].element === document.querySelector(".introjsFloatingElement") && typeof( this._introItems[this._currentStep].elementStr) === 'string') {
+            if (this._options.steps[this._currentStep].element != undefined && this._options.steps[this._currentStep].element.indexOf("nth-child") !== -1 ||
+                    this._introItems[this._currentStep].element === document.querySelector(".introjsFloatingElement") && typeof (this._introItems[this._currentStep].elementStr) === 'string') {
                 let elmt = $(this._options.steps[this._currentStep].elementStr);
-                if(elmt != undefined) {
+                if (elmt != undefined) {
                     this._introItems[this._currentStep].position = null;
                     this._introItems[this._currentStep].element = document.querySelector(this._options.steps[this._currentStep].element);
                 }
             }
         });
 
-        this.intro.onbeforeexit(function() {
-            if(modalConfirmationIsVisible()) {
+        this.intro.onbeforeexit(function () {
+            if (modalConfirmationIsVisible()) {
                 hideModalConfirmationIsVisible();
                 return true;
             }
 
-            if(!_this.isLastStep()) {
+            if (!_this.isLastStep()) {
                 showModalConfirmation(function () {
                     console.log("ok");
                     _this.intro.exit(true);
@@ -280,9 +315,9 @@ class CerberusTuto {
             }
 
             // add the step and tutorial number on link to follow the tutorial throw web pages
-            let message = _this.listMessage[intro._currentStep+parseInt(startStep)-1];
+            let message = _this.listMessage[intro._currentStep + parseInt(startStep) - 1];
             // if we want change page after the click, we have to added
-            if(message.type==='changeAfterClick') {
+            if (message.type === 'changeAfterClick') {
                 if ($(message.idLink) === undefined) {
                     console.log("Element " + message.idLink + " is undefined");
                 } else {
@@ -290,7 +325,7 @@ class CerberusTuto {
 
                     // by default, we add action on dom
                     if (typeObj != undefined) {
-                        prepareChangeAfterClick(typeObj, message,_this);
+                        prepareChangeAfterClick(typeObj, message, _this);
                     }
 
                     $(message.element).on('DOMNodeInserted', function (e) {
@@ -304,13 +339,13 @@ class CerberusTuto {
 
         });
 
-        this.intro.onafterchange(function(targetElement) {
-            var intro=this;
+        this.intro.onafterchange(function (targetElement) {
+            var intro = this;
 
             // Bug introjs with modal bootstrat, we move introjs directly into the modal to correct it (bug with fix position)
             // by default introjs element on body
             $('.introjs-overlay, .introjs-helperLayer, .introjs-tooltipReferenceLayer').appendTo("body");
-            if(intro._options.steps[intro._currentStep ] !== undefined && intro._options.steps[intro._currentStep ].element !== undefined) {
+            if (intro._options.steps[intro._currentStep ] !== undefined && intro._options.steps[intro._currentStep ].element !== undefined) {
                 waitForElementToDisplay(intro._options.steps[intro._currentStep].element, 100, function () {
                     if ($("div.modal.introjs-fixParent").length == 1) {
                         $('.introjs-overlay, .introjs-helperLayer, .introjs-tooltipReferenceLayer').appendTo("div.modal.introjs-fixParent");
@@ -323,15 +358,15 @@ class CerberusTuto {
         });
 
         // wait for the first element
-        if(this.listMessage[startStep-1] != undefined && this.listMessage[startStep-1].element != undefined) {
-            waitForElementToDisplay(this.listMessage[startStep - 1].element, 100, function() {
+        if (this.listMessage[startStep - 1] != undefined && this.listMessage[startStep - 1].element != undefined) {
+            waitForElementToDisplay(this.listMessage[startStep - 1].element, 100, function () {
                 _this.intro.start();
-                _this.working=true;
+                _this.working = true;
             });
         } else {
             this.intro.start();
-            this.working=true;
-        }
+            this.working = true;
+    }
     }
 
 }
@@ -380,9 +415,9 @@ function prepareChangeAfterClick(typeObj, message, _this) {
 
 function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-        sURLVariables = sPageURL.split('&'),
-        sParameterName,
-        i;
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
 
     for (i = 0; i < sURLVariables.length; i++) {
         sParameterName = sURLVariables[i].split('=');
@@ -391,16 +426,16 @@ function getUrlParameter(sParam) {
             return sParameterName[1] === undefined ? true : sParameterName[1];
         }
     }
-};
+}
+;
 
 
 function waitForElementToDisplay(selector, time, callback) {
-    if($(selector).is(":visible")) {
+    if ($(selector).is(":visible")) {
         callback();
         return;
-    }
-    else {
-        setTimeout(function() {
+    } else {
+        setTimeout(function () {
             waitForElementToDisplay(selector, time, callback);
         }, time);
     }

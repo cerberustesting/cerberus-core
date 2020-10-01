@@ -32,8 +32,12 @@ import org.cerberus.crud.service.IUserService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IUserSystemService;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -122,10 +126,6 @@ public class UserSystemService implements IUserSystemService {
             // Create User/System.
             UserSystem us = factoryUserSystem.create(user, newSystem);
             userSystemDAO.create(us);
-            // Update User to System.
-            User myuser = userService.convert(userService.readByKey(user));
-            myuser.setDefaultSystem(newSystem);
-            userService.update(myuser);
         }
         // Automatically all systems depending on parameters.
         String param = parameterService.getParameterStringByKey("cerberus_accountcreation_systemlist", "", "ALL");
@@ -137,6 +137,18 @@ public class UserSystemService implements IUserSystemService {
                 userSystemDAO.createSystemList(user, systemList);
             }
         }
+
+        // Update User to System.
+        List<UserSystem> systemList = convert(userSystemDAO.readByUser(user));
+        JSONArray sysList = new JSONArray();
+        for (UserSystem userSystem : systemList) {
+            sysList.put(userSystem.getSystem());
+        }
+
+        User myuser = userService.convert(userService.readByKey(user));
+        myuser.setDefaultSystem(sysList.toString());
+        userService.update(myuser);
+
     }
 
     @Override
@@ -177,6 +189,33 @@ public class UserSystemService implements IUserSystemService {
             }
         }
         return a;
+    }
+
+    @Override
+    public UserSystem convert(AnswerItem<UserSystem> answerItem) throws CerberusException {
+        if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (UserSystem) answerItem.getItem();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public List<UserSystem> convert(AnswerList<UserSystem> answerList) throws CerberusException {
+        if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (List<UserSystem>) answerList.getDataList();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public void convert(Answer answer) throws CerberusException {
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return;
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
 
 }
