@@ -8703,6 +8703,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + " ('INVARIANTPRIVATE','CONSOLELOG', '', '850','.', ''),"
                 + " ('INVARIANTPRIVATE','VIDEO', '', '850','.', '')");
 
+        a.add("ALTER TABLE `testcaseexecution`  CHANGE COLUMN `URL` `URL` VARCHAR(350) NULL DEFAULT NULL ;");
+
         return a;
     }
 
