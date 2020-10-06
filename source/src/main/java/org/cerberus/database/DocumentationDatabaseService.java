@@ -2528,6 +2528,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('transversal','UsrCreated','','fr','Créé par','Utilisateur ayant créé l\\'objet.','_librairie_de_données')");
         b.append(",('transversal','UsrModif','','en','Modified by','User who last modified the object.','_data_library')");
         b.append(",('transversal','UsrModif','','fr','Modifié par','Dernier utilisateur ayant modifié l\\'objet.','_librairie_de_données')");
+        b.append(" ;");
+        a.add(b.toString());
                 
         /* 
          *  Updated Tutorial
