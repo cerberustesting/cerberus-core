@@ -568,18 +568,18 @@ function setActive(checkbox) {
     var active;
 
     if (checkbox.checked === true) {
-        active = "Y";
+        active = true;
     } else {
-        active = "N";
+        active = false;
     }
 
     $.ajax({
         url: "UpdateTestCase",
         method: "POST",
-        data: {test: test, testCase: testCase, originalTest: test, originalTestCase: testCase, active: active},
+        data: {test: test, testCase: testCase, originalTest: test, originalTestCase: testCase, isActive: active},
         dataType: "json",
         success: function (data) {
-            if (active === "Y") {
+            if (active) {
                 $('[id="runTest' + encodeURIComponent(test) + encodeURIComponent(testCase) + '"]').removeAttr("disabled");
             } else {
                 $('[id="runTest' + encodeURIComponent(test) + encodeURIComponent(testCase) + '"]').attr("disabled", "disabled");
@@ -877,20 +877,20 @@ function aoColumnsFunc(countries, tableId) {
             "data": "isActive",
             "visible": false,
             "sName": "tec.isActive",
-            "title": doc.getDocOnline("testcase", "isActive"),
+            "title": doc.getDocOnline("testcase", "IsActive"),
             "sDefaultContent": "",
             "sWidth": "70px",
             "className": "center",
             "mRender": function (data, type, obj) {
                 if (obj.hasPermissionsUpdate) {
-                    if (data === "Y") {
+                    if (data) {
                         return '<input type="checkbox" name="' + obj["testcase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" checked/>';
-                    } else if (data === "N") {
+                    } else {
                         $('[id="runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testcase"]) + '"]').attr("disabled", "disabled");
                         return '<input type="checkbox" name="' + obj["testcase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" />';
                     }
                 } else {
-                    if (data === "Y") {
+                    if (data) {
                         return '<input type="checkbox" checked disabled />';
                     } else {
                         $('[id="runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testcase"]) + '"]').attr("disabled", "disabled");

@@ -1,6 +1,6 @@
 *Bug fixes*
 [square]
-* none
+* Fixed isActive checkbox in testcase list page.
 
 *Improvements / New features*
 [square]
