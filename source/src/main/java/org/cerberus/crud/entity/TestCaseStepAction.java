@@ -97,6 +97,7 @@ public class TestCaseStepAction {
     public static final String ACTION_EXECUTESQLSTOREPROCEDURE = "executeSqlStoredProcedure";
     public static final String ACTION_CALCULATEPROPERTY = "calculateProperty";
     public static final String ACTION_SETNETWORKTRAFFICCONTENT = "setNetworkTrafficContent";
+    public static final String ACTION_SETCONSOLECONTENT = "setConsoleContent";
     public static final String ACTION_SETSERVICECALLCONTENT = "setServiceCallContent";
     public static final String ACTION_DONOTHING = "doNothing";
 

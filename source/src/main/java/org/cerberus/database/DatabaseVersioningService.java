@@ -8646,11 +8646,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
                 + "VALUES('ACTION', 'setServiceCallContent', 24910, 'Set JSON Service Call to current content', 'Set Call content');");
 
-        // ADD setServiceCallContent Action.
         // 1536
         a.add("ALTER TABLE `appservice` ADD COLUMN `isFollowRedir` BOOLEAN DEFAULT 1 AFTER `ServicePath`;");
 
-        // ADD setServiceCallContent Action.
         // 1537
         a.add("ALTER TABLE `tag` ADD COLUMN `Comment` VARCHAR(1000) DEFAULT '' AFTER `Description`;");
 
@@ -8704,6 +8702,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + " ('INVARIANTPRIVATE','VIDEO', '', '850','.', '')");
 
         a.add("ALTER TABLE `testcaseexecution`  CHANGE COLUMN `URL` `URL` VARCHAR(350) NULL DEFAULT NULL ;");
+
+        // ADD setConsoleContent Action.
+        // 1535
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES('ACTION', 'setConsoleContent', 24950, 'Set JSON Console Logs to current content', 'Set Console content');");
 
         return a;
     }

@@ -61,10 +61,15 @@
             function printValue(value) {
                 document.selectFormulary.selectedValue.value = value.value;
             }
+            console.warn("This is a sample Warning message.");
+            console.error("This is a sample Error message.");
+            console.info("This is a sample Info message.");
+            console.info({"key1": "value","key2": "value","key3": "value"});
+            console.info({"key1": "value","key2": "value","key3": "value"}.toString());
         </script>
         <script>
             function waitXSecondAndPrintValue(value) {
-                window.setTimeout(function() {
+                window.setTimeout(function () {
                     var i = document.createElement('input');
                     i.setAttribute('id', 'selectedTimeout');
                     i.setAttribute('name', 'selectedTimeout');
@@ -158,6 +163,9 @@
             function showTextFieldContent() {
                 var textContent = document.getElementById("textField").value;
                 document.getElementById("textFieldContent").innerHTML = textContent;
+                console.warn("This is another sample Warning message.");
+                console.error("This is another sample Error message.");
+                console.info("This is another sample Info message.");
             }
         </script>
         <br>
@@ -167,7 +175,7 @@
             <span id="emailInputResult"></span>
         </form>
         <script>
-            $("#emailInput").on("click", function() {
+            $("#emailInput").on("click", function () {
                 $("#emailInputForm span").text("OK");
             });
         </script>

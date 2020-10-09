@@ -6,8 +6,10 @@
 [square]
 * Split Screenshot and Video parameters (inside campaign and runtest page) in order to prepare the video capture collection.
 * Added a browser console log parameter that allow to optionally collect the browser logs.
+* New 'setConsoleContent' action in order to collect the browser logs and allow control on them (from a JSON structure similar to Networks Traffic content).
 * Possibility to configure an information message on every page 'cerberus_messageinfo_enable' parameter activate the message display and 'cerberus_messageinfo_text' parameter, the content of the message.
 * Display a splash page (for non admin users) when manage API is called with stop action. Splash page disappear when API called with start action.
+* Tutorial is now back with 3 main use cases.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

@@ -649,6 +649,48 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
+    public List<TestCaseExecutionFile> recordConsoleContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, JSONObject consoleContent, boolean withDetail) {
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
+        TestCaseExecutionFile object = null;
+        String test = null;
+        String testCase = null;
+        String step = null;
+        String index = null;
+        String sequence = null;
+        if (testCaseStepActionExecution != null) {
+            test = testCaseExecution.getTest();
+            testCase = testCaseExecution.getTestCase();
+            step = String.valueOf(testCaseStepActionExecution.getStep());
+            index = String.valueOf(testCaseStepActionExecution.getIndex());
+            sequence = String.valueOf(testCaseStepActionExecution.getSequence());
+        }
+        String controlString = control.equals(0) ? null : String.valueOf(control);
+        long runId = testCaseExecution.getId();
+        int propertyIndex = 0;
+        if (!(StringUtil.isNullOrEmpty(property))) {
+            propertyIndex = 1;
+        }
+        try {
+
+            // Full Network Traffic.
+            if (withDetail) {
+                Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "console_content", "json", false);
+                recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), consoleContent.toString(1));
+
+                // Index file created to database.
+                object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "Console", recorderResponse.getRelativeFilenameURL(), TestCaseExecutionFile.FILETYPE_JSON, "", null, "", null);
+                testCaseExecutionFileService.save(object);
+                objectFileList.add(object);
+
+            }
+
+        } catch (Exception ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return objectFileList;
+    }
+
+    @Override
     public TestCaseExecutionFile recordTestDataLibProperty(Long runId, String property, int propertyIndex, List<HashMap<String, String>> result) {
         TestCaseExecutionFile object = null;
         // Used for logging purposes

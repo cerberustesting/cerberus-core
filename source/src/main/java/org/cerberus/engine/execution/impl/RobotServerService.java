@@ -822,7 +822,7 @@ public class RobotServerService implements IRobotServerService {
                     optionsCH.setAcceptInsecureCerts(true);
 
                     // Collect Logs on Selenium side.
-                    optionsCH.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
+                    optionsCH.setCapability("goog:loggingPrefs", logPrefs);
 
                     return optionsCH;
 

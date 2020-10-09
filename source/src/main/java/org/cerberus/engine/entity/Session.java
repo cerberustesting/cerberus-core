@@ -20,6 +20,8 @@
 package org.cerberus.engine.entity;
 
 import io.appium.java_client.AppiumDriver;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 
@@ -28,7 +30,7 @@ import org.openqa.selenium.WebDriver;
  * @author bcivel
  */
 public class Session {
-    
+
     private String host;
     private String hostUser;
     private String hostPassword;
@@ -47,6 +49,22 @@ public class Session {
     private Integer cerberus_selenium_autoscroll_vertical_offset;
     private Integer cerberus_selenium_autoscroll_horizontal_offset;
     private MutableCapabilities desiredCapabilities;
+    private JSONArray consoleLogs;
+
+    public JSONArray getConsoleLogs() {
+        return consoleLogs;
+    }
+
+    public void setConsoleLogs(JSONArray consoleLogs) {
+        this.consoleLogs = consoleLogs;
+    }
+
+    public void appendConsoleLogs(JSONObject consoleLogsEntry) {
+        if (this.consoleLogs == null) {
+            this.consoleLogs = new JSONArray();
+        }
+        this.consoleLogs.put(consoleLogsEntry);
+    }
 
     public Integer getCerberus_selenium_pageLoadTimeout() {
         return cerberus_selenium_pageLoadTimeout;
@@ -119,7 +137,7 @@ public class Session {
     public void setHostPassword(String hostPassword) {
         this.hostPassword = hostPassword;
     }
-    
+
     public String getHost() {
         return host;
     }
@@ -151,14 +169,14 @@ public class Session {
     public void setStarted(boolean started) {
         this.started = started;
     }
-    
-    public boolean isCerberus_selenium_autoscroll() {
-		return cerberus_selenium_autoscroll;
-	}
 
-	public void setCerberus_selenium_autoscroll(boolean cerberus_selenium_autoscroll) {
-		this.cerberus_selenium_autoscroll = cerberus_selenium_autoscroll;
-	}
+    public boolean isCerberus_selenium_autoscroll() {
+        return cerberus_selenium_autoscroll;
+    }
+
+    public void setCerberus_selenium_autoscroll(boolean cerberus_selenium_autoscroll) {
+        this.cerberus_selenium_autoscroll = cerberus_selenium_autoscroll;
+    }
 
     public void quit() {
         if (driver != null) {
@@ -180,7 +198,7 @@ public class Session {
     public Integer getCerberus_appium_action_longpress_wait() {
         return cerberus_selenium_action_click_timeout;
     }
-    
+
     public void setCerberus_appium_action_longpress_wait(Integer cerberus_appium_action_longpress_wait) {
         this.cerberus_appium_action_longpress_wait = cerberus_appium_action_longpress_wait;
     }
@@ -200,5 +218,5 @@ public class Session {
     public void setCerberus_selenium_autoscroll_horizontal_offset(Integer cerberus_selenium_autoscroll_horizontal_offset) {
         this.cerberus_selenium_autoscroll_horizontal_offset = cerberus_selenium_autoscroll_horizontal_offset;
     }
-    
+
 }

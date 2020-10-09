@@ -1472,13 +1472,21 @@ public class WebDriverService implements IWebDriverService {
 
     @Override
     public List<String> getConsoleLog(Session session) {
-
-        LogEntries logEntries = session.getDriver().manage().logs().get(LogType.BROWSER);
-
         List<String> result = new ArrayList<>();
+        try {
+            // Collect the latest logs on session.
+            getJSONConsoleLog(session);
 
-        for (LogEntry logEntry : logEntries) {
-            result.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").format(new Date(logEntry.getTimestamp())) + " " + logEntry.getLevel() + " " + logEntry.getMessage() + "\n");
+            for (int i = 0; i < session.getConsoleLogs().length(); i++) {
+                result.add(session.getConsoleLogs().getJSONObject(i).getString("timestamp") + " " + session.getConsoleLogs().getJSONObject(i).getString("level") + " " + session.getConsoleLogs().getJSONObject(i).getString("message") + "\n");
+
+            }
+
+        } catch (Exception e) {
+            LOG.debug(e, e);
+            // Unfortunatly that can happen on Firefox See : https://github.com/SeleniumHQ/selenium/issues/7792
+            result.add("CRITICAL ERROR when getting the Console logs!!\n");
+            result.add(e.getMessage());
         }
 
         return result;
@@ -1486,22 +1494,40 @@ public class WebDriverService implements IWebDriverService {
 
     @Override
     public JSONArray getJSONConsoleLog(Session session) {
-
-        LogEntries logEntries = session.getDriver().manage().logs().get(LogType.BROWSER);
-
         JSONArray result = new JSONArray();
         JSONObject entry;
 
-        for (LogEntry logEntry : logEntries) {
-            try {
-                entry = new JSONObject();
-                entry.put("timestamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").format(new Date(logEntry.getTimestamp())));
-                entry.put("level", logEntry.getLevel());
-                entry.put("message", logEntry.getMessage());
-                result.put(entry);
-            } catch (JSONException ex) {
-                LOG.error("Exception when collecting the Console Logs", ex);
+        try {
+            LogEntries logEntries = session.getDriver().manage().logs().get(LogType.BROWSER);
+            for (LogEntry logEntry : logEntries) {
+                try {
+                    entry = new JSONObject();
+                    entry.put("timestamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").format(new Date(logEntry.getTimestamp())));
+                    entry.put("level", logEntry.getLevel());
+                    entry.put("message", logEntry.getMessage());
+                    String[] messageSplit = logEntry.getMessage().split(" ");
+                    String message1 = "";
+                    String message2 = "";
+                    String message3 = "";
+
+                    if (messageSplit.length > 2) {
+                        message1 = messageSplit[0];
+                        message2 = messageSplit[1];
+                        message3 = logEntry.getMessage().replace(message1 + " " + message2 + " ", "");
+                    }
+                    entry.put("message1", message1);
+                    entry.put("message2", message2);
+                    entry.put("message3", message3);
+                    result.put(entry);
+                    session.appendConsoleLogs(entry);
+                } catch (JSONException ex) {
+                    LOG.error("Exception when collecting the Console Logs", ex);
+                }
             }
+        } catch (Exception e) {
+            LOG.debug(e, e);
+            result.put("CRITICAL ERROR when getting the Console logs!!\n");
+            result.put(e.getMessage());
         }
 
         return result;

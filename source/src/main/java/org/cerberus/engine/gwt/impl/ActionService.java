@@ -31,6 +31,7 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.crud.factory.IFactoryAppService;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
 import org.cerberus.crud.service.IAppServiceService;
 import org.cerberus.crud.service.ILogEventService;
@@ -52,6 +53,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.service.appium.IAppiumService;
 import org.cerberus.service.appservice.IServiceService;
 import org.cerberus.service.cerberuscommand.ICerberusCommand;
+import org.cerberus.service.consolelog.IConsolelogService;
 import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.har.IHarService;
 import org.cerberus.service.rest.IRestService;
@@ -64,6 +66,7 @@ import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openqa.selenium.Platform;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,9 +120,13 @@ public class ActionService implements IActionService {
     @Autowired
     private IServiceService serviceService;
     @Autowired
+    private IConsolelogService consolelogService;
+    @Autowired
     private IExecutorService executorService;
     @Autowired
     private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
+    @Autowired
+    private IFactoryAppService factoryAppService;
     @Autowired
     private ITestCaseExecutionDataService testCaseExecutionDataService;
 
@@ -347,6 +354,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT:
                     res = this.doActionSetNetworkTrafficContent(tCExecution, testCaseStepActionExecution, value1, value2);
                     break;
+                case TestCaseStepAction.ACTION_SETCONSOLECONTENT:
+                    res = this.doActionSetConsoleContent(tCExecution, testCaseStepActionExecution, value1);
+                    break;
                 case TestCaseStepAction.ACTION_SETSERVICECALLCONTENT:
                     res = this.doActionSetServiceCallContent(tCExecution, testCaseStepActionExecution);
                     break;
@@ -472,7 +482,7 @@ public class ActionService implements IActionService {
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 return iosAppiumService.scrollTo(tCExecution.getSession(), identifier, text);
-                
+
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 return webdriverService.scrollTo(tCExecution.getSession(), identifier, text);
             }
@@ -1542,7 +1552,7 @@ public class ActionService implements IActionService {
         return message;
     }
 
-    public MessageEvent doActionSetNetworkTrafficContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String urlToFilter, String withResponseContent) throws IOException {
+    private MessageEvent doActionSetNetworkTrafficContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String urlToFilter, String withResponseContent) throws IOException {
         MessageEvent message;
         try {
             // Check that robot has executor activated
@@ -1591,16 +1601,56 @@ public class ActionService implements IActionService {
         }
     }
 
+    private MessageEvent doActionSetConsoleContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String textToFilter) throws IOException {
+        MessageEvent message;
+        try {
+            /**
+             * Building the url to get the Har file from cerberus-executor
+             */
+            LOG.debug("Getting Console Logs content.");
+
+            JSONObject consoleRecap = new JSONObject();
+            JSONArray consoleLogs = webdriverService.getJSONConsoleLog(exe.getSession());
+            consoleRecap.put("logs", consoleLogs);
+            JSONObject consoleStat = new JSONObject();
+            consoleStat = consolelogService.enrichWithStats(consoleLogs);
+            consoleRecap.put("stat", consoleStat);
+
+            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", false, "", "", "", null, "", null, "");
+            appSrv.setResponseHTTPBody(consoleRecap.toString());
+            appSrv.setResponseHTTPBodyContentType(AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON);
+            appSrv.setRecordTraceFile(false);
+
+            exe.setLastServiceCalled(appSrv);
+
+            /**
+             * Record the Request and Response in file system.
+             */
+            actionexe.addFileList(recorderService.recordConsoleContent(exe, actionexe, 0, null, consoleRecap, true));
+
+            // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
+            exe.setAppTypeEngine(Application.TYPE_SRV);
+
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETCONSOLECONTENT);
+            return message;
+        } catch (Exception ex) {
+            LOG.error("Error doing Action setNetworkTrafficContent :" + ex);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETCONSOLECONTENT);
+            message.setDescription(message.getDescription().replace("%DETAIL%", ex.toString()));
+            return message;
+        }
+    }
+
     public MessageEvent doActionSetServiceCallContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe) throws IOException {
         MessageEvent message;
         try {
-            
+
             // Check that robot has executor activated
             if (exe.getLastServiceCalled() == null) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETSERVICECALLCONTENT_NOLASTCALLDONE);
                 return message;
             }
-            
+
             // Force last service call content to JSON Service Call Structure & disable file save.
             exe.getLastServiceCalled().setResponseHTTPBody(exe.getLastServiceCalled().toJSONOnExecution().toString());
             exe.getLastServiceCalled().setResponseHTTPBodyContentType(AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON);
