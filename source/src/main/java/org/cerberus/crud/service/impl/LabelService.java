@@ -117,7 +117,6 @@ public class LabelService implements ILabelService {
 
         testCaseLabels.forEach((key, value) -> {
             String keyTC = value.getTest() + "##" + value.getTestcase();
-            LOG.debug("toto : " + key + " " + keyTC + " " + value.getLabel());
             if (labelsToReturn.containsKey(keyTC)) {
                 labelsToReturn.get(keyTC).add(labelsMap.get(value.getLabelId()));
             } else {
@@ -125,7 +124,6 @@ public class LabelService implements ILabelService {
                 labelsToReturn.get(keyTC).add(labelsMap.get(value.getLabelId()));
             }
         });
-        LOG.debug(labelsToReturn);
         return labelsToReturn;
     }
 
