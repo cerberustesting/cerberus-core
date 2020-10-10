@@ -72,6 +72,19 @@ public interface ITestCaseService {
      */
     List<TestCase> findTestCaseByTest(String test);
 
+    /**
+     *
+     * @param system
+     * @param test
+     * @param startPosition
+     * @param length
+     * @param sortInformation
+     * @param searchParameter
+     * @param individualSearch
+     * @param isCalledFromListPage
+     * @return
+     * @throws CerberusException
+     */
     AnswerList<TestCase> findTestCasesByTestByCriteriaWithDependencies(List<String> system, String test, int startPosition, int length, String sortInformation, String searchParameter, Map<String, List<String>> individualSearch, boolean isCalledFromListPage) throws CerberusException;
 
     /**
@@ -161,10 +174,11 @@ public interface ITestCaseService {
      * @return true if delete is OK
      */
     boolean deleteTestCase(TestCase testCase);
-    
+
     /**
      * @param campaign
-     * @return return list of testCases using findTestCaseByCampaignNameAndCountries service method
+     * @return return list of testCases using
+     * findTestCaseByCampaignNameAndCountries service method
      */
     AnswerList<TestCase> findTestCaseByCampaign(String campaign);
 

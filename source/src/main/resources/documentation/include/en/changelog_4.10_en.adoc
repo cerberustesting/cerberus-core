@@ -1,6 +1,7 @@
 *Bug fixes*
 [square]
 * Fixed isActive checkbox in testcase list page.
+* Fixed issue on labels display on testcase list page.
 
 *Improvements / New features*
 [square]

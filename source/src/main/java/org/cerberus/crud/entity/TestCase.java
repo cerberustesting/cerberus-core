@@ -485,6 +485,14 @@ public class TestCase {
         this.version = version;
     }
 
+    /**
+     * Generate a unique key for a TestCase.
+     * @return
+     */
+    public String getKey() {
+        return this.test + "##" + this.testCase;
+    }
+
     @Override
     public String toString() {
         return "TestCase{" + "test=" + test + ", testCase=" + testCase + ", application=" + application + ", ticket=" + ticket + ", description=" + description + ", detailedDescription=" + detailedDescription + ", priority=" + priority + ", version=" + version + ", status=" + status + ", isActive=" + isActive + ", isActiveQA=" + isActiveQA + ", isActiveUAT=" + isActiveUAT + ", isActivePROD=" + isActivePROD + ", conditionOperator=" + conditionOperator + ", conditionVal1=" + conditionVal1 + ", conditionVal2=" + conditionVal2 + ", conditionVal3=" + conditionVal3 + ", type=" + type + ", origine=" + origine + ", refOrigine=" + refOrigine + ", comment=" + comment + ", fromMajor=" + fromMajor + ", fromMinor=" + fromMinor + ", toMajor=" + toMajor + ", toMinor=" + toMinor + ", bugs=" + bugs + ", targetMajor=" + targetMajor + ", targetMinor=" + targetMinor + ", implementer=" + implementer + ", executor=" + executor + ", userAgent=" + userAgent + ", screenSize=" + screenSize + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", system=" + system + ", lastExecutionStatus=" + lastExecutionStatus + ", testCaseCountryProperties=" + testCaseCountryProperties + ", invariantCountries=" + invariantCountries + ", testCaseCountries=" + testCaseCountries + ", steps=" + steps + ", testCaseStepBatch=" + testCaseStepBatch + ", testCaseLabels=" + testCaseLabels + ", labels=" + labels + ", dependencies=" + dependencies + '}';
@@ -541,8 +549,8 @@ public class TestCase {
             JSONArray countriesJson = new JSONArray();
             if (this.getInvariantCountries() != null) {
                 for (Invariant country : this.getInvariantCountries()) {
-                    if(country != null) {
-                       countriesJson.put(country.toJson(true)); 
+                    if (country != null) {
+                        countriesJson.put(country.toJson(true));
                     }
                 }
             }

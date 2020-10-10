@@ -132,7 +132,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
 
         HashMap<String, HashMap<String, TestCaseCountry>> testCaseCountries = new HashMap<>();
         for (TestCaseCountry testCaseCountry : testCaseCountryList) {
-            String key = testCaseCountry.getTest() + "_" + testCaseCountry.getTestCase();
+            String key = testCaseCountry.getTest() + "##" + testCaseCountry.getTestCase();
             if (testCaseCountries.containsKey(key)) {
                 testCaseCountries.get(key).put(testCaseCountry.getCountry(), testCaseCountry);
             } else {

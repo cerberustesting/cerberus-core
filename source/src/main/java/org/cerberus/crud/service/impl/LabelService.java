@@ -116,13 +116,16 @@ public class LabelService implements ILabelService {
         HashMap<String, List<Label>> labelsToReturn = new HashMap<>();
 
         testCaseLabels.forEach((key, value) -> {
-            if (labelsToReturn.containsKey(value.getTestcase())) {
-                labelsToReturn.get(value.getTestcase()).add(labelsMap.get(value.getLabelId()));
+            String keyTC = value.getTest() + "##" + value.getTestcase();
+            LOG.debug("toto : " + key + " " + keyTC + " " + value.getLabel());
+            if (labelsToReturn.containsKey(keyTC)) {
+                labelsToReturn.get(keyTC).add(labelsMap.get(value.getLabelId()));
             } else {
-                labelsToReturn.put(value.getTestcase(), new ArrayList<Label>());
-                labelsToReturn.get(value.getTestcase()).add(labelsMap.get(value.getLabelId()));
+                labelsToReturn.put(keyTC, new ArrayList<Label>());
+                labelsToReturn.get(keyTC).add(labelsMap.get(value.getLabelId()));
             }
         });
+        LOG.debug(labelsToReturn);
         return labelsToReturn;
     }
 
