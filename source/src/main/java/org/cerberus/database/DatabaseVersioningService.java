@@ -8707,6 +8707,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1535
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
                 + "VALUES('ACTION', 'setConsoleContent', 24950, 'Set JSON Console Logs to current content', 'Set Console content');");
+        
+        // Enlarge documentation column.
+        a.add("ALTER TABLE `documentation` CHANGE COLUMN `DocLabel` `DocLabel` TEXT NULL DEFAULT NULL ; ";
 
         return a;
     }

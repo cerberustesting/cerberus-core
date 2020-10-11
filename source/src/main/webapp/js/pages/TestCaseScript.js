@@ -1211,8 +1211,9 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                             // clone the country list
                             var newCountryList = myCountry.slice(0);
 
+                            let propIndex = $("#propTable #masterProp").length;
                             var newProperty = {
-                                property: "",
+                                property: "PROP-" + propIndex,
                                 description: "",
                                 country: newCountryList,
                                 type: "text",
@@ -1234,6 +1235,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
 
                             $(prop[0]).find("#propName").focus();
                             // autocompleteAllFields();
+                            setModif(true);
 
                             // Restore the saveScript button status
                             $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
@@ -1587,10 +1589,10 @@ function saveScript(property) {
     var propertyWithoutCountry = false;
     var propertyWithoutName = false;
     for (var i = 0; i < properties.length; i++) {
-        if ($(properties[i]).data("property").country.length <= 0) {
+        if (($(properties[i]).data("property").country.length <= 0) && ($(properties[i]).data("property").toDelete === false)) {
             propertyWithoutCountry = true;
         }
-        if ($(properties[i]).data("property").property === "") {
+        if (($(properties[i]).data("property").property === "") && ($(properties[i]).data("property").toDelete === false)) {
             propertyWithoutName = true;
         }
         if (!$.isNumeric($(properties[i]).data("property").rank)) {
@@ -2243,7 +2245,7 @@ function getTestCaseCountry(countries, countryToCheck, isDisabled) {
     var html = [];
     var cpt = 0;
     var div = $("<div></div>").addClass("checkbox");
-    
+
     $.each(countries, function (index) {
         var country;
         if (typeof index === "number") {
@@ -2367,7 +2369,6 @@ function initStep() {
     };
 }
 
-
 function addStep(event) {
     var steps = event.data.steps;
     $("#addStepModal").modal('show');
@@ -2436,6 +2437,15 @@ function addStep(event) {
 }
 
 function createSteps(data, steps, stepIndex, canUpdate, hasPermissionsStepLibrary) {
+    // If the testcase has no steps, we create an empty one.
+    if (data.length === 0) {
+        var step = initStep();
+        var stepObj = new Step(step, steps, canUpdate, hasPermissionsStepLibrary);
+
+        stepObj.draw();
+        steps.push(stepObj);
+//        setModif(true);
+    }
     for (var i = 0; i < data.length; i++) {
         var step = data[i];
         var stepObj = new Step(step, steps, canUpdate, hasPermissionsStepLibrary);
@@ -2759,7 +2769,7 @@ function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
     this.sort = json.sort;
     this.stepId = json.stepId;
     this.description = json.description;
-    this.isExecutionForced= json.isExecutionForced;
+    this.isExecutionForced = json.isExecutionForced;
     this.loop = json.loop;
     this.conditionOperator = json.conditionOperator;
     this.conditionVal1 = json.conditionVal1;
@@ -2914,7 +2924,7 @@ Step.prototype.show = function () {
     $("#stepForceExe").replaceWith(getSelectInvariant("STEPFORCEEXE", true, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepForceExe"));
     $("#stepForceExe").unbind("change").change(function () {
         setModif(true);
-        object.isExecutionForced= $(this).val();
+        object.isExecutionForced = $(this).val();
     });
 
     $("#stepConditionVal1").unbind("change").change(function () {
@@ -3082,7 +3092,7 @@ Step.prototype.getJsonData = function () {
     json.conditionVal1 = this.conditionVal1;
     json.conditionVal2 = this.conditionVal2;
     json.conditionVal3 = this.conditionVal3;
-    json.isExecutionForced= this.isExecutionForced;
+    json.isExecutionForced = this.isExecutionForced;
 
     return json;
 };

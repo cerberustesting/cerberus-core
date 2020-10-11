@@ -484,7 +484,11 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
     background: url(../images/login-box-backg.png) no-repeat left top;
     /*    box-sizing: initial;*/
 }
-
+.introjs-tooltip{
+    min-width: 400px;
+    max-width: 500px;
+    font: 16px Arial, Helvetica, sans-serif;
+}
 .login-box img {
     border:none;
 }
