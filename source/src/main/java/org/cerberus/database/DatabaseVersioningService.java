@@ -8709,7 +8709,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + "VALUES('ACTION', 'setConsoleContent', 24950, 'Set JSON Console Logs to current content', 'Set Console content');");
         
         // Enlarge documentation column.
-        a.add("ALTER TABLE `documentation` CHANGE COLUMN `DocLabel` `DocLabel` TEXT NULL DEFAULT NULL ; ";
+        a.add("ALTER TABLE `documentation` CHANGE COLUMN `DocLabel` `DocLabel` TEXT NULL DEFAULT NULL ; ");
 
         return a;
     }
