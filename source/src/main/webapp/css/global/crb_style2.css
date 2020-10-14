@@ -489,6 +489,9 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
     max-width: 500px;
     font: 16px Arial, Helvetica, sans-serif;
 }
+.tutoA{
+    color: darkblue;
+}
 .login-box img {
     border:none;
 }

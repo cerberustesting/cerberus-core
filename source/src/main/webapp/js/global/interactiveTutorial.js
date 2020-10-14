@@ -27,9 +27,10 @@ $(document).ready(function () {
         localStorage.setItem("displayWelcomeTuto", "true");
     }
 
+    var doc = new Doc();
     if ((displayWelcomeTuto === "true") && (GetURLParameter("tutorielId") == null)) {
 
-        displayTuto();
+        displayTuto(doc);
     }
 
     $("#byPassTuto").off("click");
@@ -42,7 +43,7 @@ $(document).ready(function () {
 
     $("#openInteractiveTutoModal").off("click");
     $("#openInteractiveTutoModal").click(function () {
-        displayTuto();
+        displayTuto(doc);
     });
 
     if (getUrlParameter("tutorielId") !== undefined) {
@@ -53,7 +54,13 @@ $(document).ready(function () {
 
 });
 
-function displayTuto() {
+function displayTuto(doc) {
+    $("#tutoWelcome1").html(doc.getDocDescription("transversal", "tuto_line1"));
+    $("#tutoWelcome2").html(doc.getDocDescription("transversal", "tuto_line2"));
+    $("#tutoWelcome3").html(doc.getDocDescription("transversal", "tuto_line3"));
+    $("#tutoWelcome4").html(doc.getDocDescription("transversal", "tuto_line4"));
+    $("#byPassTuto").html(doc.getDocDescription("transversal", "tuto_line5"));
+
     // remove all into the modal
     $("#interactiveTutoList").html("");
     $('#interactiveTutoList').append("<div class='row' id='tuto-line'>");
@@ -96,11 +103,15 @@ function createNewButtonOnTutoShowroom(id, title, description, role, level) {
 
     // populate the modal
     $('#tuto-line').append(
-            "<div class='col-md-4 marginLeftz10 marginRightz10 marginTop10 marginBottom10'  data-dismiss=\"modal\" id=tuto-" + id + "><div class='card' style='width: 18rem;'>" +
+            "<div class='col-md-4 marginTop10 marginBottom10 text-center'  data-dismiss=\"modal\" id=tuto-" + id + ">" +
+            "  <a href='#' class='btn btn-primary'>" +
+            "  <div class='card' style='width: 18rem;'>" +
+            "  <span class=\"card-img-top glyphicon glyphicon-" + title + " marginBottom20 marginTop20\" style=\"font-size:70px;\"></span>" +
             "  <div class='card-body'>" +
-            "    <a href='#' class='btn btn-primary'>" + title + "</a><br>" +
-            "    <p class='card-text'>" + description + "</p>" +
+            "  <p class='card-text'>" + description + "</p>" +
             "  </div>" +
+            "  </div>" +
+            "    </a>" +
             "</div>"
             );
 
@@ -179,7 +190,6 @@ function interractiveTutorial(id, startStep = 1) {
 //}
 
 class CerberusTuto {
-
     constructor(tutorialId) {
         this.tutorialId = tutorialId;
         this.listMessage = new Array();
@@ -242,6 +252,8 @@ class CerberusTuto {
     }
 
     start(startStep = 1) {
+        var doc = new Doc();
+
         if (startStep <= 0)
             startStep = 0;
         this.startStep = startStep;
@@ -278,7 +290,7 @@ class CerberusTuto {
                     _this.intro.exit(true);
                     this.working = false;
                 }, function () {
-                }, "Warning", "Do you really want to leave Tutorial?");
+                }, "Warning", doc.getDocDescription("transversal", "tuto_exit"));
                 return false;
             }
 
