@@ -351,6 +351,23 @@ public class HarService implements IHarService {
                 urlEntry.put("contentType", responseType);
                 urlEntry.put("httpStatus", httpS);
                 urlEntry.put("provider", provider);
+                JSONObject entryReq = new JSONObject();
+                entryReq = entry.getJSONObject("request");
+                if (entryReq.has("postData")) {
+                    if (entryReq.getJSONObject("postData").has("params")) {
+                        JSONObject pD = new JSONObject();
+                        JSONArray pData = new JSONArray();
+                        pData = entryReq.getJSONObject("postData").getJSONArray("params");
+                        JSONObject pA = new JSONObject();
+                        for (int i = 0; i < pData.length(); i++) {
+                            pA = pData.getJSONObject(i);
+                            if ((pA.has("name")) && (!StringUtil.isNullOrEmpty(pA.getString("name").trim()))) {
+                                pD.put(pA.getString("name").trim(), pA.getString("value"));
+                            }
+                        }
+                        urlEntry.put("postData", pD);
+                    }
+                }
                 harStat.appendUrlList(urlEntry);
             }
 
