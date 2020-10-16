@@ -248,11 +248,12 @@ class CerberusTuto {
         return this.getCurrentStep() + parseInt(this.startStep) + 1;
     }
     isLastStep() {
-        return this.currentStep === this.intro._options.length - 1;
+        return this.currentStep === this.intro._options.steps.length - 1;
     }
 
     start(startStep = 1) {
         var doc = new Doc();
+        console.info("start");
 
         if (startStep <= 0)
             startStep = 0;
@@ -267,6 +268,8 @@ class CerberusTuto {
         // correct a bug into introJs. If element use "nth-child" selector,  we have to
         // initialize and find it manually it before a change
         this.intro.onbeforechange(function (targetElement) {
+            console.info("onbeforechange");
+            console.info(_this);
 
             if (this._options.steps[this._currentStep].element != undefined && this._options.steps[this._currentStep].element.indexOf("nth-child") !== -1 ||
                     this._introItems[this._currentStep].element === document.querySelector(".introjsFloatingElement") && typeof (this._introItems[this._currentStep].elementStr) === 'string') {
@@ -279,6 +282,8 @@ class CerberusTuto {
         });
 
         this.intro.onbeforeexit(function () {
+            console.info("onbeforeexit");
+            console.info(_this);
             if (modalConfirmationIsVisible()) {
                 hideModalConfirmationIsVisible();
                 return true;
@@ -299,6 +304,8 @@ class CerberusTuto {
 
 
         this.intro.onchange(function (targetElement) {
+            console.info("onchange");
+            console.info(_this);
             let intro = this;
             _this.currentStep = intro._currentStep;
             var clickOnNextStep = function (targetElement) {
@@ -354,6 +361,8 @@ class CerberusTuto {
         });
 
         this.intro.onafterchange(function (targetElement) {
+            console.info("onafterchange");
+            console.info(_this);
             var intro = this;
 
             // Bug introjs with modal bootstrat, we move introjs directly into the modal to correct it (bug with fix position)
@@ -369,6 +378,7 @@ class CerberusTuto {
                     $('.introjs-helperLayer, .introjs-tooltipReferenceLayer').removeClass("introjs-fixedTooltip");
                 });
             }
+
         });
 
         // wait for the first element

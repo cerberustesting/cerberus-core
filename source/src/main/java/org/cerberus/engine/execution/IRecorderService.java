@@ -112,6 +112,18 @@ public interface IRecorderService {
 
     /**
      *
+     * @param testCaseExecution
+     * @param testCaseStepActionExecution
+     * @param control
+     * @param property
+     * @param content
+     * @param contentType
+     * @return
+     */
+    List<TestCaseExecutionFile> recordContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, String content, String contentType);
+
+    /**
+     *
      * @param runId
      * @param property
      * @param propertyIndex

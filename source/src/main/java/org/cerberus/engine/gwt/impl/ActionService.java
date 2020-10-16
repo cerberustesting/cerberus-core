@@ -360,6 +360,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_SETSERVICECALLCONTENT:
                     res = this.doActionSetServiceCallContent(tCExecution, testCaseStepActionExecution);
                     break;
+                case TestCaseStepAction.ACTION_SETCONTENT:
+                    res = this.doActionSetContent(tCExecution, testCaseStepActionExecution, value1);
+                    break;
                 case TestCaseStepAction.ACTION_DONOTHING:
                     res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
                     break;
@@ -1510,9 +1513,8 @@ public class ActionService implements IActionService {
                     if (message.getCodeString().equals("OK")) {
                         // If Property calculated successfully we summarize the message to a shorter version.
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALCULATEPROPERTY);
-                        message.setDescription(message.getDescription()
-                                .replace("%PROP%", value1)
-                                .replace("%VALUE%", tcExeData.getValue()));
+                        message.resolveDescription("VALUE", tcExeData.getValue());
+                        message.resolveDescription("PROP", value1);
                         if (tcExeData.getDataLibRawData() != null) {
                             message.setDescription(message.getDescription() + " %NBROWS% row(s) with %NBSUBDATA% Subdata(s) calculated."
                                     .replace("%NBROWS%", String.valueOf(tcExeData.getDataLibRawData().size()))
@@ -1636,6 +1638,40 @@ public class ActionService implements IActionService {
         } catch (Exception ex) {
             LOG.error("Error doing Action setNetworkTrafficContent :" + ex);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETCONSOLECONTENT);
+            message.setDescription(message.getDescription().replace("%DETAIL%", ex.toString()));
+            return message;
+        }
+    }
+
+    private MessageEvent doActionSetContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String textContent) throws IOException {
+        MessageEvent message;
+        try {
+            /**
+             * Building the url to get the Har file from cerberus-executor
+             */
+            LOG.debug("Setting static content.");
+
+            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", false, "", "", "", null, "", null, "");
+            appSrv.setResponseHTTPBody(textContent);
+            appSrv.setResponseHTTPBodyContentType(appServiceService.guessContentType(appSrv, AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON));
+            appSrv.setRecordTraceFile(false);
+
+            exe.setLastServiceCalled(appSrv);
+
+            /**
+             * Record the Request and Response in file system.
+             */
+            actionexe.addFileList(recorderService.recordContent(exe, actionexe, 0, null, textContent,  appSrv.getResponseHTTPBodyContentType()));
+
+            // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
+            exe.setAppTypeEngine(Application.TYPE_SRV);
+
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETCONTENT);
+            message.resolveDescription("TYPE", appSrv.getResponseHTTPBodyContentType());
+            return message;
+        } catch (Exception ex) {
+            LOG.error("Error doing Action setNetworkTrafficContent :" + ex);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETCONTENT);
             message.setDescription(message.getDescription().replace("%DETAIL%", ex.toString()));
             return message;
         }

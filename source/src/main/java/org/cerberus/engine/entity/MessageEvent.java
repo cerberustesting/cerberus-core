@@ -21,6 +21,7 @@ package org.cerberus.engine.entity;
 
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.util.StringUtil;
 
 /**
  * {Insert class description here}
@@ -164,7 +165,7 @@ public class MessageEvent {
      */
     public MessageEvent resolveDescription(String key, String value) {
         if (description != null) {
-            description = description.replace(VARIABLE_DELIMITER + key + VARIABLE_DELIMITER, value);
+            description = description.replace(VARIABLE_DELIMITER + key + VARIABLE_DELIMITER, StringUtil.getShortenVersionOfString(value));
         }
         return this;
     }

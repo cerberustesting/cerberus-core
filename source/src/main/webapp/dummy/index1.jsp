@@ -65,8 +65,11 @@
             console.warn("This is a sample Warning message.");
             console.error("This is a sample Error message.");
             console.info("This is a sample Info message.");
+            console.log("This is a sample Log message.");
             console.info({"key1": "value", "key2": "value", "key3": "value"});
             console.info({"key1": "value", "key2": "value", "key3": "value"}.toString());
+            console.log({"key1": "value", "key2": "value", "key3": "value"});
+            console.log({"key1": "value", "key2": "value", "key3": "value"}.toString());
             var objet = {"key1": "value", "key2": "value", "key3": "value"};
             tableau.push(objet)
         </script>
@@ -169,6 +172,9 @@
                 console.warn("This is another sample Warning message.");
                 console.error("This is another sample Error message.");
                 console.info("This is another sample Info message.");
+                console.log("This is another sample Info message.");
+                console.log({"key1": "value", "key2": "value", "key3": "value"});
+                console.log({"key1": "value", "key2": "value", "key3": "value"}.toString());
                 var objet = {"key1": "value", "key2": "value", "key3": new Date().getTime().toString()};
                 tableau.push(objet)
             }

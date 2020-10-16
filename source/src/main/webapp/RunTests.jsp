@@ -42,21 +42,11 @@
 
 
         <div id="runTestCaseBlockSticky" class="btn-group btn-group-lg" role="group">
-            <!--            <div class="col-lg-4">-->
             <button type="button" class="feedback btn btn-secondary " id="runTestCase">Run TestCase</button>
-            <!--            </div>
-                        <div class="col-lg-8">-->
             <button type="button" class="feedback btn btn-primary " id="runTestCaseAndSee">Run TestCase (and See Result)</button>
-            <!--            </div>-->
         </div>
 
         <div class="container-fluid center" id="page-layout">
-            <!--            <div id="mybutton">
-                            <button class="feedback">Run Test Case</button>
-                            <button class="feedback">Run Test Case (and see result)</button>
-                        </div>-->
-
-
 
             <div id="DialogMessagesArea">
                 <div class="alert" id="DialogMessagesAlert"  style="display:none;">
@@ -186,7 +176,8 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-6" style="margin-bottom: 15px;">
+
+                                <div id="envSettingsBlock" class="col-lg-6" style="margin-bottom: 15px;">
                                     <label for="envList" id="envListLabel" class="bold">Environment :</label>
                                     <label class="radio-inline">
                                         <input name="envSettings" value="auto" checked type="radio"/><span>Automatic</span>
@@ -224,8 +215,8 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div class="col-lg-6">
 
+                                <div id="countrySettingsBlock" class="col-lg-6">
                                     <div class="row">
                                         <div class="form-group col-xs-11">
                                             <label for="countryList" id="countryListLabel" class="bold">Country :</label>
@@ -239,6 +230,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                
                             </div>
 
                         </div>
@@ -314,7 +306,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="verbose" class="col-sm-3 control-label bold">Verbose</label>
-<!--                                            <span class="toggle glyphicon glyphicon-list pull-left"></span>-->
+                                            <!--                                            <span class="toggle glyphicon glyphicon-list pull-left"></span>-->
                                             <div class="col-sm-9">
                                                 <select class="form-control input-sm" id="verbose" name="Verbose"></select>
                                             </div>

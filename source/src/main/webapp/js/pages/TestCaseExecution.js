@@ -1434,7 +1434,7 @@ function drawProperty(property, table, isSecondary) {
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
     returnMessageField.append(safeLinkify(property.rMessage));
-    descriptionField.append(property.value);
+    descriptionField.append(getShortenString(property.value));
 
     propertyName.append(property.property);
 

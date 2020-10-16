@@ -56,10 +56,25 @@ public final class StringUtil {
 
     private static final Logger LOG = LogManager.getLogger(StringUtil.class);
 
+    private static final int MAX_STRING_SIZE_IN_MESSAGE = 300;
+
     /**
      * To avoid instantiation of utility class
      */
     private StringUtil() {
+    }
+
+    /**
+     *
+     * @param in
+     * @return
+     */
+    public static String getShortenVersionOfString(String in) {
+
+        if (in.length() > MAX_STRING_SIZE_IN_MESSAGE) {
+            return in.substring(0, MAX_STRING_SIZE_IN_MESSAGE) + "... (TOO LONG TO DISPLAY !! Please check Action or Property detail)";
+        }
+        return in;
     }
 
     /**

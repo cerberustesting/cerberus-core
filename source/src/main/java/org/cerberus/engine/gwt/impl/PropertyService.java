@@ -1135,7 +1135,7 @@ public class PropertyService implements IPropertyService {
                 testCaseExecutionData.setValue(valueFromJS);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_JS);
                 res.setDescription(res.getDescription().replace("%SCRIPT%", script));
-                res.setDescription(res.getDescription().replace("%VALUE%", valueFromJS));
+                res.resolveDescription("VALUE", valueFromJS);
                 testCaseExecutionData.setPropertyResultMessage(res);
             } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_JS_EXCEPTION);

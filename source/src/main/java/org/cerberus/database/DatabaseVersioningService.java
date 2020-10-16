@@ -8713,6 +8713,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // Enlarge crondefinition column.
         a.add("ALTER TABLE `scheduleentry`  CHANGE COLUMN `cronDefinition` `cronDefinition` VARCHAR(200) NOT NULL ;");
+        
+        // ADD setConsoleContent Action.
+        // 1535
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES('ACTION', 'setContent', 24960, 'Set parameter1 to current content', 'Set content');");
 
         return a;
     }

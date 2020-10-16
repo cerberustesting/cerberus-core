@@ -1290,9 +1290,12 @@ public class ExecutionRunService implements IExecutionRunService {
             return actionExe;
         }
 
-        // If Action setNetworkTrafficContent or setServiceCallContent or setConsoleContent is not executed, we don't execute the corresponding controls.
+        // If Action setXXContent is not executed, we don't execute the corresponding controls.
         if (actionExe.getActionResultMessage().getCodeString().equals("NE")
-                && (actionExe.getAction().equals(TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT) || actionExe.getAction().equals(TestCaseStepAction.ACTION_SETSERVICECALLCONTENT) || actionExe.getAction().equals(TestCaseStepAction.ACTION_SETCONSOLECONTENT))) {
+                && (actionExe.getAction().equals(TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT) 
+                || actionExe.getAction().equals(TestCaseStepAction.ACTION_SETSERVICECALLCONTENT) 
+                || actionExe.getAction().equals(TestCaseStepAction.ACTION_SETCONSOLECONTENT)
+                || actionExe.getAction().equals(TestCaseStepAction.ACTION_SETCONTENT))) {
             return actionExe;
         }
         //As controls are associated with an action, the current state for the action is stored in order to restore it

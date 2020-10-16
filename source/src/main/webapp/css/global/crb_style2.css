@@ -490,8 +490,23 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
     font: 16px Arial, Helvetica, sans-serif;
 }
 .tutoA{
-    color: darkblue;
+    color: darkgreen;
+    position:relative;
+    padding-left: 20px;
 }
+.tutoA:after {
+    font-family: FontAwesome;
+    content: "\f0a9";
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+.tutoA:before {
+    position: absolute;
+    top: 0px;
+    left: 10px;
+}
+
 .login-box img {
     border:none;
 }
