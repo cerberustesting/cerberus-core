@@ -29,7 +29,7 @@ $(document).ready(function () {
 
     var doc = new Doc();
     if ((displayWelcomeTuto === "true") && (GetURLParameter("tutorielId") == null)) {
-        if (window.location.href.includes("Homepage.jsp")) {
+        if ((window.location.href.includes("Homepage.jsp")) || (window.location.href.slice(-1)==="/")) {
             displayTuto(doc);
         }
     }
