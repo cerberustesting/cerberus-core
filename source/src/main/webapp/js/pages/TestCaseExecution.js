@@ -1275,9 +1275,9 @@ function setLinkOnEditTCStepInfoButton() {
 function setLoadBar(data) {
     var total = 0;
     var ended = 0;
-    if (data.testCaseObj !== undefined && data.testCaseObj.testCaseSteps !== undefined) {
-        for (var i = 0; i < data.testCaseObj.testCaseSteps.length; i++) {
-            var step = data.testCaseObj.testCaseSteps[i];
+    if (data.testCaseObj !== undefined && data.testCaseObj.steps !== undefined) {
+        for (var i = 0; i < data.testCaseObj.steps.length; i++) {
+            var step = data.testCaseObj.steps[i];
             var stepExec = data.testCaseStepExecutionList[i];
             if (stepExec !== undefined && stepExec.returnCode !== "PE") {
                 ended += 1;

@@ -2685,7 +2685,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('interactiveTuto', 'testTour', '', 'fr', 'cog', '','') ");
         b.append(",('interactiveTuto', 'testTour.detail', '', 'en', 'Run a Test', '','') ");
         b.append(",('interactiveTuto', 'testTour.detail', '', 'fr', 'Exécutez un Test', '','') ");
-        b.append(",('interactiveTutoStep', '3.step.2', '', 'en', '<h3>Run a Test Tutorial</h3><p>Welcome to this Run Test case Tutorial, this tutorial will present you how to execute a test case for the first time as well as reexecuting a test in one click.<p>Each pop-up will confirm the step to be taken. Ready? Let\\'s get started!</p><p class=\\'tutoA\\'>Click on <b>Next</b></p>', '','') ");
+        b.append(",('interactiveTutoStep', '3.step.2', '', 'en', '<h3>Run a Test Tutorial</h3><p>Welcome to this Run Test case Tutorial, this tutorial will present you how to execute a test case for the first time going through all available execution parameters.<p>Each pop-up will confirm the steps to be taken. Ready? Let\\'s get started!</p><p class=\\'tutoA\\'>Click on <b>Next</b></p>', '','') ");
         b.append(",('interactiveTutoStep', '3.step.2', '', 'fr', '', '','') ");
         b.append(",('interactiveTutoStep', '3.step.5', '', 'en', '<h3>Navigate to the Run Test Page</h3><p>We will start by accessing the page where we can submit an execution.</p><p class=\\'tutoA\\'>Please navigate to:<br><b>Run >> Run Test Case</b> menu.</p>', '','') ");
         b.append(",('interactiveTutoStep', '3.step.5', '', 'fr', '', '','') ");
