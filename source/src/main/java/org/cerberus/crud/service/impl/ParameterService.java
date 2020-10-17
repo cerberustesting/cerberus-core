@@ -383,6 +383,7 @@ public class ParameterService implements IParameterService {
                     || Parameter.VALUE_cerberus_manage_timeout.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_manage_token.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_url.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_webperf_thirdpartyfilepath.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_executeCerberusCommand_password.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_executeCerberusCommand_path.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_executeCerberusCommand_user.equalsIgnoreCase(parameter.getParam())) {

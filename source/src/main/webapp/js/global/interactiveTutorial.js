@@ -29,8 +29,9 @@ $(document).ready(function () {
 
     var doc = new Doc();
     if ((displayWelcomeTuto === "true") && (GetURLParameter("tutorielId") == null)) {
-
-        displayTuto(doc);
+        if (window.location.href.includes("Homepage.jsp")) {
+            displayTuto(doc);
+        }
     }
 
     $("#byPassTuto").off("click");
