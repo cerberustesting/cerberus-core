@@ -8719,6 +8719,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
                 + "VALUES('ACTION', 'setContent', 24960, 'Set parameter1 to current content', 'Set content');");
 
+        // ADD setConsoleContent Action.
+        // 1535
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES('ACTION', 'indexNetworkTraffic', 24905, 'Index Network Traffic requests', 'Index Network Traffic');");
+        
         return a;
     }
 

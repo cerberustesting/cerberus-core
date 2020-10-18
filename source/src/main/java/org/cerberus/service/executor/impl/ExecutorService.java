@@ -32,6 +32,7 @@ import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.service.executor.IExecutorService;
+import org.cerberus.service.har.IHarService;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -51,6 +52,8 @@ public class ExecutorService implements IExecutorService {
     private IParameterService parameterService;
     @Autowired
     private IRestService restService;
+    @Autowired
+    private IHarService harService;
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ExecutorService.class);
 
@@ -174,11 +177,11 @@ public class ExecutorService implements IExecutorService {
     }
 
     @Override
-    public JSONObject getHar(String urlFilter, boolean withContent, String exHost, Integer exPort, String exUuid, String system) {
+    public JSONObject getHar(String urlFilter, boolean withContent, String exHost, Integer exPort, String exUuid, String system, Integer indexFrom) {
 
         JSONObject har = new JSONObject();
         try {
-            
+
             // Generate URL to Cerberus executor with parameter to reduce the answer size by removing response content.
             String url = getExecutorURL(urlFilter, withContent, exHost, exPort, exUuid);
 
@@ -187,8 +190,15 @@ public class ExecutorService implements IExecutorService {
             result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, null);
 
             AppService appSrv = result.getItem();
-            return new JSONObject(appSrv.getResponseHTTPBody());
-            
+            har = new JSONObject(appSrv.getResponseHTTPBody());
+
+            // remove the 1st entries is index exist in order to get only the hits since last index.
+            if (indexFrom > 0) {
+                har = harService.removeFirstHits(har, indexFrom);
+            }
+
+            return har;
+
         } catch (JSONException ex) {
             LOG.error("Exception when parsing JSON.", ex);
         }
@@ -209,4 +219,31 @@ public class ExecutorService implements IExecutorService {
         return url;
     }
 
+    @Override
+    public Integer getHitsNb(String exHost, Integer exPort, String exUuid) throws CerberusEventException {
+        String url = "http://" + exHost + ":" + exPort + "/getStats?uuid=" + exUuid;
+        Integer nbHits = 0;
+        try {
+            AnswerItem<AppService> result = new AnswerItem<>();
+            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, null);
+
+            if (result.isCodeStringEquals("OK")) {
+
+                AppService appSrv = result.getItem();
+                JSONObject stats = new JSONObject(appSrv.getResponseHTTPBody());
+                nbHits = stats.getInt("hits");
+                LOG.debug("Nb of Hits collected : " + nbHits);
+
+                return nbHits;
+
+            } else {
+                LOG.warn("Failed getting nb of Hits from URL (Maybe cerberus-executor is not at the correct version) : '" + url + "'");
+//                    return new MessageEvent(MessageEventEnum.ACTION_FAILED_WAITNETWORKTRAFFICIDLE).resolveDescription("DETAIL", "Failed getting nb of Hits from URL (Maybe cerberus-executor is not reachable) : '" + url + "'");
+            }
+        } catch (JSONException ex) {
+            LOG.warn("Exception when getting nb of hits (interpreting JSON answer from URL : '" + url + "').");
+//            return new MessageEvent(MessageEventEnum.ACTION_FAILED_WAITNETWORKTRAFFICIDLE).resolveDescription("DETAIL", "Failed getting nb of Hits from URL (Maybe cerberus-executor is not at the correct version) : '" + url + "'");
+        }
+        return nbHits;
+    }
 }

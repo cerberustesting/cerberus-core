@@ -124,7 +124,7 @@ public enum MessageGeneralEnum {
     DATA_OPERATION_ERROR_DUPLICATE(900, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "The %ITEM% that you are trying to %OPERATION% conflicts with an existing one! Please check for duplicates! %REASON%"),
     GENERIC_SUCCESS(000, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "The requested operation was concluded with success."),
     GENERIC_WARNING(000, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "The requested operation was concluded but with warnings."),
-    GENERIC_ERROR(900, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "An error occurred while executing the requested operation !");
+    GENERIC_ERROR(900, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "An error occured while executing the requested operation !");
 
     private final int code;
     private final String codeString;

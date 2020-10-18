@@ -15,6 +15,7 @@
 * Tutorial is now back with 3 main use cases (Global Homepage and menu tour, TestCase creation, TestCase Execution).
 * Various ergonomic improvements (default property name when added, propose to open testcase script after creation, testcase automatically have an empty step when created...)
 * Enlarge size of cron definition allowing more complex scheduling of campaigns.
+* New 'indexNetworkTraffic' action in order to index Network Traffic and allow to control and calculate Network Traffic stats from a specific timing. That allow for example to perform some webperf controls in specific steps in a middle of a customer experience.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

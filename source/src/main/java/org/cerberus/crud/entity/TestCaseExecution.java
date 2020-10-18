@@ -167,6 +167,7 @@ public class TestCaseExecution {
     private HashMap<String, Map<TopicPartition, Long>> kafkaLatestOffset;
     // Http Stats
     private TestCaseExecutionHttpStat httpStat;
+    private List<Integer> networkTrafficIndexList;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -203,6 +204,18 @@ public class TestCaseExecution {
     public static final String ROBOTPROVIDER_BROWSERSTACK = "BROWSERSTACK";
     public static final String ROBOTPROVIDER_KOBITON = "KOBITON";
     public static final String ROBOTPROVIDER_NONE = "NONE";
+
+    public List<Integer> getNetworkTrafficIndexList() {
+        return networkTrafficIndexList;
+    }
+
+    public void setNetworkTrafficIndexList(List<Integer> networkTrafficIndexList) {
+        this.networkTrafficIndexList = networkTrafficIndexList;
+    }
+
+    public void appendNetworkTrafficIndexList(Integer nbHitsTondex) {
+        this.networkTrafficIndexList.add(nbHitsTondex);
+    }
 
     public TestCaseExecutionHttpStat getHttpStat() {
         return httpStat;

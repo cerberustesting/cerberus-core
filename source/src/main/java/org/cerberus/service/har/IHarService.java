@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.har;
 
+import java.util.List;
 import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
 import org.json.JSONObject;
 
@@ -33,9 +34,10 @@ public interface IHarService {
      * @param har
      * @param domains
      * @param system
+     * @param indexList
      * @return
      */
-    JSONObject enrichWithStats(JSONObject har, String domains, String system);
+    JSONObject enrichWithStats(JSONObject har, String domains, String system, List<Integer> indexList);
 
     /**
      *
@@ -46,4 +48,12 @@ public interface IHarService {
      * @return
      */
     int getValue(TestCaseExecutionHttpStat stat, String party, String type, String unit);
+
+    /**
+     *
+     * @param har
+     * @param indexStart
+     * @return The new har removed from the log entries from 0 to #indexStart
+     */
+    JSONObject removeFirstHits(JSONObject har, Integer indexStart);
 }

@@ -134,6 +134,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setDateCreated(dateCreated);
         newTce.setUsrModif(usrModif);
         newTce.setDateModif(dateModif);
+        newTce.setNetworkTrafficIndexList(new ArrayList<>());
 
         return newTce;
     }
