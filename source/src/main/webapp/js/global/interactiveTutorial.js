@@ -41,7 +41,6 @@ $(document).ready(function () {
     });
 
 
-
     $("#openInteractiveTutoModal").off("click");
     $("#openInteractiveTutoModal").click(function () {
         displayTuto(doc);
