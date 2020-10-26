@@ -801,6 +801,10 @@ public class RobotServerService implements IRobotServerService {
 
                     }
                     optionsCH.addArguments("start-maximized");
+                    // TODO isolate the feature into a dedicated field.
+                    if (tCExecution.getRobotObj().getDescription().contains("session=")) {
+                        optionsCH.addArguments("user-data-dir=" + tCExecution.getRobotObj().getDescription().replace("session=", ""));
+                    }
                     if (tCExecution.getVerbose() <= 0) {
                         optionsCH.addArguments("--headless");
                     }

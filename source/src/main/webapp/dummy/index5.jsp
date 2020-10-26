@@ -33,6 +33,7 @@
         <div id="localList"><b>localStorage List</b></div>
     </body>
     <script>
+        localStorage.setItem(new Date(),'value');
         Object.keys(sessionStorage).forEach((key) => {
             console.info(key);
             $("#sessionList").append("<br>" + key);
