@@ -104,7 +104,7 @@ public class ParameterService implements IParameterService {
         if (cacheEntry == null) {
             cacheEntry = new HashMap<>();
         }
-        // si global + param splashpage alors short cache + refacto ci dessous (switch)
+        
         if (Parameter.SHORT_CACHE_DURATION > 0 && Parameter.VALUE_cerberus_splashpage_enable.equals(key)) {
             if (cacheEntry.containsKey(cacheKey)
                     && cacheEntry.get(cacheKey) != null
@@ -383,6 +383,7 @@ public class ParameterService implements IParameterService {
                     || Parameter.VALUE_cerberus_manage_timeout.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_manage_token.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_url.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_webperf_thirdpartyfilepath.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_executeCerberusCommand_password.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_executeCerberusCommand_path.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_executeCerberusCommand_user.equalsIgnoreCase(parameter.getParam())) {

@@ -31,6 +31,7 @@ import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.engine.entity.Recorder;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerItem;
+import org.json.JSONObject;
 
 /**
  *
@@ -96,6 +97,30 @@ public interface IRecorderService {
      * @return
      */
     List<TestCaseExecutionFile> recordNetworkTrafficContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, AppService service, boolean withDetail);
+
+    /**
+     *
+     * @param testCaseExecution
+     * @param testCaseStepActionExecution
+     * @param control
+     * @param property
+     * @param consoleContent
+     * @param withDetail
+     * @return
+     */
+    List<TestCaseExecutionFile> recordConsoleContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, JSONObject consoleContent, boolean withDetail);
+
+    /**
+     *
+     * @param testCaseExecution
+     * @param testCaseStepActionExecution
+     * @param control
+     * @param property
+     * @param content
+     * @param contentType
+     * @return
+     */
+    List<TestCaseExecutionFile> recordContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, String content, String contentType);
 
     /**
      *
@@ -166,6 +191,13 @@ public interface IRecorderService {
      * @return
      */
     TestCaseExecutionFile recordNetworkTrafficLog(TestCaseExecution testCaseExecution, String url);
+
+    /**
+     *
+     * @param testCaseExecution
+     * @return
+     */
+    TestCaseExecutionFile recordConsoleLog(TestCaseExecution testCaseExecution);
 
     /**
      *

@@ -62,10 +62,11 @@ public interface IExecutorService {
      * @param exPort
      * @param exUuid
      * @param system
+     * @param indexFrom
      * @return
      * @throws CerberusException
      */
-    public JSONObject getHar(String urlFilter, boolean withContent, String exHost, Integer exPort, String exUuid, String system) throws CerberusException;
+    public JSONObject getHar(String urlFilter, boolean withContent, String exHost, Integer exPort, String exUuid, String system, Integer indexFrom) throws CerberusException;
 
     /**
      *
@@ -78,4 +79,13 @@ public interface IExecutorService {
      */
     public String getExecutorURL(String urlFilter, boolean withContent, String exHost, Integer exPort, String exUuid);
 
+    /**
+     *
+     * @param exHost
+     * @param exPort
+     * @param exUuid
+     * @return
+     * @throws CerberusEventException
+     */
+    public Integer getHitsNb(String exHost, Integer exPort, String exUuid) throws CerberusEventException;
 }

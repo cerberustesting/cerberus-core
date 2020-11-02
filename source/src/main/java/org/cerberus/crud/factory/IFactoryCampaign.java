@@ -40,13 +40,15 @@ public interface IFactoryCampaign {
      * @param SlackWebhook
      * @param SlackChannel
      * @param CIScoreThreshold
-     * @param Verbose
-     * @param Tag
+     * @param verbose
+     * @param tag
+     * @param video
      * @param PageSource
      * @param longDescription
+     * @param ConsoleLog
      * @param RobotLog
      * @param UsrCreated
-     * @param Screenshot
+     * @param screenshot
      * @param ManualExecution
      * @param UsrModif
      * @param Timeout
@@ -63,7 +65,7 @@ public interface IFactoryCampaign {
             String distribList, String notifyStartTagExecution, String notifyEndTagExecution,
             String SlackNotifyStartTagExecution, String SlackNotifyEndTagExecution, String SlackWebhook, String SlackChannel,
             String CIScoreThreshold,
-            String Tag, String Verbose, String Screenshot, String PageSource, String RobotLog, String Timeout, String Retries, String Priority, String ManualExecution,
+            String tag, String verbose, String screenshot, String video, String PageSource, String RobotLog, String ConsoleLog, String Timeout, String Retries, String Priority, String ManualExecution,
             String description, String longDescription, String group1, String group2, String group3,
             String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif);
 }

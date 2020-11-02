@@ -1,10 +1,21 @@
 *Bug fixes*
 [square]
-* none
+* Fixed isActive checkbox in testcase list page.
+* Fixed issue on labels display on testcase list page.
+* Fixed progress bar display on execution page.
 
 *Improvements / New features*
 [square]
-* none
+* Split Screenshot and Video parameters (inside campaign and runtest page) in order to prepare the video capture collection.
+* Added a browser console log parameter that allow to optionally collect the browser logs.
+* New 'setConsoleContent' action in order to collect the browser logs and allow control on them (from a JSON structure similar to Networks Traffic content).
+* New 'setContent' action in order to control with XMLPath or JSONPath from a specific variable value (could be either JSON or XML).
+* Possibility to manually configure a notification message on every page. 'cerberus_messageinfo_enable' parameter activate the message display and 'cerberus_messageinfo_text' parameter define the content of the message.
+* Display a splash page (for non admin users) when manage API is called with stop action. Splash page disappear when API called with start action.
+* Tutorial is now back with 3 main use cases (Global Homepage and menu tour, TestCase creation, TestCase Execution).
+* Various ergonomic improvements (default property name when added, propose to open testcase script after creation, testcase automatically have an empty step when created...)
+* Enlarge size of cron definition allowing more complex scheduling of campaigns.
+* New 'indexNetworkTraffic' action in order to index Network Traffic and allow to control and calculate Network Traffic stats from a specific timing. That allow for example to perform some webperf controls in specific steps in a middle of a customer experience.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

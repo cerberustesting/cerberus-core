@@ -42,21 +42,11 @@
 
 
         <div id="runTestCaseBlockSticky" class="btn-group btn-group-lg" role="group">
-            <!--            <div class="col-lg-4">-->
             <button type="button" class="feedback btn btn-secondary " id="runTestCase">Run TestCase</button>
-            <!--            </div>
-                        <div class="col-lg-8">-->
             <button type="button" class="feedback btn btn-primary " id="runTestCaseAndSee">Run TestCase (and See Result)</button>
-            <!--            </div>-->
         </div>
 
         <div class="container-fluid center" id="page-layout">
-            <!--            <div id="mybutton">
-                            <button class="feedback">Run Test Case</button>
-                            <button class="feedback">Run Test Case (and see result)</button>
-                        </div>-->
-
-
 
             <div id="DialogMessagesArea">
                 <div class="alert" id="DialogMessagesAlert"  style="display:none;">
@@ -186,7 +176,8 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-6" style="margin-bottom: 15px;">
+
+                                <div id="envSettingsBlock" class="col-lg-6" style="margin-bottom: 15px;">
                                     <label for="envList" id="envListLabel" class="bold">Environment :</label>
                                     <label class="radio-inline">
                                         <input name="envSettings" value="auto" checked type="radio"/><span>Automatic</span>
@@ -224,8 +215,8 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div class="col-lg-6">
 
+                                <div id="countrySettingsBlock" class="col-lg-6">
                                     <div class="row">
                                         <div class="form-group col-xs-11">
                                             <label for="countryList" id="countryListLabel" class="bold">Country :</label>
@@ -239,6 +230,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                
                             </div>
 
                         </div>
@@ -314,6 +306,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="verbose" class="col-sm-3 control-label bold">Verbose</label>
+                                            <!--                                            <span class="toggle glyphicon glyphicon-list pull-left"></span>-->
                                             <div class="col-sm-9">
                                                 <select class="form-control input-sm" id="verbose" name="Verbose"></select>
                                             </div>
@@ -325,15 +318,27 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
+                                            <label for="video" class="col-sm-3 control-label bold">Video</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control input-sm" id="video" name="Video"></select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
                                             <label for="pageSource" class="col-sm-3 control-label bold">Page Source</label>
                                             <div class="col-sm-9">
                                                 <select class="form-control input-sm" id="pageSource" name="PageSource"></select>
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="seleniumLog" class="col-sm-3 control-label bold">Selenium Log</label>
+                                            <label for="seleniumLog" class="col-sm-3 control-label bold">Robot Log</label>
                                             <div class="col-sm-9">
                                                 <select class="form-control input-sm" id="seleniumLog" name="SeleniumLog"></select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="consoleLog" class="col-sm-3 control-label bold">Console Log</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control input-sm" id="consoleLog" name="ConsoleLog"></select>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -388,8 +393,10 @@
                         <input type="hidden" name="outputformat" id="outputformatATQ" value="gui">
                         <input type="hidden" name="verbose" id="verboseATQ">
                         <input type="hidden" name="screenshot" id="screenshotATQ">
+                        <input type="hidden" name="video" id="videoATQ">
                         <input type="hidden" name="pageSource" id="pageSourceATQ">
                         <input type="hidden" name="seleniumLog" id="seleniumLogATQ">
+                        <input type="hidden" name="consoleLog" id="consoleLogATQ">
                         <input type="hidden" name="timeout" id="timeoutATQ">
                         <input type="hidden" name="retries" id="retriesATQ">
                         <input type="hidden" name="manualExecution" id="manualExecutionATQ">

@@ -372,8 +372,8 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                                             for (String browser : browsers) {
                                                 try {
                                                     toInserts.add(inQueueFactoryService.create("", test, testCase, country.getCountry(), environment, robot, robot, robotIP, robotPort, browser, browserVersion,
-                                                            platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
-                                                            timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
+                                                            platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, 0, verbose,
+                                                            timeout, pageSource, seleniumLog, 0, 0, retries, manualExecution, priority, user, null, null, null));
                                                 } catch (FactoryCreationException e) {
                                                     LOG.error("Unable to insert record due to: " + e, e);
                                                     LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robot);
@@ -384,8 +384,8 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                                             LOG.debug("Forcing Browser to empty value. Application type=" + app.getType());
                                             try {
                                                 toInserts.add(inQueueFactoryService.create("", test, testCase, country.getCountry(), environment, robot, robot, robotIP, robotPort, "", browserVersion,
-                                                        platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
-                                                        timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
+                                                        platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, 0, verbose,
+                                                        timeout, pageSource, seleniumLog, 0, 0, retries, manualExecution, priority, user, null, null, null));
                                             } catch (FactoryCreationException e) {
                                                 LOG.error("Unable to insert record due to: " + e, e);
                                                 LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robot);

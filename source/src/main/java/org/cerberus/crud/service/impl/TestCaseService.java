@@ -228,17 +228,17 @@ public class TestCaseService implements ITestCaseService {
             HashMap<String, HashMap<String, TestCaseCountry>> testCaseCountryHash = testCaseCountryService.convertListToHashMapTestTestCaseAsKey(testCaseCountries);
             List<TestCaseDep> testCaseDependencies = testCaseDepService.readByTestAndTestCase(testCases.getDataList());
             HashMap<String, List<TestCaseDep>> testCaseDependenciesHash = testCaseDepService.convertTestCaseDepListToHash(testCaseDependencies);
-            HashMap<String, List<Label>> labels = labelService.findLabelsFromTestCase(test, null, testCases.getDataList());
+            HashMap<String, List<Label>> labelsHash = labelService.findLabelsFromTestCase(test, null, testCases.getDataList());
 
             for (TestCase testCase : testCases.getDataList()) {
-                if (testCaseCountryHash.containsKey(testCase.getTest() + "_" + testCase.getTestCase())) {
-                    testCase.setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(testCaseCountryHash.get(testCase.getTest() + "_" + testCase.getTestCase()), countryInvariants));
+                if (testCaseCountryHash.containsKey(testCase.getKey())) {
+                    testCase.setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(testCaseCountryHash.get(testCase.getKey()), countryInvariants));
                 }
-                if (labels.containsKey(testCase.getTestCase())) {
-                    testCase.setLabels(labels.get(testCase.getTestCase()));
+                if (labelsHash.containsKey(testCase.getKey())) {
+                    testCase.setLabels(labelsHash.get(testCase.getKey()));
                 }
-                if (testCaseDependenciesHash.containsKey(testCase.getTestCase())) {
-                    testCase.setDependencies(testCaseDependenciesHash.get(testCase.getTestCase()));
+                if (testCaseDependenciesHash.containsKey(testCase.getKey())) {
+                    testCase.setDependencies(testCaseDependenciesHash.get(testCase.getKey()));
                 }
             }
         }
@@ -535,7 +535,7 @@ public class TestCaseService implements ITestCaseService {
         // We first create the corresponding test if it doesn,'t exist.
         if (testCase.getTest() != null) {
             if (!testService.exist(testCase.getTest())) {
-                testService.create(factoryTest.create(testCase.getTest(), "", "Y", null, testCase.getUsrModif(), null, "", null));
+                testService.create(factoryTest.create(testCase.getTest(), "", true, null, testCase.getUsrModif(), null, "", null));
             }
         }
         return testCaseDao.update(keyTest, keyTestCase, testCase);
@@ -546,7 +546,7 @@ public class TestCaseService implements ITestCaseService {
         // We first create the corresponding test if it doesn,'t exist.
         if (testCase.getTest() != null) {
             if (!testService.exist(testCase.getTest())) {
-                testService.create(factoryTest.create(testCase.getTest(), "", "Y", null, testCase.getUsrCreated(), null, "", null));
+                testService.create(factoryTest.create(testCase.getTest(), "", true, null, testCase.getUsrCreated(), null, "", null));
             }
         }
         return testCaseDao.create(testCase);

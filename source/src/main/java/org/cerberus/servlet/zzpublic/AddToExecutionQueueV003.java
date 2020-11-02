@@ -93,10 +93,12 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     private static final String PARAMETER_MANUAL_ENV_DATA = "myenvdata";
     private static final String PARAMETER_TAG = "tag";
     private static final String PARAMETER_SCREENSHOT = "screenshot";
+    private static final String PARAMETER_VIDEO = "video";
     private static final String PARAMETER_VERBOSE = "verbose";
     private static final String PARAMETER_TIMEOUT = "timeout";
     private static final String PARAMETER_PAGE_SOURCE = "pagesource";
-    private static final String PARAMETER_SELENIUM_LOG = "seleniumlog";
+    private static final String PARAMETER_ROBOT_LOG = "seleniumlog";
+    private static final String PARAMETER_CONSOLE_LOG = "consolelog";
     private static final String PARAMETER_RETRIES = "retries";
     private static final String PARAMETER_MANUAL_EXECUTION = "manualexecution";
     private static final String PARAMETER_EXEPRIORITY = "priority";
@@ -105,11 +107,13 @@ public class AddToExecutionQueueV003 extends HttpServlet {
 
     private static final String DEFAULT_VALUE_TAG = "";
     private static final int DEFAULT_VALUE_SCREENSHOT = 1;
+    private static final int DEFAULT_VALUE_VIDEO = 0;
     private static final int DEFAULT_VALUE_MANUAL_URL = 0;
     private static final int DEFAULT_VALUE_VERBOSE = 1;
     private static final String DEFAULT_VALUE_TIMEOUT = "30000";
     private static final int DEFAULT_VALUE_PAGE_SOURCE = 1;
-    private static final int DEFAULT_VALUE_SELENIUM_LOG = 1;
+    private static final int DEFAULT_VALUE_ROBOT_LOG = 1;
+    private static final int DEFAULT_VALUE_CONSOLE_LOG = 1;
     private static final int DEFAULT_VALUE_RETRIES = 0;
     private static final String DEFAULT_VALUE_MANUAL_EXECUTION = "N";
     private static final int DEFAULT_VALUE_PRIORITY = 1000;
@@ -229,10 +233,12 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         String executor = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_EXECUTOR), null, charset);
 
         int screenshot = DEFAULT_VALUE_SCREENSHOT;
+        int video = DEFAULT_VALUE_VIDEO;
         int verbose = DEFAULT_VALUE_VERBOSE;
         String timeout = DEFAULT_VALUE_TIMEOUT;
         int pageSource = DEFAULT_VALUE_PAGE_SOURCE;
-        int seleniumLog = DEFAULT_VALUE_SELENIUM_LOG;
+        int robotLog = DEFAULT_VALUE_ROBOT_LOG;
+        int consoleLog = DEFAULT_VALUE_CONSOLE_LOG;
         int retries = DEFAULT_VALUE_RETRIES;
         String manualExecution = DEFAULT_VALUE_MANUAL_EXECUTION;
         int priority = DEFAULT_VALUE_PRIORITY;
@@ -247,9 +253,21 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         if (mCampaign == null) {
             // Campaign not defined or does not exist so we parse parameter from servlet query string or defaut values
             screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SCREENSHOT), DEFAULT_VALUE_SCREENSHOT, charset);
+            // Manage retrocompatibility in case the screenshot parameter is called with values 3 or 4 (should not be possible ).
+            int defaultVideo = DEFAULT_VALUE_VIDEO;
+            if (screenshot == 3) {
+                defaultVideo = 1;
+                screenshot = 1;
+            }
+            if (screenshot == 4) {
+                defaultVideo = 2;
+                screenshot = 2;
+            }
+            video = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_VIDEO), defaultVideo, charset);
             verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_VERBOSE), DEFAULT_VALUE_VERBOSE, charset);
             pageSource = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_PAGE_SOURCE), DEFAULT_VALUE_PAGE_SOURCE, charset);
-            seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SELENIUM_LOG), DEFAULT_VALUE_SELENIUM_LOG, charset);
+            robotLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_ROBOT_LOG), DEFAULT_VALUE_ROBOT_LOG, charset);
+            consoleLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_CONSOLE_LOG), DEFAULT_VALUE_CONSOLE_LOG, charset);
             timeout = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_TIMEOUT), DEFAULT_VALUE_TIMEOUT, charset);
             retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_RETRIES), DEFAULT_VALUE_RETRIES, charset);
             manualExecution = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION, charset);
@@ -260,12 +278,16 @@ public class AddToExecutionQueueV003 extends HttpServlet {
 
             screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SCREENSHOT),
                     ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getScreenshot(), DEFAULT_VALUE_SCREENSHOT, charset), charset);
+            video = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_VIDEO),
+                    ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getVideo(), DEFAULT_VALUE_VIDEO, charset), charset);
             verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_VERBOSE),
                     ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getVerbose(), DEFAULT_VALUE_VERBOSE, charset), charset);
             pageSource = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_PAGE_SOURCE),
                     ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getPageSource(), DEFAULT_VALUE_PAGE_SOURCE, charset), charset);
-            seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SELENIUM_LOG),
-                    ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getRobotLog(), DEFAULT_VALUE_SELENIUM_LOG, charset), charset);
+            robotLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_ROBOT_LOG),
+                    ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getRobotLog(), DEFAULT_VALUE_ROBOT_LOG, charset), charset);
+            consoleLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_CONSOLE_LOG),
+                    ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getConsoleLog(), DEFAULT_VALUE_CONSOLE_LOG, charset), charset);
             timeout = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_TIMEOUT),
                     ParameterParserUtil.parseStringParamAndDecode(mCampaign.getTimeout(), DEFAULT_VALUE_TIMEOUT, charset), charset);
             retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_RETRIES),
@@ -301,10 +323,12 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 + "- " + PARAMETER_MANUAL_ENV_DATA + " : Environment where to get the test data when a " + PARAMETER_MANUAL_URL + " is defined. (only used when manualURL is active or override). [" + manualEnvData + "]\n"
                 + "- " + PARAMETER_TAG + " : Tag that will be used for every execution triggered. [" + tag + "]\n"
                 + "- " + PARAMETER_SCREENSHOT + " : Activate or not the screenshots for every execution triggered. [" + screenshot + "]\n"
+                + "- " + PARAMETER_VIDEO + " : Activate or not the video for every execution triggered. [" + video + "]\n"
                 + "- " + PARAMETER_VERBOSE + " : Verbose level for every execution triggered. [" + verbose + "]\n"
                 + "- " + PARAMETER_TIMEOUT + " : Timeout used for the action that will be used for every execution triggered. [" + timeout + "]\n"
                 + "- " + PARAMETER_PAGE_SOURCE + " : Record Page Source during for every execution triggered. [" + pageSource + "]\n"
-                + "- " + PARAMETER_SELENIUM_LOG + " : Get the SeleniumLog at the end of the execution for every execution triggered. [" + seleniumLog + "]\n"
+                + "- " + PARAMETER_ROBOT_LOG + " : Get the Robot Logs at the end of the execution for every execution triggered. [" + robotLog + "]\n"
+                + "- " + PARAMETER_CONSOLE_LOG + " : Get the Console Log at the end of the execution for every execution triggered. [" + consoleLog + "]\n"
                 + "- " + PARAMETER_MANUAL_EXECUTION + " : Execute testcase in manual mode for every execution triggered. [" + manualExecution + "]\n"
                 + "- " + PARAMETER_RETRIES + " : Number of tries if the result is not OK for every execution triggered. [" + retries + "]\n"
                 + "- " + PARAMETER_EXEPRIORITY + " : Priority that will be used in the queue for every execution triggered. [" + priority + "]\n"
@@ -541,8 +565,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                                         browserVersion, platform, screenSize, manualURL,
                                                                         manualHostforThisApplication, manualContextRoot,
                                                                         manualLoginRelativeURL, manualEnvData, tag,
-                                                                        screenshot, verbose, timeout, pageSource,
-                                                                        seleniumLog, 0, retries, manualExecution, priority,
+                                                                        screenshot, video, verbose, timeout, pageSource,
+                                                                        robotLog, consoleLog, 0, retries, manualExecution, priority,
                                                                         user, null, null, null));
                                                             }
                                                         } else {
@@ -562,8 +586,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                     toInserts.add(inQueueFactoryService.create(app.getSystem(), test,
                                                             testCase, country.getCountry(), environment, "", "", "", "",
                                                             "", "", "", "", manualURL, manualHostforThisApplication, manualContextRoot,
-                                                            manualLoginRelativeURL, manualEnvData, tag, screenshot,
-                                                            verbose, timeout, pageSource, seleniumLog, 0, retries,
+                                                            manualLoginRelativeURL, manualEnvData, tag, screenshot, video,
+                                                            verbose, timeout, pageSource, robotLog, consoleLog, 0, retries,
                                                             manualExecution, priority, user, null, null, null));
                                                 } catch (FactoryCreationException e) {
                                                     LOG.error("Unable to insert record due to: " + e, e);
@@ -658,32 +682,32 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         switch (outputFormat) {
             case "json":
                 try {
-                    JSONObject jsonResponse = new JSONObject();
-                    jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
-                    jsonResponse.put("message", errorMessage.toString());
-                    if (error) {
-                        // Only display help message if error.
-                        jsonResponse.put("helpMessage", helpMessage);
-                    }
-                    jsonResponse.put("tag", tag);
-                    jsonResponse.put("nbExe", nbExe);
-                    jsonResponse.put("nbErrorTCNotActive", nbtestcasenotactive);
-                    jsonResponse.put("nbErrorTCNotAllowedOnEnv", nbtestcaseenvgroupnotallowed);
-                    jsonResponse.put("nbErrorEnvNotExistOrNotActive", nbenvnotexist);
-                    jsonResponse.put("nbErrorRobotMissing", nbrobotmissing);
-                    jsonResponse.put("queueList", jsonArray);
-
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("utf8");
-                    response.getWriter().print(jsonResponse.toString());
-                } catch (JSONException e) {
-                    LOG.warn(e);
-                    //returns a default error message with the json format that is able to be parsed by the client-side
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("utf8");
-                    response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+                JSONObject jsonResponse = new JSONObject();
+                jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+                jsonResponse.put("message", errorMessage.toString());
+                if (error) {
+                    // Only display help message if error.
+                    jsonResponse.put("helpMessage", helpMessage);
                 }
-                break;
+                jsonResponse.put("tag", tag);
+                jsonResponse.put("nbExe", nbExe);
+                jsonResponse.put("nbErrorTCNotActive", nbtestcasenotactive);
+                jsonResponse.put("nbErrorTCNotAllowedOnEnv", nbtestcaseenvgroupnotallowed);
+                jsonResponse.put("nbErrorEnvNotExistOrNotActive", nbenvnotexist);
+                jsonResponse.put("nbErrorRobotMissing", nbrobotmissing);
+                jsonResponse.put("queueList", jsonArray);
+
+                response.setContentType("application/json");
+                response.setCharacterEncoding("utf8");
+                response.getWriter().print(jsonResponse.toString());
+            } catch (JSONException e) {
+                LOG.warn(e);
+                //returns a default error message with the json format that is able to be parsed by the client-side
+                response.setContentType("application/json");
+                response.setCharacterEncoding("utf8");
+                response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+            }
+            break;
             default:
                 response.setContentType("text");
                 response.setCharacterEncoding("utf8");

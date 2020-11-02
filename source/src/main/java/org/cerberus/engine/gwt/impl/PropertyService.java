@@ -967,31 +967,45 @@ public class PropertyService implements IPropertyService {
 
     private TestCaseExecutionData property_getFromNetworkTraffic(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
         if ("Y".equalsIgnoreCase(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+            String jsonPath = testCaseExecutionData.getValue2();
+            if (StringUtil.isNullOrEmpty(jsonPath)) {
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMNETWORKTRAFFIC_MISSINGJSONPATH);
+                testCaseExecutionData.setPropertyResultMessage(res);
+                return testCaseExecutionData;
+
+            }
 
             try {
                 //TODO : check if HAR is the same than the last one to avoid to download same har file several times
                 // String remoteHarMD5 = "http://" + tCExecution.getRobotExecutorObj().getHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHarMD5?uuid="+tCExecution.getRemoteProxyUUID();
+                Integer indexFrom = 0;
+                if (!tCExecution.getNetworkTrafficIndexList().isEmpty()) {
+                    // Take the value from the last entry.
+                    indexFrom = tCExecution.getNetworkTrafficIndexList().get(tCExecution.getNetworkTrafficIndexList().size() - 1);
+                }
 
                 JSONObject harRes = executorService.getHar(testCaseExecutionData.getValue1(), false, tCExecution.getRobotExecutorObj().getExecutorExtensionHost(), tCExecution.getRobotExecutorObj().getExecutorExtensionPort(),
-                        tCExecution.getRemoteProxyUUID(), tCExecution.getSystem());
+                        tCExecution.getRemoteProxyUUID(), tCExecution.getSystem(), indexFrom);
 
-                harRes = harService.enrichWithStats(harRes, tCExecution.getCountryEnvironmentParameters().getDomain(), tCExecution.getSystem());
+                harRes = harService.enrichWithStats(harRes, tCExecution.getCountryEnvironmentParameters().getDomain(), tCExecution.getSystem(), tCExecution.getNetworkTrafficIndexList());
 
                 //Record result in filessytem.
                 testCaseExecutionData.addFileList(recorderService.recordProperty(tCExecution.getId(), testCaseExecutionData.getProperty(), 1, harRes.toString(1)));
 
-                String valueFromJson = this.jsonService.getFromJson(harRes.toString(), null, testCaseExecutionData.getValue2());
+                String valueFromJson = this.jsonService.getFromJson(harRes.toString(), null, jsonPath);
 
                 if (valueFromJson != null) {
                     testCaseExecutionData.setValue(valueFromJson);
-                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMNETWORKTRAFFIC);
-                    res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue2()));
-                    res.setDescription(res.getDescription().replace("%VALUE%", valueFromJson));
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMNETWORKTRAFFIC)
+                            .resolveDescription("PARAM", jsonPath)
+                            .resolveDescription("VALUE", valueFromJson)
+                            .resolveDescription("INDEX", String.valueOf(tCExecution.getNetworkTrafficIndexList().size()))
+                            .resolveDescription("NBHITS", String.valueOf(indexFrom));
                     testCaseExecutionData.setPropertyResultMessage(res);
 
                 } else {
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMNETWORKTRAFFIC_PATHNOTFOUND);
-                    res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue2()));
+                    res.setDescription(res.getDescription().replace("%PARAM%", jsonPath));
                     testCaseExecutionData.setPropertyResultMessage(res);
 
                 }
@@ -1135,7 +1149,7 @@ public class PropertyService implements IPropertyService {
                 testCaseExecutionData.setValue(valueFromJS);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_JS);
                 res.setDescription(res.getDescription().replace("%SCRIPT%", script));
-                res.setDescription(res.getDescription().replace("%VALUE%", valueFromJS));
+                res.resolveDescription("VALUE", valueFromJS);
                 testCaseExecutionData.setPropertyResultMessage(res);
             } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_JS_EXCEPTION);

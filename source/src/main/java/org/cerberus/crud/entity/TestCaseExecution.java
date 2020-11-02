@@ -96,8 +96,9 @@ public class TestCaseExecution {
     private String queueState;
     private int verbose;
     private int screenshot;
+    private int video;
     private String outputFormat;
-    private boolean manualURL;
+    private int manualURL;
     private String myHost;
     private String myContextRoot;
     private String myLoginRelativeURL;
@@ -106,7 +107,8 @@ public class TestCaseExecution {
     private String seleniumIPPassword;
     private String seleniumPort;
     private Integer pageSource;
-    private Integer seleniumLog;
+    private Integer robotLog;
+    private Integer consoleLog;
     private Integer numberOfRetries;
     private boolean synchroneous;
     private String timeout;
@@ -165,6 +167,7 @@ public class TestCaseExecution {
     private HashMap<String, Map<TopicPartition, Long>> kafkaLatestOffset;
     // Http Stats
     private TestCaseExecutionHttpStat httpStat;
+    private List<Integer> networkTrafficIndexList;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -201,6 +204,18 @@ public class TestCaseExecution {
     public static final String ROBOTPROVIDER_BROWSERSTACK = "BROWSERSTACK";
     public static final String ROBOTPROVIDER_KOBITON = "KOBITON";
     public static final String ROBOTPROVIDER_NONE = "NONE";
+
+    public List<Integer> getNetworkTrafficIndexList() {
+        return networkTrafficIndexList;
+    }
+
+    public void setNetworkTrafficIndexList(List<Integer> networkTrafficIndexList) {
+        this.networkTrafficIndexList = networkTrafficIndexList;
+    }
+
+    public void appendNetworkTrafficIndexList(Integer nbHitsTondex) {
+        this.networkTrafficIndexList.add(nbHitsTondex);
+    }
 
     public TestCaseExecutionHttpStat getHttpStat() {
         return httpStat;
@@ -559,12 +574,20 @@ public class TestCaseExecution {
         this.pageSource = pageSource;
     }
 
-    public Integer getSeleniumLog() {
-        return seleniumLog;
+    public Integer getRobotLog() {
+        return robotLog;
     }
 
-    public void setSeleniumLog(Integer seleniumLog) {
-        this.seleniumLog = seleniumLog;
+    public void setRobotLog(Integer robotLog) {
+        this.robotLog = robotLog;
+    }
+
+    public Integer getConsoleLog() {
+        return consoleLog;
+    }
+
+    public void setConsoleLog(Integer consoleLog) {
+        this.consoleLog = consoleLog;
     }
 
     public boolean isSynchroneous() {
@@ -639,11 +662,11 @@ public class TestCaseExecution {
         this.environmentData = environmentData;
     }
 
-    public boolean isManualURL() {
+    public int getManualURL() {
         return manualURL;
     }
 
-    public void setManualURL(boolean manualURL) {
+    public void setManualURL(int manualURL) {
         this.manualURL = manualURL;
     }
 
@@ -685,6 +708,14 @@ public class TestCaseExecution {
 
     public void setScreenshot(int screenshot) {
         this.screenshot = screenshot;
+    }
+
+    public int getVideo() {
+        return video;
+    }
+
+    public void setVideo(int video) {
+        this.video = video;
     }
 
     public MessageGeneral getResultMessage() {

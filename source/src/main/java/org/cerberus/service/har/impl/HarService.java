@@ -68,7 +68,7 @@ public class HarService implements IHarService {
     private static final String PROVIDER_IGNORE = "ignore";
 
     @Override
-    public JSONObject enrichWithStats(JSONObject har, String domains, String system) {
+    public JSONObject enrichWithStats(JSONObject har, String domains, String system, List<Integer> indexList) {
         LOG.debug("Enriching HAR file with stats.");
         try {
             JSONArray harEntries = har.getJSONObject("log").getJSONArray("entries");
@@ -171,6 +171,14 @@ public class HarService implements IHarService {
             stat.put("requests", req);
 
             har.put("stat", stat);
+            
+            // Adding index.
+            JSONArray indexArray = new JSONArray();
+            for (Integer ind : indexList) {
+                indexArray.put(ind);
+            }
+            har.put("index", indexArray);
+            
             return har;
 
         } catch (JSONException ex) {
@@ -351,6 +359,23 @@ public class HarService implements IHarService {
                 urlEntry.put("contentType", responseType);
                 urlEntry.put("httpStatus", httpS);
                 urlEntry.put("provider", provider);
+                JSONObject entryReq = new JSONObject();
+                entryReq = entry.getJSONObject("request");
+                if (entryReq.has("postData")) {
+                    if (entryReq.getJSONObject("postData").has("params")) {
+                        JSONObject pD = new JSONObject();
+                        JSONArray pData = new JSONArray();
+                        pData = entryReq.getJSONObject("postData").getJSONArray("params");
+                        JSONObject pA = new JSONObject();
+                        for (int i = 0; i < pData.length(); i++) {
+                            pA = pData.getJSONObject(i);
+                            if ((pA.has("name")) && (!StringUtil.isNullOrEmpty(pA.getString("name").trim()))) {
+                                pD.put(pA.getString("name").trim(), pA.getString("value"));
+                            }
+                        }
+                        urlEntry.put("postData", pD);
+                    }
+                }
                 harStat.appendUrlList(urlEntry);
             }
 
@@ -894,4 +919,35 @@ public class HarService implements IHarService {
         }
     }
 
+    @Override
+    public JSONObject removeFirstHits(JSONObject har, Integer indexStart) {
+        LOG.debug("Remove First entries from HAR file from index " + indexStart);
+        if (indexStart < 1) {
+            return har;
+        }
+        try {
+            JSONArray harEntries = har.getJSONObject("log").getJSONArray("entries");
+            JSONArray newLogEntries = new JSONArray();
+
+            for (int i = 0; i < harEntries.length(); i++) {
+                if (i >= indexStart) {
+                    // Only add the entries if index is reached.
+                    newLogEntries.put(harEntries.getJSONObject(i));
+                }
+            }
+            LOG.debug(newLogEntries.length());
+            LOG.debug(newLogEntries.toString());
+            JSONObject log = new JSONObject();
+            log = har.getJSONObject("log");
+            log.put("entries", newLogEntries);
+            har.put("log", log);
+            return har;
+
+        } catch (JSONException ex) {
+            LOG.error("Exception when trying to remove 1st entries from har file : " + ex.toString());
+        } catch (Exception ex) {
+            LOG.error("Exception when trying to enrich 1st entries from har file.", ex);
+        }
+        return har;
+    }
 }

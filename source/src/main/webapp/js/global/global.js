@@ -1934,7 +1934,7 @@ function displayFooter(doc) {
  */
 function envTuning(myenv) {
     // Background color is light yellow if the environment is not production.
-    if ((myenv !== "prd") && (myenv !== "prod") && (myenv !== "PROD")) {
+    if ((myenv !== "prd") && (myenv !== "prod") && (myenv !== "PROD") && (myenv !== "demo")) {
         document.body.style.background = "#FFFFCC";
     }
 }
@@ -2088,6 +2088,12 @@ function escapeHtml(unsafe) {
             .replace(/'/g, "\\'");
 }
 
+function getShortenString(bigString) {
+    if (bigString.length > 300) {
+        return bigString.substring(0, 300) + "... (TOO LONG TO DISPLAY !! Please check Action or Property detail)";
+    }
+    return bigString;
+}
 function getRowClass(status) {
     var rowClass = [];
 

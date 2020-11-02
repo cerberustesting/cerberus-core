@@ -185,8 +185,10 @@ function confirmExecutionQueueModalHandler(mode, queueAction, saveAction) {
             screenSize: data.screenSize,
             verbose: data.verbose,
             screenshot: data.screenshot,
+            video: data.video,
             pageSource: data.pageSource,
-            seleniumLog: data.seleniumLog,
+            robotLog: data.robotLog,
+            consoleLog: data.consoleLog,
             timeout: data.timeout,
             retries: data.retries,
             priority: data.priority,
@@ -407,10 +409,14 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
     displayInvariantList("verbose", "VERBOSE", false, exeQ.verbose);
     formEdit.find("#screenshot").empty();
     displayInvariantList("screenshot", "SCREENSHOT", false, exeQ.screenshot);
+    formEdit.find("#video").empty();
+    displayInvariantList("video", "VIDEO", false, exeQ.video);
     formEdit.find("#pageSource").empty();
     displayInvariantList("pageSource", "PAGESOURCE", false, exeQ.pageSource);
-    formEdit.find("#seleniumLog").empty();
-    displayInvariantList("seleniumLog", "SELENIUMLOG", false, exeQ.seleniumLog);
+    formEdit.find("#robotLog").empty();
+    displayInvariantList("robotLog", "ROBOTLOG", false, exeQ.robotLog);
+    formEdit.find("#consoleLog").empty();
+    displayInvariantList("consoleLog", "CONSOLELOG", false, exeQ.consoleLog);
     formEdit.find("#retries").empty();
     displayInvariantList("retries", "RETRIES", false, exeQ.retries);
 
@@ -505,8 +511,10 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#screenSize").prop("readonly", false);
         formEdit.find("#verbose").removeAttr("disabled");
         formEdit.find("#screenshot").removeAttr("disabled");
+        formEdit.find("#video").removeAttr("disabled");
         formEdit.find("#pageSource").removeAttr("disabled");
-        formEdit.find("#seleniumLog").removeAttr("disabled");
+        formEdit.find("#robotLog").removeAttr("disabled");
+        formEdit.find("#consoleLog").removeAttr("disabled");
         formEdit.find("#timeout").prop("readonly", false);
         formEdit.find("#retries").removeAttr("disabled");
         formEdit.find("#manualExecution").removeAttr("disabled");
@@ -534,8 +542,10 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#screenSize").prop("readonly", "readonly");
         formEdit.find("#verbose").prop("disabled", "disabled");
         formEdit.find("#screenshot").prop("disabled", "disabled");
+        formEdit.find("#video").prop("disabled", "disabled");
         formEdit.find("#pageSource").prop("disabled", "disabled");
-        formEdit.find("#seleniumLog").prop("disabled", "disabled");
+        formEdit.find("#robotLog").prop("disabled", "disabled");
+        formEdit.find("#consoleLog").prop("disabled", "disabled");
         formEdit.find("#timeout").prop("readonly", "readonly");
         formEdit.find("#retries").prop("disabled", "disabled");
         formEdit.find("#manualExecution").prop("disabled", "disabled");

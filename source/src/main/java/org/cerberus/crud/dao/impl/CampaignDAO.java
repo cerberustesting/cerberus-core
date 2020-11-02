@@ -382,9 +382,9 @@ public class CampaignDAO implements ICampaignDAO {
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO campaign (`campaign`, `DistribList`, `NotifyStartTagExecution`, `NotifyEndTagExecution`"
                 + ", SlackNotifyStartTagExecution, SlackNotifyEndTagExecution, SlackWebhook, SlackChannel"
-                + ", CIScoreThreshold, Tag, Verbose, Screenshot, PageSource, RobotLog, Timeout, Retries, Priority, ManualExecution"
+                + ", CIScoreThreshold, Tag, Verbose, Screenshot, Video, PageSource, RobotLog, ConsoleLog, Timeout, Retries, Priority, ManualExecution"
                 + ", `Description`, LongDescription, Group1, Group2, Group3, UsrCreated) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -407,8 +407,10 @@ public class CampaignDAO implements ICampaignDAO {
                 preStat.setString(i++, object.getTag());
                 preStat.setString(i++, object.getVerbose());
                 preStat.setString(i++, object.getScreenshot());
+                preStat.setString(i++, object.getVideo());
                 preStat.setString(i++, object.getPageSource());
                 preStat.setString(i++, object.getRobotLog());
+                preStat.setString(i++, object.getConsoleLog());
                 preStat.setString(i++, object.getTimeout());
                 preStat.setString(i++, object.getRetries());
                 preStat.setString(i++, object.getPriority());
@@ -458,7 +460,7 @@ public class CampaignDAO implements ICampaignDAO {
         MessageEvent msg = null;
         final String query = "UPDATE campaign cpg SET campaign = ?, DistribList = ?, NotifyStartTagExecution = ?, NotifyEndTagExecution = ?"
                 + ", SlackNotifyStartTagExecution = ?,  SlackNotifyEndTagExecution = ?, SlackWebhook = ?, SlackChannel = ?"
-                + ", CIScoreThreshold = ?, Tag = ?, Verbose = ?, Screenshot = ?, PageSource = ?, RobotLog = ?, Timeout = ?, Retries = ?, Priority = ?, ManualExecution = ?"
+                + ", CIScoreThreshold = ?, Tag = ?, Verbose = ?, Screenshot = ?, Video = ?, PageSource = ?, RobotLog = ?, ConsoleLog = ?, Timeout = ?, Retries = ?, Priority = ?, ManualExecution = ?"
                 + ", Description = ?, LongDescription = ?, Group1 = ?, Group2 = ?, Group3 = ?, UsrModif = ?, DateModif =  NOW() WHERE campaignID = ?";
 
         // Debug message on SQL.
@@ -482,8 +484,10 @@ public class CampaignDAO implements ICampaignDAO {
                 preStat.setString(i++, object.getTag());
                 preStat.setString(i++, object.getVerbose());
                 preStat.setString(i++, object.getScreenshot());
+                preStat.setString(i++, object.getVideo());
                 preStat.setString(i++, object.getPageSource());
                 preStat.setString(i++, object.getRobotLog());
+                preStat.setString(i++, object.getConsoleLog());
                 preStat.setString(i++, object.getTimeout());
                 preStat.setString(i++, object.getRetries());
                 preStat.setString(i++, object.getPriority());
@@ -580,8 +584,10 @@ public class CampaignDAO implements ICampaignDAO {
         String tag = ParameterParserUtil.parseStringParam(rs.getString("cpg.Tag"), "");
         String verbose = ParameterParserUtil.parseStringParam(rs.getString("cpg.Verbose"), "");
         String screenshot = ParameterParserUtil.parseStringParam(rs.getString("cpg.Screenshot"), "");
+        String video = ParameterParserUtil.parseStringParam(rs.getString("cpg.Video"), "");
         String pageSource = ParameterParserUtil.parseStringParam(rs.getString("cpg.PageSource"), "");
         String robotLog = ParameterParserUtil.parseStringParam(rs.getString("cpg.RobotLog"), "");
+        String consoleLog = ParameterParserUtil.parseStringParam(rs.getString("cpg.ConsoleLog"), "");
         String timeout = ParameterParserUtil.parseStringParam(rs.getString("cpg.Timeout"), "");
         String retries = ParameterParserUtil.parseStringParam(rs.getString("cpg.Retries"), "");
         String priority = ParameterParserUtil.parseStringParam(rs.getString("cpg.Priority"), "");
@@ -601,7 +607,7 @@ public class CampaignDAO implements ICampaignDAO {
         return factoryCampaign.create(campID, camp, distribList, notifyStartTagExecution, notifyEndTagExecution,
                 slackNotifyStartTagExecution, slackNotifyEndTagExecution, slackWebhook, slackChannel,
                 cIScoreThreshold,
-                tag, verbose, screenshot, pageSource, robotLog, timeout, retries, priority, manualExecution,
+                tag, verbose, screenshot, video, pageSource, robotLog, consoleLog, timeout, retries, priority, manualExecution,
                 desc, longDesc, group1, group2, group3,
                 usrCreated, dateCreated, usrModif, dateModif);
     }

@@ -31,11 +31,11 @@ import org.springframework.stereotype.Service;
 public class FactoryTest implements IFactoryTest {
 
     @Override
-    public Test create(String test, String description, String active, String parentTest, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
+    public Test create(String test, String description, boolean isActive, String parentTest, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         Test newTest = new Test();
         newTest.setTest(test);
         newTest.setDescription(description);
-        newTest.setActive(active);
+        newTest.setActive(isActive);
         newTest.setParentTest(parentTest);
         newTest.setUsrCreated(usrCreated);
         newTest.setDateCreated(dateCreated);

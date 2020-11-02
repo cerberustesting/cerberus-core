@@ -106,7 +106,7 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
             if (data.messageType === "OK") {
                 var tceq = data.contentTable;
 
-                var tc = tceq.testCase;
+                var tc = tceq.testcase;
                 updatePageTitle(tc);
 
                 var configPanel = $("#testCaseConfig");
@@ -1153,8 +1153,8 @@ function setConfigPanel(data) {
     configPanel.find("#country").text(data.country);
     configPanel.find("#tcDescription").text(data.description);
     configPanel.find("input#application").val(data.application);
-    configPanel.find("input#browser").val(data.browser);
     configPanel.find("input#build").val(data.build);
+    configPanel.find("input#revision").val(data.revision);
     configPanel.find("input#country").val(data.country);
     configPanel.find("input#environment").val(data.environment);
     configPanel.find("input#environmentData").val(data.environmentData);
@@ -1170,7 +1170,8 @@ function setConfigPanel(data) {
     configPanel.find("input#robothost").val(data.robotHost);
     configPanel.find("input#robotport").val(data.robotPort);
     configPanel.find("input#platform").val(data.platform);
-    configPanel.find("input#revision").val(data.revision);
+    configPanel.find("input#browser").val(data.browser);
+    configPanel.find("input#version").val(data.version);
     configPanel.find("input#cerberusversion").val(data.crbVersion);
     if (isTheExecutionManual) {
         $("input#executor").prop("readonly", false);
@@ -1184,7 +1185,7 @@ function setConfigPanel(data) {
     configPanel.find("input#url").val(data.url);
     configPanel.find("input#exetest").val(data.test);
     configPanel.find("input#exetestcase").val(data.testcase);
-    configPanel.find("input#version").val(data.version);
+    configPanel.find("input#testcaseversion").val(data.testCaseVersion);
     configPanel.find("input#system").val(data.system);
     configPanel.find("input#robotdecli").val(data.robotDecli);
     configPanel.find("input#robotsessionid").val(data.robotSessionId);
@@ -1274,9 +1275,9 @@ function setLinkOnEditTCStepInfoButton() {
 function setLoadBar(data) {
     var total = 0;
     var ended = 0;
-    if (data.testCaseObj !== undefined && data.testCaseObj.testCaseSteps !== undefined) {
-        for (var i = 0; i < data.testCaseObj.testCaseSteps.length; i++) {
-            var step = data.testCaseObj.testCaseSteps[i];
+    if (data.testCaseObj !== undefined && data.testCaseObj.steps !== undefined) {
+        for (var i = 0; i < data.testCaseObj.steps.length; i++) {
+            var step = data.testCaseObj.steps[i];
             var stepExec = data.testCaseStepExecutionList[i];
             if (stepExec !== undefined && stepExec.returnCode !== "PE") {
                 ended += 1;
@@ -1433,7 +1434,7 @@ function drawProperty(property, table, isSecondary) {
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
     returnMessageField.append(safeLinkify(property.rMessage));
-    descriptionField.append(property.value);
+    descriptionField.append(getShortenString(property.value));
 
     propertyName.append(property.property);
 

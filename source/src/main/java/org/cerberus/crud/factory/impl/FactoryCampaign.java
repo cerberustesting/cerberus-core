@@ -36,7 +36,7 @@ public class FactoryCampaign implements IFactoryCampaign {
             String distribList, String notifyStartTagExecution, String notifyEndTagExecution,
             String SlackNotifyStartTagExecution, String SlackNotifyEndTagExecution, String SlackWebhook, String SlackChannel,
             String CIScoreThreshold,
-            String Tag, String Verbose, String Screenshot, String PageSource, String RobotLog, String Timeout, String Retries, String Priority, String ManualExecution,
+            String tag, String verbose, String screenshot, String video, String PageSource, String RobotLog, String ConsoleLog, String Timeout, String Retries, String Priority, String ManualExecution,
             String description, String longDescription, String group1, String group2, String group3,
             String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif) {
         Campaign newObject = new Campaign();
@@ -50,11 +50,13 @@ public class FactoryCampaign implements IFactoryCampaign {
         newObject.setSlackWebhook(SlackWebhook);
         newObject.setSlackChannel(SlackChannel);
         newObject.setCIScoreThreshold(CIScoreThreshold);
-        newObject.setTag(Tag);
-        newObject.setVerbose(Verbose);
-        newObject.setScreenshot(Screenshot);
+        newObject.setTag(tag);
+        newObject.setVerbose(verbose);
+        newObject.setScreenshot(screenshot);
+        newObject.setVideo(video);
         newObject.setPageSource(PageSource);
         newObject.setRobotLog(RobotLog);
+        newObject.setConsoleLog(ConsoleLog);
         newObject.setTimeout(Timeout);
         newObject.setRetries(Retries);
         newObject.setPriority(Priority);

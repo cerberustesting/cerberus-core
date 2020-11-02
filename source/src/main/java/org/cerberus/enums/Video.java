@@ -1,4 +1,4 @@
-/*
+/**
  * Cerberus Copyright (C) 2013 - 2017 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -17,26 +17,25 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.cerberus.enums;
 
+public enum Video {
 
-window.onload = function () {
-    var user = getUser();
-    var cerberusInformation = getCerberusInformation();
-    if ((cerberusInformation.isGlobalSplashPageActive || cerberusInformation.isInstanceSplashPageActive) && !user.isAdmin) {
-        if (getPageName(window.location.pathname) !== "SplashPage.jsp") {
-            window.location.replace("SplashPage.jsp");
-        }
+    NO_VIDEO (0),
+    AUTOMATIC_VIDEO_ON_ERROR (1),
+    SYSTEMATIC_VIDEO (2);
+
+    private int value;
+    Video(int value) {
+        this.value=value;
     }
-};
 
-$(document).ready(function () {
-    if (getPageName(window.location.pathname) === "SplashPage.jsp") {
-        var adminEmail = getParameter("cerberus_support_email", "", true);
-        $('#adminMailLink').attr("href", ('mailto:' + adminEmail.value)).text(adminEmail.value);
+    public int getValue() {
+        return value;
     }
-});
 
-function getPageName(url) {
-    var index = url.lastIndexOf("/") + 1;
-    return url.substr(index);
+
+    public static boolean recordVideo(int value) {
+        return value == AUTOMATIC_VIDEO_ON_ERROR.getValue() || value == SYSTEMATIC_VIDEO.getValue();
+    }
 }

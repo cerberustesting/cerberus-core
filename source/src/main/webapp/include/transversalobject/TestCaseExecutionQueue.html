@@ -136,15 +136,21 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="robotIP" class="col-sm-3 control-label bold">Selenium Server IP</label>
+                                        <label for="robotIP" class="col-sm-3 control-label bold">Robot Server IP</label>
                                         <div class="col-sm-9">
                                             <input type="text" class="form-control input-sm" id="robotIP" name="robotIP" readonly="readonly" />
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="robotPort" class="col-sm-3 control-label bold">Selenium Server Port</label>
+                                        <label for="robotPort" class="col-sm-3 control-label bold">Robot Server Port</label>
                                         <div class="col-sm-9">
                                             <input type="text" class="form-control input-sm" id="robotPort" name="robotPort" readonly="readonly" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="platform" class="col-sm-3 control-label">Platform (Optional)</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-control input-sm" id="platform" name="platform" disabled=""></select>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -158,12 +164,6 @@
                                         <div class="col-sm-9">
                                             <input type="text" class="form-control input-sm" id="browserVersion" name="browserVersion" readonly="readonly" />
                                         </div> 
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="platform" class="col-sm-3 control-label">Platform (Optional)</label>
-                                        <div class="col-sm-9">
-                                            <select class="form-control input-sm" id="platform" name="platform" disabled=""></select>
-                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="screenSize" class="col-sm-3 control-label bold">Screen Size</label>
@@ -183,31 +183,43 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="screenshot" class="col-sm-3 control-label bold">Screenshot</label>
+                                    <label for="screenshot" class="col-sm-3 control-label bold"><span class="toggle glyphicon glyphicon-picture"></span>&nbsp;Screenshot</label>
                                     <div class="col-sm-9">
                                         <select class="form-control input-sm" id="screenshot" name="screenshot" disabled=""></select>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="pageSource" class="col-sm-3 control-label bold">Page Source</label>
+                                    <label for="video" class="col-sm-3 control-label bold"><span class="toggle glyphicon glyphicon-film"></span>&nbsp;Video</label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control input-sm" id="video" name="video" disabled=""></select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pageSource" class="col-sm-3 control-label bold"><span class="toggle glyphicon glyphicon-list"></span>&nbsp;Page Source</label>
                                     <div class="col-sm-9">
                                         <select class="form-control input-sm" id="pageSource" name="pageSource" disabled=""></select>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="seleniumLog" class="col-sm-3 control-label bold">Selenium Log</label>
+                                    <label for="seleniumLog" class="col-sm-3 control-label bold"><span class="toggle glyphicon glyphicon-list"></span>&nbsp;Robot Log</label>
                                     <div class="col-sm-9">
-                                        <select class="form-control input-sm" id="seleniumLog" name="seleniumLog" disabled=""></select>
+                                        <select class="form-control input-sm" id="robotLog" name="robotLog" disabled=""></select>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="timeout" class="col-sm-3 control-label bold">Timeout</label>
+                                    <label for="consoleLog" class="col-sm-3 control-label bold"><span class="toggle glyphicon glyphicon-console"></span>&nbsp;Console Log</label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control input-sm" id="consoleLog" name="consoleLog" disabled=""></select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="timeout" class="col-sm-3 control-label bold"><span class="toggle glyphicon glyphicon-time"></span>&nbsp;Timeout</label>
                                     <div class="col-sm-9">
                                         <input type="text" class="form-control input-sm" id="timeout" name="timeout" readonly="readonly"/>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="retries" class="col-sm-3 control-label bold">Retries</label>
+                                    <label for="retries" class="col-sm-3 control-label bold"><span class="toggle glyphicon glyphicon-repeat"></span>&nbsp;Retries</label>
                                     <div class="col-sm-9">
                                         <select class="form-control input-sm" id="retries" name="retries" disabled=""></select>
                                     </div>

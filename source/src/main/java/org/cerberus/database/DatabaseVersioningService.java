@@ -8646,11 +8646,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
                 + "VALUES('ACTION', 'setServiceCallContent', 24910, 'Set JSON Service Call to current content', 'Set Call content');");
 
-        // ADD setServiceCallContent Action.
         // 1536
         a.add("ALTER TABLE `appservice` ADD COLUMN `isFollowRedir` BOOLEAN DEFAULT 1 AFTER `ServicePath`;");
 
-        // ADD setServiceCallContent Action.
         // 1537
         a.add("ALTER TABLE `tag` ADD COLUMN `Comment` VARCHAR(1000) DEFAULT '' AFTER `Description`;");
 
@@ -8658,10 +8656,73 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1538
         a.add("INSERT INTO `parameter` (`system`, param, value, description) VALUES "
                 + " ('', 'cerberus_queueshistorystatgraph_maxnbpoints', '1000', 'Maximum number of points on the queue history graph.')");
-        
+
         // ADD Parameter
         // 1539
         a.add("INSERT INTO `parameter` VALUES('', 'cerberus_splashpage_enable', 'false', 'Boolean to display for non admin users a splashpage is case of maintenance')");
+
+        // ADD Parameters to display a message info on cerberus GUI
+        // 1540 -1541
+        a.add("INSERT INTO `parameter` VALUES('', 'cerberus_messageinfo_text', 'your text here', 'text that will be displayed in case paramater \"cerberus_messageinfo_enable\" is set on true')");
+        a.add("INSERT INTO `parameter` VALUES('', 'cerberus_messageinfo_enable', 'false', 'Boolean to display a message info to all Cerberus users')");
+
+        // Modify active varchar column to isActive boolean column and update data
+        // 1542 - 1545
+        a.add("ALTER TABLE test CHANGE Active isActive VARCHAR(1)");
+        a.add("UPDATE test SET isActive = 1 WHERE isActive = 'Y'");
+        a.add("UPDATE test SET isActive = 0 WHERE isActive != '1'");
+        a.add("ALTER TABLE test MODIFY isActive BOOLEAN");
+
+        // Update TESTACTIVE invariant
+        a.add("UPDATE invariant SET value = 'true' WHERE idname = 'TESTACTIVE' AND value ='Y'");
+        a.add("UPDATE invariant SET value = 'false' WHERE idname = 'TESTACTIVE' AND value ='N'");
+
+        a.add("ALTER TABLE `testcaseexecutionqueue` ADD COLUMN `Video` INT(11) NOT NULL DEFAULT '0' AFTER `Screenshot`, CHANGE COLUMN `SeleniumLog` `RobotLog` INT(11) NOT NULL DEFAULT '1', ADD COLUMN `ConsoleLog` INT(11) NOT NULL DEFAULT '0' AFTER `RobotLog`, CHANGE COLUMN `Verbose` `Verbose` INT(11) NOT NULL DEFAULT '0' AFTER `Tag`, CHANGE COLUMN `Timeout` `Timeout` MEDIUMTEXT NULL DEFAULT NULL AFTER `ConsoleLog` ;");
+        a.add("ALTER TABLE `campaign` ADD COLUMN `Video` VARCHAR(5) NULL DEFAULT NULL AFTER `Screenshot`,ADD COLUMN `ConsoleLog` VARCHAR(5) NULL DEFAULT NULL AFTER `RobotLog`;");
+        a.add("UPDATE campaign SET Video = '1', Screenshot = '1' WHERE Screenshot = '3'");
+        a.add("UPDATE campaign SET Video = '2', Screenshot = '2' WHERE Screenshot = '4'");
+
+        a.add("DELETE FROM invariant where idname in ('SELENIUMLOG','SCREENSHOT');");
+        a.add("DELETE FROM invariant where idname in ('PRIVATEINVARIANT') and value in ('SELENIUMLOG');");
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `gp1`, `sort`, `description`, `VeryShortDesc`) VALUES "
+                + " ('ROBOTLOG', '0', NULL, 10, 'Never record Robot Log (Selenium, Appium, ...)', ''),"
+                + " ('ROBOTLOG', '1', NULL, 20, 'Record Robot Log on error only (Selenium, Appium, ...)', ''),"
+                + " ('ROBOTLOG', '2', NULL, 30, 'Always record Robot Log (Selenium, Appium, ...)', ''),"
+                + " ('CONSOLELOG', '0', NULL, 10, 'Never record Console Log', ''),"
+                + " ('CONSOLELOG', '1', NULL, 20, 'Record Console Log on error only', ''),"
+                + " ('CONSOLELOG', '2', NULL, 30, 'Always record Console Log', ''),"
+                + " ('VIDEO', '0', NULL, 10, 'Never record Video', ''),"
+                + " ('VIDEO', '1', NULL, 20, 'Record Video on error only', ''),"
+                + " ('VIDEO', '2', NULL, 30, 'Always record Video', ''),"
+                + " ('SCREENSHOT', '0', NULL, 10, 'No Screenshots', ''),"
+                + " ('SCREENSHOT', '1', NULL, 20, 'Automatic Screenshots on error', ''),"
+                + " ('SCREENSHOT', '2', NULL, 30, 'Systematic Screenshots', ''),"
+                + " ('INVARIANTPRIVATE','ROBOTLOG', '', '850','.', ''),"
+                + " ('INVARIANTPRIVATE','CONSOLELOG', '', '850','.', ''),"
+                + " ('INVARIANTPRIVATE','VIDEO', '', '850','.', '')");
+
+        a.add("ALTER TABLE `testcaseexecution`  CHANGE COLUMN `URL` `URL` VARCHAR(350) NULL DEFAULT NULL ;");
+
+        // ADD setConsoleContent Action.
+        // 1535
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES('ACTION', 'setConsoleContent', 24950, 'Set JSON Console Logs to current content', 'Set Console content');");
+        
+        // Enlarge documentation column.
+        a.add("ALTER TABLE `documentation` CHANGE COLUMN `DocLabel` `DocLabel` TEXT NULL DEFAULT NULL ;");
+
+        // Enlarge crondefinition column.
+        a.add("ALTER TABLE `scheduleentry`  CHANGE COLUMN `cronDefinition` `cronDefinition` VARCHAR(200) NOT NULL ;");
+        
+        // ADD setConsoleContent Action.
+        // 1535
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES('ACTION', 'setContent', 24960, 'Set parameter1 to current content', 'Set content');");
+
+        // ADD setConsoleContent Action.
+        // 1535
+        a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES('ACTION', 'indexNetworkTraffic', 24905, 'Index Network Traffic requests', 'Index Network Traffic');");
         
         return a;
     }

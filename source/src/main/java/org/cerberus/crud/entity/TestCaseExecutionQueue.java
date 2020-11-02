@@ -46,10 +46,12 @@ public class TestCaseExecutionQueue {
     private String manualEnvData;
     private String tag;
     private int screenshot;
+    private int video;
     private int verbose;
     private String timeout;
     private int pageSource;
-    private int seleniumLog;
+    private int robotLog;
+    private int consoleLog;
     private String manualExecution;
     private int retries;
     private Date requestDate;
@@ -387,6 +389,14 @@ public class TestCaseExecutionQueue {
         this.screenshot = screenshot;
     }
 
+    public int getVideo() {
+        return video;
+    }
+
+    public void setVideo(int video) {
+        this.video = video;
+    }
+
     public int getVerbose() {
         return verbose;
     }
@@ -411,12 +421,20 @@ public class TestCaseExecutionQueue {
         this.pageSource = pageSource;
     }
 
-    public int getSeleniumLog() {
-        return seleniumLog;
+    public int getRobotLog() {
+        return robotLog;
     }
 
-    public void setSeleniumLog(int seleniumLog) {
-        this.seleniumLog = seleniumLog;
+    public void setRobotLog(int robotLog) {
+        this.robotLog = robotLog;
+    }
+
+    public int getConsoleLog() {
+        return consoleLog;
+    }
+
+    public void setConsoleLog(int consoleLog) {
+        this.consoleLog = consoleLog;
     }
 
     public Date getRequestDate() {
@@ -441,7 +459,7 @@ public class TestCaseExecutionQueue {
                 + ", robotIP=" + robotIP + ", robotPort=" + robotPort + ", browser=" + browser + ", browserVersion=" + browserVersion + ", platform=" + platform + ", manualURL="
                 + manualURL + ", manualHost=" + manualHost + ", manualContextRoot=" + manualContextRoot + ", manualLoginRelativeURL=" + manualLoginRelativeURL + ", manualEnvData="
                 + manualEnvData + ", tag=" + tag + ", screenshot=" + screenshot + ", verbose=" + verbose + ", timeout=" + timeout
-                + ", pageSource=" + pageSource + ", seleniumLog=" + seleniumLog + ", requestDate=" + requestDate + "]";
+                + ", pageSource=" + pageSource + ", seleniumLog=" + robotLog + ", requestDate=" + requestDate + "]";
     }
 
 }

@@ -31,6 +31,7 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.crud.factory.IFactoryAppService;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
 import org.cerberus.crud.service.IAppServiceService;
 import org.cerberus.crud.service.ILogEventService;
@@ -52,6 +53,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.service.appium.IAppiumService;
 import org.cerberus.service.appservice.IServiceService;
 import org.cerberus.service.cerberuscommand.ICerberusCommand;
+import org.cerberus.service.consolelog.IConsolelogService;
 import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.har.IHarService;
 import org.cerberus.service.rest.IRestService;
@@ -64,6 +66,7 @@ import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openqa.selenium.Platform;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,9 +120,13 @@ public class ActionService implements IActionService {
     @Autowired
     private IServiceService serviceService;
     @Autowired
+    private IConsolelogService consolelogService;
+    @Autowired
     private IExecutorService executorService;
     @Autowired
     private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
+    @Autowired
+    private IFactoryAppService factoryAppService;
     @Autowired
     private ITestCaseExecutionDataService testCaseExecutionDataService;
 
@@ -347,8 +354,17 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT:
                     res = this.doActionSetNetworkTrafficContent(tCExecution, testCaseStepActionExecution, value1, value2);
                     break;
+                case TestCaseStepAction.ACTION_INDEXNETWORKTRAFFIC:
+                    res = this.doActionIndexNetworkTraffic(tCExecution, testCaseStepActionExecution);
+                    break;
+                case TestCaseStepAction.ACTION_SETCONSOLECONTENT:
+                    res = this.doActionSetConsoleContent(tCExecution, testCaseStepActionExecution, value1);
+                    break;
                 case TestCaseStepAction.ACTION_SETSERVICECALLCONTENT:
                     res = this.doActionSetServiceCallContent(tCExecution, testCaseStepActionExecution);
+                    break;
+                case TestCaseStepAction.ACTION_SETCONTENT:
+                    res = this.doActionSetContent(tCExecution, testCaseStepActionExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_DONOTHING:
                     res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
@@ -472,7 +488,7 @@ public class ActionService implements IActionService {
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 return iosAppiumService.scrollTo(tCExecution.getSession(), identifier, text);
-                
+
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 return webdriverService.scrollTo(tCExecution.getSession(), identifier, text);
             }
@@ -1500,9 +1516,8 @@ public class ActionService implements IActionService {
                     if (message.getCodeString().equals("OK")) {
                         // If Property calculated successfully we summarize the message to a shorter version.
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALCULATEPROPERTY);
-                        message.setDescription(message.getDescription()
-                                .replace("%PROP%", value1)
-                                .replace("%VALUE%", tcExeData.getValue()));
+                        message.resolveDescription("VALUE", tcExeData.getValue());
+                        message.resolveDescription("PROP", value1);
                         if (tcExeData.getDataLibRawData() != null) {
                             message.setDescription(message.getDescription() + " %NBROWS% row(s) with %NBSUBDATA% Subdata(s) calculated."
                                     .replace("%NBROWS%", String.valueOf(tcExeData.getDataLibRawData().size()))
@@ -1542,7 +1557,7 @@ public class ActionService implements IActionService {
         return message;
     }
 
-    public MessageEvent doActionSetNetworkTrafficContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String urlToFilter, String withResponseContent) throws IOException {
+    private MessageEvent doActionSetNetworkTrafficContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String urlToFilter, String withResponseContent) throws IOException {
         MessageEvent message;
         try {
             // Check that robot has executor activated
@@ -1552,21 +1567,20 @@ public class ActionService implements IActionService {
                 return message;
             }
 
-            /**
-             * Building the url to get the Har file from cerberus-executor
-             */
-            String url = executorService.getExecutorURL(urlToFilter, ParameterParserUtil.parseBooleanParam(withResponseContent, false),
-                    exe.getRobotExecutorObj().getExecutorExtensionHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID());
+            LOG.debug("Getting Network Traffic content.");
 
-            LOG.debug("Getting Network Traffic content from URL : " + url);
+            Integer indexFrom = 0;
+            if (!exe.getNetworkTrafficIndexList().isEmpty()) {
+                // Take the value from the last entry.
+                indexFrom = exe.getNetworkTrafficIndexList().get(exe.getNetworkTrafficIndexList().size() - 1);
+            }
 
-            AnswerItem<AppService> result = new AnswerItem<>();
-            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, exe);
+            // We now get the har data.
+            JSONObject har = executorService.getHar(null, false, exe.getRobotExecutorObj().getExecutorExtensionHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID(), exe.getSystem(), indexFrom);
 
-            AppService appSrv = result.getItem();
-            JSONObject har = new JSONObject(appSrv.getResponseHTTPBody());
+            har = harService.enrichWithStats(har, exe.getCountryEnvironmentParameters().getDomain(), exe.getSystem(), exe.getNetworkTrafficIndexList());
 
-            har = harService.enrichWithStats(har, exe.getCountryEnvironmentParameters().getDomain(), exe.getSystem());
+            AppService appSrv = factoryAppService.create("", AppService.TYPE_REST, AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", true, "", "", "", null, "", null, null);
             appSrv.setResponseHTTPBody(har.toString());
             appSrv.setResponseHTTPBodyContentType(AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON);
             appSrv.setRecordTraceFile(false);
@@ -1576,16 +1590,127 @@ public class ActionService implements IActionService {
             /**
              * Record the Request and Response in file system.
              */
-            actionexe.addFileList(recorderService.recordNetworkTrafficContent(exe, actionexe, 0, null, result.getItem(), true));
+            actionexe.addFileList(recorderService.recordNetworkTrafficContent(exe, actionexe, 0, null, appSrv, true));
 
             // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
             exe.setAppTypeEngine(Application.TYPE_SRV);
 
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETNETWORKTRAFFICCONTENT);
+            if (!exe.getNetworkTrafficIndexList().isEmpty()) {
+                // Message will include the index and request nb when the content start.
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETNETWORKTRAFFICCONTENT).resolveDescription("INDEX", String.valueOf(exe.getNetworkTrafficIndexList().size())).resolveDescription("NBHITS", String.valueOf(indexFrom));
+            } else {
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETNETWORKTRAFFICCONTENT_FROMINDEX0);
+            }
+            return message;
+        } catch (Exception ex) {
+            LOG.error("Error doing Action setNetworkTrafficContent :" + ex, ex);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETNETWORKTRAFFICCONTENT);
+            message.setDescription(message.getDescription().replace("%DETAIL%", ex.toString()));
+            return message;
+        }
+    }
+
+    private MessageEvent doActionIndexNetworkTraffic(TestCaseExecution exe, TestCaseStepActionExecution actionexe) throws IOException {
+        MessageEvent message;
+        try {
+            // Check that robot has executor activated
+            if (!"Y".equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyActive()) || StringUtil.isNullOrEmpty(exe.getRobotExecutorObj().getExecutorProxyHost())) {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_INDEXNETWORKTRAFFIC_ROBOTEXECUTORPROXYNOTACTIVATED);
+                message.setDescription(message.getDescription().replace("%ROBOT%", exe.getRobotExecutorObj().getRobot()).replace("%EXECUTOR%", exe.getRobotExecutorObj().getExecutor()));
+                return message;
+            }
+
+            LOG.debug("Getting Network Traffic index");
+
+            /**
+             * Building the url to get the Latest index from cerberus-executor
+             */
+            Integer nbHits = executorService.getHitsNb(exe.getRobotExecutorObj().getExecutorExtensionHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID());
+
+            if (nbHits > 0) {
+                exe.appendNetworkTrafficIndexList(nbHits);
+            }
+            LOG.debug("New Index : " + exe.getNetworkTrafficIndexList());
+
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_INDEXNETWORKTRAFFIC).resolveDescription("NB", nbHits.toString()).resolveDescription("INDEX", String.valueOf(exe.getNetworkTrafficIndexList().size()));
+            return message;
+        } catch (Exception ex) {
+            LOG.error("Error doing Action indexNetworkTraffic :" + ex, ex);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_INDEXNETWORKTRAFFIC);
+            message.setDescription(message.getDescription().replace("%DETAIL%", ex.toString()));
+            return message;
+        }
+    }
+
+    private MessageEvent doActionSetConsoleContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String textToFilter) throws IOException {
+        MessageEvent message;
+        try {
+            /**
+             * Building the url to get the Har file from cerberus-executor
+             */
+            LOG.debug("Getting Console Logs content.");
+
+            JSONObject consoleRecap = new JSONObject();
+            JSONArray consoleLogs = webdriverService.getJSONConsoleLog(exe.getSession());
+            consoleRecap.put("logs", consoleLogs);
+            JSONObject consoleStat = new JSONObject();
+            consoleStat = consolelogService.enrichWithStats(consoleLogs);
+            consoleRecap.put("stat", consoleStat);
+
+            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", false, "", "", "", null, "", null, "");
+            appSrv.setResponseHTTPBody(consoleRecap.toString());
+            appSrv.setResponseHTTPBodyContentType(AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON);
+            appSrv.setRecordTraceFile(false);
+
+            exe.setLastServiceCalled(appSrv);
+
+            /**
+             * Record the Request and Response in file system.
+             */
+            actionexe.addFileList(recorderService.recordConsoleContent(exe, actionexe, 0, null, consoleRecap, true));
+
+            // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
+            exe.setAppTypeEngine(Application.TYPE_SRV);
+
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETCONSOLECONTENT);
             return message;
         } catch (Exception ex) {
             LOG.error("Error doing Action setNetworkTrafficContent :" + ex);
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETNETWORKTRAFFICCONTENT);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETCONSOLECONTENT);
+            message.setDescription(message.getDescription().replace("%DETAIL%", ex.toString()));
+            return message;
+        }
+    }
+
+    private MessageEvent doActionSetContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String textContent) throws IOException {
+        MessageEvent message;
+        try {
+            /**
+             * Building the url to get the Har file from cerberus-executor
+             */
+            LOG.debug("Setting static content.");
+
+            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", false, "", "", "", null, "", null, "");
+            appSrv.setResponseHTTPBody(textContent);
+            appSrv.setResponseHTTPBodyContentType(appServiceService.guessContentType(appSrv, AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON));
+            appSrv.setRecordTraceFile(false);
+
+            exe.setLastServiceCalled(appSrv);
+
+            /**
+             * Record the Request and Response in file system.
+             */
+            actionexe.addFileList(recorderService.recordContent(exe, actionexe, 0, null, textContent, appSrv.getResponseHTTPBodyContentType()));
+
+            // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
+            exe.setAppTypeEngine(Application.TYPE_SRV);
+
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETCONTENT);
+            message.resolveDescription("TYPE", appSrv.getResponseHTTPBodyContentType());
+            return message;
+        } catch (Exception ex) {
+            LOG.error("Error doing Action setNetworkTrafficContent :" + ex);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETCONTENT);
             message.setDescription(message.getDescription().replace("%DETAIL%", ex.toString()));
             return message;
         }
@@ -1594,13 +1719,13 @@ public class ActionService implements IActionService {
     public MessageEvent doActionSetServiceCallContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe) throws IOException {
         MessageEvent message;
         try {
-            
+
             // Check that robot has executor activated
             if (exe.getLastServiceCalled() == null) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETSERVICECALLCONTENT_NOLASTCALLDONE);
                 return message;
             }
-            
+
             // Force last service call content to JSON Service Call Structure & disable file save.
             exe.getLastServiceCalled().setResponseHTTPBody(exe.getLastServiceCalled().toJSONOnExecution().toString());
             exe.getLastServiceCalled().setResponseHTTPBodyContentType(AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON);

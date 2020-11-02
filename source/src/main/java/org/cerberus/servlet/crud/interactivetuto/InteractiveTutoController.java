@@ -75,7 +75,7 @@ public class InteractiveTutoController {
         String lang = (String) request.getSession().getAttribute("MyLang");
 
         if(lang == null)
-            lang = "fr";
+            lang = "en";
 
         List<InteractiveTuto> it = interactiveTutoService.getListInteractiveTutorial(false, lang);
 

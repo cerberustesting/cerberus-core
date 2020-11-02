@@ -39,6 +39,7 @@ import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.factory.IFactoryTest;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
@@ -101,7 +102,7 @@ public class TestDAO implements ITestDAO {
     public Answer create(Test test) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO test (test, description, active, ParentTest, UsrCreated) ");
+        query.append("INSERT INTO test (test, description, isActive, ParentTest, UsrCreated) ");
         query.append("VALUES (?, ?, ?, ?, ?)");
 
         // Debug message on SQL.
@@ -117,7 +118,7 @@ public class TestDAO implements ITestDAO {
                 int i = 1;
                 preStat.setString(i++, test.getTest());
                 preStat.setString(i++, test.getDescription());
-                preStat.setString(i++, test.getActive());
+                preStat.setBoolean(i++, test.getActive());
                 preStat.setString(i++, test.getParentTest());
                 preStat.setString(i++, test.getUsrCreated());
 
@@ -200,7 +201,7 @@ public class TestDAO implements ITestDAO {
     @Override
     public Answer update(String keyTest, Test test) {
         MessageEvent msg = null;
-        final String query = "UPDATE test SET test = ?, description = ?, active = ?, ParentTest = ?, usrModif = ?, DateModif = CURRENT_TIMESTAMP WHERE test = ?";
+        final String query = "UPDATE test SET test = ?, description = ?, isActive = ?, ParentTest = ?, usrModif = ?, DateModif = CURRENT_TIMESTAMP WHERE test = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -215,7 +216,7 @@ public class TestDAO implements ITestDAO {
                 int i = 1;
                 preStat.setString(i++, test.getTest());
                 preStat.setString(i++, test.getDescription());
-                preStat.setString(i++, test.getActive());
+                preStat.setBoolean(i++, test.getActive());
                 preStat.setString(i++, test.getParentTest());
                 preStat.setString(i++, test.getUsrModif());
                 preStat.setString(i++, keyTest);
@@ -253,14 +254,14 @@ public class TestDAO implements ITestDAO {
 
         String test = resultSet.getString("tes.test") == null ? "" : resultSet.getString("tes.test");
         String description = resultSet.getString("tes.description") == null ? "" : resultSet.getString("tes.description");
-        String active = resultSet.getString("tes.active") == null ? "" : resultSet.getString("tes.active");
+        boolean isActive = resultSet.getBoolean("tes.isActive");
         String parentTest = resultSet.getString("tes.ParentTest");
         String usrCreated = resultSet.getString("tes.UsrCreated");
         Timestamp dateCreated = resultSet.getTimestamp("tes.DateCreated");
         String usrModif = resultSet.getString("tes.UsrModif");
         Timestamp dateModif = resultSet.getTimestamp("tes.DateModif");
 
-        return factoryTest.create(test, description, active, parentTest, usrCreated, dateCreated, usrModif, dateModif);
+        return factoryTest.create(test, description, isActive, parentTest, usrCreated, dateCreated, usrModif, dateModif);
     }
 
     @Override
@@ -373,7 +374,7 @@ public class TestDAO implements ITestDAO {
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`test` like ?");
             searchSQL.append(" or `description` like ?");
-            searchSQL.append(" or `active` like ?");
+            searchSQL.append(" or `isActive` like ?");
             searchSQL.append(" or `datecreated` like ?) ");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
@@ -506,7 +507,7 @@ public class TestDAO implements ITestDAO {
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (tes.`test` like ?");
             searchSQL.append(" or tes.`description` like ?");
-            searchSQL.append(" or tes.`active` like ?");
+            searchSQL.append(" or tes.`isActive` like ?");
             searchSQL.append(" or tes.`datecreated` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {

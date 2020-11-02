@@ -345,9 +345,10 @@ function editEntryClick(param) {
         formEdit.find("#tag").prop("value", obj["Tag"]);
         formEdit.find("#verbose").prop("value", obj["Verbose"]);
         formEdit.find("#screenshot").prop("value", obj["Screenshot"]);
+        formEdit.find("#video").prop("value", obj["Video"]);
         formEdit.find("#pageSource").prop("value", obj["PageSource"]);
         formEdit.find("#robotLog").prop("value", obj["RobotLog"]);
-        formEdit.find("#screenshot").prop("value", obj["Screenshot"]);
+        formEdit.find("#consoleLog").prop("value", obj["ConsoleLog"]);
         formEdit.find("#retries").prop("value", obj["Retries"]);
         formEdit.find("#timeout").prop("value", obj["Timeout"]);
         formEdit.find("#priority").prop("value", obj["Priority"]);
@@ -526,10 +527,12 @@ function editEntryModalSaveHandler() {
             Labels: JSON.stringify(labels),
             Parameters: JSON.stringify(parameters),
             Screenshot: data.screenshot,
+            Video: data.video,
             Verbose: data.verbose,
             Tag: data.tag,
             PageSource: data.pageSource,
             RobotLog: data.robotLog,
+            ConsoleLog: data.consoleLog,
             Timeout: data.timeout,
             Retries: data.retries,
             Priority: data.priority,
@@ -686,10 +689,12 @@ function addEntryModalSaveHandler() {
             Labels: JSON.stringify(labels),
             Parameters: JSON.stringify(parameters),
             Screenshot: data.screenshot,
+            Video: data.video,
             Verbose: data.verbose,
             Tag: data.tag,
             PageSource: data.pageSource,
             RobotLog: data.robotLog,
+            ConsoleLog: data.consoleLog,
             Timeout: data.timeout,
             Retries: data.retries,
             Priority: data.priority,

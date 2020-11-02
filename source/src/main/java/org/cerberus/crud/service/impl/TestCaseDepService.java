@@ -54,7 +54,7 @@ public class TestCaseDepService implements ITestCaseDepService {
     }
 
     /**
-     * 
+     *
      * @param testCaseDependencies
      * @return HashMap<String, List<TestCaseDep>> with testCase as Key
      */
@@ -62,11 +62,12 @@ public class TestCaseDepService implements ITestCaseDepService {
     public HashMap<String, List<TestCaseDep>> convertTestCaseDepListToHash(List<TestCaseDep> testCaseDependencies) {
         HashMap<String, List<TestCaseDep>> testCaseDependenciesHash = new HashMap<>();
         for (TestCaseDep testCaseDependency : testCaseDependencies) {
-            if (testCaseDependenciesHash.containsKey(testCaseDependency.getTestCase())) {
-                testCaseDependenciesHash.get(testCaseDependency.getTestCase()).add(testCaseDependency);
+            String key = testCaseDependency.getTest() + "##" + testCaseDependency.getTestCase();
+            if (testCaseDependenciesHash.containsKey(key)) {
+                testCaseDependenciesHash.get(key).add(testCaseDependency);
             } else {
-                testCaseDependenciesHash.put(testCaseDependency.getTestCase(), new ArrayList<TestCaseDep>());
-                testCaseDependenciesHash.get(testCaseDependency.getTestCase()).add(testCaseDependency);
+                testCaseDependenciesHash.put(key, new ArrayList<TestCaseDep>());
+                testCaseDependenciesHash.get(key).add(testCaseDependency);
             }
         }
         return testCaseDependenciesHash;

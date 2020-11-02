@@ -42,8 +42,10 @@ public class Campaign implements Serializable {
     private String Tag;
     private String Verbose;
     private String Screenshot;
+    private String Video;
     private String PageSource;
     private String RobotLog;
+    private String ConsoleLog;
     private String Timeout;
     private String Retries;
     private String Priority;
@@ -78,6 +80,22 @@ public class Campaign implements Serializable {
         this.campaignID = campaignID;
         this.campaign = campaign;
         this.description = description;
+    }
+
+    public String getVideo() {
+        return Video;
+    }
+
+    public void setVideo(String Video) {
+        this.Video = Video;
+    }
+
+    public String getConsoleLog() {
+        return ConsoleLog;
+    }
+
+    public void setConsoleLog(String ConsoleLog) {
+        this.ConsoleLog = ConsoleLog;
     }
 
     public String getGroup1() {

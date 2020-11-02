@@ -448,6 +448,7 @@ function displayMenuItem(doc) {
             $('.' + user.group[group] + '.navlist').removeAttr('style');
         }
     }
+    $("#openInteractiveTutoModal").html(doc.getDocLabel("page_header", "menuTutorial"));
 
 }
 

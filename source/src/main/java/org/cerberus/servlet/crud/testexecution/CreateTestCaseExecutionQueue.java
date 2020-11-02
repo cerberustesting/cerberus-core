@@ -127,8 +127,10 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
 
         int verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("verbose"), 1, charset);
         int screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("screenshot"), 0, charset);
+        int video = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("video"), 0, charset);
         int pageSource = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("pageSource"), 0, charset);
-        int seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("seleniumLog"), 0, charset);
+        int robotLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("robotLog"), 0, charset);
+        int consoleLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("consoleLog"), 0, charset);
         String timeout = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("timeout"), "", charset);
         int retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("retries"), 0, charset);
         String manualExecution = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("manualExecution"), "", charset);
@@ -229,8 +231,8 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                         if (id == 0) {
                             // If id is not defined, we build the execution queue from all request datas.
                             executionQueueData = executionQueueFactory.create("", test, testcase, country, environment, robot, robot, robotIP, robotPort, browser, browserVersion,
-                                    platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose, timeout,
-                                    pageSource, seleniumLog, 0, retries, manualExecution, priority, request.getRemoteUser(), null, null, null);
+                                    platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, video, verbose, timeout,
+                                    pageSource, robotLog, consoleLog, 0, retries, manualExecution, priority, request.getRemoteUser(), null, null, null);
                             executionQueueData.setDebugFlag(debugFlag);
                             ansItem.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
                         } else {

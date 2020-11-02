@@ -141,7 +141,7 @@ public class RunTestCase extends HttpServlet {
         String screenSize = "";
         boolean synchroneous = true;
         int getPageSource = 0;
-        int getSeleniumLog = 0;
+        int getRobotLog = 0;
         String manualExecution = "N";
 
         //Test
@@ -167,7 +167,7 @@ public class RunTestCase extends HttpServlet {
         timeout = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("timeout"), "");
         synchroneous = ParameterParserUtil.parseBooleanParam(request.getParameter("synchroneous"), false);
         getPageSource = ParameterParserUtil.parseIntegerParam(request.getParameter("pageSource"), 1);
-        getSeleniumLog = ParameterParserUtil.parseIntegerParam(request.getParameter("seleniumLog"), 1);
+        getRobotLog = ParameterParserUtil.parseIntegerParam(request.getParameter("seleniumLog"), 1);
         manualExecution = ParameterParserUtil.parseStringParam(request.getParameter("manualExecution"), "N");
         int numberOfRetries = ParameterParserUtil.parseIntegerParam(request.getParameter("retries"), 0);
         screenSize = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("screenSize"), "");
@@ -208,7 +208,7 @@ public class RunTestCase extends HttpServlet {
                 + "- timeout : Timeout used for the action. If empty, the default value will be the one configured in parameter table. [" + timeout + "]\n"
                 + "- synchroneous : Synchroneous define if the servlet wait for the end of the execution to report its execution. [" + synchroneous + "\n"
                 + "- pageSource : Record Page Source during the execution. [" + getPageSource + "]\n"
-                + "- seleniumLog : Get the SeleniumLog at the end of the execution. [" + getSeleniumLog + "]\n"
+                + "- seleniumLog : Get the SeleniumLog at the end of the execution. [" + getRobotLog + "]\n"
                 + "- manualExecution : Execute testcase in manual mode. [" + manualExecution + "]\n"
                 + "- retries : Number of tries if the result is not OK. [" + numberOfRetries + "]\n";
 
@@ -322,8 +322,8 @@ public class RunTestCase extends HttpServlet {
 
             // Building Execution Object.
             TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, robot, "", robotHost, robotPort, robotDecli, browser, version, platform,
-                    0, 0, "", "", "", null, null, tag, verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
-                    Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort,
+                    0, 0, "", "", "", null, null, tag, verbose, screenshot, 0, getPageSource, getRobotLog, 0, synchroneous, timeout, outputFormat, null,
+                    Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL ? 1 : 0, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort,
                     null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, robObj, "", "",
                     "", "", "", "", "", "", "", manualExecution, userAgent, 0, 0, "", executor, null, executor, null);
             tCExecution.setSeleniumIPUser(ss_ip_user);
@@ -336,7 +336,7 @@ public class RunTestCase extends HttpServlet {
                 tCExecution.setQueueID(idFromQueue);
 
                 TestCaseExecutionQueue queueExecution = factoryTCExecutionQueue.create(idFromQueue, "", test, testCase, country, environment, robot, robotDecli, robotHost, robotPort, browser, version,
-                        platform, screenSize, 0, myHost, myContextRoot, myLoginRelativeURL, myEnvData, tag, screenshot, verbose, timeout, getPageSource, getSeleniumLog, 0, numberOfRetries,
+                        platform, screenSize, 0, myHost, myContextRoot, myLoginRelativeURL, myEnvData, tag, screenshot, 0, verbose, timeout, getPageSource, getRobotLog, 0, 0, numberOfRetries,
                         manualExecution, executor, null, null, null);
                 tCExecution.setTestCaseExecutionQueue(queueExecution);
             } catch (FactoryCreationException ex) {
@@ -398,7 +398,7 @@ public class RunTestCase extends HttpServlet {
                         out.println("<tr><td>Verbose</td><td><span id='Verbose'>" + verbose + "</span></td></tr>");
                         out.println("<tr><td>Screenshot</td><td><span id='Screenshot'>" + screenshot + "</span></td></tr>");
                         out.println("<tr><td>PageSource</td><td><span id='PageSource'>" + getPageSource + "</span></td></tr>");
-                        out.println("<tr><td>SeleniumLog</td><td><span id='SeleniumLog'>" + getSeleniumLog + "</span></td></tr>");
+                        out.println("<tr><td>SeleniumLog</td><td><span id='SeleniumLog'>" + getRobotLog + "</span></td></tr>");
                         out.println("<tr><td>Robot</td><td><span id='Robot'>" + robot + "</span></td></tr>");
                         out.println("<tr><td>Selenium Server IP</td><td><span id='SeleniumIP'>" + robotHost + "</span></td></tr>");
                         out.println("<tr><td>Selenium Server Port</td><td><span id='SeleniumPort'>" + robotPort + "</span></td></tr>");
@@ -409,7 +409,7 @@ public class RunTestCase extends HttpServlet {
                         out.println("<tr><td>Platform</td><td><span id='Platform'>" + platform + "</span></td></tr>");
                         out.println("<tr><td>Screen Size</td><td><span id='screenSize'>" + screenSize + "</span></td></tr>");
                         out.println("<tr><td>Number of Retry</td><td><span id='nbretry'>" + numberOfRetries + "</span></td></tr>");
-                        out.println("<tr><td>ManualURL</td><td><span id='ManualURL'>" + tCExecution.isManualURL() + "</span></td></tr>");
+                        out.println("<tr><td>ManualURL</td><td><span id='ManualURL'>" + tCExecution.getManualURL() + "</span></td></tr>");
                         out.println("<tr><td>MyHost</td><td><span id='MyHost'>" + tCExecution.getMyHost() + "</span></td></tr>");
                         out.println("<tr><td>MyContextRoot</td><td><span id='MyContextRoot'>" + tCExecution.getMyContextRoot() + "</span></td></tr>");
                         out.println("<tr><td>MyLoginRelativeURL</td><td><span id='MyLoginRelativeURL'>" + tCExecution.getMyLoginRelativeURL() + "</span></td></tr>");
@@ -445,7 +445,7 @@ public class RunTestCase extends HttpServlet {
                     out.println("Verbose" + separator + verbose);
                     out.println("Screenshot" + separator + screenshot);
                     out.println("PageSource" + separator + getPageSource);
-                    out.println("SeleniumLog" + separator + getSeleniumLog);
+                    out.println("SeleniumLog" + separator + getRobotLog);
                     out.println("Robot" + separator + robot);
                     out.println("Selenium Server IP" + separator + robotHost);
                     out.println("Selenium Server Port" + separator + robotPort);
@@ -456,7 +456,7 @@ public class RunTestCase extends HttpServlet {
                     out.println("Platform" + separator + platform);
                     out.println("ScreenSize" + separator + screenSize);
                     out.println("Nb Of Retry" + separator + numberOfRetries);
-                    out.println("ManualURL" + separator + tCExecution.isManualURL());
+                    out.println("ManualURL" + separator + tCExecution.getManualURL());
                     out.println("MyHost" + separator + tCExecution.getMyHost());
                     out.println("MyContextRoot" + separator + tCExecution.getMyContextRoot());
                     out.println("MyLoginRelativeURL" + separator + tCExecution.getMyLoginRelativeURL());
@@ -469,59 +469,59 @@ public class RunTestCase extends HttpServlet {
                 case "json":
 
                     try {
-                        JSONObject jsonResponse = new JSONObject();
+                    JSONObject jsonResponse = new JSONObject();
 
-                        if (runID > 0) { // Execution has been created.
-                            TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
-                            out.print(tCExecution.toJson(true).toString());
-                        } else { // Execution was not even created.
-                            jsonResponse.put("RunID", 0);
-                            jsonResponse.put("id", 0);
-                            jsonResponse.put("QueueID", idFromQueue);
-                            jsonResponse.put("Test", test);
-                            jsonResponse.put("TestCase", testCase);
-                            jsonResponse.put("Country", country);
-                            jsonResponse.put("Environment", environment);
-                            jsonResponse.put("Time Start", new Timestamp(tCExecution.getStart()));
-                            jsonResponse.put("Time End", new Timestamp(tCExecution.getEnd()));
-                            jsonResponse.put("OutputFormat", outputFormat);
-                            jsonResponse.put("Verbose", verbose);
-                            jsonResponse.put("Screenshot", screenshot);
-                            jsonResponse.put("PageSource", getPageSource);
-                            jsonResponse.put("SeleniumLog", getSeleniumLog);
-                            jsonResponse.put("Robot", robot);
-                            jsonResponse.put("Selenium Server IP", robotHost);
-                            jsonResponse.put("Selenium Server Port", robotPort);
-                            jsonResponse.put("Timeout", timeout);
-                            jsonResponse.put("Synchroneous", synchroneous);
-                            jsonResponse.put("Browser", browser);
-                            jsonResponse.put("Version", version);
-                            jsonResponse.put("Platform", platform);
-                            jsonResponse.put("ScreenSize", screenSize);
-                            jsonResponse.put("Nb Of Retry", numberOfRetries);
-                            jsonResponse.put("ManualURL", manualURL);
-                            jsonResponse.put("MyHost", myHost);
-                            jsonResponse.put("MyContextRoot", myContextRoot);
-                            jsonResponse.put("MyLoginRelativeURL", myLoginRelativeURL);
-                            jsonResponse.put("myEnvironmentData", myEnvData);
-                            jsonResponse.put("ReturnCode", tCExecution.getResultMessage().getCode());
-                            jsonResponse.put("ReturnCodeDescription", tCExecution.getResultMessage().getDescription());
-                            jsonResponse.put("ControlStatus", tCExecution.getResultMessage().getCodeString());
-                            jsonResponse.put("helpMessage", helpMessage);
-                        }
-
-                        response.setContentType("application/json");
-                        response.setCharacterEncoding("utf8");
-                        response.getWriter().print(jsonResponse.toString());
-                    } catch (JSONException e) {
-                        LOG.warn(e);
-                        //returns a default error message with the json format that is able to be parsed by the client-side
-                        response.setContentType("application/json");
-                        response.setCharacterEncoding("utf8");
-                        response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+                    if (runID > 0) { // Execution has been created.
+                        TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
+                        out.print(tCExecution.toJson(true).toString());
+                    } else { // Execution was not even created.
+                        jsonResponse.put("RunID", 0);
+                        jsonResponse.put("id", 0);
+                        jsonResponse.put("QueueID", idFromQueue);
+                        jsonResponse.put("Test", test);
+                        jsonResponse.put("TestCase", testCase);
+                        jsonResponse.put("Country", country);
+                        jsonResponse.put("Environment", environment);
+                        jsonResponse.put("Time Start", new Timestamp(tCExecution.getStart()));
+                        jsonResponse.put("Time End", new Timestamp(tCExecution.getEnd()));
+                        jsonResponse.put("OutputFormat", outputFormat);
+                        jsonResponse.put("Verbose", verbose);
+                        jsonResponse.put("Screenshot", screenshot);
+                        jsonResponse.put("PageSource", getPageSource);
+                        jsonResponse.put("SeleniumLog", getRobotLog);
+                        jsonResponse.put("Robot", robot);
+                        jsonResponse.put("Selenium Server IP", robotHost);
+                        jsonResponse.put("Selenium Server Port", robotPort);
+                        jsonResponse.put("Timeout", timeout);
+                        jsonResponse.put("Synchroneous", synchroneous);
+                        jsonResponse.put("Browser", browser);
+                        jsonResponse.put("Version", version);
+                        jsonResponse.put("Platform", platform);
+                        jsonResponse.put("ScreenSize", screenSize);
+                        jsonResponse.put("Nb Of Retry", numberOfRetries);
+                        jsonResponse.put("ManualURL", manualURL);
+                        jsonResponse.put("MyHost", myHost);
+                        jsonResponse.put("MyContextRoot", myContextRoot);
+                        jsonResponse.put("MyLoginRelativeURL", myLoginRelativeURL);
+                        jsonResponse.put("myEnvironmentData", myEnvData);
+                        jsonResponse.put("ReturnCode", tCExecution.getResultMessage().getCode());
+                        jsonResponse.put("ReturnCodeDescription", tCExecution.getResultMessage().getDescription());
+                        jsonResponse.put("ControlStatus", tCExecution.getResultMessage().getCodeString());
+                        jsonResponse.put("helpMessage", helpMessage);
                     }
 
-                    break;
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("utf8");
+                    response.getWriter().print(jsonResponse.toString());
+                } catch (JSONException e) {
+                    LOG.warn(e);
+                    //returns a default error message with the json format that is able to be parsed by the client-side
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("utf8");
+                    response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+                }
+
+                break;
                 default:
                     response.setContentType("text/plain");
                     DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
@@ -552,7 +552,7 @@ public class RunTestCase extends HttpServlet {
                     out.println("Verbose" + separator + verbose);
                     out.println("Screenshot" + separator + screenshot);
                     out.println("PageSource" + separator + getPageSource);
-                    out.println("SeleniumLog" + separator + getSeleniumLog);
+                    out.println("SeleniumLog" + separator + getRobotLog);
                     out.println("Robot" + separator + robot);
                     out.println("Selenium Server IP" + separator + robotHost);
                     out.println("Selenium Server Port" + separator + robotPort);
@@ -575,49 +575,49 @@ public class RunTestCase extends HttpServlet {
                 case "json":
                 case "verbose-json":
                     try {
-                        JSONObject jsonResponse = new JSONObject();
-                        jsonResponse.put("RunID", 0);
-                        jsonResponse.put("QueueID", idFromQueue);
-                        jsonResponse.put("Test", test);
-                        jsonResponse.put("TestCase", testCase);
-                        jsonResponse.put("Country", country);
-                        jsonResponse.put("Environment", environment);
-                        jsonResponse.put("OutputFormat", outputFormat);
-                        jsonResponse.put("Verbose", verbose);
-                        jsonResponse.put("Screenshot", screenshot);
-                        jsonResponse.put("PageSource", getPageSource);
-                        jsonResponse.put("SeleniumLog", getSeleniumLog);
-                        jsonResponse.put("Robot", robot);
-                        jsonResponse.put("Selenium Server IP", robotHost);
-                        jsonResponse.put("Selenium Server Port", robotPort);
-                        jsonResponse.put("Timeout", timeout);
-                        jsonResponse.put("Synchroneous", synchroneous);
-                        jsonResponse.put("Browser", browser);
-                        jsonResponse.put("Version", version);
-                        jsonResponse.put("Platform", platform);
-                        jsonResponse.put("ScreenSize", screenSize);
-                        jsonResponse.put("Nb Of Retry", numberOfRetries);
-                        jsonResponse.put("ManualURL", manualURL);
-                        jsonResponse.put("MyHost", myHost);
-                        jsonResponse.put("MyContextRoot", myContextRoot);
-                        jsonResponse.put("MyLoginRelativeURL", myLoginRelativeURL);
-                        jsonResponse.put("myEnvironmentData", myEnvData);
-                        jsonResponse.put("ReturnCode", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCode());
-                        jsonResponse.put("ReturnCodeDescription", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage);
-                        jsonResponse.put("ControlStatus", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCodeString());
-                        jsonResponse.put("helpMessage", helpMessage);
+                    JSONObject jsonResponse = new JSONObject();
+                    jsonResponse.put("RunID", 0);
+                    jsonResponse.put("QueueID", idFromQueue);
+                    jsonResponse.put("Test", test);
+                    jsonResponse.put("TestCase", testCase);
+                    jsonResponse.put("Country", country);
+                    jsonResponse.put("Environment", environment);
+                    jsonResponse.put("OutputFormat", outputFormat);
+                    jsonResponse.put("Verbose", verbose);
+                    jsonResponse.put("Screenshot", screenshot);
+                    jsonResponse.put("PageSource", getPageSource);
+                    jsonResponse.put("SeleniumLog", getRobotLog);
+                    jsonResponse.put("Robot", robot);
+                    jsonResponse.put("Selenium Server IP", robotHost);
+                    jsonResponse.put("Selenium Server Port", robotPort);
+                    jsonResponse.put("Timeout", timeout);
+                    jsonResponse.put("Synchroneous", synchroneous);
+                    jsonResponse.put("Browser", browser);
+                    jsonResponse.put("Version", version);
+                    jsonResponse.put("Platform", platform);
+                    jsonResponse.put("ScreenSize", screenSize);
+                    jsonResponse.put("Nb Of Retry", numberOfRetries);
+                    jsonResponse.put("ManualURL", manualURL);
+                    jsonResponse.put("MyHost", myHost);
+                    jsonResponse.put("MyContextRoot", myContextRoot);
+                    jsonResponse.put("MyLoginRelativeURL", myLoginRelativeURL);
+                    jsonResponse.put("myEnvironmentData", myEnvData);
+                    jsonResponse.put("ReturnCode", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCode());
+                    jsonResponse.put("ReturnCodeDescription", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage);
+                    jsonResponse.put("ControlStatus", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCodeString());
+                    jsonResponse.put("helpMessage", helpMessage);
 
-                        response.setContentType("application/json");
-                        response.setCharacterEncoding("utf8");
-                        response.getWriter().print(jsonResponse.toString());
-                    } catch (JSONException e) {
-                        LOG.warn(e);
-                        //returns a default error message with the json format that is able to be parsed by the client-side
-                        response.setContentType("application/json");
-                        response.setCharacterEncoding("utf8");
-                        response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
-                    }
-                    break;
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("utf8");
+                    response.getWriter().print(jsonResponse.toString());
+                } catch (JSONException e) {
+                    LOG.warn(e);
+                    //returns a default error message with the json format that is able to be parsed by the client-side
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("utf8");
+                    response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+                }
+                break;
                 default:
                     // In case of errors, we display the help message.
                     response.setContentType("text/plain");

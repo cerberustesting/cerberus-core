@@ -45,9 +45,11 @@ function initPage() {
     displayInvariantList("notifySlackstart", "CAMPAIGNSTARTNOTIF", false);
     displayInvariantList("notifySlackend", "CAMPAIGNENDNOTIF", false);
     displayInvariantList("screenshot", "SCREENSHOT", false, undefined, "");
+    displayInvariantList("video", "VIDEO", false, undefined, "");
     displayInvariantList("verbose", "VERBOSE", false, undefined, "");
     displayInvariantList("pageSource", "PAGESOURCE", false, undefined, "");
-    displayInvariantList("robotLog", "SELENIUMLOG", false, undefined, "");
+    displayInvariantList("robotLog", "ROBOTLOG", false, undefined, "");
+    displayInvariantList("consoleLog", "CONSOLELOG", false, undefined, "");
     displayInvariantList("retries", "RETRIES", false, undefined, "");
     displayInvariantList("manualExecution", "MANUALEXECUTION", false, undefined, "");
     

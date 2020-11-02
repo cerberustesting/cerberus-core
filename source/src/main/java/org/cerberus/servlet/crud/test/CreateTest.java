@@ -83,7 +83,7 @@ public class CreateTest extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
-        String active = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Active"), "");
+        boolean isActive = ParameterParserUtil.parseBooleanParam(request.getParameter("Active"), false);
         String parentTest = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("ParentTest"), null);
         String description = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Description"), "");
 
@@ -104,7 +104,7 @@ public class CreateTest extends HttpServlet {
             ITestService testService = appContext.getBean(ITestService.class);
             IFactoryTest factoryTest = appContext.getBean(IFactoryTest.class);
 
-            Test testData = factoryTest.create(test, description, active, parentTest, request.getUserPrincipal().getName(), null, null, null);
+            Test testData = factoryTest.create(test, description, isActive, parentTest, request.getUserPrincipal().getName(), null, null, null);
             ans = testService.create(testData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

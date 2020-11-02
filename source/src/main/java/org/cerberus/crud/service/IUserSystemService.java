@@ -24,6 +24,7 @@ import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -31,7 +32,7 @@ import org.cerberus.util.answer.AnswerList;
  * @author bcivel
  */
 public interface IUserSystemService {
-    
+
     UserSystem findUserSystemByKey(String login, String system) throws CerberusException;
 
     /**
@@ -46,7 +47,7 @@ public interface IUserSystemService {
      * @throws CerberusException
      */
     List<UserSystem> findUserSystemByUser(String login) throws CerberusException;
-    
+
     /**
      * @param system
      * @return a list of all the userSystem of a system
@@ -92,7 +93,7 @@ public interface IUserSystemService {
      * @throws CerberusException
      */
     void createSystemAutomatic(String user) throws CerberusException;
-    
+
     /**
      * Adding the usersystem
      *
@@ -108,5 +109,28 @@ public interface IUserSystemService {
      * @return
      */
     Answer remove(UserSystem sys);
-    
+
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    UserSystem convert(AnswerItem<UserSystem> answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<UserSystem> convert(AnswerList<UserSystem> answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
+
 }

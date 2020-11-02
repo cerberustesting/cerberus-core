@@ -57,7 +57,7 @@ function displayPageLabel(doc) {
     $("[name='confirmationField']").html(doc.getDocLabel("page_test", "button_delete"));
     $("[name='editEntryField']").html(doc.getDocLabel("page_test", "btn_edit"));
     $("[name='testField']").html(doc.getDocOnline("test", "Test"));
-    $("[name='activeField']").html(doc.getDocOnline("test", "Active"));
+    $("[name='activeField']").html(doc.getDocOnline("test", "isActive"));
     $("[name='automatedField']").html(doc.getDocOnline("test", "Automated"));
     $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
 }
@@ -172,7 +172,9 @@ function editEntryClick(test) {
 
         formEdit.find("#test").prop("value", obj.test);
         formEdit.find("#originalTest").prop("value", obj.test);
-        formEdit.find("#active").prop("value", obj.active);
+        console.log(formEdit.find("#active"));
+        formEdit.find("#active").prop("value", obj.isActive);
+        console.log(formEdit.find("#active"));
         formEdit.find("#description").prop("value", obj.description);
         formEdit.find("#automated").prop("value", obj.automated);
 
@@ -252,10 +254,10 @@ function aoColumnsFunc() {
             "title": doc.getDocOnline("test", "Description")
         },
         {
-            "data": "active",
-            "sName": "active",
+            "data": "isActive",
+            "sName": "isActive",
             "sWidth": "30px",
-            "title": doc.getDocOnline("test", "Active"),
+            "title": doc.getDocOnline("test", "isActive"),
             "className": "center"
         },
         {

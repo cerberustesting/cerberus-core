@@ -122,7 +122,7 @@
                                 <li class="active"><a data-toggle="tab" href="#tabSteps" id="editTabStep" name="tabSteps">Steps</a></li>
                                 <li><a data-toggle="tab" href="#tabProperties" id="editTabProperties" name="tabProperties">Properties</a></li>
                                 <li><a data-toggle="tab" href="#tabInheritedProperties" id="editTabInheritedProperties" name="tabInheritedProperties">InheritedProperties</a></li>
-                                <li><a data-toggle="tab" href="#tabSchema" id="editTabSchema" name="tabSchema">Schema</a></li>
+<!--                                <li><a data-toggle="tab" href="#tabSchema" id="editTabSchema" name="tabSchema">Schema</a></li>-->
                             </ul>
                         </div>
                     </div>
@@ -280,9 +280,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="center marginTop25 tab-pane fade" id="tabSchema">
+<!--                        <div class="center marginTop25 tab-pane fade" id="tabSchema">
                             <div id="schemaDiv"></div>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
                 <datalist id="objects"></datalist>
