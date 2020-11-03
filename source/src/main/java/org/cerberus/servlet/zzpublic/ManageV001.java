@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
@@ -40,6 +41,7 @@ import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.engine.scheduler.SchedulerInit;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.session.SessionCounter;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -93,6 +95,7 @@ public class ManageV001 extends HttpServlet {
             ExecutionUUID euuid = appContext.getBean(ExecutionUUID.class);
 
             executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
+            SessionCounter sc = appContext.getBean(SessionCounter.class);
             parameterService = appContext.getBean(IParameterService.class);
             cerberusScheduler = appContext.getBean(SchedulerInit.class);
             logEventService = appContext.getBean(ILogEventService.class);
@@ -100,8 +103,6 @@ public class ManageV001 extends HttpServlet {
             String token = parameterService.getParameterStringByKey("cerberus_manage_token", "", UUID.randomUUID().toString());
             String message = "";
             String returnCode = "OK";
-            
-            boolean isSplashPageActive = false;
 
             if (token.equals(request.getParameter("token"))) {
 
@@ -111,6 +112,7 @@ public class ManageV001 extends HttpServlet {
                 int globalPendingExecutionNb = getNbPendingExecutions(appContext);
                 int globalQueueingExecutionNb = getNbQueueingExecutions(appContext);
                 boolean globalActive = parameterService.getParameterBooleanByKey("cerberus_queueexecution_enable", "", true);
+                boolean globalSplashPageActive = parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_splashpage_enable, "", true);
 
                 if (request.getParameter("action") != null && request.getParameter("action").equals("cleanMemory")) {
                     if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
@@ -139,7 +141,6 @@ public class ManageV001 extends HttpServlet {
 
                         // ajouter boolean setSplashPageActive
                         executionThreadPoolService.setSplashPageActive(true);
-                        isSplashPageActive = true;
 
                         /**
                          * We deactivate the instance to process new execution.
@@ -178,7 +179,7 @@ public class ManageV001 extends HttpServlet {
 
                         // global splashpage : true => ATTENTION CACHE 60s utiliser short_cache
                         parameterService.setParameter("cerberus_splashpage_enable", "", "true");
-                        isSplashPageActive = true;
+
                         /**
                          * We deactivate globally the queue processing accross
                          * all instances.
@@ -210,7 +211,7 @@ public class ManageV001 extends HttpServlet {
                         logEventService.createForPrivateCalls(SERVLETNAME, "START", "Instance requested to start.", request);
 
                         executionThreadPoolService.setSplashPageActive(false);
-                        isSplashPageActive = false;
+
                         /**
                          * We activate the instance to process queue and start
                          * new executions.
@@ -237,8 +238,7 @@ public class ManageV001 extends HttpServlet {
 
                         // global splashpage : false
                         parameterService.setParameter("cerberus_splashpage_enable", "", "false");
-                        isSplashPageActive = false;
-                        
+
                         /**
                          * We activate the parameter to process queue (that will
                          * start new executions).
@@ -255,12 +255,21 @@ public class ManageV001 extends HttpServlet {
 
                 }
 
+                instancePendingExecutionNb = euuid.size();
+                globalPendingExecutionNb = getNbPendingExecutions(appContext);
+                globalQueueingExecutionNb = getNbQueueingExecutions(appContext);
+                globalActive = parameterService.getParameterBooleanByKey("cerberus_queueexecution_enable", "", true);
+                globalSplashPageActive = parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_splashpage_enable, "", true);
+
                 JSONObject instance = new JSONObject();
-                JSONObject global = new JSONObject();
 
                 instance.put("active", executionThreadPoolService.isInstanceActive());
                 instance.put("runningExecutions", instancePendingExecutionNb);
                 instance.put("readyToStop", (instancePendingExecutionNb <= 0));
+                instance.put("isSplashPageActive", executionThreadPoolService.isSplashPageActive());
+
+                data.put("instance", instance);
+
                 JSONObject memory = new JSONObject();
                 Runtime instance1 = Runtime.getRuntime();
                 int mb = 1024 * 1024;
@@ -274,12 +283,12 @@ public class ManageV001 extends HttpServlet {
 
                 data.put("memory", memory);
 
-                data.put("instance", instance);
-
+                JSONObject global = new JSONObject();
                 global.put("active", globalActive);
                 global.put("runningExecutions", globalPendingExecutionNb);
                 global.put("readyToStop", (globalPendingExecutionNb <= 0));
                 global.put("queuedExecutions", globalQueueingExecutionNb);
+                global.put("isSplashPageActive", globalSplashPageActive);
 
                 data.put("global", global);
 
@@ -291,6 +300,15 @@ public class ManageV001 extends HttpServlet {
                 fsSize.put("cerberus_testdatalibcsv_path", getFSSize(parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", "/")));
                 data.put("fileSystemSize", fsSize);
 
+                // Credit Limit Consumption
+                JSONObject objCreditLimit = new JSONObject();
+                objCreditLimit.put("numberOfExecution", sc.getCreditLimitNbExe());
+                objCreditLimit.put("durationOfExecutionInSecond", sc.getCreditLimitSecondExe());
+
+                data.put("creditLimit", objCreditLimit);
+
+                data.put("isSplashPageActive", globalSplashPageActive || executionThreadPoolService.isSplashPageActive());
+
             } else {
                 message = "Invalid Token";
                 returnCode = "KO";
@@ -298,7 +316,6 @@ public class ManageV001 extends HttpServlet {
 
             data.put("message", message);
             data.put("returnCode", returnCode);
-            data.put("isSplashPageActive", isSplashPageActive);
             resultS = data.toString(1);
 
         } catch (JSONException | InterruptedException ex) {

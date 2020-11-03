@@ -8674,6 +8674,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("ALTER TABLE test MODIFY isActive BOOLEAN");
 
         // Update TESTACTIVE invariant
+        // 1546 - 1555
         a.add("UPDATE invariant SET value = 'true' WHERE idname = 'TESTACTIVE' AND value ='Y'");
         a.add("UPDATE invariant SET value = 'false' WHERE idname = 'TESTACTIVE' AND value ='N'");
 
@@ -8704,26 +8705,32 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("ALTER TABLE `testcaseexecution`  CHANGE COLUMN `URL` `URL` VARCHAR(350) NULL DEFAULT NULL ;");
 
         // ADD setConsoleContent Action.
-        // 1535
+        // 1556
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
                 + "VALUES('ACTION', 'setConsoleContent', 24950, 'Set JSON Console Logs to current content', 'Set Console content');");
-        
+
         // Enlarge documentation column.
+        // 1557
         a.add("ALTER TABLE `documentation` CHANGE COLUMN `DocLabel` `DocLabel` TEXT NULL DEFAULT NULL ;");
 
         // Enlarge crondefinition column.
+        // 1558
         a.add("ALTER TABLE `scheduleentry`  CHANGE COLUMN `cronDefinition` `cronDefinition` VARCHAR(200) NOT NULL ;");
-        
+
         // ADD setConsoleContent Action.
-        // 1535
+        // 1559
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
                 + "VALUES('ACTION', 'setContent', 24960, 'Set parameter1 to current content', 'Set content');");
 
         // ADD setConsoleContent Action.
-        // 1535
+        // 1560
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
                 + "VALUES('ACTION', 'indexNetworkTraffic', 24905, 'Index Network Traffic requests', 'Index Network Traffic');");
-        
+
+        // ADD Parameters to display a message info on cerberus GUI
+        // 1561
+        a.add("INSERT INTO `parameter` VALUES('', 'cerberus_creditlimit_nbexeperday', '0', 'Maximum number of execution per day.'), ('', 'cerberus_creditlimit_secondexeperday', '0', 'Maximum duration of all execution in minutes.')");
+
         return a;
     }
 

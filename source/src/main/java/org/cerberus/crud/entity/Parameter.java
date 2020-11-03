@@ -67,6 +67,8 @@ public class Parameter {
     public static final String VALUE_cerberus_messageinfo_text = "cerberus_messageinfo_text";
     public static final String VALUE_cerberus_messageinfo_enable = "cerberus_messageinfo_enable";
     public static final String VALUE_cerberus_webperf_thirdpartyfilepath = "cerberus_webperf_thirdpartyfilepath";
+    public static final String VALUE_cerberus_creditlimit_nbexeperday = "cerberus_creditlimit_nbexeperday";
+    public static final String VALUE_cerberus_creditlimit_secondexeperday = "cerberus_creditlimit_secondexeperday";
 
     public static final String SECUREDPARAMINSQLCLAUSE = "(\"cerberus_accountcreation_defaultpassword\",\"cerberus_proxyauthentification_password\",\"cerberus_jenkinsadmin_password\",\"cerberus_smtp_password\",\"cerberus_executeCerberusCommand_password\")";
 

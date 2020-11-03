@@ -230,6 +230,13 @@ public class ReadCerberusDetailInformation extends HttpServlet {
 
             jsonResponse.put("cache", objCache);
 
+            // Credit Limit Consumption
+            JSONObject objCreditLimit = new JSONObject();
+            objCreditLimit.put("numberOfExecution", sc.getCreditLimitNbExe());
+            objCreditLimit.put("durationOfExecutionInSecond", sc.getCreditLimitSecondExe());
+
+            jsonResponse.put("creditLimit", objCreditLimit);
+
             executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
             jsonResponse.put("executionThreadPoolInstanceActive", executionThreadPoolService.isInstanceActive());
 

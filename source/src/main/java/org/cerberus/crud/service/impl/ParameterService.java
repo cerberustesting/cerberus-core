@@ -104,7 +104,7 @@ public class ParameterService implements IParameterService {
         if (cacheEntry == null) {
             cacheEntry = new HashMap<>();
         }
-        
+
         if (Parameter.SHORT_CACHE_DURATION > 0 && Parameter.VALUE_cerberus_splashpage_enable.equals(key)) {
             if (cacheEntry.containsKey(cacheKey)
                     && cacheEntry.get(cacheKey) != null
@@ -386,7 +386,9 @@ public class ParameterService implements IParameterService {
                     || Parameter.VALUE_cerberus_webperf_thirdpartyfilepath.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_executeCerberusCommand_password.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_executeCerberusCommand_path.equalsIgnoreCase(parameter.getParam())
-                    || Parameter.VALUE_cerberus_executeCerberusCommand_user.equalsIgnoreCase(parameter.getParam())) {
+                    || Parameter.VALUE_cerberus_executeCerberusCommand_user.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_creditlimit_secondexeperday.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_creditlimit_nbexeperday.equalsIgnoreCase(parameter.getParam())) {
 
                 return false;
 

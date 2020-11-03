@@ -46,6 +46,7 @@ import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.zzpublic.ManageV001;
+import org.cerberus.session.SessionCounter;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerList;
@@ -73,6 +74,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     private ITestCaseExecutionQueueService tceiqService;
     @Autowired
     private IParameterService parameterService;
+    @Autowired
+    private SessionCounter sessionCounter;
     @Autowired
     private IInvariantService invariantService;
     @Autowired
@@ -580,7 +583,9 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                         task.setSelectedRobotExtHost(robotExtHost);
                                         task.setToExecuteTimeout(queueTimeout);
                                         task.setQueueService(queueService);
-                                        task.setQueueDepService(queueDepService);
+                                        task.setQueueService(queueService);
+                                        task.setParameterService(parameterService);
+                                        task.setSessionCounter(sessionCounter);
                                         task.setRetriesService(retriesService);
                                         task.setTagService(tagService);
                                         task.setExecThreadPool(threadQueuePool);

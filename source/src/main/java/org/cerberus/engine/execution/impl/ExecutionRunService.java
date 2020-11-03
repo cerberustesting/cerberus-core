@@ -86,6 +86,7 @@ import org.cerberus.service.kafka.IKafkaService;
 import org.cerberus.service.robotproviders.IBrowserstackService;
 import org.cerberus.service.robotproviders.IKobitonService;
 import org.cerberus.service.sikuli.ISikuliService;
+import org.cerberus.session.SessionCounter;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.websocket.TestCaseExecutionEndPoint;
@@ -151,6 +152,8 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private ExecutionUUID executionUUID;
     @Autowired
+    private SessionCounter sessionCounter;
+    @Autowired
     private IRecorderService recorderService;
     @Autowired
     private IVariableService variableService;
@@ -191,7 +194,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
             AnswerItem<String> answerDecode = new AnswerItem<>();
 
-            if (!(tCExecution.getManualURL() >=1)) {
+            if (!(tCExecution.getManualURL() >= 1)) {
                 /**
                  * Insert SystemVersion in Database
                  */
@@ -915,6 +918,15 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
             /**
+             * Credit Limit increase
+             */
+            sessionCounter.incrementCreditLimitNbExe();
+            Long durationinSecond = (tCExecution.getEnd() - tCExecution.getStart()) / 1000;
+            if ((durationinSecond > 0) && (durationinSecond <= 1000000)) {
+                sessionCounter.incrementCreditLimitSecondExe(durationinSecond.intValue());
+            }
+
+            /**
              * Log execution is finished
              */
             LOG.info("Execution Finished : UUID=" + tCExecution.getExecutionUUID()
@@ -1292,8 +1304,8 @@ public class ExecutionRunService implements IExecutionRunService {
 
         // If Action setXXContent is not executed, we don't execute the corresponding controls.
         if (actionExe.getActionResultMessage().getCodeString().equals("NE")
-                && (actionExe.getAction().equals(TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT) 
-                || actionExe.getAction().equals(TestCaseStepAction.ACTION_SETSERVICECALLCONTENT) 
+                && (actionExe.getAction().equals(TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT)
+                || actionExe.getAction().equals(TestCaseStepAction.ACTION_SETSERVICECALLCONTENT)
                 || actionExe.getAction().equals(TestCaseStepAction.ACTION_SETCONSOLECONTENT)
                 || actionExe.getAction().equals(TestCaseStepAction.ACTION_SETCONTENT))) {
             return actionExe;

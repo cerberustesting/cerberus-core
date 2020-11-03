@@ -33,16 +33,18 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.engine.execution.IRetriesService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.zzpublic.RunTestCaseV002;
+import org.cerberus.session.SessionCounter;
 import org.cerberus.util.ParamRequestMaker;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.StringUtil;
 
 /**
  *
@@ -55,9 +57,12 @@ public class ExecutionQueueWorkerThread implements Runnable {
     private ITestCaseExecutionQueueService queueService;
     private IRetriesService retriesService;
     private ITestCaseExecutionQueueDepService queueDepService;
+    private IParameterService parameterService;
     private ITagService tagService;
 
     private ExecutionQueueThreadPool execThreadPool;
+
+    private SessionCounter sessionCounter;
 
     private long queueId;
     private String robotExecutor;
@@ -140,6 +145,22 @@ public class ExecutionQueueWorkerThread implements Runnable {
             super(message, cause);
         }
 
+    }
+
+    public SessionCounter getSessionCounter() {
+        return sessionCounter;
+    }
+
+    public void setSessionCounter(SessionCounter sessionCounter) {
+        this.sessionCounter = sessionCounter;
+    }
+
+    public IParameterService getParameterService() {
+        return parameterService;
+    }
+
+    public void setParameterService(IParameterService parameterService) {
+        this.parameterService = parameterService;
     }
 
     public ITestCaseExecutionQueueDepService getQueueDepService() {
@@ -237,6 +258,9 @@ public class ExecutionQueueWorkerThread implements Runnable {
     @Override
     public void run() {
         try {
+            LOG.debug("Checking credit limit on : " + queueId + " with RobotHost : " + selectedRobotHost + " with RobotExtensionHost : " + selectedRobotExtHost);
+            checkCreditLimit();
+
             LOG.debug("Start to execute : " + queueId + " with RobotHost : " + selectedRobotHost + " with RobotExtensionHost : " + selectedRobotExtHost);
 
             LOG.debug("Get queue exe to execute : " + queueId);
@@ -394,6 +418,28 @@ public class ExecutionQueueWorkerThread implements Runnable {
             }
             throw new RunQueueProcessException(descriptionMatcher.group(1));
         }
+    }
+
+    /**
+     * Control is execution can be executed following consumption constrains.
+     * <p>
+     * @throws RunQueueProcessException if either daily duration of nb of
+     * execution limit has been reached.
+     * @see #run()
+     */
+    private void checkCreditLimit() {
+
+        int maxNbExe = parameterService.getParameterIntegerByKey(Parameter.VALUE_cerberus_creditlimit_nbexeperday, "", 0);
+        int maxSecondExe = parameterService.getParameterIntegerByKey(Parameter.VALUE_cerberus_creditlimit_secondexeperday, "", 0);
+
+        if ((maxNbExe != 0) && (sessionCounter.getCreditLimitNbExe() >= maxNbExe)) {
+            throw new RunQueueProcessException("Your Number of Execution Credit Limit (" + maxNbExe + ") was been reached !!!");
+        }
+
+        if ((maxSecondExe != 0) && (sessionCounter.getCreditLimitSecondExe() >= maxSecondExe)) {
+            throw new RunQueueProcessException("Your Execution Time Credit Limit (" + maxSecondExe + " min) was been reached !!!");
+        }
+
     }
 
     @Override

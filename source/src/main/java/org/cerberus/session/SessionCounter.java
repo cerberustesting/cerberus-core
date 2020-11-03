@@ -19,7 +19,9 @@
  */
 package org.cerberus.session;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -33,10 +35,14 @@ import org.springframework.stereotype.Component;
 public class SessionCounter {
 
     private Map<String, String> users;
+    private Map<String, Integer> creditLimitNbExe;
+    private Map<String, Integer> creditLimitSecondExe;
 
     @PostConstruct
     public void init() {
-        users = new HashMap<String, String>();
+        users = new HashMap<>();
+        creditLimitNbExe = new HashMap<>();
+        creditLimitSecondExe = new HashMap<>();
     }
 
     public boolean isAuthentified(String sessionId) {
@@ -61,6 +67,50 @@ public class SessionCounter {
 
     public Collection<String> getActiveUsers() {
         return users.values();
+    }
+
+    public int getCreditLimitNbExe() {
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDate = formatter.format(date);
+        if (creditLimitNbExe.containsKey(currentDate)) {
+            return creditLimitNbExe.get(currentDate);
+        } else {
+            return 0;
+        }
+    }
+
+    public void incrementCreditLimitNbExe() {
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDate = formatter.format(date);
+        if (creditLimitNbExe.containsKey(currentDate)) {
+            creditLimitNbExe.put(currentDate, creditLimitNbExe.get(currentDate) + 1);
+        } else {
+            creditLimitNbExe.put(currentDate, 1);
+        }
+    }
+
+    public int getCreditLimitSecondExe() {
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDate = formatter.format(date);
+        if (creditLimitSecondExe.containsKey(currentDate)) {
+            return creditLimitSecondExe.get(currentDate);
+        } else {
+            return 0;
+        }
+    }
+
+    public void incrementCreditLimitSecondExe(Integer durationToAdd) {
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDate = formatter.format(date);
+        if (creditLimitSecondExe.containsKey(currentDate)) {
+            creditLimitSecondExe.put(currentDate, creditLimitSecondExe.get(currentDate) + durationToAdd);
+        } else {
+            creditLimitSecondExe.put(currentDate, durationToAdd);
+        }
     }
 
 }
