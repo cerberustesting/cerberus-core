@@ -29,25 +29,26 @@ $(document).ready(function () {
     var user = getUser();
     var cerberusInformation = getCerberusInformation();
 
+    if (cerberusInformation != null) {
+        if ((cerberusInformation.isGlobalSplashPageActive || cerberusInformation.isInstanceSplashPageActive)) {
+            if (!user.isAdmin) {
+                redirectionToSplashPage();
+            } else {
 
-    if ((cerberusInformation.isGlobalSplashPageActive || cerberusInformation.isInstanceSplashPageActive)) {
-        if (!user.isAdmin) {
-            redirectionToSplashPage();
-        } else {
-
-            showMessageMainPage("warning", "Cerberus maintenance is in progress !! Splash page activated for non admin users.", false, 10000);
+                showMessageMainPage("warning", "Cerberus maintenance is in progress !! Splash page activated for non admin users.", false, 10000);
+            }
         }
-    }
 
-    if (getPageName(window.location.pathname) === "SplashPage.jsp") {
-        displayAdminEmailOnSplashPage();
-        addRedictionSplashPageButton();
-        var doc = new Doc();
-        displayFooter(doc)
-    }
+        if (getPageName(window.location.pathname) === "SplashPage.jsp") {
+            displayAdminEmailOnSplashPage();
+            addRedictionSplashPageButton();
+            var doc = new Doc();
+            displayFooter(doc)
+        }
 
-    if (cerberusInformation.isMessageInformationEnabled) {
-        displayMessageInfoforAllUsers(cerberusInformation.messageInformation);
+        if (cerberusInformation.isMessageInformationEnabled) {
+            displayMessageInfoforAllUsers(cerberusInformation.messageInformation);
+        }
     }
 });
 
