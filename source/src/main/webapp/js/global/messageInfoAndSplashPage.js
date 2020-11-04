@@ -18,19 +18,6 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// When the page is loading we verify if a maintenance is in progress and if the user has admin status
-// if a maintenance is in progress the user is redirected to a splashpage
-window.onload = function () {
-    var user = getUser();
-    var cerberusInformation = getCerberusInformation();
-    if ((cerberusInformation.isGlobalSplashPageActive || cerberusInformation.isInstanceSplashPageActive)) {
-        if (!user.isAdmin) {
-            redirectionToSplashPage();
-        } else {
-            showMessageMainPage("warning", "Cerberus maintenance is in progress !! Splash page activated for non admin users.", false, 10000);
-        }
-    }
-};
 
 /*
  * When the document is ready if the user is on the splashPage, we fill that page we some information and function
@@ -38,7 +25,19 @@ window.onload = function () {
  * On every page we check if a message information needs to be displayed for the user
  */
 $(document).ready(function () {
+
+    var user = getUser();
     var cerberusInformation = getCerberusInformation();
+
+
+    if ((cerberusInformation.isGlobalSplashPageActive || cerberusInformation.isInstanceSplashPageActive)) {
+        if (!user.isAdmin) {
+            redirectionToSplashPage();
+        } else {
+
+            showMessageMainPage("warning", "Cerberus maintenance is in progress !! Splash page activated for non admin users.", false, 10000);
+        }
+    }
 
     if (getPageName(window.location.pathname) === "SplashPage.jsp") {
         displayAdminEmailOnSplashPage();
