@@ -51,13 +51,9 @@ public class ReadCerberusInformation extends HttpServlet {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S'Z'";
 
-    @Autowired
     private IDatabaseVersioningService databaseVersionService;
-    @Autowired
     private IMyVersionService myVersionService;
-    @Autowired
     private IExecutionThreadPoolService executionThreadPoolService;
-    @Autowired
     private IParameterService parameterService;
 
     /**
