@@ -834,6 +834,8 @@ function updateSelectCriteria(id) {
     var data = []
     if (val === "STATUS") {
         data = getSelectInvariant("TCSTATUS", false, true);
+    } else if (val === "TYPE") {
+        data = getSelectInvariant("TESTCASE_TYPE", false, true);
     } else if (val === "APPLICATION") {
         data = getSelectApplicationWithoutSystem();
     } else {

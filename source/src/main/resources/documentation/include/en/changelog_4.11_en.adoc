@@ -1,6 +1,6 @@
 *Bug fixes*
 [square]
-* none
+* Fixed campaign testcase selection criteria on type information #2202
 
 *Improvements / New features*
 [square]

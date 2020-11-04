@@ -8727,9 +8727,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) "
                 + "VALUES('ACTION', 'indexNetworkTraffic', 24905, 'Index Network Traffic requests', 'Index Network Traffic');");
 
-        // ADD Parameters to display a message info on cerberus GUI
+        // ADD Parameters to manage credit limit
         // 1561
         a.add("INSERT INTO `parameter` VALUES('', 'cerberus_creditlimit_nbexeperday', '0', 'Maximum number of execution per day.'), ('', 'cerberus_creditlimit_secondexeperday', '0', 'Maximum duration of all execution in minutes.')");
+
+        // ADD Parameters to manage credit limit
+        // 1562
+        a.add("UPDATE invariant set value = 'TYPE' where idname='CAMPAIGN_TCCRITERIA' and value='GROUP';");
 
         return a;
     }

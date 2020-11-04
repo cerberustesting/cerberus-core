@@ -262,7 +262,6 @@ public class ManageV001 extends HttpServlet {
                 globalSplashPageActive = parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_splashpage_enable, "", true);
 
                 JSONObject instance = new JSONObject();
-
                 instance.put("active", executionThreadPoolService.isInstanceActive());
                 instance.put("runningExecutions", instancePendingExecutionNb);
                 instance.put("readyToStop", (instancePendingExecutionNb <= 0));
@@ -298,6 +297,7 @@ public class ManageV001 extends HttpServlet {
                 fsSize.put("cerberus_exemanualmedia_path", getFSSize(parameterService.getParameterStringByKey("cerberus_exemanualmedia_path", "", "/")));
                 fsSize.put("cerberus_ftpfile_path", getFSSize(parameterService.getParameterStringByKey("cerberus_ftpfile_path", "", "/")));
                 fsSize.put("cerberus_testdatalibcsv_path", getFSSize(parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", "/")));
+                
                 data.put("fileSystemSize", fsSize);
 
                 // Credit Limit Consumption
