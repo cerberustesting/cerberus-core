@@ -26,6 +26,7 @@
  */
 $(document).ready(function () {
 
+    /*
     var user = getUser();
     var cerberusInformation = getCerberusInformation();
 
@@ -49,7 +50,7 @@ $(document).ready(function () {
         if (cerberusInformation.isMessageInformationEnabled) {
             displayMessageInfoforAllUsers(cerberusInformation.messageInformation);
         }
-    }
+    }*/
 });
 
 function redirectionToSplashPage() {
