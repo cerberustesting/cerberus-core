@@ -20,38 +20,39 @@
 
 $(document).ready(function () {
 
-    let displayWelcomeTuto = localStorage.getItem("displayWelcomeTuto");
+    if (document.title !== "Login") {
+        let displayWelcomeTuto = localStorage.getItem("displayWelcomeTuto");
 
-    if (displayWelcomeTuto === null) {
-        displayWelcomeTuto = "true";
-        localStorage.setItem("displayWelcomeTuto", "true");
-    }
+        if (displayWelcomeTuto === null) {
+            displayWelcomeTuto = "true";
+            localStorage.setItem("displayWelcomeTuto", "true");
+        }
 
-    var doc = new Doc();
-    if ((displayWelcomeTuto === "true") && (GetURLParameter("tutorielId") == null)) {
-        if ((window.location.href.includes("Homepage.jsp")) || (window.location.href.slice(-1)==="/")) {
+        var doc = new Doc();
+        if ((displayWelcomeTuto === "true") && (GetURLParameter("tutorielId") == null)) {
+            if ((window.location.href.includes("Homepage.jsp")) || (window.location.href.slice(-1) === "/")) {
+                displayTuto(doc);
+            }
+        }
+
+        $("#byPassTuto").off("click");
+        $("#byPassTuto").click(function () {
+            localStorage.setItem("displayWelcomeTuto", "false");
+            $('#interactiveTutoModal').modal('hide')
+        });
+
+
+        $("#openInteractiveTutoModal").off("click");
+        $("#openInteractiveTutoModal").click(function () {
             displayTuto(doc);
+        });
+
+        if (getUrlParameter("tutorielId") !== undefined) {
+            let tutorielId = getUrlParameter("tutorielId");
+            let startStep = getUrlParameter("startStep");
+            interractiveTutorial(tutorielId, startStep);
         }
     }
-
-    $("#byPassTuto").off("click");
-    $("#byPassTuto").click(function () {
-        localStorage.setItem("displayWelcomeTuto", "false");
-        $('#interactiveTutoModal').modal('hide')
-    });
-
-
-    $("#openInteractiveTutoModal").off("click");
-    $("#openInteractiveTutoModal").click(function () {
-        displayTuto(doc);
-    });
-
-    if (getUrlParameter("tutorielId") !== undefined) {
-        let tutorielId = getUrlParameter("tutorielId");
-        let startStep = getUrlParameter("startStep");
-        interractiveTutorial(tutorielId, startStep);
-    }
-
 });
 
 function displayTuto(doc) {
