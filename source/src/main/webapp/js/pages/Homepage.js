@@ -497,7 +497,6 @@ function loadTagExec() {
             var idDiv = '<div id="tagExecStatusRow' + index + '"></div>';
             reportArea.append(idDiv);
         }
-
         for (var index = 0; index < tagList.length; index++) {
             let : tagName = tagList[index];
             //TODO find a way to remove the use for resendTag

@@ -1249,23 +1249,29 @@ function refreshNbChecked() {
 function renderOptionsForExeList(selectTag, fullListSelected) {
     if ($("#blankSpace").length === 0) {
         var doc = new Doc();
-        var contentToAdd = "<div class='marginBottom10'>";
-        contentToAdd += "<label class='marginRight10'>Select all/none :</label>";
-        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueQEERROR' type='checkbox'></input>QE (ERROR)</label>";
-        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueFA' type='checkbox'></input>FA</label>";
-        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueFAManual' type='checkbox'></input>FA (Manual)</label>";
-        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKO' type='checkbox'></input>KO</label>";
-        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKOManual' type='checkbox'></input>KO (Manual)</label>";
-        contentToAdd += "<label class='checkbox-inline marginRight10'><input id='selectAllQueueNA' type='checkbox'></input>NA</label>";
-        contentToAdd += "<div class='btn-group marginRight20'>";
+        var contentToAdd = "<div class='marginBottom10' id='statusFilterList'>";
+        
+        contentToAdd += "<label class='marginRight10'>Status :</label>";
+        
+        contentToAdd += "<button type='button' id='selectAllStatus' class='glyphicon glyphicon-check'></button>";
+        contentToAdd += "<button type='button' id='unselectAllStatus' class='glyphicon glyphicon-unchecked marginRight10'></button>";
+        contentToAdd += "<label class='checkbox-inline fontOK'><input id='selectAllQueueOK' type='checkbox'></input>OK</label>";
+        contentToAdd += "<label class='checkbox-inline fontQE'><input id='selectAllQueueQEERROR' type='checkbox'></input>QE (ERROR)</label>";
+        contentToAdd += "<label class='checkbox-inline fontFA'><input id='selectAllQueueFA' type='checkbox'></input>FA</label>";
+        contentToAdd += "<label class='checkbox-inline fontKO'><input id='selectAllQueueKO' type='checkbox'></input>KO</label>";
+        contentToAdd += "<label class='checkbox-inline fontFA'><input id='selectAllQueueFAManual' type='checkbox'></input>FA (Manual)</label>";
+        contentToAdd += "<label class='checkbox-inline fontKO'><input id='selectAllQueueKOManual' type='checkbox'></input>KO (Manual)</label>";
+        contentToAdd += "<label class='checkbox-inline fontNA'><input id='selectAllQueueNA' type='checkbox'></input>NA</label>"; 
+        contentToAdd += "<label class='checkbox-inline marginRight10'><input id='fullList' type='checkbox' " + fullListSelected + "></input>Full List</label>";       
+        contentToAdd += "<div class='btn-group marginRight20 marginLeft20'>";
         contentToAdd += "<button id='submitExe' type='button' disabled='disabled' title='Submit again the selected executions.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again</button>";
         contentToAdd += "<button id='btnGroupDrop4' type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
         contentToAdd += "<div class='dropdown-menu'><button id='submitExewithDep' type='button' disabled='disabled' title='Submit again the selected executions with all dependencies.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again with Dep</button></div>";
         contentToAdd += "</div>";
         contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default marginLeft20'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
-        contentToAdd += "<label class='checkbox-inline'><input id='fullList' type='checkbox' " + fullListSelected + "></input>Full List</label>";
         contentToAdd += "<button id='refresh' type='button' title='Refresh.' class='btn btn-default marginLeft20' onclick='loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
         contentToAdd += "</div>";
+      
 
         $("#listTable_length").before(contentToAdd);
 
@@ -1287,6 +1293,41 @@ function renderOptionsForExeList(selectTag, fullListSelected) {
         $('#selectAllQueueNA').click(function() {
             selectAllQueue("selectAllQueueNA", "", "NA");
         });
+        $('#selectAllQueueOK').click(function () {
+            selectAllQueue("selectAllQueueOK", "N", "OK");
+        });
+        
+        $("#selectAllStatus").on("click", function () {
+        	$("#selectAllQueueOK").prop('checked', true);
+        	$("#selectAllQueueFA").prop('checked', true);
+        	$("#selectAllQueueKO").prop('checked', true);
+        	$("#selectAllQueueFAManual").prop('checked', true);
+        	$("#selectAllQueueKOManual").prop('checked', true);
+        	$("#selectAllQueueNA").prop('checked', true);
+        	$("#selectAllQueueQEERROR").prop('checked', true);
+            $("#fullList").prop('checked', false);
+        	
+            selectAllQueue("selectAllQueueOK", "N", "OK");
+            selectAllQueue("selectAllQueueFA", "N", "FA");
+            selectAllQueue("selectAllQueueKO", "N", "KO");
+            selectAllQueue("selectAllQueueFAManual", "Y", "FA");
+            selectAllQueue("selectAllQueueKOManual", "Y", "KO");
+            selectAllQueue("selectAllQueueNA", "", "NA");
+            selectAllQueue("selectAllQueueQEERROR", "", "QEERROR");
+        });
+        $("#unselectAllStatus").on("click", function () {
+            $("#statusFilterList input").prop('checked', false);
+            selectAllQueue("selectAllQueueOK", "N", "OK");
+            selectAllQueue("selectAllQueueFA", "N", "FA");
+            selectAllQueue("selectAllQueueKO", "N", "KO");
+            selectAllQueue("selectAllQueueFAManual", "Y", "FA");
+            selectAllQueue("selectAllQueueKOManual", "Y", "KO");
+            selectAllQueue("selectAllQueueNA", "", "NA");
+            selectAllQueue("selectAllQueueQEERROR", "", "QEERROR");
+        });
+        
+        
+        
         $('#submitExe').click(massAction_copyQueueWithoutDep);
         $('#submitExewithDep').click(massAction_copyQueueWithDep);
     }
