@@ -2538,12 +2538,12 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('transversal','tuto_line1','','fr','','Bienvenue sur Cerberus Testing !','_librairie_de_données')");
         b.append(",('transversal','tuto_line2','','en','','You just took the first step to start your Cerberus Testing automation journey.','_data_library')");
         b.append(",('transversal','tuto_line2','','fr','','Nous sommes au debut de l\\'experience de testing automatisé Cerberus Testing.','_librairie_de_données')");
-        b.append(",('transversal','tuto_line3','','en','','Dive into our tutorial and have fun testing!','_data_library')");
+        b.append(",('transversal','tuto_line3','','en','','Dive into our tutorials and have fun testing!','_data_library')");
         b.append(",('transversal','tuto_line3','','fr','','Consultez les tutoriels ci dessous.','_librairie_de_données')");
         b.append(",('transversal','tuto_line4','','en','','Where would you like to start?','_data_library')");
         b.append(",('transversal','tuto_line4','','fr','','Par où souhaitez-vous commencer ?','_librairie_de_données')");
-        b.append(",('transversal','tuto_line5','','en','','I just want to take a look around first','_data_library')");
-        b.append(",('transversal','tuto_line5','','fr','','Je souhaite juste me balader dans l\\'outil','_librairie_de_données')");
+        b.append(",('transversal','tuto_line5','','en','','Click here to prevent the tutorials from opening again','_data_library')");
+        b.append(",('transversal','tuto_line5','','fr','','Ne plus ouvrir ce tutoriel','_librairie_de_données')");
         b.append(" ;");
         a.add(b.toString());
                 
