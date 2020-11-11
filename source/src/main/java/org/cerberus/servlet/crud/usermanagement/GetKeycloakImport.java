@@ -105,6 +105,9 @@ public class GetKeycloakImport extends HttpServlet {
             roleJSON = new JSONObject();
             roleJSON.put("name", "TestAdmin").put("composite", false).put("clientRole", false).put("containerId", realm).put("attributes", emptyJSONObject);
             arrayRoles.put(roleJSON);
+            roleJSON = new JSONObject();
+            roleJSON.put("name", "TestDataManager").put("composite", false).put("clientRole", false).put("containerId", realm).put("attributes", emptyJSONObject);
+            arrayRoles.put(roleJSON);
 
             JSONObject rolesJSON = new JSONObject();
             rolesJSON.put("realm", arrayRoles);
