@@ -25,11 +25,8 @@
  * On every page we check if a message information needs to be displayed for the user
  */
 $(document).ready(function () {
-    /*
 
-    console.log(document.title);
     if (document.title !== "Login") {
-        console.log("inside function");
         var user = getUser();
         var cerberusInformation = getCerberusInformation();
 
@@ -54,7 +51,7 @@ $(document).ready(function () {
                 displayMessageInfoforAllUsers(cerberusInformation.messageInformation);
             }
         }
-    }*/
+    }
 });
 
 function redirectionToSplashPage() {
