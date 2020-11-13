@@ -73,7 +73,7 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setTargetMinor(targetMinor);
         newTestCase.setTargetMajor(targetMajor);
         newTestCase.setTest(test);
-        newTestCase.setTestCase(testCase);
+        newTestCase.setTestcase(testCase);
         newTestCase.setToMinor(toMinor);
         newTestCase.setToMajor(toMajor);
         newTestCase.setUsrCreated(usrCreated);
@@ -120,7 +120,7 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setTargetMinor(targetMinor);
         newTestCase.setTargetMajor(targetMajor);
         newTestCase.setTest(test);
-        newTestCase.setTestCase(testCase);
+        newTestCase.setTestcase(testCase);
         newTestCase.setToMinor(toMinor);
         newTestCase.setToMajor(toMajor);
         newTestCase.setUsrCreated(usrCreated);
@@ -138,7 +138,7 @@ public class FactoryTestCase implements IFactoryTestCase {
     public TestCase create(String test, String testCase) {
         TestCase newTestCase = new TestCase();
         newTestCase.setTest(test);
-        newTestCase.setTestCase(testCase);
+        newTestCase.setTestcase(testCase);
         return newTestCase;
     }
 
@@ -146,7 +146,7 @@ public class FactoryTestCase implements IFactoryTestCase {
     public TestCase create(String test, String testCase, String description) {
         TestCase newTestCase = new TestCase();
         newTestCase.setTest(test);
-        newTestCase.setTestCase(testCase);
+        newTestCase.setTestcase(testCase);
         newTestCase.setDescription(description);
         return newTestCase;
     }

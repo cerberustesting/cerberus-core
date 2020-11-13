@@ -188,10 +188,10 @@ public class ReadTestCase extends AbstractCrudTestCase {
         AnswerItem<JSONObject> answerItem = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
 
-        AnswerItem answerTestCase;
+        AnswerItem<TestCase> answerTestCase;
         answerTestCase = testCaseService.findTestCaseByKeyWithDependencies(test, testCase, withSteps);
         if (answerTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerTestCase.getItem() != null) {
-            TestCase tc = (TestCase) answerTestCase.getItem();
+            TestCase tc = answerTestCase.getItem();
             if (withSteps) {
                 jsonResponse.put("hasPermissionsStepLibrary", (request.isUserInRole("TestStepLibrary")));
             }
@@ -206,6 +206,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         answerItem.setItem(jsonResponse);
         answerItem.setResultMessage(answerTestCase.getResultMessage());
 
+        LOG.debug(answerItem.getItem());
         return answerItem;
     }
 

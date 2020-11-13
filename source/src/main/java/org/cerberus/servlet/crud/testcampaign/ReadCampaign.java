@@ -370,7 +370,7 @@ public class ReadCampaign extends HttpServlet {
     private JSONObject convertTestCasetoJSONObject(TestCase testCase) throws JSONException {
         JSONObject result = new JSONObject();
         result.put("test", testCase.getTest());
-        result.put("testCase", testCase.getTestCase());
+        result.put("testCase", testCase.getTestcase());
         result.put("application", testCase.getApplication());
         result.put("description", testCase.getDescription());
         result.put("status", testCase.getStatus());

@@ -183,7 +183,7 @@ public class GetTestCasesV001 {
         //using stream method, to learn more about it : https://blog.ippon.fr/2014/03/17/api-stream-une-nouvelle-facon-de-gerer-les-collections-en-java-8/
         List<ResponseTC.TestCase> responseList = testCaseList.stream()
                 .map(testCase -> new ResponseTC.TestCase(testCase.getTest(),
-                testCase.getTestCase(), testCase.getDescription(),
+                testCase.getTestcase(), testCase.getDescription(),
                 testCase.getApplication(), testCase.getStatus()))
                 .collect(Collectors.toList());
         return responseList;

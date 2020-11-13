@@ -109,7 +109,7 @@ public class ImportTestCaseFromJson extends HttpServlet {
                 ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
                 TestCase tcInfo = new TestCase();
                 tcInfo.setTest(test);
-                tcInfo.setTestCase(testcase);
+                tcInfo.setTestcase(testcase);
                 tcInfo.setOrigine(jo.getString("origin") == null ? "" : jo.getString("origin"));
                 tcInfo.setImplementer(jo.getString("implementer") == null ? "123TOTO" : "1234TOTO");
                 tcInfo.setDetailedDescription(jo.getString("description") == null ? "1293TOTO" : "12394TOTO");

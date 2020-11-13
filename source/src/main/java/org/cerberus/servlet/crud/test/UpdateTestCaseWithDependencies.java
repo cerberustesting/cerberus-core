@@ -175,8 +175,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
                 int nextStepNumber = getMaxStepNumber(tcsFromPage);
                 for (TestCaseStep tcs : tcsFromPage) {
-                    if (tcs.getStep() == -1) {
-                        tcs.setStep(++nextStepNumber);
+                    if (tcs.getStepId() == -1) {
+                        tcs.setStepId(++nextStepNumber);
                     }
 
                     if (tcs.getActions() != null) {
@@ -185,7 +185,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                             if (tcsa.getSequence() == -1) {
                                 tcsa.setSequence(++nextSequenceNumber);
                             }
-                            tcsa.setStep(tcs.getStep());
+                            tcsa.setStep(tcs.getStepId());
 
                             if (tcsa.getControls() != null) {
                                 int nextControlNumber = getMaxControlNumber(tcsa.getControls());
@@ -193,7 +193,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                                     if (tscac.getControlSequence() == -1) {
                                         tscac.setControlSequence(++nextControlNumber);
                                     }
-                                    tscac.setStep(tcs.getStep());
+                                    tscac.setStep(tcs.getStepId());
                                     tscac.setSequence(tcsa.getSequence());
                                 }
                                 tcsacFromPage.addAll(tcsa.getControls());
@@ -218,7 +218,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 tc.setUsrModif(request.getUserPrincipal().getName());
                 tc.setVersion(tc.getVersion() + 1);
 
-                testCaseService.update(tc.getTest(), tc.getTestCase(), tc);
+                testCaseService.update(tc.getTest(), tc.getTestcase(), tc);
 
                 /**
                  * Adding Log entry.
@@ -228,7 +228,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                      * Update was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateTestCaseWithDependencies", "UPDATE", "Update TestCase Script : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "'] version : " + tc.getVersion(), request);
+                    logEventService.createForPrivateCalls("/UpdateTestCaseWithDependencies", "UPDATE", "Update TestCase Script : ['" + tc.getTest() + "'|'" + tc.getTestcase() + "'] version : " + tc.getVersion(), request);
                 }
 
             }
@@ -255,8 +255,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         int nextStepNumber = 0;
         if (steps != null) {
             for (TestCaseStep step : steps) {
-                if (nextStepNumber < step.getStep()) {
-                    nextStepNumber = step.getStep();
+                if (nextStepNumber < step.getStepId()) {
+                    nextStepNumber = step.getStepId();
                 }
             }
         }
@@ -351,28 +351,28 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionVal2 = step.getString("conditionVal2");
             String conditionVal3 = step.getString("conditionVal3");
             String description = step.getString("description");
-            String isUsedStep = step.getString("isUsedStep");
+            boolean isUsedStep = step.getBoolean("isUsedStep");
             String libraryStepTest = step.getString("libraryStepTest");
             String libraryStepTestCase = step.getString("libraryStepTestCase");
             int libraryStepStepId = step.getInt("libraryStepStepId");
-            String isLibraryStep = step.getString("isLibraryStep");
-            String isExecutionForced  = step.getString("isExecutionForced");
+            boolean isLibraryStep = step.getBoolean("isLibraryStep");
+            boolean isExecutionForced  = step.getBoolean("isExecutionForced");
             JSONArray stepActions = step.getJSONArray("actionArr");
 
             if (!delete) {
                 TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, sort, loop, conditionOperator, conditionVal1, conditionVal2, conditionVal3, description, isUsedStep, libraryStepTest,
                         libraryStepTestCase, libraryStepStepId, isLibraryStep, isExecutionForced , null, null, request.getUserPrincipal().getName(), null);
 
-                if (isUsedStep.equals("N")) {
+                if (!isUsedStep) {
                     tcStep.setActions(getTestCaseStepActionFromParameter(request, appContext, test, testCase, stepActions));
                 } else {
                     TestCaseStep tcs = null;
                     if (libraryStepStepId != -1 && !libraryStepTest.equals("") && !libraryStepTestCase.equals("")) {
                         tcs = tcsService.findTestCaseStep(libraryStepTest, libraryStepTestCase, libraryStepStepId);
                         if (tcs != null) {
-                            tcStep.setUseStepTest(tcs.getTest());
-                            tcStep.setUseStepTestCase(tcs.getTestCase());
-                            tcStep.setUseStepStep(tcs.getStep());
+                            tcStep.setLibraryStepTest(tcs.getTest());
+                            tcStep.setLibraryStepTestCase(tcs.getTestcase());
+                            tcStep.setLibraryStepStepId(tcs.getStepId());
                         }
                     }
                 }

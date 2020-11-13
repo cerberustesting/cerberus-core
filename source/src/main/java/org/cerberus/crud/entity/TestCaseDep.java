@@ -177,7 +177,7 @@ public class TestCaseDep {
         try {
             testCaseDependencyJson.put("id", this.getId());
             testCaseDependencyJson.put("dependencyTest", this.getDepTest());
-            testCaseDependencyJson.put("dependencyTestCase", this.getDepTestCase());
+            testCaseDependencyJson.put("dependencyTestcase", this.getDepTestCase());
             testCaseDependencyJson.put("type", this.getType());
             testCaseDependencyJson.put("active", "Y".equals(this.getActive()));
             testCaseDependencyJson.put("dependencyDescription", this.getDepDescription());

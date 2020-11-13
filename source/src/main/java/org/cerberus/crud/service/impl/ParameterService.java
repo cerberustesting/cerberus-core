@@ -105,6 +105,7 @@ public class ParameterService implements IParameterService {
             cacheEntry = new HashMap<>();
         }
 
+        /*
         if (Parameter.SHORT_CACHE_DURATION > 0 && Parameter.VALUE_cerberus_splashpage_enable.equals(key)) {
             if (cacheEntry.containsKey(cacheKey)
                     && cacheEntry.get(cacheKey) != null
@@ -113,7 +114,7 @@ public class ParameterService implements IParameterService {
                 LOG.debug("Return parameter from short cache Value.");
                 return cacheEntry.get(cacheKey);
             }
-        }
+        }*/
 
         if (Parameter.CACHE_DURATION > 0 && !Parameter.VALUE_cerberus_queueexecution_enable.equals(key)) {
             if (cacheEntry.containsKey(cacheKey)

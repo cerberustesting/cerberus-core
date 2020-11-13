@@ -628,7 +628,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionVal2(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionVal3(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestCase(), ""));
+                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestcase(), ""));
 
                 res = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
@@ -670,7 +670,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             PreparedStatement preStat = connection.prepareStatement(sql_count);
             try {
                 preStat.setString(1, tc.getTest());
-                preStat.setString(2, tc.getTestCase());
+                preStat.setString(2, tc.getTestcase());
                 ResultSet rsCount = preStat.executeQuery();
                 try {
                     while (rsCount.next()) {
@@ -681,7 +681,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                             PreparedStatement preStat2 = connection.prepareStatement(sql_delete);
                             try {
                                 preStat2.setString(1, tc.getTest());
-                                preStat2.setString(2, tc.getTestCase());
+                                preStat2.setString(2, tc.getTestcase());
                                 preStat2.setString(3, rsCount.getString("Country"));
 
                                 preStat2.executeUpdate();
@@ -711,7 +711,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     PreparedStatement preStat2 = connection.prepareStatement(sql_insert);
                     try {
                         preStat2.setString(1, tc.getTest());
-                        preStat2.setString(2, tc.getTestCase());
+                        preStat2.setString(2, tc.getTestcase());
                         preStat2.setString(3, countryList.get(i));
 
                         res = preStat2.executeUpdate() > 0;
@@ -763,7 +763,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             try {
                 int i = 1;
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestCase(), ""));
+                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestcase(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getApplication(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDetailedDescription(), ""));
@@ -938,7 +938,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append(") AND (tec.TargetMinor LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.TargetMinor", testCase.getTargetMinor()))
                 .append(") AND (tec.testcase LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.testcase", testCase.getTestCase()))
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.testcase", testCase.getTestcase()))
                 .append(") AND (tec.Executor LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.Executor", testCase.getExecutor()))
                 .append(") AND (tec.Implementer LIKE ")
@@ -1130,7 +1130,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, testCase.getTest());
-                preStat.setString(2, testCase.getTestCase());
+                preStat.setString(2, testCase.getTestcase());
 
                 bool = preStat.executeUpdate() > 0;
 
@@ -1201,7 +1201,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getScreenSize(), ""));
                 preStat.setInt(i++, ParameterParserUtil.parseIntegerParam(testCase.getVersion(), 0));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestCase(), ""));
+                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestcase(), ""));
 
                 preStat.executeUpdate();
             } catch (SQLException exception) {
@@ -1974,7 +1974,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             try {
                 int i = 1;
                 preStat.setString(i++, tc.getTest());
-                preStat.setString(i++, tc.getTestCase());
+                preStat.setString(i++, tc.getTestcase());
                 preStat.setString(i++, tc.getImplementer());
                 preStat.setString(i++, tc.getExecutor());
                 preStat.setString(i++, tc.getApplication());
@@ -2059,7 +2059,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             try {
                 int i = 1;
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestCase(), ""));
+                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestcase(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getApplication(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDetailedDescription(), ""));
@@ -2142,7 +2142,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, testCase.getTest());
-                preStat.setString(2, testCase.getTestCase());
+                preStat.setString(2, testCase.getTestcase());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

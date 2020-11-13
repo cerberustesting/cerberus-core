@@ -139,11 +139,11 @@ public class DeleteTest extends HttpServlet {
                                                                 "<a href='%s/TestCaseScript.jsp?test=%s&testcase=%s&step=%s'>%s/%s#%s</a>",
                                                                 cerberusUrl,
                                                                 input.getTest(),
-                                                                input.getTestCase(),
-                                                                input.getStep(),
+                                                                input.getTestcase(),
+                                                                input.getStepId(),
                                                                 input.getTest(),
-                                                                input.getTestCase(),
-                                                                input.getStep()
+                                                                input.getTestcase(),
+                                                                input.getStepId()
                                                         );
                                                     }
                                                 }

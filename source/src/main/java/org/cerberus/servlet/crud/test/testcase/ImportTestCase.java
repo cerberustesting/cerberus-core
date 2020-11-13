@@ -111,14 +111,14 @@ public class ImportTestCase extends HttpServlet {
                             tcService.importWithDependency(tcInfo);
 
                             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                            msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase " + tcInfo.getTest() + " - " + tcInfo.getTestCase())
+                            msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase " + tcInfo.getTest() + " - " + tcInfo.getTestcase())
                                     .replace("%OPERATION%", "Import"));
                             ans.setResultMessage(msg);
                             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                         } catch (CerberusException ex) {
                             LOG.error("Cerberus Exception during testcase import.", ex);
                             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                            msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase " + tcInfo.getTest() + " - " + tcInfo.getTestCase())
+                            msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase " + tcInfo.getTest() + " - " + tcInfo.getTestcase())
                                     .replace("%OPERATION%", "Import")
                                     .replace("%REASON%", ex.getMessageError().getDescription()));
                             ans.setResultMessage(msg);

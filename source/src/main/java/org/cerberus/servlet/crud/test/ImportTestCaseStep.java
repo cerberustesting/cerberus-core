@@ -112,8 +112,8 @@ public class ImportTestCaseStep extends HttpServlet {
          */
         LOG.debug("Rewrite TestCaseStep");
         fromTcs.setTest(test);
-        fromTcs.setTestCase(testCase);
-        fromTcs.setStep(step);
+        fromTcs.setTestcase(testCase);
+        fromTcs.setStepId(step);
 
         LOG.debug("Rewrite TestCaseStepAction");
         List<TestCaseStepAction> tcsaToImport = new ArrayList<>();

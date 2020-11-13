@@ -121,7 +121,7 @@ public class DeleteTestCase extends AbstractCrudTestCase {
                  * object exist, then we can delete it.
                  */
                 TestCase testCaseData = (TestCase) resp.getItem();
-                List<TestCaseStep> tcsList = testCaseStepService.getTestCaseStepUsingTestCaseInParamter(testCaseData.getTest(), testCaseData.getTestCase());
+                List<TestCaseStep> tcsList = testCaseStepService.getTestCaseStepUsingTestCaseInParamter(testCaseData.getTest(), testCaseData.getTestcase());
                 if (tcsList != null && !tcsList.isEmpty()) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")

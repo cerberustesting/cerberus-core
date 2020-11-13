@@ -357,7 +357,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
                 if ((testCaseList != null) && !testCaseList.isEmpty() && testCaseList.size() < 5000) {
                     for (TestCase testCase1 : testCaseList) {
                         preStat.setString(i++, testCase1.getTest());
-                        preStat.setString(i++, testCase1.getTestCase());
+                        preStat.setString(i++, testCase1.getTestcase());
                     }
                 }
 

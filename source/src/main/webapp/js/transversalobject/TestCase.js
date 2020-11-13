@@ -1177,7 +1177,7 @@ function appendTestCaseDepList(testCase) {
     $("#depenencyTable").find("tr").remove() // clean the table
 
     testCase.dependencies.forEach((dep) =>
-        addHtmlForDependencyLine(dep.id, dep.dependencyTest, dep.dependencyTestCase, dep.dependencyTestCase + " - " + dep.dependencyDescription, dep.active, dep.dependencyDescription)
+        addHtmlForDependencyLine(dep.id, dep.dependencyTest, dep.dependencyTestcase, dep.dependencyTestcase + " - " + dep.dependencyDescription, dep.active, dep.dependencyDescription)
     )
 }
 

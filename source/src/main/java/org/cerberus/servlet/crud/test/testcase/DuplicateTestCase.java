@@ -167,7 +167,7 @@ public class DuplicateTestCase extends AbstractCrudTestCase {
 
                 //Update object with new testcase id and insert it in db
                 originalTC.setTest(test);
-                originalTC.setTestCase(testCase);
+                originalTC.setTestcase(testCase);
                 ans = testCaseService.create(originalTC);
 
                 List<TestCaseCountry> countryList = new ArrayList<>();

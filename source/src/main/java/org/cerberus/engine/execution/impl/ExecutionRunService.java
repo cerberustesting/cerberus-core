@@ -400,7 +400,7 @@ public class ExecutionRunService implements IExecutionRunService {
             List<TestCaseStep> preTestCaseStepList = new ArrayList<>();
             for (TestCase myTCase : preTests) {
                 preTestCaseStepList.addAll(this.loadTestCaseService.loadTestCaseStep(myTCase));
-                LOG.debug(logPrefix + "Pre testcase : " + myTCase.getTest() + "-" + myTCase.getTestCase() + " Loaded With all Step(s) found.");
+                LOG.debug(logPrefix + "Pre testcase : " + myTCase.getTest() + "-" + myTCase.getTestcase() + " Loaded With all Step(s) found.");
             }
             LOG.debug(logPrefix + "All Steps information (Actions & Controls) of all Pre-testcase Loaded.");
 
@@ -422,7 +422,7 @@ public class ExecutionRunService implements IExecutionRunService {
             List<TestCaseStep> postTestCaseStepList = new ArrayList<>();
             for (TestCase myTCase : postTests) {
                 postTestCaseStepList.addAll(this.loadTestCaseService.loadTestCaseStep(myTCase));
-                LOG.debug(logPrefix + "Post testcase : " + myTCase.getTest() + "-" + myTCase.getTestCase() + " Loaded With all Step(s) found.");
+                LOG.debug(logPrefix + "Post testcase : " + myTCase.getTest() + "-" + myTCase.getTestcase() + " Loaded With all Step(s) found.");
             }
             LOG.debug(logPrefix + "All Steps information (Actions & Controls) of all Post-testcase Loaded.");
 
@@ -554,7 +554,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     for (TestCaseStep testCaseStep : mainExecutionTestCaseStepList) {
 
                         // exeMod management : We trigger Forced Step no matter if previous step execution asked to stop.
-                        if ((!doStepStopExecution) || (testCaseStep.getForceExe().equalsIgnoreCase("Y"))) {
+                        if (!doStepStopExecution || testCaseStep.isExecutionForced()) {
 
                             // init the index of the step in case we loop.
                             int step_index = 1;
@@ -578,10 +578,10 @@ public class ExecutionRunService implements IExecutionRunService {
                                         .resolveDescription("STEP", String.valueOf(testCaseStep.getSort()))
                                         .resolveDescription("STEPINDEX", String.valueOf(step_index));
                                 testCaseStepExecution = factoryTestCaseStepExecution.create(
-                                        runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
-                                        testCaseStep.getStep(), step_index, testCaseStep.getSort(), testCaseStep.getLoop(), testCaseStep.getConditionOperator(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal3(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal3(), null,
+                                        runID, testCaseStep.getTest(), testCaseStep.getTestcase(),
+                                        testCaseStep.getStepId(), step_index, testCaseStep.getSort(), testCaseStep.getLoop(), testCaseStep.getConditionOperator(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal3(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal3(), null,
                                         startStep, startStep, startStep, startStep, new BigDecimal("0"), null, stepMess, testCaseStep, tCExecution,
-                                        testCaseStep.getUseStep(), testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), testCaseStep.getDescription());
+                                        (testCaseStep.isUsingLibraryStep() ? "Y" : "N"), testCaseStep.getLibraryStepTest(), testCaseStep.getLibraryStepTestCase(), testCaseStep.getLibraryStepStepId(), testCaseStep.getDescription());
                                 testCaseStepExecution.setLoop(testCaseStep.getLoop());
                                 testCaseStepExecutionService.insertTestCaseStepExecution(testCaseStepExecution);
                                 testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
@@ -827,7 +827,7 @@ public class ExecutionRunService implements IExecutionRunService {
                             } while (execute_Next_Step && step_index <= maxloop);
 
                             // Step execution boolean is considered for next step execution only if current step was not forced or forced and failed.
-                            if (!testCaseStep.getForceExe().equalsIgnoreCase("Y") || testCaseStepExecution.isStopExecution()) {
+                            if (!testCaseStep.isExecutionForced() || testCaseStepExecution.isStopExecution()) {
                                 doStepStopExecution = testCaseStepExecution.isStopExecution();
                             }
                         }

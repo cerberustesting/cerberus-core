@@ -146,13 +146,13 @@ public class UpdateTestCaseMass extends HttpServlet {
                     tcData.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(status, tcData.getStatus(), charset));
                     tcData.setApplication(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(application, tcData.getApplication(), charset));
                     tcData.setPriority(ParameterParserUtil.parseIntegerParam(priority, tcData.getPriority()));
-                    ans = testCaseService.update(tcData.getTest(), tcData.getTestCase(), tcData);
+                    ans = testCaseService.update(tcData.getTest(), tcData.getTestcase(), tcData);
 
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         /**
                          * Update was successful. Adding Log entry.
                          */
-                        logEventService.createForPrivateCalls("/UpdateTestCaseMass", "UPDATE", "Updated TestCase : ['" + tcData.getTest() + "'|'" + tcData.getTestCase() + "']", request);
+                        logEventService.createForPrivateCalls("/UpdateTestCaseMass", "UPDATE", "Updated TestCase : ['" + tcData.getTest() + "'|'" + tcData.getTestcase() + "']", request);
                     } else {
                         massErrorCounter++;
                         output_message.append("<br>id : ").append(cur_test).append("|").append(cur_testcase).append(" - ").append(ans.getResultMessage().getDescription());
