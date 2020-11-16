@@ -402,7 +402,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         StringBuilder query = new StringBuilder();
         query.append("SELECT tcs.libraryStepTest, tcs.libraryStepTestcase,tcs.libraryStepStepId,tcs.sort, tcs2.description FROM testcasestep tcs ");
         query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
-        query.append("join testcasestep tcs2 on tcs.test=tcs2.test and tcs.testcase=tcs2.testcase and tcs.step=tcs2.step ");
+        query.append("join testcasestep tcs2 on tcs.test=tcs2.test and tcs.testcase=tcs2.testcase and tcs.stepId=tcs2.stepId ");
         query.append("where tcs.isUsingLibraryStep IS true and tc.application = ?  ");
         query.append("group by tcs.libraryStepTest, tcs.libraryStepTestcase, tcs.libraryStepStepId ");
 
@@ -456,7 +456,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     public List<TestCaseStep> getStepLibraryBySystem(String system) throws CerberusException {
         List<TestCaseStep> list = null;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT tcs.test, tcs.testcase, tcs.step, tcs.sort, tcs.description, tc.description as tcdesc FROM testcasestep tcs ");
+        query.append("SELECT tcs.test, tcs.testcase, tcs.stepId, tcs.sort, tcs.description, tc.description as tcdesc FROM testcasestep tcs ");
         query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
         query.append("join application app  on tc.application=app.application ");
         query.append("where tcs.islibrarystep IS true and app.system = ?  ");
@@ -515,7 +515,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     public List<TestCaseStep> getStepLibraryBySystemTest(String system, String test) throws CerberusException {
         List<TestCaseStep> list = null;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT tcs.test, tcs.testcase,tcs.step, tcs.sort, tcs.description, tc.description as tcdesc, tc.application as tcapp FROM testcasestep tcs ");
+        query.append("SELECT tcs.test, tcs.testcase,tcs.stepId, tcs.sort, tcs.description, tc.description as tcdesc, tc.application as tcapp FROM testcasestep tcs ");
         query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
         query.append("join application app  on tc.application=app.application ");
         query.append("where tcs.islibrarystep IS true ");
@@ -590,7 +590,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     public List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException {
         List<TestCaseStep> list = null;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT tcs.test, tcs.testcase,tcs.step, tcs.sort, tcs.description FROM testcasestep tcs ");
+        query.append("SELECT tcs.test, tcs.testcase,tcs.stepId, tcs.sort, tcs.description FROM testcasestep tcs ");
         query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
         query.append("join application app  on tc.application=app.application ");
         query.append("where tcs.islibrarystep IS true ");
@@ -670,10 +670,10 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStep> stepList = new ArrayList<>();
         StringBuilder query = new StringBuilder();
-        query.append("SELECT tcs.*, CASE WHEN tcs1.test + tcs1.testcase + tcs1.step is NULL THEN 0 ELSE 1 END as isStepInUseByOtherTestCase "
+        query.append("SELECT tcs.*, CASE WHEN tcs1.test + tcs1.testcase + tcs1.stepId is NULL THEN 0 ELSE 1 END as isStepInUseByOtherTestCase "
                 + "FROM testcasestep tcs LEFT JOIN testcasestep tcs1 "
-                + "ON tcs1.isUsingLibraryStep = true AND tcs1.libraryStepTest = ? AND tcs1.libraryStepTestcase = ? AND tcs1.libraryStepStepId = tcs.step WHERE tcs.test = ? AND tcs.testcase = ? "
-                + "GROUP BY tcs.test, tcs.testcase, tcs.step ORDER BY tcs.sort");
+                + "ON tcs1.isUsingLibraryStep = true AND tcs1.libraryStepTest = ? AND tcs1.libraryStepTestcase = ? AND tcs1.libraryStepStepId = tcs.stepId WHERE tcs.test = ? AND tcs.testcase = ? "
+                + "GROUP BY tcs.test, tcs.testcase, tcs.stepId ORDER BY tcs.sort");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -927,13 +927,13 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
 
         String test = resultSet.getString("test") == null ? "" : resultSet.getString("test");
         String testcase = resultSet.getString("testcase") == null ? "" : resultSet.getString("testcase");
-        int step = resultSet.getInt("step") == 0 ? 0 : resultSet.getInt("step");
+        int step = resultSet.getInt("stepId") == 0 ? 0 : resultSet.getInt("stepId");
         int sort = resultSet.getInt("sort");
         String loop = resultSet.getString("loop") == null ? "" : resultSet.getString("loop");
         String conditionOperator = resultSet.getString("conditionOperator") == null ? "" : resultSet.getString("conditionOperator");
-        String conditionVal1 = resultSet.getString("conditionVal1") == null ? "" : resultSet.getString("conditionVal1");
-        String conditionVal2 = resultSet.getString("conditionVal2") == null ? "" : resultSet.getString("conditionVal2");
-        String conditionVal3 = resultSet.getString("conditionVal3") == null ? "" : resultSet.getString("conditionVal3");
+        String conditionVal1 = resultSet.getString("conditionValue1") == null ? "" : resultSet.getString("conditionValue1");
+        String conditionVal2 = resultSet.getString("conditionValue2") == null ? "" : resultSet.getString("conditionValue2");
+        String conditionVal3 = resultSet.getString("conditionValue3") == null ? "" : resultSet.getString("conditionValue3");
         String description = resultSet.getString("description") == null ? "" : resultSet.getString("description");
         boolean isUsingLibraryStep = resultSet.getBoolean("isUsingLibraryStep");
         String libraryStepTest = resultSet.getString("libraryStepTest") == null ? "" : resultSet.getString("libraryStepTest");
