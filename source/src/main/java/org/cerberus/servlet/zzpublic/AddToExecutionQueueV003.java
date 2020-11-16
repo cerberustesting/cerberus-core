@@ -397,7 +397,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     if (testcases.getDataList() != null) {
                         for (TestCase campaignTestCase : testcases.getDataList()) {
                             selectTest.add(campaignTestCase.getTest());
-                            selectTestCase.add(campaignTestCase.getTestCase());
+                            selectTestCase.add(campaignTestCase.getTestcase());
                         }
                     } else {
                         errorMessage.append("Error - ").append(testcases.getMessageDescription()).append("\n");

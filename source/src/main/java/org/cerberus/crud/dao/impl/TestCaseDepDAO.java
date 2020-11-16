@@ -93,7 +93,7 @@ public class TestCaseDepDAO implements ITestCaseDepDAO {
                     int idx = 1;
                     for(TestCase tc : testCaseList) {
                         ps.setString(idx++, tc.getTest());
-                        ps.setString(idx++, tc.getTestCase());
+                        ps.setString(idx++, tc.getTestcase());
                     }
                 },
                 rs -> {

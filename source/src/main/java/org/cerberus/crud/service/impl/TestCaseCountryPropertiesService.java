@@ -158,9 +158,9 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         HashMap<String, TestCase> testCaseHash = new HashMap<>();
         // Before getting the list of properties, we first dedup the list of testcase with useStep as many steps from TestCase, could point to the same testCase library.
         for (TestCaseStep step : testCase.getSteps()) {
-            if (step.getUseStep().equals("Y")) {
-                LOG.debug("Item to add " + step.getUseStepTest() + "#/" + step.getUseStepTestCase());
-                testCaseHash.put(step.getUseStepTest() + "#/" + step.getUseStepTestCase(), factoryTestCase.create(step.getUseStepTest(), step.getUseStepTestCase()));
+            if (step.isUsingLibraryStep()) {
+                LOG.debug("Item to add " + step.getLibraryStepTest() + "#/" + step.getLibraryStepTestCase());
+                testCaseHash.put(step.getLibraryStepTest() + "#/" + step.getLibraryStepTestCase(), factoryTestCase.create(step.getLibraryStepTest(), step.getLibraryStepTestCase()));
             }
         }
         LOG.debug("Size " + testCaseHash.size());
@@ -256,8 +256,8 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
             List<TestCaseCountryProperties> tccpListPerCountry = new ArrayList<>();
 
             for (TestCase tcase : tcList) {
-                tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
-                tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestCase(), country));
+                tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestcase()));
+                tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestcase(), country));
             }
 
             //Keep only one property by name
@@ -284,7 +284,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
 
             // find all properties of those TC
             for (TestCase tcase : tcList) {
-                tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
+                tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestcase()));
             }
 
             /**

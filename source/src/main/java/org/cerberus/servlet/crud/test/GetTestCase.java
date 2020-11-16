@@ -112,7 +112,7 @@ public class GetTestCase extends HttpServlet {
                 jsonObject.put("targetMinor", tcInfo.getTargetMinor());
                 jsonObject.put("comment", tcInfo.getComment());
                 jsonObject.put("test", tcInfo.getTest());
-                jsonObject.put("testcase", tcInfo.getTestCase());
+                jsonObject.put("testcase", tcInfo.getTestcase());
 
                 JSONArray propertyList = new JSONArray();
                 List<TestCaseCountryProperties> properties = testCaseDAO.findDistinctPropertiesOfTestCase(test, testcase);
@@ -146,7 +146,7 @@ public class GetTestCase extends HttpServlet {
 
                 for (TestCaseStep step : tcs) {
                     JSONObject stepObject = new JSONObject();
-                    stepObject.put("number", step.getStep());
+                    stepObject.put("number", step.getStepId());
                     stepObject.put("name", step.getDescription());
                     int i = 1;
                     JSONArray actionList = new JSONArray();

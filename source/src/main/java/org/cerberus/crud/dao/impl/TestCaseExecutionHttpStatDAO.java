@@ -337,7 +337,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
                 preStat.setTimestamp(i++, t1);
                 for (TestCase testcase : testcases) {
                     preStat.setString(i++, testcase.getTest());
-                    preStat.setString(i++, testcase.getTestCase());
+                    preStat.setString(i++, testcase.getTestcase());
                 }
                 if (controlStatus != null) {
                     preStat.setString(i++, controlStatus);
@@ -517,7 +517,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
                 preStat.setTimestamp(i++, t1);
                 for (TestCase testcase : testcases) {
                     preStat.setString(i++, testcase.getTest());
-                    preStat.setString(i++, testcase.getTestCase());
+                    preStat.setString(i++, testcase.getTestcase());
                 }
                 if (controlStatus != null) {
                     preStat.setString(i++, controlStatus);

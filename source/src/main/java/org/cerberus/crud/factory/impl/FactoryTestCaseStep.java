@@ -30,12 +30,36 @@ import org.springframework.stereotype.Service;
 @Service
 public class FactoryTestCaseStep implements IFactoryTestCaseStep {
 
+    /**
+     * 
+     * @param test
+     * @param testCase
+     * @param step
+     * @param sort
+     * @param loop
+     * @param conditionOperator
+     * @param conditionVal1
+     * @param conditionVal2
+     * @param conditionVal3
+     * @param description
+     * @param isUsedStep
+     * @param useStepTest
+     * @param useStepTestCase
+     * @param useStepStep
+     * @param isLibraryStep
+     * @param isExecutionForced
+     * @param usrCreated
+     * @param dateCreated
+     * @param usrModif
+     * @param dateModif
+     * @return 
+     */
     @Override
-    public TestCaseStep create(String test, String testCase, int step, int sort, String loop, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String description, String useStep,
-            String useStepTest, String useStepTestCase, Integer useStepStep, String inLibrary, String forceExe, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
+    public TestCaseStep create(String test, String testCase, int step, int sort, String loop, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String description, boolean isUsingLibraryStep,
+            String libraryStepTest, String libraryStepTestcase, Integer libraryStepStepId, boolean isLibraryStep, boolean isExecutionForced, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         TestCaseStep testCaseStep = new TestCaseStep();
         testCaseStep.setDescription(description);
-        testCaseStep.setStep(step);
+        testCaseStep.setStepId(step);
         testCaseStep.setSort(sort);
         testCaseStep.setLoop(loop);
         testCaseStep.setConditionOperator(conditionOperator);
@@ -43,13 +67,13 @@ public class FactoryTestCaseStep implements IFactoryTestCaseStep {
         testCaseStep.setConditionVal2(conditionVal2);
         testCaseStep.setConditionVal3(conditionVal3);
         testCaseStep.setTest(test);
-        testCaseStep.setTestCase(testCase);
-        testCaseStep.setUseStep(useStep);
-        testCaseStep.setUseStepTest(useStepTest);
-        testCaseStep.setUseStepTestCase(useStepTestCase);
-        testCaseStep.setUseStepStep(useStepStep);
-        testCaseStep.setInLibrary(inLibrary);
-        testCaseStep.setForceExe(forceExe);
+        testCaseStep.setTestcase(testCase);
+        testCaseStep.setUsingLibraryStep(isUsingLibraryStep);
+        testCaseStep.setLibraryStepTest(libraryStepTest);
+        testCaseStep.setLibraryStepTestCase(libraryStepTestcase);
+        testCaseStep.setLibraryStepStepId(libraryStepStepId);
+        testCaseStep.setLibraryStep(isLibraryStep);
+        testCaseStep.setExecutionForced(isExecutionForced);
         testCaseStep.setUsrCreated(usrCreated);
         testCaseStep.setDateCreated(usrCreated);
         testCaseStep.setUsrModif(usrModif);

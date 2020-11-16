@@ -220,7 +220,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
                     TestCaseExecution execution = new TestCaseExecution();
 
                     execution.setTest(tc.getTest());
-                    execution.setTestCase(tc.getTestCase());
+                    execution.setTestCase(tc.getTestcase());
                     execution.setEnvironment(environment);
                     execution.setCountry(country);
                     result.add(execution);

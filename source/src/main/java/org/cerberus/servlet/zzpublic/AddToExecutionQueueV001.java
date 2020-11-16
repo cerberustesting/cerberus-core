@@ -303,7 +303,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                     selectedTests.add(new HashMap<String, String>() {
                         {
                             put(PARAMETER_SELECTED_TEST_KEY_TEST, str.getTest());
-                            put(PARAMETER_SELECTED_TEST_KEY_TESTCASE, str.getTestCase());
+                            put(PARAMETER_SELECTED_TEST_KEY_TESTCASE, str.getTestcase());
                         }
                     });
 

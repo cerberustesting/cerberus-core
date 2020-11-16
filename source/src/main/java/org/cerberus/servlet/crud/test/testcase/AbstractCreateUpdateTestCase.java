@@ -134,7 +134,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
                     List<TestCaseLabel> labelList = getLabelListFromRequest(request, test, testcase, objLabelArray);
 
                     // Update the Database with the new list.
-                    ans = testCaseLabelService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestCase(), labelList);
+                    ans = testCaseLabelService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestcase(), labelList);
                     finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                 }
 
@@ -144,7 +144,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
                     List<TestCaseCountry> tccList = getCountryListFromRequest(request, test, testcase, objCountryArray);
 
                     // Update the Database with the new list.
-                    ans = testCaseCountryService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestCase(), tccList);
+                    ans = testCaseCountryService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestcase(), tccList);
                     finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                 }
 
@@ -180,7 +180,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
                 if (request.getParameter("dependencies") != null) {
                     List<TestCaseDep> tcdList = getDependencyFromRequest(request, tc);
 
-                    testCaseDepService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestCase(), tcdList);
+                    testCaseDepService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestcase(), tcdList);
                 }
 
                 if (primaryKeyChanged) {
@@ -287,7 +287,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
 
             Timestamp creationDate = new Timestamp(new Date().getTime());
 
-            res.add(testCaseDepFactory.create(testcaseid, tc.getTest(), tc.getTestCase(), test, testcase, "", TestCaseExecutionQueueDep.TYPE_TCEXEEND, active, description, request.getRemoteUser(), creationDate, request.getRemoteUser(), creationDate));
+            res.add(testCaseDepFactory.create(testcaseid, tc.getTest(), tc.getTestcase(), test, testcase, "", TestCaseExecutionQueueDep.TYPE_TCEXEEND, active, description, request.getRemoteUser(), creationDate, request.getRemoteUser(), creationDate));
         }
         );
 

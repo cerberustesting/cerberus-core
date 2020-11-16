@@ -27,7 +27,31 @@ import org.cerberus.crud.entity.TestCaseStep;
  */
 public interface IFactoryTestCaseStep {
 
+    /**
+     * 
+     * @param test
+     * @param testCase
+     * @param step
+     * @param sort
+     * @param loop
+     * @param conditionOperator
+     * @param conditionVal1
+     * @param conditionVal2
+     * @param conditionVal3
+     * @param description
+     * @param isUsingLibraryStep 
+     * @param useStepTest
+     * @param libraryStepTestcase
+     * @param libraryStepStepId
+     * @param isLibraryTest
+     * @param isExecutionForced
+     * @param usrCreated
+     * @param dateCreated
+     * @param usrModif
+     * @param dateModif
+     * @return 
+     */
     TestCaseStep create(String test, String testCase, int step, int sort, String loop, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String description,
-            String useStep, String useStepTest, String useStepTestCase, Integer useStepStep, String inLibrary, String forceExe, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
+            boolean isUsingLibraryStep , String libraryStepTest, String libraryStepTestcase, Integer libraryStepStepId, boolean isLibraryTest, boolean isExecutionForced, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
 }

@@ -95,12 +95,12 @@ public class GetStepUsedAsLibraryInOtherTestCasePerApplication extends HttpServl
                 testcaseLink.append("<a href=\"TestCaseScript.jsp?test=");
                 testcaseLink.append(tcs.getTest());
                 testcaseLink.append("&testcase=");
-                testcaseLink.append(tcs.getTestCase());
+                testcaseLink.append(tcs.getTestcase());
                 testcaseLink.append("\">");
-                testcaseLink.append(tcs.getTestCase());
+                testcaseLink.append(tcs.getTestcase());
                 testcaseLink.append("</a>");
                 row.put(testcaseLink.toString());
-                row.put(tcs.getStep());
+                row.put(tcs.getStepId());
                 row.put(tcs.getDescription());
                 data.put(row);
             }

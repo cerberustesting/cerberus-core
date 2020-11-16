@@ -8730,10 +8730,50 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // ADD Parameters to manage credit limit
         // 1561
         a.add("INSERT INTO `parameter` VALUES('', 'cerberus_creditlimit_nbexeperday', '0', 'Maximum number of execution per day.'), ('', 'cerberus_creditlimit_secondexeperday', '0', 'Maximum duration of all execution in minutes.')");
-
+        
         // ADD Parameters to manage credit limit
         // 1562
         a.add("UPDATE invariant set value = 'TYPE' where idname='CAMPAIGN_TCCRITERIA' and value='GROUP';");
+                
+        // DROP testcase action foreign key to update testcasestep column names
+        // 1563
+        a.add("ALTER TABLE testcasestepaction DROP FOREIGN KEY FK_testcasestepaction_01;");
+        
+        // 1564
+        a.add("ALTER TABLE testcasestep "
+                + "CHANGE COLUMN Step StepId INT(10) UNSIGNED NOT NULL, "
+                + "CHANGE COLUMN TestCase Testcase VARCHAR(45) NOT NULL, "
+                + "CHANGE COLUMN ConditionVal1 ConditionValue1 TEXT, "
+                + "CHANGE COLUMN ConditionVal2 ConditionValue2 TEXT, "
+                + "CHANGE COLUMN ConditionVal3 ConditionValue3 TEXT, "
+                + "CHANGE COLUMN useStep IsUsingLibraryStep VARCHAR(1), "
+                + "CHANGE COLUMN useStepTest LibraryStepTest VARCHAR(45) DEFAULT NULL, "
+                + "CHANGE COLUMN useStepTestCase LibraryStepTestcase VARCHAR(45) DEFAULT NULL, "
+                + "CHANGE COLUMN useStepStep LibraryStepStepId int(10) UNSIGNED DEFAULT NULL, "
+                + "CHANGE COLUMN inLibrary IsLibraryStep VARCHAR(1), "
+                + "CHANGE COLUMN forceExe IsExecutionForced VARCHAR(1) NOT NULL;");
+        
+        // Update column type from VARCHAR to Boolean 
+        // 1565 -1570
+        a.add("UPDATE testcasestep SET IsUsingLibraryStep = 1 WHERE IsUsingLibraryStep = 'Y';");
+        a.add("UPDATE testcasestep SET IsExecutionForced = 1 WHERE IsExecutionForced = 'Y';");
+        a.add("UPDATE testcasestep SET IsLibraryStep = 1 WHERE IsLibraryStep = 'Y';");
+        a.add("UPDATE testcasestep SET IsUsingLibraryStep = 0 WHERE IsUsingLibraryStep != '1';");
+        a.add("UPDATE testcasestep SET IsExecutionForced = 0 WHERE IsExecutionForced != '1';");
+        a.add("UPDATE testcasestep SET IsLibraryStep = 0 WHERE IsLibraryStep != '1';");
+        
+        // 1571
+        a.add("ALTER TABLE testcasestep "
+                + "MODIFY IsUsingLibraryStep BOOLEAN DEFAULT 0, "
+                + "MODIFY IsExecutionForced BOOLEAN DEFAULT 0, "
+                + "MODIFY IsLibraryStep BOOLEAN DEFAULT 0;");
+        
+        // 1572
+        a.add("ALTER TABLE testcasestepaction "
+                + "ADD CONSTRAINT FK_testcasestepaction_01 "
+                + "FOREIGN KEY (Test , Testcase , Step) "
+                + "REFERENCES testcasestep (Test , TestCase , StepId) "
+                + "ON DELETE CASCADE ON UPDATE CASCADE;");
 
         return a;
     }

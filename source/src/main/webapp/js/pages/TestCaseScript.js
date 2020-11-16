@@ -2297,11 +2297,11 @@ function changeLib() {
     setModif(true);
     var stepHtml = $("#steps li.active");
     var stepData = stepHtml.data("item");
-    if (stepData.isLibraryStep === "Y") {
-        stepData.isLibraryStep = "N";
+    if (stepData.isLibraryStep) {
+        stepData.isLibraryStep = false;
         $(this).removeClass("btn-dark");
     } else {
-        stepData.isLibraryStep = "Y";
+        stepData.isLibraryStep = true;
         $(this).addClass("btn-dark");
     }
 }
@@ -2356,11 +2356,11 @@ function showImportStepDetail(element) {
 
 function initStep() {
     return {
-        "isLibraryStep": "N",
+        "isLibraryStep": false,
         "objType": "step",
         "libraryStepTest": "",
         "libraryStepTestCase": "",
-        "isUsedStep": "N",
+        "isUsingLibraryStep": false,
         "description": "",
         "libraryStepStepId": -1,
         "actions": [],
@@ -2369,7 +2369,7 @@ function initStep() {
         "conditionVal1": "",
         "conditionVal2": "",
         "conditionVal3": "",
-        "isExecutionForced": "N"
+        "isExecutionForced": false
     };
 }
 
@@ -2423,7 +2423,7 @@ function addStep(event) {
                         }
                     });
                     if ($("#" + generateImportInfoId(useStep)).find("[name='useStep']").prop("checked")) {
-                        step.isUsedStep = "Y";
+                        step.isUsingLibraryStep = true;
                         step.libraryStepTest = useStep.test;
                         step.libraryStepTestCase = useStep.testCase;
                         step.libraryStepStepId = useStep.step;
@@ -2779,7 +2779,7 @@ function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
     this.conditionVal1 = json.conditionVal1;
     this.conditionVal2 = json.conditionVal2;
     this.conditionVal3 = json.conditionVal3;
-    this.isUsedStep = json.isUsedStep;
+    this.isUsingLibraryStep = json.isUsingLibraryStep;
     this.isLibraryStep = json.isLibraryStep;
     this.libraryStepTest = json.libraryStepTest;
     this.libraryStepTestCase = json.libraryStepTestCase;
@@ -2792,7 +2792,7 @@ function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
     if (canUpdate) {
         // If we can update the testcase we check whether we can still modify
         // following the TestStepLibrary group.
-        if (!hasPermissionsStepLibrary && json.isLibraryStep === "Y") {
+        if (!hasPermissionsStepLibrary && json.isLibraryStep) {
             canUpdate = false;
         }
     }
@@ -2819,11 +2819,11 @@ Step.prototype.draw = function () {
         loopIcon = $("<span class='loopIcon'></span>").addClass("glyphicon glyphicon-refresh loop-Icon");
     }
 
-    if (this.isLibraryStep == "Y") {
+    if (this.isLibraryStep) {
         libraryIcon = $("<span class='libraryIcon'></span>").addClass("glyphicon glyphicon-book library-Icon");
     }
 
-    if (this.isUsedStep == "Y") {
+    if (this.isUsingLibraryStep) {
         libraryIcon = $("<span class='libraryIcon'></span>").addClass("glyphicon glyphicon-lock library-Icon");
     }
 
@@ -2880,7 +2880,7 @@ Step.prototype.show = function () {
     }
 
     $("#isLib").unbind("click");
-    if (object.isLibraryStep === "Y") {
+    if (object.isLibraryStep) {
         $("#isLib").addClass("btn-dark");
         if (object.isStepInUseByOtherTestCase) {
             $("#isLib").click(function () {
@@ -2896,7 +2896,7 @@ Step.prototype.show = function () {
         $("#isLib").click(changeLib);
     }
 
-    if (object.isUsedStep === "Y") {
+    if (object.isUsingLibraryStep) {
         $("#isLib").hide();
         $("#UseStepRow").html("(" + doc.getDocLabel("page_testcasescript", "imported_from") + " <a href='./TestCaseScript.jsp?test=" + encodeURI(object.libraryStepTest) + "&testcase=" + encodeURI(object.libraryStepTestCase) + "&step=" + encodeURI(object.useStepStepSort) + "' >" + object.libraryStepTest + " - " + object.libraryStepTestCase + " - " + object.useStepStepSort + "</a>)").show();
         $("#UseStepRowButton").html("|").show();
@@ -2962,9 +2962,9 @@ Step.prototype.show = function () {
 
     $("#isUseStep").unbind("click").click(function () {
         setModif(true);
-        if (object.isUsedStep === "Y") {
+        if (object.isUsedStep) {
             showModalConfirmation(function () {
-                object.isUsedStep = "N";
+                object.isUsedStep = false;
                 object.libraryStepStepId = -1;
                 object.libraryStepTest = "";
                 object.libraryStepTestCase = "";
@@ -2998,7 +2998,7 @@ Step.prototype.show = function () {
     $("#isLib").attr("disabled", activateIsLib);
     // Detail of the Step can be modified if hasPermitionUpdate is true and Step
     // is not a useStep.
-    var activateDisableWithUseStep = !(object.hasPermissionsUpdate && !(object.isUsedStep === "Y"));
+    var activateDisableWithUseStep = !(object.hasPermissionsUpdate && !(object.isUsedStep));
     $("#stepLoop").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionOperator").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal1").attr("disabled", activateDisableWithUseStep);
@@ -3086,7 +3086,7 @@ Step.prototype.getJsonData = function () {
     json.stepId = this.stepId;
     json.sort = this.sort;
     json.description = this.description;
-    json.isUsedStep = this.isUsedStep;
+    json.isUsingLibraryStep = this.isUsingLibraryStep;
     json.libraryStepTest = this.libraryStepTest;
     json.libraryStepTestCase = this.libraryStepTestCase;
     json.libraryStepStepId = this.libraryStepStepId;
@@ -3164,7 +3164,7 @@ Action.prototype.draw = function (afterAction) {
     var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding", "0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
     var imgGrp = $("<div></div>").addClass("col-lg-1").css("height", "100%").append($("<div style='margin-top:40px;'></div>").append($("<img>").attr("id", "ApplicationObjectImg").css("width", "100%")));
 
-    if ((this.parentStep.isUsedStep === "N") && (action.hasPermissionsUpdate)) {
+    if ((!this.parentStep.isUsingLibraryStep) && (action.hasPermissionsUpdate)) {
         drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
         drag.on("dragstart", handleDragStart);
         drag.on("dragenter", handleDragEnter);
@@ -3392,7 +3392,7 @@ Action.prototype.generateContent = function () {
 
     actionconditionoperator.trigger("change");
 
-    if ((this.parentStep.isUsedStep === "Y") || (!obj.hasPermissionsUpdate)) {
+    if ((this.parentStep.isUsingLibraryStep) || (!obj.hasPermissionsUpdate)) {
         descriptionField.prop("readonly", true);
         value1Field.prop("readonly", true);
         value2Field.prop("readonly", true);
@@ -3498,7 +3498,7 @@ Control.prototype.draw = function (afterControl) {
 
     var content = this.generateContent();
 
-    if ((this.parentAction.parentStep.isUsedStep === "N") && (control.hasPermissionsUpdate)) {
+    if ((!this.parentAction.parentStep.isUsingLibraryStep) && (control.hasPermissionsUpdate)) {
         drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
         drag.on("dragstart", handleDragStart);
         drag.on("dragenter", handleDragEnter);
@@ -3529,7 +3529,7 @@ Control.prototype.draw = function (afterControl) {
         }
     });
 
-    if ((this.parentStep.isUsedStep === "Y") || (!control.hasPermissionsUpdate)) {
+    if ((this.parentStep.isUsingLibraryStep) || (!control.hasPermissionsUpdate)) {
 
         supprBtn.attr("disabled", true);
         addBtn.attr("disabled", true);
@@ -3716,7 +3716,7 @@ Control.prototype.generateContent = function () {
     thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(controlconditionoperator));
 
 
-    if ((this.parentStep.isUsedStep === "Y") || (!obj.hasPermissionsUpdate)) {
+    if ((this.parentStep.isUsingLibraryStep) || (!obj.hasPermissionsUpdate)) {
         descriptionField.prop("readonly", true);
         controlValue1Field.prop("readonly", true);
         controlValue2Field.prop("readonly", true);

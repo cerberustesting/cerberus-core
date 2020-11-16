@@ -141,7 +141,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                     if ((testcases != null) && !testcases.isEmpty() && testcases.size() < 5000) {
                         for (TestCase testCase1 : testcases) {
                             ps.setString(i++, testCase1.getTest());
-                            ps.setString(i++, testCase1.getTestCase());
+                            ps.setString(i++, testCase1.getTestcase());
                         }
                     }
                 },
