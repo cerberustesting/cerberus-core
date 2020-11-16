@@ -350,7 +350,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         query.append("SELECT tcsac.* ");
         query.append("FROM testcasestepactioncontrol AS tcsac ");
         query.append("RIGHT JOIN testcasestepaction AS tcsa ON tcsac.Test = tcsa.Test AND tcsac.TestCase = tcsa.TestCase AND tcsac.Step = tcsa.Step AND tcsac.Sequence = tcsa.Sequence ");
-        query.append("RIGHT JOIN testcasestep AS tcs ON tcsac.Test = tcs.Test AND tcsac.TestCase = tcs.TestCase AND tcsac.Step = tcs.Step ");
+        query.append("RIGHT JOIN testcasestep AS tcs ON tcsac.Test = tcs.Test AND tcsac.TestCase = tcs.TestCase AND tcsac.Step = tcs.StepId ");
         query.append("WHERE tcsac.Test = ? AND tcsac.TestCase = ? ");
         query.append("GROUP BY tcsac.Test, tcsac.TestCase, tcsac.Step, tcsac.Sequence, tcsac.ControlSequence ");
         query.append("ORDER BY tcs.Sort, tcsa.Sort, tcsac.Sort ");

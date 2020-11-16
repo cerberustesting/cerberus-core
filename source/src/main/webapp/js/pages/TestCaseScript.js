@@ -2962,9 +2962,9 @@ Step.prototype.show = function () {
 
     $("#isUseStep").unbind("click").click(function () {
         setModif(true);
-        if (object.isUsedStep) {
+        if (object.isUsingLibraryStep) {
             showModalConfirmation(function () {
-                object.isUsedStep = false;
+                object.isUsingLibraryStep = false;
                 object.libraryStepStepId = -1;
                 object.libraryStepTest = "";
                 object.libraryStepTestCase = "";
@@ -2998,7 +2998,7 @@ Step.prototype.show = function () {
     $("#isLib").attr("disabled", activateIsLib);
     // Detail of the Step can be modified if hasPermitionUpdate is true and Step
     // is not a useStep.
-    var activateDisableWithUseStep = !(object.hasPermissionsUpdate && !(object.isUsedStep));
+    var activateDisableWithUseStep = !(object.hasPermissionsUpdate && !(object.isUsingLibraryStep));
     $("#stepLoop").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionOperator").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal1").attr("disabled", activateDisableWithUseStep);

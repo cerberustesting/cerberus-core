@@ -122,7 +122,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         final StringBuilder query = new StringBuilder();
         query.append("SELECT tca.* ");
         query.append("FROM testcasestepaction AS tca ");
-        query.append("RIGHT JOIN testcasestep AS tcs ON tca.Test = tcs.Test AND tca.TestCase = tcs.TestCase AND tca.Step = tcs.Step ");
+        query.append("RIGHT JOIN testcasestep AS tcs ON tca.Test = tcs.Test AND tca.TestCase = tcs.TestCase AND tca.Step = tcs.StepId ");
         query.append("WHERE tca.Test = ? AND tca.TestCase = ? ");
         query.append("GROUP BY tca.Test, tca.TestCase, tca.Step, tca.Sequence ");
         query.append("ORDER BY tcs.Sort, tca.Sort ");

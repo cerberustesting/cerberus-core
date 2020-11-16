@@ -393,7 +393,7 @@ public class TestCaseStep {
             stepJson.put("conditionVal1", this.getConditionVal1());
             stepJson.put("conditionVal2", this.getConditionVal2());
             stepJson.put("conditionVal3", this.getConditionVal3());
-            stepJson.put("isUsedStep", this.isUsingLibraryStep());
+            stepJson.put("isUsingLibraryStep", this.isUsingLibraryStep());
             stepJson.put("isLibraryStep", this.isLibraryStep());
             stepJson.put("libraryStepTest", this.getLibraryStepTest());
             stepJson.put("libraryStepTestCase", this.getLibraryStepTestCase());

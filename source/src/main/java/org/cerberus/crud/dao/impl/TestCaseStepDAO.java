@@ -123,7 +123,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     @Override
     public TestCaseStep findTestCaseStep(String test, String testcase, Integer step) {
         TestCaseStep result = null;
-        final String query = "SELECT * FROM testcasestep WHERE test = ? AND testcase = ? AND step = ?";
+        final String query = "SELECT * FROM testcasestep WHERE test = ? AND testcase = ? AND stepId = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -169,7 +169,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     @Override
     public void deleteTestCaseStep(TestCaseStep tcs) throws CerberusException {
         boolean throwExcep = false;
-        final String query = "DELETE FROM testcasestep WHERE test = ? and testcase = ? and step = ?";
+        final String query = "DELETE FROM testcasestep WHERE test = ? and testcase = ? and stepId = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -220,7 +220,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         if (tcs.getLibraryStepStepId() >= 0) {
             query.append(",`libraryStepStepId`=? ");
         }
-        query.append(",`isLibraryStep` = ?, `Sort` = ?, `loop` = ?, `conditionOperator` = ?, `conditionVal1` = ?, `conditionVal2` = ?, `conditionVal3` = ?, `isExecutionForced` = ?, DateModif = CURRENT_TIMESTAMP, UsrModif = ? WHERE Test = ? AND TestCase = ? AND step = ?");
+        query.append(",`isLibraryStep` = ?, `Sort` = ?, `loop` = ?, `conditionOperator` = ?, `conditionVal1` = ?, `conditionVal2` = ?, `conditionVal3` = ?, `isExecutionForced` = ?, DateModif = CURRENT_TIMESTAMP, UsrModif = ? WHERE Test = ? AND TestCase = ? AND stepId = ?");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -844,7 +844,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         Answer ans = new Answer();
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO `testcasestep` (`Test`,`TestCase`,`Step`,`Sort`,`Description`,`isUsingLibraryStep` ");
+        query.append("INSERT INTO `testcasestep` (`Test`,`TestCase`,`StepId`,`Sort`,`Description`,`isUsingLibraryStep` ");
 
         if (!StringUtil.isNullOrEmpty(testCaseStep.getLibraryStepTest())) {
             query.append(",`libraryStepTest` ");
@@ -855,7 +855,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         if (testCaseStep.getLibraryStepStepId() >= 0) {
             query.append(",`libraryStepStepId` ");
         }
-        query.append(", `isLibraryStep`, `loop`, `conditionOperator`, `conditionVal1`, `conditionVal2`, `conditionVal3`, `isExecutionForced`, `usrCreated`) ");
+        query.append(", `isLibraryStep`, `loop`, `conditionOperator`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `isExecutionForced`, `usrCreated`) ");
         query.append("VALUES (?,?,?,?,?,?,?");
         if (!StringUtil.isNullOrEmpty(testCaseStep.getLibraryStepTest())) {
             query.append(",?");

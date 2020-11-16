@@ -351,7 +351,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionVal2 = step.getString("conditionVal2");
             String conditionVal3 = step.getString("conditionVal3");
             String description = step.getString("description");
-            boolean isUsedStep = step.getBoolean("isUsedStep");
+            boolean isUsingLibraryStep = step.getBoolean("isUsingLibraryStep");
             String libraryStepTest = step.getString("libraryStepTest");
             String libraryStepTestCase = step.getString("libraryStepTestCase");
             int libraryStepStepId = step.getInt("libraryStepStepId");
@@ -360,10 +360,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             JSONArray stepActions = step.getJSONArray("actionArr");
 
             if (!delete) {
-                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, sort, loop, conditionOperator, conditionVal1, conditionVal2, conditionVal3, description, isUsedStep, libraryStepTest,
+                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, sort, loop, conditionOperator, conditionVal1, conditionVal2, conditionVal3, description, isUsingLibraryStep, libraryStepTest,
                         libraryStepTestCase, libraryStepStepId, isLibraryStep, isExecutionForced , null, null, request.getUserPrincipal().getName(), null);
 
-                if (!isUsedStep) {
+                if (!isUsingLibraryStep) {
                     tcStep.setActions(getTestCaseStepActionFromParameter(request, appContext, test, testCase, stepActions));
                 } else {
                     TestCaseStep tcs = null;
