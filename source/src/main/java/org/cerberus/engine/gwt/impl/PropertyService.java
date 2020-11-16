@@ -981,7 +981,7 @@ public class PropertyService implements IPropertyService {
                 Integer indexFrom = 0;
                 if (!tCExecution.getNetworkTrafficIndexList().isEmpty()) {
                     // Take the value from the last entry.
-                    indexFrom = tCExecution.getNetworkTrafficIndexList().get(tCExecution.getNetworkTrafficIndexList().size() - 1);
+                    indexFrom = tCExecution.getNetworkTrafficIndexList().get(tCExecution.getNetworkTrafficIndexList().size() - 1).getIndexRequestNb();
                 }
 
                 JSONObject harRes = executorService.getHar(testCaseExecutionData.getValue1(), false, tCExecution.getRobotExecutorObj().getExecutorExtensionHost(), tCExecution.getRobotExecutorObj().getExecutorExtensionPort(),

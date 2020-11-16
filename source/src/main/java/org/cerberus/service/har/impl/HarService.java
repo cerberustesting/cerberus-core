@@ -40,6 +40,7 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.har.IHarService;
 import org.cerberus.service.har.entity.HarStat;
+import org.cerberus.service.har.entity.NetworkTrafficIndex;
 import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -68,7 +69,7 @@ public class HarService implements IHarService {
     private static final String PROVIDER_IGNORE = "ignore";
 
     @Override
-    public JSONObject enrichWithStats(JSONObject har, String domains, String system, List<Integer> indexList) {
+    public JSONObject enrichWithStats(JSONObject har, String domains, String system, List<NetworkTrafficIndex> indexList) {
         LOG.debug("Enriching HAR file with stats.");
         try {
             JSONArray harEntries = har.getJSONObject("log").getJSONArray("entries");
@@ -164,21 +165,42 @@ public class HarService implements IHarService {
             stat.put("nbThirdParty", nbTP);
 
             JSONArray req = new JSONArray();
+            Integer tmpIndex = 0;
+
+            Integer i = 1;
             for (JSONObject jSONObject : harTotalStat.getUrlList()) {
                 jSONObject.put("start", jSONObject.getLong("start") - firstEver.getTime());
+                // Feed the index position from indexList
+                tmpIndex = getNetworkTrafficIndexPositionFromList(i++, indexList);
+                jSONObject.put("index", tmpIndex);
+                if (tmpIndex == 0) {
+                    jSONObject.put("indexName", "n/a");
+                } else {
+                    jSONObject.put("indexName", indexList.get((tmpIndex - 1)).getName());
+                }
                 req.put(jSONObject);
             }
             stat.put("requests", req);
 
-            har.put("stat", stat);
-            
-            // Adding index.
+            // Adding index array.
             JSONArray indexArray = new JSONArray();
-            for (Integer ind : indexList) {
-                indexArray.put(ind);
+            if (indexList.isEmpty() || indexList.get(0).getIndexRequestNb() > 0) {
+                // When test does not start by an indexNetworkTraffic action, we automaticaly adds the 1st index with n/a value.
+                NetworkTrafficIndex naIndex = new NetworkTrafficIndex();
+                naIndex.setIndex(0);
+                naIndex.setIndexRequestNb(0);
+                naIndex.setName("n/a");
+                indexArray.put(naIndex.toJson());
             }
-            har.put("index", indexArray);
-            
+            i = 1;
+            for (NetworkTrafficIndex ind : indexList) {
+                ind.setIndex(i++);
+                indexArray.put(ind.toJson());
+            }
+            stat.put("index", indexArray);
+
+            har.put("stat", stat);
+
             return har;
 
         } catch (JSONException ex) {
@@ -187,6 +209,21 @@ public class HarService implements IHarService {
             LOG.error("Exception when trying to enrich har file.", ex);
         }
         return har;
+    }
+
+    private Integer getNetworkTrafficIndexPositionFromList(Integer hitNb, List<NetworkTrafficIndex> list) {
+        if (list.isEmpty()) {
+            return 0;
+        }
+        Integer i = 0;
+        // Loop over all index values until the request nb is reached (max 500 index possible).
+        while (((i < list.size()) && (list.get(i).getIndexRequestNb() < hitNb)) && (i < 500)) {
+            i++;
+        }
+        if (i == 0) {
+            return 0;
+        }
+        return (i);
     }
 
     private HashMap<String, List<String>> loadProvidersExternal() {

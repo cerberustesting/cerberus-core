@@ -76,7 +76,7 @@
                                         <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;font-weight: 900;word-wrap: break-word"></span>
                                     </div>
                                 </div>
-                            <div class="col-lg-5" style="padding: 0px;">
+                                <div class="col-lg-5" style="padding: 0px;">
                                     <div id="RefreshQueueButton">
                                         <button id="refreshQueue" class="btn btn-default">Refresh</button>
                                         <button id="editQueue" class="btn btn-default">Edit Queue Entry</button>
@@ -594,6 +594,20 @@
                         </div>
 
                         <div class="center marginTop25 tab-pane fade" id="tabNetwork">
+
+                            <div class="panel" id="filterContainer">
+                                <div class="panel-body" id="FilterIndex">
+                                    <label for="selectIndex">Index :</label>
+                                    <div class="row" id="indexFilter">
+                                        <div class="input-group">
+                                            <select class="form-control col-lg-12" name="Index" id="selectIndex" multiple="multiple"></select>
+                                            <div class="input-group-btn">
+                                                <button type="button" class="btn btn-default" style="margin-left: 10px;" id="loadbutton" onclick="updateAllGraphs()">Load</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="panel panel-default" id="NS1Panel">
                                 <div class="panel-heading card" data-toggle="collapse" data-target="#NS1">

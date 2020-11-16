@@ -1253,6 +1253,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','t_size','','fr','Taille','',NULL)");
         b.append(",('page_executiondetail','t_time','','en','Time','',NULL)");
         b.append(",('page_executiondetail','t_time','','fr','Durée','',NULL)");
+        b.append(",('page_executiondetail','t_index','','en','Index','',NULL)");
+        b.append(",('page_executiondetail','t_index','','fr','Index','',NULL)");
+        b.append(",('page_executiondetail','t_indexName','','en','Index Name','',NULL)");
+        b.append(",('page_executiondetail','t_indexName','','fr','Index Name','',NULL)");
         b.append(",('page_executiondetail','hits','','en','Requests per http status','',NULL)");
         b.append(",('page_executiondetail','hits','','fr','Requêtes par code http','',NULL)");
         b.append(",('page_executiondetail','size','','en','Size per type','',NULL)");

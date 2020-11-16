@@ -56,6 +56,7 @@ import org.cerberus.service.cerberuscommand.ICerberusCommand;
 import org.cerberus.service.consolelog.IConsolelogService;
 import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.har.IHarService;
+import org.cerberus.service.har.entity.NetworkTrafficIndex;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.service.sikuli.impl.SikuliService;
@@ -63,7 +64,6 @@ import org.cerberus.service.soap.ISoapService;
 import org.cerberus.service.sql.ISQLService;
 import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
-import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONArray;
@@ -355,7 +355,7 @@ public class ActionService implements IActionService {
                     res = this.doActionSetNetworkTrafficContent(tCExecution, testCaseStepActionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_INDEXNETWORKTRAFFIC:
-                    res = this.doActionIndexNetworkTraffic(tCExecution, testCaseStepActionExecution);
+                    res = this.doActionIndexNetworkTraffic(tCExecution, testCaseStepActionExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_SETCONSOLECONTENT:
                     res = this.doActionSetConsoleContent(tCExecution, testCaseStepActionExecution, value1);
@@ -1572,7 +1572,7 @@ public class ActionService implements IActionService {
             Integer indexFrom = 0;
             if (!exe.getNetworkTrafficIndexList().isEmpty()) {
                 // Take the value from the last entry.
-                indexFrom = exe.getNetworkTrafficIndexList().get(exe.getNetworkTrafficIndexList().size() - 1);
+                indexFrom = exe.getNetworkTrafficIndexList().get(exe.getNetworkTrafficIndexList().size() - 1).getIndexRequestNb();
             }
 
             // We now get the har data.
@@ -1610,7 +1610,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionIndexNetworkTraffic(TestCaseExecution exe, TestCaseStepActionExecution actionexe) throws IOException {
+    private MessageEvent doActionIndexNetworkTraffic(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String value1) throws IOException {
         MessageEvent message;
         try {
             // Check that robot has executor activated
@@ -1621,15 +1621,16 @@ public class ActionService implements IActionService {
             }
 
             LOG.debug("Getting Network Traffic index");
-
             /**
              * Building the url to get the Latest index from cerberus-executor
              */
             Integer nbHits = executorService.getHitsNb(exe.getRobotExecutorObj().getExecutorExtensionHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID());
 
-            if (nbHits > 0) {
-                exe.appendNetworkTrafficIndexList(nbHits);
-            }
+            NetworkTrafficIndex nti = new NetworkTrafficIndex();
+            nti.setName(value1);
+            nti.setIndexRequestNb(nbHits);
+            exe.appendNetworkTrafficIndexList(nti);
+
             LOG.debug("New Index : " + exe.getNetworkTrafficIndexList());
 
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_INDEXNETWORKTRAFFIC).resolveDescription("NB", nbHits.toString()).resolveDescription("INDEX", String.valueOf(exe.getNetworkTrafficIndexList().size()));

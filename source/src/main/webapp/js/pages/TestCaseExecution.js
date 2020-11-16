@@ -21,6 +21,10 @@ var paramActivatewebsocketpush = "N";
 var paramWebsocketpushperiod = 5000;
 var networkStat = {};
 var configDo = {};
+var configNb = {};
+var configSize = {};
+var configGantt = {};
+var sortCol = 1;
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -33,13 +37,16 @@ $.when($.getScript("js/global/global.js")).then(function () {
         bindToggleCollapse();
 
         $("#sortSize").click(function () {
-            update_thirdParty_Chart(1);
+            sortCol = 1;
+            update_thirdParty_Chart();
         });
         $("#sortRequest").click(function () {
-            update_thirdParty_Chart(2);
+            sortCol = 2;
+            update_thirdParty_Chart();
         });
         $("#sortTime").click(function () {
-            update_thirdParty_Chart(3);
+            sortCol = 3;
+            update_thirdParty_Chart();
         });
 
 
@@ -488,32 +495,71 @@ function updatePage(data, steps) {
     drawDependencies(data.testCaseExecutionQueueDepList, "depTableBody", "editTabDep");
 
     if (data.httpStat !== undefined) {
-        drawNetworkCharts(data.httpStat.stat);
+        networkStat = data.httpStat.stat;
+
+        // Feed index select box.
+        loadIndexSelect();
+
+        drawNetworkCharts();
     }
 }
 
 
-function drawNetworkCharts(data) {
+function drawNetworkCharts() {
     var doc = new Doc();
 
     $("#editTabNetwork").show();
 
-    var title = [doc.getDocLabel("page_executiondetail", "hits"), 'total : ' + data.total.requests.nb];
-    drawChart_HttpStatus(data, title, 'myChart1');
+    drawChart_HttpStatus('myChart1');
 
-    var title = [doc.getDocLabel("page_executiondetail", "size"), 'total : ' + formatNumber(Math.round(data.total.size.sum / 1024)) + ' Kb'];
-    drawChart_SizePerType(data, title, 'myChart2');
+    drawChart_SizePerType('myChart2');
 
-    networkStat = data;
     drawChart_PerThirdParty(networkStat, 'myChart3');
 
     var title = [doc.getDocLabel("page_executiondetail", "thirdPartygantt")];
-    drawChart_GanttPerThirdParty(data, title, 'myChart4');
+    drawChart_GanttPerThirdParty(networkStat, title, 'myChart4');
 
-    drawTable_Requests(data, "requestTable", "#NS3Panel")
+    drawTable_Requests(networkStat, "requestTable", "#NS3Panel");
 
 }
 
+
+function updateAllGraphs() {
+    update_HttpStatus();
+    update_SizePerType();
+    drawTable_Requests(networkStat, "requestTable", "#NS3Panel");
+    update_thirdParty_Chart();
+    update_GanttPerThirdParty();
+
+}
+
+function isIndexSelected(index, selectedIndex) {
+    for (var key in selectedIndex) {
+        // WARNING : type are not the same so == should be used in stead of ===
+        if (selectedIndex[key].id == index) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function loadIndexSelect() {
+    console.info("loadingSelect...")
+    $("#selectIndex").select2({
+        width: '100%' // need to override the default to secure to take the full size available.
+    });
+    $('#selectIndex').empty().trigger("change");
+
+    if (networkStat.index !== undefined) {
+        for (var key in networkStat.index) {
+            var $option = $('<option selected></option>').text(networkStat.index[key].name).val(networkStat.index[key].index);
+            $("#selectIndex").append($option); // append the option.
+        }
+        // Refresh the select2
+        $("#selectIndex").trigger('change');
+    }
+
+}
 
 function drawTable_Requests(data, targetTable, targetPanel) {
     var configurations = new TableConfigurationsClientSide(targetTable, data.requests, aoColumnsFunc(), true, [0, 'asc']);
@@ -523,11 +569,17 @@ function drawTable_Requests(data, targetTable, targetPanel) {
         createDataTableWithPermissions(configurations, undefined, targetPanel);
         showTitleWhenTextOverflow();
     } else {
+        let selectedIndex = $('#selectIndex').select2('data');
+        var newData = [];
+        for (var key in networkStat.requests) {
+            if (isIndexSelected(networkStat.requests[key].index, selectedIndex)) {
+                newData.push(networkStat.requests[key]);
+            }
+        }
+
         var oTable = $("#requestTable").dataTable();
         oTable.fnClearTable();
-        if (data.requests.length > 0) {
-            oTable.fnAddData(data.requests);
-        }
+        oTable.fnAddData(newData);
     }
 }
 
@@ -542,80 +594,107 @@ function aoColumnsFunc() {
         {"data": "contentType", "bSortable": true, "sName": "contentType", "title": doc.getDocOnline("page_executiondetail", "t_contentType"), "sWidth": "70px"},
         {"data": "httpStatus", "bSortable": true, "sName": "httpStatus", "title": doc.getDocOnline("page_executiondetail", "t_httpStatus"), "sWidth": "50px"},
         {"data": "size", "bSortable": true, "sName": "size", "title": doc.getDocOnline("page_executiondetail", "t_size"), "sWidth": "50px"},
-        {"data": "time", "bSortable": true, "sName": "time", "title": doc.getDocOnline("page_executiondetail", "t_time"), "sWidth": "50px"}
+        {"data": "time", "bSortable": true, "sName": "time", "title": doc.getDocOnline("page_executiondetail", "t_time"), "sWidth": "50px"},
+        {"data": "index", "bSortable": true, "visible": false, "sName": "index", "title": doc.getDocOnline("page_executiondetail", "t_index"), "sWidth": "30px"},
+        {"data": "indexName", "bSortable": true, "sName": "indexName", "title": doc.getDocOnline("page_executiondetail", "t_indexName"), "sWidth": "50px"}
     ];
 
     return aoColumns;
 }
 
 
-function drawChart_HttpStatus(data, titletext, target) {
+function drawChart_HttpStatus(target) {
+
+    configNb = {
+        type: 'pie',
+        data: {
+            datasets: [{
+                    data: [],
+                    backgroundColor: [],
+                    label: 'Hits'
+                }],
+            labels: []
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: []
+            }
+        }
+    };
+
+    var ctx = document.getElementById(target).getContext('2d');
+    window.graphNb = new Chart(ctx, configNb);
+
+    update_HttpStatus();
+}
+
+function update_HttpStatus() {
+    var doc = new Doc();
+
+    let selectedIndex = $('#selectIndex').select2('data');
+    let resultNb = {};
+    let resultNbTotal = 0;
+    for (var key in networkStat.requests) {
+        if (isIndexSelected(networkStat.requests[key].index, selectedIndex)) {
+            resultNbTotal++;
+            let entryNb = "" + networkStat.requests[key].httpStatus;
+            let entrySize = "" + networkStat.requests[key].contentType;
+            if (resultNb.hasOwnProperty(entryNb)) {
+                resultNb[entryNb]++;
+            } else {
+                resultNb[entryNb] = 1;
+            }
+        }
+    }
+
+    let data = resultNb;
 
     var dataArray = [];
     var labelArray = [];
     var bgColorArray = [];
 
-    if (data.hasOwnProperty("total")) {
-
-        var newDataArray = [];
-        for (var key in data.total.requests) {
-            if ((!key.includes("XX") && key.includes("nb") && (key !== "nb")) && (data.total.requests[key] > 0)) {
-                var entry = {
-                    nb: data.total.requests[key],
-                    name: key,
-                    color: drawChart_HttpStatus_Color(key)
-                };
-                newDataArray.push(entry);
-            }
-        }
-        // Sorting values by nb of requests.
-        sortedArrayOfObj = newDataArray.sort(function (a, b) {
-            return b.nb - a.nb;
-        });
-
-        sortedArrayOfObj.forEach(function (d) {
-            dataArray.push(d.nb);
-            labelArray.push(d.name);
-            bgColorArray.push(d.color);
-        });
-
-        var config = {
-            type: 'pie',
-            data: {
-                datasets: [{
-                        data: dataArray,
-                        backgroundColor: bgColorArray,
-                        label: 'Hits'
-                    }],
-                labels: labelArray
-            },
-            options: {
-                responsive: true,
-                title: {
-                    display: true,
-                    text: titletext
-                }
-            }
+    var newDataArray = [];
+    for (var key in data) {
+        var entry = {
+            nb: data[key],
+            name: key,
+            color: drawChart_HttpStatus_Color(key)
         };
-
-        var ctx = document.getElementById(target).getContext('2d');
-        let chart = new Chart(ctx, config);
-
+        newDataArray.push(entry);
     }
+    // Sorting values by nb of requests.
+    sortedArrayOfObj = newDataArray.sort(function (a, b) {
+        return b.nb - a.nb;
+    });
 
+    sortedArrayOfObj.forEach(function (d) {
+        dataArray.push(d.nb);
+        labelArray.push(d.name);
+        bgColorArray.push(d.color);
+    });
+
+    configNb.data.datasets[0].data = dataArray;
+    configNb.data.datasets[0].backgroundColor = bgColorArray;
+    configNb.data.labels = labelArray;
+    configNb.options.title.text = [doc.getDocLabel("page_executiondetail", "hits"), 'total : ' + resultNbTotal];
+
+    window.graphNb.update();
 }
+
 
 function drawChart_HttpStatus_Color(i) {
     if (i !== undefined) {
         if (i.includes("nbE")) {
             return "purple";
-        } else if (i.includes("nb2")) {
+        } else if (i.startsWith("2")) {
             return "green";
-        } else if (i.includes("nb3")) {
+        } else if (i.startsWith("3")) {
             return "lightgreen";
-        } else if (i.includes("nb4")) {
+        } else if (i.startsWith("4")) {
             return "orange";
-        } else if (i.includes("nb5")) {
+        } else if (i.startsWith("5")) {
             return "red";
         }
     }
@@ -623,71 +702,101 @@ function drawChart_HttpStatus_Color(i) {
 }
 
 
-function drawChart_SizePerType(data, titletext, target) {
+function drawChart_SizePerType(target) {
 
-    if (data.hasOwnProperty("total")) {
-
-        var dataArray = [];
-        var labelArray = [];
-        var bgColorArray = [];
-
-        var newDataArray = [];
-        drawChart_SizePerType_Data(data.total.type.html.sizeSum, "html", newDataArray, "html");
-        drawChart_SizePerType_Data(data.total.type.img.sizeSum, "img", newDataArray, "img");
-        drawChart_SizePerType_Data(data.total.type.js.sizeSum, "js", newDataArray, "js");
-        drawChart_SizePerType_Data(data.total.type.css.sizeSum, "css", newDataArray, "css");
-        drawChart_SizePerType_Data(data.total.type.content.sizeSum, "content", newDataArray, "content");
-        drawChart_SizePerType_Data(data.total.type.font.sizeSum, "font", newDataArray, "font");
-        drawChart_SizePerType_Data(data.total.type.other.sizeSum, "other", newDataArray, "other");
-        drawChart_SizePerType_Data(data.total.type.media.sizeSum, "media", newDataArray, "media");
-
-        // Sorting values by nb of requests.
-        sortedArrayOfObj = newDataArray.sort(function (a, b) {
-            return b.nb - a.nb;
-        });
-
-        sortedArrayOfObj.forEach(function (d) {
-            dataArray.push(d.nb);
-            labelArray.push(d.name);
-            bgColorArray.push(d.color);
-        });
-
-        var config = {
-            type: 'pie',
-            data: {
-                datasets: [{
-                        data: dataArray,
-                        backgroundColor: bgColorArray,
-                        label: 'Size'
-                    }],
-                labels: labelArray
-            },
-            options: {
-                responsive: true,
-                tooltips: {
-                    enabled: true,
-                    callbacks: {
-                        label: function (tooltipItem, data) {
-                            var label = data.labels[tooltipItem.index] + " " + data.datasets[0].label;
-                            label += ': ';
-                            let tmp = data.datasets[0].data[tooltipItem.index];
-                            label += formatNumber(Math.round(tmp / 1024)) + " Kb";
-                            return label;
-                        }
-                    }},
-                title: {
-                    display: true,
-                    text: titletext
-                }
+    configSize = {
+        type: 'pie',
+        data: {
+            datasets: [{
+                    data: [],
+                    backgroundColor: [],
+                    label: 'Size'
+                }],
+            labels: []
+        },
+        options: {
+            responsive: true,
+            tooltips: {
+                enabled: true,
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var label = data.labels[tooltipItem.index] + " " + data.datasets[0].label;
+                        label += ': ';
+                        let tmp = data.datasets[0].data[tooltipItem.index];
+                        label += formatNumber(Math.round(tmp / 1024)) + " Kb";
+                        return label;
+                    }
+                }},
+            title: {
+                display: true,
+                text: []
             }
-        };
+        }
+    };
 
-        var ctx = document.getElementById(target).getContext('2d');
-        let chart = new Chart(ctx, config);
+    var ctx = document.getElementById(target).getContext('2d');
+    window.graphSize = new Chart(ctx, configSize);
 
-    }
+    update_SizePerType();
 
 }
+
+function update_SizePerType() {
+    var doc = new Doc();
+
+    // Filtering the data for only selected index.
+    let selectedIndex = $('#selectIndex').select2('data');
+    let resultSize = {};
+    let resultSizeTotal = 0;
+    for (var key in networkStat.requests) {
+        if (isIndexSelected(networkStat.requests[key].index, selectedIndex)) {
+            resultSizeTotal = resultSizeTotal + networkStat.requests[key].size;
+            let entrySize = "" + networkStat.requests[key].contentType;
+            if (resultSize.hasOwnProperty(entrySize)) {
+                resultSize[entrySize] = resultSize[entrySize] + networkStat.requests[key].size;
+            } else {
+                resultSize[entrySize] = networkStat.requests[key].size;
+            }
+        }
+    }
+
+    let data = resultSize;
+
+    var newDataArray = [];
+    drawChart_SizePerType_Data(data.html, "html", newDataArray, "html");
+    drawChart_SizePerType_Data(data.img, "img", newDataArray, "img");
+    drawChart_SizePerType_Data(data.js, "js", newDataArray, "js");
+    drawChart_SizePerType_Data(data.css, "css", newDataArray, "css");
+    drawChart_SizePerType_Data(data.content, "content", newDataArray, "content");
+    drawChart_SizePerType_Data(data.font, "font", newDataArray, "font");
+    drawChart_SizePerType_Data(data.other, "other", newDataArray, "other");
+    drawChart_SizePerType_Data(data.media, "media", newDataArray, "media");
+
+    // Sorting values by nb of requests.
+    sortedArrayOfObj = newDataArray.sort(function (a, b) {
+        return b.nb - a.nb;
+    });
+
+    var dataArray = [];
+    var labelArray = [];
+    var bgColorArray = [];
+
+
+    sortedArrayOfObj.forEach(function (d) {
+        dataArray.push(d.nb);
+        labelArray.push(d.name);
+        bgColorArray.push(d.color);
+    });
+
+    configSize.data.datasets[0].data = dataArray;
+    configSize.data.datasets[0].backgroundColor = bgColorArray;
+    configSize.data.labels = labelArray;
+    configSize.options.title.text = [doc.getDocLabel("page_executiondetail", "size"), 'total : ' + formatNumber(Math.round(resultSizeTotal / 1024)) + ' Kb'];
+//    var title = [doc.getDocLabel("page_executiondetail", "size"), 'total : ' + formatNumber(Math.round(resultSizeTotal / 1024)) + ' Kb'];
+
+    window.graphSize.update();
+}
+
 
 function drawChart_SizePerType_Data(nb, key, newDataArray, label) {
     if (nb > 0) {
@@ -767,7 +876,53 @@ function drawChart_PerThirdParty(data, target) {
     update_thirdParty_Chart(1);
 }
 
-function update_thirdParty_Chart(sortCol) {
+function update_thirdParty_Chart() {
+    var doc = new Doc();
+
+    // Filtering the data for only selected index.
+    let selectedIndex = $('#selectIndex').select2('data');
+    let result3rdParty = {};
+    let unknownDomain = [];
+    let nbThirdParty = 0;
+    for (var key in networkStat.requests) {
+        if (isIndexSelected(networkStat.requests[key].index, selectedIndex)) {
+            let entryProvider = "" + networkStat.requests[key].provider;
+            // Add (unduplicated) all domains that are in unknown provider
+            if (entryProvider === "unknown") {
+                var exist = false;
+                for (var i = 0; i < unknownDomain.length; i++) {
+                    if (unknownDomain[i] === networkStat.requests[key].domain) {
+                        // it happened.
+                        exist = true;
+                        break;
+                    }
+                }
+                if (!exist)
+                    unknownDomain.push(networkStat.requests[key].domain);
+            }
+            if (result3rdParty.hasOwnProperty(entryProvider)) {
+                result3rdParty[entryProvider].size = result3rdParty[entryProvider].size + networkStat.requests[key].size;
+                if (networkStat.requests[key].time > result3rdParty[entryProvider].time) {
+                    result3rdParty[entryProvider].time = networkStat.requests[key].time;
+                }
+                result3rdParty[entryProvider].nb++;
+            } else {
+                if ((entryProvider !== "unknown") && (entryProvider !== "internal")) {
+                    nbThirdParty++;
+                }
+                result3rdParty[entryProvider] = {size: networkStat.requests[key].size, nb: 1, time: networkStat.requests[key].time};
+            }
+        }
+    }
+
+    // Display unknown hosts in warning mode.
+    $("#detailUnknownList").empty();
+    let entryUnknown = $('<li class="list-group-item">').text("Unknown Hosts/Domains:");
+    $("#detailUnknownList").append(entryUnknown);
+    for (var key in unknownDomain) {
+        let entryUnknown = $('<li class="list-group-item list-group-item-danger">').text(unknownDomain[key]);
+        $("#detailUnknownList").append(entryUnknown);
+    }
 
     var newDataArray = [];
     var dataArray1 = [];
@@ -783,7 +938,7 @@ function update_thirdParty_Chart(sortCol) {
     $("#sortRequest").removeClass("btn-primary");
     $("#sortTime").removeClass("btn-primary");
 
-    drawChart_GetThirdPartyDataset(networkStat, newDataArray);
+    drawChart_GetThirdPartyDataset(result3rdParty, newDataArray);
 
     // Sorting values by nb of requests.
     if (sortCol === 2) {
@@ -838,36 +993,22 @@ function update_thirdParty_Chart(sortCol) {
 
     configDo.data.labels = labelArray;
 
+    configDo.options.title.text = [doc.getDocLabel("page_executiondetail", "thirdPartychart"), 'total : ' + nbThirdParty];
+
     window.graph1.update();
 }
 
 function drawChart_GetThirdPartyDataset(data, newDataArray) {
-
-    // Internal stat.
-    if (data.hasOwnProperty("internal")) {
-        drawChart_PerThirdParty_data(data.internal.size.sum, data.internal.requests.nb, data.internal.time.max, "internal", newDataArray, "INTERNAL", "blue")
-    }
-
-    // ThirdParty stat.
-    if (data.hasOwnProperty("thirdparty")) {
-        for (var key in data.thirdparty) {
-            drawChart_PerThirdParty_data(data.thirdparty[key].size.sum, data.thirdparty[key].requests.nb, data.thirdparty[key].time.max, key, newDataArray, key, get_Color_fromindex(newDataArray.length))
+    for (var key in data) {
+        // Internal stat.
+        if (key === "internal") {
+            drawChart_PerThirdParty_data(data.internal.size, data.internal.nb, data.internal.time, "internal", newDataArray, "INTERNAL", "blue")
+        } else if (key === "unknown") {
+            drawChart_PerThirdParty_data(data.unknown.size, data.unknown.nb, data.unknown.time, "unknown", newDataArray, "UNKNOWN", "black")
+        } else {
+            drawChart_PerThirdParty_data(data[key].size, data[key].nb, data[key].time, key, newDataArray, key, get_Color_fromindex(newDataArray.length))
         }
     }
-
-    // Unknown stat.
-    if (data.hasOwnProperty("unknown") && data.unknown.requests.nb > 0) {
-        drawChart_PerThirdParty_data(data.unknown.size.sum, data.unknown.requests.nb, data.unknown.time.max, "unknown", newDataArray, "UNKNOWN", "black")
-        $("#detailUnknownList").empty();
-        let entryUnknown = $('<li class="list-group-item">').text("Unknown Hosts/Domains:");
-        $("#detailUnknownList").append(entryUnknown);
-        for (var key in data.unknown.hosts) {
-            let entryUnknown = $('<li class="list-group-item list-group-item-danger">').text(data.unknown.hosts[key]);
-            $("#detailUnknownList").append(entryUnknown);
-        }
-
-    }
-
 }
 
 function drawChart_PerThirdParty_data(nb1, nb2, nb3, key, newDataArray, label, color) {
@@ -894,47 +1035,6 @@ function drawChart_GanttPerThirdParty_data(start, end, key, newDataArray, label,
 }
 
 function drawChart_GanttPerThirdParty(data, titletext, target) {
-
-    var dataArray1 = [];
-    var dataArray2 = [];
-    var labelArray = [];
-    var bgColorArray = [];
-
-    var newDataArray = [];
-
-
-
-
-
-    // Internal stat.
-    if (data.hasOwnProperty("internal")) {
-        drawChart_GanttPerThirdParty_data(data.internal.time.firstStartR, data.internal.time.lastEndR - data.internal.time.firstStartR, "internal", newDataArray, "INTERNAL", "blue");
-    }
-
-    // ThirdParty stat.
-    if (data.hasOwnProperty("thirdparty")) {
-        for (var key in data.thirdparty) {
-            drawChart_GanttPerThirdParty_data(data.thirdparty[key].time.firstStartR, data.thirdparty[key].time.lastEndR - data.thirdparty[key].time.firstStartR, key, newDataArray, key, get_Color_fromindex(newDataArray.length));
-        }
-    }
-
-    // Unknown stat.
-    if (data.hasOwnProperty("unknown") && data.unknown.requests.nb > 0) {
-        drawChart_GanttPerThirdParty_data(data.unknown.time.firstStartR, data.unknown.time.lastEndR - data.unknown.time.firstStartR, "unknown", newDataArray, "UNKNOWN", "black");
-    }
-
-
-    // Sorting values by nb of requests.
-    sortedArrayOfObj = newDataArray.sort(function (a, b) {
-        return a.start - b.start;
-    });
-
-    sortedArrayOfObj.forEach(function (d) {
-        dataArray1.push(d.start);
-        dataArray2.push(d.end);
-        labelArray.push(d.name);
-        bgColorArray.push(d.color);
-    });
 
     var barOptions_stacked = {
         hover: {
@@ -978,37 +1078,101 @@ function drawChart_GanttPerThirdParty(data, titletext, target) {
         }
     };
 
-    var config = {
+    configGantt = {
         type: 'horizontalBar',
         data: {
-            labels: labelArray,
+            labels: [],
 
             datasets: [{
                     label: "Start",
-                    data: dataArray1,
+                    data: [],
                     backgroundColor: "rgba(63,103,126,0)",
                     hoverBackgroundColor: "rgba(50,90,100,0)"
 
                 },
                 {
                     label: "Duration",
-                    data: dataArray2,
-                    backgroundColor: bgColorArray,
+                    data: [],
+                    backgroundColor: [],
                 }]
         },
         options: barOptions_stacked,
     }
 
     var ctx = document.getElementById(target).getContext('2d');
-    let chart = new Chart(ctx, config);
+    window.graphGantt = new Chart(ctx, configGantt);
 
     // this part to make the tooltip only active on your real dataset
-    var originalGetElementAtEvent = chart.getElementAtEvent;
-    chart.getElementAtEvent = function (e) {
+    var originalGetElementAtEvent = window.graphGantt.getElementAtEvent;
+    window.graphGantt.getElementAtEvent = function (e) {
         return originalGetElementAtEvent.apply(this, arguments).filter(function (e) {
             return e._datasetIndex === 1;
         });
     }
+    update_GanttPerThirdParty();
+}
+
+function update_GanttPerThirdParty() {
+
+    // Filtering the data for only selected index
+    let selectedIndex = $('#selectIndex').select2('data');
+    let result3rdParty = {};
+    for (var key in networkStat.requests) {
+        if (isIndexSelected(networkStat.requests[key].index, selectedIndex)) {
+
+            let entryProvider = "" + networkStat.requests[key].provider;
+            let start = networkStat.requests[key].start;
+            let end = networkStat.requests[key].start + networkStat.requests[key].time;
+
+            if (result3rdParty.hasOwnProperty(entryProvider)) {
+                if (end > result3rdParty[entryProvider].end) {
+                    result3rdParty[entryProvider].end = end;
+                }
+                if (start < result3rdParty[entryProvider].time) {
+                    result3rdParty[entryProvider].start = start;
+                }
+            } else {
+                result3rdParty[entryProvider] = {start: start, end: end};
+            }
+        }
+    }
+
+    var dataArray1 = [];
+    var dataArray2 = [];
+    var labelArray = [];
+    var bgColorArray = [];
+
+    var newDataArray = [];
+
+    for (var key in result3rdParty) {
+        // Internal stat.
+        if (key === "internal") {
+            drawChart_GanttPerThirdParty_data(result3rdParty[key].start, result3rdParty[key].end - result3rdParty[key].start, "internal", newDataArray, "INTERNAL", "blue");
+        } else if (key === "unknown") {
+            drawChart_GanttPerThirdParty_data(result3rdParty[key].start, result3rdParty[key].end - result3rdParty[key].start, "unknown", newDataArray, "UNKNOWN", "black");
+        } else {
+            drawChart_GanttPerThirdParty_data(result3rdParty[key].start, result3rdParty[key].end - result3rdParty[key].start, key, newDataArray, key, get_Color_fromindex(newDataArray.length));
+        }
+    }
+
+    // Sorting values by nb of requests.
+    sortedArrayOfObj = newDataArray.sort(function (a, b) {
+        return a.start - b.start;
+    });
+
+    sortedArrayOfObj.forEach(function (d) {
+        dataArray1.push(d.start);
+        dataArray2.push(d.end);
+        labelArray.push(d.name);
+        bgColorArray.push(d.color);
+    });
+
+    configGantt.data.labels = labelArray;
+    configGantt.data.datasets[0].data = dataArray1;
+    configGantt.data.datasets[1].data = dataArray2;
+    configGantt.data.datasets[1].backgroundColor = bgColorArray;
+
+    window.graphGantt.update();
 }
 
 function formatNumber(num) {
