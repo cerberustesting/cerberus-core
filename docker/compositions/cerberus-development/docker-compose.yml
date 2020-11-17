@@ -45,7 +45,7 @@ services:
       # copy server.xml and context.xml (using volumes to avoid running instance problems)
       - ./configuration/server.xml:/opt/bitnami/tomcat/conf/server.xml
       - ./configuration/context.xml:/opt/bitnami/tomcat/conf/context.xml
-      - ./localdata/cerberus-tomcat:/bitnami   
+#      - ./localdata/cerberus-tomcat:/bitnami   
     restart: always
     depends_on:
       - database
