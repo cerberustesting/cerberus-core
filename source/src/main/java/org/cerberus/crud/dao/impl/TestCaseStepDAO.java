@@ -479,7 +479,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         String t = resultSet.getString("test");
                         String tc = resultSet.getString("testcase");
                         String tcdesc = resultSet.getString("tcdesc");
-                        int s = resultSet.getInt("step");
+                        int s = resultSet.getInt("stepId");
                         int sort = resultSet.getInt("sort");
                         String description = resultSet.getString("description");
                         TestCaseStep tcs = factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, null, description, false, null, null, 0, false, false, null, null, null, null);
@@ -552,7 +552,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                     while (resultSet.next()) {
                         String t = resultSet.getString("test");
                         String tc = resultSet.getString("testcase");
-                        int s = resultSet.getInt("step");
+                        int s = resultSet.getInt("stepId");
                         int sort = resultSet.getInt("sort");
                         String description = resultSet.getString("description");
                         String tcdesc = resultSet.getString("tcdesc");
@@ -634,7 +634,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                     while (resultSet.next()) {
                         String t = resultSet.getString("test");
                         String tc = resultSet.getString("testcase");
-                        int s = resultSet.getInt("step");
+                        int s = resultSet.getInt("stepId");
                         int sort = resultSet.getInt("sort");
                         String description = resultSet.getString("description");
                         list.add(factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, null, description, false, null, null, 0, false, false, null, null, null, null));

@@ -2379,7 +2379,7 @@ function addStep(event) {
 
     // Setting the focus on the Description of the step.
     $('#addStepModal').on('shown.bs.modal', function () {
-        $('#description').focus();
+        $('#addStepModal #description').focus();
     });
 
     $("#addStepConfirm").unbind("click").click(function (event) {
