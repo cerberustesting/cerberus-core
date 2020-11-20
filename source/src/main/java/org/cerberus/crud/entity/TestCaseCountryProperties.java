@@ -50,7 +50,7 @@ public class TestCaseCountryProperties {
     private int retryPeriod;
     private int Rank;
     private String usrCreated;
-    private String dateCreated;
+    private Timestamp dateCreated;
     private String usrModif;
     private Timestamp dateModif;
 
@@ -256,11 +256,11 @@ public class TestCaseCountryProperties {
         this.usrCreated = usrCreated;
     }
 
-    public String getDateCreated() {
+    public Timestamp getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(String dateCreated) {
+    public void setDateCreated(Timestamp dateCreated) {
         this.dateCreated = dateCreated;
     }
 
