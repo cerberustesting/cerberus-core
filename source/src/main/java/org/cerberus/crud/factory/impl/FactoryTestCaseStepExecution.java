@@ -38,20 +38,20 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecution {
 
     @Override
-    public TestCaseStepExecution create(long id, String test, String testCase, int step, int index, int sort, String loop, String conditionOperator, String conditionVal1Init,
-            String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3,
+    public TestCaseStepExecution create(long id, String test, String testCase, int stepId, int index, int sort, String loop, String conditionOperator, String conditionValue1Init,
+            String conditionValue2Init, String conditionValue3Init, String conditionValue1, String conditionValue2, String conditionValue3,
             String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed,
             String returnCode, String returnMessage, String description) {
-        TestCaseStepExecution testCaseStepExecution = create(id, test, testCase, step, index, sort, loop, conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, batNumExe, start, end, fullStart, fullEnd, timeElapsed, returnCode, null, null, null, null, null, null, -1, description);
+        TestCaseStepExecution testCaseStepExecution = create(id, test, testCase, stepId, index, sort, loop, conditionOperator, conditionValue1Init, conditionValue2Init, conditionValue3Init, conditionValue1, conditionValue2, conditionValue3, batNumExe, start, end, fullStart, fullEnd, timeElapsed, returnCode, null, null, null, false, null, null, -1, description);
         testCaseStepExecution.setReturnMessage(returnMessage);
         return testCaseStepExecution;
     }
 
     @Override
-    public TestCaseStepExecution create(long id, String test, String testCase, int step, int index, int sort, String loop, String conditionOperator, String conditionVal1Init,
-            String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed,
+    public TestCaseStepExecution create(long id, String test, String testCase, int stepId, int index, int sort, String loop, String conditionOperator, String conditionValue1Init,
+            String conditionValue2Init, String conditionValue3Init, String conditionValue1, String conditionValue2, String conditionValue3, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed,
             String returnCode, MessageEvent stepResultMessage,
-            TestCaseStep testCaseStep, TestCaseExecution tCExecution, String useStep, String useStepTest, String useStepTestCase, int useStepTestCaseStep, String description) {
+            TestCaseStep testCaseStep, TestCaseExecution tCExecution, boolean isUsingLibraryStep, String libraryStepTest, String libraryStepTestcase, int useStepTestCaseStep, String description) {
         TestCaseStepExecution testCaseStepExecution = new TestCaseStepExecution();
         testCaseStepExecution.setBatNumExe(batNumExe);
         testCaseStepExecution.setEnd(end);
@@ -60,26 +60,26 @@ public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecuti
         testCaseStepExecution.setId(id);
         testCaseStepExecution.setReturnCode(returnCode);
         testCaseStepExecution.setStart(start);
-        testCaseStepExecution.setStep(step);
+        testCaseStepExecution.setStepId(stepId);
         testCaseStepExecution.setIndex(index);
         testCaseStepExecution.setSort(sort);
         testCaseStepExecution.setLoop(loop);
         testCaseStepExecution.setConditionOperator(conditionOperator);
-        testCaseStepExecution.setConditionVal1Init(conditionVal1Init);
-        testCaseStepExecution.setConditionVal2Init(conditionVal2Init);
-        testCaseStepExecution.setConditionVal3Init(conditionVal3Init);
-        testCaseStepExecution.setConditionVal1(conditionVal1);
-        testCaseStepExecution.setConditionVal2(conditionVal2);
-        testCaseStepExecution.setConditionVal3(conditionVal3);
+        testCaseStepExecution.setConditionValue1Init(conditionValue1Init);
+        testCaseStepExecution.setConditionValue2Init(conditionValue2Init);
+        testCaseStepExecution.setConditionValue3Init(conditionValue3Init);
+        testCaseStepExecution.setConditionValue1(conditionValue1);
+        testCaseStepExecution.setConditionValue2(conditionValue2);
+        testCaseStepExecution.setConditionValue3(conditionValue3);
         testCaseStepExecution.setTest(test);
         testCaseStepExecution.setTestCase(testCase);
         testCaseStepExecution.setTimeElapsed(timeElapsed);
         testCaseStepExecution.setStepResultMessage(stepResultMessage);
         testCaseStepExecution.setTestCaseStep(testCaseStep);
         testCaseStepExecution.settCExecution(tCExecution);
-        testCaseStepExecution.setUseStep(useStep);
-        testCaseStepExecution.setUseStepTest(useStepTest);
-        testCaseStepExecution.setUseStepTestCase(useStepTestCase);
+        testCaseStepExecution.setUsingLibraryStep(isUsingLibraryStep);
+        testCaseStepExecution.setLibraryStepTest(libraryStepTest);
+        testCaseStepExecution.setLibraryStepTestcase(libraryStepTestcase);
         testCaseStepExecution.setUseStepTestCaseStep(useStepTestCaseStep);
         testCaseStepExecution.setDescription(description);
         // List objects

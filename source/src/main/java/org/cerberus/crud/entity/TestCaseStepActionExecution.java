@@ -36,7 +36,7 @@ public class TestCaseStepActionExecution {
     private long id;
     private String test;
     private String testCase;
-    private int step;
+    private int stepId;
     private int index;
     private int sequence;
     private int sort;
@@ -72,7 +72,7 @@ public class TestCaseStepActionExecution {
     private MessageGeneral executionResultMessage;
     private String propertyName; // Property name is stored in order to keep track of the property name. property is replaced by the value of it.
     private boolean stopExecution;
-    private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at step level
+    private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at stepId level
     private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data that was previously calculated and that will be used to calculate during the calculation of any property during the action.
     private List<TestCaseStepActionControlExecution> testCaseStepActionControlExecutionList; // Host the full list of data that was previously calculated and that will be used to calculate during the calculation of any property during the action.
 
@@ -348,12 +348,12 @@ public class TestCaseStepActionExecution {
         this.startLong = startLong;
     }
 
-    public int getStep() {
-        return step;
+    public int getStepId() {
+        return stepId;
     }
 
-    public void setStep(int step) {
-        this.step = step;
+    public void setStepId(int stepId) {
+        this.stepId = stepId;
     }
 
     public int getIndex() {
@@ -430,7 +430,7 @@ public class TestCaseStepActionExecution {
             result.put("id", this.getId());
             result.put("test", this.getTest());
             result.put("testcase", this.getTestCase());
-            result.put("step", this.getStep());
+            result.put("step", this.getStepId());
             result.put("index", this.getIndex());
             result.put("sequence", this.getSequence());
             result.put("sort", this.getSort());

@@ -32,15 +32,15 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestCaseStepActionService {
     
-    TestCaseStepAction findTestCaseStepActionbyKey (String test, String testCase, int step, int sequence);
+    TestCaseStepAction findTestCaseStepActionbyKey (String test, String testCase, int stepId, int sequence);
 
-    List<TestCaseStepAction> getListOfAction(String test, String testcase, int step);
+    List<TestCaseStepAction> getListOfAction(String test, String testcase, int stepId);
     
     void insertTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException ;
     
     boolean insertListTestCaseStepAction(List<TestCaseStepAction> testCaseStepActionList);
     
-    boolean changeTestCaseStepActionSequence(String test, String testCase, int step, int oldSequence, int newSequence);
+    boolean changeTestCaseStepActionSequence(String test, String testCase, int stepId, int oldSequence, int newSequence);
 
     public boolean updateTestCaseStepAction(TestCaseStepAction tcsa);
 
@@ -54,7 +54,7 @@ public interface ITestCaseStepActionService {
 
     public AnswerList<TestCaseStepAction> readByTestTestCase(String test, String testcase);
 
-    public AnswerList readByVarious1WithDependency(String test, String testcase, int step);
+    public AnswerList readByVarious1WithDependency(String test, String testcase, int stepId);
 
     Answer create(TestCaseStepAction object);
     

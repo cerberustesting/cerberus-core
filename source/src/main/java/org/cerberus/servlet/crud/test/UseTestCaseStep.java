@@ -75,23 +75,23 @@ public class UseTestCaseStep extends HttpServlet {
          */
         String test = request.getParameter("Test");
         String testCase = request.getParameter("TestCase");
-        Integer step = Integer.valueOf(request.getParameter("Step"));
+        Integer stepId = Integer.valueOf(request.getParameter("Step"));
         String loop = request.getParameter("Loop");
         String conditionOperator = request.getParameter("conditionOperator");
-        String conditionVal1 = request.getParameter("ConditionVal1");
-        String conditionVal2 = request.getParameter("ConditionVal2");
-        String conditionVal3 = request.getParameter("ConditionVal3");
+        String conditionValue1 = request.getParameter("ConditionVal1");
+        String conditionValue2 = request.getParameter("ConditionVal2");
+        String conditionValue3 = request.getParameter("ConditionVal3");
         String description = request.getParameter("Description");
-        String fromTest = request.getParameter("FromTest");
-        String fromTestCase = request.getParameter("FromTestCase");
-        Integer fromStep = Integer.valueOf(request.getParameter("FromStep"));
+        String libraryStepTest = request.getParameter("FromTest");
+        String libraryStepTestCase = request.getParameter("FromTestCase");
+        Integer libraryStepStepId = Integer.valueOf(request.getParameter("FromStep"));
         String importProperty = "N";
         if (request.getParameter("ImportProperty") != null) {
             LOG.debug(request.getParameter("ImportProperty"));
             importProperty = request.getParameter("ImportProperty");
         }
 
-        TestCaseStep tcs = testCaseStepFactory.create(test, testCase, step, step, loop, conditionOperator, conditionVal1, conditionVal2, conditionVal3, description, true, fromTest, fromTestCase, fromStep, false, false, null, null, null, null);
+        TestCaseStep tcs = testCaseStepFactory.create(test, testCase, stepId, stepId, loop, conditionOperator, conditionValue1, conditionValue2, conditionValue3, description, true, libraryStepTest, libraryStepTestCase, libraryStepStepId, false, false, null, null, null, null);
 
         /**
          * Import Step, properties
@@ -115,9 +115,9 @@ public class UseTestCaseStep extends HttpServlet {
              * For the country defined in the destination testcase, insert the
              * properties of the origine testcase
              */
-            // retrieve list of property name used in the step
+            // retrieve list of property name used in the stepId
             List<String> propertyNamesOfStep = new ArrayList<>();
-            List<TestCaseStepAction> testCaseStepActions = testCaseStepActionService.getListOfAction(fromTest, fromTestCase, fromStep);
+            List<TestCaseStepAction> testCaseStepActions = testCaseStepActionService.getListOfAction(libraryStepTest, libraryStepTestCase, libraryStepStepId);
             for (TestCaseStepAction action : testCaseStepActions) {
                 if (!propertyNamesOfStep.contains(action.getValue2())) {
                     propertyNamesOfStep.add(action.getValue2());
@@ -130,9 +130,9 @@ public class UseTestCaseStep extends HttpServlet {
                 if (tccListString.size() > 0 && propertyNamesOfStep.size() > 0) {
                     List<TestCaseCountryProperties> tccpToImport = new ArrayList<>();
                     for (String country : tccListString) {
-                        tccpList = testCaseCountryProperties.findListOfPropertyPerTestTestCaseCountry(fromTest, fromTestCase, country);
+                        tccpList = testCaseCountryProperties.findListOfPropertyPerTestTestCaseCountry(libraryStepTest, libraryStepTestCase, country);
                         for (TestCaseCountryProperties tccp : tccpList) {
-                            // only add property of the test case if it is used by the step
+                            // only add property of the test case if it is used by the stepId
                             if (propertyNamesOfStep.contains(tccp.getProperty())) {
                                 tccp.setTest(test);
                                 tccp.setTestCase(testCase);

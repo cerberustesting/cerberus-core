@@ -31,7 +31,7 @@ public class TestCaseStepActionControl {
 
     private String test;
     private String testCase;
-    private int step;
+    private int stepId;
     private int sequence;
     private int controlSequence;
     private int sort;
@@ -199,12 +199,12 @@ public class TestCaseStepActionControl {
         this.sequence = sequence;
     }
 
-    public int getStep() {
-        return step;
+    public int getStepId() {
+        return stepId;
     }
 
-    public void setStep(int step) {
-        this.step = step;
+    public void setStepId(int stepId) {
+        this.stepId = stepId;
     }
 
     public String getTest() {
@@ -245,7 +245,7 @@ public class TestCaseStepActionControl {
         if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
             return false;
         }
-        if (this.step != other.step) {
+        if (this.stepId != other.stepId) {
             return false;
         }
         if (this.sequence != other.sequence) {
@@ -262,7 +262,7 @@ public class TestCaseStepActionControl {
         int hash = 3;
         hash = 67 * hash + (this.test != null ? this.test.hashCode() : 0);
         hash = 67 * hash + (this.testCase != null ? this.testCase.hashCode() : 0);
-        hash = 67 * hash + this.step;
+        hash = 67 * hash + this.stepId;
         hash = 67 * hash + this.sequence;
         hash = 67 * hash + this.controlSequence;
         hash = 67 * hash + this.sort;
@@ -294,7 +294,7 @@ public class TestCaseStepActionControl {
         if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
             return false;
         }
-        if (this.step != other.step) {
+        if (this.stepId != other.stepId) {
             return false;
         }
         if (this.sequence != other.sequence) {
@@ -344,14 +344,14 @@ public class TestCaseStepActionControl {
 
     @Override
     public String toString() {
-        return "TestCaseStepActionControl{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", control=" + controlSequence + ", type=" + control + ", controlValue=" + value1 + ", controlProperty=" + value2 + ", controlValue3=" + value3 + ", fatal=" + fatal + ", description=" + description + '}';
+        return "TestCaseStepActionControl{" + "test=" + test + ", testCase=" + testCase + ", step=" + stepId + ", sequence=" + sequence + ", control=" + controlSequence + ", type=" + control + ", controlValue=" + value1 + ", controlProperty=" + value2 + ", controlValue3=" + value3 + ", fatal=" + fatal + ", description=" + description + '}';
     }
 
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
             result.put("sort", this.getSort());
-            result.put("stepId", this.getStep());
+            result.put("stepId", this.getStepId());
             result.put("actionId", this.getSequence());
             result.put("controlId", this.getControlSequence());
             result.put("description", this.getDescription());

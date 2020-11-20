@@ -59,31 +59,31 @@ public class TestCaseStepActionControlExecutionService implements ITestCaseStepA
     }
 
     @Override
-    public List<TestCaseStepActionControlExecution> findTestCaseStepActionControlExecutionByCriteria(long id, String test, String testCase, int step, int index, int sequence) {
-        return testCaseStepActionControlExecutionDao.findTestCaseStepActionControlExecutionByCriteria(id, test, testCase, step, index, sequence);
+    public List<TestCaseStepActionControlExecution> findTestCaseStepActionControlExecutionByCriteria(long id, String test, String testCase, int stepId, int index, int sequence) {
+        return testCaseStepActionControlExecutionDao.findTestCaseStepActionControlExecutionByCriteria(id, test, testCase, stepId, index, sequence);
     }
 
     @Override
-    public AnswerList<TestCaseStepActionControlExecution> readByVarious1(long executionId, String test, String testcase, int step, int index, int sequence) {
-        return testCaseStepActionControlExecutionDao.readByVarious1(executionId, test, testcase, step, index, sequence);
+    public AnswerList<TestCaseStepActionControlExecution> readByVarious1(long executionId, String test, String testcase, int stepId, int index, int sequence) {
+        return testCaseStepActionControlExecutionDao.readByVarious1(executionId, test, testcase, stepId, index, sequence);
     }
 
     @Override
-    public AnswerItem<TestCaseStepActionControlExecution> readByKey(long executionId, String test, String testcase, int step, int index, int sequence, int controlSequence) {
-        return testCaseStepActionControlExecutionDao.readByKey(executionId, test, testcase, step, index, sequence, controlSequence);
+    public AnswerItem<TestCaseStepActionControlExecution> readByKey(long executionId, String test, String testcase, int stepId, int index, int sequence, int controlSequence) {
+        return testCaseStepActionControlExecutionDao.readByKey(executionId, test, testcase, stepId, index, sequence, controlSequence);
     }
 
     @Override
-    public AnswerList<TestCaseStepActionControlExecution> readByVarious1WithDependency(long executionId, String test, String testcase, int step, int index, int sequence) {
+    public AnswerList<TestCaseStepActionControlExecution> readByVarious1WithDependency(long executionId, String test, String testcase, int stepId, int index, int sequence) {
 
-        AnswerList<TestCaseStepActionControlExecution> controls = this.readByVarious1(executionId, test, testcase, step, index, sequence);
+        AnswerList<TestCaseStepActionControlExecution> controls = this.readByVarious1(executionId, test, testcase, stepId, index, sequence);
         AnswerList<TestCaseStepActionControlExecution> response = null;
         List<TestCaseStepActionControlExecution> tcsaceList = new ArrayList<>();
         for (Object control : controls.getDataList()) {
 
             TestCaseStepActionControlExecution tcsace = (TestCaseStepActionControlExecution) control;
 
-            AnswerList<TestCaseExecutionFile> files = testCaseExecutionFileService.readByVarious(executionId, tcsace.getTest() + "-" + tcsace.getTestCase() + "-" + tcsace.getStep() + "-" + tcsace.getIndex() + "-" + tcsace.getSequence() + "-" + tcsace.getControlSequence());
+            AnswerList<TestCaseExecutionFile> files = testCaseExecutionFileService.readByVarious(executionId, tcsace.getTest() + "-" + tcsace.getTestCase() + "-" + tcsace.getStepId() + "-" + tcsace.getIndex() + "-" + tcsace.getSequence() + "-" + tcsace.getControlSequence());
             tcsace.setFileList((List<TestCaseExecutionFile>) files.getDataList());
 
             tcsaceList.add(tcsace);

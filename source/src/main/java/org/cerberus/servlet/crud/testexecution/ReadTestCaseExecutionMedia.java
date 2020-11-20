@@ -91,7 +91,7 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         String fileName = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("filename"), "", charset);
         String fileType = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("filetype"), "", charset);
         String fileDesc = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("filedesc"), "", charset);
-        int step = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("step"), 0, charset);
+        int stepId = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("step"), 0, charset);
         int index = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("index"), 1, charset);
         int sequence = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("sequence"), 0, charset);
         int sequenceControl = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("sequenceControl"), 0, charset);
@@ -121,9 +121,9 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
 
             String levelFile = "";
             if (type.equals("action")) {
-                levelFile = test + "-" + testcase + "-" + step + "-" + index + "-" + sequence;
+                levelFile = test + "-" + testcase + "-" + stepId + "-" + index + "-" + sequence;
             } else if (type.equals("control")) {
-                levelFile = test + "-" + testcase + "-" + step + "-" + index + "-" + sequence + "-" + sequenceControl;
+                levelFile = test + "-" + testcase + "-" + stepId + "-" + index + "-" + sequence + "-" + sequenceControl;
             }
             al = testCaseExecutionFileService.readByVarious(id, levelFile);
 
@@ -138,11 +138,11 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
                     }
                 }
             } else {
-                // If previous read failed we try without index. (that can be removed few moths after step index has been introduced in Jan 2017)
+                // If previous read failed we try without index. (that can be removed few moths after stepId index has been introduced in Jan 2017)
                 if (type.equals("action")) {
-                    levelFile = test + "-" + testcase + "-" + step + "-" + sequence;
+                    levelFile = test + "-" + testcase + "-" + stepId + "-" + sequence;
                 } else if (type.equals("control")) {
-                    levelFile = test + "-" + testcase + "-" + step + "-" + sequence + "-" + sequenceControl;
+                    levelFile = test + "-" + testcase + "-" + stepId + "-" + sequence + "-" + sequenceControl;
                 }
                 al = testCaseExecutionFileService.readByVarious(id, levelFile);
                 if (al.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && !al.getDataList().isEmpty()) {

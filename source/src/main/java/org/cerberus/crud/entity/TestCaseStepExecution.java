@@ -39,17 +39,17 @@ public class TestCaseStepExecution {
     private long id;
     private String test;
     private String testCase;
-    private int step;
+    private int stepId;
     private int index;
     private int sort;
     private String loop;
     private String conditionOperator;
-    private String conditionVal1Init;
-    private String conditionVal2Init;
-    private String conditionVal3Init;
-    private String conditionVal1;
-    private String conditionVal2;
-    private String conditionVal3;
+    private String conditionValue1Init;
+    private String conditionValue2Init;
+    private String conditionValue3Init;
+    private String conditionValue1;
+    private String conditionValue2;
+    private String conditionValue3;
     private String batNumExe;
     private long start;
     private long end;
@@ -64,15 +64,15 @@ public class TestCaseStepExecution {
      */
     private TestCaseStep testCaseStep;
     private TestCaseExecution tCExecution;
-    private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at step level
-    private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the list of data calculated during the step execution.
+    private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at stepId level
+    private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the list of data calculated during the stepId execution.
     private List<TestCaseStepActionExecution> testCaseStepActionExecutionList;
     private MessageEvent stepResultMessage;
     private MessageGeneral executionResultMessage;
     private boolean stopExecution;
-    private String useStep;
-    private String useStepTest;
-    private String useStepTestCase;
+    private boolean isUsingLibraryStep;
+    private String libraryStepTest;
+    private String libraryStepTestcase;
     private int useStepTestCaseStep;
 
     public List<TestCaseExecutionFile> getFileList() {
@@ -111,28 +111,28 @@ public class TestCaseStepExecution {
         this.returnMessage = returnMessage;
     }
 
-    public String getUseStep() {
-        return useStep;
+    public boolean isUsingLibraryStep() {
+        return isUsingLibraryStep;
     }
 
-    public void setUseStep(String useStep) {
-        this.useStep = useStep;
+    public void setUsingLibraryStep(boolean isUsingLibraryStep) {
+        this.isUsingLibraryStep = isUsingLibraryStep;
     }
 
-    public String getUseStepTest() {
-        return useStepTest;
+    public String getLibraryStepTest() {
+        return libraryStepTest;
     }
 
-    public void setUseStepTest(String useStepTest) {
-        this.useStepTest = useStepTest;
+    public void setLibraryStepTest(String libraryStepTest) {
+        this.libraryStepTest = libraryStepTest;
     }
 
-    public String getUseStepTestCase() {
-        return useStepTestCase;
+    public String getLibraryStepTestcase() {
+        return libraryStepTestcase;
     }
 
-    public void setUseStepTestCase(String useStepTestCase) {
-        this.useStepTestCase = useStepTestCase;
+    public void setLibraryStepTestcase(String libraryStepTestcase) {
+        this.libraryStepTestcase = libraryStepTestcase;
     }
 
     public int getUseStepTestCaseStep() {
@@ -251,12 +251,12 @@ public class TestCaseStepExecution {
         this.start = start;
     }
 
-    public int getStep() {
-        return step;
+    public int getStepId() {
+        return stepId;
     }
 
-    public void setStep(int step) {
-        this.step = step;
+    public void setStepId(int stepId) {
+        this.stepId = stepId;
     }
 
     public int getIndex() {
@@ -283,52 +283,52 @@ public class TestCaseStepExecution {
         this.conditionOperator = conditionOperator;
     }
 
-    public String getConditionVal1Init() {
-        return conditionVal1Init;
+    public String getConditionValue1Init() {
+        return conditionValue1Init;
     }
 
-    public void setConditionVal1Init(String conditionVal1Init) {
-        this.conditionVal1Init = conditionVal1Init;
+    public void setConditionValue1Init(String conditionValue1Init) {
+        this.conditionValue1Init = conditionValue1Init;
     }
 
-    public String getConditionVal2Init() {
-        return conditionVal2Init;
+    public String getConditionValue2Init() {
+        return conditionValue2Init;
     }
 
-    public void setConditionVal2Init(String conditionVal2Init) {
-        this.conditionVal2Init = conditionVal2Init;
+    public void setConditionValue2Init(String conditionValue2Init) {
+        this.conditionValue2Init = conditionValue2Init;
     }
 
-    public String getConditionVal3Init() {
-        return conditionVal3Init;
+    public String getConditionValue3Init() {
+        return conditionValue3Init;
     }
 
-    public void setConditionVal3Init(String conditionVal3Init) {
-        this.conditionVal3Init = conditionVal3Init;
+    public void setConditionValue3Init(String conditionValue3Init) {
+        this.conditionValue3Init = conditionValue3Init;
     }
 
-    public String getConditionVal1() {
-        return conditionVal1;
+    public String getConditionValue1() {
+        return conditionValue1;
     }
 
-    public void setConditionVal1(String conditionVal1) {
-        this.conditionVal1 = conditionVal1;
+    public void setConditionValue1(String conditionValue1) {
+        this.conditionValue1 = conditionValue1;
     }
 
-    public String getConditionVal2() {
-        return conditionVal2;
+    public String getConditionValue2() {
+        return conditionValue2;
     }
 
-    public void setConditionVal2(String conditionVal2) {
-        this.conditionVal2 = conditionVal2;
+    public void setConditionValue2(String conditionValue2) {
+        this.conditionValue2 = conditionValue2;
     }
 
-    public String getConditionVal3() {
-        return conditionVal3;
+    public String getConditionValue3() {
+        return conditionValue3;
     }
 
-    public void setConditionVal3(String conditionVal3) {
-        this.conditionVal3 = conditionVal3;
+    public void setConditionValue3(String conditionValue3) {
+        this.conditionValue3 = conditionValue3;
     }
 
     public String getTest() {
@@ -405,7 +405,7 @@ public class TestCaseStepExecution {
             result.put("id", this.getId());
             result.put("test", this.getTest());
             result.put("testcase", this.getTestCase());
-            result.put("step", this.getStep());
+            result.put("step", this.getStepId());
             result.put("index", this.getIndex());
             result.put("sort", this.getSort());
             result.put("batNumExe", this.getBatNumExe());
@@ -417,18 +417,18 @@ public class TestCaseStepExecution {
             result.put("returnCode", this.getReturnCode());
             result.put("returnMessage", this.getReturnMessage());
             result.put("description", this.getDescription());
-            result.put("useStep", this.getUseStep());
-            result.put("useStepTest", this.getUseStepTest());
-            result.put("useStepTestCase", this.getUseStepTestCase());
+            result.put("isUsingLibraryStep ", this.isUsingLibraryStep());
+            result.put("libraryStepTest", this.getLibraryStepTest());
+            result.put("libraryStepTestcase", this.getLibraryStepTestcase());
             result.put("useStepTestCaseStep", this.getUseStepTestCaseStep());
             result.put("loop", this.getLoop());
             result.put("conditionOperator", this.getConditionOperator());
-            result.put("conditionVal1Init", this.getConditionVal1Init());
-            result.put("conditionVal2Init", this.getConditionVal2Init());
-            result.put("conditionVal3Init", this.getConditionVal3Init());
-            result.put("conditionVal1", this.getConditionVal1());
-            result.put("conditionVal2", this.getConditionVal2());
-            result.put("conditionVal3", this.getConditionVal3());
+            result.put("conditionVal1Init", this.getConditionValue1Init());
+            result.put("conditionVal2Init", this.getConditionValue2Init());
+            result.put("conditionVal3Init", this.getConditionValue3Init());
+            result.put("conditionVal1", this.getConditionValue1());
+            result.put("conditionVal2", this.getConditionValue2());
+            result.put("conditionVal3", this.getConditionValue3());
 
             if (withChilds) {
                 JSONArray array = new JSONArray();

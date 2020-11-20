@@ -121,7 +121,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     }
 
     @Override
-    public TestCaseStep findTestCaseStep(String test, String testcase, Integer step) {
+    public TestCaseStep findTestCaseStep(String test, String testcase, Integer stepId) {
         TestCaseStep result = null;
         final String query = "SELECT * FROM testcasestep WHERE test = ? AND testcase = ? AND stepId = ?";
 
@@ -135,7 +135,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             try {
                 preStat.setString(1, test);
                 preStat.setString(2, testcase);
-                preStat.setInt(3, step);
+                preStat.setInt(3, stepId);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -214,13 +214,13 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         if (!StringUtil.isNullOrEmpty(tcs.getLibraryStepTest())) {
             query.append(",`libraryStepTest`=? ");
         }
-        if (!StringUtil.isNullOrEmpty(tcs.getLibraryStepTestCase())) {
+        if (!StringUtil.isNullOrEmpty(tcs.getLibraryStepTestcase())) {
             query.append(",`libraryStepTestcase`=? ");
         }
         if (tcs.getLibraryStepStepId() >= 0) {
             query.append(",`libraryStepStepId`=? ");
         }
-        query.append(",`isLibraryStep` = ?, `Sort` = ?, `loop` = ?, `conditionOperator` = ?, `conditionVal1` = ?, `conditionVal2` = ?, `conditionVal3` = ?, `isExecutionForced` = ?, DateModif = CURRENT_TIMESTAMP, UsrModif = ? WHERE Test = ? AND TestCase = ? AND stepId = ?");
+        query.append(",`isLibraryStep` = ?, `Sort` = ?, `loop` = ?, `conditionOperator` = ?, `conditionValue1` = ?, `conditionValue2` = ?, `conditionValue3` = ?, `isExecutionForced` = ?, DateModif = CURRENT_TIMESTAMP, UsrModif = ? WHERE Test = ? AND testcase = ? AND stepId = ?");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -237,8 +237,8 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 if (!StringUtil.isNullOrEmpty(tcs.getLibraryStepTest())) {
                     preStat.setString(i++, tcs.getLibraryStepTest());
                 }
-                if (!StringUtil.isNullOrEmpty(tcs.getLibraryStepTestCase())) {
-                    preStat.setString(i++, tcs.getLibraryStepTestCase());
+                if (!StringUtil.isNullOrEmpty(tcs.getLibraryStepTestcase())) {
+                    preStat.setString(i++, tcs.getLibraryStepTestcase());
                 }
                 if (tcs.getLibraryStepStepId() >= 0) {
                     preStat.setInt(i++, tcs.getLibraryStepStepId());
@@ -247,9 +247,9 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setInt(i++, tcs.getSort());
                 preStat.setString(i++, tcs.getLoop() == null ? "" : tcs.getLoop());
                 preStat.setString(i++, tcs.getConditionOperator() == null ? "" : tcs.getConditionOperator());
-                preStat.setString(i++, tcs.getConditionVal1() == null ? "" : tcs.getConditionVal1());
-                preStat.setString(i++, tcs.getConditionVal2() == null ? "" : tcs.getConditionVal2());
-                preStat.setString(i++, tcs.getConditionVal3() == null ? "" : tcs.getConditionVal3());
+                preStat.setString(i++, tcs.getConditionValue1() == null ? "" : tcs.getConditionValue1());
+                preStat.setString(i++, tcs.getConditionValue2() == null ? "" : tcs.getConditionValue2());
+                preStat.setString(i++, tcs.getConditionValue3() == null ? "" : tcs.getConditionValue3());
                 preStat.setBoolean(i++, tcs.isExecutionForced());
                 preStat.setString(i++, tcs.getUsrModif() == null ? "" : tcs.getUsrModif());
 
@@ -282,7 +282,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     }
 
     @Override
-    public List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testCase, int step) throws CerberusException {
+    public List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testcase, int stepId) throws CerberusException {
         List<TestCaseStep> list = new ArrayList<TestCaseStep>();
         final String query = "SELECT * FROM testcasestep WHERE isUsingLibraryStep IS true AND libraryStepTest = ? AND libraryStepTestcase = ? AND libraryStepStepId = ?";
 
@@ -295,8 +295,8 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, test);
-                preStat.setString(2, testCase);
-                preStat.setInt(3, step);
+                preStat.setString(2, testcase);
+                preStat.setInt(3, stepId);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -328,7 +328,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     }
 
     @Override
-    public List<TestCaseStep> getTestCaseStepUsingTestCaseInParamter(String test, String testCase) throws CerberusException {
+    public List<TestCaseStep> getTestCaseStepUsingTestCaseInParamter(String test, String testcase) throws CerberusException {
         List<TestCaseStep> list = null;
         final String query = "SELECT * FROM testcasestep WHERE isUsingLibraryStep IS true AND libraryStepTest = ? AND libraryStepTestcase = ?";
 
@@ -341,7 +341,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, test);
-                preStat.setString(2, testCase);
+                preStat.setString(2, testcase);
 
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<TestCaseStep>();
@@ -484,7 +484,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         String description = resultSet.getString("description");
                         TestCaseStep tcs = factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, null, description, false, null, null, 0, false, false, null, null, null, null);
                         TestCase tcObj = factoryTestCase.create(t, tc, tcdesc);
-                        tcs.setTestCaseObj(tcObj);
+                        tcs.setTestcaseObj(tcObj);
                         list.add(tcs);
                     }
                 } catch (SQLException exception) {
@@ -559,7 +559,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         TestCase tcToAdd = factoryTestCase.create(t, tc, tcdesc);
                         tcToAdd.setApplication(resultSet.getString("tcapp"));
                         TestCaseStep tcsToAdd = factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, null, description, false, null, null, 0, false, false, null, null, null, null);
-                        tcsToAdd.setTestCaseObj(tcToAdd);
+                        tcsToAdd.setTestcaseObj(tcToAdd);
                         list.add(tcsToAdd);
                     }
                 } catch (SQLException exception) {
@@ -587,7 +587,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     }
 
     @Override
-    public List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException {
+    public List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testcase) throws CerberusException {
         List<TestCaseStep> list = null;
         StringBuilder query = new StringBuilder();
         query.append("SELECT tcs.test, tcs.testcase,tcs.stepId, tcs.sort, tcs.description FROM testcasestep tcs ");
@@ -600,7 +600,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         if (test != null) {
             query.append("and tcs.test = ? ");
         }
-        if (testCase != null) {
+        if (testcase != null) {
             query.append("and tcs.testcase = ? ");
         }
         query.append("order by tcs.test, tcs.testcase, tcs.sort");
@@ -610,7 +610,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             LOG.debug("SQL : " + query.toString());
             LOG.debug("SQL.param.system : " + system);
             LOG.debug("SQL.param.test : " + test);
-            LOG.debug("SQL.param.testcase : " + testCase);
+            LOG.debug("SQL.param.testcase : " + testcase);
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -624,8 +624,8 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 if (test != null) {
                     preStat.setString(i++, test);
                 }
-                if (testCase != null) {
-                    preStat.setString(i++, testCase);
+                if (testcase != null) {
+                    preStat.setString(i++, testcase);
                 }
 
                 ResultSet resultSet = preStat.executeQuery();
@@ -754,7 +754,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     }
 
     @Override
-    public AnswerList readByLibraryUsed(String test, String testcase, int step) {
+    public AnswerList readByLibraryUsed(String test, String testcase, int stepId) {
         AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -768,7 +768,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             try {
                 preStat.setString(1, test);
                 preStat.setString(2, testcase);
-                preStat.setInt(3, step);
+                preStat.setInt(3, stepId);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
@@ -849,7 +849,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         if (!StringUtil.isNullOrEmpty(testCaseStep.getLibraryStepTest())) {
             query.append(",`libraryStepTest` ");
         }
-        if (!StringUtil.isNullOrEmpty(testCaseStep.getLibraryStepTestCase())) {
+        if (!StringUtil.isNullOrEmpty(testCaseStep.getLibraryStepTestcase())) {
             query.append(",`libraryStepTestcase` ");
         }
         if (testCaseStep.getLibraryStepStepId() >= 0) {
@@ -860,7 +860,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         if (!StringUtil.isNullOrEmpty(testCaseStep.getLibraryStepTest())) {
             query.append(",?");
         }
-        if (!StringUtil.isNullOrEmpty(testCaseStep.getLibraryStepTestCase())) {
+        if (!StringUtil.isNullOrEmpty(testCaseStep.getLibraryStepTestcase())) {
             query.append(",?");
         }
         if (testCaseStep.getLibraryStepStepId() >= 0) {
@@ -872,7 +872,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
             LOG.debug("SQL.param.libraryStepTest : " + testCaseStep.getLibraryStepTest());
-            LOG.debug("SQL.param.libraryStepTestcase : " + testCaseStep.getLibraryStepTestCase());
+            LOG.debug("SQL.param.libraryStepTestcase : " + testCaseStep.getLibraryStepTestcase());
             LOG.debug("SQL.param.libraryStepStepId : " + testCaseStep.getLibraryStepStepId());
         }
 
@@ -889,8 +889,8 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             if (!StringUtil.isNullOrEmpty(testCaseStep.getLibraryStepTest())) {
                 preStat.setString(i++, testCaseStep.getLibraryStepTest());
             }
-            if (!StringUtil.isNullOrEmpty(testCaseStep.getLibraryStepTestCase())) {
-                preStat.setString(i++, testCaseStep.getLibraryStepTestCase());
+            if (!StringUtil.isNullOrEmpty(testCaseStep.getLibraryStepTestcase())) {
+                preStat.setString(i++, testCaseStep.getLibraryStepTestcase());
             }
             if (testCaseStep.getLibraryStepStepId() >= 0) {
                 preStat.setInt(i++, testCaseStep.getLibraryStepStepId());
@@ -898,9 +898,9 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             preStat.setBoolean(i++, testCaseStep.isLibraryStep());
             preStat.setString(i++, testCaseStep.getLoop() == null ? "" : testCaseStep.getLoop());
             preStat.setString(i++, testCaseStep.getConditionOperator() == null ? "" : testCaseStep.getConditionOperator());
-            preStat.setString(i++, testCaseStep.getConditionVal1() == null ? "" : testCaseStep.getConditionVal1());
-            preStat.setString(i++, testCaseStep.getConditionVal2() == null ? "" : testCaseStep.getConditionVal2());
-            preStat.setString(i++, testCaseStep.getConditionVal3() == null ? "" : testCaseStep.getConditionVal3());
+            preStat.setString(i++, testCaseStep.getConditionValue1() == null ? "" : testCaseStep.getConditionValue1());
+            preStat.setString(i++, testCaseStep.getConditionValue2() == null ? "" : testCaseStep.getConditionValue2());
+            preStat.setString(i++, testCaseStep.getConditionValue3() == null ? "" : testCaseStep.getConditionValue3());
             preStat.setBoolean(i++, testCaseStep.isExecutionForced());
             preStat.setString(i++, testCaseStep.getUsrCreated() == null ? "" : testCaseStep.getUsrCreated());
             preStat.executeUpdate();
@@ -927,13 +927,13 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
 
         String test = resultSet.getString("test") == null ? "" : resultSet.getString("test");
         String testcase = resultSet.getString("testcase") == null ? "" : resultSet.getString("testcase");
-        int step = resultSet.getInt("stepId") == 0 ? 0 : resultSet.getInt("stepId");
+        int stepId = resultSet.getInt("stepId") == 0 ? 0 : resultSet.getInt("stepId");
         int sort = resultSet.getInt("sort");
         String loop = resultSet.getString("loop") == null ? "" : resultSet.getString("loop");
         String conditionOperator = resultSet.getString("conditionOperator") == null ? "" : resultSet.getString("conditionOperator");
-        String conditionVal1 = resultSet.getString("conditionValue1") == null ? "" : resultSet.getString("conditionValue1");
-        String conditionVal2 = resultSet.getString("conditionValue2") == null ? "" : resultSet.getString("conditionValue2");
-        String conditionVal3 = resultSet.getString("conditionValue3") == null ? "" : resultSet.getString("conditionValue3");
+        String conditionValue1 = resultSet.getString("conditionValue1") == null ? "" : resultSet.getString("conditionValue1");
+        String conditionValue2 = resultSet.getString("conditionValue2") == null ? "" : resultSet.getString("conditionValue2");
+        String conditionValue3 = resultSet.getString("conditionValue3") == null ? "" : resultSet.getString("conditionValue3");
         String description = resultSet.getString("description") == null ? "" : resultSet.getString("description");
         boolean isUsingLibraryStep = resultSet.getBoolean("isUsingLibraryStep");
         String libraryStepTest = resultSet.getString("libraryStepTest") == null ? "" : resultSet.getString("libraryStepTest");
@@ -946,7 +946,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         String usrModif = resultSet.getString("UsrModif");
         Timestamp dateModif = resultSet.getTimestamp("DateModif");
 
-        TestCaseStep tcs = factoryTestCaseStep.create(test, testcase, step, sort, loop, conditionOperator, conditionVal1, conditionVal2, conditionVal3, description, isUsingLibraryStep, libraryStepTest, libraryStepTestcase, libraryStepStepId,
+        TestCaseStep tcs = factoryTestCaseStep.create(test, testcase, stepId, sort, loop, conditionOperator, conditionValue1, conditionValue2, conditionValue3, description, isUsingLibraryStep, libraryStepTest, libraryStepTestcase, libraryStepStepId,
                 isLibraryStep, isExecutionForced, usrCreated, dateCreated, usrModif, dateModif);
         
         LOG.debug(tcs.toJson());
@@ -954,7 +954,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         try {
             resultSet.findColumn("isStepInUseByOtherTestCase");
             boolean isStepInUseByOtherTestCase = resultSet.getInt("isStepInUseByOtherTestCase") == 1 ? true : false;
-            tcs.setIsStepInUseByOtherTestCase(isStepInUseByOtherTestCase);
+            tcs.setIsStepInUseByOtherTestcase(isStepInUseByOtherTestCase);
         } catch (SQLException sqlex) {
             // That means there is not this column, so nothing to do
         }

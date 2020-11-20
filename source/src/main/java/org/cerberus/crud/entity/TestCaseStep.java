@@ -40,13 +40,13 @@ public class TestCaseStep {
     private int sort;
     private String loop;
     private String conditionOperator;
-    private String conditionVal1;
-    private String conditionVal2;
-    private String conditionVal3;
+    private String conditionValue1;
+    private String conditionValue2;
+    private String conditionValue3;
     private String description;
     private boolean isUsingLibraryStep;  //  true if the stepId use a stepId from another test
     private String libraryStepTest; //  The test of the used stepId
-    private String libraryStepTestCase;  // The testcase of the used stepId
+    private String libraryStepTestcase;  // The testcase of the used stepId
     private Integer libraryStepStepId;   //  the stepId of the original step
     private boolean isLibraryStep;
     private boolean isExecutionForced;
@@ -58,10 +58,10 @@ public class TestCaseStep {
      * Not included in table.
      */
     private List<TestCaseStepAction> actions;
-    private boolean isStepInUseByOtherTestCase;
+    private boolean isStepInUseByOtherTestcase;
     private int initialStep;
-    private TestCase testCaseObj;
-    private int useStepStepSort;
+    private TestCase testcaseObj;
+    private int libraryStepSort;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -113,12 +113,12 @@ public class TestCaseStep {
         this.dateModif = dateModif;
     }
 
-    public TestCase getTestCaseObj() {
-        return testCaseObj;
+    public TestCase getTestcaseObj() {
+        return testcaseObj;
     }
 
-    public void setTestCaseObj(TestCase testCaseObj) {
-        this.testCaseObj = testCaseObj;
+    public void setTestcaseObj(TestCase testcaseObj) {
+        this.testcaseObj = testcaseObj;
     }
 
     public boolean isLibraryStep() {
@@ -137,12 +137,12 @@ public class TestCaseStep {
         this.initialStep = initialStep;
     }
 
-    public boolean isIsStepInUseByOtherTestCase() {
-        return isStepInUseByOtherTestCase;
+    public boolean isIsStepInUseByOtherTestcase() {
+        return isStepInUseByOtherTestcase;
     }
 
-    public void setIsStepInUseByOtherTestCase(boolean isStepInUseByOtherTestCase) {
-        this.isStepInUseByOtherTestCase = isStepInUseByOtherTestCase;
+    public void setIsStepInUseByOtherTestcase(boolean isStepInUseByOtherTestcase) {
+        this.isStepInUseByOtherTestcase = isStepInUseByOtherTestcase;
     }
 
     public boolean isUsingLibraryStep() {
@@ -161,12 +161,12 @@ public class TestCaseStep {
         this.libraryStepTest = libraryStepTest;
     }
 
-    public String getLibraryStepTestCase() {
-        return libraryStepTestCase;
+    public String getLibraryStepTestcase() {
+        return libraryStepTestcase;
     }
 
-    public void setLibraryStepTestCase(String libraryStepTestCase) {
-        this.libraryStepTestCase = libraryStepTestCase;
+    public void setLibraryStepTestcase(String libraryStepTestcase) {
+        this.libraryStepTestcase = libraryStepTestcase;
     }
 
     public Integer getLibraryStepStepId() {
@@ -205,12 +205,12 @@ public class TestCaseStep {
         this.sort = sort;
     }
 
-    public int getUseStepStepSort() {
-        return useStepStepSort;
+    public int getLibraryStepSort() {
+        return libraryStepSort;
     }
 
-    public void setUseStepStepSort(int useStepStepSort) {
-        this.useStepStepSort = useStepStepSort;
+    public void setLibraryStepSort(int libraryStepSort) {
+        this.libraryStepSort = libraryStepSort;
     }
 
     public String getLoop() {
@@ -229,28 +229,28 @@ public class TestCaseStep {
         this.conditionOperator = conditionOperator;
     }
 
-    public String getConditionVal1() {
-        return conditionVal1;
+    public String getConditionValue1() {
+        return conditionValue1;
     }
 
-    public void setConditionVal1(String conditionVal1) {
-        this.conditionVal1 = conditionVal1;
+    public void setConditionValue1(String conditionValue1) {
+        this.conditionValue1 = conditionValue1;
     }
 
-    public String getConditionVal2() {
-        return conditionVal2;
+    public String getConditionValue2() {
+        return conditionValue2;
     }
 
-    public void setConditionVal2(String conditionVal2) {
-        this.conditionVal2 = conditionVal2;
+    public void setConditionValue2(String conditionValue2) {
+        this.conditionValue2 = conditionValue2;
     }
 
-    public String getConditionVal3() {
-        return conditionVal3;
+    public String getConditionValue3() {
+        return conditionValue3;
     }
 
-    public void setConditionVal3(String conditionVal3) {
-        this.conditionVal3 = conditionVal3;
+    public void setConditionValue3(String conditionValue3) {
+        this.conditionValue3 = conditionValue3;
     }
 
     public void setStepId(int stepId) {
@@ -302,13 +302,13 @@ public class TestCaseStep {
         hash = 29 * hash + this.sort;
         hash = 29 * hash + (this.loop != null ? this.loop.hashCode() : 0);
         hash = 29 * hash + (this.conditionOperator != null ? this.conditionOperator.hashCode() : 0);
-        hash = 29 * hash + (this.conditionVal1 != null ? this.conditionVal1.hashCode() : 0);
-        hash = 29 * hash + (this.conditionVal2 != null ? this.conditionVal2.hashCode() : 0);
-        hash = 29 * hash + (this.conditionVal3 != null ? this.conditionVal3.hashCode() : 0);
+        hash = 29 * hash + (this.conditionValue1 != null ? this.conditionValue1.hashCode() : 0);
+        hash = 29 * hash + (this.conditionValue2 != null ? this.conditionValue2.hashCode() : 0);
+        hash = 29 * hash + (this.conditionValue3 != null ? this.conditionValue3.hashCode() : 0);
         hash = 29 * hash + (this.description != null ? this.description.hashCode() : 0);
         hash = 29 * hash + (this.isUsingLibraryStep ? 1 : 0);
         hash = 29 * hash + (this.libraryStepTest != null ? this.libraryStepTest.hashCode() : 0);
-        hash = 29 * hash + (this.libraryStepTestCase != null ? this.libraryStepTestCase.hashCode() : 0);
+        hash = 29 * hash + (this.libraryStepTestcase != null ? this.libraryStepTestcase.hashCode() : 0);
         hash = 29 * hash + (this.isLibraryStep ? 1 : 0);
         hash = 29 * hash + (this.isExecutionForced ? 1 : 0);
         return hash;
@@ -341,13 +341,13 @@ public class TestCaseStep {
         if (this.conditionOperator != other.conditionOperator && (this.conditionOperator == null || !this.conditionOperator.equals(other.conditionOperator))) {
             return false;
         }
-        if (this.conditionVal1 != other.conditionVal1 && (this.conditionVal1 == null || !this.conditionVal1.equals(other.conditionVal1))) {
+        if (this.conditionValue1 != other.conditionValue1 && (this.conditionValue1 == null || !this.conditionValue1.equals(other.conditionValue1))) {
             return false;
         }
-        if (this.conditionVal2 != other.conditionVal2 && (this.conditionVal2 == null || !this.conditionVal2.equals(other.conditionVal2))) {
+        if (this.conditionValue2 != other.conditionValue2 && (this.conditionValue2 == null || !this.conditionValue2.equals(other.conditionValue2))) {
             return false;
         }
-        if (this.conditionVal3 != other.conditionVal3 && (this.conditionVal3 == null || !this.conditionVal3.equals(other.conditionVal3))) {
+        if (this.conditionValue3 != other.conditionValue3 && (this.conditionValue3 == null || !this.conditionValue3.equals(other.conditionValue3))) {
             return false;
         }
         if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
@@ -359,7 +359,7 @@ public class TestCaseStep {
         if ((this.libraryStepTest == null) ? (other.libraryStepTest != null) : !this.libraryStepTest.equals(other.libraryStepTest)) {
             return false;
         }
-        if ((this.libraryStepTestCase == null) ? (other.libraryStepTestCase != null) : !this.libraryStepTestCase.equals(other.libraryStepTestCase)) {
+        if ((this.libraryStepTestcase == null) ? (other.libraryStepTestcase != null) : !this.libraryStepTestcase.equals(other.libraryStepTestcase)) {
             return false;
         }
         if (this.libraryStepStepId != other.libraryStepStepId && (this.libraryStepStepId == null || !this.libraryStepStepId.equals(other.libraryStepStepId))) {
@@ -374,11 +374,9 @@ public class TestCaseStep {
         return true;
     }
 
-
-
     @Override
     public String toString() {
-        return "TestCaseStep{" + "test=" + test + ", testcase=" + testcase + ", step=" + stepId + ", sort=" + sort + ", loop=" + loop + ", conditionOperator=" + conditionOperator + ", conditionVal1=" + conditionVal1 + ", conditionVal2=" + conditionVal2 + ", conditionVal3=" + conditionVal3 + ", description=" + description + ", isUsingLibraryStep=" + isUsingLibraryStep + ", libraryStepTest=" + libraryStepTest + ", useStepTestCase=" + libraryStepTestCase + ", libraryStepStepId=" + libraryStepStepId + ", isLibraryStep=" + isLibraryStep + ", isExecutionForced=" + isExecutionForced + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", actions=" + actions + ", isStepInUseByOtherTestCase=" + isStepInUseByOtherTestCase + ", initialStep=" + initialStep + ", testCaseObj=" + testCaseObj + '}';
+        return "TestCaseStep{" + "test=" + test + ", testcase=" + testcase + ", stepId=" + stepId + ", sort=" + sort + ", loop=" + loop + ", conditionOperator=" + conditionOperator + ", conditionValue1=" + conditionValue1 + ", conditionValue2=" + conditionValue2 + ", conditionValue3=" + conditionValue3 + ", description=" + description + ", isUsingLibraryStep=" + isUsingLibraryStep + ", libraryStepTest=" + libraryStepTest + ", libraryStepTestCase=" + libraryStepTestcase + ", libraryStepStepId=" + libraryStepStepId + ", isLibraryStep=" + isLibraryStep + ", isExecutionForced=" + isExecutionForced + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", actions=" + actions + ", isStepInUseByOtherTestCase=" + isStepInUseByOtherTestcase + ", initialStep=" + initialStep + ", testCaseObj=" + testcaseObj + ", libraryStepSort=" + libraryStepSort + '}';
     }
 
     public JSONObject toJson() {
@@ -390,13 +388,13 @@ public class TestCaseStep {
             stepJson.put("isExecutionForced", this.isExecutionForced());
             stepJson.put("loop", this.getLoop());
             stepJson.put("conditionOperator", this.getConditionOperator());
-            stepJson.put("conditionVal1", this.getConditionVal1());
-            stepJson.put("conditionVal2", this.getConditionVal2());
-            stepJson.put("conditionVal3", this.getConditionVal3());
+            stepJson.put("conditionValue1", this.getConditionValue1());
+            stepJson.put("conditionValue2", this.getConditionValue2());
+            stepJson.put("conditionValue3", this.getConditionValue3());
             stepJson.put("isUsingLibraryStep", this.isUsingLibraryStep());
             stepJson.put("isLibraryStep", this.isLibraryStep());
             stepJson.put("libraryStepTest", this.getLibraryStepTest());
-            stepJson.put("libraryStepTestCase", this.getLibraryStepTestCase());
+            stepJson.put("libraryStepTestCase", this.getLibraryStepTestcase());
             stepJson.put("libraryStepStepId", this.getLibraryStepStepId());
             stepJson.put("test", this.getTest());
             stepJson.put("testcase", this.getTestcase());
@@ -405,8 +403,8 @@ public class TestCaseStep {
             stepJson.put("dateCreated", this.dateCreated);
             stepJson.put("usrModif", this.usrModif);
             stepJson.put("dateModif", this.dateModif);
-            stepJson.put("isStepInUseByOtherTestCase", this.isIsStepInUseByOtherTestCase());
-            stepJson.put("useStepStepSort", this.getUseStepStepSort());
+            stepJson.put("isStepInUseByOtherTestCase", this.isIsStepInUseByOtherTestcase());
+            stepJson.put("libraryStepSort", this.getLibraryStepSort());
 
             JSONArray stepsJson = new JSONArray();
             if (this.getActions() != null) {

@@ -78,7 +78,7 @@ public class ImportTestCaseStep extends HttpServlet {
          */
         String test = request.getParameter("Test");
         String testCase = request.getParameter("TestCase");
-        Integer step = Integer.valueOf(request.getParameter("Step"));
+        Integer stepId = Integer.valueOf(request.getParameter("Step"));
         String fromTest = request.getParameter("FromTest");
         String fromTestCase = request.getParameter("FromTestCase");
         Integer fromStep = Integer.valueOf(request.getParameter("FromStep"));
@@ -113,16 +113,16 @@ public class ImportTestCaseStep extends HttpServlet {
         LOG.debug("Rewrite TestCaseStep");
         fromTcs.setTest(test);
         fromTcs.setTestcase(testCase);
-        fromTcs.setStepId(step);
+        fromTcs.setStepId(stepId);
 
         LOG.debug("Rewrite TestCaseStepAction");
         List<TestCaseStepAction> tcsaToImport = new ArrayList<>();
-        // retrieve list of property name used in the step
+        // retrieve list of property name used in the stepId
         List<String> propertyNamesOfStep = new ArrayList<String>();
         for (TestCaseStepAction tcsa : fromTcsa) {
             tcsa.setTest(test);
             tcsa.setTestCase(testCase);
-            tcsa.setStep(step);
+            tcsa.setStepId(stepId);
             tcsaToImport.add(tcsa);
             if (!propertyNamesOfStep.contains(tcsa.getValue2())) {
                 propertyNamesOfStep.add(tcsa.getValue2());
@@ -134,7 +134,7 @@ public class ImportTestCaseStep extends HttpServlet {
         for (TestCaseStepActionControl tcsac : fromTcsac) {
             tcsac.setTest(test);
             tcsac.setTestCase(testCase);
-            tcsac.setStep(step);
+            tcsac.setStepId(stepId);
             tcsacToImport.add(tcsac);
         }
 

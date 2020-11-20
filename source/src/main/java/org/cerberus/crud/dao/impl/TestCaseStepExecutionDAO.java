@@ -77,7 +77,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
             LOG.debug("SQL.param.id : " + testCaseStepExecution.getId());
             LOG.debug("SQL.param.test : " + testCaseStepExecution.getTest());
             LOG.debug("SQL.param.testcase : " + testCaseStepExecution.getTestCase());
-            LOG.debug("SQL.param.step : " + testCaseStepExecution.getStep());
+            LOG.debug("SQL.param.step : " + testCaseStepExecution.getStepId());
             LOG.debug("SQL.param.index : " + testCaseStepExecution.getIndex());
         }
 
@@ -89,7 +89,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 preStat.setLong(i++, testCaseStepExecution.getId());
                 preStat.setString(i++, testCaseStepExecution.getTest());
                 preStat.setString(i++, testCaseStepExecution.getTestCase());
-                preStat.setInt(i++, testCaseStepExecution.getStep());
+                preStat.setInt(i++, testCaseStepExecution.getStepId());
                 preStat.setInt(i++, testCaseStepExecution.getIndex());
                 preStat.setInt(i++, testCaseStepExecution.getSort());
                 preStat.setString(i++, testCaseStepExecution.getLoop());
@@ -101,12 +101,12 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getReturnMessage(), 65000));
                 preStat.setString(i++, testCaseStepExecution.getDescription());
                 preStat.setString(i++, testCaseStepExecution.getConditionOperator());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal1Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal2Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal3Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal1(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal2(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal3(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionValue1Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionValue2Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionValue3Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionValue1(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionValue2(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionValue3(), 65000));
 
                 preStat.executeUpdate();
 
@@ -141,7 +141,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
             LOG.debug("SQL.param.id : " + testCaseStepExecution.getId());
             LOG.debug("SQL.param.test : " + testCaseStepExecution.getTest());
             LOG.debug("SQL.param.testcase : " + testCaseStepExecution.getTestCase());
-            LOG.debug("SQL.param.step : " + testCaseStepExecution.getStep());
+            LOG.debug("SQL.param.step : " + testCaseStepExecution.getStepId());
             LOG.debug("SQL.param.index : " + testCaseStepExecution.getIndex());
         }
 
@@ -165,14 +165,14 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 preStat.setInt(i++, testCaseStepExecution.getSort());
                 preStat.setString(i++, testCaseStepExecution.getLoop());
                 preStat.setString(i++, testCaseStepExecution.getConditionOperator());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal1Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal2Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal3Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal1(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal2(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionVal3(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionValue1Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionValue2Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionValue3Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionValue1(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionValue2(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getConditionValue3(), 65000));
                 preStat.setLong(i++, testCaseStepExecution.getId());
-                preStat.setInt(i++, testCaseStepExecution.getStep());
+                preStat.setInt(i++, testCaseStepExecution.getStepId());
                 preStat.setInt(i++, testCaseStepExecution.getIndex());
                 preStat.setString(i++, testCaseStepExecution.getTest());
                 preStat.setString(i++, testCaseStepExecution.getTestCase());
@@ -327,17 +327,17 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         long id = resultSet.getInt("id");
         String test = resultSet.getString("test");
         String testcase = resultSet.getString("testcase");
-        int step = resultSet.getInt("step");
+        int stepId = resultSet.getInt("step");
         int index = resultSet.getInt("index");
         int sort = resultSet.getInt("sort");
         String loop = resultSet.getString("loop");
         String conditionOperator = resultSet.getString("conditionOperator");
-        String conditionVal1 = resultSet.getString("conditionVal1");
-        String conditionVal2 = resultSet.getString("conditionVal2");
-        String conditionVal3 = resultSet.getString("conditionVal3");
-        String conditionVal1Init = resultSet.getString("conditionVal1Init");
-        String conditionVal2Init = resultSet.getString("conditionVal2Init");
-        String conditionVal3Init = resultSet.getString("conditionVal3Init");
+        String conditionValue1 = resultSet.getString("conditionVal1");
+        String conditionValue2 = resultSet.getString("conditionVal2");
+        String conditionValue3 = resultSet.getString("conditionVal3");
+        String conditionValue1Init = resultSet.getString("conditionVal1Init");
+        String conditionValue2Init = resultSet.getString("conditionVal2Init");
+        String conditionValue3Init = resultSet.getString("conditionVal3Init");
         String batNumExe = resultSet.getString("batnumexe");
         long start = resultSet.getTimestamp("start") == null ? 0 : resultSet.getTimestamp("start").getTime();
         long end = resultSet.getTimestamp("end") == null ? 0 : resultSet.getTimestamp("end").getTime();
@@ -347,6 +347,6 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         String returnCode = resultSet.getString("returncode");
         String returnMessage = resultSet.getString("returnMessage");
         String description = resultSet.getString("description");
-        return factoryTestCaseStepExecution.create(id, test, testcase, step, index, sort, loop, conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, batNumExe, start, end, fullstart, fullend, timeelapsed, returnCode, returnMessage, description);
+        return factoryTestCaseStepExecution.create(id, test, testcase, stepId, index, sort, loop, conditionOperator, conditionValue1Init, conditionValue2Init, conditionValue3Init, conditionValue1, conditionValue2, conditionValue3, batNumExe, start, end, fullstart, fullend, timeelapsed, returnCode, returnMessage, description);
     }
 }

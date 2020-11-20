@@ -43,42 +43,42 @@ public interface ITestCaseStepActionControlExecutionService {
      */
     void updateTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution);
     
-    List<TestCaseStepActionControlExecution> findTestCaseStepActionControlExecutionByCriteria(long id, String test, String testCase, int step, int index, int sequence);
+    List<TestCaseStepActionControlExecution> findTestCaseStepActionControlExecutionByCriteria(long id, String test, String testCase, int stepId, int index, int sequence);
 
     /**
-     * Return the testcasestepactioncontrolexecution list of an execution, step, action
+     * Return the testcasestepactioncontrolexecution list of an execution, stepId, action
      * @param executionId : ID of the execution
      * @param test : test
      * @param testcase : testcase
-     * @param step : ID of the step
+     * @param stepId : ID of the stepId
      * @param index
      * @param sequence : ID of the action
      * @return List of testcasestepactioncontrol object
      */
-    public AnswerList<TestCaseStepActionControlExecution> readByVarious1(long executionId, String test, String testcase, int step, int index, int sequence);
+    public AnswerList<TestCaseStepActionControlExecution> readByVarious1(long executionId, String test, String testcase, int stepId, int index, int sequence);
 
     /**
-     * Return the testcasestepactioncontrolexecution list of an execution, step, action
+     * Return the testcasestepactioncontrolexecution list of an execution, stepId, action
      * @param executionId : ID of the execution
      * @param test : test
      * @param testcase : testcase
-     * @param step : ID of the step
+     * @param stepId : ID of the stepId
      * @param index
      * @param sequence : ID of the action
      * @param controlSequence : ID of the control
      * @return List of testcasestepactioncontrol object
      */
-    public AnswerItem<TestCaseStepActionControlExecution> readByKey(long executionId, String test, String testcase, int step, int index, int sequence, int controlSequence);
+    public AnswerItem<TestCaseStepActionControlExecution> readByKey(long executionId, String test, String testcase, int stepId, int index, int sequence, int controlSequence);
 
     /**
-     * Return the testcasestepactioncontrolexecution list of an execution, step, action
+     * Return the testcasestepactioncontrolexecution list of an execution, stepId, action
      * @param executionId : ID of the execution
      * @param test : test
      * @param testcase : testcase
-     * @param step : ID of the step
+     * @param stepId : ID of the stepId
      * @param index
      * @param sequence : ID of the action
      * @return List of testcasestepactioncontrol object
      */
-    public AnswerList<TestCaseStepActionControlExecution> readByVarious1WithDependency(long executionId, String test, String testcase, int step, int index, int sequence);
+    public AnswerList<TestCaseStepActionControlExecution> readByVarious1WithDependency(long executionId, String test, String testcase, int stepId, int index, int sequence);
 }

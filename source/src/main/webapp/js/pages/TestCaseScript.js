@@ -1563,11 +1563,11 @@ function setAllSort() {
                     }
                 }
                 var actionJson = action.getJsonData();
-                actionJson.controlArr = controlArr;
+                actionJson.controls = controlArr;
                 actionArr.push(actionJson);
             }
             var stepJson = step.getJsonData();
-            stepJson.actionArr = actionArr;
+            stepJson.actions = actionArr;
             stepArr.push(stepJson);
         }
     }
@@ -1627,8 +1627,8 @@ function saveScript(property) {
                 informationInitialTestCase: GetURLParameter("testcase"),
                 informationTest: GetURLParameter("test"),
                 informationTestCase: GetURLParameter("testcase"),
-                stepArray: stepArr,
-                propArr: propArr
+                steps: stepArr,
+                properties: propArr
             }),
             success: function () {
 
@@ -2366,9 +2366,9 @@ function initStep() {
         "actions": [],
         "loop": "onceIfConditionTrue",
         "conditionOperator": "always",
-        "conditionVal1": "",
-        "conditionVal2": "",
-        "conditionVal3": "",
+        "conditionValue1": "",
+        "conditionValue2": "",
+        "conditionValue3": "",
         "isExecutionForced": false
     };
 }
@@ -2405,12 +2405,12 @@ function addStep(event) {
 
                     $.ajax({
                         url: "ReadTestCaseStep",
-                        data: {test: useStep.test, testcase: useStep.testCase, step: useStep.step},
+                        data: {test: useStep.test, testcase: useStep.testCase, stepid: useStep.stepId},
                         async: false,
                         success: function (data) {
-                            step.actions = data.tcsActions;
-                            for (var index = 0; index < data.tcsActionControls.length; index++) {
-                                var control = data.tcsActionControls[index];
+                            step.actions = data.actions;
+                            for (var index = 0; index < data.controls.length; index++) {
+                                var control = data.controls[index];
 
                                 for (var i = 0; i < step.actions.length; i++) {
                                     if (step.actions[i].actionId === control.actionId) {
@@ -2427,7 +2427,7 @@ function addStep(event) {
                         step.libraryStepTest = useStep.test;
                         step.libraryStepTestCase = useStep.testCase;
                         step.libraryStepStepId = useStep.step;
-                        step.useStepStepSort = useStep.sort;
+                        step.libraryStepSort = useStep.sort;
                     }
                 }
                 var stepObj = new Step(step, steps, true);
@@ -2605,13 +2605,13 @@ function showStepUsesLibraryInConfirmationModal(object) {
         data: {
             test: object.test,
             testcase: object.testcase,
-            step: object.stepId,
+            stepId: object.stepId,
             getUses: true
         },
         success: function (data) {
             var content = "";
             for (var i = 0; i < data.step.length; i++) {
-                content += "<a target='_blank' href='./TestCaseScript.jsp?test=" + encodeURI(data.step[i].test) + "&testcase=" + encodeURI(data.step[i].testcase) + "&step=" + encodeURI(data.step[i].sort) + "'>" + data.step[i].test + " - " + data.step[i].testcase + " - " + data.step[i].sort + " - " + data.step[i].description + "</a><br/>"
+                content += "<a target='_blank' href='./TestCaseScript.jsp?test=" + encodeURI(data.step[i].test) + "&testcase=" + encodeURI(data.step[i].testcase) + "&stepId=" + encodeURI(data.step[i].sort) + "'>" + data.step[i].test + " - " + data.step[i].testcase + " - " + data.step[i].sort + " - " + data.step[i].description + "</a><br/>"
             }
             $("#confirmationModal #otherStepThatUseIt").empty().append(content);
         }
@@ -2776,15 +2776,15 @@ function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
     this.isExecutionForced = json.isExecutionForced;
     this.loop = json.loop;
     this.conditionOperator = json.conditionOperator;
-    this.conditionVal1 = json.conditionVal1;
-    this.conditionVal2 = json.conditionVal2;
-    this.conditionVal3 = json.conditionVal3;
+    this.conditionValue1 = json.conditionValue1;
+    this.conditionValue2 = json.conditionValue2;
+    this.conditionValue3 = json.conditionValue3;
     this.isUsingLibraryStep = json.isUsingLibraryStep;
     this.isLibraryStep = json.isLibraryStep;
     this.libraryStepTest = json.libraryStepTest;
     this.libraryStepTestCase = json.libraryStepTestCase;
     this.libraryStepStepId = json.libraryStepStepId;
-    this.useStepStepSort = json.useStepStepSort;
+    this.libraryStepSort = json.libraryStepSort;
     this.test = json.test;
     this.testcase = json.testcase;
     this.isStepInUseByOtherTestCase = json.isStepInUseByOtherTestCase;
@@ -2898,7 +2898,7 @@ Step.prototype.show = function () {
 
     if (object.isUsingLibraryStep) {
         $("#isLib").hide();
-        $("#UseStepRow").html("(" + doc.getDocLabel("page_testcasescript", "imported_from") + " <a href='./TestCaseScript.jsp?test=" + encodeURI(object.libraryStepTest) + "&testcase=" + encodeURI(object.libraryStepTestCase) + "&step=" + encodeURI(object.useStepStepSort) + "' >" + object.libraryStepTest + " - " + object.libraryStepTestCase + " - " + object.useStepStepSort + "</a>)").show();
+        $("#UseStepRow").html("(" + doc.getDocLabel("page_testcasescript", "imported_from") + " <a href='./TestCaseScript.jsp?test=" + encodeURI(object.libraryStepTest) + "&testcase=" + encodeURI(object.libraryStepTestCase) + "&step=" + encodeURI(object.libraryStepSort) + "' >" + object.libraryStepTest + " - " + object.libraryStepTestCase + " - " + object.libraryStepSort + "</a>)").show();
         $("#UseStepRowButton").html("|").show();
         $("#addAction").prop("disabled", true);
         $("#addActionBottomBtn").hide();
@@ -2933,17 +2933,17 @@ Step.prototype.show = function () {
 
     $("#stepConditionVal1").unbind("change").change(function () {
         setModif(true);
-        object.conditionVal1 = $(this).val();
+        object.conditionValue1 = $(this).val();
     });
 
     $("#stepConditionVal2").unbind("change").change(function () {
         setModif(true);
-        object.conditionVal2 = $(this).val();
+        object.conditionValue2 = $(this).val();
     });
 
     $("#stepConditionVal3").unbind("change").change(function () {
         setModif(true);
-        object.conditionVal3 = $(this).val();
+        object.conditionValue3 = $(this).val();
     });
 
     $("#stepConditionOperator").replaceWith(getSelectInvariant("STEPCONDITIONOPERATOR", false, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepConditionOperator"));
@@ -2975,9 +2975,9 @@ Step.prototype.show = function () {
 
     $("#stepLoop").val(object.loop);
     $("#stepConditionOperator").val(object.conditionOperator);
-    $("#stepConditionVal1").val(object.conditionVal1);
-    $("#stepConditionVal2").val(object.conditionVal2);
-    $("#stepConditionVal3").val(object.conditionVal3);
+    $("#stepConditionVal1").val(object.conditionValue1);
+    $("#stepConditionVal2").val(object.conditionValue2);
+    $("#stepConditionVal3").val(object.conditionValue3);
     $("#stepDescription").val(object.description);
     $("#stepForceExe").val(object.isExecutionForced);
     $("#stepId").text(object.sort);
@@ -3093,9 +3093,9 @@ Step.prototype.getJsonData = function () {
     json.isLibraryStep = this.isLibraryStep;
     json.loop = this.loop;
     json.conditionOperator = this.conditionOperator;
-    json.conditionVal1 = this.conditionVal1;
-    json.conditionVal2 = this.conditionVal2;
-    json.conditionVal3 = this.conditionVal3;
+    json.conditionValue1 = this.conditionValue1;
+    json.conditionValue2 = this.conditionValue2;
+    json.conditionValue3 = this.conditionValue3;
     json.isExecutionForced = this.isExecutionForced;
 
     return json;

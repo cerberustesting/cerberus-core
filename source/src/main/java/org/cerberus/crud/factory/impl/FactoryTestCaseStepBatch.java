@@ -30,10 +30,10 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepBatch implements IFactoryTestCaseStepBatch {
 
     @Override
-    public TestCaseStepBatch create(String test, String testCase, int step, String batch) {
+    public TestCaseStepBatch create(String test, String testCase, int stepId, String batch) {
         TestCaseStepBatch testCaseStepBatch = new TestCaseStepBatch();
         testCaseStepBatch.setBatch(batch);
-        testCaseStepBatch.setStep(step);
+        testCaseStepBatch.setStepId(stepId);
         testCaseStepBatch.setTest(test);
         testCaseStepBatch.setTestCase(testCase);
         return testCaseStepBatch;

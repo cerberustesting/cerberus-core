@@ -79,7 +79,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
             LOG.debug("SQL.param.id : " + testCaseStepActionControlExecution.getId());
             LOG.debug("SQL.param.test : " + testCaseStepActionControlExecution.getTest());
             LOG.debug("SQL.param.testcase : " + testCaseStepActionControlExecution.getTestCase());
-            LOG.debug("SQL.param.step : " + testCaseStepActionControlExecution.getStep());
+            LOG.debug("SQL.param.step : " + testCaseStepActionControlExecution.getStepId());
             LOG.debug("SQL.param.index : " + testCaseStepActionControlExecution.getIndex());
             LOG.debug("SQL.param.sequence : " + testCaseStepActionControlExecution.getSequence());
             LOG.debug("SQL.param.controlsequence : " + testCaseStepActionControlExecution.getControlSequence());
@@ -91,7 +91,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
             try {
                 int i = 1;
                 preStat.setLong(i++, testCaseStepActionControlExecution.getId());
-                preStat.setInt(i++, testCaseStepActionControlExecution.getStep());
+                preStat.setInt(i++, testCaseStepActionControlExecution.getStepId());
                 preStat.setInt(i++, testCaseStepActionControlExecution.getIndex());
                 preStat.setInt(i++, testCaseStepActionControlExecution.getSequence());
                 preStat.setInt(i++, testCaseStepActionControlExecution.getControlSequence());
@@ -164,7 +164,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
             LOG.debug("SQL.param.id : " + testCaseStepActionControlExecution.getId());
             LOG.debug("SQL.param.test : " + testCaseStepActionControlExecution.getTest());
             LOG.debug("SQL.param.testcase : " + testCaseStepActionControlExecution.getTestCase());
-            LOG.debug("SQL.param.step : " + testCaseStepActionControlExecution.getStep());
+            LOG.debug("SQL.param.step : " + testCaseStepActionControlExecution.getStepId());
             LOG.debug("SQL.param.index : " + testCaseStepActionControlExecution.getIndex());
             LOG.debug("SQL.param.sequence : " + testCaseStepActionControlExecution.getSequence());
             LOG.debug("SQL.param.controlsequence : " + testCaseStepActionControlExecution.getControlSequence());
@@ -210,7 +210,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setLong(i++, testCaseStepActionControlExecution.getId());
                 preStat.setString(i++, testCaseStepActionControlExecution.getTest());
                 preStat.setString(i++, testCaseStepActionControlExecution.getTestCase());
-                preStat.setInt(i++, testCaseStepActionControlExecution.getStep());
+                preStat.setInt(i++, testCaseStepActionControlExecution.getStepId());
                 preStat.setInt(i++, testCaseStepActionControlExecution.getIndex());
                 preStat.setInt(i++, testCaseStepActionControlExecution.getSequence());
                 preStat.setInt(i++, testCaseStepActionControlExecution.getControlSequence());
@@ -236,7 +236,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
     }
 
     @Override
-    public List<TestCaseStepActionControlExecution> findTestCaseStepActionControlExecutionByCriteria(long id, String test, String testCase, int step, int index, int sequence) {
+    public List<TestCaseStepActionControlExecution> findTestCaseStepActionControlExecutionByCriteria(long id, String test, String testCase, int stepId, int index, int sequence) {
         List<TestCaseStepActionControlExecution> result = null;
         TestCaseStepActionControlExecution resultData;
         boolean throwEx = false;
@@ -249,7 +249,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setString(1, String.valueOf(id));
                 preStat.setString(2, test);
                 preStat.setString(3, testCase);
-                preStat.setInt(4, step);
+                preStat.setInt(4, stepId);
                 preStat.setInt(5, index);
                 preStat.setInt(6, sequence);
 
@@ -285,7 +285,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
     }
 
     @Override
-    public AnswerList<TestCaseStepActionControlExecution> readByVarious1(long executionId, String test, String testCase, int step, int index, int sequence) {
+    public AnswerList<TestCaseStepActionControlExecution> readByVarious1(long executionId, String test, String testCase, int stepId, int index, int sequence) {
         MessageEvent msg;
         AnswerList<TestCaseStepActionControlExecution> answer = new AnswerList<>();
         List<TestCaseStepActionControlExecution> list = new ArrayList<>();
@@ -304,7 +304,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setLong(1, executionId);
                 preStat.setString(2, test);
                 preStat.setString(3, testCase);
-                preStat.setInt(4, step);
+                preStat.setInt(4, stepId);
                 preStat.setInt(5, index);
                 preStat.setInt(6, sequence);
                 ResultSet resultSet = preStat.executeQuery();
@@ -357,7 +357,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
     }
 
     @Override
-    public AnswerItem<TestCaseStepActionControlExecution> readByKey(long executionId, String test, String testCase, int step, int index, int sequence, int controlSequence) {
+    public AnswerItem<TestCaseStepActionControlExecution> readByKey(long executionId, String test, String testCase, int stepId, int index, int sequence, int controlSequence) {
         MessageEvent msg;
         AnswerItem<TestCaseStepActionControlExecution> answer = new AnswerItem<>();
         TestCaseStepActionControlExecution tcsa = null;
@@ -376,7 +376,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setLong(1, executionId);
                 preStat.setString(2, test);
                 preStat.setString(3, testCase);
-                preStat.setInt(4, step);
+                preStat.setInt(4, stepId);
                 preStat.setInt(5, index);
                 preStat.setInt(6, sequence);
                 preStat.setInt(7, controlSequence);
@@ -432,7 +432,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         long id = resultSet.getInt("id");
         String test = resultSet.getString("test");
         String testCase = resultSet.getString("testcase");
-        int step = resultSet.getInt("step");
+        int stepId = resultSet.getInt("step");
         int index = resultSet.getInt("index");
         int sequence = resultSet.getInt("sequence");
         int controlSequence = resultSet.getInt("controlSequence");
@@ -459,7 +459,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         long startlong = resultSet.getLong("startlong");
         long endlong = resultSet.getLong("endlong");
         String description = resultSet.getString("description");
-        return factoryTestCaseStepActionControlExecution.create(id, test, testCase, step, index,
+        return factoryTestCaseStepActionControlExecution.create(id, test, testCase, stepId, index,
                 sequence, controlSequence, sort, returnCode, returnMessage, conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init,
                 conditionVal1, conditionVal2, conditionVal3, control, value1Init, value2Init, value3Init, value1, value2, value3,
                 fatal, start, end, startlong, endlong, description, null, null);

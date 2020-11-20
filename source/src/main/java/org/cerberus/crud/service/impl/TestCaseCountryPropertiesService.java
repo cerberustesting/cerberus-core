@@ -159,8 +159,8 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         // Before getting the list of properties, we first dedup the list of testcase with useStep as many steps from TestCase, could point to the same testCase library.
         for (TestCaseStep step : testCase.getSteps()) {
             if (step.isUsingLibraryStep()) {
-                LOG.debug("Item to add " + step.getLibraryStepTest() + "#/" + step.getLibraryStepTestCase());
-                testCaseHash.put(step.getLibraryStepTest() + "#/" + step.getLibraryStepTestCase(), factoryTestCase.create(step.getLibraryStepTest(), step.getLibraryStepTestCase()));
+                LOG.debug("Item to add " + step.getLibraryStepTest() + "#/" + step.getLibraryStepTestcase());
+                testCaseHash.put(step.getLibraryStepTest() + "#/" + step.getLibraryStepTestcase(), factoryTestCase.create(step.getLibraryStepTest(), step.getLibraryStepTestcase()));
             }
         }
         LOG.debug("Size " + testCaseHash.size());

@@ -36,7 +36,7 @@ public class TestCaseStepActionControlExecution {
     private long id;
     private String test;
     private String testCase;
-    private int step;
+    private int stepId;
     private int index;
     private int sequence;
     private int controlSequence;
@@ -304,12 +304,12 @@ public class TestCaseStepActionControlExecution {
         this.startLong = startLong;
     }
 
-    public int getStep() {
-        return step;
+    public int getStepId() {
+        return stepId;
     }
 
-    public void setStep(int step) {
-        this.step = step;
+    public void setStepId(int stepId) {
+        this.stepId = stepId;
     }
 
     public String getTest() {
@@ -388,7 +388,7 @@ public class TestCaseStepActionControlExecution {
             result.put("id", this.getId());
             result.put("test", this.getTest());
             result.put("testcase", this.getTestCase());
-            result.put("step", this.getStep());
+            result.put("step", this.getStepId());
             result.put("index", this.getIndex());
             result.put("sequence", this.getSequence());
             result.put("control", this.getControlSequence());

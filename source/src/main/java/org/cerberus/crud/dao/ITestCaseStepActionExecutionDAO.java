@@ -60,34 +60,34 @@ public interface ITestCaseStepActionExecutionDAO {
      * @param id
      * @param test
      * @param testCase
-     * @param step
+     * @param stepId
      * @param index
      * @return
      */
-    List<TestCaseStepActionExecution> findTestCaseStepActionExecutionByCriteria(long id, String test, String testCase, int step, int index);
+    List<TestCaseStepActionExecution> findTestCaseStepActionExecutionByCriteria(long id, String test, String testCase, int stepId, int index);
 
     /**
      *
      * @param executionId
      * @param test
      * @param testcase
-     * @param step
+     * @param stepId
      * @param index
      * @return
      */
-    public AnswerList<TestCaseStepActionExecution> readByVarious1(long executionId, String test, String testcase, int step, int index);
+    public AnswerList<TestCaseStepActionExecution> readByVarious1(long executionId, String test, String testcase, int stepId, int index);
 
     /**
      *
      * @param executionId
      * @param test
      * @param testcase
-     * @param step
+     * @param stepId
      * @param index
      * @param sequence
      * @return
      */
-    public AnswerItem<TestCaseStepActionExecution> readByKey(long executionId, String test, String testcase, int step, int index, int sequence);
+    public AnswerItem<TestCaseStepActionExecution> readByKey(long executionId, String test, String testcase, int stepId, int index, int sequence);
 
     /**
      *
