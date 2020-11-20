@@ -1790,7 +1790,7 @@ function createPropertiesOld(propList) {
         propertyArray.push(propList[ind].property);
 
         var test = property.fromTest;
-        var testcase = property.fromTestCase;
+        var testcase = property.fromTestcase;
 
         var moreBtn = $("<div></div>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down").attr("style", "font-size:1.5em"));
 

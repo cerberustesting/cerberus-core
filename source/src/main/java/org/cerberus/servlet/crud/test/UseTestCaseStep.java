@@ -135,7 +135,7 @@ public class UseTestCaseStep extends HttpServlet {
                             // only add property of the test case if it is used by the stepId
                             if (propertyNamesOfStep.contains(tccp.getProperty())) {
                                 tccp.setTest(test);
-                                tccp.setTestCase(testCase);
+                                tccp.setTestcase(testCase);
                                 tccpToImport.add(tccp);
                             }
                         }

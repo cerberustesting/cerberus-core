@@ -2021,7 +2021,7 @@ function drawInheritedProperty(propList) {
     for (var index = 0; index < propList.length; index++) {
         var property = propList[index];
         var test = property.fromTest;
-        var testcase = property.fromTestCase;
+        var testcase = property.fromTestcase;
 
         var moreBtn = $("<button class='btn btn-default add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
         var editBtn = $("<a href='./TestCaseScript.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI(testcase) + "&property=" + encodeURI(property.property) + "' class='btn btn-primary add-btn'></a>").append($("<span></span>").addClass("glyphicon glyphicon-pencil"));

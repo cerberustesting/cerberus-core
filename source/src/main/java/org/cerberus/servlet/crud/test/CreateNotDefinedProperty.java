@@ -116,8 +116,7 @@ public class CreateNotDefinedProperty extends HttpServlet {
                 }
 
                 for (String country : toCountries) {
-                    listOfPropertiesToInsert.add(factoryTestCaseCountryProperties.create(
-                            toTest,
+                    listOfPropertiesToInsert.add(factoryTestCaseCountryProperties.create(toTest,
                             toTestCase,
                             country,
                             propertyName,
@@ -128,7 +127,7 @@ public class CreateNotDefinedProperty extends HttpServlet {
                             "",
                             "0",
                             0,
-                            "STATIC", 0, 10000, 0, 1
+                            "STATIC", 0, 10000, 0, 1, null, null, null, null
                     ));
                 }
 

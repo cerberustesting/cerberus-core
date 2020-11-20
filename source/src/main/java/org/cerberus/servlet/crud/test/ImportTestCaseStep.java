@@ -80,7 +80,7 @@ public class ImportTestCaseStep extends HttpServlet {
         String testCase = request.getParameter("TestCase");
         Integer stepId = Integer.valueOf(request.getParameter("Step"));
         String fromTest = request.getParameter("FromTest");
-        String fromTestCase = request.getParameter("FromTestCase");
+        String fromTestcase = request.getParameter("FromTestcase");
         Integer fromStep = Integer.valueOf(request.getParameter("FromStep"));
         String importProperty = "N";
         if (request.getParameter("ImportProperty") != null) {
@@ -92,9 +92,9 @@ public class ImportTestCaseStep extends HttpServlet {
          * Get TestCaseStep, List of TestCaseStepAction and List of
          * TestCaseStepActionControl from Test, Testcase, Step
          */
-        TestCaseStep fromTcs = testCaseStepService.findTestCaseStep(fromTest, fromTestCase, fromStep);
-        List<TestCaseStepAction> fromTcsa = testCaseStepActionService.getListOfAction(fromTest, fromTestCase, fromStep);
-        List<TestCaseStepActionControl> fromTcsac = testCaseStepActionControlService.findControlByTestTestCaseStep(fromTest, fromTestCase, fromStep);
+        TestCaseStep fromTcs = testCaseStepService.findTestCaseStep(fromTest, fromTestcase, fromStep);
+        List<TestCaseStepAction> fromTcsa = testCaseStepActionService.getListOfAction(fromTest, fromTestcase, fromStep);
+        List<TestCaseStepActionControl> fromTcsac = testCaseStepActionControlService.findControlByTestTestCaseStep(fromTest, fromTestcase, fromStep);
 
         /**
          * Get List of Country of the origin testcase and the destination
@@ -149,11 +149,11 @@ public class ImportTestCaseStep extends HttpServlet {
                 tccListString.retainAll(tccFromListString);
                 if (!tccListString.isEmpty()) {
                     for (String country : tccListString) {
-                        tccpList = testCaseCountryProperties.findListOfPropertyPerTestTestCaseCountry(fromTest, fromTestCase, country);
+                        tccpList = testCaseCountryProperties.findListOfPropertyPerTestTestCaseCountry(fromTest, fromTestcase, country);
                         for (TestCaseCountryProperties tccp : tccpList) {
                             if (propertyNamesOfStep.contains(tccp.getProperty())) {
                                 tccp.setTest(test);
-                                tccp.setTestCase(testCase);
+                                tccp.setTestcase(testCase);
                                 tccpToImport.add(tccp);
                             }
                         }

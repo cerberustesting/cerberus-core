@@ -327,7 +327,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                     String country = countries.getString(j);
 
                     testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature,
-                            retryNb, retryPeriod, cacheExpire, rank));
+                            retryNb, retryPeriod, cacheExpire, rank, null, null, null, null));
                 }
             }
         }

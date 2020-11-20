@@ -31,10 +31,10 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseCountryProperties implements IFactoryTestCaseCountryProperties {
 
     @Override
-    public TestCaseCountryProperties create(String test, String testCase, String country, String property, String description, String type, String database, String value1, String value2, String length, int rowLimit, String nature, int retryNb, int retryPeriod, int cacheExpire, int rank) {
+    public TestCaseCountryProperties create(String test, String testCase, String country, String property, String description, String type, String database, String value1, String value2, String length, int rowLimit, String nature, int retryNb, int retryPeriod, int cacheExpire, int rank, Timestamp dateCreated, String usrCreated, Timestamp dateModif, String usrModif) {
         TestCaseCountryProperties testCaseCountryProperties = new TestCaseCountryProperties();
         testCaseCountryProperties.setTest(test);
-        testCaseCountryProperties.setTestCase(testCase);
+        testCaseCountryProperties.setTestcase(testCase);
         testCaseCountryProperties.setCountry(country);
         testCaseCountryProperties.setProperty(property);
         testCaseCountryProperties.setDescription(description == null ? "" : description);
