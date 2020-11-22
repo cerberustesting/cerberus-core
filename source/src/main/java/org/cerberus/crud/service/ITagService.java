@@ -161,15 +161,16 @@ public interface ITagService {
     Answer createAuto(String tag, String campaign, String user, JSONArray reqEnvironmentList, JSONArray reqCountryList);
 
     /**
-     * will enrich the tag with Browserstack buildId hash.
+     * will enrich the tag with any external cloud service provider buildId.
      *
+     * @param provider cloud provider taken from TestCaseExecution.ROBOTPROVIDER_* value 
      * @param system
      * @param tagS
      * @param user
      * @param pass
      * @return
      */
-    String enrichTagWithBrowserStackBuild(String system, String tagS, String user, String pass);
+    String enrichTagWithCloudProviderBuild(String provider, String system, String tagS, String user, String pass);
 
     /**
      *

@@ -1352,10 +1352,10 @@ function setConfigPanel(data) {
     configPanel.find("input#testcaseversion").val(data.testCaseVersion);
     configPanel.find("input#system").val(data.system);
     configPanel.find("input#robotdecli").val(data.robotDecli);
-    configPanel.find("input#robotsessionid").val(data.robotSessionId);
+    configPanel.find("input#robotsessionid").val(data.robotProviderSessionId);
     if (data.robotProvider === "BROWSERSTACK") {
         if (data.tagObj !== undefined) {
-            let targetUrl = "https://automate.browserstack.com/builds/" + data.tagObj.browserstackBuildHash + "/sessions/" + data.robotSessionId;
+            let targetUrl = "https://automate.browserstack.com/builds/" + data.tagObj.browserstackBuildHash + "/sessions/" + data.robotProviderSessionId;
             let provImg = $('<img src="./images/browserstack.png" width="20">');
             $("#sessionLinkHeader").empty().append(provImg).show();
             $("#sessionLinkHeader").parent().attr("href", targetUrl).attr("target", "_blank");
@@ -1364,11 +1364,20 @@ function setConfigPanel(data) {
             $("#sessionLink").parent().attr("href", targetUrl).attr("target", "_blank");
         }
     } else if (data.robotProvider === "KOBITON") {
-        let targetUrl = "https://portal.kobiton.com/sessions/" + data.robotSessionId;
+        let targetUrl = "https://portal.kobiton.com/sessions/" + data.robotProviderSessionId;
         let provImg = $('<img src="./images/kobiton.png" width="20">');
         $("#sessionLinkHeader").empty().append(provImg).show();
         $("#sessionLinkHeader").parent().attr("href", targetUrl).attr("target", "_blank");
         provImg = $('<img src="./images/kobiton.png" width="20">');
+        $("#sessionLink").empty().append(provImg).show();
+        $("#sessionLink").parent().attr("href", targetUrl).attr("target", "_blank");
+    } else if (data.robotProvider === "LAMBDATEST") {
+        //WOFHL-CU17N-2NBNL-4RBTO&build=842773
+        let targetUrl = "https://automation.lambdatest.com/logs/?testID=" + data.robotProviderSessionId + "&build=" + data.tagObj.lambdaTestBuild;
+        let provImg = $('<img src="./images/lambdatest.png" height="20">');
+        $("#sessionLinkHeader").empty().append(provImg).show();
+        $("#sessionLinkHeader").parent().attr("href", targetUrl).attr("target", "_blank");
+        provImg = $('<img src="./images/lambdatest.png" height="20">');
         $("#sessionLink").empty().append(provImg).show();
         $("#sessionLink").parent().attr("href", targetUrl).attr("target", "_blank");
     } else {

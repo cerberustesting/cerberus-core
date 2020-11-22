@@ -8730,15 +8730,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // ADD Parameters to manage credit limit
         // 1561
         a.add("INSERT INTO `parameter` VALUES('', 'cerberus_creditlimit_nbexeperday', '0', 'Maximum number of execution per day.'), ('', 'cerberus_creditlimit_secondexeperday', '0', 'Maximum duration of all execution in minutes.')");
-        
+
         // ADD Parameters to manage credit limit
         // 1562
         a.add("UPDATE invariant set value = 'TYPE' where idname='CAMPAIGN_TCCRITERIA' and value='GROUP';");
-                
+
         // DROP testcase action foreign key to update testcasestep column names
         // 1563
         a.add("ALTER TABLE testcasestepaction DROP FOREIGN KEY FK_testcasestepaction_01;");
-        
+
         // 1564
         a.add("ALTER TABLE testcasestep "
                 + "CHANGE COLUMN Step StepId INT(10) UNSIGNED NOT NULL, "
@@ -8752,7 +8752,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + "CHANGE COLUMN useStepStep LibraryStepStepId int(10) UNSIGNED DEFAULT NULL, "
                 + "CHANGE COLUMN inLibrary IsLibraryStep VARCHAR(1), "
                 + "CHANGE COLUMN forceExe IsExecutionForced VARCHAR(1) NOT NULL;");
-        
+
         // Update column type from VARCHAR to Boolean 
         // 1565 -1570
         a.add("UPDATE testcasestep SET IsUsingLibraryStep = 1 WHERE IsUsingLibraryStep = 'Y';");
@@ -8761,19 +8761,38 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("UPDATE testcasestep SET IsUsingLibraryStep = 0 WHERE IsUsingLibraryStep != '1';");
         a.add("UPDATE testcasestep SET IsExecutionForced = 0 WHERE IsExecutionForced != '1';");
         a.add("UPDATE testcasestep SET IsLibraryStep = 0 WHERE IsLibraryStep != '1';");
-        
+
         // 1571
         a.add("ALTER TABLE testcasestep "
                 + "MODIFY IsUsingLibraryStep BOOLEAN DEFAULT 0, "
                 + "MODIFY IsExecutionForced BOOLEAN DEFAULT 0, "
                 + "MODIFY IsLibraryStep BOOLEAN DEFAULT 0;");
-        
+
         // 1572
         a.add("ALTER TABLE testcasestepaction "
                 + "ADD CONSTRAINT FK_testcasestepaction_01 "
                 + "FOREIGN KEY (Test , Testcase , Step) "
                 + "REFERENCES testcasestep (Test , TestCase , StepId) "
                 + "ON DELETE CASCADE ON UPDATE CASCADE;");
+
+        // New parameters for lambdatest.
+        // 1573
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + "('', 'cerberus_lambdatest_defaultexename', 'Exe : %EXEID% - %TESTDESCRIPTION%', 'Define the default value for the name of the execution to be sent to Lambdatest when a test is executed. Variable %EXEID%, %TESTFOLDER%, %TESTID% and %TESTDESCRIPTION% can be used.');");
+
+        // Adding lambdatest Build column.
+        // 1574
+        a.add("ALTER TABLE `tag` ADD COLUMN `LambdatestBuild` VARCHAR(100) NOT NULL DEFAULT '' AFTER `browserstackBuildHash`, CHANGE COLUMN `browserstackBuildHash` `BrowserstackBuildHash` VARCHAR(100) NOT NULL DEFAULT '';");
+
+        // ADD cloud providers to invariant.
+        // 1575
+        a.add("INSERT IGNORE INTO invariant (idname, value, sort, description, VeryShortDesc) "
+                + "VALUES('ROBOTHOST', 'hub-cloud.browserstack.com', 10, 'BrowserStack cloud service', 'BrowserStack')"
+                + ",('ROBOTHOST', 'hub.lambdatest.com', 10, 'LambdaTest cloud service', 'LambdaTest')"
+                + ",('ROBOTHOST', 'api.kobiton.com', 10, 'Kobiton cloud service', 'Kobiton');");
+
+        // 1576
+        a.add("ALTER TABLE testcaseexecution ADD COLUMN `RobotProviderSessionId` VARCHAR(100) NOT NULL DEFAULT '' AFTER `RobotProvider`;");
 
         return a;
     }

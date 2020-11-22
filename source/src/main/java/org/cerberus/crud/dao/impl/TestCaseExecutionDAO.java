@@ -77,8 +77,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         boolean throwEx = false;
         final String query = "INSERT INTO testcaseexecution(test, testcase, description, build, revision, environment, environmentData, country, browser, application, robothost, "
                 + "url, robotport, tag, status, start, controlstatus, controlMessage, crbversion, executor, screensize, conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, "
-                + "manualExecution, UserAgent, queueId, testCaseVersion, TestCasePriority, system, robotdecli, robot, robotexecutor, RobotProvider, RobotSessionId, UsrCreated) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "manualExecution, UserAgent, queueId, testCaseVersion, TestCasePriority, system, robotdecli, robot, robotexecutor, RobotProvider, RobotProviderSessionId, RobotSessionId, UsrCreated) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -130,6 +130,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getRobot());
                 preStat.setString(i++, tCExecution.getRobotExecutor());
                 preStat.setString(i++, tCExecution.getRobotProvider());
+                preStat.setString(i++, tCExecution.getRobotProviderSessionID());
                 preStat.setString(i++, tCExecution.getRobotSessionID());
                 preStat.setString(i++, tCExecution.getUsrCreated());
 
@@ -178,7 +179,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ? "
                 + ", version = ?, platform = ?, executor = ?, screensize = ? "
                 + ", conditionOperator = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal3Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ConditionVal3 = ?, ManualExecution = ?, UserAgent = ?, queueId = ?, testCaseVersion = ?, testCasePriority = ?, system = ? "
-                + ", robotdecli = ?, robot = ?, robotexecutor = ?, RobotProvider = ?, RobotSessionId = ?, UsrModif = ?, DateModif = NOW() WHERE id = ?";
+                + ", robotdecli = ?, robot = ?, robotexecutor = ?, RobotProvider = ?, RobotSessionId = ?, RobotProviderSessionId = ?, UsrModif = ?, DateModif = NOW() WHERE id = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -237,6 +238,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getRobotExecutor());
                 preStat.setString(i++, tCExecution.getRobotProvider());
                 preStat.setString(i++, tCExecution.getRobotSessionID());
+                preStat.setString(i++, tCExecution.getRobotProviderSessionID());
                 preStat.setString(i++, tCExecution.getUsrModif());
                 preStat.setLong(i++, tCExecution.getId());
 
@@ -1549,8 +1551,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         long queueId = ParameterParserUtil.parseLongParam(resultSet.getString("exe.queueId"), 0);
         int testCaseVersion = ParameterParserUtil.parseIntegerParam(resultSet.getInt("exe.testCaseVersion"), 0);
         int testCasePriority = ParameterParserUtil.parseIntegerParam(resultSet.getInt("exe.testCasePriority"), 0);
-        String robotProvider = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robotProvider"), "");
-        String robotSessionId = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robotSessionId"), "");
+        String robotProvider = ParameterParserUtil.parseStringParam(resultSet.getString("exe.RobotProvider"), "");
+        String robotSessionId = ParameterParserUtil.parseStringParam(resultSet.getString("exe.RobotSessionId"), "");
+        String robotProviderSessionId = ParameterParserUtil.parseStringParam(resultSet.getString("exe.RobotProviderSessionId"), "");
         String usrModif = ParameterParserUtil.parseStringParam(resultSet.getString("exe.UsrModif"), "");
         String usrCreated = ParameterParserUtil.parseStringParam(resultSet.getString("exe.UsrCreated"), "");
         Timestamp dateCreated = resultSet.getTimestamp("exe.DateCreated");
@@ -1562,6 +1565,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, manualExecution, userAgent, testCaseVersion, testCasePriority, system,
                 usrCreated, dateCreated, usrModif, dateModif);
         result.setQueueID(queueId);
+        result.setRobotProviderSessionID(robotProviderSessionId);
         return result;
     }
 

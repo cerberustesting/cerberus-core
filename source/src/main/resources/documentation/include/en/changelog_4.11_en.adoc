@@ -1,12 +1,13 @@
 *Bug fixes*
 [square]
 * Fixed campaign testcase selection criteria on type information #2202
-* Filtering requests table on Network tab of testcase execution paage now display the column filtered.
+* Filtering requests table on Network tab of testcase execution page now display the column filtered.
 
 *Improvements / New features*
 [square]
 * 'indexNetworkTraffic' action now allow to name the index of network traffic. #2163
 * Network tab on Execution detail now allows to filter by index name values. #2163
+* Advanced integration to LambdaTest device Farm cloud service (https://www.lambdatest.com/)
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

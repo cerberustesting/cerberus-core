@@ -85,6 +85,7 @@ import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.kafka.IKafkaService;
 import org.cerberus.service.robotproviders.IBrowserstackService;
 import org.cerberus.service.robotproviders.IKobitonService;
+import org.cerberus.service.robotproviders.ILambdaTestService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.session.SessionCounter;
 import org.cerberus.util.StringUtil;
@@ -173,6 +174,8 @@ public class ExecutionRunService implements IExecutionRunService {
     private IBrowserstackService browserstackService;
     @Autowired
     private IKobitonService kobitonService;
+    @Autowired
+    private ILambdaTestService lambdaTestService;
     @Autowired
     private IKafkaService kafkaService;
     @Autowired
@@ -342,12 +345,15 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
             /**
-             * For BrowserStack only, we try to enrich the Tag with build hash.
+             * For BrowserStack and LambdaTest, we try to enrich the Tag with build hash.
              */
-            if (TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK.equals(tCExecution.getRobotProvider())) {
-                String newBuildHash = tagService.enrichTagWithBrowserStackBuild(tCExecution.getSystem(), tCExecution.getTag(), tCExecution.getRobotExecutorObj().getHostUser(), tCExecution.getRobotExecutorObj().getHostPassword());
-                Tag newTag = tagService.convert(tagService.readByKey(tCExecution.getTag()));
-                tCExecution.setTagObj(newTag);
+            switch (tCExecution.getRobotProvider()) {
+                case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
+                case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
+                    String newBuildHash = tagService.enrichTagWithCloudProviderBuild(tCExecution.getRobotProvider(), tCExecution.getSystem(), tCExecution.getTag(), tCExecution.getRobotExecutorObj().getHostUser(), tCExecution.getRobotExecutorObj().getHostPassword());
+                    Tag newTag = tagService.convert(tagService.readByKey(tCExecution.getTag()));
+                    tCExecution.setTagObj(newTag);
+                    break;
             }
 
             /**
@@ -852,6 +858,12 @@ public class ExecutionRunService implements IExecutionRunService {
                         case TestCaseExecution.ROBOTPROVIDER_KOBITON:
                             kobitonService.setSessionStatus(tCExecution.getSystem(), tCExecution.getRobotSessionID(), tCExecution.getControlStatus(), tCExecution.getControlMessage(), tCExecution.getRobotExecutorObj().getHostUser(), tCExecution.getRobotExecutorObj().getHostPassword());
                             break;
+                        case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
+                            lambdaTestService.setSessionStatus(tCExecution.getSession(), tCExecution.getControlStatus());
+                            // We also set the exeid at that stage.
+                            String session1 = lambdaTestService.getTestID(tCExecution.getTagObj().getLambdaTestBuild(), tCExecution.getRobotSessionID(), tCExecution.getRobotExecutorObj().getHostUser(), tCExecution.getRobotExecutorObj().getHostPassword(), tCExecution.getSystem());
+                            tCExecution.setRobotProviderSessionID(session1);
+                            break;
                     }
 
                 } else { // We don't execute the testcase linked with condition.
@@ -1008,7 +1020,7 @@ public class ExecutionRunService implements IExecutionRunService {
             LOG.debug("[DEBUG] STOP " + " ID=" + tCExecution.getId());
             this.stopRunTestCase(tCExecution);
         } catch (Exception ex) {
-            LOG.warn("Exception Stopping Execution " + tCExecution.getId() + " Exception :" + ex.toString());
+            LOG.warn("Exception Stopping Execution " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
         }
 
         /**

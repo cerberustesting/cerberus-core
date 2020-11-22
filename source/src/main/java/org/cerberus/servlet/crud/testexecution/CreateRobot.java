@@ -239,7 +239,10 @@ public class CreateRobot extends HttpServlet {
             if (reJson.has("devicePort") && !StringUtil.isNullOrEmpty(reJson.getString("devicePort"))) {
                 devicePort = reJson.getInt("devicePort");
             }
-            String executorProxyHost = reJson.getString("executorProxyHost");
+            String executorProxyHost = "";
+            if (reJson.has("executorProxyHost") && !StringUtil.isNullOrEmpty(reJson.getString("executorProxyHost"))) {
+                executorProxyHost = reJson.getString("executorProxyHost");
+            }
             Integer executorProxyPort = null;
             if (reJson.has("executorProxyPort") && !StringUtil.isNullOrEmpty(reJson.getString("executorProxyPort"))) {
                 executorProxyPort = reJson.getInt("executorProxyPort");

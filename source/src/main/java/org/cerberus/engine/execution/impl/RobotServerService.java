@@ -70,6 +70,7 @@ import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.har.IHarService;
 import org.cerberus.service.proxy.IProxyService;
 import org.cerberus.service.rest.IRestService;
+import org.cerberus.service.robotproviders.ILambdaTestService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -131,6 +132,8 @@ public class RobotServerService implements IRobotServerService {
     private IRestService restService;
     @Autowired
     private IHarService harService;
+    @Autowired
+    private ILambdaTestService lambdaTestService;
     @Autowired
     private IExecutorService executorService;
 
@@ -348,7 +351,9 @@ public class RobotServerService implements IRobotServerService {
                     } else {
                         driver = new RemoteWebDriver(executor, caps);
                     }
-                    tCExecution.setRobotSessionID(getSession(driver, tCExecution.getRobotProvider()));
+                    tCExecution.setRobotProviderSessionID(getSession(driver, tCExecution.getRobotProvider()));
+                    tCExecution.setRobotSessionID(getSession(driver));
+
                     break;
                 case Application.TYPE_APK:
                     // add a lock on app path this part of code, because we can't install 2 apk with the same name simultaneously
@@ -375,13 +380,15 @@ public class RobotServerService implements IRobotServerService {
                     }
 
                     driver = (WebDriver) appiumDriver;
-                    tCExecution.setRobotSessionID(getSession(driver, tCExecution.getRobotProvider()));
+                    tCExecution.setRobotProviderSessionID(getSession(driver, tCExecution.getRobotProvider()));
+                    tCExecution.setRobotSessionID(getSession(driver));
                     break;
 
                 case Application.TYPE_IPA:
                     appiumDriver = new IOSDriver(url, caps);
                     driver = (WebDriver) appiumDriver;
-                    tCExecution.setRobotSessionID(getSession(driver, tCExecution.getRobotProvider()));
+                    tCExecution.setRobotProviderSessionID(getSession(driver, tCExecution.getRobotProvider()));
+                    tCExecution.setRobotSessionID(getSession(driver));
                     break;
                 case Application.TYPE_FAT:
                     /**
@@ -516,11 +523,19 @@ public class RobotServerService implements IRobotServerService {
             case TestCaseExecution.ROBOTPROVIDER_KOBITON:
                 session = ((RemoteWebDriver) driver).getCapabilities().getCapability("kobitonSessionId").toString();
                 break;
+            case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
+            // For LambdaTest we get the exeid not here but by service call at the end of the execution.
             case TestCaseExecution.ROBOTPROVIDER_NONE:
                 session = ((RemoteWebDriver) driver).getSessionId().toString();
                 break;
             default:
         }
+        return session;
+    }
+
+    private String getSession(WebDriver driver) {
+        String session = "";
+        session = ((RemoteWebDriver) driver).getSessionId().toString();
         return session;
     }
 
@@ -530,6 +545,9 @@ public class RobotServerService implements IRobotServerService {
         }
         if (host.contains("kobiton")) {
             return TestCaseExecution.ROBOTPROVIDER_KOBITON;
+        }
+        if (host.contains("lambdatest")) {
+            return TestCaseExecution.ROBOTPROVIDER_LAMBDATEST;
         }
         return TestCaseExecution.ROBOTPROVIDER_NONE;
     }
@@ -682,6 +700,33 @@ public class RobotServerService implements IRobotServerService {
                     }
                     if (isNotAlreadyDefined(caps, "browserstack.networkLogs")) {
                         caps.setCapability("browserstack.networkLogs", true);
+                    }
+                }
+                break;
+            case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
+                if (!StringUtil.isNullOrEmpty(tCExecution.getTag()) && isNotAlreadyDefined(caps, "build")) {
+                    caps.setCapability("build", tCExecution.getTag());
+                }
+                if (isNotAlreadyDefined(caps, "name")) {
+                    String externalExeName = parameterService.getParameterStringByKey("cerberus_lambdatest_defaultexename", tCExecution.getSystem(), "Exe : %EXEID% - %TESTDESCRIPTION%");
+                    externalExeName = externalExeName.replace("%EXEID%", String.valueOf(tCExecution.getId()));
+                    externalExeName = externalExeName.replace("%TESTFOLDER%", String.valueOf(tCExecution.getTest()));
+                    externalExeName = externalExeName.replace("%TESTID%", String.valueOf(tCExecution.getTestCase()));
+                    externalExeName = externalExeName.replace("%TESTDESCRIPTION%", String.valueOf(tCExecution.getDescription()));
+                    caps.setCapability("name", externalExeName);
+                }
+                if (tCExecution.getVerbose() >= 2) {
+                    if (isNotAlreadyDefined(caps, "video")) {
+                        caps.setCapability("video", true);
+                    }
+                    if (isNotAlreadyDefined(caps, "visual")) {
+                        caps.setCapability("visual", true);
+                    }
+                    if (isNotAlreadyDefined(caps, "network")) {
+                        caps.setCapability("network", true);
+                    }
+                    if (isNotAlreadyDefined(caps, "console")) {
+                        caps.setCapability("console", true);
                     }
                 }
                 break;
