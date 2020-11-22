@@ -1549,7 +1549,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append("SELECT * FROM testcase tec ");
         query.append("LEFT OUTER JOIN application app ON app.application=tec.application ");
         query.append("INNER JOIN testcasestep  tcs ON tec.test = tcs.test and tec.testcase = tcs.testcase ");
-        query.append("WHERE tec.test= ? and (tcs.inlibrary = 'Y' or tcs.inlibrary = 'y') ");
+        query.append("WHERE tec.test= ? and tcs.isLibraryStep = true ");
         query.append("GROUP BY tec.testcase order by tec.testcase ");
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {

@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.entity;
 
+import java.sql.Timestamp;
 import org.cerberus.engine.entity.MessageEvent;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -33,7 +34,7 @@ import org.json.JSONObject;
 public class TestCaseCountryProperties {
 
     private String test;
-    private String testCase;
+    private String testcase;
     private String country;
     private String property;
     private String description;
@@ -48,14 +49,18 @@ public class TestCaseCountryProperties {
     private int retryNb;
     private int retryPeriod;
     private int Rank;
+    private String usrCreated;
+    private Timestamp dateCreated;
+    private String usrModif;
+    private Timestamp dateModif;
 
     /**
      * From here are data outside database model.
      */
     private MessageEvent result;
-    private TestCaseCountry testCaseCountry;
+    private TestCaseCountry testcaseCountry;
     private List<Invariant> invariantCountries;
-    private List<TestCaseCountry> tccList;
+    private List<TestCaseCountry> testcaseCountries;
     private static final Logger LOG = LogManager.getLogger(TestCase.class);
 
     /**
@@ -99,12 +104,12 @@ public class TestCaseCountryProperties {
         this.cacheExpire = cacheExpire;
     }
 
-    public List<TestCaseCountry> getTccList() {
-        return tccList;
+    public List<TestCaseCountry> getTestcaseCountries() {
+        return testcaseCountries;
     }
 
-    public void setTccList(List<TestCaseCountry> tccList) {
-        this.tccList = tccList;
+    public void setTestcaseCountries(List<TestCaseCountry> testcaseCountries) {
+        this.testcaseCountries = testcaseCountries;
     }
 
     public int getRetryNb() {
@@ -135,12 +140,12 @@ public class TestCaseCountryProperties {
         return country;
     }
 
-    public TestCaseCountry getTestCaseCountry() {
-        return testCaseCountry;
+    public TestCaseCountry getTestcaseCountry() {
+        return testcaseCountry;
     }
 
-    public void setTestCaseCountry(TestCaseCountry testCaseCountry) {
-        this.testCaseCountry = testCaseCountry;
+    public void setTestcaseCountry(TestCaseCountry testcaseCountry) {
+        this.testcaseCountry = testcaseCountry;
     }
 
     public void setCountry(String country) {
@@ -211,12 +216,12 @@ public class TestCaseCountryProperties {
         this.test = test;
     }
 
-    public String getTestCase() {
-        return testCase;
+    public String getTestcase() {
+        return testcase;
     }
 
-    public void setTestCase(String testCase) {
-        this.testCase = testCase;
+    public void setTestcase(String testcase) {
+        this.testcase = testcase;
     }
 
     public String getType() {
@@ -243,6 +248,38 @@ public class TestCaseCountryProperties {
         this.result = result;
     }
 
+    public String getUsrCreated() {
+        return usrCreated;
+    }
+
+    public void setUsrCreated(String usrCreated) {
+        this.usrCreated = usrCreated;
+    }
+
+    public Timestamp getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Timestamp dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public String getUsrModif() {
+        return usrModif;
+    }
+
+    public void setUsrModif(String usrModif) {
+        this.usrModif = usrModif;
+    }
+
+    public Timestamp getDateModif() {
+        return dateModif;
+    }
+
+    public void setDateModif(Timestamp dateModif) {
+        this.dateModif = dateModif;
+    }
+
     public boolean hasSameKey(TestCaseCountryProperties obj) {
         if (obj == null) {
             return false;
@@ -254,7 +291,7 @@ public class TestCaseCountryProperties {
         if ((this.test == null) ? (obj.test != null) : !this.test.equals(obj.test)) {
             return false;
         }
-        if ((this.testCase == null) ? (obj.testCase != null) : !this.testCase.equals(obj.testCase)) {
+        if ((this.testcase == null) ? (obj.testcase != null) : !this.testcase.equals(obj.testcase)) {
             return false;
         }
         if ((this.country == null) ? (obj.country != null) : !this.country.equals(obj.country)) {
@@ -278,7 +315,7 @@ public class TestCaseCountryProperties {
     public int hashCode() {
         int hash = 5;
         hash = 83 * hash + (this.test != null ? this.test.hashCode() : 0);
-        hash = 83 * hash + (this.testCase != null ? this.testCase.hashCode() : 0);
+        hash = 83 * hash + (this.testcase != null ? this.testcase.hashCode() : 0);
         hash = 83 * hash + (this.country != null ? this.country.hashCode() : 0);
         hash = 83 * hash + (this.property != null ? this.property.hashCode() : 0);
         hash = 83 * hash + (this.description != null ? this.description.hashCode() : 0);
@@ -306,7 +343,7 @@ public class TestCaseCountryProperties {
         if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
             return false;
         }
-        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
+        if ((this.testcase == null) ? (other.testcase != null) : !this.testcase.equals(other.testcase)) {
             return false;
         }
         if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
@@ -350,14 +387,15 @@ public class TestCaseCountryProperties {
 
     @Override
     public String toString() {
-        return "TestCaseCountryProperties{" + "test=" + test + ", testCase=" + testCase + ", country=" + country + ", property=" + property + ", description=" + description + ", type=" + type + ", database=" + database + ", value1=" + value1 + ", value2=" + value2 + ", length=" + length + ", rowLimit=" + rowLimit + ", nature=" + nature + ", cacheExpire=" + cacheExpire + ", retryNb=" + retryNb + ", retryPeriod=" + retryPeriod + ", Rank=" + Rank + ", result=" + result + ", testCaseCountry=" + testCaseCountry + ", invariantCountries=" + invariantCountries + ", tccList=" + tccList + '}';
+        return "TestCaseCountryProperties{" + "test=" + test + ", testcase=" + testcase + ", country=" + country + ", property=" + property + ", description=" + description + ", type=" + type + ", database=" + database + ", value1=" + value1 + ", value2=" + value2 + ", length=" + length + ", rowLimit=" + rowLimit + ", nature=" + nature + ", cacheExpire=" + cacheExpire + ", retryNb=" + retryNb + ", retryPeriod=" + retryPeriod + ", Rank=" + Rank + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", result=" + result + ", testcaseCountry=" + testcaseCountry + ", invariantCountries=" + invariantCountries + ", testcaseCountries=" + testcaseCountries + '}';
     }
+
 
     public JSONObject toJson() {
         JSONObject testCaseCountryPropertiesJson = new JSONObject();
         try {
             testCaseCountryPropertiesJson.put("fromTest", this.getTest());
-            testCaseCountryPropertiesJson.put("fromTestCase", this.getTestCase());
+            testCaseCountryPropertiesJson.put("fromTestcase", this.getTestcase());
             testCaseCountryPropertiesJson.put("property", this.getProperty());
             testCaseCountryPropertiesJson.put("description", this.getDescription());
             testCaseCountryPropertiesJson.put("type", this.getType());
@@ -368,6 +406,10 @@ public class TestCaseCountryProperties {
             testCaseCountryPropertiesJson.put("rowLimit", this.getRowLimit());
             testCaseCountryPropertiesJson.put("nature", this.getNature());
             testCaseCountryPropertiesJson.put("rank", this.getRank());
+            testCaseCountryPropertiesJson.put("usrCreated", this.getUsrCreated());
+            testCaseCountryPropertiesJson.put("dateCreated", this.getDateCreated());
+            testCaseCountryPropertiesJson.put("usrModif", this.getUsrModif());
+            testCaseCountryPropertiesJson.put("dateModif", this.getDateModif());
 
             JSONArray countriesJson = new JSONArray();
             if (this.getInvariantCountries() != null) {

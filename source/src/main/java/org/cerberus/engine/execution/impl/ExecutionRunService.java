@@ -1,4 +1,4 @@
-/**
+    /**
  * Cerberus Copyright (C) 2013 - 2017 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -585,9 +585,9 @@ public class ExecutionRunService implements IExecutionRunService {
                                         .resolveDescription("STEPINDEX", String.valueOf(step_index));
                                 testCaseStepExecution = factoryTestCaseStepExecution.create(
                                         runID, testCaseStep.getTest(), testCaseStep.getTestcase(),
-                                        testCaseStep.getStepId(), step_index, testCaseStep.getSort(), testCaseStep.getLoop(), testCaseStep.getConditionOperator(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal3(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal3(), null,
+                                        testCaseStep.getStepId(), step_index, testCaseStep.getSort(), testCaseStep.getLoop(), testCaseStep.getConditionOperator(), testCaseStep.getConditionValue1(), testCaseStep.getConditionValue2(), testCaseStep.getConditionValue3(), testCaseStep.getConditionValue1(), testCaseStep.getConditionValue2(), testCaseStep.getConditionValue3(), null,
                                         startStep, startStep, startStep, startStep, new BigDecimal("0"), null, stepMess, testCaseStep, tCExecution,
-                                        (testCaseStep.isUsingLibraryStep() ? "Y" : "N"), testCaseStep.getLibraryStepTest(), testCaseStep.getLibraryStepTestCase(), testCaseStep.getLibraryStepStepId(), testCaseStep.getDescription());
+                                        testCaseStep.isUsingLibraryStep(), testCaseStep.getLibraryStepTest(), testCaseStep.getLibraryStepTestcase(), testCaseStep.getLibraryStepStepId(), testCaseStep.getDescription());
                                 testCaseStepExecution.setLoop(testCaseStep.getLoop());
                                 testCaseStepExecutionService.insertTestCaseStepExecution(testCaseStepExecution);
                                 testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
@@ -611,8 +611,8 @@ public class ExecutionRunService implements IExecutionRunService {
                                         || step_index > 1) {
                                     // Decode Conditionvalue1 and Conditionvalue2 and Evaluate the condition at the Step level.
                                     try {
-                                        answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionVal1(), tCExecution, null, false);
-                                        testCaseStepExecution.setConditionVal1((String) answerDecode.getItem());
+                                        answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue1(), tCExecution, null, false);
+                                        testCaseStepExecution.setConditionValue1((String) answerDecode.getItem());
                                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                                             testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
                                             testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value1"));
@@ -628,8 +628,8 @@ public class ExecutionRunService implements IExecutionRunService {
                                     }
                                     if (!descriptionOrConditionStepDecodeError) {
                                         try {
-                                            answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionVal2(), tCExecution, null, false);
-                                            testCaseStepExecution.setConditionVal2((String) answerDecode.getItem());
+                                            answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue2(), tCExecution, null, false);
+                                            testCaseStepExecution.setConditionValue2((String) answerDecode.getItem());
                                             if (!(answerDecode.isCodeStringEquals("OK"))) {
                                                 testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
                                                 testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value2"));
@@ -646,8 +646,8 @@ public class ExecutionRunService implements IExecutionRunService {
                                     }
                                     if (!descriptionOrConditionStepDecodeError) {
                                         try {
-                                            answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionVal3(), tCExecution, null, false);
-                                            testCaseStepExecution.setConditionVal3((String) answerDecode.getItem());
+                                            answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue3(), tCExecution, null, false);
+                                            testCaseStepExecution.setConditionValue3((String) answerDecode.getItem());
                                             if (!(answerDecode.isCodeStringEquals("OK"))) {
                                                 testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
                                                 testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value3"));
@@ -682,7 +682,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                     }
                                     if (!(descriptionOrConditionStepDecodeError)) {
 
-                                        conditionAnswer = this.conditionService.evaluateCondition(testCaseStepExecution.getConditionOperator(), testCaseStepExecution.getConditionVal1(), testCaseStepExecution.getConditionVal2(), testCaseStepExecution.getConditionVal3(), tCExecution);
+                                        conditionAnswer = this.conditionService.evaluateCondition(testCaseStepExecution.getConditionOperator(), testCaseStepExecution.getConditionValue1(), testCaseStepExecution.getConditionValue2(), testCaseStepExecution.getConditionValue3(), tCExecution);
                                         execute_Step = (boolean) conditionAnswer.getItem();
                                         if (conditionAnswer.getResultMessage().getMessage().getCodeString().equals("PE")) {
                                             // There were no error when performing the condition evaluation.
@@ -762,7 +762,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                 /**
                                  * Execute Step
                                  */
-                                LOG.debug(logPrefix + "Executing step : " + testCaseStepExecution.getTest() + " - " + testCaseStepExecution.getTestCase() + " - Step " + testCaseStepExecution.getStep() + " - Index " + testCaseStepExecution.getStep());
+                                LOG.debug(logPrefix + "Executing step : " + testCaseStepExecution.getTest() + " - " + testCaseStepExecution.getTestCase() + " - Step " + testCaseStepExecution.getStepId() + " - Index " + testCaseStepExecution.getStepId());
 
                                 if (execute_Step) {
 
@@ -796,7 +796,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                     /**
                                      * Register Step in database
                                      */
-                                    LOG.debug(logPrefix + "Registering Step : " + testCaseStepExecution.getStep());
+                                    LOG.debug(logPrefix + "Registering Step : " + testCaseStepExecution.getStepId());
 
                                     // We change the Step message only if the Step is not executed due to condition.
                                     MessageEvent stepMes = new MessageEvent(MessageEventEnum.CONDITION_TESTCASESTEP_NOTEXECUTED);
@@ -1071,7 +1071,7 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             TestCaseStepActionExecution testCaseStepActionExecution = factoryTestCaseStepActionExecution.create(
                     testCaseStepExecution.getId(), testCaseStepAction.getTest(), testCaseStepAction.getTestCase(),
-                    testCaseStepAction.getStep(), testCaseStepExecution.getIndex(), testCaseStepAction.getSequence(), testCaseStepAction.getSort(), null, null,
+                    testCaseStepAction.getStepId(), testCaseStepExecution.getIndex(), testCaseStepAction.getSequence(), testCaseStepAction.getSort(), null, null,
                     testCaseStepAction.getConditionOperator(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), testCaseStepAction.getConditionVal3(),
                     testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), testCaseStepAction.getConditionVal3(),
                     testCaseStepAction.getAction(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(), testCaseStepAction.getValue3(), testCaseStepAction.getValue1(),
@@ -1343,7 +1343,7 @@ public class ExecutionRunService implements IExecutionRunService {
             LOG.debug("Creating TestCaseStepActionControlExecution");
             TestCaseStepActionControlExecution controlExe
                     = factoryTestCaseStepActionControlExecution.create(actionExe.getId(), control.getTest(), control.getTestCase(),
-                            control.getStep(), actionExe.getIndex(), control.getSequence(), control.getControlSequence(), control.getSort(),
+                            control.getStepId(), actionExe.getIndex(), control.getSequence(), control.getControlSequence(), control.getSort(),
                             null, null,
                             control.getConditionOperator(), control.getConditionVal1(), control.getConditionVal2(), control.getConditionVal3(), control.getConditionVal1(), control.getConditionVal2(), control.getConditionVal3(),
                             control.getControl(), control.getValue1(), control.getValue2(), control.getValue3(), control.getValue1(), control.getValue2(),

@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.sql.Timestamp;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
 import org.springframework.stereotype.Service;
@@ -31,10 +32,13 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseCountryProperties implements IFactoryTestCaseCountryProperties {
 
     @Override
-    public TestCaseCountryProperties create(String test, String testCase, String country, String property, String description, String type, String database, String value1, String value2, String length, int rowLimit, String nature, int retryNb, int retryPeriod, int cacheExpire, int rank) {
+    public TestCaseCountryProperties create(String test, String testcase, String country, String property,
+            String description, String type, String database, String value1, String value2, String length,
+            int rowLimit, String nature, int retryNb, int retryPeriod, int cacheExpire, int rank,
+            Timestamp dateCreated, String usrCreated, Timestamp dateModif, String usrModif) {
         TestCaseCountryProperties testCaseCountryProperties = new TestCaseCountryProperties();
         testCaseCountryProperties.setTest(test);
-        testCaseCountryProperties.setTestCase(testCase);
+        testCaseCountryProperties.setTestcase(testcase);
         testCaseCountryProperties.setCountry(country);
         testCaseCountryProperties.setProperty(property);
         testCaseCountryProperties.setDescription(description == null ? "" : description);
@@ -49,6 +53,11 @@ public class FactoryTestCaseCountryProperties implements IFactoryTestCaseCountry
         testCaseCountryProperties.setRetryPeriod(retryPeriod);
         testCaseCountryProperties.setCacheExpire(cacheExpire);
         testCaseCountryProperties.setRank(rank);
+        testCaseCountryProperties.setDateCreated(dateCreated);
+        testCaseCountryProperties.setUsrCreated(usrCreated == null ? "" : usrCreated);
+        testCaseCountryProperties.setDateModif(dateModif);
+        testCaseCountryProperties.setUsrModif(usrModif == null ? "" : usrModif);
+
         return testCaseCountryProperties;
     }
 

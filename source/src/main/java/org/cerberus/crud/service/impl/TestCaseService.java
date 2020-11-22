@@ -145,28 +145,28 @@ public class TestCaseService implements ITestCaseService {
             List<TestCaseStep> tcs = testCaseStepService.getListOfSteps(test, testCase);
             List<TestCaseStep> tcsToAdd = new ArrayList<>();
             for (TestCaseStep step : tcs) {
-                int stepNumber = step.getStepId();
+                int stepId = step.getStepId();
                 int initialStep = step.getStepId();
                 if (step.isUsingLibraryStep()) {
                     test = step.getLibraryStepTest();
-                    testCase = step.getLibraryStepTestCase();
-                    stepNumber = step.getLibraryStepStepId();
+                    testCase = step.getLibraryStepTestcase();
+                    stepId = step.getLibraryStepStepId();
                 }
-                List<TestCaseStepAction> tcsa = testCaseStepActionService.getListOfAction(test, testCase, stepNumber);
+                List<TestCaseStepAction> tcsa = testCaseStepActionService.getListOfAction(test, testCase, stepId);
                 List<TestCaseStepAction> tcsaToAdd = new ArrayList<>();
                 for (TestCaseStepAction action : tcsa) {
-                    List<TestCaseStepActionControl> tcsac = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(test, testCase, stepNumber, action.getSequence());
+                    List<TestCaseStepActionControl> tcsac = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(test, testCase, stepId, action.getSequence());
                     List<TestCaseStepActionControl> tcsacToAdd = new ArrayList<>();
                     for (TestCaseStepActionControl control : tcsac) {
                         control.setTest(initialTest);
                         control.setTestCase(initialTc);
-                        control.setStep(initialStep);
+                        control.setStepId(initialStep);
                         tcsacToAdd.add(control);
                     }
                     action.setControls(tcsacToAdd);
                     action.setTest(initialTest);
                     action.setTestCase(initialTc);
-                    action.setStep(initialStep);
+                    action.setStepId(initialStep);
                     tcsaToAdd.add(action);
                 }
                 step.setActions(tcsaToAdd);
@@ -432,7 +432,7 @@ public class TestCaseService implements ITestCaseService {
                  * has the same name, the 1st step imported will define the
                  * property value.
                  */
-                result.add(0, this.findTestCaseByKey(tcs.getLibraryStepTest(), tcs.getLibraryStepTestCase()));
+                result.add(0, this.findTestCaseByKey(tcs.getLibraryStepTest(), tcs.getLibraryStepTestcase()));
             }
         }
         return result;

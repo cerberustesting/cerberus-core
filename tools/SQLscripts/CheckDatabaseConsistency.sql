@@ -161,14 +161,14 @@ order by inv.sort;
 -- Steps that uses other steps that uses other steps.
 select * 
 from testcasestep tcs 
- join testcasestep tcs1 on tcs1.test=tcs.useSteptest and tcs1.testcase=tcs.useSteptestcase and tcs1.step=tcs.useStepstep  
-  where tcs.useStep = 'Y' and tcs1.useStep='Y'
+ join testcasestep tcs1 on tcs1.test=tcs.libraryStepTest and tcs1.testcase=tcs.libraryStepTestcase and tcs1.step=tcs.libraryStepStepId  
+  where tcs.isUsingLibraryStep = true and tcs1.isUsingLibraryStep = true
   order by tcs1.test, tcs1.testcase, tcs1.step;
 
--- Steps that uses other steps even if they are not flagged as inLibrary
+-- Steps that uses other steps even if they are not flagged as isLibraryStep
 select * from testcasestep tcs 
- join testcasestep tcs1 on tcs1.test=tcs.useSteptest and tcs1.testcase=tcs.useSteptestcase and tcs1.step=tcs.useStepstep  
-  where tcs.useStep = 'Y' and tcs1.inLibrary!='Y'
+ join testcasestep tcs1 on tcs1.test=tcs.libraryStepTest and tcs1.testcase=tcs.libraryStepTestcase and tcs1.step=tcs.libraryStepStepId  
+  where tcs.isUsingLibraryStep = true and tcs1.isLibraryStep = false
   order by tcs1.test, tcs1.testcase, tcs1.step;
 
   

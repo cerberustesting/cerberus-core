@@ -1,0 +1,3 @@
+This installation file is a duplicate from the INSTALL one one level upper.
+
+Its is needed by Dockerfile to add it in the archive while building the application since it cannot access files outside of the build context.

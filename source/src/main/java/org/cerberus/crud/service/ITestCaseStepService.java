@@ -46,10 +46,10 @@ public interface ITestCaseStepService {
      *
      * @param test
      * @param testcase
-     * @param step
+     * @param stepId
      * @return TestCaseStep object
      */
-    TestCaseStep findTestCaseStep(String test, String testcase, Integer step);
+    TestCaseStep findTestCaseStep(String test, String testcase, Integer stepId);
 
     /**
      * This method is changing the data that belong to masterStep by the data
@@ -67,7 +67,7 @@ public interface ITestCaseStepService {
 
     public void deleteListTestCaseStep(List<TestCaseStep> tcsToDelete) throws CerberusException;
 
-    List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testCase, int step) throws CerberusException;
+    List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testCase, int stepId) throws CerberusException;
 
     List<TestCaseStep> getTestCaseStepUsingTestCaseInParamter(String test, String testCase) throws CerberusException;
 
@@ -85,7 +85,7 @@ public interface ITestCaseStepService {
 
     AnswerList<TestCaseStep> readByTestTestCase(String test, String testcase);
 
-    AnswerList readByLibraryUsed(String test, String testcase, int step);
+    AnswerList readByLibraryUsed(String test, String testcase, int stepId);
 
     /**
      *

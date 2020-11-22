@@ -165,7 +165,7 @@ public class GetTestCase extends HttpServlet {
 
                         for (TestCaseStepActionControl control : action.getControls()) {
                             JSONObject controlObject = new JSONObject();
-                            controlObject.put("step", control.getStep());
+                            controlObject.put("step", control.getStepId());
                             controlObject.put("sequence", control.getSequence());
                             controlObject.put("order", control.getControlSequence());
                             controlObject.put("action", control.getControl());

@@ -8775,23 +8775,31 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + "REFERENCES testcasestep (Test , TestCase , StepId) "
                 + "ON DELETE CASCADE ON UPDATE CASCADE;");
 
-        // New parameters for lambdatest.
         // 1573
+        a.add("ALTER TABLE testcasecountryproperties "
+                + "ADD COLUMN UsrCreated VARCHAR(45) NOT NULL DEFAULT '', "
+                + "ADD COLUMN DateCreated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                + "ADD COLUMN UsrModif VARCHAR(45) NOT NULL DEFAULT '', "
+                + "CHANGE COLUMN TestCase Testcase VARCHAR(45) NOT NULL, "
+                + "CHANGE COLUMN last_modified DateModif TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER UsrModif;");
+        
+        // New parameters for lambdatest.
+        // 1574
         a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
                 + "('', 'cerberus_lambdatest_defaultexename', 'Exe : %EXEID% - %TESTDESCRIPTION%', 'Define the default value for the name of the execution to be sent to Lambdatest when a test is executed. Variable %EXEID%, %TESTFOLDER%, %TESTID% and %TESTDESCRIPTION% can be used.');");
 
         // Adding lambdatest Build column.
-        // 1574
+        // 1575
         a.add("ALTER TABLE `tag` ADD COLUMN `LambdatestBuild` VARCHAR(100) NOT NULL DEFAULT '' AFTER `browserstackBuildHash`, CHANGE COLUMN `browserstackBuildHash` `BrowserstackBuildHash` VARCHAR(100) NOT NULL DEFAULT '';");
 
         // ADD cloud providers to invariant.
-        // 1575
+        // 1576
         a.add("INSERT IGNORE INTO invariant (idname, value, sort, description, VeryShortDesc) "
                 + "VALUES('ROBOTHOST', 'hub-cloud.browserstack.com', 10, 'BrowserStack cloud service', 'BrowserStack')"
                 + ",('ROBOTHOST', 'hub.lambdatest.com', 10, 'LambdaTest cloud service', 'LambdaTest')"
                 + ",('ROBOTHOST', 'api.kobiton.com', 10, 'Kobiton cloud service', 'Kobiton');");
 
-        // 1576
+        // 1577
         a.add("ALTER TABLE testcaseexecution ADD COLUMN `RobotProviderSessionId` VARCHAR(100) NOT NULL DEFAULT '' AFTER `RobotProvider`;");
 
         return a;

@@ -32,15 +32,15 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestCaseStepActionControlService {
 
-    TestCaseStepActionControl findTestCaseStepActionControlByKey(String test, String testcase, int stepNumber, int sequence, int control);
+    TestCaseStepActionControl findTestCaseStepActionControlByKey(String test, String testcase, int stepId, int sequence, int control);
 
-    List<TestCaseStepActionControl> findControlByTestTestCaseStepSequence(String test, String testcase, int stepNumber, int sequence);
+    List<TestCaseStepActionControl> findControlByTestTestCaseStepSequence(String test, String testcase, int stepId, int sequence);
 
     void insertTestCaseStepActionControl(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException;
 
     boolean insertListTestCaseStepActionControl(List<TestCaseStepActionControl> testCaseStepActionControlList);
 
-    List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int step);
+    List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int stepId);
 
     public boolean updateTestCaseStepActionControl(TestCaseStepActionControl control);
 
@@ -58,11 +58,11 @@ public interface ITestCaseStepActionControlService {
      *
      * @param test
      * @param testcase
-     * @param step
+     * @param stepId
      * @param sequence
      * @return
      */
-    public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int step, int sequence);
+    public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int stepId, int sequence);
 
     Answer create(TestCaseStepActionControl object);
     

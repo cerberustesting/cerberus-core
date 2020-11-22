@@ -159,8 +159,8 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         // Before getting the list of properties, we first dedup the list of testcase with useStep as many steps from TestCase, could point to the same testCase library.
         for (TestCaseStep step : testCase.getSteps()) {
             if (step.isUsingLibraryStep()) {
-                LOG.debug("Item to add " + step.getLibraryStepTest() + "#/" + step.getLibraryStepTestCase());
-                testCaseHash.put(step.getLibraryStepTest() + "#/" + step.getLibraryStepTestCase(), factoryTestCase.create(step.getLibraryStepTest(), step.getLibraryStepTestCase()));
+                LOG.debug("Item to add " + step.getLibraryStepTest() + "#/" + step.getLibraryStepTestcase());
+                testCaseHash.put(step.getLibraryStepTest() + "#/" + step.getLibraryStepTestcase(), factoryTestCase.create(step.getLibraryStepTest(), step.getLibraryStepTestcase()));
             }
         }
         LOG.debug("Size " + testCaseHash.size());
@@ -308,8 +308,8 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
                     TestCaseCountryProperties tccp_level = (TestCaseCountryProperties) tccpMap1.get(tccp.getProperty());
                     if ((tccp_level != null)
                             && (((tccp.getTest().equals("Pre Testing")) && (tccp_level.getTest().equals("Pre Testing")))
-                            || ((tccp.getTest().equals(test)) && (tccp.getTestCase().equals(testcase)) && (tccp_level.getTest().equals(test)) && (tccp_level.getTestCase().equals(testcase)))
-                            || ((tccp.getTest().equals(tccp_level.getTest())) && (tccp.getTestCase().equals(tccp_level.getTestCase()))))) {
+                            || ((tccp.getTest().equals(test)) && (tccp.getTestcase().equals(testcase)) && (tccp_level.getTest().equals(test)) && (tccp_level.getTestcase().equals(testcase)))
+                            || ((tccp.getTest().equals(tccp_level.getTest())) && (tccp.getTestcase().equals(tccp_level.getTestcase()))))) {
                         result.add(tccp);
                     }
                 }
@@ -435,7 +435,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         List<TestCaseCountryProperties> listToCreate = new ArrayList<>();
         for (TestCaseCountryProperties objectToDuplicate : objectList) {
             objectToDuplicate.setTest(targetTest);
-            objectToDuplicate.setTestCase(targetTestCase);
+            objectToDuplicate.setTestcase(targetTestCase);
             listToCreate.add(objectToDuplicate);
         }
         ans = createList(listToCreate);

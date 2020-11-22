@@ -1799,7 +1799,7 @@ function createPropertiesOld(propList) {
         propertyArray.push(propList[ind].property);
 
         var test = property.fromTest;
-        var testcase = property.fromTestCase;
+        var testcase = property.fromTestcase;
 
         var moreBtn = $("<div></div>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down").attr("style", "font-size:1.5em"));
 
@@ -2004,12 +2004,12 @@ function Step(json, steps, id) {
     this.conditionVal1Init = json.conditionVal1Init;
     this.conditionVal2Init = json.conditionVal2Init;
     this.conditionVal3Init = json.conditionVal3Init;
-    this.useStep = json.useStep;
-    this.useStepTest = json.useStepTest;
-    this.useStepTestCase = json.useStepTestCase;
+    this.isUsingLibraryStep = json.isUsingLibraryStep;
+    this.libraryStepTest = json.libraryStepTest;
+    this.libraryStepTestcase = json.libraryStepTestcase;
     this.useStepTestCaseStep = json.useStepTestCaseStep;
-    this.useStepStep = json.useStepStep;
-    this.inLibrary = json.inLibrary;
+    this.libraryStepStepId = json.libraryStepStepId;
+    this.isLibraryStep = json.isLibraryStep;
     this.actions = [];
     this.setActions(json.testCaseStepActionExecutionList, id);
 
@@ -2267,7 +2267,7 @@ Step.prototype.getJsonData = function () {
     json.fullEnd = this.fullEnd;
     json.fullStart = this.fullStart;
     json.id = this.id;
-    json.inLibrary = this.inLibrary;
+    json.isLibraryStep = this.isLibraryStep;
     json.index = this.index;
     json.loop = this.loop;
     json.returnCode = this.returnCode;
@@ -2277,10 +2277,10 @@ Step.prototype.getJsonData = function () {
     json.test = this.test;
     json.testcase = this.testcase;
     json.toDelete = this.toDelete;
-    json.useStep = this.useStep;
-    json.useStepStep = this.useStepStep;
-    json.useStepTest = this.useStepTest;
-    json.useStepTestCase = this.useStepTestCase;
+    json.isUsingLibraryStep = this.isUsingLibraryStep;
+    json.libraryStepStepId = this.libraryStepStepId;
+    json.libraryStepTest = this.libraryStepTest;
+    json.libraryStepTestcase = this.libraryStepTestcase;
     json.useStepTestCaseStep = this.useStepTestCaseStep;
     json.screenshotFileName = "";
     //Value the user is able to modified

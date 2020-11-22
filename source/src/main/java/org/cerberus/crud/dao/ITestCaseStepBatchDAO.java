@@ -32,5 +32,5 @@ import org.cerberus.crud.entity.TestCaseStepBatch;
  */
 public interface ITestCaseStepBatchDAO {
 
-    List<TestCaseStepBatch> findTestCaseStepBatchByTestCaseStep(String test, String testcase, int stepNumber);
+    List<TestCaseStepBatch> findTestCaseStepBatchByTestCaseStep(String test, String testcase, int stepId);
 }

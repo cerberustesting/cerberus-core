@@ -31,16 +31,16 @@ public interface IFactoryTestCaseStep {
      * 
      * @param test
      * @param testCase
-     * @param step
+     * @param stepId
      * @param sort
      * @param loop
      * @param conditionOperator
-     * @param conditionVal1
-     * @param conditionVal2
-     * @param conditionVal3
+     * @param conditionValue1
+     * @param conditionValue2
+     * @param conditionValue3
      * @param description
      * @param isUsingLibraryStep 
-     * @param useStepTest
+     * @param libraryStepTest
      * @param libraryStepTestcase
      * @param libraryStepStepId
      * @param isLibraryTest
@@ -51,7 +51,7 @@ public interface IFactoryTestCaseStep {
      * @param dateModif
      * @return 
      */
-    TestCaseStep create(String test, String testCase, int step, int sort, String loop, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String description,
+    TestCaseStep create(String test, String testCase, int stepId, int sort, String loop, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, String description,
             boolean isUsingLibraryStep , String libraryStepTest, String libraryStepTestcase, Integer libraryStepStepId, boolean isLibraryTest, boolean isExecutionForced, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
 }

@@ -55,21 +55,21 @@ public class TestCaseStepService implements ITestCaseStepService {
     }
 
     @Override
-    public TestCaseStep findTestCaseStep(String test, String testcase, Integer step) {
-        return testCaseStepDAO.findTestCaseStep(test, testcase, step);
+    public TestCaseStep findTestCaseStep(String test, String testcase, Integer stepId) {
+        return testCaseStepDAO.findTestCaseStep(test, testcase, stepId);
     }
 
     @Override
     public TestCaseStep modifyTestCaseStepDataFromUsedStep(TestCaseStep masterStep) {
         if (masterStep.isUsingLibraryStep()) {
-            TestCaseStep usedStep = findTestCaseStep(masterStep.getLibraryStepTest(), masterStep.getLibraryStepTestCase(), masterStep.getLibraryStepStepId());
+            TestCaseStep usedStep = findTestCaseStep(masterStep.getLibraryStepTest(), masterStep.getLibraryStepTestcase(), masterStep.getLibraryStepStepId());
             // Copy the usedStep property to main step. Loop and conditionOperator are taken from used step.
             if (usedStep != null) {
                 masterStep.setLoop(usedStep.getLoop());
                 masterStep.setConditionOperator(usedStep.getConditionOperator());
-                masterStep.setConditionVal1(usedStep.getConditionVal1());
-                masterStep.setConditionVal2(usedStep.getConditionVal2());
-                masterStep.setConditionVal3(usedStep.getConditionVal3());
+                masterStep.setConditionValue1(usedStep.getConditionValue1());
+                masterStep.setConditionValue2(usedStep.getConditionValue2());
+                masterStep.setConditionValue3(usedStep.getConditionValue3());
             }
         }
 
@@ -94,8 +94,8 @@ public class TestCaseStepService implements ITestCaseStepService {
     }
 
     @Override
-    public List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testCase, int step) throws CerberusException {
-        return testCaseStepDAO.getTestCaseStepUsingStepInParamter(test, testCase, step);
+    public List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testCase, int stepId) throws CerberusException {
+        return testCaseStepDAO.getTestCaseStepUsingStepInParamter(test, testCase, stepId);
     }
 
     @Override
@@ -150,7 +150,7 @@ public class TestCaseStepService implements ITestCaseStepService {
 
     private void updateTestCaseStepUsingTestCaseStepInList(List<TestCaseStep> testCaseStepList) throws CerberusException {
         for (TestCaseStep tcsDifference : testCaseStepList) {
-            if (tcsDifference.isIsStepInUseByOtherTestCase()) {
+            if (tcsDifference.isIsStepInUseByOtherTestcase()) {
                 List<TestCaseStep> tcsUsingStep = this.getTestCaseStepUsingStepInParamter(tcsDifference.getTest(), tcsDifference.getTestcase(), tcsDifference.getInitialStep());
                 for (TestCaseStep tcsUS : tcsUsingStep) {
                     tcsUS.setLibraryStepStepId(tcsDifference.getStepId());
@@ -196,8 +196,8 @@ public class TestCaseStepService implements ITestCaseStepService {
     }
 
     @Override
-    public AnswerList readByLibraryUsed(String test, String testcase, int step) {
-        return testCaseStepDAO.readByLibraryUsed(test, testcase, step);
+    public AnswerList readByLibraryUsed(String test, String testcase, int stepId) {
+        return testCaseStepDAO.readByLibraryUsed(test, testcase, stepId);
     }
 
     @Override
@@ -209,9 +209,9 @@ public class TestCaseStepService implements ITestCaseStepService {
         List<TestCaseStep> steps = new ArrayList<>();
         for (TestCaseStep step : answerSteps.getDataList()) {
             if (step.isUsingLibraryStep()) {
-                TestCaseStep usedStep = this.findTestCaseStep(step.getLibraryStepTest(), step.getLibraryStepTestCase(), step.getLibraryStepStepId());
-                step.setUseStepStepSort(usedStep.getSort());
-                actions = testCaseStepActionService.readByVarious1WithDependency(step.getLibraryStepTest(), step.getLibraryStepTestCase(), step.getLibraryStepStepId());
+                TestCaseStep usedStep = this.findTestCaseStep(step.getLibraryStepTest(), step.getLibraryStepTestcase(), step.getLibraryStepStepId());
+                step.setLibraryStepSort(usedStep.getSort());
+                actions = testCaseStepActionService.readByVarious1WithDependency(step.getLibraryStepTest(), step.getLibraryStepTestcase(), step.getLibraryStepStepId());
             } else {
                 actions = testCaseStepActionService.readByVarious1WithDependency(test, testcase, step.getStepId());
             }

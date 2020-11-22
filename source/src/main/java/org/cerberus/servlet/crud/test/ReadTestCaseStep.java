@@ -80,13 +80,13 @@ public class ReadTestCaseStep extends HttpServlet {
             AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             String test = request.getParameter("test");
             String testCase = request.getParameter("testcase");
-            int step = Integer.parseInt(request.getParameter("step"));
+            int stepId = Integer.parseInt(request.getParameter("stepId"));
             boolean getUses = ParameterParserUtil.parseBooleanParam(request.getParameter("getUses"), false);
 
             if (getUses) {
-                jsonResponse = getStepUsesByKey(test, testCase, step, appContext, response);
+                jsonResponse = getStepUsesByKey(test, testCase, stepId, appContext, response);
             } else {
-                jsonResponse = getStepByKey(test, testCase, step, appContext, response);
+                jsonResponse = getStepByKey(test, testCase, stepId, appContext, response);
             }
 
             jsonResponse.put("messageType", "OK");
@@ -102,12 +102,12 @@ public class ReadTestCaseStep extends HttpServlet {
 
     }
 
-    private JSONObject getStepUsesByKey(String test, String testcase, int step, ApplicationContext appContext, HttpServletResponse response) throws JSONException {
+    private JSONObject getStepUsesByKey(String test, String testcase, int stepId, ApplicationContext appContext, HttpServletResponse response) throws JSONException {
         JSONObject jsonResponse = new JSONObject();
 
         ITestCaseStepService stepService = appContext.getBean(TestCaseStepService.class);
 
-        AnswerList answer = stepService.readByLibraryUsed(test, testcase, step);
+        AnswerList answer = stepService.readByLibraryUsed(test, testcase, stepId);
         JSONArray res = new JSONArray();
 
         for (Object obj : answer.getDataList()) {
@@ -121,19 +121,19 @@ public class ReadTestCaseStep extends HttpServlet {
         return jsonResponse;
     }
 
-    private JSONObject getStepByKey(String test, String testcase, int step, ApplicationContext appContext, HttpServletResponse response) throws JSONException {
+    private JSONObject getStepByKey(String test, String testcase, int stepId, ApplicationContext appContext, HttpServletResponse response) throws JSONException {
         JSONObject jsonResponse = new JSONObject();
 
         ITestCaseStepService stepService = appContext.getBean(TestCaseStepService.class);
         ITestCaseStepActionService stepActionService = appContext.getBean(TestCaseStepActionService.class);
         ITestCaseStepActionControlService stepActionControlService = appContext.getBean(TestCaseStepActionControlService.class);
 
-        TestCaseStep testCaseStep = stepService.findTestCaseStep(test, testcase, step);
+        TestCaseStep testCaseStep = stepService.findTestCaseStep(test, testcase, stepId);
         JSONObject result = testCaseStep.toJson();
         jsonResponse.put("step", result);
-        //jsonResponse.put("step", testCaseStep);
+        //jsonResponse.put("stepId", testCaseStep);
 
-        List<TestCaseStepAction> tcsActions = stepActionService.getListOfAction(test, testcase, step);
+        List<TestCaseStepAction> tcsActions = stepActionService.getListOfAction(test, testcase, stepId);
 
         if (tcsActions != null) {
             JSONArray list = new JSONArray();
@@ -143,10 +143,10 @@ public class ReadTestCaseStep extends HttpServlet {
                 obj.put("objType", "action");
                 list.put(obj);
             }
-            jsonResponse.put("tcsActions", list);
+            jsonResponse.put("actions", list);
         }
 
-        List<TestCaseStepActionControl> tcsActionControls = stepActionControlService.findControlByTestTestCaseStep(test, testcase, step);
+        List<TestCaseStepActionControl> tcsActionControls = stepActionControlService.findControlByTestTestCaseStep(test, testcase, stepId);
 
         if (tcsActionControls != null) {
             JSONArray list2 = new JSONArray();
@@ -154,7 +154,7 @@ public class ReadTestCaseStep extends HttpServlet {
                 JSONObject obj = testCaseStepActionControl.toJson();
                 list2.put(obj);
             }
-            jsonResponse.put("tcsActionControls", list2);
+            jsonResponse.put("controls", list2);
         }
 
         return jsonResponse;

@@ -26,7 +26,7 @@ public class TestCaseStepBatch {
 
     private String test;
     private String testCase;
-    private int step;
+    private int stepId;
     private String batch;
 
     public String getBatch() {
@@ -37,12 +37,12 @@ public class TestCaseStepBatch {
         this.batch = batch;
     }
 
-    public int getStep() {
-        return step;
+    public int getStepId() {
+        return stepId;
     }
 
-    public void setStep(int step) {
-        this.step = step;
+    public void setStepId(int stepId) {
+        this.stepId = stepId;
     }
 
     public String getTest() {

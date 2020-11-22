@@ -30,14 +30,14 @@ import org.cerberus.crud.entity.TestCaseStepExecution;
  */
 public interface IFactoryTestCaseStepExecution {
 
-    TestCaseStepExecution create(long id, String test, String testCase, int step, int index, int sort, String loop,
-            String conditionOperator, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3,
+    TestCaseStepExecution create(long id, String test, String testCase, int stepId, int index, int sort, String loop,
+            String conditionOperator, String conditionValue1Init, String conditionValue2Init, String conditionValue3Init, String conditionValue1, String conditionValue2, String conditionValue3,
             String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode,
             String returnMessage, String description);
 
-    TestCaseStepExecution create(long id, String test, String testCase, int step, int index, int sort, String loop,
-            String conditionOperator, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3,
+    TestCaseStepExecution create(long id, String test, String testCase, int stepId, int index, int sort, String loop,
+            String conditionOperator, String conditionValue1Init, String conditionValue2Init, String conditionValue3Init, String conditionValue1, String conditionValue2, String conditionValue3,
             String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode,
-            MessageEvent stepResultMessage, TestCaseStep testCaseStep, TestCaseExecution tCExecution, String useStep, String useStepTest,
-            String useStepTestCase, int useStepTestCaseStep, String description);
+            MessageEvent stepResultMessage, TestCaseStep testCaseStep, TestCaseExecution tCExecution, boolean isUsingLibraryStep, String libraryStepTest,
+            String libraryStepTestcase, int useStepTestCaseStep, String description);
 }

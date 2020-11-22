@@ -80,7 +80,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
             } else {
                 // Step is used from another testcase.
                 List<TestCaseStepAction> tcsa = this.loadTestCaseStepAction(testCaseStep, factoryTCS.create(testCaseStep.getLibraryStepTest(),
-                        testCaseStep.getLibraryStepTestCase(), testCaseStep.getLibraryStepStepId(), testCaseStep.getSort(), null, null, null, null, null, null, false, null, null, 0, false, false, null, null, null, null));
+                        testCaseStep.getLibraryStepTestcase(), testCaseStep.getLibraryStepStepId(), testCaseStep.getSort(), null, null, null, null, null, null, false, null, null, 0, false, false, null, null, null, null));
                 if (tcsa != null) {
                     testCaseStep.setActions(tcsa);
                 }
@@ -99,8 +99,8 @@ public class LoadTestCaseService implements ILoadTestCaseService {
         /**
          * If use Step, take the List of action and control of the used step
          */
-        boolean useStep = (UsedTestCaseStep != null);
-        if (!useStep) {
+        boolean isUsingLibraryStep = (UsedTestCaseStep != null);
+        if (!isUsingLibraryStep) {
             tcsaToAdd = this.testCaseStepActionService.getListOfAction(testCaseStep.getTest(), testCaseStep.getTestcase(), testCaseStep.getStepId());
         } else {
             tcsaToAdd = this.testCaseStepActionService.getListOfAction(UsedTestCaseStep.getTest(), UsedTestCaseStep.getTestcase(), UsedTestCaseStep.getStepId());
@@ -123,7 +123,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
              */
             testCaseStepAction.setTest(testCaseStep.getTest());
             testCaseStepAction.setTestCase(testCaseStep.getTestcase());
-            testCaseStepAction.setStep(testCaseStep.getStepId());
+            testCaseStepAction.setStepId(testCaseStep.getStepId());
             result.add(testCaseStepAction);
 
         }
@@ -132,12 +132,12 @@ public class LoadTestCaseService implements ILoadTestCaseService {
 
     public List<TestCaseStepActionControl> loadTestCaseStepActionControl(TestCaseStep testCaseStep, TestCaseStepAction testCaseAction) {
         List<TestCaseStepActionControl> result = new ArrayList<>();
-        List<TestCaseStepActionControl> controlList = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(testCaseAction.getTest(), testCaseAction.getTestCase(), testCaseAction.getStep(), testCaseAction.getSequence());
+        List<TestCaseStepActionControl> controlList = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(testCaseAction.getTest(), testCaseAction.getTestCase(), testCaseAction.getStepId(), testCaseAction.getSequence());
         if (controlList != null) {
             for (TestCaseStepActionControl testCaseStepActionControl : controlList) {
                 testCaseStepActionControl.setTest(testCaseStep.getTest());
                 testCaseStepActionControl.setTestCase(testCaseStep.getTestcase());
-                testCaseStepActionControl.setStep(testCaseStep.getStepId());
+                testCaseStepActionControl.setStepId(testCaseStep.getStepId());
                 result.add(testCaseStepActionControl);
             }
         }

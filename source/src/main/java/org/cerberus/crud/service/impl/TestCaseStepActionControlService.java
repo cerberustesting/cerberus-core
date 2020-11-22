@@ -46,13 +46,13 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
     private ITestCaseStepActionControlDAO testCaseStepActionControlDao;
 
     @Override
-    public TestCaseStepActionControl findTestCaseStepActionControlByKey(String test, String testcase, int stepNumber, int sequence, int control) {
-        return testCaseStepActionControlDao.findTestCaseStepActionControlByKey(test, testcase, stepNumber, sequence, control);
+    public TestCaseStepActionControl findTestCaseStepActionControlByKey(String test, String testcase, int stepId, int sequence, int control) {
+        return testCaseStepActionControlDao.findTestCaseStepActionControlByKey(test, testcase, stepId, sequence, control);
     }
 
     @Override
-    public List<TestCaseStepActionControl> findControlByTestTestCaseStepSequence(String test, String testcase, int stepNumber, int sequence) {
-        return testCaseStepActionControlDao.findControlByTestTestCaseStepSequence(test, testcase, stepNumber, sequence);
+    public List<TestCaseStepActionControl> findControlByTestTestCaseStepSequence(String test, String testcase, int stepId, int sequence) {
+        return testCaseStepActionControlDao.findControlByTestTestCaseStepSequence(test, testcase, stepId, sequence);
     }
 
     @Override
@@ -74,8 +74,8 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
     }
 
     @Override
-    public List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int step) {
-        return testCaseStepActionControlDao.findControlByTestTestCaseStep(test, testcase, step);
+    public List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int stepId) {
+        return testCaseStepActionControlDao.findControlByTestTestCaseStep(test, testcase, stepId);
     }
 
     @Override
@@ -158,8 +158,8 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
     }
 
     @Override
-    public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int step, int sequence) {
-        return testCaseStepActionControlDao.readByVarious1(test, testcase, step, sequence);
+    public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int stepId, int sequence) {
+        return testCaseStepActionControlDao.readByVarious1(test, testcase, stepId, sequence);
     }
 
     @Override

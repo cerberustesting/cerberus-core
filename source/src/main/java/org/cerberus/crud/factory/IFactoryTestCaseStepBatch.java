@@ -26,5 +26,5 @@ import org.cerberus.crud.entity.TestCaseStepBatch;
  */
 public interface IFactoryTestCaseStepBatch {
 
-    TestCaseStepBatch create(String test, String testCase, int step, String batch);
+    TestCaseStepBatch create(String test, String testCase, int stepId, String batch);
 }
