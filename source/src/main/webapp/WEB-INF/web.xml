@@ -2009,8 +2009,8 @@
             <url-pattern>/DisableEnvironmentV000</url-pattern>
             <url-pattern>/NewEnvironmentEventV000</url-pattern>
             <url-pattern>/GetTagExecutions</url-pattern>
-            <url-pattern>/GetTestCasesV000</url-pattern>
-            <url-pattern>/manageV001</url-pattern>
+            <url-pattern>/GetTestCasesV001</url-pattern>
+            <url-pattern>/ManageV001</url-pattern>
             <!--            Password Management Servlets -->
             <url-pattern>/ForgotPassword</url-pattern>
             <url-pattern>/ForgotPasswordEmailConfirmation</url-pattern>

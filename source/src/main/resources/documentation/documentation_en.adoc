@@ -228,6 +228,12 @@ include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
+== Administration API 
+:file-to-include: api_administration_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
 ---
 = Installation
 :file-to-include: installation_introduction_{lang}.adoc
@@ -278,6 +284,10 @@ include::include/{lang}/{file-to-include}[]
 
 === Browserstack
 :file-to-include: installation_externaltools_cloud_browserstack_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+=== Lambdatest
+:file-to-include: installation_externaltools_cloud_lambdatest_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
 
 = Maintenance

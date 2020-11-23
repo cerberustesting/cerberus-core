@@ -8782,11 +8782,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + "ADD COLUMN UsrModif VARCHAR(45) NOT NULL DEFAULT '', "
                 + "CHANGE COLUMN TestCase Testcase VARCHAR(45) NOT NULL, "
                 + "CHANGE COLUMN last_modified DateModif TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER UsrModif;");
-        
+
         // New parameters for lambdatest.
         // 1574
         a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
-                + "('', 'cerberus_lambdatest_defaultexename', 'Exe : %EXEID% - %TESTDESCRIPTION%', 'Define the default value for the name of the execution to be sent to Lambdatest when a test is executed. Variable %EXEID%, %TESTFOLDER%, %TESTID% and %TESTDESCRIPTION% can be used.');");
+                + " ('', 'cerberus_lambdatest_defaultexename', 'Exe : %EXEID% - %TESTDESCRIPTION%', 'Define the default value for the name of the execution to be sent to Lambdatest when a test is executed. Variable %EXEID%, %TESTFOLDER%, %TESTID% and %TESTDESCRIPTION% can be used.')"
+                + ",('', 'cerberus_apikey_enable', 'false', 'Boolean in order to activate the API Key control for all public API calls.')"
+                + ",('', 'cerberus_apikey_value2', '', 'API key value. API Keys are used to secure public access to all public API.')"
+                + ",('', 'cerberus_apikey_value3', '', 'API key value. API Keys are used to secure public access to all public API.')"
+                + ",('', 'cerberus_apikey_value4', '', 'API key value. API Keys are used to secure public access to all public API.')"
+                + ",('', 'cerberus_apikey_value5', '', 'API key value. API Keys are used to secure public access to all public API.')");
 
         // Adding lambdatest Build column.
         // 1575
@@ -8801,6 +8806,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // 1577
         a.add("ALTER TABLE testcaseexecution ADD COLUMN `RobotProviderSessionId` VARCHAR(100) NOT NULL DEFAULT '' AFTER `RobotProvider`;");
+
+        // 1578
+        a.add("UPDATE `parameter` SET `param` = 'cerberus_apikey_value1', `description` = 'API key value. API Keys are used to secure public access to all public API.' WHERE (`param` = 'cerberus_manage_token');");
 
         return a;
     }

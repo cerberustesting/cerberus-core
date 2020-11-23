@@ -38,6 +38,7 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.impl.TestCaseExecutionService;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
@@ -54,12 +55,14 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ResultCIV002 extends HttpServlet {
     
     private static Logger LOG = LogManager.getLogger(ResultCIV002.class);
+    private IAPIKeyService apiKeyService;
 
     protected void processRequest(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
         
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        apiKeyService = appContext.getBean(IAPIKeyService.class);
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
@@ -70,6 +73,8 @@ public class ResultCIV002 extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createForPublicCalls("/ResultCIV002", "CALL", "ResultCIV002 called : " + request.getRequestURL(), request);
 
+        if (apiKeyService.checkAPIKey(request, response)) {
+            
         try {
             JSONObject jsonResponse = new JSONObject();
 
@@ -266,6 +271,7 @@ public class ResultCIV002 extends HttpServlet {
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
+        }
 
     }
 
@@ -309,11 +315,11 @@ public class ResultCIV002 extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private void generateResponse(HttpServletResponse response, String outputFormat, JSONObject jsonResponse, boolean error) throws IOException {
+    private void generateResponse(HttpServletResponse response, String outputFormat, JSONObject jsonResponse, boolean error) throws IOException, JSONException {
         if (StringUtils.isBlank(outputFormat) || outputFormat.equals("json") || error) {
             response.setContentType("application/json");
             response.setCharacterEncoding("utf8");
-            response.getWriter().print(jsonResponse.toString());
+            response.getWriter().print(jsonResponse.toString(1));
         } else {
             response.setContentType("image/svg+xml");
             try (PrintWriter out = response.getWriter()){

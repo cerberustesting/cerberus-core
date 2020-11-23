@@ -8,6 +8,7 @@
 * 'indexNetworkTraffic' action now allow to name the index of network traffic. #2163
 * Network tab on Execution detail now allows to filter by index name values. #2163
 * Advanced integration to LambdaTest device Farm cloud service (https://www.lambdatest.com/)
+* All Public API are now secured using API Key. You can enable the feature with parameter `cerberus_apikey_enable` 5 API Keys can be used from `cerberus_apikey_value1` to `cerberus_apikey_value5`. The API Key value must be added on every calls inside the HTTP header `apikey`. Please refer to documentation for further information.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

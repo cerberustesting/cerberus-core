@@ -20,7 +20,6 @@
 package org.cerberus.util.servlet;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;

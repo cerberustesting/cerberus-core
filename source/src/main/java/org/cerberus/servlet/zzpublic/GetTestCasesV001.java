@@ -35,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.util.StringUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -52,8 +53,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class GetTestCasesV001 {
 
     private ITestCaseService testCaseService;
-    private static final String VERSION = "V2";
+    private static final String VERSION = "V1";
     private static final Logger LOG = LogManager.getLogger(GetTestCasesV001.class);
+    private IAPIKeyService apiKeyService;
 
     /*
     * Response.Testcase object target is to construct testcase object formatted for webservice response

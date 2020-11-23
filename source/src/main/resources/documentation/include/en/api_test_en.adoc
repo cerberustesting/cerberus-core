@@ -5,19 +5,28 @@ This is the APi that can be used on the test perimeter (getting testcase informa
 
 | *API URI* | *Description* | *Version List*
 
-| /RunTestCase | Trigger a single testcase excution | **/RunTestCase**
-
 | /AddToExecutionQueue 
 | Allow to insert testcase execution into Cerberus Queue for execution 
-v| /AddToExecutionQueue 
+| /AddToExecutionQueue 
+
 /AddToExecutionQueueV001
-**/AddToExecutionQueueV002**
+
+/AddToExecutionQueueV002
+
+**/AddToExecutionQueueV003**
+
+| /RunTestCase | Trigger a single testcase excution either in a synchronous or asynchronous way.
+| /RunTestCase
+
+/RunTestCaseV001
+
+**/RunTestCaseV002**
 
 | /GetTagExecutions | TBD. | **/GetTagExecutions**
 
 | /GetTestCases 
-| Provide the list of test cases by application. 
-| **/GetTestCasesV000**
+| Provide a list of test cases filtered by some criteria. 
+| **/GetTestCasesV001**
 
 | /GetNumberOfExecutions 
 | Return the number of execution performed on WORKING test cases that match the following criterias. 
@@ -27,9 +36,14 @@ To be used for monitoring purpose.
 | /ResultCI 
 | Used to provide various execution counters as well as a global OK or KO status based on the number and status of the execution done on a specific tag. 
 v| /ResultCI 
+
 /ResultCIV001 
+
 /ResultCIV002
-**/ResultCIV003**
+
+/ResultCIV003
+
+**/ResultCIV004**
 
 |=== 
 

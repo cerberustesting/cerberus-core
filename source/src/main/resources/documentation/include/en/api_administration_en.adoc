@@ -1,0 +1,16 @@
+This is the APi that can be used on the integration perimeter (change environment status) :
+
+|=== 
+
+| *API URI* | *Description* | *Version List*
+
+| /Manage | This API should be used pior to perform database backup (global stop and start) or pior to restart an instance (instance stop). It is used to start and stop Cerberus instance or global system in a clean way by stopping submitting new executions and waiting pending execution to finish. 
+
+`action` parameter can take the various values: `start`, `stop`, `cleanMemory`, `runQueueJob`
+
+`scope` parameter can be either `global` or `instance`. It is used only when `action` parameter is either `start` or `stop` 
+
+NB: The timeout in order to wait for all pending execution to stop can be configured with Cerberus parameter `cerberus_manage_timeout` (default to 300 seconds).  | **/ManageV001**
+
+|=== 
+

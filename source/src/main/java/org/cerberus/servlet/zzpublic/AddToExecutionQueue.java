@@ -52,6 +52,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.service.authentification.IAPIKeyService;
 
 /**
  * Add a test case to the execution queue (so to be executed later).
@@ -127,6 +128,7 @@ public class AddToExecutionQueue extends HttpServlet {
     private IExecutionThreadPoolService executionThreadService;
     private ITestCaseService testCaseService;
     private ICampaignParameterService campaignParameterService;
+    private IAPIKeyService apiKeyService;
 
     @Override
     public void init() throws ServletException {
@@ -169,6 +171,7 @@ public class AddToExecutionQueue extends HttpServlet {
 
         // Loading Services.
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        apiKeyService = appContext.getBean(IAPIKeyService.class);
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
@@ -181,80 +184,84 @@ public class AddToExecutionQueue extends HttpServlet {
 
         // Parsing all parameters.
         String tag = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_TAG), "");
-// TO BE IMPLEMENTED...
+        // TO BE IMPLEMENTED...
 
         // Defining help message.
         String helpMessage = "\nThis servlet is used to add to Cerberus execution queue a list of execution specified by various parameters:\n"
                 + "- " + PARAMETER_TAG + " [mandatory] : Tag that will be used for every execution triggered. [" + tag + "]\n";
-// TO BE IMPLEMENTED...
+        // TO BE IMPLEMENTED...
 
-        // Checking the parameter validity.
-        boolean error = false;
-        if (tag == null || tag.isEmpty()) {
-            out.println("Error - Parameter " + PARAMETER_TAG + " is mandatory.");
-            error = true;
-        } else if (tag.length() > 255) {
-            out.println("Error - Parameter " + PARAMETER_TAG + " is too big. Maximum size is 255. Current size is : " + tag.length());
-            error = true;
-        }
+        if (apiKeyService.checkAPIKey(request, response)) {
 
-        // Starting the request only if previous parameters exist.
-        if (!error) {
-
-            // Create Tag when exist.
-            if (!StringUtil.isNullOrEmpty(tag)) {
-                // We create or update it.
-                ITagService tagService = appContext.getBean(ITagService.class);
-                tagService.createAuto(tag, "", "", null, null);
+            // Checking the parameter validity.
+            boolean error = false;
+            if (tag == null || tag.isEmpty()) {
+                out.println("Error - Parameter " + PARAMETER_TAG + " is mandatory.");
+                error = true;
+            } else if (tag.length() > 255) {
+                out.println("Error - Parameter " + PARAMETER_TAG + " is too big. Maximum size is 255. Current size is : " + tag.length());
+                error = true;
             }
 
-            // Part 1: Getting all test cases which have been sent to this servlet.
-            List<TestCaseExecutionQueue> toInserts = null;
-            try {
-                toInserts = getTestCasesToInsert(request);
-            } catch (ParameterException pe) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, pe.getMessage());
-                return;
-            } catch (CerberusException ex) {
-                LOG.warn(ex);
-            }
+            // Starting the request only if previous parameters exist.
+            if (!error) {
 
-            // Part 2: Try to insert all these test cases to the execution queue.
-            List<String> errorMessages = new ArrayList<String>();
-            for (TestCaseExecutionQueue toInsert : toInserts) {
+                // Create Tag when exist.
+                if (!StringUtil.isNullOrEmpty(tag)) {
+                    // We create or update it.
+                    ITagService tagService = appContext.getBean(ITagService.class);
+                    tagService.createAuto(tag, "", "", null, null);
+                }
+
+                // Part 1: Getting all test cases which have been sent to this servlet.
+                List<TestCaseExecutionQueue> toInserts = null;
                 try {
-                    inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUEUED));
-                } catch (CerberusException e) {
-                    String errorMessage = "Unable to insert " + toInsert.toString() + " due to " + e.getMessage();
+                    toInserts = getTestCasesToInsert(request);
+                } catch (ParameterException pe) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, pe.getMessage());
+                    return;
+                } catch (CerberusException ex) {
+                    LOG.warn(ex);
+                }
+
+                // Part 2: Try to insert all these test cases to the execution queue.
+                List<String> errorMessages = new ArrayList<String>();
+                for (TestCaseExecutionQueue toInsert : toInserts) {
+                    try {
+                        inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUEUED));
+                    } catch (CerberusException e) {
+                        String errorMessage = "Unable to insert " + toInsert.toString() + " due to " + e.getMessage();
+                        LOG.warn(errorMessage);
+                        errorMessages.add(errorMessage);
+                        continue;
+                    }
+                }
+
+                // Part 3 : Put these tests in the queue in memory
+                try {
+                    executionThreadService.executeNextInQueueAsynchroneously(false);
+                } catch (CerberusException ex) {
+                    String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
                     LOG.warn(errorMessage);
                     errorMessages.add(errorMessage);
-                    continue;
                 }
-            }
 
-            // Part 3 : Put these tests in the queue in memory
-            try {
-                executionThreadService.executeNextInQueueAsynchroneously(false);
-            } catch (CerberusException ex) {
-                String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
-                LOG.warn(errorMessage);
-                errorMessages.add(errorMessage);
-            }
-
-            if (!errorMessages.isEmpty()) {
-                StringBuilder errorMessage = new StringBuilder();
-                for (String item : errorMessages) {
-                    errorMessage.append(item);
-                    errorMessage.append(LINE_SEPARATOR);
+                if (!errorMessages.isEmpty()) {
+                    StringBuilder errorMessage = new StringBuilder();
+                    for (String item : errorMessages) {
+                        errorMessage.append(item);
+                        errorMessage.append(LINE_SEPARATOR);
+                    }
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, errorMessage.toString());
                 }
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, errorMessage.toString());
+
+                response.sendRedirect("ReportingExecutionByTag.jsp?enc=1&Tag=" + StringUtil.encodeAsJavaScriptURIComponent(request.getParameter(PARAMETER_TAG)));
+
+            } else {
+                // In case of errors, we displayu the help message.
+                out.println(helpMessage);
+
             }
-
-            response.sendRedirect("ReportingExecutionByTag.jsp?enc=1&Tag=" + StringUtil.encodeAsJavaScriptURIComponent(request.getParameter(PARAMETER_TAG)));
-
-        } else {
-            // In case of errors, we displayu the help message.
-            out.println(helpMessage);
 
         }
 

@@ -58,6 +58,7 @@ import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONArray;
@@ -137,6 +138,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     private IRobotService robotService;
     private IFactoryRobot robotFactory;
     private IParameterService parameterService;
+    private IAPIKeyService apiKeyService;
 
     /**
      * Process request for both GET and POST method.
@@ -174,6 +176,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         robotService = appContext.getBean(IRobotService.class);
         robotFactory = appContext.getBean(IFactoryRobot.class);
         parameterService = appContext.getBean(IParameterService.class);
+        apiKeyService = appContext.getBean(IAPIKeyService.class);
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
@@ -190,6 +193,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createForPublicCalls("/AddToExecutionQueueV003", "CALL", "AddToExecutionQueueV003 called : " + request.getRequestURL(), request);
 
+        if (apiKeyService.checkAPIKey(request, response)) {
         // Parsing all parameters.
         // Execution scope parameters : Campaign, TestCases, Countries, Environment, Browser.
         String campaign = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_CAMPAIGN), null, charset);
@@ -719,7 +723,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         }
         Date date1 = new Date();
         LOG.debug("TOTAL Duration : " + (date1.getTime() - requestDate.getTime()));
-
+        }
     }
 
     private HashMap<String, Application> updateMapWithApplication(String application, HashMap<String, Application> appMap) throws CerberusException {

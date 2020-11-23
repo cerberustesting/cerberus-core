@@ -39,6 +39,7 @@ import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.crud.service.impl.TestCaseExecutionService;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.servlet.ServletUtil;
@@ -69,10 +70,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class GetNumberOfExecutions extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(GetNumberOfExecutions.class);
+
+    private IAPIKeyService apiKeyService;
+
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -87,6 +90,7 @@ public class GetNumberOfExecutions extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IApplicationService myApplicationService = appContext.getBean(ApplicationService.class);
         IInvariantService myInvariantService = appContext.getBean(InvariantService.class);
+        apiKeyService = appContext.getBean(IAPIKeyService.class);
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
@@ -97,86 +101,87 @@ public class GetNumberOfExecutions extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         logEventService.createForPublicCalls("/GetNumberOfExecutions", "CALL", "GetNumberOfExecutions called : " + request.getRequestURL(), request);
 
-        // Parsing all parameters.
-        String environment = ParameterParserUtil.parseStringParam(request.getParameter("environment"), "PROD");
-        String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
-        String application = ParameterParserUtil.parseStringParam(request.getParameter("application"), "");
-        String country = ParameterParserUtil.parseStringParam(request.getParameter("country"), "");
-        String controlStatus = ParameterParserUtil.parseStringParam(request.getParameter("controlstatus"), "");
-        int NbMinutes = ParameterParserUtil.parseIntegerParam(request.getParameter("nbminuteshistory"), 0);
+        if (apiKeyService.checkAPIKey(request, response)) {
 
-        // Defining help message.
-        String helpMessage = "\nThis servlet return the number of execution performed on WORKING test cases that match the following criterias :\n"
-                + "- nbminuteshistory [mandatory] : the number of minutes in the past from the moment the servlet is called. This parameter must be > 0. [" + NbMinutes + "]\n"
-                + "- test : Executions done on the test. [" + test + "]\n"
-                + "- environment : Environment where the execution happened. Default to PROD. [" + environment + "]\n"
-                + "- country : Executions done on the country. [" + country + "]\n"
-                + "- application : Executions done against that application. [" + application + "]\n"
-                + "- controlstatus : execution that return the following status. [" + controlStatus + "]\n";
+            // Parsing all parameters.
+            String environment = ParameterParserUtil.parseStringParam(request.getParameter("environment"), "PROD");
+            String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
+            String application = ParameterParserUtil.parseStringParam(request.getParameter("application"), "");
+            String country = ParameterParserUtil.parseStringParam(request.getParameter("country"), "");
+            String controlStatus = ParameterParserUtil.parseStringParam(request.getParameter("controlstatus"), "");
+            int NbMinutes = ParameterParserUtil.parseIntegerParam(request.getParameter("nbminuteshistory"), 0);
 
-        try {
+            // Defining help message.
+            String helpMessage = "\nThis servlet return the number of execution performed on WORKING test cases that match the following criterias :\n"
+                    + "- nbminuteshistory [mandatory] : the number of minutes in the past from the moment the servlet is called. This parameter must be > 0. [" + NbMinutes + "]\n"
+                    + "- test : Executions done on the test. [" + test + "]\n"
+                    + "- environment : Environment where the execution happened. Default to PROD. [" + environment + "]\n"
+                    + "- country : Executions done on the country. [" + country + "]\n"
+                    + "- application : Executions done against that application. [" + application + "]\n"
+                    + "- controlstatus : execution that return the following status. [" + controlStatus + "]\n";
 
-            // Checking the parameter validity. nbminuteshistory is a mandatory parameter.
-            boolean error = false;
-            if (NbMinutes == 0) {
-                out.println("Error - Parameter nbminuteshistory is mandatory. Please feed it in order to specify the elapsed time where the history should be considered.");
-                error = true;
-            }
-            // Checking the parameter validity. If application has been entered, does it exist ?
-            if (!application.equalsIgnoreCase("") && !myApplicationService.exist(application)) {
-                out.println("Error - Application does not exist  : " + application);
-                error = true;
-            }
+            try {
 
-            if (!country.equalsIgnoreCase("") && !myInvariantService.isInvariantExist("COUNTRY", country)) {
-                out.println("Warning - Country does not exist  : " + country);
-            }
-
-            if (!environment.equalsIgnoreCase("") && !myInvariantService.isInvariantExist("ENVIRONMENT", environment)) {
-                out.println("Warning - Environment does not exist  : " + environment);
-            }
-
-            if (!controlStatus.equalsIgnoreCase("") && !myInvariantService.isInvariantExist("TCESTATUS", controlStatus)) {
-                out.println("Warning - Control Status does not exist  : " + controlStatus);
-            }
-
-            // Starting the request only if previous parameters exist.
-            if (!error) {
-
-                // Getting a timestamp to filter the executions based on the nb of minutes
-                String dateLimitFrom = DateUtil.getMySQLTimestampTodayDeltaMinutes(-NbMinutes);
-
-                ITestCaseExecutionService MyTestExecutionService = appContext.getBean(TestCaseExecutionService.class);
-                List<TestCaseExecution> myList;
-
-                // Getting the lists of test cases the follow the criterias.
-                try {
-                    myList = MyTestExecutionService.findTCExecutionbyCriteria1(dateLimitFrom, test, "", application, country, environment, controlStatus, "WORKING");
-                    out.println(myList.size());
-                } catch (CerberusException e) {
-                    out.println("0");
+                // Checking the parameter validity. nbminuteshistory is a mandatory parameter.
+                boolean error = false;
+                if (NbMinutes == 0) {
+                    out.println("Error - Parameter nbminuteshistory is mandatory. Please feed it in order to specify the elapsed time where the history should be considered.");
+                    error = true;
+                }
+                // Checking the parameter validity. If application has been entered, does it exist ?
+                if (!application.equalsIgnoreCase("") && !myApplicationService.exist(application)) {
+                    out.println("Error - Application does not exist  : " + application);
+                    error = true;
                 }
 
-            } else {
-                // In case of errors, we displayu the help message.
-                out.println(helpMessage);
+                if (!country.equalsIgnoreCase("") && !myInvariantService.isInvariantExist("COUNTRY", country)) {
+                    out.println("Warning - Country does not exist  : " + country);
+                }
 
+                if (!environment.equalsIgnoreCase("") && !myInvariantService.isInvariantExist("ENVIRONMENT", environment)) {
+                    out.println("Warning - Environment does not exist  : " + environment);
+                }
+
+                if (!controlStatus.equalsIgnoreCase("") && !myInvariantService.isInvariantExist("TCESTATUS", controlStatus)) {
+                    out.println("Warning - Control Status does not exist  : " + controlStatus);
+                }
+
+                // Starting the request only if previous parameters exist.
+                if (!error) {
+
+                    // Getting a timestamp to filter the executions based on the nb of minutes
+                    String dateLimitFrom = DateUtil.getMySQLTimestampTodayDeltaMinutes(-NbMinutes);
+
+                    ITestCaseExecutionService MyTestExecutionService = appContext.getBean(TestCaseExecutionService.class);
+                    List<TestCaseExecution> myList;
+
+                    // Getting the lists of test cases the follow the criterias.
+                    try {
+                        myList = MyTestExecutionService.findTCExecutionbyCriteria1(dateLimitFrom, test, "", application, country, environment, controlStatus, "WORKING");
+                        out.println(myList.size());
+                    } catch (CerberusException e) {
+                        out.println("0");
+                    }
+
+                } else {
+                    // In case of errors, we displayu the help message.
+                    out.println(helpMessage);
+
+                }
+
+            } catch (Exception e) {
+                LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
+                out.print("Error while Getting number of executions : ");
+                out.println(e.getMessage());
+            } finally {
+                out.close();
             }
-
-
-        } catch (Exception e) {
-            LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-            out.print("Error while Getting number of executions : ");
-            out.println(e.getMessage());
-        } finally {
-            out.close();
         }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -190,8 +195,7 @@ public class GetNumberOfExecutions extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response

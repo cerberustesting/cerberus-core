@@ -41,8 +41,10 @@ import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.engine.scheduler.SchedulerInit;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.session.SessionCounter;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -52,12 +54,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-@WebServlet(name = "manageV001", urlPatterns = {"/manageV001"})
+@WebServlet(name = "ManageV001", urlPatterns = {"/ManageV001"})
 public class ManageV001 extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ManageV001.class);
 
-    public static final String SERVLETNAME = "manageV001";
+    public static final String SERVLETNAME = "ManageV001";
     public static final String ACTIONRUNQUEUEJOB = "runQueueJob";
     public static final String ACTIONSTART = "start";
     public static final String ACTIONSTOP = "stop";
@@ -68,6 +70,7 @@ public class ManageV001 extends HttpServlet {
     private ITestCaseExecutionQueueService tceiqService;
     private SchedulerInit cerberusScheduler;
     private ILogEventService logEventService;
+    private IAPIKeyService apiKeyService;
 
     private IDatabaseVersioningService databaseVersionService;
     private IMyVersionService myVersionService;
@@ -99,12 +102,12 @@ public class ManageV001 extends HttpServlet {
             parameterService = appContext.getBean(IParameterService.class);
             cerberusScheduler = appContext.getBean(SchedulerInit.class);
             logEventService = appContext.getBean(ILogEventService.class);
+            apiKeyService = appContext.getBean(IAPIKeyService.class);
 
-            String token = parameterService.getParameterStringByKey("cerberus_manage_token", "", UUID.randomUUID().toString());
             String message = "";
             String returnCode = "OK";
 
-            if (token.equals(request.getParameter("token"))) {
+            if (apiKeyService.checkAPIKey(request, response)) {
 
                 int maxIteration = parameterService.getParameterIntegerByKey("cerberus_manage_timeout", "", 300);
                 int cntIteration = 0;
@@ -297,7 +300,7 @@ public class ManageV001 extends HttpServlet {
                 fsSize.put("cerberus_exemanualmedia_path", getFSSize(parameterService.getParameterStringByKey("cerberus_exemanualmedia_path", "", "/")));
                 fsSize.put("cerberus_ftpfile_path", getFSSize(parameterService.getParameterStringByKey("cerberus_ftpfile_path", "", "/")));
                 fsSize.put("cerberus_testdatalibcsv_path", getFSSize(parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", "/")));
-                
+
                 data.put("fileSystemSize", fsSize);
 
                 // Credit Limit Consumption
@@ -309,19 +312,16 @@ public class ManageV001 extends HttpServlet {
 
                 data.put("isSplashPageActive", globalSplashPageActive || executionThreadPoolService.isSplashPageActive());
 
-            } else {
-                message = "Invalid Token";
-                returnCode = "KO";
-            }
+                data.put("message", message);
+                data.put("returnCode", returnCode);
+                resultS = data.toString(1);
 
-            data.put("message", message);
-            data.put("returnCode", returnCode);
-            resultS = data.toString(1);
+                response.getWriter().print(resultS);
+            }
 
         } catch (JSONException | InterruptedException ex) {
             LOG.error(ex);
         }
-        response.getWriter().print(resultS);
     }
 
     private int getNbPendingExecutions(ApplicationContext appContext) {

@@ -36,6 +36,7 @@ import org.cerberus.crud.service.ICountryEnvParam_logService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.service.email.IEmailGenerationService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
@@ -57,6 +58,7 @@ public class NewBuildRevisionV000 extends HttpServlet {
 
     private final String OPERATION = "New Build/Revision";
     private final String PARAMETERALL = "ALL";
+    private IAPIKeyService apiKeyService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -74,172 +76,177 @@ public class NewBuildRevisionV000 extends HttpServlet {
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        apiKeyService = appContext.getBean(IAPIKeyService.class);
+
         /**
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createForPublicCalls("/NewBuildRevisionV000", "CALL", "NewBuildRevisionV000 called : " + request.getRequestURL(), request);
 
-        ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
-        IInvariantService invariantService = appContext.getBean(IInvariantService.class);
-        IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
-        IEmailService emailService = appContext.getBean(IEmailService.class);
-        IEmailGenerationService emailGenerationService = appContext.getBean(IEmailGenerationService.class);
-        ICountryEnvParam_logService countryEnvParam_logService = appContext.getBean(ICountryEnvParam_logService.class);
-        IParameterService parameterService = appContext.getBean(IParameterService.class);
+        if (apiKeyService.checkAPIKey(request, response)) {
 
-        // Parsing all parameters.
-        String system = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("system"), "", charset);
-        String country = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("country"), "", charset);
-        String environment = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("environment"), "", charset);
-        String build = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("build"), "", charset);
-        String revision = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("revision"), "", charset);
+            ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
+            IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+            IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
+            IEmailService emailService = appContext.getBean(IEmailService.class);
+            IEmailGenerationService emailGenerationService = appContext.getBean(IEmailGenerationService.class);
+            ICountryEnvParam_logService countryEnvParam_logService = appContext.getBean(ICountryEnvParam_logService.class);
+            IParameterService parameterService = appContext.getBean(IParameterService.class);
 
-        String helpMessage = "\nThis servlet is used to inform Cerberus that a new Build and Revision has been deployed on a system.\n\nParameter list :\n"
-                + "- system [mandatory] : the system where the Build Revision has been deployed. [" + system + "]\n"
-                + "- country [mandatory] : the country where the Build Revision has been deployed. You can use ALL if you want to perform the action for all countries that exist for the given system and environement. [" + country + "]\n"
-                + "- environment [mandatory] : the environment where the Build Revision has been deployed. [" + environment + "]\n"
-                + "- build [mandatory] : the build that has been deployed. [" + build + "]\n"
-                + "- revision [mandatory] : the revision that has been deployed. [" + revision + "]\n";
+            // Parsing all parameters.
+            String system = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("system"), "", charset);
+            String country = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("country"), "", charset);
+            String environment = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("environment"), "", charset);
+            String build = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("build"), "", charset);
+            String revision = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("revision"), "", charset);
 
-        boolean error = false;
+            String helpMessage = "\nThis servlet is used to inform Cerberus that a new Build and Revision has been deployed on a system.\n\nParameter list :\n"
+                    + "- system [mandatory] : the system where the Build Revision has been deployed. [" + system + "]\n"
+                    + "- country [mandatory] : the country where the Build Revision has been deployed. You can use ALL if you want to perform the action for all countries that exist for the given system and environement. [" + country + "]\n"
+                    + "- environment [mandatory] : the environment where the Build Revision has been deployed. [" + environment + "]\n"
+                    + "- build [mandatory] : the build that has been deployed. [" + build + "]\n"
+                    + "- revision [mandatory] : the revision that has been deployed. [" + revision + "]\n";
 
-        // Checking the parameter validity. If application has been entered, does it exist ?
-        if (system.equalsIgnoreCase("")) {
-            out.println("Error - Parameter system is mandatory.");
-            error = true;
-        }
-        if (!system.equalsIgnoreCase("") && !invariantService.isInvariantExist("SYSTEM", system)) {
-            out.println("Error - System does not exist  : " + system);
-            error = true;
-        }
-        if (environment.equalsIgnoreCase("")) {
-            out.println("Error - Parameter environment is mandatory.");
-            error = true;
-        }
-        if (!environment.equalsIgnoreCase("") && !invariantService.isInvariantExist("ENVIRONMENT", environment)) {
-            out.println("Error - Environment does not exist  : " + environment);
-            error = true;
-        }
-        if (country.equalsIgnoreCase("")) {
-            out.println("Error - Parameter country is mandatory.");
-            error = true;
-        } else if (!country.equalsIgnoreCase(PARAMETERALL)) {
-            if (!invariantService.isInvariantExist("COUNTRY", country)) {
-                out.println("Error - Country does not exist  : " + country);
+            boolean error = false;
+
+            // Checking the parameter validity. If application has been entered, does it exist ?
+            if (system.equalsIgnoreCase("")) {
+                out.println("Error - Parameter system is mandatory.");
                 error = true;
             }
-            if (!error) {
-                if (!countryEnvParamService.exist(system, country, environment)) {
-                    out.println("Error - System/Country/Environment does not exist : " + system + "/" + country + "/" + environment);
+            if (!system.equalsIgnoreCase("") && !invariantService.isInvariantExist("SYSTEM", system)) {
+                out.println("Error - System does not exist  : " + system);
+                error = true;
+            }
+            if (environment.equalsIgnoreCase("")) {
+                out.println("Error - Parameter environment is mandatory.");
+                error = true;
+            }
+            if (!environment.equalsIgnoreCase("") && !invariantService.isInvariantExist("ENVIRONMENT", environment)) {
+                out.println("Error - Environment does not exist  : " + environment);
+                error = true;
+            }
+            if (country.equalsIgnoreCase("")) {
+                out.println("Error - Parameter country is mandatory.");
+                error = true;
+            } else if (!country.equalsIgnoreCase(PARAMETERALL)) {
+                if (!invariantService.isInvariantExist("COUNTRY", country)) {
+                    out.println("Error - Country does not exist  : " + country);
                     error = true;
                 }
-            }
-        }
-        if (build.equalsIgnoreCase("")) {
-            out.println("Error - Parameter build is mandatory.");
-            error = true;
-        }
-        if (!build.equalsIgnoreCase("") && !buildRevisionInvariantService.exist(system, 1, build)) {
-            out.println("Error - Build does not exist : " + build);
-            error = true;
-        }
-        if (revision.equalsIgnoreCase("")) {
-            out.println("Error - Parameter revision is mandatory.");
-            error = true;
-        }
-        if (!revision.equalsIgnoreCase("") && !buildRevisionInvariantService.exist(system, 2, revision)) {
-            out.println("Error - Revision does not exist : " + revision);
-            error = true;
-        }
-
-        // Starting the database update only when no blocking error has been detected.
-        if (error == false) {
-
-            /**
-             * Getting the list of objects to treat.
-             */
-            // We update the object.
-            MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
-            Answer finalAnswer = new Answer(msg);
-
-            AnswerList<CountryEnvParam> answerList = new AnswerList<>();
-            if (country.equalsIgnoreCase(PARAMETERALL)) {
-                country = null;
-            }
-            answerList = countryEnvParamService.readByVarious(system, country, environment, null, null, null);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) answerList);
-
-            for (CountryEnvParam cepData : answerList.getDataList()) {
-
-                // Email Calculation. Email must be calcuated before we update the Build and revision in order to have the old build revision still available in the mail.
-                String OutputMessage = "";
-                Email email = null;
-                try {
-                    email = emailGenerationService.generateRevisionChangeEmail(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), build, revision);
-                } catch (Exception ex) {
-                    LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", ex);
-                    logEventService.createForPrivateCalls("/NewBuildRevisionV000", "NEWBUILDREV", "Warning on New Build/Revision environment : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + ex.getMessage(), request);
-                    OutputMessage = ex.getMessage();
+                if (!error) {
+                    if (!countryEnvParamService.exist(system, country, environment)) {
+                        out.println("Error - System/Country/Environment does not exist : " + system + "/" + country + "/" + environment);
+                        error = true;
+                    }
                 }
+            }
+            if (build.equalsIgnoreCase("")) {
+                out.println("Error - Parameter build is mandatory.");
+                error = true;
+            }
+            if (!build.equalsIgnoreCase("") && !buildRevisionInvariantService.exist(system, 1, build)) {
+                out.println("Error - Build does not exist : " + build);
+                error = true;
+            }
+            if (revision.equalsIgnoreCase("")) {
+                out.println("Error - Parameter revision is mandatory.");
+                error = true;
+            }
+            if (!revision.equalsIgnoreCase("") && !buildRevisionInvariantService.exist(system, 2, revision)) {
+                out.println("Error - Revision does not exist : " + revision);
+                error = true;
+            }
+
+            // Starting the database update only when no blocking error has been detected.
+            if (error == false) {
 
                 /**
-                 * For each object, we can update it.
+                 * Getting the list of objects to treat.
                  */
-                cepData.setBuild(build);
-                cepData.setRevision(revision);
-                cepData.setActive(true);
-                Answer answerUpdate = countryEnvParamService.update(cepData);
+                // We update the object.
+                MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
+                Answer finalAnswer = new Answer(msg);
 
-                if (!(answerUpdate.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
-                    /**
-                     * Object could not be updated. We stop here and report the
-                     * error.
-                     */
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerUpdate);
+                AnswerList<CountryEnvParam> answerList = new AnswerList<>();
+                if (country.equalsIgnoreCase(PARAMETERALL)) {
+                    country = null;
+                }
+                answerList = countryEnvParamService.readByVarious(system, country, environment, null, null, null);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) answerList);
 
-                } else {
-                    /**
-                     * Update was successful.
-                     */
-                    // Adding Log entry.
-                    logEventService.createForPrivateCalls("/NewBuildRevisionV000", "UPDATE", "Updated CountryEnvParam : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "']", request);
+                for (CountryEnvParam cepData : answerList.getDataList()) {
 
-                    // Adding CountryEnvParam Log entry.
-                    countryEnvParam_logService.createLogEntry(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), build, revision, "New Build Revision.", "PublicCall");
-
-                    /**
-                     * Email notification.
-                     */
+                    // Email Calculation. Email must be calcuated before we update the Build and revision in order to have the old build revision still available in the mail.
+                    String OutputMessage = "";
+                    Email email = null;
                     try {
-                        //Sending the email
-                        emailService.sendHtmlMail(email);
-                    } catch (Exception e) {
-                        LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-                        logEventService.createForPrivateCalls("/NewBuildRevisionV000", "NEWBUILDREV", "Warning on New Build/Revision environment : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + e.getMessage(), request);
-                        OutputMessage = e.getMessage();
+                        email = emailGenerationService.generateRevisionChangeEmail(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), build, revision);
+                    } catch (Exception ex) {
+                        LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", ex);
+                        logEventService.createForPrivateCalls("/NewBuildRevisionV000", "NEWBUILDREV", "Warning on New Build/Revision environment : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + ex.getMessage(), request);
+                        OutputMessage = ex.getMessage();
                     }
 
-                    if (OutputMessage.equals("")) {
-                        msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
-                        Answer answerSMTP = new AnswerList<>(msg);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);
+                    /**
+                     * For each object, we can update it.
+                     */
+                    cepData.setBuild(build);
+                    cepData.setRevision(revision);
+                    cepData.setActive(true);
+                    Answer answerUpdate = countryEnvParamService.update(cepData);
+
+                    if (!(answerUpdate.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+                        /**
+                         * Object could not be updated. We stop here and report
+                         * the error.
+                         */
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerUpdate);
+
                     } else {
-                        msg = new MessageEvent(MessageEventEnum.GENERIC_WARNING);
-                        msg.setDescription(msg.getDescription().replace("%REASON%", OutputMessage + " when sending email for " + cepData.getSystem() + "/" + cepData.getCountry() + "/" + cepData.getEnvironment()));
-                        Answer answerSMTP = new AnswerList<>(msg);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);
+                        /**
+                         * Update was successful.
+                         */
+                        // Adding Log entry.
+                        logEventService.createForPrivateCalls("/NewBuildRevisionV000", "UPDATE", "Updated CountryEnvParam : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "']", request);
+
+                        // Adding CountryEnvParam Log entry.
+                        countryEnvParam_logService.createLogEntry(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), build, revision, "New Build Revision.", "PublicCall");
+
+                        /**
+                         * Email notification.
+                         */
+                        try {
+                            //Sending the email
+                            emailService.sendHtmlMail(email);
+                        } catch (Exception e) {
+                            LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
+                            logEventService.createForPrivateCalls("/NewBuildRevisionV000", "NEWBUILDREV", "Warning on New Build/Revision environment : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + e.getMessage(), request);
+                            OutputMessage = e.getMessage();
+                        }
+
+                        if (OutputMessage.equals("")) {
+                            msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
+                            Answer answerSMTP = new AnswerList<>(msg);
+                            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);
+                        } else {
+                            msg = new MessageEvent(MessageEventEnum.GENERIC_WARNING);
+                            msg.setDescription(msg.getDescription().replace("%REASON%", OutputMessage + " when sending email for " + cepData.getSystem() + "/" + cepData.getCountry() + "/" + cepData.getEnvironment()));
+                            Answer answerSMTP = new AnswerList<>(msg);
+                            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);
+                        }
                     }
                 }
-            }
-            /**
-             * Formating and returning the result.
-             */
-            out.println(finalAnswer.getResultMessage().getMessage().getCodeString() + " - " + finalAnswer.getResultMessage().getDescription());
+                /**
+                 * Formating and returning the result.
+                 */
+                out.println(finalAnswer.getResultMessage().getMessage().getCodeString() + " - " + finalAnswer.getResultMessage().getDescription());
 
-        } else {
-            // In case of errors, we display the help message.
-            out.println(helpMessage);
+            } else {
+                // In case of errors, we display the help message.
+                out.println(helpMessage);
+            }
         }
 
     }

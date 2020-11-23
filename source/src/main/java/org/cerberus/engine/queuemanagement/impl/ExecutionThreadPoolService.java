@@ -575,7 +575,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
                                         task.setCerberusExecutionUrl(StringUtil.addSuffixIfNotAlready(parameterService.getParameterStringByKey("cerberus_url", exe.getSystem(), ""), "/"));
                                         task.setCerberusTriggerQueueJobUrl(StringUtil.addSuffixIfNotAlready(parameterService.getParameterStringByKey("cerberus_url", exe.getSystem(), ""), "/")
-                                                + ManageV001.SERVLETNAME + "?token=" + parameterService.getParameterStringByKey("cerberus_manage_token", "", "") + "&action=" + ManageV001.ACTIONRUNQUEUEJOB);
+                                                + ManageV001.SERVLETNAME + "?apikey=" + parameterService.getParameterStringByKey("cerberus_api_value1", "", "") + "&action=" + ManageV001.ACTIONRUNQUEUEJOB);
 
                                         task.setQueueId(exe.getId());
                                         task.setRobotExecutor(robotExecutor);

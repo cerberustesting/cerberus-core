@@ -35,6 +35,7 @@ import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
@@ -54,6 +55,7 @@ public class NewEnvironmentEventV000 extends HttpServlet {
 
     private final String OPERATION = "New Environment Event";
     private final String PARAMETERALL = "ALL";
+    private IAPIKeyService apiKeyService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -71,127 +73,132 @@ public class NewEnvironmentEventV000 extends HttpServlet {
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        apiKeyService = appContext.getBean(IAPIKeyService.class);
+
         /**
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createForPublicCalls("/NewEnvironmentEventV000", "CALL", "NewEnvironmentEventV000 called : " + request.getRequestURL(), request);
 
-        ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
-        IInvariantService invariantService = appContext.getBean(IInvariantService.class);
-        IBatchInvariantService batchInvariantService = appContext.getBean(IBatchInvariantService.class);
-        IBuildRevisionBatchService buildRevisionBatchService = appContext.getBean(IBuildRevisionBatchService.class);
-        INotificationService notificationService = appContext.getBean(INotificationService.class);
+        if (apiKeyService.checkAPIKey(request, response)) {
 
-        // Parsing all parameters.
-        String system = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("system"), "", charset);
-        String country = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("country"), "", charset);
-        String environment = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("environment"), "", charset);
-        String event = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("event"), "", charset);
+            ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
+            IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+            IBatchInvariantService batchInvariantService = appContext.getBean(IBatchInvariantService.class);
+            IBuildRevisionBatchService buildRevisionBatchService = appContext.getBean(IBuildRevisionBatchService.class);
+            INotificationService notificationService = appContext.getBean(INotificationService.class);
 
-        String helpMessage = "\nThis servlet is used to inform Cerberus about an event that occured on a given environment. For example when a treatment has been executed.\n\nParameter list :\n"
-                + "- system [mandatory] : the system where the Build Revision has been deployed. [" + system + "]\n"
-                + "- country [mandatory] : the country where the Build Revision has been deployed. You can use ALL if you want to perform the action for all countries that exist for the given system and environement. [" + country + "]\n"
-                + "- environment [mandatory] : the environment where the Build Revision has been deployed. [" + environment + "]\n"
-                + "- event [mandatory] : the event that should be recorded.. [" + event + "]\n";
+            // Parsing all parameters.
+            String system = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("system"), "", charset);
+            String country = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("country"), "", charset);
+            String environment = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("environment"), "", charset);
+            String event = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("event"), "", charset);
 
-        boolean error = false;
+            String helpMessage = "\nThis servlet is used to inform Cerberus about an event that occured on a given environment. For example when a treatment has been executed.\n\nParameter list :\n"
+                    + "- system [mandatory] : the system where the Build Revision has been deployed. [" + system + "]\n"
+                    + "- country [mandatory] : the country where the Build Revision has been deployed. You can use ALL if you want to perform the action for all countries that exist for the given system and environement. [" + country + "]\n"
+                    + "- environment [mandatory] : the environment where the Build Revision has been deployed. [" + environment + "]\n"
+                    + "- event [mandatory] : the event that should be recorded.. [" + event + "]\n";
 
-        // Checking the parameter validity. If application has been entered, does it exist ?
-        if (system.equalsIgnoreCase("")) {
-            out.println("Error - Parameter system is mandatory.");
-            error = true;
-        }
-        if (!system.equalsIgnoreCase("") && !invariantService.isInvariantExist("SYSTEM", system)) {
-            out.println("Error - System does not exist  : " + system);
-            error = true;
-        }
-        if (environment.equalsIgnoreCase("")) {
-            out.println("Error - Parameter environment is mandatory.");
-            error = true;
-        }
-        if (!environment.equalsIgnoreCase("") && !invariantService.isInvariantExist("ENVIRONMENT", environment)) {
-            out.println("Error - Environment does not exist  : " + environment);
-            error = true;
-        }
-        if (country.equalsIgnoreCase("")) {
-            out.println("Error - Parameter country is mandatory.");
-            error = true;
-        } else if (!country.equalsIgnoreCase(PARAMETERALL)) {
-            if (!invariantService.isInvariantExist("COUNTRY", country)) {
-                out.println("Error - Country does not exist  : " + country);
+            boolean error = false;
+
+            // Checking the parameter validity. If application has been entered, does it exist ?
+            if (system.equalsIgnoreCase("")) {
+                out.println("Error - Parameter system is mandatory.");
                 error = true;
             }
-            if (!error) {
-                if (!countryEnvParamService.exist(system, country, environment)) {
-                    out.println("Error - System/Country/Environment does not exist : " + system + "/" + country + "/" + environment);
+            if (!system.equalsIgnoreCase("") && !invariantService.isInvariantExist("SYSTEM", system)) {
+                out.println("Error - System does not exist  : " + system);
+                error = true;
+            }
+            if (environment.equalsIgnoreCase("")) {
+                out.println("Error - Parameter environment is mandatory.");
+                error = true;
+            }
+            if (!environment.equalsIgnoreCase("") && !invariantService.isInvariantExist("ENVIRONMENT", environment)) {
+                out.println("Error - Environment does not exist  : " + environment);
+                error = true;
+            }
+            if (country.equalsIgnoreCase("")) {
+                out.println("Error - Parameter country is mandatory.");
+                error = true;
+            } else if (!country.equalsIgnoreCase(PARAMETERALL)) {
+                if (!invariantService.isInvariantExist("COUNTRY", country)) {
+                    out.println("Error - Country does not exist  : " + country);
                     error = true;
                 }
-            }
-        }
-        if (event.equalsIgnoreCase("")) {
-            out.println("Error - Parameter event is mandatory.");
-            error = true;
-        }
-        if (!event.equalsIgnoreCase("") && !batchInvariantService.exist(event)) {
-            out.println("Error - Event does not exist  : " + event);
-            error = true;
-        }
-
-        // Starting the database update only when no blocking error has been detected.
-        if (error == false) {
-
-            /**
-             * Getting the list of objects to treat.
-             */
-            MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
-            Answer finalAnswer = new Answer(msg);
-
-            if (country.equalsIgnoreCase(PARAMETERALL)) {
-                country = null;
-            }
-            AnswerList<CountryEnvParam> answerList = countryEnvParamService.readByVarious(system, country, environment, null, null, "Y");
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) answerList);
-
-            for (CountryEnvParam cepData : (List<CountryEnvParam>) answerList.getDataList()) {
-
-                /**
-                 * For each object, we can update it.
-                 */
-                // Adding CountryEnvParam Log entry.
-                buildRevisionBatchService.create(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), cepData.getBuild(), cepData.getRevision(), event);
-
-                /**
-                 * Email notification.
-                 */
-                String OutputMessage = "";
-                MessageEvent me = notificationService.generateAndSendNewChainEmail(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), event);
-
-                if (!"OK".equals(me.getMessage().getCodeString())) {
-                    LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched." + me.getMessage().getDescription());
-                    logEventService.createForPrivateCalls("/NewEnvironmentEventV000", "NEW", "Warning on New environment event : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + me.getMessage().getDescription(), request);
-                    OutputMessage = me.getMessage().getDescription();
-                }
-
-                if (OutputMessage.equals("")) {
-                    msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
-                    Answer answerSMTP = new AnswerList<>(msg);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);
-                } else {
-                    msg = new MessageEvent(MessageEventEnum.GENERIC_WARNING);
-                    msg.setDescription(msg.getDescription().replace("%REASON%", OutputMessage + " when sending email for " + cepData.getSystem() + "/" + cepData.getCountry() + "/" + cepData.getEnvironment()));
-                    Answer answerSMTP = new AnswerList<>(msg);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);
+                if (!error) {
+                    if (!countryEnvParamService.exist(system, country, environment)) {
+                        out.println("Error - System/Country/Environment does not exist : " + system + "/" + country + "/" + environment);
+                        error = true;
+                    }
                 }
             }
-            /**
-             * Formating and returning the result.
-             */
-            out.println(finalAnswer.getResultMessage().getMessage().getCodeString() + " - " + finalAnswer.getResultMessage().getDescription());
+            if (event.equalsIgnoreCase("")) {
+                out.println("Error - Parameter event is mandatory.");
+                error = true;
+            }
+            if (!event.equalsIgnoreCase("") && !batchInvariantService.exist(event)) {
+                out.println("Error - Event does not exist  : " + event);
+                error = true;
+            }
 
-        } else {
-            // In case of errors, we display the help message.
-            out.println(helpMessage);
+            // Starting the database update only when no blocking error has been detected.
+            if (error == false) {
+
+                /**
+                 * Getting the list of objects to treat.
+                 */
+                MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
+                Answer finalAnswer = new Answer(msg);
+
+                if (country.equalsIgnoreCase(PARAMETERALL)) {
+                    country = null;
+                }
+                AnswerList<CountryEnvParam> answerList = countryEnvParamService.readByVarious(system, country, environment, null, null, "Y");
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) answerList);
+
+                for (CountryEnvParam cepData : (List<CountryEnvParam>) answerList.getDataList()) {
+
+                    /**
+                     * For each object, we can update it.
+                     */
+                    // Adding CountryEnvParam Log entry.
+                    buildRevisionBatchService.create(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), cepData.getBuild(), cepData.getRevision(), event);
+
+                    /**
+                     * Email notification.
+                     */
+                    String OutputMessage = "";
+                    MessageEvent me = notificationService.generateAndSendNewChainEmail(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), event);
+
+                    if (!"OK".equals(me.getMessage().getCodeString())) {
+                        LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched." + me.getMessage().getDescription());
+                        logEventService.createForPrivateCalls("/NewEnvironmentEventV000", "NEW", "Warning on New environment event : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + me.getMessage().getDescription(), request);
+                        OutputMessage = me.getMessage().getDescription();
+                    }
+
+                    if (OutputMessage.equals("")) {
+                        msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
+                        Answer answerSMTP = new AnswerList<>(msg);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.GENERIC_WARNING);
+                        msg.setDescription(msg.getDescription().replace("%REASON%", OutputMessage + " when sending email for " + cepData.getSystem() + "/" + cepData.getCountry() + "/" + cepData.getEnvironment()));
+                        Answer answerSMTP = new AnswerList<>(msg);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);
+                    }
+                }
+                /**
+                 * Formating and returning the result.
+                 */
+                out.println(finalAnswer.getResultMessage().getMessage().getCodeString() + " - " + finalAnswer.getResultMessage().getDescription());
+
+            } else {
+                // In case of errors, we display the help message.
+                out.println(helpMessage);
+            }
         }
 
     }
