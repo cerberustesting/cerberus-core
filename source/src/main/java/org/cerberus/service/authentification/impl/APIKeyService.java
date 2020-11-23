@@ -53,6 +53,11 @@ public class APIKeyService implements IAPIKeyService {
         try {
             LOG.debug("Checking API Call.");
 
+            // If already aauthorised, we don't need to check the api key.
+            if ((request.getUserPrincipal() != null) && (!StringUtil.isNullOrEmpty(request.getUserPrincipal().getName()))) {
+                return true;
+            }
+
             boolean toSecure = parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_apikey_enable, "", false);
 
             String accessKey = request.getHeader("apikey");

@@ -364,6 +364,8 @@ public class ExecutionQueueWorkerThread implements Runnable {
 
             HttpGet httpGet = new HttpGet(url.toString());
             httpGet.setConfig(requestConfig);
+
+            httpGet.setHeader("apikey", parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value1, "", ""));
             CloseableHttpResponse response = httpclient.execute(httpGet);
             HttpEntity entity = response.getEntity();
             String responseContent = EntityUtils.toString(entity);

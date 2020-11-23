@@ -617,7 +617,7 @@ function runTestCase(doRedirect) {
 
     showLoader('#page-layout');
 
-    var jqxhr = $.post("AddToExecutionQueueV003", paramSerialized + teststring + environmentstring + countriesstring + robotsstring);
+    var jqxhr = $.post("AddToExecutionQueuePrivate", paramSerialized + teststring + environmentstring + countriesstring + robotsstring);
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns
         hideLoader('#page-layout');

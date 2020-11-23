@@ -32,6 +32,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.ScheduledExecution;
 import org.cerberus.crud.factory.IFactoryScheduledExecution;
 import org.cerberus.crud.factory.impl.FactoryScheduledExecution;
@@ -108,6 +109,7 @@ public class ScheduledJob implements Job {
                                 String encodeName = URLEncoder.encode(scheduleName, "UTF-8");
                                 request = parameterService.getParameterStringByKey("cerberus_url", "", "") + SERVLET_ADDTOEXECUTION + "?campaign=" + encodeName + "&outputformat=json";
                                 HttpGet requesthttp = new HttpGet(request);
+                                requesthttp.setHeader("apikey", parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value1, "", ""));
                                 HttpResponse responsehttp = httpclient.execute(requesthttp);
                                 int statusCode = responsehttp.getStatusLine().getStatusCode();
 
