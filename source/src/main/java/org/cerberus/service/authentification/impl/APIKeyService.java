@@ -20,9 +20,6 @@
 package org.cerberus.service.authentification.impl;
 
 import java.io.IOException;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Parameter;
@@ -51,7 +48,7 @@ public class APIKeyService implements IAPIKeyService {
     @Override
     public boolean checkAPIKey(HttpServletRequest request, HttpServletResponse response) {
         try {
-            LOG.info("Checking API Call.");
+            LOG.debug("Checking API Call.");
 
             boolean toSecure = parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_apikey_enable, "", false);
 
@@ -60,7 +57,7 @@ public class APIKeyService implements IAPIKeyService {
                 // If already aauthorised, we don't need to check the api key.
                 LOG.info(request.getUserPrincipal());
                 if ((request.getUserPrincipal() != null) && (!StringUtil.isNullOrEmpty(request.getUserPrincipal().getName()))) {
-                    LOG.info("User connected with : '" + request.getUserPrincipal().getName() + "'");
+                    LOG.debug("User connected with : '" + request.getUserPrincipal().getName() + "'");
                     return true;
                 }
 
