@@ -431,8 +431,6 @@ function getHPOptionsTcGraph(title, unit) {
     return option;
 }
 
-
-
 function generateTooltip(data, tag) {
     var htmlRes;
     var len = statusOrder.length;

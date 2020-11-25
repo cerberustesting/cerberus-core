@@ -152,6 +152,22 @@ public interface ITagService {
     /**
      *
      * @param tag
+     * @param object
+     * @return
+     */
+    Answer updateDescription(String tag, Tag object);
+
+    /**
+     *
+     * @param tag
+     * @param object
+     * @return
+     */
+    Answer updateComment(String tag, Tag object);
+
+    /**
+     *
+     * @param tag
      * @param campaign
      * @param user
      * @param reqEnvironmentList

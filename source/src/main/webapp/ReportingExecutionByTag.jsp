@@ -190,62 +190,92 @@
                         </div>
                     </div>
                     <div class="panel panel-default">
+                        <div class="panel-heading card">
+                            <span class="fa fa-tag fa-fw"></span>
+                            <label id="TagDetailLab">Tag Information</label>
+                        </div>
+                        <div class="panel-body" id="TagInfo">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label for="startExe">Start :</label>
+                                    <input type="text" class="form-control" name="startExe" id="startExe" readonly aria-describedby="basic-addon1" >
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="endExe">End :</label>
+                                    <input type="text" class="form-control" name="endExe" id="endExe" readonly aria-describedby="basic-addon1" >
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="durExe">Dur (Min) :</label>
+                                    <input type="text" class="form-control" name="durExe" id="durExe" readonly aria-describedby="basic-addon1" >
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12" id="TagDescCel">
+                                    <label for="TagDesc">Description :</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="TagDesc" id="TagDesc" readonly aria-describedby="basic-addon1">
+                                        <span class="input-group-btn">
+                                            <button id="editTagDesc" class="btn btn-default">Edit</button>
+                                            <button id="saveTagDesc" class="btn btn-primary" style="display : none;">Save</button>
+                                        </span>
+                                    </div>
+                                    <!--                                    <input type="text" class="form-control" name="TagDesc" id="TagDesc" readonly aria-describedby="basic-addon1" >-->
+                                </div>
+                                <div class="col-sm-12" id="TagCommentCel">
+                                    <label for="TagComment">Comment :</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="TagComment" id="TagComment" readonly aria-describedby="basic-addon1">
+                                        <span class="input-group-btn">
+                                            <button id="editTagComment" class="btn btn-default">Edit</button>
+                                            <button id="saveTagComment" class="btn btn-primary" style="display : none;">Save</button>
+                                        </span>
+                                    </div>
+                                    <!--                                    <input type="text" class="form-control" name="TagComment" id="TagComment" readonly aria-describedby="basic-addon1" >-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#TagDetail">
                             <span class="fa fa-pie-chart fa-fw"></span>
                             <label id="TagDetailLab">Tag detail</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
                         <div class="panel-body collapse in" id="TagDetail">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <label for="startExe">Start :</label>
-                                    <input type="text" class="form-control" name="startExe" id="startExe" readonly aria-describedby="basic-addon1" >
-                                </div>
-                                <div class="col-sm-6">
-                                    <label for="endExe">End : <br>(When all execution queue has been closed)</label>
-                                    <input type="text" class="form-control" name="endExe" id="endExe" readonly aria-describedby="basic-addon1" >
-                                </div>
-                            </div>
+
+
                             <div class="row" id="panelDuration">
-                                <div class="col-sm-6">
-                                    <label for="durExe">Duration (Minutes) :</label>
-                                    <input type="text" class="form-control" name="durExe" id="durExe" readonly aria-describedby="basic-addon1" >
-                                </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-12">
                                     <label for="endLastExe">Last Execution :</label>
                                     <input type="text" class="form-control" name="endLastExe" id="endLastExe" readonly aria-describedby="basic-addon1" >
                                 </div>
                             </div>
                             <div class="row">
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-6">
                                     <label for="TagUsrCreated">Created by :</label>
                                     <input type="text" class="form-control" name="TagUsrCreated" id="TagUsrCreated" readonly aria-describedby="basic-addon1" >
                                 </div>
-                                <div class="col-sm-4" id="TagcampaignCel1">
+                                <div class="col-sm-6" id="TagcampaignCel1">
                                     <label for="Tagcampaign">Campaign :</label>
                                     <input type="text" class="form-control" name="Tagcampaign" id="Tagcampaign" readonly aria-describedby="basic-addon1" >
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-sm-12" id="TagDescCel">
-                                    <label for="TagDesc">Description :</label>
-                                    <input type="text" class="form-control" name="TagDesc" id="TagDesc" readonly aria-describedby="basic-addon1" >
+                            <div class="marginTop10" id="tagDetailBar">
+                            </div>
+
+                            <div class="marginTop10" class="row">
+                                <div class="col-sm-6">
+                                    <div class="input-group-btn" id="TagcampaignCel2">
+                                        <a id="buttonSeeStatsCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;">See Stats</button></a>
+                                    </div>
                                 </div>
-                                <div class="col-sm-12" id="TagCommentCel">
-                                    <label for="TagComment">Comment :</label>
-                                    <input type="text" class="form-control" name="TagComment" id="TagComment" readonly aria-describedby="basic-addon1" >
+                                <div class="col-sm-6">
+                                    <div class="input-group-btn" id="TagcampaignCel2">
+                                        <a id="buttonRunCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;">(Re)Run Campaign</button></a>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="input-group-btn" id="TagcampaignCel2">
-                                    <a id="buttonSeeStatsCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;margin-top: 20px;">See Stats</button></a>
-                                </div>
-                                <div class="input-group-btn" id="TagcampaignCel2">
-                                    <a id="buttonRunCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;margin-top: 20px;">Run Campaign</button></a>
-                                </div>
-                            </div>
+
                         </div>
                     </div>
                 </div>

@@ -132,6 +132,22 @@ public interface ITagDAO {
     /**
      *
      * @param tag
+     * @param object
+     * @return
+     */
+    Answer updateDescription(String tag, Tag object);
+
+    /**
+     *
+     * @param tag
+     * @param object
+     * @return
+     */
+    Answer updateComment(String tag, Tag object);
+
+    /**
+     *
+     * @param tag
      * @return
      */
     Answer updateDateEndQueue(Tag tag);

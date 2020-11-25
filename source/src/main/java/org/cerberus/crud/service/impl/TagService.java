@@ -219,6 +219,16 @@ public class TagService implements ITagService {
     }
 
     @Override
+    public Answer updateDescription(String tag, Tag object) {
+            return tagDAO.updateDescription(tag, object);
+    }
+    
+    @Override
+    public Answer updateComment(String tag, Tag object) {
+            return tagDAO.updateComment(tag, object);
+    }
+    
+    @Override
     public Answer createAuto(String tagS, String campaign, String user, JSONArray reqEnvironmentList, JSONArray reqCountryList) {
         AnswerItem answerTag;
         answerTag = readByKey(tagS);
