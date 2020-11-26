@@ -59,7 +59,7 @@ public class TestCaseStep {
      */
     private List<TestCaseStepAction> actions;
     private boolean isStepInUseByOtherTestcase;
-    private int initialStep;
+//    private int initialStep;
     private TestCase testcaseObj;
     private int libraryStepSort;
 
@@ -129,14 +129,14 @@ public class TestCaseStep {
         this.isLibraryStep = isLibraryStep;
     }
 
-    public int getInitialStep() {
-        return initialStep;
-    }
-
-    public void setInitialStep(int initialStep) {
-        this.initialStep = initialStep;
-    }
-
+//    public int getInitialStep() {
+//        return initialStep;
+//    }
+//
+//    public void setInitialStep(int initialStep) {
+//        this.initialStep = initialStep;
+//    }
+//
     public boolean isIsStepInUseByOtherTestcase() {
         return isStepInUseByOtherTestcase;
     }
@@ -314,7 +314,7 @@ public class TestCaseStep {
         return hash;
     }
 
-       @Override
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
@@ -376,7 +376,7 @@ public class TestCaseStep {
 
     @Override
     public String toString() {
-        return "TestCaseStep{" + "test=" + test + ", testcase=" + testcase + ", stepId=" + stepId + ", sort=" + sort + ", loop=" + loop + ", conditionOperator=" + conditionOperator + ", conditionValue1=" + conditionValue1 + ", conditionValue2=" + conditionValue2 + ", conditionValue3=" + conditionValue3 + ", description=" + description + ", isUsingLibraryStep=" + isUsingLibraryStep + ", libraryStepTest=" + libraryStepTest + ", libraryStepTestCase=" + libraryStepTestcase + ", libraryStepStepId=" + libraryStepStepId + ", isLibraryStep=" + isLibraryStep + ", isExecutionForced=" + isExecutionForced + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", actions=" + actions + ", isStepInUseByOtherTestCase=" + isStepInUseByOtherTestcase + ", initialStep=" + initialStep + ", testCaseObj=" + testcaseObj + ", libraryStepSort=" + libraryStepSort + '}';
+        return "TestCaseStep{" + "test=" + test + ", testcase=" + testcase + ", stepId=" + stepId + ", sort=" + sort + ", loop=" + loop + ", conditionOperator=" + conditionOperator + ", conditionValue1=" + conditionValue1 + ", conditionValue2=" + conditionValue2 + ", conditionValue3=" + conditionValue3 + ", description=" + description + ", isUsingLibraryStep=" + isUsingLibraryStep + ", libraryStepTest=" + libraryStepTest + ", libraryStepTestCase=" + libraryStepTestcase + ", libraryStepStepId=" + libraryStepStepId + ", isLibraryStep=" + isLibraryStep + ", isExecutionForced=" + isExecutionForced + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", actions=" + actions + ", isStepInUseByOtherTestCase=" + isStepInUseByOtherTestcase + ", testCaseObj=" + testcaseObj + ", libraryStepSort=" + libraryStepSort + '}';
     }
 
     public JSONObject toJson() {
@@ -398,7 +398,7 @@ public class TestCaseStep {
             stepJson.put("libraryStepStepId", this.getLibraryStepStepId());
             stepJson.put("test", this.getTest());
             stepJson.put("testcase", this.getTestcase());
-            stepJson.put("initialStep", this.getInitialStep());
+//            stepJson.put("initialStep", this.getInitialStep());
             stepJson.put("usrCreated", this.usrCreated);
             stepJson.put("dateCreated", this.dateCreated);
             stepJson.put("usrModif", this.usrModif);

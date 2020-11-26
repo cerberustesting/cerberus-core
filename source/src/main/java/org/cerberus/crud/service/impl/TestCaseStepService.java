@@ -114,9 +114,9 @@ public class TestCaseStepService implements ITestCaseStepService {
                 if (tcsDifference.hasSameKey(tcsInDatabase)) {
                     this.updateTestCaseStep(tcsDifference);
                     tcsToUpdateOrInsert.remove(tcsDifference);
-                    List<TestCaseStep> tcsDependencyToUpd = new ArrayList<TestCaseStep>();
-                    tcsDependencyToUpd.add(tcsDifference);
-                    updateTestCaseStepUsingTestCaseStepInList(tcsDependencyToUpd);
+//                    List<TestCaseStep> tcsDependencyToUpd = new ArrayList<TestCaseStep>();
+//                    tcsDependencyToUpd.add(tcsDifference);
+//                    updateTestCaseStepUsingTestCaseStepInList(tcsDependencyToUpd);
                 }
             }
         }
@@ -138,27 +138,27 @@ public class TestCaseStepService implements ITestCaseStepService {
                     }
                 }
             }
-            updateTestCaseStepUsingTestCaseStepInList(tcsToDelete);
+//            updateTestCaseStepUsingTestCaseStepInList(tcsToDelete);
             this.deleteListTestCaseStep(tcsToDelete);
 
         }
 
         // We insert only at the end (after deletion of all potencial enreg - linked with #1281)
         this.createList(tcsToUpdateOrInsert);
-        updateTestCaseStepUsingTestCaseStepInList(tcsToUpdateOrInsert);
+//        updateTestCaseStepUsingTestCaseStepInList(tcsToUpdateOrInsert);
     }
 
-    private void updateTestCaseStepUsingTestCaseStepInList(List<TestCaseStep> testCaseStepList) throws CerberusException {
-        for (TestCaseStep tcsDifference : testCaseStepList) {
-            if (tcsDifference.isIsStepInUseByOtherTestcase()) {
-                List<TestCaseStep> tcsUsingStep = this.getTestCaseStepUsingStepInParamter(tcsDifference.getTest(), tcsDifference.getTestcase(), tcsDifference.getInitialStep());
-                for (TestCaseStep tcsUS : tcsUsingStep) {
-                    tcsUS.setLibraryStepStepId(tcsDifference.getStepId());
-                    this.updateTestCaseStep(tcsUS);
-                }
-            }
-        }
-    }
+//    private void updateTestCaseStepUsingTestCaseStepInList(List<TestCaseStep> testCaseStepList) throws CerberusException {
+//        for (TestCaseStep tcsDifference : testCaseStepList) {
+//            if (tcsDifference.isIsStepInUseByOtherTestcase()) {
+//                List<TestCaseStep> tcsUsingStep = this.getTestCaseStepUsingStepInParamter(tcsDifference.getTest(), tcsDifference.getTestcase(), tcsDifference.getInitialStep());
+//                for (TestCaseStep tcsUS : tcsUsingStep) {
+//                    tcsUS.setLibraryStepStepId(tcsDifference.getStepId());
+//                    this.updateTestCaseStep(tcsUS);
+//                }
+//            }
+//        }
+//    }
 
     @Override
     public List<TestCaseStep> getTestCaseStepUsingTestCaseInParamter(String test, String testCase) throws CerberusException {
