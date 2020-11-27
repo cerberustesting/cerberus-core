@@ -347,7 +347,18 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public String getMaxNumberTestCase(String test) {
-        return this.testCaseDao.getMaxNumberTestCase(test);
+        String result = testCaseDao.getMaxNumberTestCase(test);
+        if (result == null) {
+            return "0001A";
+        }
+        int resultInt = 0;
+        try {
+            resultInt = Integer.valueOf(result);
+        } catch (NumberFormatException e) {
+            LOG.debug("Could not convert '" + result + "' to Integer.");
+        }
+        resultInt++;
+        return String.format("%04dA", resultInt);
     }
 
     @Override
@@ -363,7 +374,7 @@ public class TestCaseService implements ITestCaseService {
         } else {
             testCases = this.findTestCaseByCampaignNameAndCountries(campaign, null);
         }
-        
+
         return testCases;
     }
 

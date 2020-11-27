@@ -109,10 +109,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
                 answer = findTestCaseByTestTestCase(test, testCase, request, withSteps);
             } else if (!Strings.isNullOrEmpty(test) && getMaxTC) {
                 String max = testCaseService.getMaxNumberTestCase(test);
-                if (max == null) {
-                    max = "0";
-                }
-                jsonResponse.put("maxTestCase", Integer.valueOf(max));
+                jsonResponse.put("nextAvailableTestcaseId", max);
                 answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             } else if (filter) {
                 answer = findTestCaseByVarious(request);

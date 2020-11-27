@@ -369,21 +369,7 @@ function feedTestCaseField(test, modalForm) {
             data: {test: encodeURIComponent(test), getMaxTC: true},
             dataType: "json",
             success: function (data) {
-                var testCaseNumber = data.maxTestCase + 1;
-                var tcnumber;
-
-                if (testCaseNumber < 10) {
-                    tcnumber = "000" + testCaseNumber.toString() + "A";
-                } else if (testCaseNumber >= 10 && testCaseNumber < 99) {
-                    tcnumber = "00" + testCaseNumber.toString() + "A";
-                } else if (testCaseNumber >= 100 && testCaseNumber < 999) {
-                    tcnumber = "0" + testCaseNumber.toString() + "A";
-                } else if (testCaseNumber >= 1000) {
-                    tcnumber = testCaseNumber.toString() + "A";
-                } else {
-                    tcnumber = "0001A";
-                }
-                $('#' + modalForm + ' [name="testCase"]').val(tcnumber);
+                $('#' + modalForm + ' [name="testCase"]').val(data.nextAvailableTestcaseId);
             },
             error: showUnexpectedError
         });
