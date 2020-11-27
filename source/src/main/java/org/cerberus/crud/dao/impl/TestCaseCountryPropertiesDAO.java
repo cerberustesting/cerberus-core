@@ -1153,7 +1153,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 + "`RetryPeriod` = ? , "
                 + "`CacheExpire` = ?, "
                 + "`Rank` = ? , "
-                + "`UsrModif = ? , "
+                + "`UsrModif` = ? , "
                 + "`DateModif` = CURRENT_TIMESTAMP "
                 + "WHERE Test = ? AND TestCase = ? AND Country = ? AND hex(`Property`) like hex(?)";
 
