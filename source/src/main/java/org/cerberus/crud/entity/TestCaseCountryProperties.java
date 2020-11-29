@@ -95,6 +95,31 @@ public class TestCaseCountryProperties {
     public static final String NATURE_NOTINUSE = "NOTINUSE";
     // Others
     public static final int MAX_PROPERTY_LENGTH = 160;
+    
+    /**
+     * Database Columns values
+     * Use it instead of literals
+     */
+    public static final String DB_TEST = "Test";
+    public static final String DB_TESTCASE = "Testcase";
+    public static final String DB_COUNTRY = "Country";
+    public static final String DB_PROPERTY = "Property";
+    public static final String DB_TYPE = "Type";
+    public static final String DB_DATABASE = "Database";
+    public static final String DB_VALUE1 = "Value1";
+    public static final String DB_VALUE2 = "Value2";
+    public static final String DB_LENGTH = "Length";
+    public static final String DB_ROWLIMIT = "RowLimit";
+    public static final String DB_NATURE = "Nature";
+    public static final String DB_CACHEEXPIRE = "CacheExpire";
+    public static final String DB_RETRYNB = "RetryNb";
+    public static final String DB_RETRYPERIOD = "RetryPeriod";
+    public static final String DB_DESCRIPTION = "Description";
+    public static final String DB_RANK = "Rank";
+    public static final String DB_USRCREATED = "UsrCreated";
+    public static final String DB_DATECREATED = "DateCreated";
+    public static final String DB_USRMODIF = "UsrModif";
+    public static final String DB_DATEMODIF = "DateModif";
 
     public int getCacheExpire() {
         return cacheExpire;

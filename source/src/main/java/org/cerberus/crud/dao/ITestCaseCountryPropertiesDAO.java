@@ -19,6 +19,8 @@
  */
 package org.cerberus.crud.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import org.cerberus.crud.entity.TestCase;
 
@@ -173,5 +175,13 @@ public interface ITestCaseCountryPropertiesDAO {
      * @return
      */
     Answer bulkRenameProperties(String oldName, String newName);
+    
+    /**
+     * 
+     * @param resultSet
+     * @return
+     * @throws SQLException 
+     */
+    TestCaseCountryProperties loadFromResultSet(ResultSet resultSet) throws SQLException;
 
 }
