@@ -220,14 +220,14 @@ public class TagService implements ITagService {
 
     @Override
     public Answer updateDescription(String tag, Tag object) {
-            return tagDAO.updateDescription(tag, object);
+        return tagDAO.updateDescription(tag, object);
     }
-    
+
     @Override
     public Answer updateComment(String tag, Tag object) {
-            return tagDAO.updateComment(tag, object);
+        return tagDAO.updateComment(tag, object);
     }
-    
+
     @Override
     public Answer createAuto(String tagS, String campaign, String user, JSONArray reqEnvironmentList, JSONArray reqCountryList) {
         AnswerItem answerTag;
@@ -253,7 +253,7 @@ public class TagService implements ITagService {
 
     @Override
     public String enrichTagWithCloudProviderBuild(String provider, String system, String tagS, String user, String pass) {
-        LOG.debug("Trying to enrish tag '" + tagS + "' with Cloud service provider Build.");
+        LOG.debug("Trying to enrish tag '" + tagS + "' with Cloud service provider Build (" + provider + ").");
         if (StringUtil.isNullOrEmpty(tagS)) {
             return null;
         }
@@ -268,6 +268,7 @@ public class TagService implements ITagService {
                     Answer ans = tagDAO.updateBrowserStackBuild(tagS, tag);
                     return newBuildHash;
                 }
+                break;
             case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
                 if ((tag != null) && (StringUtil.isNullOrEmpty(tag.getLambdaTestBuild()))) {
                     String newBuildHash = lambdatestService.getBuildValue(tagS, user, pass, system);
@@ -275,6 +276,7 @@ public class TagService implements ITagService {
                     Answer ans = tagDAO.updateLambdatestBuild(tagS, tag);
                     return newBuildHash;
                 }
+                break;
         }
 
         return null;

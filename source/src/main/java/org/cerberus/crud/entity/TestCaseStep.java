@@ -185,6 +185,10 @@ public class TestCaseStep {
         this.actions = actions;
     }
 
+    public void appendActions(TestCaseStepAction action) {
+        this.actions.add(action);
+    }
+
     public String getDescription() {
         return description;
     }

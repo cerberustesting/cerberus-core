@@ -397,6 +397,10 @@ public class TestCase {
         this.testCaseCountries = testCaseCountries;
     }
 
+    public void appendTestCaseCountries(TestCaseCountry testCaseCountry) {
+        this.testCaseCountries.add(testCaseCountry);
+    }
+
     public List<Invariant> getInvariantCountries() {
         return invariantCountries;
     }
@@ -411,6 +415,10 @@ public class TestCase {
 
     public void setSteps(List<TestCaseStep> steps) {
         this.steps = steps;
+    }
+
+    public void appendSteps(TestCaseStep step) {
+        this.steps.add(step);
     }
 
     public String getTicket() {
@@ -487,8 +495,10 @@ public class TestCase {
 
     /**
      * Generate a unique key for a TestCase.
+     *
      * @return
      */
+    @JsonIgnore
     public String getKey() {
         return this.test + "##" + this.testcase;
     }

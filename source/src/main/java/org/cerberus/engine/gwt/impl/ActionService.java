@@ -554,6 +554,7 @@ public class ActionService implements IActionService {
              * Get Identifier (identifier, locator) and check it's valid
              */
             Identifier identifier = identifierService.convertStringToIdentifier(element);
+            LOG.debug("Click : " + identifier.toString());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
@@ -1269,19 +1270,19 @@ public class ActionService implements IActionService {
             /**
              * Get Identifier (identifier, locator)
              */
-            Identifier identifierObject = identifierService.convertStringToIdentifier(value1);
-            Identifier identifierValue = identifierService.convertStringToSelectIdentifier(value2);
+            Identifier identifierValue1 = identifierService.convertStringToIdentifier(value1);
+            Identifier identifierValue2 = identifierService.convertStringToSelectIdentifier(value2);
 
-            identifierService.checkWebElementIdentifier(identifierObject.getIdentifier());
-            identifierService.checkSelectOptionsIdentifier(identifierValue.getIdentifier());
+            identifierService.checkWebElementIdentifier(identifierValue1.getIdentifier());
+            identifierService.checkSelectOptionsIdentifier(identifierValue2.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
-                    return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierObject, identifierValue, false, false);
+                    return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierValue1, identifierValue2, false, false);
                 }
-                return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierObject, identifierValue, true, true);
+                return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierValue1, identifierValue2, true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "Select"));

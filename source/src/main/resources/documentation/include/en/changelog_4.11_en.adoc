@@ -12,6 +12,8 @@
 * All Public API are now secured using API Key. You can enable the feature with parameter `cerberus_apikey_enable` 5 API Keys can be used from `cerberus_apikey_value1` to `cerberus_apikey_value5`. The API Key value must be added on every calls inside the HTTP header `apikey`. Please refer to documentation for further information.
 * Improved Campaign report over time when list of countries variations are huge
 * Allow to edit a description and a comment for each campaign execution (tag). That comment and description is then displayed on report by time. That allows to track the reasons of a particular campaign result.
+* You can now import Selenium IDE files. That allow Cerberus to have a recorder for both Firefox and Chrome.
+* element that start by // now default to xpath. That allow to copy/paste xpath element from Cerberus to/from browser without beeing forced to add/remove xpath=
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

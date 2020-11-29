@@ -19,7 +19,9 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.util.ArrayList;
 import org.cerberus.crud.entity.TestCaseStepAction;
+import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.factory.IFactoryTestCaseStepAction;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +51,8 @@ public class FactoryTestCaseStepAction implements IFactoryTestCaseStepAction {
         testCaseStepAction.setTestCase(testCase);
         testCaseStepAction.setDescription(description);
         testCaseStepAction.setScreenshotFilename(screenshotFilename);
+        testCaseStepAction.setControls(new ArrayList<>());
+
         return testCaseStepAction;
     }
 }

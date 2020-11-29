@@ -213,7 +213,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         AnswerList<CountryEnvParam> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<CountryEnvParam> countryEnvParamList = new ArrayList<CountryEnvParam>();
+        List<CountryEnvParam> countryEnvParamList = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 

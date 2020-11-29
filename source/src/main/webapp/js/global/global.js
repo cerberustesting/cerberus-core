@@ -2734,7 +2734,7 @@ function getComboConfigApplication() {
                         params.page = params.page || 1;
                         return {
                             results: $.map(data.contentTable, function (obj) {
-                                return {id: obj.application, text: obj.application};
+                                return {id: obj.application, text: obj.application, type: obj.type};
                             }),
                             pagination: {
                                 more: (params.page * 30) < data.iTotalRecords
@@ -2745,10 +2745,47 @@ function getComboConfigApplication() {
                     allowClear: true
                 },
                 width: "100%",
-                minimumInputLength: 0
+                minimumInputLength: 0,
+                templateResult: comboConfigApplication_format, // omitted for brevity, see the source of this page
+                templateSelection: comboConfigApplication_formatSelection // omitted for brevity, see the source of this page
             };
     return config;
 }
+
+function comboConfigApplication_formatSelection(application) {
+    console.log(application);
+    var result = application.id;
+    if (!isEmpty(application.type)) {
+        result = result + " [" + application.type + "]";
+    }
+    return result;
+}
+
+function comboConfigApplication_format(app) {
+//    var markup = "<div class='select2-result-tag clearfix'>" +
+//            "<div class='select2-result-tag__title'>" + app.id + "</div>";
+    var markup = app.id + " ["+app.type+"]";
+
+//    if (app.type) {
+//        markup += "<div class='select2-result-tag__description'>" + app.type + "</div>";
+//    }
+//    markup += "<div class='select2-result-tag__statistics'>";
+//    if (app.campaign) {
+//        markup += "<div class='select2-result-tag__detail'><i class='fa fa-list'></i> " + app.campaign + "</div>";
+//    }
+//    if (app.DateCreated) {
+//        markup += "<div class='select2-result-tag__detail'><i class='fa fa-calendar'></i> " + app.DateCreated + "</div>";
+//    }
+//    if (app.nbExeUsefull > 0) {
+//        markup += "<div class='select2-result-tag__detail'> " + app.nbExeUsefull + " Exe(s)</div>";
+//        markup += "<div class='select2-result-tag__detail " + app.ciResult + "'> " + app.ciResult + "</div>";
+//    }
+//    markup += "</div>";
+//    markup += "</div>";
+
+    return markup;
+}
+
 
 function getBugIdList(data, appurl) {
     var link = "";

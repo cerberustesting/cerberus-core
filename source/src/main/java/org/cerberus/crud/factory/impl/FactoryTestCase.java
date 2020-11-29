@@ -20,6 +20,7 @@
 package org.cerberus.crud.factory.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -130,6 +131,10 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setUserAgent(userAgent);
         newTestCase.setScreenSize(screenSize);
         newTestCase.setVersion(version);
+        newTestCase.setSteps(new ArrayList<>());
+        newTestCase.setTestCaseCountries(new ArrayList<>());
+        newTestCase.setDependencies(new ArrayList<>());
+        newTestCase.setTestCaseLabels(new ArrayList<>());
 
         return newTestCase;
     }
@@ -148,6 +153,14 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setTest(test);
         newTestCase.setTestcase(testCase);
         newTestCase.setDescription(description);
+        newTestCase.setActive(true);
+        newTestCase.setActivePROD(true);
+        newTestCase.setActiveQA(true);
+        newTestCase.setActiveUAT(true);
+        newTestCase.setSteps(new ArrayList<>());
+        newTestCase.setTestCaseCountries(new ArrayList<>());
+        newTestCase.setDependencies(new ArrayList<>());
+        newTestCase.setTestCaseLabels(new ArrayList<>());
         return newTestCase;
     }
 }

@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -59,6 +60,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
+@WebServlet(name = "ImportTestCase", urlPatterns = {"/ImportTestCase"})
 public class ImportTestCase extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ImportTestCase.class);
@@ -99,7 +101,13 @@ public class ImportTestCase extends HttpServlet {
                     if (isCompatible(json)) {
 
                         //Remove attribute not in the Object
-                        JSONObject tcJson = json.getJSONObject("testCase");
+                        JSONObject tcJson;
+                        // Testcase moved from ROOT / "testCase" to ROOT / testcases [] in order to support multiple testcase export to a single file. 
+                        if (json.has("testCase")) {
+                            tcJson = json.getJSONObject("testCase");
+                        } else {
+                            tcJson = json.getJSONArray("testcases").getJSONObject(0);
+                        }
                         JSONArray bugs = tcJson.getJSONArray("bugs");
                         tcJson.remove("bugs");
 

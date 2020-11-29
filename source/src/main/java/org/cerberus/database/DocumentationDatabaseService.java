@@ -1345,6 +1345,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','message_delete','','fr','Voulez vous supprimer le %TABLE% <b>\\'%ENTRY%\\'</b> ?','',NULL)");
         b.append(",('page_global','message_massActionError','','en','Please select at least 1 line before trying to perform a mass action!',NULL,NULL)");
         b.append(",('page_global','message_massActionError','','fr','Merci de selectionner au moins 1 élément avant de faire une action en masse !',NULL,NULL)");
+        b.append(",('page_global','message_exportActionError','','en','Please select at least 1 testcase to export!',NULL,NULL)");
+        b.append(",('page_global','message_exportActionError','','fr','Merci de selectionner au moins 1 cas de test à exporter !',NULL,NULL)");
         b.append(",('page_global','old_page','','en','Old Page','',NULL)");
         b.append(",('page_global','old_page','','fr','Ancienne Page','',NULL)");
         b.append(",('page_global','processing','','en','Processing…','',NULL)");
@@ -2000,6 +2002,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcase','BugsLink','','fr','Lien',NULL,NULL)");
         b.append(",('page_testcase','delete','','en','Dlt','Select this checkbox and then save changes in order to delete the row.',NULL)");
         b.append(",('page_testcase','delete','','fr','Sup','',NULL)");
+        b.append(",('page_testcase','message_delete_all','','en','Are you sure you want to delete all testcases below?','Select this checkbox and then save changes in order to delete the row.',NULL)");
+        b.append(",('page_testcase','message_delete_all','','fr','Etes vous sur de vouloir supprimer tous les cas de tests ci-dessous ?','',NULL)");
         b.append(",('page_testcase','dpd_choose_step','','en','-- Choose Step  --','',NULL)");
         b.append(",('page_testcase','dpd_choose_step','','fr','-- Choisissez une Etape --',NULL,NULL)");
         b.append(",('page_testcase','dpd_choose_test','','en','-- Choose Test --','',NULL)");
@@ -2132,10 +2136,14 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaselist','activationCriteria','','fr','Critères d\\'activation','',NULL)");
         b.append(",('page_testcaselist','btn_create','','en','Create Test Case',NULL,NULL)");
         b.append(",('page_testcaselist','btn_create','','fr','Créer un Cas de Test',NULL,NULL)");
-        b.append(",('page_testcaselist','btn_import','','en','Import Test Case',NULL,NULL)");
-        b.append(",('page_testcaselist','btn_import','','fr','Importer un Cas de Test',NULL,NULL)");
-        b.append(",('page_testcaselist','btn_export','','en','Export Test Case',NULL,NULL)");
-        b.append(",('page_testcaselist','btn_export','','fr','Exporter un Cas de Test',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import','','en','Import Test Cases',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import','','fr','Importer les Cas de Tests',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import_ide','','en','Import Test Case From Selenium IDE',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import_ide','','fr','Importer un Cas de Test de Selenium IDE',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_export','','en','Export Test Cases',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_export','','fr','Exporter les Cas de Test',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_export1file','','en','Export Test Cases (Single File)',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_export1file','','fr','Exporter les Cas de Test (Fichier unique)',NULL,NULL)");
         b.append(",('page_testcaselist','btn_delete','','en','Delete Test Case','',NULL)");
         b.append(",('page_testcaselist','btn_delete','','fr','Supprimer le Cas de Test','',NULL)");
         b.append(",('page_testcaselist','btn_delete_all','','en','Delete all these Test Case : ','',NULL)");
@@ -2550,10 +2558,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('transversal','tuto_line5','','fr','','Ne plus ouvrir ce tutoriel','_librairie_de_données')");
         b.append(" ;");
         a.add(b.toString());
-                
+
         /* 
          *  Updated Tutorial
-         */                  
+         */
         a.add("DELETE FROM `documentation` where DocTable = 'interactiveTuto' ;");
         a.add("DELETE FROM `documentation` where DocTable = 'interactiveTutoStep' ;");
         a.add("DELETE FROM `interactive_tuto_step`;");
@@ -2712,7 +2720,6 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(" ;");
         a.add(b.toString());
 
-       
         return a;
     }
 }

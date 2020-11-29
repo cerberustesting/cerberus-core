@@ -20,6 +20,7 @@
 package org.cerberus.crud.factory.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStep implements IFactoryTestCaseStep {
 
     /**
-     * 
+     *
      * @param test
      * @param testCase
      * @param stepId
@@ -52,7 +53,7 @@ public class FactoryTestCaseStep implements IFactoryTestCaseStep {
      * @param dateCreated
      * @param usrModif
      * @param dateModif
-     * @return 
+     * @return
      */
     @Override
     public TestCaseStep create(String test, String testCase, int stepId, int sort, String loop, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, String description, boolean isUsingLibraryStep,
@@ -78,6 +79,7 @@ public class FactoryTestCaseStep implements IFactoryTestCaseStep {
         testCaseStep.setDateCreated(usrCreated);
         testCaseStep.setUsrModif(usrModif);
         testCaseStep.setDateModif(dateModif);
+        testCaseStep.setActions(new ArrayList<>());
 
         return testCaseStep;
     }

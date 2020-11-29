@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.util.ArrayList;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.factory.IFactoryTestCaseCountry;
 import org.springframework.stereotype.Service;
@@ -28,14 +29,15 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class FactoryTestCaseCountry implements IFactoryTestCaseCountry {
-
+    
     @Override
     public TestCaseCountry create(String test, String testCase, String country) {
         TestCaseCountry testCaseCountry = new TestCaseCountry();
         testCaseCountry.setTest(test);
         testCaseCountry.setTestCase(testCase);
         testCaseCountry.setCountry(country);
+        testCaseCountry.setTestCaseCountryProperty(new ArrayList<>());
         return testCaseCountry;
     }
-
+    
 }
