@@ -522,10 +522,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','Executor','','fr','Executeur Manuel','Nom de l\\'utilisateur Cerberus qui executera le cas de test en mode manuel.','_testcase')");
         b.append(",('testcase','LastModifier','','en','LastModifier','This is the name of the Cerberus user who last modified the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','LastModifier','','fr','Dernier Modificateur','','_cas_de_test')");
-        b.append(",('testcase','Origine','','en','Origin','This is the country or the team that identified the scenario of the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
-        b.append(",('testcase','Origine','','fr','Origine',NULL,'_cas_de_test')");
-        b.append(",('testcase','RefOrigine','','en','RefOrigin','This is the external reference of the <code class=\\'doc-crbvvoca\\'>test case</code> when coming from outside Cerberus.','_testcase')");
-        b.append(",('testcase','RefOrigine','','fr','RefOrigine','','_cas_de_test')");
+        b.append(",('testcase','Origin','','en','Origin','This from where the test case come from in case it was imported.','_testcase')");
+        b.append(",('testcase','Origin','','fr','Origine','Origine du cas de test quand celui-ci a été importé','_cas_de_test')");
+        b.append(",('testcase','RefOrigin','','en','RefOrigin','This is the external reference of the test case when coming from outside Cerberus.','_testcase')");
+        b.append(",('testcase','RefOrigin','','fr','RefOrigine','Reference externe du cas de test en cas d\\'importation','_cas_de_test')");
         b.append(",('testcase','Status','','en','Status','It is the workflow status of the <code class=\\'doc-crbvvoca\\'>test case</code> used to follow-up the implementation of the tests.<br>It can take any values depending on the workflow that manage the <code class=\\'doc-crbvvoca\\'>test case</code> life cycle.<br><br>The first status defined on the invariant table (based on the sequence) will be the default value for any new <code class=\\'doc-crbvvoca\\'>test case</code>.<br>The only status that is mandatory to define and create is the WORKING status that correspond to fully working and stable <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','Status','','fr','Status','','_cas_de_test')");
         b.append(",('testcase','TargetMajor','','en','Target Major','This is the Major build that should fix the bug. Until we reach that Major, the <code class=\\'doc-crbvvoca\\'>test case</code> execution will be discarded.','_testcase')");

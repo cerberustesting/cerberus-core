@@ -68,6 +68,12 @@ include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
+== Import / Export
+:file-to-include: testmanagement_importexport_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
 == Label
 :file-to-include: testmanagement_label_{lang}.adoc
 include::include/{lang}/{file-to-include}[]

@@ -1045,6 +1045,24 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
+            "data": "origine",
+            "visible": false,
+            "sName": "tec.origine",
+            "like": false,
+            "title": doc.getDocOnline("testcase", "Origin"),
+            "sWidth": "50px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "refOrigine",
+            "visible": false,
+            "sName": "tec.refOrigine",
+            "like": true,
+            "title": doc.getDocOnline("testcase", "RefOrigin"),
+            "sWidth": "150px",
+            "sDefaultContent": ""
+        },
+        {
             "data": "dateCreated",
             "visible": false,
             "sName": "tec.dateCreated",

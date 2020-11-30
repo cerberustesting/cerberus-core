@@ -170,7 +170,7 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                                 newTC.setApplication(targetApplication);
                                 newTC.setType(TestCase.TESTCASE_TYPE_AUTOMATED);
                                 newTC.setConditionOperator("always");
-                                newTC.setOrigine("SIDE");
+                                newTC.setOrigine("Selenium IDE");
                                 newTC.setRefOrigine(test.getString("id"));
                                 newTC.setStatus("WORKING");
                                 newTC.setUsrCreated(userCreated);
