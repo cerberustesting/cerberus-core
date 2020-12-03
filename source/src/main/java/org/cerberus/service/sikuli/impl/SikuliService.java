@@ -59,7 +59,7 @@ public class SikuliService implements ISikuliService {
 
     @Autowired
     private IParameterService parameterService;
-    
+
     private static final Logger LOG = LogManager.getLogger(SikuliService.class);
 
     /**
@@ -223,14 +223,14 @@ public class SikuliService implements ISikuliService {
             }
             in.close();
         } catch (MalformedURLException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_BADURL);
             mes.setDescription(mes.getDescription().replace("%URL%", urlToConnect));
             msg = mes;
         } catch (FileNotFoundException ex) {
-            LOG.warn(ex);
-            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_FILE_NOT_FOUND);
-            mes.setDescription(mes.getDescription().replace("%FILE%", locator));
+            LOG.warn(ex, ex);
+            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_BADURL);
+            mes.resolveDescription("URL", urlToConnect);
             msg = mes;
         } catch (IOException ex) {
             LOG.warn(ex);
@@ -242,9 +242,9 @@ public class SikuliService implements ISikuliService {
             LOG.warn(ex);
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } catch (Exception ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
-            mes.setDescription(mes.getDescription().replace("%URL%", urlToConnect));
+            mes.resolveDescription("URL", urlToConnect);
             msg = mes;
         } finally {
             if (os != null) {
