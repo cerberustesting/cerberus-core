@@ -597,14 +597,14 @@ function confirmTestCaseModalHandler(mode) {
             if (getAlertType(dataMessage.messageType) === "success") {
                 if (isInTutorial) {
                     $('#confirmationModal').modal('hide');
-                    window.location.href = "TestCaseScript.jsp?test=" + encodeURI(data.test) + "&testcase=" + encodeURI(data.testCase) + "&tutorielId=" + GetURLParameter("tutorielId") + "&startStep=10";
+                    window.location.href = "TestCaseScript.jsp?test=" + encodeURI(data.test.replace(/\+/g, ' ')) + "&testcase=" + encodeURI(data.testCase.replace(/\+/g, ' ')) + "&tutorielId=" + GetURLParameter("tutorielId") + "&startStep=10";
                 } else {
                     if (((mode === "ADD") || (mode === "DUPLICATE"))) {
                         var doc = new Doc();
                         // If we created a testcase, We propose the user to go and edit testcase directly.
                         showModalConfirmation(function () {
                             $('#confirmationModal').modal('hide');
-                            window.location.href = "TestCaseScript.jsp?test=" + encodeURI(data.test) + "&testcase=" + encodeURI(data.testCase);
+                            window.location.href = "TestCaseScript.jsp?test=" + encodeURI(data.test.replace(/\+/g, ' ')) + "&testcase=" + encodeURI(data.testCase.replace(/\+/g, ' '));
                         }, function () {
                         }, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcaselist", "ask_edit_testcase"), "", "", "", "");
                     }

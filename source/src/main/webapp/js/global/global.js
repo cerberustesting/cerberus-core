@@ -2764,7 +2764,7 @@ function comboConfigApplication_formatSelection(application) {
 function comboConfigApplication_format(app) {
 //    var markup = "<div class='select2-result-tag clearfix'>" +
 //            "<div class='select2-result-tag__title'>" + app.id + "</div>";
-    var markup = app.id + " ["+app.type+"]";
+    var markup = app.id + " [" + app.type + "]";
 
 //    if (app.type) {
 //        markup += "<div class='select2-result-tag__description'>" + app.type + "</div>";
