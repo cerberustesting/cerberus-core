@@ -94,7 +94,7 @@ function initModalTestCase() {
     $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
     $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
     $("[name='executorField']").html(doc.getDocOnline("testcase", "Executor"));
-    $("[name='typeField']").html(doc.getDocOnline("invariant", "Type"));
+    $("[name='typeField']").html(doc.getDocOnline("invariant", "TESTCASE_TYPE"));
     $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
     $("[name='countriesLabel']").html(doc.getDocOnline("testcase", "countriesLabel"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));

@@ -8810,6 +8810,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1578
         a.add("UPDATE `parameter` SET `param` = 'cerberus_apikey_value1', `description` = 'API key value. API Keys are used to secure public access to all public API.' WHERE (`param` = 'cerberus_manage_token');");
 
+        a.add("UPDATE invariant SET value='TESTCASE_TYPE' WHERE idname='INVARIANTPRIVATE' AND value='GROUP'");
+
         return a;
     }
 

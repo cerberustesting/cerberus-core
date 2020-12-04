@@ -554,7 +554,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         List<TestListDTO> listOfTests = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("select count(*) as total, tccp.property, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application, ");
-        query.append("tc.isActive, tc.`Group`, tc.UsrCreated, tc.`Status` ");
+        query.append("tc.isActive, tc.`Type`, tc.UsrCreated, tc.`Status` ");
         query.append("from testcasecountryproperties tccp    ");
         query.append("inner join test t on t.test = tccp.test ");
         query.append("inner join testcase tc  on t.test = tccp.test  and t.test = tc.test ");
@@ -612,7 +612,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         testCaseDTO.setCreator(resultSet.getString("tc.UsrCreated"));
                         testCaseDTO.setStatus(resultSet.getString("Status"));
 
-                        testCaseDTO.setGroup(resultSet.getString("Group"));
+                        testCaseDTO.setGroup(resultSet.getString("Type"));
                         testCaseDTO.setIsActive(resultSet.getString("isActive"));
                         testList.getTestCaseList().add(testCaseDTO);
                         map.put(test, testList);

@@ -176,7 +176,7 @@ function displayPageLabel() {
     $("#lbl_application").text(doc.getDocLabel("page_runtest", "application"));
     $("#lbl_creator").text(doc.getDocLabel("page_runtest", "creator"));
     $("#lbl_implementer").text(doc.getDocLabel("page_runtest", "implementer"));
-    $("#lbl_type").text(doc.getDocLabel("invariant", "Type"));
+    $("#lbl_type").text(doc.getDocLabel("invariant", "TESTCASE_TYPE"));
     $("#lbl_campaign").text(doc.getDocLabel("page_runtest", "campaign"));
     $("#lbl_priority").text(doc.getDocLabel("page_runtest", "priority"));
     $("#lbl_status").text(doc.getDocLabel("page_runtest", "status"));

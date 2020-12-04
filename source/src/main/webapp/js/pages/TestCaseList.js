@@ -1016,7 +1016,7 @@ function aoColumnsFunc(countries, tableId) {
             "data": "type",
             "visible": false,
             "sName": "tec.type",
-            "title": doc.getDocOnline("invariant", "Type"),
+            "title": doc.getDocOnline("invariant", "TESTCASE_TYPE"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },

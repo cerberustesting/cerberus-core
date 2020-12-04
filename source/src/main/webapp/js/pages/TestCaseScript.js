@@ -1439,7 +1439,7 @@ function displayPageLabel(doc) {
     $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
     $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
     $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
-    $("[name='groupField']").html(doc.getDocOnline("invariant", "Type"));
+    $("[name='groupField']").html(doc.getDocOnline("invariant", "TESTCASE_TYPE"));
     $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
     $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
