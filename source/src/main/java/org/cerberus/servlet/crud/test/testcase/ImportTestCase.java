@@ -64,6 +64,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ImportTestCase extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ImportTestCase.class);
+    private ITestCaseService testcaseService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -81,64 +82,77 @@ public class ImportTestCase extends HttpServlet {
         try {
             try {
                 ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-                ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
+                testcaseService = appContext.getBean(ITestCaseService.class);
                 Answer ans = new Answer();
                 MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
                 ans.setResultMessage(msg);
 
                 ///Get files
-                List<String> files = getFiles(httpServletRequest);
+//                List<String> files = getFiles(httpServletRequest);
+                HashMap<String, String> param = getParams(httpServletRequest);
+                String userCreated = httpServletRequest.getUserPrincipal().getName();
 
                 // Prepare the final answer.
                 MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
                 Answer finalAnswer = new Answer(msg1);
 
-                for (String fileContent : files) {
+                String importOption = param.get("importOption");
 
-                    JSONObject json = new JSONObject(fileContent);
+                for (Map.Entry<String, String> entry : param.entrySet()) {
+                    String key = entry.getKey();
+                    String val = entry.getValue();
+                    if (key.startsWith("file")) {
 
-                    if (isCompatible(json)) {
+                        JSONObject json = new JSONObject(val);
 
-                        //Remove attribute not in the Object
-                        JSONObject tcJson;
-                        // Testcase moved from ROOT / "testCase" to ROOT / testcases [] in order to support multiple testcase export to a single file. 
-                        if (json.has("testCase")) {
-                            tcJson = json.getJSONObject("testCase");
+                        if (isCompatible(json)) {
+
+                            //Remove attribute not in the Object
+                            JSONObject tcJson;
+                            // Testcase moved from ROOT / "testCase" to ROOT / testcases [] in order to support multiple testcase export to a single file. 
+                            if (json.has("testCase")) {
+                                tcJson = json.getJSONObject("testCase");
+                            } else {
+                                tcJson = json.getJSONArray("testcases").getJSONObject(0);
+                            }
+                            JSONArray bugs = tcJson.getJSONArray("bugs");
+                            tcJson.remove("bugs");
+
+                            if ("2".equalsIgnoreCase(importOption)) {
+                                String targetTestcase = testcaseService.getMaxNumberTestCase(tcJson.getString("test"));
+                                tcJson.put("testcase", targetTestcase);
+                            }
+
+                            ObjectMapper mapper = new ObjectMapper();
+
+                            TestCase tcInfo = mapper.readValue(tcJson.toString(), TestCase.class);
+                            tcInfo.setBugs(bugs);
+                            try {
+                                testcaseService.importWithDependency(tcInfo);
+
+                                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase " + tcInfo.getTest() + " - " + tcInfo.getTestcase())
+                                        .replace("%OPERATION%", "Import"));
+                                ans.setResultMessage(msg);
+                                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                            } catch (CerberusException ex) {
+                                LOG.error("Cerberus Exception during testcase import.", ex);
+                                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase " + tcInfo.getTest() + " - " + tcInfo.getTestcase())
+                                        .replace("%OPERATION%", "Import")
+                                        .replace("%REASON%", ex.getMessageError().getDescription()));
+                                ans.setResultMessage(msg);
+                                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                            }
                         } else {
-                            tcJson = json.getJSONArray("testcases").getJSONObject(0);
-                        }
-                        JSONArray bugs = tcJson.getJSONArray("bugs");
-                        tcJson.remove("bugs");
-
-                        ObjectMapper mapper = new ObjectMapper();
-
-                        TestCase tcInfo = mapper.readValue(tcJson.toString(), TestCase.class);
-                        tcInfo.setBugs(bugs);
-                        try {
-                            tcService.importWithDependency(tcInfo);
-
-                            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                            msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase " + tcInfo.getTest() + " - " + tcInfo.getTestcase())
-                                    .replace("%OPERATION%", "Import"));
-                            ans.setResultMessage(msg);
-                            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-                        } catch (CerberusException ex) {
-                            LOG.error("Cerberus Exception during testcase import.", ex);
                             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                            msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase " + tcInfo.getTest() + " - " + tcInfo.getTestcase())
+                            msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase ")
                                     .replace("%OPERATION%", "Import")
-                                    .replace("%REASON%", ex.getMessageError().getDescription()));
+                                    .replace("%REASON%", "The file you're trying to import is not supported or is not in a compatible version format."));
                             ans.setResultMessage(msg);
                             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                         }
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase ")
-                                .replace("%OPERATION%", "Import")
-                                .replace("%REASON%", "The file you're trying to import is not supported or is not in a compatible version format."));
-                        ans.setResultMessage(msg);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                     }
                 }
 
@@ -203,8 +217,8 @@ public class ImportTestCase extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private List<String> getFiles(HttpServletRequest httpServletRequest) {
-        List<String> result = new ArrayList<>();
+    private HashMap<String, String> getParams(HttpServletRequest httpServletRequest) {
+        HashMap<String, String> result = new HashMap<>();
 
         try {
             if (ServletFileUpload.isMultipartContent(httpServletRequest)) {
@@ -218,21 +232,25 @@ public class ImportTestCase extends HttpServlet {
 
                 List<FileItem> formItems = upload.parseRequest(httpServletRequest);
                 if (formItems != null) {
-                    LOG.debug("Nb of Files to import : " + formItems.size());
+                    LOG.debug("Nb of Param to import : " + formItems.size());
                     if (formItems.size() > 0) {
                         int i = 1;
                         for (FileItem item : formItems) {
-                            LOG.debug("File to import (" + i++ + ") : " + item.toString());
-                            if (!item.isFormField()) {
-                                result.add(item.getString());
+                            LOG.debug("Param to import (" + i++ + ") : " + item.toString() + " FieldName : " + item.getFieldName() + " ContentType : " + item.getContentType());
+                            if (item.isFormField()) {
+                                result.put(item.getFieldName(), item.getString());
+                            } else {
+                                result.put(item.getFieldName() + i, item.getString());
+
                             }
                         }
                     }
                 }
             }
         } catch (FileUploadException ex) {
-            java.util.logging.Logger.getLogger(ImportTestCase.class.getName()).log(Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ImportTestCaseFromSIDE.class.getName()).log(Level.SEVERE, null, ex);
         }
+        LOG.debug("result Param : " + result.size());
         return result;
     }
 

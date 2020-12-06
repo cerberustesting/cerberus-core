@@ -116,13 +116,17 @@ public class ExportTestCase extends HttpServlet {
             export.put("libraryTestcases", new JSONArray());
 
             httpServletResponse.setContentType("application/json");
-            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=" + test + "-" + testcase + ".json");
+            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\"" + getFilename(test, testcase) + ".json\"");
             // Nice formating the json result by putting indent 4 parameter.
             httpServletResponse.getOutputStream().print(export.toString(1));
 
         } catch (CerberusException | JSONException ex) {
             LOG.warn(ex);
         }
+    }
+
+    private String getFilename(String test, String testcase) {
+        return test.replaceAll("\'", "") + "-" + testcase.replace("\'", "");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

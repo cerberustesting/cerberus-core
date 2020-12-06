@@ -15,7 +15,11 @@
 * Improved Campaign report over time when list of countries variations are huge
 * Allow to edit a description and a comment for each campaign execution (tag). That comment and description is then displayed on report by time. That allows to track the reasons of a particular campaign result.
 * You can now import Selenium IDE files. That allow Cerberus to have a recorder for both Firefox and Chrome.
+* You can now import Cerberus files creating new testcase ids (on the origin folder).
+* Export allow test folder and ids with spaces.
 * element that start by // now default to xpath. That allow to copy/paste xpath element from Cerberus to/from browser without beeing forced to add/remove xpath=
+* Allow configuration of Sikuli minSimilarity and duration of hightloght element for debug purpose from parameters 'cerberus_sikuli_minSimilarity' and 'cerberus_sikuli_highlightElement'
+* Various improvement on error management of Sikuli actions.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.sql.Timestamp;
 import org.cerberus.engine.entity.MessageEvent;
 import java.util.List;
@@ -95,10 +96,9 @@ public class TestCaseCountryProperties {
     public static final String NATURE_NOTINUSE = "NOTINUSE";
     // Others
     public static final int MAX_PROPERTY_LENGTH = 160;
-    
+
     /**
-     * Database Columns values
-     * Use it instead of literals
+     * Database Columns values Use it instead of literals
      */
     public static final String DB_TEST = "Test";
     public static final String DB_TESTCASE = "Testcase";
@@ -129,6 +129,7 @@ public class TestCaseCountryProperties {
         this.cacheExpire = cacheExpire;
     }
 
+    @JsonIgnore
     public List<TestCaseCountry> getTestcaseCountries() {
         return testcaseCountries;
     }
@@ -165,6 +166,7 @@ public class TestCaseCountryProperties {
         return country;
     }
 
+    @JsonIgnore
     public TestCaseCountry getTestcaseCountry() {
         return testcaseCountry;
     }
@@ -177,6 +179,7 @@ public class TestCaseCountryProperties {
         this.country = country;
     }
 
+    @JsonIgnore
     public List<Invariant> getInvariantCountries() {
         return invariantCountries;
     }
@@ -265,6 +268,7 @@ public class TestCaseCountryProperties {
         this.value1 = value1;
     }
 
+    @JsonIgnore
     public MessageEvent getResult() {
         return result;
     }
@@ -415,7 +419,6 @@ public class TestCaseCountryProperties {
         return "TestCaseCountryProperties{" + "test=" + test + ", testcase=" + testcase + ", country=" + country + ", property=" + property + ", description=" + description + ", type=" + type + ", database=" + database + ", value1=" + value1 + ", value2=" + value2 + ", length=" + length + ", rowLimit=" + rowLimit + ", nature=" + nature + ", cacheExpire=" + cacheExpire + ", retryNb=" + retryNb + ", retryPeriod=" + retryPeriod + ", Rank=" + Rank + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", result=" + result + ", testcaseCountry=" + testcaseCountry + ", invariantCountries=" + invariantCountries + ", testcaseCountries=" + testcaseCountries + '}';
     }
 
-
     public JSONObject toJson() {
         JSONObject testCaseCountryPropertiesJson = new JSONObject();
         try {
@@ -439,7 +442,7 @@ public class TestCaseCountryProperties {
             JSONArray countriesJson = new JSONArray();
             if (this.getInvariantCountries() != null) {
                 for (Invariant countryInv : this.getInvariantCountries()) {
-                    if(countryInv != null) {
+                    if (countryInv != null) {
                         countriesJson.put(countryInv.toJson(false));
                     }
                 }

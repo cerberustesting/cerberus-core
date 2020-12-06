@@ -639,16 +639,24 @@ public class TestCaseService implements ITestCaseService {
 
         //for tcstep, insert steps
         for (TestCaseStep tcs : testCase.getSteps()) {
+            tcs.setTest(testCase.getTest());
+            tcs.setTestcase(testCase.getTestcase());
             Answer testCaseStepImported = testCaseStepService.create(tcs);
             if (!testCaseStepImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                 throw new CerberusException(new MessageGeneral(testCaseStepImported.getResultMessage().getMessage()));
             }
+
             for (TestCaseStepAction tcsa : tcs.getActions()) {
+                tcsa.setTest(testCase.getTest());
+                tcsa.setTestCase(testCase.getTestcase());
                 Answer testCaseStepActionImported = testCaseStepActionService.create(tcsa);
                 if (!testCaseStepActionImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                     throw new CerberusException(new MessageGeneral(testCaseStepActionImported.getResultMessage().getMessage()));
                 }
+
                 for (TestCaseStepActionControl tcsac : tcsa.getControls()) {
+                    tcsac.setTest(testCase.getTest());
+                    tcsac.setTestCase(testCase.getTestcase());
                     Answer testCaseStepActionControlImported = testCaseStepActionControlService.create(tcsac);
                     if (!testCaseStepActionControlImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                         throw new CerberusException(new MessageGeneral(testCaseStepActionControlImported.getResultMessage().getMessage()));
@@ -659,12 +667,16 @@ public class TestCaseService implements ITestCaseService {
 
         //insert tccountry, insert countries
         for (TestCaseCountry tcc : testCase.getTestCaseCountries()) {
+            tcc.setTest(testCase.getTest());
+            tcc.setTestCase(testCase.getTestcase());
             Answer testCaseCountryImported = testCaseCountryService.create(tcc);
             if (!testCaseCountryImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                 throw new CerberusException(new MessageGeneral(testCaseCountryImported.getResultMessage().getMessage()));
             }
 
             for (TestCaseCountryProperties tccp : tcc.getTestCaseCountryProperty()) {
+                tccp.setTest(testCase.getTest());
+                tccp.setTestcase(testCase.getTestcase());
                 Answer testCaseCountryPropertiesImported = testCaseCountryPropertiesService.create(tccp);
                 if (!testCaseCountryPropertiesImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                     throw new CerberusException(new MessageGeneral(testCaseCountryPropertiesImported.getResultMessage().getMessage()));
@@ -674,11 +686,15 @@ public class TestCaseService implements ITestCaseService {
 
         //insert testcasedependencies
         for (TestCaseDep tcd : testCase.getDependencies()) {
+            tcd.setTest(testCase.getTest());
+            tcd.setTestCase(testCase.getTestcase());
             testCaseDepService.create(tcd);
         }
 
         //insert testcaselabel
         for (TestCaseLabel tcl : testCase.getTestCaseLabels()) {
+            tcl.setTest(testCase.getTest());
+            tcl.setTestcase(testCase.getTestcase());
             testCaseLabelService.create(tcl);
         }
 

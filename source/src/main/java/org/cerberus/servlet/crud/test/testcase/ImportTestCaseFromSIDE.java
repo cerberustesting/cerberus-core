@@ -239,6 +239,10 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
             }
 
             switch (commandS) {
+                case "setWindowSize":
+                case "mouseOut":
+                    // Those commands are ignored.
+                    break;
                 case "open":
                     LOG.debug(masterSIDEURL);
                     LOG.debug(applicationURLs);
@@ -255,9 +259,6 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                     value1 = convertElement(command);
                     value2 = command.getString("value");
                     break;
-                case "setWindowSize":
-                    // Those commands are ignored.
-                    break;
                 case "click":
                     action = TestCaseStepAction.ACTION_CLICK;
                     value1 = convertElement(command);
@@ -273,6 +274,10 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                     break;
                 case "mouseUp":
                     action = TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE;
+                    value1 = convertElement(command);
+                    break;
+                case "mouseOver":
+                    action = TestCaseStepAction.ACTION_MOUSEOVER;
                     value1 = convertElement(command);
                     break;
                 default:

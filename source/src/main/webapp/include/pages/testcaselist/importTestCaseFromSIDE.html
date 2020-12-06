@@ -25,9 +25,12 @@
                                 <img height='100' src='./images/SeleniumIDE.jpg'>
                             </div>
                             <div class="col-sm-10 marginLeft20">
-                                <h3>Download the Selenium IDE plugin from <a href="https://addons.mozilla.org/fr/firefox/addon/selenium-ide/" target="_blank">Firefox</a> or <a href="https://chrome.google.com/webstore/detail/selenium-ide/mooikfkahbdckldjjndioackbalphokd" target="_blank">Chrome</a></h3>
-                                <h3>Record your scenario using Selenium IDE</h3>
-                                <h3>Use the Form below in order to integrate them into Cerberus.</h3>
+                                <br>
+                                <label>Download the Selenium IDE plugin from <a href="https://addons.mozilla.org/fr/firefox/addon/selenium-ide/" target="_blank">Firefox</a> or <a href="https://chrome.google.com/webstore/detail/selenium-ide/mooikfkahbdckldjjndioackbalphokd" target="_blank">Chrome</a></label>
+                                <br>
+                                <label>Record your scenario using Selenium IDE</label>
+                                <br>
+                                <label>Use the Form below in order to integrate them into Cerberus.</label>
                             </div>
                         </div>
 
@@ -48,18 +51,14 @@
 
                         <div class="row marginTop15">
                             <div class="form-group col-xs-12">
-                                <!--                                <div class="input-group">
-                                                                    <div class="input-group-btn">-->
                                 <label for="filesSIDE">Select the Selenium IDE files to import (.side format)</label>
-                                <input class="form-control" type="file" multiple="multiple" name="files[]" id="filesSIDE">
-                                <!--                                    </div>
-                                                                </div>-->
+                                <input class="form-control-file" type="file" multiple="multiple" name="files[]" id="filesSIDE">
                             </div>
                         </div>
 
                     </div>
                 </form>
-                <div id='fileside-list-display'></div>
+                <div class="container-fluid center" id='fileside-list-display'></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
