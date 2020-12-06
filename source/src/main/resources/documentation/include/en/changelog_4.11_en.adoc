@@ -1,8 +1,10 @@
 *Bug fixes*
 [square]
-* Fixed campaign testcase selection criteria on type information #2202
+* Fixed campaign testcase selection criteria on type information. #2202
 * Filtering requests table on Network tab of testcase execution page now display the column filtered.
 * Secure that a campaign report is displayed even if a country invariant has been deleted.
+* List of testcases used by a datalib was not displayed. #2222
+* When test folder contain a space the redirection to script page right after creation was not working. #2220 
 
 *Improvements / New features*
 [square]

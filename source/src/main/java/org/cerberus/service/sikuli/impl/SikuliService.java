@@ -44,6 +44,7 @@ import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.sikuli.ISikuliService;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -123,7 +124,8 @@ public class SikuliService implements ISikuliService {
         result.put("text", text);
         result.put("defaultWait", defaultWait);
         result.put("pictureExtension", extension);
-//        result.put("minSimilarity", parameterService.getParameterStringByKey("cerberus_sikuli_minSimilarity", "", null));
+        result.put("minSimilarity", parameterService.getParameterStringByKey("cerberus_sikuli_minSimilarity", "", ""));
+        result.put("highlightElement", parameterService.getParameterStringByKey("cerberus_sikuli_highlightElement", "", "0"));
         return result;
     }
 
@@ -141,6 +143,11 @@ public class SikuliService implements ISikuliService {
              */
             url = new URL(urlToConnect);
             connection = (HttpURLConnection) url.openConnection();
+            LOG.debug("Trying to connect to: " + urlToConnect);
+
+            if (connection != null) {
+                LOG.debug("Answer from Server: " + connection.getResponseCode());
+            }
 
             if (connection == null || connection.getResponseCode() != 200) {
                 return false;
@@ -168,6 +175,7 @@ public class SikuliService implements ISikuliService {
         BufferedReader in = null;
         PrintStream os = null;
 
+        StringBuilder response = new StringBuilder();
         URL url;
         String urlToConnect = "http://" + session.getHost() + ":" + session.getPort() + "/extra/ExecuteSikuliAction";
         try {
@@ -175,6 +183,7 @@ public class SikuliService implements ISikuliService {
              * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
              */
             url = new URL(urlToConnect);
+            LOG.debug("Open Connection to : " + urlToConnect);
             connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -186,8 +195,15 @@ public class SikuliService implements ISikuliService {
 
             // Send post request
             os = new PrintStream(connection.getOutputStream());
+            LOG.debug("Sending JSON : " + postParameters.toString());
             os.println(postParameters.toString());
             os.println("|ENDS|");
+
+            if (connection == null) {
+                LOG.warn("No response to the request !!");
+            } else {
+                LOG.debug("http response status code : " + connection.getResponseCode());
+            }
 
             if (connection == null || connection.getResponseCode() != 200) {
                 msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
@@ -196,7 +212,6 @@ public class SikuliService implements ISikuliService {
             in = new BufferedReader(
                     new InputStreamReader(connection.getInputStream()));
             String inputLine;
-            StringBuilder response = new StringBuilder();
 
             /**
              * Wait here until receiving |ENDR| String
@@ -212,9 +227,15 @@ public class SikuliService implements ISikuliService {
             JSONObject objReceived = new JSONObject(response.toString());
             answer.setItem(objReceived);
 
+            LOG.debug("Sikuli Answer: " + response.toString());
             if (objReceived.has("status")) {
                 if ("Failed".equals(objReceived.getString("status"))) {
-                    msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
+                    if (objReceived.has("message") && !StringUtil.isNullOrEmpty(objReceived.getString("message"))) {
+                        msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL);
+                        msg.resolveDescription("DETAIL", objReceived.getString("message"));
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
+                    }
                 } else {
                     msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
                 }
@@ -233,13 +254,13 @@ public class SikuliService implements ISikuliService {
             mes.resolveDescription("URL", urlToConnect);
             msg = mes;
         } catch (IOException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.warn("Exception when converting response to JSON : " + response.toString(), ex);
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } catch (MimeTypeException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } catch (Exception ex) {
             LOG.warn(ex, ex);

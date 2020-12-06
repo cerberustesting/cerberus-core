@@ -398,8 +398,8 @@ public class RobotServerService implements IRobotServerService {
                      */
                     if (!sikuliService.isSikuliServerReachable(session)) {
                         MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SIKULI_COULDNOTCONNECT);
-                        mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
-                        mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
+                        mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSession().getHost()));
+                        mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSession().getPort()));
                         throw new CerberusException(mes);
                     }
                     /**

@@ -8810,7 +8810,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1578
         a.add("UPDATE `parameter` SET `param` = 'cerberus_apikey_value1', `description` = 'API key value. API Keys are used to secure public access to all public API.' WHERE (`param` = 'cerberus_manage_token');");
 
+        // 1579
         a.add("UPDATE invariant SET value='TESTCASE_TYPE' WHERE idname='INVARIANTPRIVATE' AND value='GROUP'");
+
+        // 1580
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + " ('', 'cerberus_sikuli_minSimilarity', '', 'Define similarity value used by Sikuli. Value can take from 0 (minumum similarity) to 1 (maximum similarity). Sikuli default to 0.7.')"
+                + ",('', 'cerberus_sikuli_highlightElement', '', 'Number of second Sikuli will hightlight the element when interacting with it. Default to 2 seconds.')");
 
         return a;
     }
