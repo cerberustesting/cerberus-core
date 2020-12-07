@@ -8818,6 +8818,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + " ('', 'cerberus_sikuli_minSimilarity', '', 'Define similarity value used by Sikuli. Value can take from 0 (minumum similarity) to 1 (maximum similarity). Sikuli default to 0.7.')"
                 + ",('', 'cerberus_sikuli_highlightElement', '', 'Number of second Sikuli will hightlight the element when interacting with it. Default to 2 seconds.')");
 
+        // 1581
+        a.add("ALTER TABLE robot ADD COLUMN `ProfileFolder` VARCHAR(400) NOT NULL DEFAULT '' AFTER `screensize`;");
+
         return a;
     }
 

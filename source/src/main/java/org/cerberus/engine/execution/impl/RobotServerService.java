@@ -807,6 +807,12 @@ public class RobotServerService implements IRobotServerService {
                         profile.setPreference("intl.accept_languages", "en");
                     }
 
+                    // Force a specific profile for that session (allow to reuse cookies and browser preferences).
+                    if (tCExecution.getRobotObj() != null && StringUtil.isNullOrEmpty(tCExecution.getRobotObj().getProfileFolder())) {
+                        optionsFF.addArguments("--profile");
+                        optionsFF.addArguments(tCExecution.getRobotObj().getProfileFolder());
+                    }
+
                     // Set UserAgent if testCaseUserAgent or robotUserAgent is defined
                     if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
                         profile.setPreference("general.useragent.override", usedUserAgent);
@@ -846,11 +852,12 @@ public class RobotServerService implements IRobotServerService {
                         optionsCH.addArguments(sizeOpts);
                         LOG.debug("Selenium resolution (for Chrome) Activated : " + screenWidth + "*" + screenLength);
 
+                    } else {
+                        optionsCH.addArguments("start-maximized");
                     }
-                    optionsCH.addArguments("start-maximized");
-                    // TODO isolate the feature into a dedicated field.
-                    if (tCExecution.getRobotObj().getDescription().contains("session=")) {
-                        optionsCH.addArguments("user-data-dir=" + tCExecution.getRobotObj().getDescription().replace("session=", ""));
+                    // Force a specific profile for that session (allow to reuse cookies and browser preferences).
+                    if (tCExecution.getRobotObj() != null && StringUtil.isNullOrEmpty(tCExecution.getRobotObj().getProfileFolder())) {
+                        optionsCH.addArguments("user-data-dir=" + tCExecution.getRobotObj().getProfileFolder());
                     }
                     if (tCExecution.getVerbose() <= 0) {
                         optionsCH.addArguments("--headless");

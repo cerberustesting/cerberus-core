@@ -46,7 +46,7 @@ public interface IFactoryRobot {
      * @return
      */
     Robot create(Integer robotID, String robot, String platform,
-            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize, String robotDecli, String type);
+            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize, String profileFolder, String robotDecli, String type);
 
     /**
      *
@@ -60,6 +60,7 @@ public interface IFactoryRobot {
      * @param description description of the Robot
      * @param userAgent userAgent to Use
      * @param screenSize
+     * @param profileFolder
      * @param capabilities
      * @param executors
      * @param robotDecli
@@ -67,7 +68,7 @@ public interface IFactoryRobot {
      * @return
      */
     Robot create(Integer robotID, String robot, String platform,
-            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize,
+            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize, String profileFolder,
             List<RobotCapability> capabilities, List<RobotExecutor> executors, String robotDecli, String type);
 
 }

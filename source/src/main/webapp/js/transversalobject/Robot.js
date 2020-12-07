@@ -68,6 +68,7 @@ function initModalRobot() {
     $("#editRobotModal [name='activeField']").html(doc.getDocOnline("robot", "active"));
     $("#editRobotModal [name='useragentField']").html(doc.getDocOnline("robot", "useragent"));
     $("#editRobotModal [name='screensizeField']").html(doc.getDocOnline("robot", "screensize"));
+    $("#editRobotModal [name='profileFolderField']").html(doc.getDocOnline("robot", "ProfileFolder"));
     $("#editRobotModal [name='descriptionField']").html(doc.getDocOnline("robot", "description"));
     $("#editRobotModal [name='addCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
     $("#editRobotModal [name='addValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
@@ -281,6 +282,7 @@ function confirmRobotModalHandler(mode) {
             useragent: data.useragent,
             type: data.type,
             screensize: data.screensize,
+            profileFolder: data.profileFolder,
             robotDecli: data.robotdecli,
             description: data.description,
             lbexemethod: data.lbexemethod,
@@ -354,6 +356,7 @@ function feedRobotModal(robot, modalId, mode) {
         robotObj1.version = "";
         robotObj1.userAgent = "";
         robotObj1.screenSize = "";
+        robotObj1.profileFolder = "";
         robotObj1.robotDecli = "";
         robotObj1.description = "";
         robotObj1.lbexemethod = "BYRANKING";
@@ -399,6 +402,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#version").prop("value", "");
         formEdit.find("#useragent").prop("value", "");
         formEdit.find("#screensize").prop("value", "");
+        formEdit.find("#profileFolder").prop("value", "");
         formEdit.find("#robotdecli").prop("value", "");
         formEdit.find("#Description").prop("value", "");
         formEdit.find("#type").val("");
@@ -416,6 +420,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#version").prop("value", robot.version);
         formEdit.find("#useragent").prop("value", robot.userAgent);
         formEdit.find("#screensize").prop("value", robot.screenSize);
+        formEdit.find("#profileFolder").prop("value", robot.profileFolder);
         formEdit.find("#robotdecli").prop("value", robot.robotDecli);
         formEdit.find("#Description").prop("value", robot.description);
         formEdit.find("#type").val(robot.type);
@@ -442,6 +447,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#version").prop("readonly", false);
         formEdit.find("#useragent").prop("readonly", false);
         formEdit.find("#screensize").prop("readonly", false);
+        formEdit.find("#profileFolder").prop("readonly", false);
         formEdit.find("#robotdecli").prop("readonly", false);
         formEdit.find("#Description").prop("readonly", false);
         formEdit.find("#hostPassword").prop("readonly", false);
@@ -458,6 +464,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#version").prop("readonly", "readonly");
         formEdit.find("#useragent").prop("readonly", "readonly");
         formEdit.find("#screensize").prop("readonly", "readonly");
+        formEdit.find("#profileFolder").prop("readonly", "readonly");
         formEdit.find("#robotdecli").prop("readonly", "readonly");
         formEdit.find("#Description").prop("readonly", "readonly");
         formEdit.find("#hostPassword").prop("readonly", "readonly");

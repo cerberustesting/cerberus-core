@@ -454,7 +454,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 // RobotIP is not defined and no robot are provided so the content is probably testcases that does not require robot definition.
                 if (manualExecution.equalsIgnoreCase("Y") || manualExecution.equalsIgnoreCase("A")) {
                     robotIP = "manual";
-                    robotsMap.put("", robotFactory.create(0, "", platform, browser, "", "Y", "", "", "", screenSize, browser, ""));
+                    robotsMap.put("", robotFactory.create(0, "", platform, browser, "", "Y", "", "", "", screenSize, "", browser, ""));
                 }
                 nbrobot = 1;
             } else {
@@ -474,7 +474,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             nbrobot = 1;
             robots = new ArrayList<>();
             robots.add("");
-            robotsMap.put("", robotFactory.create(0, "", platform, browser, "", "Y", "", "", "", screenSize, browser, ""));
+            robotsMap.put("", robotFactory.create(0, "", platform, browser, "", "Y", "", "", "", screenSize, "", browser, ""));
         }
 
         HashMap<String, Application> appMap = new HashMap<>();

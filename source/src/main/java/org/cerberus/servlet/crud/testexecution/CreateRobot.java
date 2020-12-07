@@ -104,6 +104,7 @@ public class CreateRobot extends HttpServlet {
         String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), "", charset);
         String userAgent = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("useragent"), "", charset);
         String screenSize = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("screensize"), "", charset);
+        String profileFolder = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("profileFolder"), "", charset);
         String robotDecli = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("robotDecli"), "", charset);
         String lbexemethod = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("lbexemethod"), "", charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), "", charset);
@@ -191,7 +192,7 @@ public class CreateRobot extends HttpServlet {
             IRobotService robotService = appContext.getBean(IRobotService.class);
             IFactoryRobot robotFactory = appContext.getBean(IFactoryRobot.class);
 
-            Robot robotData = robotFactory.create(robotid, robot, platform, browser, version, active, lbexemethod, description, userAgent, screenSize, capabilities, executors, robotDecli, type);
+            Robot robotData = robotFactory.create(robotid, robot, platform, browser, version, active, lbexemethod, description, userAgent, screenSize, profileFolder, capabilities, executors, robotDecli, type);
             ans = robotService.create(robotData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
