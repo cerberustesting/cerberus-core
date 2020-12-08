@@ -40,7 +40,13 @@ Depending on your OS (Mac, Linux or Windows) this process is different.
 Mac/Linux
 
 create 'setenv.sh' file in /bin folder
-edit it with this content : CATALINA_OPTS="-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=none -Xmx1024m"
+edit it with this content : 
+```
+#!/usr/bin/env bash
+export CATALINA_OPTS="-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=none -Xmx1024m"
+```
+Also, make sure the file has the correct permissions to be used by any others scripts
+tip: run `chmod +x setenv.sh`
 
 Windows
 
