@@ -51,7 +51,6 @@ import org.springframework.stereotype.Service;
  *
  * @author vertigo17
  */
-
 // TEST
 @Service
 public class ConditionService implements IConditionService {
@@ -102,7 +101,7 @@ public class ConditionService implements IConditionService {
                 ans = evaluateCondition_ifElementNotPresent(conditionOperator, conditionValue1, tCExecution);
                 mes = ans.getResultMessage();
                 break;
-                
+
             case TestCaseStepAction.CONDITIONOPERATOR_IFELEMENTVISIBLE:
                 ans = evaluateCondition_ifElementVisible(conditionOperator, conditionValue1, tCExecution);
                 mes = ans.getResultMessage();
@@ -112,7 +111,7 @@ public class ConditionService implements IConditionService {
                 ans = evaluateCondition_ifElementNotVisible(conditionOperator, conditionValue1, tCExecution);
                 mes = ans.getResultMessage();
                 break;
-                
+
             case TestCaseStepAction.CONDITIONOPERATOR_IFPROPERTYEXIST:
                 ans = evaluateCondition_ifPropertyExist(conditionOperator, conditionValue1, tCExecution);
                 mes = ans.getResultMessage();
@@ -347,14 +346,27 @@ public class ConditionService implements IConditionService {
         } else {
             boolean condition_result = false;
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+            Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);
 
-                Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);
+            switch (tCExecution.getApplicationObj().getType()) {
+                case Application.TYPE_GUI:
+                case Application.TYPE_APK:
+                case Application.TYPE_IPA:
+                    try {
 
-                try {
-                    if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                    if (identifier.getIdentifier().equals("picture")) {
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator());
+                        if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
+                            condition_result = true;
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                        } else if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
+                            condition_result = false;
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                        }
+
+                    } else if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
                         condition_result = true;
                         mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
                         mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
@@ -367,35 +379,42 @@ public class ConditionService implements IConditionService {
                     condition_result = false;
                     mes = parseWebDriverException(exception);
                 }
+                break;
 
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
+                case Application.TYPE_FAT:
 
-                if (tCExecution.getLastServiceCalled() != null) {
-                    String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+                    if (identifier.getIdentifier().equals("picture")) {
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator());
+                        LOG.debug("Sikuli : " + mes.getCode());
+                        if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
+                            condition_result = true;
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                        } else if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
+                            condition_result = false;
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                        }
 
-                    switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
-                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
-                            if (LOG.isDebugEnabled()) {
-                                LOG.debug("Checking if Element Present - XML");
-                            }
+                    } else {
+                        condition_result = false;
+                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_GENERIC);
+                        mes.resolveDescription("ERROR", "Element must start by picture=");
+                    }
+                    break;
 
-                            if (xmlUnitService.isElementPresent(responseBody, conditionValue1)) {
-                                condition_result = true;
-                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
-                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                            } else {
-                                condition_result = false;
-                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
-                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                            }
-                            break;
+                case Application.TYPE_SRV:
 
-                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
-                            if (LOG.isDebugEnabled()) {
-                                LOG.debug("Checking if Element Present - JSON");
-                            }
-                            try {
-                                if (jsonService.getFromJson(responseBody, null, conditionValue1) != null) {
+                    if (tCExecution.getLastServiceCalled() != null) {
+                        String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+
+                        switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
+                            case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
+                                if (LOG.isDebugEnabled()) {
+                                    LOG.debug("Checking if Element Present - XML");
+                                }
+
+                                if (xmlUnitService.isElementPresent(responseBody, conditionValue1)) {
                                     condition_result = true;
                                     mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
                                     mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
@@ -404,28 +423,44 @@ public class ConditionService implements IConditionService {
                                     mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
                                     mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
                                 }
-                            } catch (Exception ex) {
-                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_GENERIC);
-                                mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
-                            }
-                            break;
+                                break;
 
-                        default:
-                            condition_result = false;
-                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_MESSAGETYPE);
-                            mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
-                            mes.setDescription(mes.getDescription().replace("%CONDITION%", conditionOperator));
+                            case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
+                                if (LOG.isDebugEnabled()) {
+                                    LOG.debug("Checking if Element Present - JSON");
+                                }
+                                try {
+                                    if (jsonService.getFromJson(responseBody, null, conditionValue1) != null) {
+                                        condition_result = true;
+                                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
+                                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                                    } else {
+                                        condition_result = false;
+                                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
+                                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                                    }
+                                } catch (Exception ex) {
+                                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_GENERIC);
+                                    mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
+                                }
+                                break;
+
+                            default:
+                                condition_result = false;
+                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_MESSAGETYPE);
+                                mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
+                                mes.setDescription(mes.getDescription().replace("%CONDITION%", conditionOperator));
+                        }
+                    } else {
+                        condition_result = false;
+                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOOBJECTINMEMORY);
                     }
 
-                } else {
-                    condition_result = false;
-                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOOBJECTINMEMORY);
-                }
-
-            } else {
-                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_APPLICATION);
-                mes.setDescription(mes.getDescription().replace("%CONDITION%", conditionOperator));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+                    break;
+                default:
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_APPLICATION);
+                    mes.setDescription(mes.getDescription().replace("%CONDITION%", conditionOperator));
+                    mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             }
 
         }
@@ -450,17 +485,21 @@ public class ConditionService implements IConditionService {
 
             Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-
+            switch (tCExecution.getApplicationObj().getType()) {
+                case Application.TYPE_GUI:
+                case Application.TYPE_APK:
+                case Application.TYPE_IPA:
                 try {
                     if (identifier.getIdentifier().equals("picture")) {
-                        mes = sikuliService.doSikuliVerifyElementNotPresent(tCExecution.getSession(), identifier.getLocator());
-                        if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT))) {
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator());
+                        if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
                             condition_result = true;
-                        } else {
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                        } else if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
                             condition_result = false;
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTPRESENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
                         }
 
                     } else if (!this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
@@ -476,27 +515,49 @@ public class ConditionService implements IConditionService {
                     condition_result = false;
                     mes = parseWebDriverException(exception);
                 }
+                break;
 
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
+                case Application.TYPE_FAT:
+                    if (identifier.getIdentifier().equals("picture")) {
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator());
+                        LOG.debug("Sikuli : " + mes.getCode());
+                        if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
+                            condition_result = true;
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                        } else if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
+                            condition_result = false;
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTPRESENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                        }
 
-                if (tCExecution.getLastServiceCalled() != null) {
-                    String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+                    } else {
+                        condition_result = false;
+                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_GENERIC);
+                        mes.resolveDescription("ERROR", "Element must start by picture=");
+                    }
+                    break;
 
-                    switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
+                case Application.TYPE_SRV:
 
-                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
-                            if (!xmlUnitService.isElementPresent(responseBody, conditionValue1)) {
-                                condition_result = true;
-                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT);
-                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                            } else {
-                                condition_result = false;
-                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTPRESENT);
-                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                            }
-                            break;
+                    if (tCExecution.getLastServiceCalled() != null) {
+                        String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
 
-                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
+                        switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
+
+                            case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
+                                if (!xmlUnitService.isElementPresent(responseBody, conditionValue1)) {
+                                    condition_result = true;
+                                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT);
+                                    mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                                } else {
+                                    condition_result = false;
+                                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTPRESENT);
+                                    mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                                }
+                                break;
+
+                            case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                             try {
                                 if (jsonService.getFromJson(responseBody, null, conditionValue1) == null) {
                                     condition_result = true;
@@ -513,29 +574,29 @@ public class ConditionService implements IConditionService {
                             }
                             break;
 
-                        default:
-                            condition_result = false;
-                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_MESSAGETYPE);
-                            mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
-                            mes.setDescription(mes.getDescription().replace("%CONDITION%", conditionOperator));
+                            default:
+                                condition_result = false;
+                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_MESSAGETYPE);
+                                mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
+                                mes.setDescription(mes.getDescription().replace("%CONDITION%", conditionOperator));
+                        }
+
+                    } else {
+                        condition_result = false;
+                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOOBJECTINMEMORY);
                     }
-
-                } else {
-                    condition_result = false;
-                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOOBJECTINMEMORY);
-                }
-
-            } else {
-                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_APPLICATION);
-                mes.setDescription(mes.getDescription().replace("%CONDITION%", conditionOperator));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+                    break;
+                default:
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_APPLICATION);
+                    mes.setDescription(mes.getDescription().replace("%CONDITION%", conditionOperator));
+                    mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             }
 
         }
         ans.setResultMessage(mes);
         return ans;
     }
-    
+
     private AnswerItem<Boolean> evaluateCondition_ifElementVisible(String conditionOperator, String conditionValue1, TestCaseExecution tCExecution) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if Element Visible");
@@ -549,7 +610,7 @@ public class ConditionService implements IConditionService {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTVISIBLE_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOperator));
         } else {
-        	if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
 
@@ -558,14 +619,14 @@ public class ConditionService implements IConditionService {
                     if (this.webdriverService.isElementVisible(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTVISIBLE);
                         mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
-                       
+
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTVISIBLE);
                         mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
-                      
+
                     }
                 } catch (WebDriverException exception) {
-                	mes = parseWebDriverException(exception);
+                    mes = parseWebDriverException(exception);
                 }
 
             } else {
@@ -593,7 +654,7 @@ public class ConditionService implements IConditionService {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTNOTVISIBLE_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOperator));
         } else {
-        	if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
 
@@ -603,16 +664,16 @@ public class ConditionService implements IConditionService {
                         if (this.webdriverService.isElementNotVisible(tCExecution.getSession(), identifier)) {
                             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTVISIBLE);
                             mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
-                            
+
                         } else {
                             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTVISIBLE);
                             mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
-                            
+
                         }
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTVISIBLE);
                         mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
-                        
+
                     }
                 } catch (WebDriverException exception) {
                     mes = parseWebDriverException(exception);
@@ -623,14 +684,13 @@ public class ConditionService implements IConditionService {
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementNotVisible"));
                 mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
 
-
             }
 
         }
         ans.setResultMessage(mes);
         return ans;
     }
-   
+
     private AnswerItem<Boolean> evaluateCondition_ifStringEqual(String conditionOperator, String conditionValue1, String conditionValue2, String isCaseSensitive) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if String Equal");

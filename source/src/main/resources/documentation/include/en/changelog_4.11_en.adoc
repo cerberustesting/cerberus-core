@@ -20,6 +20,8 @@
 * element that start by // now default to xpath. That allow to copy/paste xpath element from Cerberus to/from browser without beeing forced to add/remove xpath=
 * Allow configuration of Sikuli minSimilarity and duration of hightloght element for debug purpose from parameters 'cerberus_sikuli_minSimilarity' and 'cerberus_sikuli_highlightElement'
 * Various improvement on error management of Sikuli actions.
+* Support for  conditions verify[Not]Exist for sikuli engine.
+* new parameter 'cerberus_sikuli_wait_element' in order to tune sikuli timeout independently.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

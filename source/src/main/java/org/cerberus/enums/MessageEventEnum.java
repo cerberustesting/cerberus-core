@@ -169,6 +169,7 @@ public enum MessageEventEnum {
     PROPERTY_NOTPOSSIBLE(199, "FA", "can't calculate this property, no webdriver set on a manual execution", false, false, false, MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_NOCONNECTION),
     // *********** EXECUTION ACTIONS ***********
     ACTION_SUCCESS(200, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_BUTRETURNEDKO(210, "KO", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_OPENAPP(200, "OK", "Application '%APP%' opened.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLOSEAPP(200, "OK", "Application '%APP%' closed.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLOSEAPP_GENERIC(200, "OK", "Application closed.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),

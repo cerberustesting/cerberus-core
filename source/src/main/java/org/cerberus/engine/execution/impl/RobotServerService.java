@@ -173,16 +173,18 @@ public class RobotServerService implements IRobotServerService {
              * else, take the one from parameter
              */
             Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout,
-                    cerberus_selenium_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout,
+                    cerberus_selenium_wait_element, cerberus_sikuli_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout,
                     cerberus_appium_action_longpress_wait, cerberus_selenium_autoscroll_vertical_offset, cerberus_selenium_autoscroll_horizontal_offset;
             boolean cerberus_selenium_autoscroll;
 
             if (!tCExecution.getTimeout().isEmpty()) {
                 cerberus_selenium_wait_element = Integer.valueOf(tCExecution.getTimeout());
+                cerberus_sikuli_wait_element = Integer.valueOf(tCExecution.getTimeout());
                 cerberus_appium_wait_element = Integer.valueOf(tCExecution.getTimeout());
             } else {
-                cerberus_selenium_wait_element = parameterService.getParameterIntegerByKey("cerberus_selenium_wait_element", system, 90000);
-                cerberus_appium_wait_element = parameterService.getParameterIntegerByKey("cerberus_appium_wait_element", system, 90000);
+                cerberus_selenium_wait_element = parameterService.getParameterIntegerByKey("cerberus_selenium_wait_element", system, 30000);
+                cerberus_sikuli_wait_element = parameterService.getParameterIntegerByKey("cerberus_sikuli_wait_element", system, 30000);
+                cerberus_appium_wait_element = parameterService.getParameterIntegerByKey("cerberus_appium_wait_element", system, 30000);
             }
 
             cerberus_selenium_pageLoadTimeout = parameterService.getParameterIntegerByKey("cerberus_selenium_pageLoadTimeout", system, 90000);
@@ -200,6 +202,7 @@ public class RobotServerService implements IRobotServerService {
             session.setCerberus_selenium_pageLoadTimeout(cerberus_selenium_pageLoadTimeout);
             session.setCerberus_selenium_setScriptTimeout(cerberus_selenium_setScriptTimeout);
             session.setCerberus_selenium_wait_element(cerberus_selenium_wait_element);
+            session.setCerberus_sikuli_wait_element(cerberus_sikuli_wait_element);
             session.setCerberus_appium_wait_element(cerberus_appium_wait_element);
             session.setCerberus_selenium_action_click_timeout(cerberus_selenium_action_click_timeout);
             session.setCerberus_appium_action_longpress_wait(cerberus_appium_action_longpress_wait);

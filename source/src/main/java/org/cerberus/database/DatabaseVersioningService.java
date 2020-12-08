@@ -8821,6 +8821,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1581
         a.add("ALTER TABLE robot ADD COLUMN `ProfileFolder` VARCHAR(400) NOT NULL DEFAULT '' AFTER `screensize`;");
 
+        // 1582
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + "('', 'cerberus_sikuli_wait_element', '30000', 'Integer that correspond to the number of milliseconds that sikuli will wait before give timeout, when searching an element.');");
+
         return a;
     }
 

@@ -190,7 +190,7 @@ public class SikuliService implements ISikuliService {
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
             connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-            JSONObject postParameters = generatePostParameters(action, locator, text, session.getCerberus_selenium_wait_element());
+            JSONObject postParameters = generatePostParameters(action, locator, text, session.getCerberus_sikuli_wait_element());
             connection.setDoOutput(true);
 
             // Send post request
@@ -229,18 +229,20 @@ public class SikuliService implements ISikuliService {
 
             LOG.debug("Sikuli Answer: " + response.toString());
             if (objReceived.has("status")) {
-                if ("Failed".equals(objReceived.getString("status"))) {
+                if ("OK".equals(objReceived.getString("status"))) {
+                    msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+                } else if ("KO".equals(objReceived.getString("status"))) {
+                    msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_BUTRETURNEDKO);
+                } else {
                     if (objReceived.has("message") && !StringUtil.isNullOrEmpty(objReceived.getString("message"))) {
                         msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL);
                         msg.resolveDescription("DETAIL", objReceived.getString("message"));
                     } else {
                         msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
                     }
-                } else {
-                    msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
                 }
             } else {
-                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
+                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL).resolveDescription("DETAIL", "Sikuli Extention returned an invalid answer !! (Missing status information)");
             }
             in.close();
         } catch (MalformedURLException ex) {
@@ -513,9 +515,14 @@ public class SikuliService implements ISikuliService {
             message.setDescription(message.getDescription().replace("%STRING1%", locator));
             return message;
         }
-        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS_BUTRETURNEDKO).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", locator) + " - " + actionResult.getMessageDescription());
+            mes.setDescription(mes.getDescription().replace("%STRING1%", locator));
+            return mes;
+        }
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
+            MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+            mes.setDescription(mes.getDescription().replace("%ERROR%", locator) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
@@ -531,9 +538,14 @@ public class SikuliService implements ISikuliService {
             message.setDescription(message.getDescription().replace("%STRING1%", locator));
             return message;
         }
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS_BUTRETURNEDKO).getCodeString())) {
+            MessageEvent message = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
+            message.setDescription(message.getDescription().replace("%STRING1%", locator));
+            return message;
+        }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
-            MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", locator) + " - " + actionResult.getMessageDescription());
+            MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+            mes.setDescription(mes.getDescription().replace("%ERROR%", locator) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
