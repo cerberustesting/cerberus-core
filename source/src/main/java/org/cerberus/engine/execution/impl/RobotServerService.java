@@ -811,7 +811,7 @@ public class RobotServerService implements IRobotServerService {
                     }
 
                     // Force a specific profile for that session (allow to reuse cookies and browser preferences).
-                    if (tCExecution.getRobotObj() != null && StringUtil.isNullOrEmpty(tCExecution.getRobotObj().getProfileFolder())) {
+                    if (tCExecution.getRobotObj() != null && !StringUtil.isNullOrEmpty(tCExecution.getRobotObj().getProfileFolder())) {
                         optionsFF.addArguments("--profile");
                         optionsFF.addArguments(tCExecution.getRobotObj().getProfileFolder());
                     }
@@ -859,7 +859,7 @@ public class RobotServerService implements IRobotServerService {
                         optionsCH.addArguments("start-maximized");
                     }
                     // Force a specific profile for that session (allow to reuse cookies and browser preferences).
-                    if (tCExecution.getRobotObj() != null && StringUtil.isNullOrEmpty(tCExecution.getRobotObj().getProfileFolder())) {
+                    if (tCExecution.getRobotObj() != null && !StringUtil.isNullOrEmpty(tCExecution.getRobotObj().getProfileFolder())) {
                         optionsCH.addArguments("user-data-dir=" + tCExecution.getRobotObj().getProfileFolder());
                     }
                     if (tCExecution.getVerbose() <= 0) {
