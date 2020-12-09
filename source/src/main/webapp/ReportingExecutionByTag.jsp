@@ -263,14 +263,14 @@
                             <div class="marginTop10" id="tagDetailBar">
                             </div>
 
-                            <div class="marginTop10" class="row">
+                            <div class="marginTop10" class="row" id="TagcampaignCel2">
                                 <div class="col-sm-6">
-                                    <div class="input-group-btn" id="TagcampaignCel2">
+                                    <div class="input-group-btn">
                                         <a id="buttonSeeStatsCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;">See Stats</button></a>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
-                                    <div class="input-group-btn" id="TagcampaignCel2">
+                                    <div class="input-group-btn">
                                         <a id="buttonRunCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;">(Re)Run Campaign</button></a>
                                     </div>
                                 </div>
