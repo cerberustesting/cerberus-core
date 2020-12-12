@@ -210,6 +210,8 @@ public class RobotServerService implements IRobotServerService {
             session.setHostUser(tCExecution.getSeleniumIPUser());
             session.setHostPassword(tCExecution.getSeleniumIPPassword());
             session.setPort(tCExecution.getRobotPort());
+            session.setNodeHost(tCExecution.getSeleniumIP());
+            session.setNodePort(tCExecution.getSeleniumPort());
             session.setCerberus_selenium_autoscroll(cerberus_selenium_autoscroll);
             session.setCerberus_selenium_autoscroll_vertical_offset(cerberus_selenium_autoscroll_vertical_offset);
             session.setCerberus_selenium_autoscroll_horizontal_offset(cerberus_selenium_autoscroll_horizontal_offset);
@@ -1166,13 +1168,15 @@ public class RobotServerService implements IRobotServerService {
             SessionId sessionId = ((RemoteWebDriver) session.getDriver()).getSessionId();
             String hostName = ce.getAddressOfRemoteServer().getHost();
             int port = ce.getAddressOfRemoteServer().getPort();
+
             HttpHost host = new HttpHost(hostName, port);
 
             HttpClient client = HttpClientBuilder.create().setRedirectStrategy(new LaxRedirectStrategy()).build();
 
             URL sessionURL = new URL(RobotServerService.getBaseUrl(session.getHost(), session.getPort()) + "/grid/api/testsession?session=" + sessionId);
 
-            BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("POST", sessionURL.toExternalForm());
+            BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("GET", sessionURL.toExternalForm());
+            LOG.debug("Calling Hub to get the node information. " + sessionURL.toString());
             HttpResponse response = client.execute(host, r);
             if (!response.getStatusLine().toString().contains("403")
                     && !response.getEntity().getContentType().getValue().contains("text/html")) {
@@ -1183,8 +1187,12 @@ public class RobotServerService implements IRobotServerService {
                 if (object.has("proxyId")) {
                     URL myURL = new URL(object.getString("proxyId"));
                     if ((myURL.getHost() != null) && (myURL.getPort() != -1)) {
+                        LOG.debug("Get remote node information : " + myURL.getHost() + " - " + myURL.getPort());
                         tCExecution.setRobotHost(myURL.getHost());
                         tCExecution.setRobotPort(String.valueOf(myURL.getPort()));
+                        // Node information at session level is now overwrite with real values.
+                        tCExecution.getSession().setNodeHost(myURL.getHost());
+                        tCExecution.getSession().setNodePort(String.valueOf(myURL.getPort()));
                     }
                 } else {
                     LOG.debug("'proxyId' json data not available from remote Selenium Server request : " + writer.toString());

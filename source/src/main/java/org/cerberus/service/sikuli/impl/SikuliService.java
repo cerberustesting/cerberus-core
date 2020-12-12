@@ -177,7 +177,7 @@ public class SikuliService implements ISikuliService {
 
         StringBuilder response = new StringBuilder();
         URL url;
-        String urlToConnect = "http://" + session.getHost() + ":" + session.getPort() + "/extra/ExecuteSikuliAction";
+        String urlToConnect = "http://" + session.getNodeHost() + ":" + session.getNodePort() + "/extra/ExecuteSikuliAction";
         try {
             /**
              * Connect to ExecuteSikuliAction Servlet Through SeleniumServer

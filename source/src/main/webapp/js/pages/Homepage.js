@@ -131,7 +131,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $("#documentationFrame").attr("src", "./documentation/changelog_4.11_en.html");
         var windowsHeight = $(window).height() + 'px';
         $('#documentationFrame').css('height', '400px');
-        $("#changelogLabel").html("Changelog 4.110");
+        $("#changelogLabel").html("Changelog 4.11");
 
         //close all sidebar menu
         closeEveryNavbarMenu();
