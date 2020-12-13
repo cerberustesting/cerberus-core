@@ -75,6 +75,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         return false;
     }
 
+    public String extractSQLScript() {
+        return "";
+    }
+
     @Override
     public ArrayList<String> getSQLScript() {
         // Temporary string that will store the SQL Command before putting in the array.

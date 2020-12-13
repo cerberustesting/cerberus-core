@@ -165,6 +165,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             // Cerberus Informations.
             jsonResponse.put("projectName", infos.getProjectName());
             jsonResponse.put("projectVersion", infos.getProjectVersion());
+            jsonResponse.put("projectBuild", infos.getProjectBuildId());
             jsonResponse.put("environment", System.getProperty(Property.ENVIRONMENT));
 
             databaseVersionService = appContext.getBean(IDatabaseVersioningService.class);

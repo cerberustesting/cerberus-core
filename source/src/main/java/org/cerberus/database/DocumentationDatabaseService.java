@@ -1337,8 +1337,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','filters','','fr','Filtres','',NULL)");
         b.append(",('page_global','footer_bug','','en','Open a bug or ask for any new feature <a target=\"_blank\"  href=\"%LINK%\">here</a>.','',NULL)");
         b.append(",('page_global','footer_bug','','fr','Ouvrir un bug ou envoyer une demande d\\'évolution <a target=\"_blank\"  href=\"%LINK%\">ici</a>.','',NULL)");
-        b.append(",('page_global','footer_text','','en','Page started generating on %SERVERDATE% by %VERSION% in %ENV% and took %TIMING%ms (browser date : %DATE%)','',NULL)");
-        b.append(",('page_global','footer_text','','fr','Page générée le %SERVERDATE% par %VERSION% en environnement : %ENV% et a pris %TIMING%ms (date du navigteur : %DATE%)','',NULL)");
+        b.append(",('page_global','footer_text','','en','Page started generating on %SERVERDATE% by %VERSION% Build %BUILD% in %ENV% and took %TIMING%ms (browser date : %DATE%)','',NULL)");
+        b.append(",('page_global','footer_text','','fr','Page générée le %SERVERDATE% par %VERSION% Build %BUILD% en environnement : %ENV% et a pris %TIMING%ms (date du navigteur : %DATE%)','',NULL)");
         b.append(",('page_global','invalid_extension_message','','en','Please select a file with the extension ','',NULL)");
         b.append(",('page_global','invalid_extension_message','','fr','Merci de selectionner un fichier avec l\\'extension ','',NULL)");
         b.append(",('page_global','lbl_all','','en','All','',NULL)");

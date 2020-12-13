@@ -1915,6 +1915,7 @@ function displayFooter(doc) {
 
         footerString = footerString.replace("%VERSION%", cerberusInformation.projectName + cerberusInformation.projectVersion + "-" + cerberusInformation.databaseCerberusTargetVersion);
         footerString = footerString.replace("%ENV%", cerberusInformation.environment);
+        footerString = footerString.replace("%BUILD%", cerberusInformation.projectBuild);
         footerString = footerString.replace("%DATE%", date.toISOString());
         footerString = footerString.replace("%TIMING%", loadTime);
         footerString = footerString.replace("%SERVERDATE%", cerberusInformation.serverDate);

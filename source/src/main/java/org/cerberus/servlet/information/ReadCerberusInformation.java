@@ -77,6 +77,7 @@ public class ReadCerberusInformation extends HttpServlet {
         try {
             data.put("projectName", infos.getProjectName());
             data.put("projectVersion", infos.getProjectVersion());
+            data.put("projectBuild", infos.getProjectBuildId());
             data.put("environment", System.getProperty("org.cerberus.environment"));
             parameterService = appContext.getBean(IParameterService.class);
             data.put("isGlobalSplashPageActive", parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_splashpage_enable, "", false));
