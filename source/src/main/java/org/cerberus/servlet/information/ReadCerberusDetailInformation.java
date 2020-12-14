@@ -169,7 +169,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             jsonResponse.put("environment", System.getProperty(Property.ENVIRONMENT));
 
             databaseVersionService = appContext.getBean(IDatabaseVersioningService.class);
-            jsonResponse.put("databaseCerberusTargetVersion", databaseVersionService.getSQLScript().size());
+            jsonResponse.put("databaseCerberusTargetVersion", databaseVersionService.getSqlVersion());
 
             myVersionService = appContext.getBean(IMyVersionService.class);
             if (myVersionService.findMyVersionByKey("database") != null) {

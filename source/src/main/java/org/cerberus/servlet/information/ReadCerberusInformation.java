@@ -86,7 +86,7 @@ public class ReadCerberusInformation extends HttpServlet {
             data.put("messageInformation", parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_messageinfo_text, "", ""));
             data.put("isMessageInformationEnabled", parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_messageinfo_enable, "", false));
             databaseVersionService = appContext.getBean(IDatabaseVersioningService.class);
-            data.put("databaseCerberusTargetVersion", databaseVersionService.getSQLScript().size());
+            data.put("databaseCerberusTargetVersion", databaseVersionService.getSqlVersion());
             Date now = new Date();
             data.put("serverDate", new SimpleDateFormat(DATE_FORMAT).format(now));
 

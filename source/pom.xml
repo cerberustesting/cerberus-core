@@ -471,8 +471,8 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>lang/**/*.properties</include>
-                    <include>xsd/**/*.xsd</include>
                     <include>*.properties</include>
+                    <include>database.sql</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>
