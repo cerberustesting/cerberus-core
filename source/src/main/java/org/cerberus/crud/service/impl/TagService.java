@@ -235,13 +235,13 @@ public class TagService implements ITagService {
         Tag tag = (Tag) answerTag.getItem();
         if (tag == null) {
             LOG.debug("toto service : " + reqEnvironmentList.toString());
-            Answer ans = tagDAO.create(factoryTag.create(0, tagS, "", "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "", "", "",
-                    reqEnvironmentList.toString(), reqCountryList.toString(), "", user, null, user, null));
+            Answer ans = tagDAO.create(factoryTag.create(0, tagS, "", "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "", "",
+                    reqEnvironmentList.toString(), reqCountryList.toString(), "", "", user, null, user, null));
+            // If campaign is not empty, we can notify the Start of campaign execution.
             if (!StringUtil.isNullOrEmpty(campaign)) {
                 notificationService.generateAndSendNotifyStartTagExecution(tagS, campaign);
             }
             return ans;
-            // If campaign is not empty, we could notify the Start of campaign execution.
         } else {
             if ((StringUtil.isNullOrEmpty(tag.getCampaign())) && !StringUtil.isNullOrEmpty(campaign)) {
                 tag.setCampaign(campaign);

@@ -139,6 +139,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     private IFactoryRobot robotFactory;
     private IParameterService parameterService;
     private IAPIKeyService apiKeyService;
+    private ITagService tagService;
 
     /**
      * Process request for both GET and POST method.
@@ -177,6 +178,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         robotFactory = appContext.getBean(IFactoryRobot.class);
         parameterService = appContext.getBean(IParameterService.class);
         apiKeyService = appContext.getBean(IAPIKeyService.class);
+        tagService = appContext.getBean(ITagService.class);
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
@@ -533,7 +535,6 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                             // Create Tag only if not already done and defined.
                                             if (!StringUtil.isNullOrEmpty(tag) && !tagAlreadyAdded) {
                                                 // We create or update it.
-                                                ITagService tagService = appContext.getBean(ITagService.class);
                                                 tagService.createAuto(tag, campaign, user, envJSONArray, countryJSONArray);
                                                 tagAlreadyAdded = true;
                                             }
