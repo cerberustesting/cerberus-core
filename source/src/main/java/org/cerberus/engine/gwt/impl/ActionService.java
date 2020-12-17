@@ -249,6 +249,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE:
                     res = this.doActionMouseLeftButtonRelease(tCExecution, value1, value2);
                     break;
+                case TestCaseStepAction.ACTION_MOUSEMOVE:
+                    res = this.doActionMouseMove(tCExecution, value1, value2);
+                    break;
                 case TestCaseStepAction.ACTION_DOUBLECLICK:
                     res = this.doActionDoubleClick(tCExecution, value1, value2);
                     break;
@@ -628,19 +631,21 @@ public class ActionService implements IActionService {
         MessageEvent message;
         String element;
         try {
-            /**
-             * Get element to use String object if not empty, String property if
-             * object empty, throws Exception if both empty)
-             */
-            element = getElementToUse(object, property, "mouseLeftButtonPress", tCExecution);
-            /**
-             * Get Identifier (identifier, locator)
-             */
-            Identifier identifier = identifierService.convertStringToIdentifier(element);
-            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                /**
+                 * Get element to use String object if not empty, String
+                 * property if object empty, throws Exception if both empty)
+                 */
+                element = getElementToUse(object, property, "mouseLeftButtonPress", tCExecution);
+                /**
+                 * Get Identifier (identifier, locator)
+                 */
+                Identifier identifier = identifierService.convertStringToIdentifier(element);
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+
                 return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier, true, true);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+                return sikuliService.doSikuliActionLeftButtonPress(tCExecution.getSession());
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "MouseDown"));
@@ -697,19 +702,21 @@ public class ActionService implements IActionService {
         MessageEvent message;
         String element;
         try {
-            /**
-             * Get element to use String object if not empty, String property if
-             * object empty, throws Exception if both empty)
-             */
-            element = getElementToUse(object, property, "mouseLeftButtonRelease", tCExecution);
-            /**
-             * Get Identifier (identifier, locator)
-             */
-            Identifier identifier = identifierService.convertStringToIdentifier(element);
-            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                /**
+                 * Get element to use String object if not empty, String
+                 * property if object empty, throws Exception if both empty)
+                 */
+                element = getElementToUse(object, property, "mouseLeftButtonRelease", tCExecution);
+                /**
+                 * Get Identifier (identifier, locator)
+                 */
+                Identifier identifier = identifierService.convertStringToIdentifier(element);
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+
                 return webdriverService.doSeleniumActionMouseUp(tCExecution.getSession(), identifier, true, true);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+                return sikuliService.doSikuliActionLeftButtonRelease(tCExecution.getSession());
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "MouseUp"));
@@ -719,6 +726,19 @@ public class ActionService implements IActionService {
             LOG.fatal("Error doing Action MouseUp :" + ex);
             return ex.getMessageError();
         }
+    }
+
+    private MessageEvent doActionMouseMove(TestCaseExecution tCExecution, String value1, String value2) {
+        MessageEvent message;
+        String element;
+
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+            return sikuliService.doSikuliActionMouseMove(tCExecution.getSession(), value1);
+        }
+        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+        message.setDescription(message.getDescription().replace("%ACTION%", "MouseMove"));
+        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+        return message;
     }
 
     private MessageEvent doActionSwitchToWindow(TestCaseExecution tCExecution, String object, String property) {

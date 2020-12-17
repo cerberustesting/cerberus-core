@@ -89,6 +89,61 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-lg-6" id="MainActionsPanel">
+                    <div class="panel panel-default" style="padding: 30px;">
+
+                        <div class="row">
+                            <div class="row" id="tuto-line">
+                                <div class="col-md-6 marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut1">  
+                                    <a href="./TestCaseList.jsp" class="btn btn-primary">  
+                                        <div class="card" style="width: 18rem;">  
+                                            <span class="card-img-top glyphicon glyphicon-pencil marginBottom20 marginTop20" style="font-size:70px;"></span>  
+                                            <div class="card-body">  <p class="card-text">Create/Modify a Test</p>  
+                                            </div>  
+                                        </div>    
+                                    </a>
+                                </div>
+                                <div class="col-md-6 marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut2">  
+                                    <a href="./RunTests.jsp" class="btn btn-primary">  
+                                        <div class="card" style="width: 18rem;">  
+                                            <span class="card-img-top glyphicon glyphicon-cog marginBottom20 marginTop20" style="font-size:70px;"></span>  
+                                            <div class="card-body">  <p class="card-text">Run a Test or a Campaign</p>  </div>  
+                                        </div>    
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut3">  
+                                    <a href="Application.jsp" class="btn btn-primary">  
+                                        <div class="card" style="width: 12rem;">  
+                                            <span class="card-img-top glyphicon glyphicon-wrench  marginBottom20 marginTop20" style="font-size:50px;"></span>  
+                                            <div class="card-body">  <p class="card-text">Create/Modify <br>an Application</p>  </div>  
+                                        </div>    
+                                    </a>
+                                </div>
+                                <div class="col-md-4 marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut3">  
+                                    <a href="AppServiceList.jsp" class="btn btn-primary">  
+                                        <div class="card" style="width: 12rem;">  
+                                            <span class="card-img-top glyphicon glyphicon-wrench  marginBottom20 marginTop20" style="font-size:50px;"></span>  
+                                            <div class="card-body">  <p class="card-text">Create/Modify <br>a Service</p>  </div>  
+                                        </div>    
+                                    </a>
+                                </div>
+                                <div class="col-md-4 marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut3">  
+                                    <a href="TestDataLibList.jsp" class="btn btn-primary">  
+                                        <div class="card" style="width: 12rem;">  
+                                            <span class="card-img-top glyphicon glyphicon-wrench  marginBottom20 marginTop20" style="font-size:50px;"></span>  
+                                            <div class="card-body">  <p class="card-text">Create/Modify <br>a Data Library</p>  </div>  
+                                        </div>    
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-lg-6" id="LastTagExecPanel">
                     <div id="panelHistory" class="panel panel-default" style="display: block;">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#histoChart1">

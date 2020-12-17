@@ -30,9 +30,14 @@ import org.json.JSONObject;
  * @author bcivel
  */
 public interface ISikuliService {
-    
+
+    /**
+     *
+     * @param session
+     * @return
+     */
     public boolean isSikuliServerReachable(Session session);
-    
+
     /**
      *
      * @param session
@@ -42,34 +47,153 @@ public interface ISikuliService {
      * @return
      */
     public AnswerItem<JSONObject> doSikuliAction(Session session, String action, String locator, String text);
-    
+
+    /**
+     *
+     * @param session
+     * @param locator
+     * @param text
+     * @return
+     */
     public MessageEvent doSikuliActionClick(Session session, String locator, String text);
-    
+
+    /**
+     *
+     * @param session
+     * @param locator
+     * @return
+     */
     public MessageEvent doSikuliActionOpenApp(Session session, String locator);
-    
+
+    /**
+     *
+     * @param session
+     * @param locator
+     * @return
+     */
     public MessageEvent doSikuliActionCloseApp(Session session, String locator);
-    
+
+    /**
+     *
+     * @param session
+     * @return
+     */
     public File takeScreenShotFile(Session session);
 
+    /**
+     *
+     * @param session
+     * @param locator
+     * @param text
+     * @return
+     */
     public MessageEvent doSikuliActionRightClick(Session session, String locator, String text);
 
+    /**
+     *
+     * @param session
+     * @param locator
+     * @return
+     */
     public MessageEvent doSikuliActionSwitchApp(Session session, String locator);
 
+    /**
+     *
+     * @param session
+     * @return
+     */
+    public MessageEvent doSikuliActionLeftButtonPress(Session session);
+
+    /**
+     *
+     * @param session
+     * @return
+     */
+    public MessageEvent doSikuliActionLeftButtonRelease(Session session);
+
+    /**
+     *
+     * @param session
+     * @param xyoffset x and y offset to move. Ex : 100,200
+     * @return
+     */
+    public MessageEvent doSikuliActionMouseMove(Session session, String xyoffset);
+
+    /**
+     *
+     * @param session
+     * @param locator
+     * @param text
+     * @return
+     */
     public MessageEvent doSikuliActionDoubleClick(Session session, String locator, String text);
 
+    /**
+     *
+     * @param session
+     * @param locator
+     * @param property
+     * @return
+     */
     public MessageEvent doSikuliActionType(Session session, String locator, String property);
 
+    /**
+     *
+     * @param session
+     * @param locator
+     * @param text
+     * @return
+     */
     public MessageEvent doSikuliActionMouseOver(Session session, String locator, String text);
 
+    /**
+     *
+     * @param session
+     * @param locator
+     * @param text
+     * @return
+     */
     public MessageEvent doSikuliActionWait(Session session, String locator, String text);
-    
+
+    /**
+     *
+     * @param session
+     * @param locator
+     * @param text
+     * @return
+     */
     public MessageEvent doSikuliActionWaitVanish(Session session, String locator, String text);
 
+    /**
+     *
+     * @param session
+     * @param locator
+     * @param property
+     * @return
+     */
     public MessageEvent doSikuliActionKeyPress(Session session, String locator, String property);
 
+    /**
+     *
+     * @param session
+     * @param locator
+     * @return
+     */
     public MessageEvent doSikuliVerifyElementPresent(Session session, String locator);
-    
+
+    /**
+     *
+     * @param session
+     * @param locator
+     * @return
+     */
     public MessageEvent doSikuliVerifyElementNotPresent(Session session, String locator);
-    
+
+    /**
+     *
+     * @param session
+     * @param locator
+     * @return
+     */
     public MessageEvent doSikuliVerifyTextInPage(Session session, String locator);
 }

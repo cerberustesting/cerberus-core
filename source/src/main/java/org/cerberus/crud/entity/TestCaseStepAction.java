@@ -62,6 +62,7 @@ public class TestCaseStepAction {
     public static final String ACTION_LONGPRESS = "longPress";
     public static final String ACTION_MOUSELEFTBUTTONPRESS = "mouseLeftButtonPress";
     public static final String ACTION_MOUSELEFTBUTTONRELEASE = "mouseLeftButtonRelease";
+    public static final String ACTION_MOUSEMOVE = "mouseMove";
     public static final String ACTION_DOUBLECLICK = "doubleClick";
     public static final String ACTION_RIGHTCLICK = "rightClick";
     public static final String ACTION_MOUSEOVER = "mouseOver";

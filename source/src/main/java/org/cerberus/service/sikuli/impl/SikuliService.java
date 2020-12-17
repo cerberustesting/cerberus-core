@@ -70,6 +70,9 @@ public class SikuliService implements ISikuliService {
     public static final String SIKULI_CLICK = "click";
     public static final String SIKULI_DOUBLECLICK = "doubleClick";
     public static final String SIKULI_RIGHTCLICK = "rightClick";
+    public static final String SIKULI_LEFTCLICKPRESS = "mouseDown";
+    public static final String SIKULI_LEFTCLICKRELEASE = "mouseUp";
+    public static final String SIKULI_MOUSEMOVE = "mouseMove";
     public static final String SIKULI_SWITCHTOWINDOW = "switchToWindow";
     public static final String SIKULI_OPENAPP = "openApp";
     public static final String SIKULI_CLOSEAPP = "closeApp";
@@ -364,6 +367,27 @@ public class SikuliService implements ISikuliService {
         }
 
         return actionResult.getResultMessage();
+    }
+
+    @Override
+    public MessageEvent doSikuliActionLeftButtonPress(Session session) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_LEFTCLICKPRESS, null, "");
+        return actionResult.getResultMessage();
+
+    }
+
+    @Override
+    public MessageEvent doSikuliActionLeftButtonRelease(Session session) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_LEFTCLICKRELEASE, null, "");
+        return actionResult.getResultMessage();
+
+    }
+
+    @Override
+    public MessageEvent doSikuliActionMouseMove(Session session, String xyoffset) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_MOUSEMOVE, null, xyoffset);
+        return actionResult.getResultMessage();
+
     }
 
     @Override
