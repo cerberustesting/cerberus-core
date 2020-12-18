@@ -627,25 +627,27 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionMouseLeftButtonPress(TestCaseExecution tCExecution, String object, String property) {
+    private MessageEvent doActionMouseLeftButtonPress(TestCaseExecution tCExecution, String value1, String value2) {
         MessageEvent message;
         String element;
         try {
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) || StringUtil.isNullOrEmpty(value1)) {
+                // If value1 is empty, the Sikuli engine must be used in order to click without element to click.
+                return sikuliService.doSikuliActionLeftButtonPress(tCExecution.getSession());
+
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 /**
                  * Get element to use String object if not empty, String
                  * property if object empty, throws Exception if both empty)
                  */
-                element = getElementToUse(object, property, "mouseLeftButtonPress", tCExecution);
+                element = getElementToUse(value1, value2, "mouseLeftButtonPress", tCExecution);
                 /**
                  * Get Identifier (identifier, locator)
                  */
-                Identifier identifier = identifierService.convertStringToIdentifier(element);
+                Identifier identifier = identifierService.convertStringToIdentifier(value1);
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
                 return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier, true, true);
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                return sikuliService.doSikuliActionLeftButtonPress(tCExecution.getSession());
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "MouseDown"));
@@ -698,16 +700,19 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionMouseLeftButtonRelease(TestCaseExecution tCExecution, String object, String property) {
+    private MessageEvent doActionMouseLeftButtonRelease(TestCaseExecution tCExecution, String value1, String value2) {
         MessageEvent message;
         String element;
         try {
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) || StringUtil.isNullOrEmpty(value1)) {
+                // If value1 is empty, the Sikuli engine must be used in order to click without element to click.
+                return sikuliService.doSikuliActionLeftButtonRelease(tCExecution.getSession());
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 /**
                  * Get element to use String object if not empty, String
                  * property if object empty, throws Exception if both empty)
                  */
-                element = getElementToUse(object, property, "mouseLeftButtonRelease", tCExecution);
+                element = getElementToUse(value1, value2, "mouseLeftButtonRelease", tCExecution);
                 /**
                  * Get Identifier (identifier, locator)
                  */
@@ -715,8 +720,6 @@ public class ActionService implements IActionService {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
                 return webdriverService.doSeleniumActionMouseUp(tCExecution.getSession(), identifier, true, true);
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                return sikuliService.doSikuliActionLeftButtonRelease(tCExecution.getSession());
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "MouseUp"));

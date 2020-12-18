@@ -188,6 +188,9 @@ public class SikuliService implements ISikuliService {
             url = new URL(urlToConnect);
             LOG.debug("Open Connection to : " + urlToConnect);
             connection = (HttpURLConnection) url.openConnection();
+            // We let Sikuli extension the sikuli timeout + 10 s to perform the action/control.
+            connection.setReadTimeout(session.getCerberus_sikuli_wait_element() + 10000);
+            connection.setConnectTimeout(session.getCerberus_sikuli_wait_element() + 10000);
 
             connection.setRequestMethod("POST");
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
