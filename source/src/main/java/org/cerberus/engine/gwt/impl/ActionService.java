@@ -735,7 +735,8 @@ public class ActionService implements IActionService {
         MessageEvent message;
         String element;
 
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) 
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
             return sikuliService.doSikuliActionMouseMove(tCExecution.getSession(), value1);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
