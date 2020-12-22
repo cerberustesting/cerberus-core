@@ -33,6 +33,7 @@ import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.execution.IConditionService;
 import org.cerberus.engine.execution.IIdentifierService;
+import org.cerberus.engine.execution.enums.ConditionOperatorEnum;
 import org.cerberus.engine.gwt.IControlService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.json.IJsonService;
@@ -77,125 +78,128 @@ public class ConditionService implements IConditionService {
     public AnswerItem<Boolean> evaluateCondition(String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution tCExecution) {
 
         LOG.debug("Starting Evaluation condition : " + conditionOperator);
+
+        ConditionOperatorEnum conditionToEvaluate = ConditionOperatorEnum.getConditionOperatorEnumFromString(conditionOperator);
+
         AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
-        boolean execute_Operation = true;
+        boolean isOperationToBeExecuted = true;
 
         /**
          * CONDITION Management is treated here. Checking if the
          * action/control/step/execution can be execued here depending on the
          * condition operator and value.
          */
-        switch (conditionOperator) {
-            case TestCaseStepAction.CONDITIONOPERATOR_ALWAYS:
-            case "": // In case condition is not defined, it is considered as always.
+        switch (conditionToEvaluate) {
+            case CONDITIONOPERATOR_ALWAYS:
+            case CONDITIONOPERATOR_UNDEFINED: // In case condition is not defined, it is considered as always.
                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_ALWAYS);
                 break;
 
-            case TestCaseStepAction.CONDITIONOPERATOR_IFELEMENTPRESENT:
-                ans = evaluateCondition_ifElementPresent(conditionOperator, conditionValue1, tCExecution);
+            case CONDITIONOPERATOR_IFELEMENTPRESENT:
+                ans = evaluateCondition_ifElementPresent(conditionToEvaluate.getCondition(), conditionValue1, tCExecution);
                 mes = ans.getResultMessage();
                 break;
 
-            case TestCaseStepAction.CONDITIONOPERATOR_IFELEMENTNOTPRESENT:
-                ans = evaluateCondition_ifElementNotPresent(conditionOperator, conditionValue1, tCExecution);
+            case CONDITIONOPERATOR_IFELEMENTNOTPRESENT:
+                ans = evaluateCondition_ifElementNotPresent(conditionToEvaluate.getCondition(), conditionValue1, tCExecution);
                 mes = ans.getResultMessage();
                 break;
 
-            case TestCaseStepAction.CONDITIONOPERATOR_IFELEMENTVISIBLE:
-                ans = evaluateCondition_ifElementVisible(conditionOperator, conditionValue1, tCExecution);
+            case CONDITIONOPERATOR_IFELEMENTVISIBLE:
+                ans = evaluateCondition_ifElementVisible(conditionToEvaluate.getCondition(), conditionValue1, tCExecution);
                 mes = ans.getResultMessage();
                 break;
 
-            case TestCaseStepAction.CONDITIONOPERATOR_IFELEMENTNOTVISIBLE:
-                ans = evaluateCondition_ifElementNotVisible(conditionOperator, conditionValue1, tCExecution);
+            case CONDITIONOPERATOR_IFELEMENTNOTVISIBLE:
+                ans = evaluateCondition_ifElementNotVisible(conditionToEvaluate.getCondition(), conditionValue1, tCExecution);
                 mes = ans.getResultMessage();
                 break;
 
-            case TestCaseStepAction.CONDITIONOPERATOR_IFPROPERTYEXIST:
-                ans = evaluateCondition_ifPropertyExist(conditionOperator, conditionValue1, tCExecution);
+            case CONDITIONOPERATOR_IFPROPERTYEXIST:
+                ans = evaluateCondition_ifPropertyExist(conditionToEvaluate.getCondition(), conditionValue1, tCExecution);
                 mes = ans.getResultMessage();
                 break;
 
-            case TestCaseStepAction.CONDITIONOPERATOR_IFPROPERTYNOTEXIST:
-                ans = evaluateCondition_ifPropertyNotExist(conditionOperator, conditionValue1, tCExecution);
+            case CONDITIONOPERATOR_IFPROPERTYNOTEXIST:
+                ans = evaluateCondition_ifPropertyNotExist(conditionToEvaluate.getCondition(), conditionValue1, tCExecution);
                 mes = ans.getResultMessage();
                 break;
 
-            case TestCaseStepAction.CONDITIONOPERATOR_IFNUMERICEQUAL:
-            case TestCaseStepAction.CONDITIONOPERATOR_IFNUMERICDIFFERENT:
-            case TestCaseStepAction.CONDITIONOPERATOR_IFNUMERICGREATER:
-            case TestCaseStepAction.CONDITIONOPERATOR_IFNUMERICGREATEROREQUAL:
-            case TestCaseStepAction.CONDITIONOPERATOR_IFNUMERICMINOR:
-            case TestCaseStepAction.CONDITIONOPERATOR_IFNUMERICMINOROREQUAL:
-                ans = evaluateCondition_ifNumericXXX(conditionOperator, conditionValue1, conditionValue2);
+            case CONDITIONOPERATOR_IFNUMERICEQUAL:
+            case CONDITIONOPERATOR_IFNUMERICDIFFERENT:
+            case CONDITIONOPERATOR_IFNUMERICGREATER:
+            case CONDITIONOPERATOR_IFNUMERICGREATEROREQUAL:
+            case CONDITIONOPERATOR_IFNUMERICMINOR:
+            case CONDITIONOPERATOR_IFNUMERICMINOROREQUAL:
+                ans = evaluateCondition_ifNumericXXX(conditionToEvaluate.getCondition(), conditionValue1, conditionValue2);
                 mes = ans.getResultMessage();
                 break;
 
-            case TestCaseStepAction.CONDITIONOPERATOR_IFSTRINGEQUAL:
-                ans = evaluateCondition_ifStringEqual(conditionOperator, conditionValue1, conditionValue2, conditionValue3);
+            case CONDITIONOPERATOR_IFSTRINGEQUAL:
+                ans = evaluateCondition_ifStringEqual(conditionToEvaluate.getCondition(), conditionValue1, conditionValue2, conditionValue3);
                 mes = ans.getResultMessage();
                 break;
 
-            case TestCaseStepAction.CONDITIONOPERATOR_IFSTRINGDIFFERENT:
-                ans = evaluateCondition_ifStringDifferent(conditionOperator, conditionValue1, conditionValue2, conditionValue3);
+            case CONDITIONOPERATOR_IFSTRINGDIFFERENT:
+                ans = evaluateCondition_ifStringDifferent(conditionToEvaluate.getCondition(), conditionValue1, conditionValue2, conditionValue3);
                 mes = ans.getResultMessage();
                 break;
 
-            case TestCaseStepAction.CONDITIONOPERATOR_IFSTRINGGREATER:
-                ans = evaluateCondition_ifStringGreater(conditionOperator, conditionValue1, conditionValue2);
+            case CONDITIONOPERATOR_IFSTRINGGREATER:
+                ans = evaluateCondition_ifStringGreater(conditionToEvaluate.getCondition(), conditionValue1, conditionValue2);
                 mes = ans.getResultMessage();
                 break;
 
-            case TestCaseStepAction.CONDITIONOPERATOR_IFSTRINGMINOR:
-                ans = evaluateCondition_ifStringMinor(conditionOperator, conditionValue1, conditionValue2);
+            case CONDITIONOPERATOR_IFSTRINGMINOR:
+                ans = evaluateCondition_ifStringMinor(conditionToEvaluate.getCondition(), conditionValue1, conditionValue2);
                 mes = ans.getResultMessage();
                 break;
 
-            case TestCaseStepAction.CONDITIONOPERATOR_IFSTRINGCONTAINS:
-                ans = evaluateCondition_ifStringContains(conditionOperator, conditionValue1, conditionValue2, conditionValue3);
+            case CONDITIONOPERATOR_IFSTRINGCONTAINS:
+                ans = evaluateCondition_ifStringContains(conditionToEvaluate.getCondition(), conditionValue1, conditionValue2, conditionValue3);
                 mes = ans.getResultMessage();
                 break;
 
-            case TestCaseStepAction.CONDITIONOPERATOR_IFSTRINGNOTCONTAINS:
-                ans = evaluateCondition_ifStringNotContains(conditionOperator, conditionValue1, conditionValue2, conditionValue3);
+            case CONDITIONOPERATOR_IFSTRINGNOTCONTAINS:
+                ans = evaluateCondition_ifStringNotContains(conditionToEvaluate.getCondition(), conditionValue1, conditionValue2, conditionValue3);
                 mes = ans.getResultMessage();
                 break;
 
-            case TestCaseStepAction.CONDITIONOPERATOR_NEVER:
+            case CONDITIONOPERATOR_NEVER:
                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NEVER);
-                mes.setDescription(mes.getDescription().replace("%COND%", conditionOperator));
+                mes.setDescription(mes.getDescription().replace("%COND%", conditionToEvaluate.getCondition()));
                 break;
 
-            case TestCaseStepAction.CONDITIONOPERATOR_IFTEXTINELEMENT:
-                ans = evaluateCondition_ifTextInElement(tCExecution, conditionValue1, conditionValue2, conditionOperator, conditionValue3);
+            case CONDITIONOPERATOR_IFTEXTINELEMENT:
+                ans = evaluateCondition_ifTextInElement(tCExecution, conditionValue1, conditionValue2, conditionValue3);
                 mes = ans.getResultMessage();
                 break;
 
-            case TestCaseStepAction.CONDITIONOPERATOR_IFTEXTNOTINELEMENT:
-                ans = evaluateCondition_ifTextNotInElement(tCExecution, conditionValue1, conditionValue2, conditionOperator, conditionValue3);
+            case CONDITIONOPERATOR_IFTEXTNOTINELEMENT:
+                ans = evaluateCondition_ifTextNotInElement(tCExecution, conditionValue1, conditionValue2, conditionValue3);
                 mes = ans.getResultMessage();
                 break;
 
             default:
                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_UNKNOWNCONDITION);
-                mes.setDescription(mes.getDescription().replace("%COND%", conditionOperator));
+                mes.setDescription(mes.getDescription().replace("%COND%", conditionToEvaluate.getCondition()));
         }
         LOG.debug("Finished Evaluation condition : " + mes.getCodeString());
 
         // the decision whether we execute the action/control/step is taken from the codeString of the message.
         if (mes.getCodeString().equals("OK")) { // If code is OK, we execute the Operation.
-            execute_Operation = true;
+            isOperationToBeExecuted = true;
         } else { // Any other status and we don't execute anything.
-            execute_Operation = false;
+            isOperationToBeExecuted = false;
         }
 
-        ans.setItem(execute_Operation);
+        ans.setItem(isOperationToBeExecuted);
         ans.setResultMessage(mes);
         return ans;
     }
 
-    private AnswerItem<Boolean> evaluateCondition_ifTextInElement(TestCaseExecution tCExecution, String path, String expected, String conditionOperator, String isCaseSensitive) {
+    private AnswerItem<Boolean> evaluateCondition_ifTextInElement(TestCaseExecution tCExecution, String path, String expected, String isCaseSensitive) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking ifTextInElement on " + path + " element against value: " + expected);
 
@@ -226,7 +230,7 @@ public class ConditionService implements IConditionService {
 
     }
 
-    private AnswerItem<Boolean> evaluateCondition_ifTextNotInElement(TestCaseExecution tCExecution, String path, String expected, String conditionOperator, String isCaseSensitive) {
+    private AnswerItem<Boolean> evaluateCondition_ifTextNotInElement(TestCaseExecution tCExecution, String path, String expected, String isCaseSensitive) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking ifTextInElement on " + path + " element against value: " + expected);
 
@@ -605,7 +609,8 @@ public class ConditionService implements IConditionService {
         MessageEvent mes;
 
         if (tCExecution.getManualExecution().equals("Y")) {
-            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_NOTPOSSIBLE);
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUEMANUAL_IFELEMENTVISIBLE);
+            mes.resolveDescription("ELEMENT", conditionValue1);
         } else if (StringUtil.isNullOrEmpty(conditionValue1)) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTVISIBLE_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOperator));
@@ -1047,5 +1052,4 @@ public class ConditionService implements IConditionService {
         }
         return isCaseSensitive;
     }
-
 }

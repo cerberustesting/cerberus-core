@@ -1,4 +1,4 @@
-    /**
+/**
  * Cerberus Copyright (C) 2013 - 2017 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -71,6 +71,7 @@ import org.cerberus.engine.execution.IExecutionRunService;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.engine.execution.IRetriesService;
 import org.cerberus.engine.execution.IRobotServerService;
+import org.cerberus.engine.execution.enums.ConditionOperatorEnum;
 import org.cerberus.engine.execution.video.VideoRecorder;
 import org.cerberus.engine.gwt.IActionService;
 import org.cerberus.engine.gwt.IControlService;
@@ -345,7 +346,8 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
             /**
-             * For BrowserStack and LambdaTest, we try to enrich the Tag with build hash.
+             * For BrowserStack and LambdaTest, we try to enrich the Tag with
+             * build hash.
              */
             switch (tCExecution.getRobotProvider()) {
                 case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
@@ -360,7 +362,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * Get used SeleniumCapabilities (empty if application is not GUI)
              */
             LOG.debug(logPrefix + "Getting Selenium capabitities for GUI applications.");
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI) && !tCExecution.getManualExecution().equals("Y")) {
                 try {
                     Capabilities caps = this.robotServerService.getUsedCapabilities(tCExecution.getSession());
                     tCExecution.setVersion(caps.getVersion());
@@ -369,7 +371,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     LOG.error(logPrefix + "Exception on Selenium getting Used Capabilities.", ex);
                 }
                 LOG.debug(logPrefix + "Selenium capabitities loaded.");
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+            } else if ((tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) && !tCExecution.getManualExecution().equals("Y")) {
                 //do nothing, and keep the robot name
             } else {
                 // If Selenium is not needed, the selenium and browser info is set to empty.
@@ -558,6 +560,8 @@ public class ExecutionRunService implements IExecutionRunService {
 
                     boolean doStepStopExecution = false;
                     for (TestCaseStep testCaseStep : mainExecutionTestCaseStepList) {
+
+                        ConditionOperatorEnum testcaseStepConditionEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(testCaseStep.getConditionOperator());
 
                         // exeMod management : We trigger Forced Step no matter if previous step execution asked to stop.
                         if (!doStepStopExecution || testCaseStep.isExecutionForced()) {
@@ -784,14 +788,21 @@ public class ExecutionRunService implements IExecutionRunService {
                                         testCaseStepExecution.setStepResultMessage(new MessageEvent(MessageEventEnum.STEP_SUCCESS));
                                     }
 
+                                    /*
+                                    TODO : tester si execution manuelle et si la condition doit être vérifier par l'opérateur
+                                    si oui concaténer la description de la step avec le message de execution de la condition
+                                     */
+                                    if (tCExecution.getManualExecution().equals("Y") && testcaseStepConditionEnum.isOperatorEvaluationRequired()) {
+                                        testCaseStepExecution.setDescription(testCaseStep.getDescription() + " - " + testcaseStepConditionEnum.getCondition());
+                                    }
+
                                     testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
 
                                     if (testCaseStepExecution.isStopExecution()) {
                                         break;
                                     }
 
-                                } else // We don't execute the step and record a generic execution.
-                                if ((!descriptionOrConditionStepDecodeError) && (!conditionStepError)) {
+                                } else if ((!descriptionOrConditionStepDecodeError) && (!conditionStepError)) { // We don't execute the step and record a generic execution.
 
                                     /**
                                      * Register Step in database
@@ -1276,6 +1287,8 @@ public class ExecutionRunService implements IExecutionRunService {
 
     private TestCaseStepActionExecution executeAction(TestCaseStepActionExecution actionExe, TestCaseExecution exe) {
 
+        ConditionOperatorEnum actionConditionOperatorEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(actionExe.getConditionOperator());
+
         LOG.debug("Starting execute Action : " + actionExe.getAction());
         AnswerItem<String> answerDecode = new AnswerItem<>();
 
@@ -1307,6 +1320,11 @@ public class ExecutionRunService implements IExecutionRunService {
          * Register Action in database
          */
         LOG.debug("Registering Action : " + actionExe.getAction());
+
+        if (exe.getManualExecution().equals("Y") && actionConditionOperatorEnum.isOperatorEvaluationRequired()) {
+            actionExe.setDescription(actionExe.getDescription() + " - " + actionConditionOperatorEnum.getCondition());
+        }
+
         this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(actionExe);
         LOG.debug("Registered Action");
 
@@ -1557,6 +1575,8 @@ public class ExecutionRunService implements IExecutionRunService {
 
     private TestCaseStepActionControlExecution executeControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution, TestCaseExecution tcExecution) {
 
+        ConditionOperatorEnum controlConditionOperatorEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(testCaseStepActionControlExecution.getConditionOperator());
+
         /**
          * If execution is not manual, do control and record files
          */
@@ -1580,6 +1600,9 @@ public class ExecutionRunService implements IExecutionRunService {
          * Register Control in database
          */
         LOG.debug("Registering Control : " + testCaseStepActionControlExecution.getControlSequence());
+        if (tcExecution.getManualExecution().equals("Y") && controlConditionOperatorEnum.isOperatorEvaluationRequired()) {
+            testCaseStepActionControlExecution.setDescription(testCaseStepActionControlExecution.getDescription() + " - " + controlConditionOperatorEnum.getCondition());
+        }
         this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
         LOG.debug("Registered Control");
 
@@ -1635,7 +1658,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
     @Override
     @Async
-    public TestCaseExecution executeTestCaseAsynchroneously(TestCaseExecution tCExecution) throws CerberusException {
+    public TestCaseExecution executeTestCaseAsynchronously(TestCaseExecution tCExecution) throws CerberusException {
         try {
             return executeTestCase(tCExecution);
         } catch (CerberusException ex) {

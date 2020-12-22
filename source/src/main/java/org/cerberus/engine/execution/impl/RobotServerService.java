@@ -1008,7 +1008,7 @@ public class RobotServerService implements IRobotServerService {
     @Override
     public boolean stopServer(TestCaseExecution tce) {
         Session session = tce.getSession();
-        if (session.isStarted()) {
+        if (session != null && session.isStarted()) {
             try {
                 // Wait 2 sec till HAR is exported
                 Thread.sleep(2000);
