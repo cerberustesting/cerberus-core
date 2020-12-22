@@ -96,11 +96,21 @@ Unknown action. Should be used when the action is not yet known.
 Warning: make the execution fail. 
  
 ==== click 
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
 Click on the left mouse button on an _element_ inside the current page.
 
 *[blue]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference.
 
 ==== longPress 
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Click during a specific duration on the left mouse button on an _element_ inside the current page.
 
 *[blue]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference.
@@ -108,17 +118,51 @@ Click during a specific duration on the left mouse button on an _element_ inside
 *[blue]#Value2#*	Duration of the click in milliseconds.
 
 ==== mouseLeftButtonPress
-Press and keep the left mouse button pressed on an _element_ until the action 'mouseLeftButtonRelease' is executed. 
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Press and keep the left mouse button pressed on an _element_ until the action 'mouseLeftButtonRelease' is executed.
+If _element_ not defined, Sikuli engine will be used and mouse button will be pressed on the current pocsition of the mouse pointer.
 
 *[blue]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference.
 
 ==== mouseLeftButtonRelease
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
 Release the mouse button on an __element__. 
-Usefull with ButtonPress to perform drag & drop 
+Usefull with ButtonPress to perform drag & drop but also to draw picture using Sikuli engine.
 
 *[blue]#Value1#*	Identifier and name of the element where release will be done in the form of : identifier=html_reference.
 
+==== mouseMove
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Allow to move the mouse.
+
+*[blue]#Value1#*	List of x and y relative move to perform separated by semi comma.
+
+.Move pointer following a square of 50px on the right/bottom side of the pointer
+====
+50,0 ; 0,50 ; -50,0 ; 0,-50
+====
+.Move pointer following a line down the current pointer position.
+====
+50,0 ; 0,50 ; -50,0 ; 0,-50
+====
 ==== doubleClick 
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
 Double click on an _element_ inside the current page.
 
 *[blue]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference.
@@ -576,6 +620,24 @@ This action is only possible when Robot has the Cerberus executor activated and 
 It also require at least version 1.1 of the executor.
 ====
 
+==== indexNetworkTrafficContent
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Allow to index the network traffic content into pieces. This action allows, during a testcase, to define some checkpoint that will isolate the traffic statistics done before and after the index. When the action is triggered, Cerberus save the number of requests performed since the beginning of the testcase in order to index them. When at least an index exist on a testcase, the 'Network' tab displayed inside the testcase execution report allow to filter the various dashboard on a selection of indexes.
+When that action is performed, the 'setNetworkTrafficContent' action and 'getFromNetworkTraffic' default to the content that occured since that last index created.
+That action is handy in order to perform a full end user scenario (ex : a customer going through a checkout) and perform control on traffic done only on some isolated part of the scenario. Thanks to that action I can validate that a certain hit has been done on a specific part of the testcase (ex : no hits perfomed during the payment page loading.)
+
+*[blue]#Value1#* : Name of the index.
+
+[NOTE]
+====
+This action is only possible when Robot has the Cerberus executor activated and fully working.
+It also require at least version 1.1 of the executor.
+====
+
 ==== setServiceCallContent
 |=== 
 
@@ -648,6 +710,9 @@ image:chromeXPathConsole2.png[XPath Chrome Console,align="center"]
  - coord=
  
  - picture=
+
+If no indentifier is defined, Cerberus will either consider that it is an _**id**_ or an _**xpath**_ if it starts by // (most xpath does start by //).
+That behaviour allows to copy/paste from Cerberus to any other tools without being forced to add or remove xpath=.
 
 .by Id
 ====
