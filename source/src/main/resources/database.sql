@@ -5629,3 +5629,8 @@ ALTER TABLE robot ADD COLUMN `ProfileFolder` VARCHAR(400) NOT NULL DEFAULT '' AF
 -- 1582
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_sikuli_wait_element', '30000', 'Integer that correspond to the number of milliseconds that sikuli will wait before give timeout, when searching an element.');
+
+-- 1583
+INSERT INTO invariant (idname, value, sort, description, VeryShortDesc)
+  VALUES('ACTION', 'mouseMove', 4500, 'Move the mouse', 'Move the mouse');
+

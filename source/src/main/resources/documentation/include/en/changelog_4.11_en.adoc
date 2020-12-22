@@ -23,6 +23,7 @@
 * Various improvement on error management of Sikuli actions.
 * Support for  conditions verify[Not]Exist for sikuli engine.
 * new parameter 'cerberus_sikuli_wait_element' in order to tune sikuli timeout independently.
+* Added 'mouseMove' action. That action allow to move the mouse using Sikuli backbone.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
