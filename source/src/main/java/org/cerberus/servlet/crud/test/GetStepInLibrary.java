@@ -86,13 +86,13 @@ public class GetStepInLibrary extends HttpServlet {
             for (TestCaseStep list : tcsList) {
                 JSONObject tcs = new JSONObject();
                 tcs.put("test", list.getTest());
-                tcs.put("testCase", list.getTestCase());
-                tcs.put("step", list.getStep());
+                tcs.put("testCase", list.getTestcase());
+                tcs.put("step", list.getStepId());
                 tcs.put("sort", list.getSort());
                 tcs.put("description", list.getDescription());
-                if (list.getTestCaseObj() != null) {
-                    tcs.put("tcdesc", list.getTestCaseObj().getDescription());
-                    tcs.put("tcapp", list.getTestCaseObj().getApplication());
+                if (list.getTestcaseObj() != null) {
+                    tcs.put("tcdesc", list.getTestcaseObj().getDescription());
+                    tcs.put("tcapp", list.getTestcaseObj().getApplication());
                 }
                 array.put(tcs);
             }

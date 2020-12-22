@@ -33,6 +33,7 @@ var actionUIList = {
         {"type": "doubleClick", "aval1": "Chemin vers l'élement à double-cliquer", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "rightClick", "aval1": "Chemin vers l'élement à clicker avec le bouton droit", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "mouseOver", "aval1": "Chemin vers l'élement", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "mouseMove", "aval1": "Coordonnées relatives (ex : 50,100 ; 200,50)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "focusToIframe", "aval1": "Chemin vers l'élement de l'iFrame à cibler", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "focusDefaultIframe", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "switchToWindow", "aval1": "Titre ou url de la fenêtre", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
@@ -62,7 +63,7 @@ var actionUIList = {
         {"type": "executeSqlStoredProcedure", "aval1": "Nom de Base de donnée", "acol1": "col-lg-3", "aval2": "Procedure Stoquée à executer", "acol2": "col-lg-6", "aval3": null, "acol3": "col-lg-5"},
         {"type": "calculateProperty", "aval1": "Nom d'une Proprieté", "acol1": "col-lg-5", "aval2": "[opt] Nom d'une autre propriété", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
         {"type": "setNetworkTrafficContent", "aval1": "URL à filtrer", "acol1": "col-lg-7", "aval2": "Activation du contenu des reponses http (Y/N)", "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "indexNetworkTraffic", "aval1": null, "acol1": "col-lg-7", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "indexNetworkTraffic", "aval1": "[opt] Nom de l'index", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
         {"type": "setServiceCallContent", "aval1": null, "acol1": "col-lg-7", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
         {"type": "setConsoleContent", "aval1": null, "acol1": "col-lg-7", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
         {"type": "setContent", "aval1": "Valeur", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
@@ -81,6 +82,7 @@ var actionUIList = {
         {"type": "doubleClick", "aval1": "Element path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "rightClick", "aval1": "Element path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "mouseOver", "aval1": "Element path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "mouseMove", "aval1": "Relative coord. (ex : 50,100 ; 200,50)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "focusToIframe", "aval1": "Element path of the target iFrame", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "focusDefaultIframe", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
         {"type": "switchToWindow", "aval1": "Window title or url", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
@@ -110,7 +112,7 @@ var actionUIList = {
         {"type": "executeSqlStoredProcedure", "aval1": "Database Name", "acol1": "col-lg-3", "aval2": "Stored Procedure", "acol2": "col-lg-6", "aval3": null, "acol3": "col-lg-5"},
         {"type": "calculateProperty", "aval1": "Property Name", "acol1": "col-lg-5", "aval2": "[opt] Name of an other property", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
         {"type": "setNetworkTrafficContent", "aval1": "url to filter", "acol1": "col-lg-7", "aval2": "Activate http response content (Y/N)", "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "indexNetworkTraffic", "aval1": null, "acol1": "col-lg-7", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
+        {"type": "indexNetworkTraffic", "aval1": "[opt] Index name", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
         {"type": "setServiceCallContent", "aval1": null, "acol1": "col-lg-7", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
         {"type": "setConsoleContent", "aval1": null, "acol1": "col-lg-7", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
         {"type": "setContent", "aval1": "Value to Set", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
@@ -1439,7 +1441,7 @@ function displayPageLabel(doc) {
     $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
     $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
     $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
-    $("[name='groupField']").html(doc.getDocOnline("invariant", "Type"));
+    $("[name='groupField']").html(doc.getDocOnline("invariant", "TESTCASE_TYPE"));
     $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
     $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
@@ -1563,11 +1565,11 @@ function setAllSort() {
                     }
                 }
                 var actionJson = action.getJsonData();
-                actionJson.controlArr = controlArr;
+                actionJson.controls = controlArr;
                 actionArr.push(actionJson);
             }
             var stepJson = step.getJsonData();
-            stepJson.actionArr = actionArr;
+            stepJson.actions = actionArr;
             stepArr.push(stepJson);
         }
     }
@@ -1627,8 +1629,8 @@ function saveScript(property) {
                 informationInitialTestCase: GetURLParameter("testcase"),
                 informationTest: GetURLParameter("test"),
                 informationTestCase: GetURLParameter("testcase"),
-                stepArray: stepArr,
-                propArr: propArr
+                steps: stepArr,
+                properties: propArr
             }),
             success: function () {
 
@@ -2021,7 +2023,7 @@ function drawInheritedProperty(propList) {
     for (var index = 0; index < propList.length; index++) {
         var property = propList[index];
         var test = property.fromTest;
-        var testcase = property.fromTestCase;
+        var testcase = property.fromTestcase;
 
         var moreBtn = $("<button class='btn btn-default add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
         var editBtn = $("<a href='./TestCaseScript.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI(testcase) + "&property=" + encodeURI(property.property) + "' class='btn btn-primary add-btn'></a>").append($("<span></span>").addClass("glyphicon glyphicon-pencil"));
@@ -2297,11 +2299,11 @@ function changeLib() {
     setModif(true);
     var stepHtml = $("#steps li.active");
     var stepData = stepHtml.data("item");
-    if (stepData.isLibraryStep === "Y") {
-        stepData.isLibraryStep = "N";
+    if (stepData.isLibraryStep) {
+        stepData.isLibraryStep = false;
         $(this).removeClass("btn-dark");
     } else {
-        stepData.isLibraryStep = "Y";
+        stepData.isLibraryStep = true;
         $(this).addClass("btn-dark");
     }
 }
@@ -2356,20 +2358,20 @@ function showImportStepDetail(element) {
 
 function initStep() {
     return {
-        "isLibraryStep": "N",
+        "isLibraryStep": false,
         "objType": "step",
         "libraryStepTest": "",
         "libraryStepTestCase": "",
-        "isUsedStep": "N",
+        "isUsingLibraryStep": false,
         "description": "",
         "libraryStepStepId": -1,
         "actions": [],
         "loop": "onceIfConditionTrue",
         "conditionOperator": "always",
-        "conditionVal1": "",
-        "conditionVal2": "",
-        "conditionVal3": "",
-        "isExecutionForced": "N"
+        "conditionValue1": "",
+        "conditionValue2": "",
+        "conditionValue3": "",
+        "isExecutionForced": false
     };
 }
 
@@ -2379,7 +2381,7 @@ function addStep(event) {
 
     // Setting the focus on the Description of the step.
     $('#addStepModal').on('shown.bs.modal', function () {
-        $('#description').focus();
+        $('#addStepModal #description').focus();
     });
 
     $("#addStepConfirm").unbind("click").click(function (event) {
@@ -2405,12 +2407,12 @@ function addStep(event) {
 
                     $.ajax({
                         url: "ReadTestCaseStep",
-                        data: {test: useStep.test, testcase: useStep.testCase, step: useStep.step},
+                        data: {test: useStep.test, testcase: useStep.testCase, stepid: useStep.stepId},
                         async: false,
                         success: function (data) {
-                            step.actions = data.tcsActions;
-                            for (var index = 0; index < data.tcsActionControls.length; index++) {
-                                var control = data.tcsActionControls[index];
+                            step.actions = data.actions;
+                            for (var index = 0; index < data.controls.length; index++) {
+                                var control = data.controls[index];
 
                                 for (var i = 0; i < step.actions.length; i++) {
                                     if (step.actions[i].actionId === control.actionId) {
@@ -2423,11 +2425,11 @@ function addStep(event) {
                         }
                     });
                     if ($("#" + generateImportInfoId(useStep)).find("[name='useStep']").prop("checked")) {
-                        step.isUsedStep = "Y";
+                        step.isUsingLibraryStep = true;
                         step.libraryStepTest = useStep.test;
                         step.libraryStepTestCase = useStep.testCase;
                         step.libraryStepStepId = useStep.step;
-                        step.useStepStepSort = useStep.sort;
+                        step.libraryStepSort = useStep.sort;
                     }
                 }
                 var stepObj = new Step(step, steps, true);
@@ -2605,13 +2607,13 @@ function showStepUsesLibraryInConfirmationModal(object) {
         data: {
             test: object.test,
             testcase: object.testcase,
-            step: object.stepId,
+            stepId: object.stepId,
             getUses: true
         },
         success: function (data) {
             var content = "";
             for (var i = 0; i < data.step.length; i++) {
-                content += "<a target='_blank' href='./TestCaseScript.jsp?test=" + encodeURI(data.step[i].test) + "&testcase=" + encodeURI(data.step[i].testcase) + "&step=" + encodeURI(data.step[i].sort) + "'>" + data.step[i].test + " - " + data.step[i].testcase + " - " + data.step[i].sort + " - " + data.step[i].description + "</a><br/>"
+                content += "<a target='_blank' href='./TestCaseScript.jsp?test=" + encodeURI(data.step[i].test) + "&testcase=" + encodeURI(data.step[i].testcase) + "&stepId=" + encodeURI(data.step[i].sort) + "'>" + data.step[i].test + " - " + data.step[i].testcase + " - " + data.step[i].sort + " - " + data.step[i].description + "</a><br/>"
             }
             $("#confirmationModal #otherStepThatUseIt").empty().append(content);
         }
@@ -2776,15 +2778,15 @@ function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
     this.isExecutionForced = json.isExecutionForced;
     this.loop = json.loop;
     this.conditionOperator = json.conditionOperator;
-    this.conditionVal1 = json.conditionVal1;
-    this.conditionVal2 = json.conditionVal2;
-    this.conditionVal3 = json.conditionVal3;
-    this.isUsedStep = json.isUsedStep;
+    this.conditionValue1 = json.conditionValue1;
+    this.conditionValue2 = json.conditionValue2;
+    this.conditionValue3 = json.conditionValue3;
+    this.isUsingLibraryStep = json.isUsingLibraryStep;
     this.isLibraryStep = json.isLibraryStep;
     this.libraryStepTest = json.libraryStepTest;
     this.libraryStepTestCase = json.libraryStepTestCase;
     this.libraryStepStepId = json.libraryStepStepId;
-    this.useStepStepSort = json.useStepStepSort;
+    this.libraryStepSort = json.libraryStepSort;
     this.test = json.test;
     this.testcase = json.testcase;
     this.isStepInUseByOtherTestCase = json.isStepInUseByOtherTestCase;
@@ -2792,7 +2794,7 @@ function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
     if (canUpdate) {
         // If we can update the testcase we check whether we can still modify
         // following the TestStepLibrary group.
-        if (!hasPermissionsStepLibrary && json.isLibraryStep === "Y") {
+        if (!hasPermissionsStepLibrary && json.isLibraryStep) {
             canUpdate = false;
         }
     }
@@ -2819,11 +2821,11 @@ Step.prototype.draw = function () {
         loopIcon = $("<span class='loopIcon'></span>").addClass("glyphicon glyphicon-refresh loop-Icon");
     }
 
-    if (this.isLibraryStep == "Y") {
+    if (this.isLibraryStep) {
         libraryIcon = $("<span class='libraryIcon'></span>").addClass("glyphicon glyphicon-book library-Icon");
     }
 
-    if (this.isUsedStep == "Y") {
+    if (this.isUsingLibraryStep) {
         libraryIcon = $("<span class='libraryIcon'></span>").addClass("glyphicon glyphicon-lock library-Icon");
     }
 
@@ -2880,7 +2882,7 @@ Step.prototype.show = function () {
     }
 
     $("#isLib").unbind("click");
-    if (object.isLibraryStep === "Y") {
+    if (object.isLibraryStep) {
         $("#isLib").addClass("btn-dark");
         if (object.isStepInUseByOtherTestCase) {
             $("#isLib").click(function () {
@@ -2896,9 +2898,9 @@ Step.prototype.show = function () {
         $("#isLib").click(changeLib);
     }
 
-    if (object.isUsedStep === "Y") {
+    if (object.isUsingLibraryStep) {
         $("#isLib").hide();
-        $("#UseStepRow").html("(" + doc.getDocLabel("page_testcasescript", "imported_from") + " <a href='./TestCaseScript.jsp?test=" + encodeURI(object.libraryStepTest) + "&testcase=" + encodeURI(object.libraryStepTestCase) + "&step=" + encodeURI(object.useStepStepSort) + "' >" + object.libraryStepTest + " - " + object.libraryStepTestCase + " - " + object.useStepStepSort + "</a>)").show();
+        $("#UseStepRow").html("(" + doc.getDocLabel("page_testcasescript", "imported_from") + " <a href='./TestCaseScript.jsp?test=" + encodeURI(object.libraryStepTest) + "&testcase=" + encodeURI(object.libraryStepTestCase) + "&step=" + encodeURI(object.libraryStepSort) + "' >" + object.libraryStepTest + " - " + object.libraryStepTestCase + " - " + object.libraryStepSort + "</a>)").show();
         $("#UseStepRowButton").html("|").show();
         $("#addAction").prop("disabled", true);
         $("#addActionBottomBtn").hide();
@@ -2933,17 +2935,17 @@ Step.prototype.show = function () {
 
     $("#stepConditionVal1").unbind("change").change(function () {
         setModif(true);
-        object.conditionVal1 = $(this).val();
+        object.conditionValue1 = $(this).val();
     });
 
     $("#stepConditionVal2").unbind("change").change(function () {
         setModif(true);
-        object.conditionVal2 = $(this).val();
+        object.conditionValue2 = $(this).val();
     });
 
     $("#stepConditionVal3").unbind("change").change(function () {
         setModif(true);
-        object.conditionVal3 = $(this).val();
+        object.conditionValue3 = $(this).val();
     });
 
     $("#stepConditionOperator").replaceWith(getSelectInvariant("STEPCONDITIONOPERATOR", false, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepConditionOperator"));
@@ -2962,9 +2964,9 @@ Step.prototype.show = function () {
 
     $("#isUseStep").unbind("click").click(function () {
         setModif(true);
-        if (object.isUsedStep === "Y") {
+        if (object.isUsingLibraryStep) {
             showModalConfirmation(function () {
-                object.isUsedStep = "N";
+                object.isUsingLibraryStep = false;
                 object.libraryStepStepId = -1;
                 object.libraryStepTest = "";
                 object.libraryStepTestCase = "";
@@ -2975,9 +2977,9 @@ Step.prototype.show = function () {
 
     $("#stepLoop").val(object.loop);
     $("#stepConditionOperator").val(object.conditionOperator);
-    $("#stepConditionVal1").val(object.conditionVal1);
-    $("#stepConditionVal2").val(object.conditionVal2);
-    $("#stepConditionVal3").val(object.conditionVal3);
+    $("#stepConditionVal1").val(object.conditionValue1);
+    $("#stepConditionVal2").val(object.conditionValue2);
+    $("#stepConditionVal3").val(object.conditionValue3);
     $("#stepDescription").val(object.description);
     $("#stepForceExe").val(object.isExecutionForced);
     $("#stepId").text(object.sort);
@@ -2998,7 +3000,7 @@ Step.prototype.show = function () {
     $("#isLib").attr("disabled", activateIsLib);
     // Detail of the Step can be modified if hasPermitionUpdate is true and Step
     // is not a useStep.
-    var activateDisableWithUseStep = !(object.hasPermissionsUpdate && !(object.isUsedStep === "Y"));
+    var activateDisableWithUseStep = !(object.hasPermissionsUpdate && !(object.isUsingLibraryStep));
     $("#stepLoop").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionOperator").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal1").attr("disabled", activateDisableWithUseStep);
@@ -3086,16 +3088,16 @@ Step.prototype.getJsonData = function () {
     json.stepId = this.stepId;
     json.sort = this.sort;
     json.description = this.description;
-    json.isUsedStep = this.isUsedStep;
+    json.isUsingLibraryStep = this.isUsingLibraryStep;
     json.libraryStepTest = this.libraryStepTest;
     json.libraryStepTestCase = this.libraryStepTestCase;
     json.libraryStepStepId = this.libraryStepStepId;
     json.isLibraryStep = this.isLibraryStep;
     json.loop = this.loop;
     json.conditionOperator = this.conditionOperator;
-    json.conditionVal1 = this.conditionVal1;
-    json.conditionVal2 = this.conditionVal2;
-    json.conditionVal3 = this.conditionVal3;
+    json.conditionValue1 = this.conditionValue1;
+    json.conditionValue2 = this.conditionValue2;
+    json.conditionValue3 = this.conditionValue3;
     json.isExecutionForced = this.isExecutionForced;
 
     return json;
@@ -3164,7 +3166,7 @@ Action.prototype.draw = function (afterAction) {
     var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding", "0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
     var imgGrp = $("<div></div>").addClass("col-lg-1").css("height", "100%").append($("<div style='margin-top:40px;'></div>").append($("<img>").attr("id", "ApplicationObjectImg").css("width", "100%")));
 
-    if ((this.parentStep.isUsedStep === "N") && (action.hasPermissionsUpdate)) {
+    if ((!this.parentStep.isUsingLibraryStep) && (action.hasPermissionsUpdate)) {
         drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
         drag.on("dragstart", handleDragStart);
         drag.on("dragenter", handleDragEnter);
@@ -3392,7 +3394,7 @@ Action.prototype.generateContent = function () {
 
     actionconditionoperator.trigger("change");
 
-    if ((this.parentStep.isUsedStep === "Y") || (!obj.hasPermissionsUpdate)) {
+    if ((this.parentStep.isUsingLibraryStep) || (!obj.hasPermissionsUpdate)) {
         descriptionField.prop("readonly", true);
         value1Field.prop("readonly", true);
         value2Field.prop("readonly", true);
@@ -3498,7 +3500,7 @@ Control.prototype.draw = function (afterControl) {
 
     var content = this.generateContent();
 
-    if ((this.parentAction.parentStep.isUsedStep === "N") && (control.hasPermissionsUpdate)) {
+    if ((!this.parentAction.parentStep.isUsingLibraryStep) && (control.hasPermissionsUpdate)) {
         drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
         drag.on("dragstart", handleDragStart);
         drag.on("dragenter", handleDragEnter);
@@ -3529,7 +3531,7 @@ Control.prototype.draw = function (afterControl) {
         }
     });
 
-    if ((this.parentStep.isUsedStep === "Y") || (!control.hasPermissionsUpdate)) {
+    if ((this.parentStep.isUsingLibraryStep) || (!control.hasPermissionsUpdate)) {
 
         supprBtn.attr("disabled", true);
         addBtn.attr("disabled", true);
@@ -3716,7 +3718,7 @@ Control.prototype.generateContent = function () {
     thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(controlconditionoperator));
 
 
-    if ((this.parentStep.isUsedStep === "Y") || (!obj.hasPermissionsUpdate)) {
+    if ((this.parentStep.isUsingLibraryStep) || (!obj.hasPermissionsUpdate)) {
         descriptionField.prop("readonly", true);
         controlValue1Field.prop("readonly", true);
         controlValue2Field.prop("readonly", true);

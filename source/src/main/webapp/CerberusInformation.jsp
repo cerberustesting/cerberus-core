@@ -109,10 +109,11 @@
                                         <table class="table table-bordered table-hover nomarginbottom dataTable" id="cerberusTable">
                                             <thead>
                                                 <tr>
-                                                    <th class="text-center" id="systemHeader" name="systemHeader">Project</th>
-                                                    <th class="text-center" id="countryHeader" name="countryHeader">Version</th>
-                                                    <th class="text-center" id="countryHeader" name="countryHeader">Database Target Version</th>
-                                                    <th class="text-center" id="countryHeader" name="countryHeader">Database Current Version</th>
+                                                    <th class="text-center" id="projectHeader" name="systemHeader">Project</th>
+                                                    <th class="text-center" id="versionHeader" name="countryHeader">Version</th>
+                                                    <th class="text-center" id="buildHeader" name="countryHeader">Build</th>
+                                                    <th class="text-center" id="dtbTargetHeader" name="countryHeader">Database Target Version</th>
+                                                    <th class="text-center" id="dtbCurrentHeader" name="countryHeader">Database Current Version</th>
                                                     <th class="text-center" id="environmentHeader" name="environmentHeader">Environment</th>
                                                 </tr>
                                             </thead>

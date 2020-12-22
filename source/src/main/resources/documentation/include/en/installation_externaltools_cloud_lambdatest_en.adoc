@@ -1,0 +1,30 @@
+====  Introduction
+
+You can use LambdaTest as a robot infrastructure.
+
+https://www.lambdatest.com/[image:lambdatest-logo.png[LambdaTest,200,100]]
+
+LambdaTest advanced integration covers: 
+
+* An automatic mapping of capabilities (test name, tag/build values, verbose execution level,... ). Parameter `cerberus_lambdatest_defaultexename` can be used in order to tune the name of the execution on LambdaTest side (default to `Exe : %EXEID% - %TESTDESCRIPTION%	`).
+
+* Automatic update of execution status
+
+* Easy access from Cerberus to LambdaTest execution from the `robot` tab or `go to` menu. 
+
+image::lambdatestexeshortcut.png[Execution Shortcut]
+
+To run your tests on LambdaTest Automate, you must:
+
+====  Create/Update the Robot
+
+To execute the tests with LambdaTest the robot executor must be added/updated with the following values:
+
+* *Hostname* - `hub.lambdatest.com`
+* *Host Username* - `lambdatest_username`
+* *Host Password* - `lambdatest_access_key`
+
+image::lambdatestrobot.png[Robot Configuration]
+
+Optionaly, you can add some extra https://www.lambdatest.com/capabilities-generator/[capabilities]
+

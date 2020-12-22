@@ -149,7 +149,7 @@ public class UpdateTestCaseProperties extends HttpServlet {
                          * Update was successful. Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createForPrivateCalls("/UpdateTestCaseProperties", "UPDATE", "Update testcaseProperties : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
+                        logEventService.createForPrivateCalls("/UpdateTestCaseProperties", "UPDATE", "Update testcaseProperties : ['" + tc.getTest() + "'|'" + tc.getTestcase() + "']", request);
                     }
 
                 }
@@ -193,7 +193,7 @@ public class UpdateTestCaseProperties extends HttpServlet {
                 for (int j = 0; j < countries.length(); j++) {
                     String country = countries.getString(j);
 
-                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod, 0, rank));
+                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod, 0, rank, null, null, null, null));
                 }
             }
         }

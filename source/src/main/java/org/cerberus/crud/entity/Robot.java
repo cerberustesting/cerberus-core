@@ -45,6 +45,7 @@ public class Robot {
     private String active;
     private String userAgent;
     private String screenSize;
+    private String profileFolder;
     private String robotDecli;
     private String lbexemethod; // Contain the method used in order to spread the load against all executors of the robot.
     private String description;
@@ -62,6 +63,14 @@ public class Robot {
     private List<RobotCapability> capabilities;
     private List<RobotCapability> capabilitiesDecoded;
     private List<RobotExecutor> executors;
+
+    public String getProfileFolder() {
+        return profileFolder;
+    }
+
+    public void setProfileFolder(String profileFolder) {
+        this.profileFolder = profileFolder;
+    }
 
     public String getUsrCreated() {
         return UsrCreated;

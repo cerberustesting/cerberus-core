@@ -76,6 +76,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setRobotDecli(robotDecli);
         newTce.setRobotProvider(robotProvider);
         newTce.setRobotSessionID(robotSessionId);
+        newTce.setRobotProviderSessionID("");
         newTce.setRevision(revision);
         newTce.setStart(start);
         newTce.setStatus(status);

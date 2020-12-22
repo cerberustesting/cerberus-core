@@ -59,7 +59,13 @@ public class Parameter {
     public static final String VALUE_cerberus_smtp_isSetTls = "cerberus_smtp_isSetTls";
     public static final String VALUE_cerberus_queueexecution_enable = "cerberus_queueexecution_enable";
     public static final String VALUE_cerberus_splashpage_enable = "cerberus_splashpage_enable";
-    public static final String VALUE_cerberus_manage_token = "cerberus_manage_token";
+    public static final String VALUE_cerberus_apikey_enable = "cerberus_apikey_enable";
+    public static final String VALUE_cerberus_apikey_value1 = "cerberus_apikey_value1";
+    public static final String VALUE_cerberus_apikey_value2 = "cerberus_apikey_value2";
+    public static final String VALUE_cerberus_apikey_value3 = "cerberus_apikey_value3";
+    public static final String VALUE_cerberus_apikey_value4 = "cerberus_apikey_value4";
+    public static final String VALUE_cerberus_apikey_value5 = "cerberus_apikey_value5";
+//    public static final String VALUE_cerberus_accesskey_value = "cerberus_manage_token";
     public static final String VALUE_cerberus_manage_timeout = "cerberus_manage_timeout";
     public static final String VALUE_cerberus_executeCerberusCommand_password = "cerberus_executeCerberusCommand_password";
     public static final String VALUE_cerberus_executeCerberusCommand_path = "cerberus_executeCerberusCommand_path";

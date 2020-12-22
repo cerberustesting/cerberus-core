@@ -212,7 +212,7 @@ public class RecorderService implements IRecorderService {
         if (testCaseStepActionControlExecution == null) {
             test = testCaseStepActionExecution.getTest();
             testCase = testCaseStepActionExecution.getTestCase();
-            step = String.valueOf(testCaseStepActionExecution.getStep());
+            step = String.valueOf(testCaseStepActionExecution.getStepId());
             index = String.valueOf(testCaseStepActionExecution.getIndex());
             sequence = String.valueOf(testCaseStepActionExecution.getSequence());
             controlString = controlNumber.equals(0) ? null : String.valueOf(controlNumber);
@@ -222,7 +222,7 @@ public class RecorderService implements IRecorderService {
             controlNumber = testCaseStepActionControlExecution.getControlSequence();
             test = testCaseStepActionControlExecution.getTest();
             testCase = testCaseStepActionControlExecution.getTestCase();
-            step = String.valueOf(testCaseStepActionControlExecution.getStep());
+            step = String.valueOf(testCaseStepActionControlExecution.getStepId());
             index = String.valueOf(testCaseStepActionControlExecution.getIndex());
             sequence = String.valueOf(testCaseStepActionControlExecution.getSequence());
             controlString = controlNumber.equals(0) ? null : String.valueOf(controlNumber);
@@ -319,7 +319,7 @@ public class RecorderService implements IRecorderService {
 
         String test = testCaseStepActionExecution.getTest();
         String testCase = testCaseStepActionExecution.getTestCase();
-        String step = String.valueOf(testCaseStepActionExecution.getStep());
+        String step = String.valueOf(testCaseStepActionExecution.getStepId());
         String index = String.valueOf(testCaseStepActionExecution.getIndex());
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         String controlString = (control < 0) ? null : String.valueOf(control);
@@ -393,7 +393,7 @@ public class RecorderService implements IRecorderService {
         TestCaseExecutionFile object = null;
         String test = testCaseExecution.getTest();
         String testCase = testCaseExecution.getTestCase();
-        String step = String.valueOf(testCaseStepActionExecution.getStep());
+        String step = String.valueOf(testCaseStepActionExecution.getStepId());
         String index = String.valueOf(testCaseStepActionExecution.getIndex());
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         String controlString = control.equals(0) ? null : String.valueOf(control);
@@ -453,7 +453,7 @@ public class RecorderService implements IRecorderService {
         if (testCaseStepActionExecution != null) {
             test = testCaseExecution.getTest();
             testCase = testCaseExecution.getTestCase();
-            step = String.valueOf(testCaseStepActionExecution.getStep());
+            step = String.valueOf(testCaseStepActionExecution.getStepId());
             index = String.valueOf(testCaseStepActionExecution.getIndex());
             sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         }
@@ -558,7 +558,7 @@ public class RecorderService implements IRecorderService {
         if (testCaseStepActionExecution != null) {
             test = testCaseExecution.getTest();
             testCase = testCaseExecution.getTestCase();
-            step = String.valueOf(testCaseStepActionExecution.getStep());
+            step = String.valueOf(testCaseStepActionExecution.getStepId());
             index = String.valueOf(testCaseStepActionExecution.getIndex());
             sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         }
@@ -594,7 +594,7 @@ public class RecorderService implements IRecorderService {
         if (testCaseStepActionExecution != null) {
             test = testCaseExecution.getTest();
             testCase = testCaseExecution.getTestCase();
-            step = String.valueOf(testCaseStepActionExecution.getStep());
+            step = String.valueOf(testCaseStepActionExecution.getStepId());
             index = String.valueOf(testCaseStepActionExecution.getIndex());
             sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         }
@@ -660,7 +660,7 @@ public class RecorderService implements IRecorderService {
         if (testCaseStepActionExecution != null) {
             test = testCaseExecution.getTest();
             testCase = testCaseExecution.getTestCase();
-            step = String.valueOf(testCaseStepActionExecution.getStep());
+            step = String.valueOf(testCaseStepActionExecution.getStepId());
             index = String.valueOf(testCaseStepActionExecution.getIndex());
             sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         }
@@ -702,7 +702,7 @@ public class RecorderService implements IRecorderService {
         if (testCaseStepActionExecution != null) {
             test = testCaseExecution.getTest();
             testCase = testCaseExecution.getTestCase();
-            step = String.valueOf(testCaseStepActionExecution.getStep());
+            step = String.valueOf(testCaseStepActionExecution.getStepId());
             index = String.valueOf(testCaseStepActionExecution.getIndex());
             sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         }
@@ -1038,7 +1038,7 @@ public class RecorderService implements IRecorderService {
 
         try {
             // UPLOADED File.
-            Recorder recorder = this.initFilenames(executionId, tcsae.getTest(), tcsae.getTestCase(), String.valueOf(tcsae.getStep()), String.valueOf(tcsae.getIndex()), String.valueOf(tcsae.getSequence()), null, null, 0, "image", "jpg", false);
+            Recorder recorder = this.initFilenames(executionId, tcsae.getTest(), tcsae.getTestCase(), String.valueOf(tcsae.getStepId()), String.valueOf(tcsae.getIndex()), String.valueOf(tcsae.getSequence()), null, null, 0, "image", "jpg", false);
             File storeFile = new File(recorder.getFullFilename());
             // saves the file on disk
             uploadedFile.write(storeFile);

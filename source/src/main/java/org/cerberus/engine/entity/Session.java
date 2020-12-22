@@ -35,12 +35,15 @@ public class Session {
     private String hostUser;
     private String hostPassword;
     private String port;
+    private String nodeHost;
+    private String nodePort;
     private WebDriver driver;
     private AppiumDriver appiumDriver;
     private Integer cerberus_selenium_pageLoadTimeout;
     private Integer cerberus_selenium_implicitlyWait;
     private Integer cerberus_selenium_setScriptTimeout;
     private Integer cerberus_selenium_wait_element;
+    private Integer cerberus_sikuli_wait_element;
     private Integer cerberus_appium_wait_element;
     private Integer cerberus_selenium_action_click_timeout;
     private Integer cerberus_appium_action_longpress_wait;
@@ -50,6 +53,22 @@ public class Session {
     private Integer cerberus_selenium_autoscroll_horizontal_offset;
     private MutableCapabilities desiredCapabilities;
     private JSONArray consoleLogs;
+
+    public String getNodeHost() {
+        return nodeHost;
+    }
+
+    public void setNodeHost(String nodeHost) {
+        this.nodeHost = nodeHost;
+    }
+
+    public String getNodePort() {
+        return nodePort;
+    }
+
+    public void setNodePort(String nodePort) {
+        this.nodePort = nodePort;
+    }
 
     public JSONArray getConsoleLogs() {
         return consoleLogs;
@@ -88,6 +107,14 @@ public class Session {
 
     public void setCerberus_selenium_setScriptTimeout(Integer cerberus_selenium_setScriptTimeout) {
         this.cerberus_selenium_setScriptTimeout = cerberus_selenium_setScriptTimeout;
+    }
+
+    public Integer getCerberus_sikuli_wait_element() {
+        return cerberus_sikuli_wait_element;
+    }
+
+    public void setCerberus_sikuli_wait_element(Integer cerberus_sikuli_wait_element) {
+        this.cerberus_sikuli_wait_element = cerberus_sikuli_wait_element;
     }
 
     public Integer getCerberus_selenium_wait_element() {

@@ -316,9 +316,12 @@ public class ExecutionStartService implements IExecutionStartService {
                     }
 
                     tCExecution.setUrl(StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", ""));
-                    // If domain is empty we guess it from URL.
-                    if (StringUtil.isNullOrEmpty(cea.getDomain())) {
-                        cea.setDomain(StringUtil.getDomainFromUrl(tCExecution.getUrl()));
+                    if ("GUI".equals(tCExecution.getApplicationObj().getType())) {
+                        // Domain calculation only make sense for Web applications.
+                        // If domain is empty we guess it from URL.
+                        if (StringUtil.isNullOrEmpty(cea.getDomain())) {
+                            cea.setDomain(StringUtil.getDomainFromUrl(tCExecution.getUrl()));
+                        }
                     }
                     tCExecution.setCountryEnvironmentParameters(cea);
                 } else {

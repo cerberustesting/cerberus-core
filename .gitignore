@@ -1,7 +1,11 @@
 *.class
 
 # Package Files #
+# exclude all .jar files
 *.jar
+# except the ones in source/lib folder
+!/source/lib/*.jar
+
 *.ear
 .directory
 *~

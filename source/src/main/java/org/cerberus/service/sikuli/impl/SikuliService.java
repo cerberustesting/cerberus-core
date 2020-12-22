@@ -44,6 +44,7 @@ import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.sikuli.ISikuliService;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,7 +60,7 @@ public class SikuliService implements ISikuliService {
 
     @Autowired
     private IParameterService parameterService;
-    
+
     private static final Logger LOG = LogManager.getLogger(SikuliService.class);
 
     /**
@@ -69,6 +70,9 @@ public class SikuliService implements ISikuliService {
     public static final String SIKULI_CLICK = "click";
     public static final String SIKULI_DOUBLECLICK = "doubleClick";
     public static final String SIKULI_RIGHTCLICK = "rightClick";
+    public static final String SIKULI_LEFTCLICKPRESS = "mouseDown";
+    public static final String SIKULI_LEFTCLICKRELEASE = "mouseUp";
+    public static final String SIKULI_MOUSEMOVE = "mouseMove";
     public static final String SIKULI_SWITCHTOWINDOW = "switchToWindow";
     public static final String SIKULI_OPENAPP = "openApp";
     public static final String SIKULI_CLOSEAPP = "closeApp";
@@ -123,7 +127,8 @@ public class SikuliService implements ISikuliService {
         result.put("text", text);
         result.put("defaultWait", defaultWait);
         result.put("pictureExtension", extension);
-//        result.put("minSimilarity", parameterService.getParameterStringByKey("cerberus_sikuli_minSimilarity", "", null));
+        result.put("minSimilarity", parameterService.getParameterStringByKey("cerberus_sikuli_minSimilarity", "", ""));
+        result.put("highlightElement", parameterService.getParameterStringByKey("cerberus_sikuli_highlightElement", "", "0"));
         return result;
     }
 
@@ -141,6 +146,11 @@ public class SikuliService implements ISikuliService {
              */
             url = new URL(urlToConnect);
             connection = (HttpURLConnection) url.openConnection();
+            LOG.debug("Trying to connect to: " + urlToConnect);
+
+            if (connection != null) {
+                LOG.debug("Answer from Server: " + connection.getResponseCode());
+            }
 
             if (connection == null || connection.getResponseCode() != 200) {
                 return false;
@@ -168,26 +178,38 @@ public class SikuliService implements ISikuliService {
         BufferedReader in = null;
         PrintStream os = null;
 
+        StringBuilder response = new StringBuilder();
         URL url;
-        String urlToConnect = "http://" + session.getHost() + ":" + session.getPort() + "/extra/ExecuteSikuliAction";
+        String urlToConnect = "http://" + session.getNodeHost() + ":" + session.getNodePort() + "/extra/ExecuteSikuliAction";
         try {
             /**
              * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
              */
             url = new URL(urlToConnect);
+            LOG.debug("Open Connection to : " + urlToConnect);
             connection = (HttpURLConnection) url.openConnection();
+            // We let Sikuli extension the sikuli timeout + 10 s to perform the action/control.
+            connection.setReadTimeout(session.getCerberus_sikuli_wait_element() + 10000);
+            connection.setConnectTimeout(session.getCerberus_sikuli_wait_element() + 10000);
 
             connection.setRequestMethod("POST");
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
             connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-            JSONObject postParameters = generatePostParameters(action, locator, text, session.getCerberus_selenium_wait_element());
+            JSONObject postParameters = generatePostParameters(action, locator, text, session.getCerberus_sikuli_wait_element());
             connection.setDoOutput(true);
 
             // Send post request
             os = new PrintStream(connection.getOutputStream());
+            LOG.debug("Sending JSON : " + postParameters.toString());
             os.println(postParameters.toString());
             os.println("|ENDS|");
+
+            if (connection == null) {
+                LOG.warn("No response to the request !!");
+            } else {
+                LOG.debug("http response status code : " + connection.getResponseCode());
+            }
 
             if (connection == null || connection.getResponseCode() != 200) {
                 msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
@@ -196,7 +218,6 @@ public class SikuliService implements ISikuliService {
             in = new BufferedReader(
                     new InputStreamReader(connection.getInputStream()));
             String inputLine;
-            StringBuilder response = new StringBuilder();
 
             /**
              * Wait here until receiving |ENDR| String
@@ -212,39 +233,47 @@ public class SikuliService implements ISikuliService {
             JSONObject objReceived = new JSONObject(response.toString());
             answer.setItem(objReceived);
 
+            LOG.debug("Sikuli Answer: " + response.toString());
             if (objReceived.has("status")) {
-                if ("Failed".equals(objReceived.getString("status"))) {
-                    msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
-                } else {
+                if ("OK".equals(objReceived.getString("status"))) {
                     msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+                } else if ("KO".equals(objReceived.getString("status"))) {
+                    msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_BUTRETURNEDKO);
+                } else {
+                    if (objReceived.has("message") && !StringUtil.isNullOrEmpty(objReceived.getString("message"))) {
+                        msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL);
+                        msg.resolveDescription("DETAIL", objReceived.getString("message"));
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
+                    }
                 }
             } else {
-                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
+                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL).resolveDescription("DETAIL", "Sikuli Extention returned an invalid answer !! (Missing status information)");
             }
             in.close();
         } catch (MalformedURLException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_BADURL);
             mes.setDescription(mes.getDescription().replace("%URL%", urlToConnect));
             msg = mes;
         } catch (FileNotFoundException ex) {
-            LOG.warn(ex);
-            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_FILE_NOT_FOUND);
-            mes.setDescription(mes.getDescription().replace("%FILE%", locator));
+            LOG.warn(ex, ex);
+            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_BADURL);
+            mes.resolveDescription("URL", urlToConnect);
             msg = mes;
         } catch (IOException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.warn("Exception when converting response to JSON : " + response.toString(), ex);
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } catch (MimeTypeException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } catch (Exception ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
-            mes.setDescription(mes.getDescription().replace("%URL%", urlToConnect));
+            mes.resolveDescription("URL", urlToConnect);
             msg = mes;
         } finally {
             if (os != null) {
@@ -341,6 +370,27 @@ public class SikuliService implements ISikuliService {
         }
 
         return actionResult.getResultMessage();
+    }
+
+    @Override
+    public MessageEvent doSikuliActionLeftButtonPress(Session session) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_LEFTCLICKPRESS, null, "");
+        return actionResult.getResultMessage();
+
+    }
+
+    @Override
+    public MessageEvent doSikuliActionLeftButtonRelease(Session session) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_LEFTCLICKRELEASE, null, "");
+        return actionResult.getResultMessage();
+
+    }
+
+    @Override
+    public MessageEvent doSikuliActionMouseMove(Session session, String xyoffset) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_MOUSEMOVE, null, xyoffset);
+        return actionResult.getResultMessage();
+
     }
 
     @Override
@@ -492,9 +542,14 @@ public class SikuliService implements ISikuliService {
             message.setDescription(message.getDescription().replace("%STRING1%", locator));
             return message;
         }
-        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS_BUTRETURNEDKO).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", locator) + " - " + actionResult.getMessageDescription());
+            mes.setDescription(mes.getDescription().replace("%STRING1%", locator));
+            return mes;
+        }
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
+            MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+            mes.setDescription(mes.getDescription().replace("%ERROR%", locator) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
@@ -510,9 +565,14 @@ public class SikuliService implements ISikuliService {
             message.setDescription(message.getDescription().replace("%STRING1%", locator));
             return message;
         }
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS_BUTRETURNEDKO).getCodeString())) {
+            MessageEvent message = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
+            message.setDescription(message.getDescription().replace("%STRING1%", locator));
+            return message;
+        }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
-            MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", locator) + " - " + actionResult.getMessageDescription());
+            MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+            mes.setDescription(mes.getDescription().replace("%ERROR%", locator) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 

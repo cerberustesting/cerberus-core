@@ -303,8 +303,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('invariant','ENVIRONMENT','','fr','Environnement','',NULL)");
         b.append(",('invariant','FILTERNBDAYS','','en','Nb Days','Number of days to Filter the history table in the integration status.',NULL)");
         b.append(",('invariant','FILTERNBDAYS','','fr','Nb Jours','',NULL)");
-        b.append(",('invariant','Type','','en','Type','The type is a property of a <code class=\\'doc-crbvvoca\\'>test case</code> that can take the following values : <br><br><b>AUTOMATED</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> is fully automated and does not require any manual action.<br><b>MANUAL</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> has to be manually executed.<br><b>PRIVATE</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> exist for technical reason and will never appear on the reporting area. For example : <code class=\\'doc-fixed\\'>Pre Testing</code> test cases that are used for login purpose should all be PRIVATE.',NULL)");
-        b.append(",('invariant','Type','','fr','Type','',NULL)");
+        b.append(",('invariant','TESTCASE_TYPE','','en','Type','The type is a property of a <code class=\\'doc-crbvvoca\\'>test case</code> that can take the following values : <br><br><b>AUTOMATED</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> is fully automated and does not require any manual action.<br><b>MANUAL</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> has to be manually executed.<br><b>PRIVATE</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> exist for technical reason and will never appear on the reporting area. For example : <code class=\\'doc-fixed\\'>Pre Testing</code> test cases that are used for login purpose should all be PRIVATE.',NULL)");
+        b.append(",('invariant','TESTCASE_TYPE','','fr','Type','',NULL)");
         b.append(",('invariant','PRIORITY','','en','Priority','It is the priority level of the functionnality which is tested.',NULL)");
         b.append(",('invariant','PRIORITY','','fr','Priorité','',NULL)");
         b.append(",('invariant','SYSTEM','','en','System','',NULL)");
@@ -394,6 +394,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('robot','screensize','','fr','Taille d\\'écran','Cette valeur correspond à la taille d\\'écran qui sera utilisé lors de l\\'execution.<br><br>Les valeurs sont définies dans la table d\\'invariant et peuvent être complétées si besoin via la page d\\'invariant.<br>Les valeur doivent être deux entiers séparé par une <b>*</b>.<br><i>Par Example : 1024*768</i><br><br>Pour ajouter de nouvelles valeurs, contactez votre administrateur Cerberus.',NULL)");
         b.append(",('robot','useragent','','en','User Agent','User Agent of the robot.',NULL)");
         b.append(",('robot','useragent','','fr','User Agent','User Agent du Robot.',NULL)");
+        b.append(",('robot','ProfileFolder','','en','Profile Folder','Profile Folder of the robot (user data or profile). That allow to avoid starting all testcases from an empty user session.',NULL)");
+        b.append(",('robot','ProfileFolder','','fr','Dossier du Profil Utilisateur','Repertoire contenant le profile de l\\'utilisateur. Definir ce parametre permet de lancer des tests avec un profil utilisateur specific (sans repartir d\\'une session vide à chaque execution)',NULL)");
         b.append(",('robot','version','','en','Version','Brower Version of the robot.',NULL)");
         b.append(",('robot','version','','fr','Version','Version du navigateur du Robot.',NULL)");
         b.append(",('robot','lbexemethod','','en','Load Balancing Method','The loadbalancing method determine the way executors will be chosen when submitting any new execution. ROUNDROBIN will spread equaly on every active executor. BYRANKING will try to put all execution on lower rank of executors.',NULL)");
@@ -522,10 +524,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','Executor','','fr','Executeur Manuel','Nom de l\\'utilisateur Cerberus qui executera le cas de test en mode manuel.','_testcase')");
         b.append(",('testcase','LastModifier','','en','LastModifier','This is the name of the Cerberus user who last modified the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','LastModifier','','fr','Dernier Modificateur','','_cas_de_test')");
-        b.append(",('testcase','Origine','','en','Origin','This is the country or the team that identified the scenario of the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
-        b.append(",('testcase','Origine','','fr','Origine',NULL,'_cas_de_test')");
-        b.append(",('testcase','RefOrigine','','en','RefOrigin','This is the external reference of the <code class=\\'doc-crbvvoca\\'>test case</code> when coming from outside Cerberus.','_testcase')");
-        b.append(",('testcase','RefOrigine','','fr','RefOrigine','','_cas_de_test')");
+        b.append(",('testcase','Origin','','en','Origin','This from where the test case come from in case it was imported.','_testcase')");
+        b.append(",('testcase','Origin','','fr','Origine','Origine du cas de test quand celui-ci a été importé','_cas_de_test')");
+        b.append(",('testcase','RefOrigin','','en','RefOrigin','This is the external reference of the test case when coming from outside Cerberus.','_testcase')");
+        b.append(",('testcase','RefOrigin','','fr','RefOrigine','Reference externe du cas de test en cas d\\'importation','_cas_de_test')");
         b.append(",('testcase','Status','','en','Status','It is the workflow status of the <code class=\\'doc-crbvvoca\\'>test case</code> used to follow-up the implementation of the tests.<br>It can take any values depending on the workflow that manage the <code class=\\'doc-crbvvoca\\'>test case</code> life cycle.<br><br>The first status defined on the invariant table (based on the sequence) will be the default value for any new <code class=\\'doc-crbvvoca\\'>test case</code>.<br>The only status that is mandatory to define and create is the WORKING status that correspond to fully working and stable <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','Status','','fr','Status','','_cas_de_test')");
         b.append(",('testcase','TargetMajor','','en','Target Major','This is the Major build that should fix the bug. Until we reach that Major, the <code class=\\'doc-crbvvoca\\'>test case</code> execution will be discarded.','_testcase')");
@@ -1253,6 +1255,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','t_size','','fr','Taille','',NULL)");
         b.append(",('page_executiondetail','t_time','','en','Time','',NULL)");
         b.append(",('page_executiondetail','t_time','','fr','Durée','',NULL)");
+        b.append(",('page_executiondetail','t_index','','en','Index','',NULL)");
+        b.append(",('page_executiondetail','t_index','','fr','Index','',NULL)");
+        b.append(",('page_executiondetail','t_indexName','','en','Index Name','',NULL)");
+        b.append(",('page_executiondetail','t_indexName','','fr','Index Name','',NULL)");
         b.append(",('page_executiondetail','hits','','en','Requests per http status','',NULL)");
         b.append(",('page_executiondetail','hits','','fr','Requêtes par code http','',NULL)");
         b.append(",('page_executiondetail','size','','en','Size per type','',NULL)");
@@ -1331,8 +1337,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','filters','','fr','Filtres','',NULL)");
         b.append(",('page_global','footer_bug','','en','Open a bug or ask for any new feature <a target=\"_blank\"  href=\"%LINK%\">here</a>.','',NULL)");
         b.append(",('page_global','footer_bug','','fr','Ouvrir un bug ou envoyer une demande d\\'évolution <a target=\"_blank\"  href=\"%LINK%\">ici</a>.','',NULL)");
-        b.append(",('page_global','footer_text','','en','Page started generating on %SERVERDATE% by %VERSION% in %ENV% and took %TIMING%ms (browser date : %DATE%)','',NULL)");
-        b.append(",('page_global','footer_text','','fr','Page générée le %SERVERDATE% par %VERSION% en environnement : %ENV% et a pris %TIMING%ms (date du navigteur : %DATE%)','',NULL)");
+        b.append(",('page_global','footer_text','','en','Page started generating on %SERVERDATE% by %VERSION% Build %BUILD% in %ENV% and took %TIMING%ms (browser date : %DATE%)','',NULL)");
+        b.append(",('page_global','footer_text','','fr','Page générée le %SERVERDATE% par %VERSION% Build %BUILD% en environnement : %ENV% et a pris %TIMING%ms (date du navigteur : %DATE%)','',NULL)");
         b.append(",('page_global','invalid_extension_message','','en','Please select a file with the extension ','',NULL)");
         b.append(",('page_global','invalid_extension_message','','fr','Merci de selectionner un fichier avec l\\'extension ','',NULL)");
         b.append(",('page_global','lbl_all','','en','All','',NULL)");
@@ -1341,6 +1347,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','message_delete','','fr','Voulez vous supprimer le %TABLE% <b>\\'%ENTRY%\\'</b> ?','',NULL)");
         b.append(",('page_global','message_massActionError','','en','Please select at least 1 line before trying to perform a mass action!',NULL,NULL)");
         b.append(",('page_global','message_massActionError','','fr','Merci de selectionner au moins 1 élément avant de faire une action en masse !',NULL,NULL)");
+        b.append(",('page_global','message_exportActionError','','en','Please select at least 1 testcase to export!',NULL,NULL)");
+        b.append(",('page_global','message_exportActionError','','fr','Merci de selectionner au moins 1 cas de test à exporter !',NULL,NULL)");
         b.append(",('page_global','old_page','','en','Old Page','',NULL)");
         b.append(",('page_global','old_page','','fr','Ancienne Page','',NULL)");
         b.append(",('page_global','processing','','en','Processing…','',NULL)");
@@ -1996,6 +2004,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcase','BugsLink','','fr','Lien',NULL,NULL)");
         b.append(",('page_testcase','delete','','en','Dlt','Select this checkbox and then save changes in order to delete the row.',NULL)");
         b.append(",('page_testcase','delete','','fr','Sup','',NULL)");
+        b.append(",('page_testcase','message_delete_all','','en','Are you sure you want to delete all testcases below?','Select this checkbox and then save changes in order to delete the row.',NULL)");
+        b.append(",('page_testcase','message_delete_all','','fr','Etes vous sur de vouloir supprimer tous les cas de tests ci-dessous ?','',NULL)");
         b.append(",('page_testcase','dpd_choose_step','','en','-- Choose Step  --','',NULL)");
         b.append(",('page_testcase','dpd_choose_step','','fr','-- Choisissez une Etape --',NULL,NULL)");
         b.append(",('page_testcase','dpd_choose_test','','en','-- Choose Test --','',NULL)");
@@ -2128,10 +2138,14 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaselist','activationCriteria','','fr','Critères d\\'activation','',NULL)");
         b.append(",('page_testcaselist','btn_create','','en','Create Test Case',NULL,NULL)");
         b.append(",('page_testcaselist','btn_create','','fr','Créer un Cas de Test',NULL,NULL)");
-        b.append(",('page_testcaselist','btn_import','','en','Import Test Case',NULL,NULL)");
-        b.append(",('page_testcaselist','btn_import','','fr','Importer un Cas de Test',NULL,NULL)");
-        b.append(",('page_testcaselist','btn_export','','en','Export Test Case',NULL,NULL)");
-        b.append(",('page_testcaselist','btn_export','','fr','Exporter un Cas de Test',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import','','en','Import Test Cases',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import','','fr','Importer les Cas de Tests',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import_ide','','en','Import Test Case From Selenium IDE',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import_ide','','fr','Importer un Cas de Test de Selenium IDE',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_export','','en','Export Test Cases',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_export','','fr','Exporter les Cas de Test',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_export1file','','en','Export Test Cases (Single File)',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_export1file','','fr','Exporter les Cas de Test (Fichier unique)',NULL,NULL)");
         b.append(",('page_testcaselist','btn_delete','','en','Delete Test Case','',NULL)");
         b.append(",('page_testcaselist','btn_delete','','fr','Supprimer le Cas de Test','',NULL)");
         b.append(",('page_testcaselist','btn_delete_all','','en','Delete all these Test Case : ','',NULL)");
@@ -2538,18 +2552,18 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('transversal','tuto_line1','','fr','','Bienvenue sur Cerberus Testing !','_librairie_de_données')");
         b.append(",('transversal','tuto_line2','','en','','You just took the first step to start your Cerberus Testing automation journey.','_data_library')");
         b.append(",('transversal','tuto_line2','','fr','','Nous sommes au debut de l\\'experience de testing automatisé Cerberus Testing.','_librairie_de_données')");
-        b.append(",('transversal','tuto_line3','','en','','Dive into our tutorial and have fun testing!','_data_library')");
+        b.append(",('transversal','tuto_line3','','en','','Dive into our tutorials and have fun testing!','_data_library')");
         b.append(",('transversal','tuto_line3','','fr','','Consultez les tutoriels ci dessous.','_librairie_de_données')");
         b.append(",('transversal','tuto_line4','','en','','Where would you like to start?','_data_library')");
         b.append(",('transversal','tuto_line4','','fr','','Par où souhaitez-vous commencer ?','_librairie_de_données')");
-        b.append(",('transversal','tuto_line5','','en','','I just want to take a look around first','_data_library')");
-        b.append(",('transversal','tuto_line5','','fr','','Je souhaite juste me balader dans l\\'outil','_librairie_de_données')");
+        b.append(",('transversal','tuto_line5','','en','','Click here to prevent the tutorials from opening again','_data_library')");
+        b.append(",('transversal','tuto_line5','','fr','','Ne plus ouvrir ce tutoriel','_librairie_de_données')");
         b.append(" ;");
         a.add(b.toString());
-                
+
         /* 
          *  Updated Tutorial
-         */                  
+         */
         a.add("DELETE FROM `documentation` where DocTable = 'interactiveTuto' ;");
         a.add("DELETE FROM `documentation` where DocTable = 'interactiveTutoStep' ;");
         a.add("DELETE FROM `interactive_tuto_step`;");
@@ -2708,7 +2722,6 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(" ;");
         a.add(b.toString());
 
-       
         return a;
     }
 }

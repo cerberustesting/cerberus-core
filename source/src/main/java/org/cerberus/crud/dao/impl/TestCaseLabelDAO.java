@@ -459,7 +459,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
                 if (testCaseList.size() < 101) {
                     for (TestCase testCase1 : testCaseList) {
                         preStat.setString(i++, testCase1.getTest());
-                        preStat.setString(i++, testCase1.getTestCase());
+                        preStat.setString(i++, testCase1.getTestcase());
                     }
                 } else {
                     for (Map.Entry<String, String> entry : testCaseMap.entrySet()) {

@@ -217,7 +217,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "application",
-            "sName": "application",
+            "sName": "obj.application",
             "sWidth": "60px",
             "title": doc.getDocOnline("page_applicationObject",
                     "Application")

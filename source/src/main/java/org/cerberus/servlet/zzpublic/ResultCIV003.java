@@ -33,6 +33,7 @@ import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.service.ciresult.ICIService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerList;
@@ -52,12 +53,14 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ResultCIV003 extends HttpServlet {
 
     private static Logger LOG = LogManager.getLogger(ResultCIV003.class);
+    private IAPIKeyService apiKeyService;
 
     protected void processRequest(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        apiKeyService = appContext.getBean(IAPIKeyService.class);
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
@@ -68,80 +71,83 @@ public class ResultCIV003 extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createForPublicCalls("/ResultCIV003", "CALL", "ResultCIV003 called : " + request.getRequestURL(), request);
 
-        try {
-            JSONObject jsonResponse = new JSONObject();
+        if (apiKeyService.checkAPIKey(request, response)) {
 
-            String tag = policy.sanitize(request.getParameter("tag"));
-            String campaign = policy.sanitize(request.getParameter("campaign"));
-            String outputFormat = policy.sanitize(request.getParameter("outputformat"));
+            try {
+                JSONObject jsonResponse = new JSONObject();
 
-            String helpMessage = "This servlet is used to provide various execution counters as well as a global OK or KO status based on the number and status of the execution done on a specific tag. \n"
-                    + "The number of executions are ponderated by parameters by priority from cerberus_ci_okcoefprio1 to cerberus_ci_okcoefprio4. \n"
-                    + "Formula used is the following : \n"
-                    + "Nb Exe Prio 1 testcases * cerberus_ci_okcoefprio1 + Nb Exe Prio 2 testcases * cerberus_ci_okcoefprio2 + "
-                    + "Nb Exe Prio 3 testcases * cerberus_ci_okcoefprio3 + Nb Exe Prio 4 testcases * cerberus_ci_okcoefprio4.\n"
-                    + "If no executions are found, the result is KO.\n"
-                    + "With at least 1 execution, if result is < 1 then global servlet result is OK. If not, it is KO.\n"
-                    + "All execution needs to have a status equal to KO, FA, NA, PE or NE.\n"
-                    + "If at least 1 PE or 1 NE if found, global status will be PE\n"
-                    + "Output format is json by default, or SVG if outputFormat=svg is defined\n"
-                    + "Parameter list :\n"
-                    + "- tag : Execution Tag to filter the test cases execution. [" + tag + "]\n"
-                    + "- campaign : If you feed the campaign, the lastest Tag from that campaign will be selected. [" + campaign + "]\n"
-                    + "- outputformat : ['text','json', 'svg']. Output format of the result. [" + outputFormat + "]\n";
+                String tag = policy.sanitize(request.getParameter("tag"));
+                String campaign = policy.sanitize(request.getParameter("campaign"));
+                String outputFormat = policy.sanitize(request.getParameter("outputformat"));
 
-            jsonResponse.put("helpMessage", helpMessage);
+                String helpMessage = "This servlet is used to provide various execution counters as well as a global OK or KO status based on the number and status of the execution done on a specific tag. \n"
+                        + "The number of executions are ponderated by parameters by priority from cerberus_ci_okcoefprio1 to cerberus_ci_okcoefprio4. \n"
+                        + "Formula used is the following : \n"
+                        + "Nb Exe Prio 1 testcases * cerberus_ci_okcoefprio1 + Nb Exe Prio 2 testcases * cerberus_ci_okcoefprio2 + "
+                        + "Nb Exe Prio 3 testcases * cerberus_ci_okcoefprio3 + Nb Exe Prio 4 testcases * cerberus_ci_okcoefprio4.\n"
+                        + "If no executions are found, the result is KO.\n"
+                        + "With at least 1 execution, if result is < 1 then global servlet result is OK. If not, it is KO.\n"
+                        + "All execution needs to have a status equal to KO, FA, NA, PE or NE.\n"
+                        + "If at least 1 PE or 1 NE if found, global status will be PE\n"
+                        + "Output format is json by default, or SVG if outputFormat=svg is defined\n"
+                        + "Parameter list :\n"
+                        + "- tag : Execution Tag to filter the test cases execution. [" + tag + "]\n"
+                        + "- campaign : If you feed the campaign, the lastest Tag from that campaign will be selected. [" + campaign + "]\n"
+                        + "- outputformat : ['text','json', 'svg']. Output format of the result. [" + outputFormat + "]\n";
 
-            boolean error = false;
-            String error_message = "";
+                jsonResponse.put("helpMessage", helpMessage);
 
-            // Checking the parameter validity. Tag is a mandatory parameter
-            if (StringUtil.isNullOrEmpty(tag)) {
+                boolean error = false;
+                String error_message = "";
 
-                if (!StringUtil.isNullOrEmpty(campaign)) {
-                    ITagService tagService = appContext.getBean(ITagService.class);
+                // Checking the parameter validity. Tag is a mandatory parameter
+                if (StringUtil.isNullOrEmpty(tag)) {
 
-                    List<Tag> myList;
-                    AnswerList<Tag> myAnswerList = tagService.readByVariousByCriteria(campaign, 0, 1, "id", "desc", null, null);
-                    if (myAnswerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-                        for (Tag tagCur : myAnswerList.getDataList()) {
-                            tag = tagCur.getTag();
+                    if (!StringUtil.isNullOrEmpty(campaign)) {
+                        ITagService tagService = appContext.getBean(ITagService.class);
+
+                        List<Tag> myList;
+                        AnswerList<Tag> myAnswerList = tagService.readByVariousByCriteria(campaign, 0, 1, "id", "desc", null, null);
+                        if (myAnswerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+                            for (Tag tagCur : myAnswerList.getDataList()) {
+                                tag = tagCur.getTag();
+                            }
                         }
                     }
+
+                }
+                if (StringUtil.isNullOrEmpty(tag)) {
+                    error_message += "Error - Either specify a tag or specify a campaign to get the latest tag from that campaign.";
+                    error = true;
+
                 }
 
+                if (!error) {
+
+                    ICIService ciService = appContext.getBean(ICIService.class);
+                    jsonResponse = ciService.getCIResult(tag, null);
+
+                    // Log the result with calculation detail.
+                    logEventService.createForPublicCalls("/ResultCIV003", "CALLRESULT", "ResultCIV003 calculated for tag " + tag + " result [" + jsonResponse.getString("result") + "]", request);
+
+                } else {
+
+                    jsonResponse.put("messageType", "KO");
+                    jsonResponse.put("message", error_message);
+                }
+
+                generateResponse(response, outputFormat, jsonResponse, error);
+
+            } catch (JSONException e) {
+                LOG.warn(e);
+                //returns a default error message with the json format that is able to be parsed by the client-side
+                response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
             }
-            if (StringUtil.isNullOrEmpty(tag)) {
-                error_message += "Error - Either specify a tag or specify a campaign to get the latest tag from that campaign.";
-                error = true;
-
-            }
-
-            if (!error) {
-
-                ICIService ciService = appContext.getBean(ICIService.class);
-                jsonResponse = ciService.getCIResult(tag, null);
-
-                // Log the result with calculation detail.
-                logEventService.createForPublicCalls("/ResultCIV003", "CALLRESULT", "ResultCIV003 calculated for tag " + tag + " result [" + jsonResponse.getString("result") + "]", request);
-
-            } else {
-
-                jsonResponse.put("messageType", "KO");
-                jsonResponse.put("message", error_message);
-            }
-
-            generateResponse(response, outputFormat, jsonResponse, error);
-
-        } catch (JSONException e) {
-            LOG.warn(e);
-            //returns a default error message with the json format that is able to be parsed by the client-side
-            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
 
     }
 
-    private void generateResponse(HttpServletResponse response, String outputFormat, JSONObject jsonResponse, boolean error) throws IOException {
+    private void generateResponse(HttpServletResponse response, String outputFormat, JSONObject jsonResponse, boolean error) throws IOException, JSONException {
 
         StringBuilder returnMessage = new StringBuilder();
 
@@ -201,7 +207,7 @@ public class ResultCIV003 extends HttpServlet {
             default:
                 response.setContentType("application/json");
                 response.setCharacterEncoding("utf8");
-                response.getWriter().print(jsonResponse.toString());
+                response.getWriter().print(jsonResponse.toString(1));
         }
 
     }

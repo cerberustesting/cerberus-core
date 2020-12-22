@@ -21,6 +21,7 @@ package org.cerberus.service.har;
 
 import java.util.List;
 import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
+import org.cerberus.service.har.entity.NetworkTrafficIndex;
 import org.json.JSONObject;
 
 /**
@@ -37,7 +38,7 @@ public interface IHarService {
      * @param indexList
      * @return
      */
-    JSONObject enrichWithStats(JSONObject har, String domains, String system, List<Integer> indexList);
+    JSONObject enrichWithStats(JSONObject har, String domains, String system, List<NetworkTrafficIndex> indexList);
 
     /**
      *

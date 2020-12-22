@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory;
 
+import java.sql.Timestamp;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 
 /**
@@ -30,7 +31,7 @@ public interface IFactoryTestCaseCountryProperties {
     /**
      *
      * @param test
-     * @param testCase
+     * @param testcase
      * @param country
      * @param property
      * @param description
@@ -45,10 +46,15 @@ public interface IFactoryTestCaseCountryProperties {
      * @param retryPeriod
      * @param cacheExpire
      * @param rank
-     * @return
+     * @param dateCreated the value of dateCreated
+     * @param usrCreated the value of usrCreated
+     * @param dateModif the value of dateModif
+     * @param usrModif the value of usrModif
+     * @return the org.cerberus.crud.entity.TestCaseCountryProperties
      */
-    TestCaseCountryProperties create(String test, String testCase, String country, String property, String description,
-            String type, String database, String value1, String value2, String length, int rowLimit, String nature, int retryNb, 
-            int retryPeriod, int cacheExpire, int rank);
+    TestCaseCountryProperties create(String test, String testcase, String country, String property, 
+            String description, String type, String database, String value1, String value2, 
+            String length, int rowLimit, String nature, int retryNb, int retryPeriod, int cacheExpire, 
+            int rank, Timestamp dateCreated, String usrCreated, Timestamp dateModif, String usrModif);
 
 }

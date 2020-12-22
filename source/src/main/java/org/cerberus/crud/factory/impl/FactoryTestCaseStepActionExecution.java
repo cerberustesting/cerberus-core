@@ -37,7 +37,7 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepActionExecution implements IFactoryTestCaseStepActionExecution {
 
     @Override
-    public TestCaseStepActionExecution create(long id, String test, String testCase, int step, int index, int sequence, int sort, String returnCode, String returnMessage,
+    public TestCaseStepActionExecution create(long id, String test, String testCase, int stepId, int index, int sequence, int sort, String returnCode, String returnMessage,
             String conditionOperator, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3,
             String action, String value1Init, String value2Init, String value3Init, String value1, String value2, String value3,
             String forceExeStatus, long start, long end, long startLong, long endLong, MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction,
@@ -67,7 +67,7 @@ public class FactoryTestCaseStepActionExecution implements IFactoryTestCaseStepA
         testCaseStepActionExecution.setSort(sort);
         testCaseStepActionExecution.setStart(start);
         testCaseStepActionExecution.setStartLong(startLong);
-        testCaseStepActionExecution.setStep(step);
+        testCaseStepActionExecution.setStepId(stepId);
         testCaseStepActionExecution.setIndex(index);
         testCaseStepActionExecution.setTest(test);
         testCaseStepActionExecution.setTestCase(testCase);

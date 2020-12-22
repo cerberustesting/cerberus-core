@@ -20,11 +20,14 @@
 package org.cerberus.engine.execution.impl;
 
 import java.util.Arrays;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.engine.execution.IIdentifierService;
+import org.cerberus.engine.gwt.impl.ActionService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -33,6 +36,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class IdentifierService implements IIdentifierService {
+
+    private static final Logger LOG = LogManager.getLogger(IdentifierService.class);
 
     @Override
     public Identifier convertStringToIdentifier(String input) {
@@ -48,15 +53,21 @@ public class IdentifierService implements IIdentifierService {
         Identifier result = new Identifier();
         String identifier;
         String locator;
-        String[] strings = input.split("=", 2);
-        if (strings.length == 1) {
-            identifier = defaultIdentifier;
-            locator = strings[0];
-        } else {
-            identifier = strings[0];
-            locator = strings[1];
-        }
 
+        if (input.startsWith("//")) {
+            identifier = Identifier.IDENTIFIER_XPATH;
+            locator = input;
+        } else {
+            String[] strings = input.split("=", 2);
+            if (strings.length == 1) {
+                identifier = defaultIdentifier;
+                locator = strings[0];
+            } else {
+                identifier = strings[0];
+                locator = strings[1];
+            }
+        }
+        
         result.setIdentifier(identifier);
         result.setLocator(locator);
         return result;

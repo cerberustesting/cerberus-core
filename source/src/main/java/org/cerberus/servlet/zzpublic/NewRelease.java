@@ -42,6 +42,7 @@ import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.crud.service.impl.UserService;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -56,6 +57,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class NewRelease extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger("NewRelease");
+    private IAPIKeyService apiKeyService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -73,6 +75,7 @@ public class NewRelease extends HttpServlet {
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        apiKeyService = appContext.getBean(IAPIKeyService.class);
 
         /**
          * Adding Log entry.
@@ -80,6 +83,8 @@ public class NewRelease extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         logEventService.createForPublicCalls("/NewRelease", "CALL", "NewRelease called : " + request.getRequestURL(), request);
 
+        if (apiKeyService.checkAPIKey(request, response)) {
+            
         IApplicationService MyApplicationService = appContext.getBean(ApplicationService.class);
         IUserService MyUserService = appContext.getBean(UserService.class);
         IBuildRevisionParametersService buildRevisionParametersService = appContext.getBean(IBuildRevisionParametersService.class);
@@ -236,6 +241,7 @@ public class NewRelease extends HttpServlet {
             } catch (SQLException e) {
                 LOG.warn(e.toString());
             }
+        }
         }
     }
 

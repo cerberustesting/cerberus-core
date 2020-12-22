@@ -61,7 +61,7 @@ public class GetTestCaseList extends HttpServlet {
         JSONArray array = new JSONArray();
         JSONObject jsonObject = new JSONObject();
         for (TestCase testcase : testService.findTestCaseByTest(test)) {
-            array.put(testcase.getTestCase());
+            array.put(testcase.getTestcase());
         }
         try {
             jsonObject.put("testcasesList", array);

@@ -32,6 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.config.Property;
 import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
@@ -41,6 +42,7 @@ import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.impl.UserGroupService;
 import org.cerberus.crud.service.impl.UserService;
+import org.cerberus.session.SessionCounter;
 import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -84,6 +86,7 @@ public class ReadMyUser extends HttpServlet {
         userGroupService = appContext.getBean(UserGroupService.class);
         logEventService = appContext.getBean(ILogEventService.class);
         parameterService = appContext.getBean(IParameterService.class);
+        SessionCounter sc = appContext.getBean(SessionCounter.class);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
@@ -127,7 +130,22 @@ public class ReadMyUser extends HttpServlet {
             data.put("robot", myUser.getRobot());
             data.put("reportingFavorite", myUser.getReportingFavorite());
             data.put("userPreferences", myUser.getUserPreferences());
+//            JSONObject mypref = new JSONObject();
+//            try {
+//                mypref = new JSONObject(myUser.getUserPreferences());
+//                data.put("userPreferences", mypref);
+//            } catch (Exception e) {
+//                LOG.debug("Failed to convert JSON");
+//            }
             data.put("isKeycloak", Property.isKeycloak());
+
+            JSONObject objCreditLimit = new JSONObject();
+            objCreditLimit.put("currentNumberOfExecution", sc.getCreditLimitNbExe());
+            objCreditLimit.put("maxNumberOfExecution", parameterService.getParameterIntegerByKey(Parameter.VALUE_cerberus_creditlimit_nbexeperday, "", 0));
+            objCreditLimit.put("currentDurationOfExecutionInSecond", sc.getCreditLimitSecondExe());
+            objCreditLimit.put("maxDurationOfExecutionInSecond", parameterService.getParameterIntegerByKey(Parameter.VALUE_cerberus_creditlimit_secondexeperday, "", 0));
+
+            data.put("creditLimit", objCreditLimit);
 
             // Define submenu entries
             JSONObject menu = new JSONObject();

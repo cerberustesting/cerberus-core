@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.Selenium;
 import org.cerberus.engine.entity.Session;
+import org.cerberus.service.har.entity.NetworkTrafficIndex;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,8 +57,9 @@ public class TestCaseExecution {
     private String robotHost; // Host the Selenium IP
     private String robotPort; // host the Selenium Port
     private String robotDecli;
-    private String robotProvider;
     private String robotSessionID;
+    private String robotProvider;
+    private String robotProviderSessionID;
     private String browser;
     private String version;
     private String platform;
@@ -167,7 +169,7 @@ public class TestCaseExecution {
     private HashMap<String, Map<TopicPartition, Long>> kafkaLatestOffset;
     // Http Stats
     private TestCaseExecutionHttpStat httpStat;
-    private List<Integer> networkTrafficIndexList;
+    private List<NetworkTrafficIndex> networkTrafficIndexList;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -203,18 +205,27 @@ public class TestCaseExecution {
 
     public static final String ROBOTPROVIDER_BROWSERSTACK = "BROWSERSTACK";
     public static final String ROBOTPROVIDER_KOBITON = "KOBITON";
+    public static final String ROBOTPROVIDER_LAMBDATEST = "LAMBDATEST";
     public static final String ROBOTPROVIDER_NONE = "NONE";
 
-    public List<Integer> getNetworkTrafficIndexList() {
+    public String getRobotProviderSessionID() {
+        return robotProviderSessionID;
+    }
+
+    public void setRobotProviderSessionID(String robotProviderSessionID) {
+        this.robotProviderSessionID = robotProviderSessionID;
+    }
+
+    public List<NetworkTrafficIndex> getNetworkTrafficIndexList() {
         return networkTrafficIndexList;
     }
 
-    public void setNetworkTrafficIndexList(List<Integer> networkTrafficIndexList) {
+    public void setNetworkTrafficIndexList(List<NetworkTrafficIndex> networkTrafficIndexList) {
         this.networkTrafficIndexList = networkTrafficIndexList;
     }
 
-    public void appendNetworkTrafficIndexList(Integer nbHitsTondex) {
-        this.networkTrafficIndexList.add(nbHitsTondex);
+    public void appendNetworkTrafficIndexList(NetworkTrafficIndex newIndex) {
+        this.networkTrafficIndexList.add(newIndex);
     }
 
     public TestCaseExecutionHttpStat getHttpStat() {
@@ -1147,6 +1158,7 @@ public class TestCaseExecution {
             result.put("robotDecli", this.getRobotDecli());
             result.put("robotProvider", this.getRobotProvider());
             result.put("robotSessionId", this.getRobotSessionID());
+            result.put("robotProviderSessionId", this.getRobotProviderSessionID());
             result.put("videos", this.getVideos());
             result.put("previousExeId", this.getPreviousExeId());
             result.put("previousExeStatus", this.getPreviousExeStatus());

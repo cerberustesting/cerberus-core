@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITagDAO;
 import org.cerberus.crud.entity.Tag;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.factory.IFactoryTag;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
@@ -41,6 +42,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ciresult.ICIService;
 import org.cerberus.service.notification.INotificationService;
 import org.cerberus.service.robotproviders.IBrowserstackService;
+import org.cerberus.service.robotproviders.ILambdaTestService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -70,6 +72,8 @@ public class TagService implements ITagService {
     private ICIService ciService;
     @Autowired
     private IBrowserstackService browserstackService;
+    @Autowired
+    private ILambdaTestService lambdatestService;
     @Autowired
     private ITestCaseExecutionQueueService executionQueueService;
 
@@ -215,6 +219,16 @@ public class TagService implements ITagService {
     }
 
     @Override
+    public Answer updateDescription(String tag, Tag object) {
+        return tagDAO.updateDescription(tag, object);
+    }
+
+    @Override
+    public Answer updateComment(String tag, Tag object) {
+        return tagDAO.updateComment(tag, object);
+    }
+
+    @Override
     public Answer createAuto(String tagS, String campaign, String user, JSONArray reqEnvironmentList, JSONArray reqCountryList) {
         AnswerItem answerTag;
         answerTag = readByKey(tagS);
@@ -222,12 +236,12 @@ public class TagService implements ITagService {
         if (tag == null) {
             LOG.debug("toto service : " + reqEnvironmentList.toString());
             Answer ans = tagDAO.create(factoryTag.create(0, tagS, "", "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "", "",
-                    reqEnvironmentList.toString(), reqCountryList.toString(), "", user, null, user, null));
+                    reqEnvironmentList.toString(), reqCountryList.toString(), "", "", user, null, user, null));
+            // If campaign is not empty, we can notify the Start of campaign execution.
             if (!StringUtil.isNullOrEmpty(campaign)) {
                 notificationService.generateAndSendNotifyStartTagExecution(tagS, campaign);
             }
             return ans;
-            // If campaign is not empty, we could notify the Start of campaign execution.
         } else {
             if ((StringUtil.isNullOrEmpty(tag.getCampaign())) && !StringUtil.isNullOrEmpty(campaign)) {
                 tag.setCampaign(campaign);
@@ -238,19 +252,33 @@ public class TagService implements ITagService {
     }
 
     @Override
-    public String enrichTagWithBrowserStackBuild(String system, String tagS, String user, String pass) {
-        if (!StringUtil.isNullOrEmpty(tagS)) {
-            LOG.debug("Trying to enrish tag '" + tagS + "' with BrowserStack Build hash.");
-            AnswerItem answerTag;
-            answerTag = readByKey(tagS);
-            Tag tag = (Tag) answerTag.getItem();
-            if ((tag != null) && (StringUtil.isNullOrEmpty(tag.getBrowserstackBuildHash()) || "BSHash".equalsIgnoreCase(tag.getBrowserstackBuildHash()))) {
-                String newBuildHash = browserstackService.getBrowserStackBuildHash(system, tagS, user, pass);
-                tag.setBrowserstackBuildHash(newBuildHash);
-                Answer ans = tagDAO.updateBrowserStackBuild(tagS, tag);
-                return newBuildHash;
-            }
+    public String enrichTagWithCloudProviderBuild(String provider, String system, String tagS, String user, String pass) {
+        LOG.debug("Trying to enrish tag '" + tagS + "' with Cloud service provider Build (" + provider + ").");
+        if (StringUtil.isNullOrEmpty(tagS)) {
+            return null;
         }
+        AnswerItem answerTag;
+        answerTag = readByKey(tagS);
+        Tag tag = (Tag) answerTag.getItem();
+        switch (provider) {
+            case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
+                if ((tag != null) && (StringUtil.isNullOrEmpty(tag.getBrowserstackBuildHash()) || "BSHash".equalsIgnoreCase(tag.getBrowserstackBuildHash()))) {
+                    String newBuildHash = browserstackService.getBrowserStackBuildHash(system, tagS, user, pass);
+                    tag.setBrowserstackBuildHash(newBuildHash);
+                    Answer ans = tagDAO.updateBrowserStackBuild(tagS, tag);
+                    return newBuildHash;
+                }
+                break;
+            case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
+                if ((tag != null) && (StringUtil.isNullOrEmpty(tag.getLambdaTestBuild()))) {
+                    String newBuildHash = lambdatestService.getBuildValue(tagS, user, pass, system);
+                    tag.setLambdaTestBuild(newBuildHash);
+                    Answer ans = tagDAO.updateLambdatestBuild(tagS, tag);
+                    return newBuildHash;
+                }
+                break;
+        }
+
         return null;
     }
 

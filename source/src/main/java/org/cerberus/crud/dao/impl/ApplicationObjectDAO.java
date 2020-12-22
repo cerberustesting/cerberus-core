@@ -86,18 +86,18 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         /**
          * Get list of {@link ApplicationObject} associated with the given id
          */
-        String READ_BY_KEY = "SELECT * FROM `applicationobject` WHERE `ID` = ?";
+        String READ_BY_KEY = "SELECT * FROM `applicationobject` obj WHERE `ID` = ?";
 
         /**
          * Get list of {@link ApplicationObject} associated with the given key
          */
-        String READ_BY_KEY1 = "SELECT * FROM `applicationobject` WHERE `Application` = ? AND `Object` = ?";
+        String READ_BY_KEY1 = "SELECT * FROM `applicationobject` obj WHERE `Application` = ? AND `Object` = ?";
 
         /**
          * Get list of {@link ApplicationObject} associated with the given
          * {@link Application}
          */
-        String READ_BY_APP = "SELECT * FROM `applicationobject` WHERE `application` = ?";
+        String READ_BY_APP = "SELECT * FROM `applicationobject` obj WHERE `application` = ?";
 
         /**
          * Create a new {@link ApplicationObject}
@@ -107,12 +107,12 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         /**
          * Remove an existing {@link ApplicationObject}
          */
-        String DELETE = "DELETE FROM `applicationobject` WHERE `ID` = ?";
+        String DELETE = "DELETE FROM `applicationobject` obj WHERE `ID` = ?";
 
         /**
          * Remove all {@link ApplicationObject} of a {@link Application}
          */
-        String DELETE_BY_APP = "DELETE FROM `applicationobject` WHERE `application` = ?";
+        String DELETE_BY_APP = "DELETE FROM `applicationobject` obj WHERE `application` = ?";
     }
 
     @Override
@@ -316,7 +316,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM applicationobject ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM applicationobject obj ");
 
         searchSQL.append(" where 1=1 ");
 
@@ -345,7 +345,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
 
         if (!StringUtil.isNullOrEmpty(column)) {
-            query.append(" order by `").append(column).append("` ").append(dir);
+            query.append(" order by ").append(column).append(" ").append(dir);
         }
 
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
@@ -474,7 +474,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
 
         if (!StringUtil.isNullOrEmpty(column)) {
-            query.append(" order by `").append(column).append("` ").append(dir);
+            query.append(" order by ").append(column).append(" ").append(dir);
         }
 
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
@@ -691,9 +691,9 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         StringBuilder query = new StringBuilder();
 
-        query.append("SELECT distinct `");
+        query.append("SELECT distinct ");
         query.append(columnName);
-        query.append("` as distinctValues FROM applicationobject ");
+        query.append(" as distinctValues FROM applicationobject obj ");
 
         searchSQL.append("WHERE 1=1 ");
 
@@ -718,7 +718,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         }
         
         query.append(searchSQL);
-        query.append(" order by `").append(columnName).append("` asc");
+        query.append(" order by ").append(columnName).append(" asc");
         
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -804,7 +804,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         query.append("SELECT distinct ");
         query.append(columnName);
-        query.append(" as distinctValues FROM applicationobject ");
+        query.append(" as distinctValues FROM applicationobject obj ");
 
         searchSQL.append("WHERE 1=1");
         if (!StringUtil.isNullOrEmpty(application)) {

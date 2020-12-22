@@ -419,7 +419,7 @@ public class ReadExecutionStat extends HttpServlet {
             try {
                 String key = env.getKey();
                 TestCase tc = env.getValue();
-                TestCase a = testCaseService.convert(testCaseService.readByKey(tc.getTest(), tc.getTestCase()));
+                TestCase a = testCaseService.convert(testCaseService.readByKey(tc.getTest(), tc.getTestcase()));
                 objectTCdinst.put(a.toJson());
             } catch (CerberusException ex) {
                 LOG.error("Exception when getting TestCase.", ex);

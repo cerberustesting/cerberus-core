@@ -109,10 +109,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
                 answer = findTestCaseByTestTestCase(test, testCase, request, withSteps);
             } else if (!Strings.isNullOrEmpty(test) && getMaxTC) {
                 String max = testCaseService.getMaxNumberTestCase(test);
-                if (max == null) {
-                    max = "0";
-                }
-                jsonResponse.put("maxTestCase", Integer.valueOf(max));
+                jsonResponse.put("nextAvailableTestcaseId", max);
                 answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             } else if (filter) {
                 answer = findTestCaseByVarious(request);
@@ -188,10 +185,10 @@ public class ReadTestCase extends AbstractCrudTestCase {
         AnswerItem<JSONObject> answerItem = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
 
-        AnswerItem answerTestCase;
+        AnswerItem<TestCase> answerTestCase;
         answerTestCase = testCaseService.findTestCaseByKeyWithDependencies(test, testCase, withSteps);
         if (answerTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerTestCase.getItem() != null) {
-            TestCase tc = (TestCase) answerTestCase.getItem();
+            TestCase tc = answerTestCase.getItem();
             if (withSteps) {
                 jsonResponse.put("hasPermissionsStepLibrary", (request.isUserInRole("TestStepLibrary")));
             }
@@ -206,6 +203,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         answerItem.setItem(jsonResponse);
         answerItem.setResultMessage(answerTestCase.getResultMessage());
 
+        LOG.debug(answerItem.getItem());
         return answerItem;
     }
 

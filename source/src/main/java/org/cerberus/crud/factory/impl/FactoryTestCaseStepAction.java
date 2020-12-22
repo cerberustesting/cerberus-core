@@ -19,7 +19,9 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.util.ArrayList;
 import org.cerberus.crud.entity.TestCaseStepAction;
+import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.factory.IFactoryTestCaseStepAction;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +32,7 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepAction implements IFactoryTestCaseStepAction {
 
     @Override
-    public TestCaseStepAction create(String test, String testCase, int step, int sequence, int sort, String conditionOperator,
+    public TestCaseStepAction create(String test, String testCase, int stepId, int sequence, int sort, String conditionOperator,
             String conditionVal1, String conditionVal2, String conditionVal3, String action, String value1, String value2, String value3, String forceExeStatus, String description, String screenshotFilename) {
         TestCaseStepAction testCaseStepAction = new TestCaseStepAction();
         testCaseStepAction.setConditionOperator(conditionOperator);
@@ -43,12 +45,14 @@ public class FactoryTestCaseStepAction implements IFactoryTestCaseStepAction {
         testCaseStepAction.setValue3(value3);
         testCaseStepAction.setForceExeStatus(forceExeStatus);
         testCaseStepAction.setSequence(sequence);
-        testCaseStepAction.setStep(step);
+        testCaseStepAction.setStepId(stepId);
         testCaseStepAction.setSort(sort);
         testCaseStepAction.setTest(test);
         testCaseStepAction.setTestCase(testCase);
         testCaseStepAction.setDescription(description);
         testCaseStepAction.setScreenshotFilename(screenshotFilename);
+        testCaseStepAction.setControls(new ArrayList<>());
+
         return testCaseStepAction;
     }
 }

@@ -71,7 +71,7 @@ public class DeleteTestCaseFromTestPage extends HttpServlet {
             for (String ttd : tcToDelete) {
                 TestCase testCase = tcService.findTestCaseByKey(testToDelete, ttd);
                 if (testCase != null) {
-                    List<TestCaseStep> tcsList = tcsService.getTestCaseStepUsingTestCaseInParamter(testCase.getTest(), testCase.getTestCase());
+                    List<TestCaseStep> tcsList = tcsService.getTestCaseStepUsingTestCaseInParamter(testCase.getTest(), testCase.getTestcase());
                     if (tcsList != null && !tcsList.isEmpty()){
                         response.sendError(403, MessageGeneralEnum.GUI_TESTCASE_DELETE_USED_STEP.getDescription());
                         return;

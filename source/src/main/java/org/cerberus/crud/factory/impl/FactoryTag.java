@@ -35,7 +35,7 @@ public class FactoryTag implements IFactoryTag {
             int nbExe, int nbExeUsefull, int nbOK, int nbKO, int nbFA, int nbNA, int nbNE, int nbWE, int nbPE, int nbQU, int nbQE, int nbCA,
             int ciScore, int ciScoreThreshold, String ciResult,
             String environmentList, String countryList, String robotDecliList, String systemList, String applicationList,
-            String reqEnvironmentList, String reqCountryList, String browserstackBuildHash,
+            String reqEnvironmentList, String reqCountryList, String browserstackBuildHash, String lambdaTestBuild,
             String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         Tag newObject = new Tag();
         newObject.setId(id);
@@ -69,7 +69,8 @@ public class FactoryTag implements IFactoryTag {
         newObject.setReqCountryList(reqCountryList);
         newObject.setReqEnvironmentList(reqEnvironmentList);
         newObject.setBrowserstackBuildHash(browserstackBuildHash);
-        
+        newObject.setLambdaTestBuild(lambdaTestBuild);
+
         newObject.setUsrModif(usrModif);
         newObject.setUsrCreated(usrCreated);
         newObject.setDateModif(dateModif);

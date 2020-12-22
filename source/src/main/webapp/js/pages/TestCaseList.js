@@ -35,7 +35,6 @@ function initPage() {
     $("#massActionTestCaseButtonAddLabel").click(massActionModalSaveHandler_addLabel);
     $("#massActionTestCaseButtonRemoveLabel").click(massActionModalSaveHandler_removeLabel);
     $("#massActionTestCaseButtonUpdate").click(massActionModalSaveHandler_update);
-    $("#massActionTestCaseButtonExport").click(massActionModalSaveHandler_export);
     $("#massActionTestCaseButtonDelete").click(massActionModalSaveHandler_delete);
 
     // MASS ACTION
@@ -159,7 +158,15 @@ function renderOptionsForTestCaseList(data) {
         if ($("#createTestCaseButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'>";
             contentToAdd += "<button id='createTestCaseButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_testcaselist", "btn_create") + "</button>";
+            contentToAdd += "<div class='btn-group'>";
+            contentToAdd += "<button id='btnGroupDropIO' type='button' class='btn btn-secondary dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Import / Export <span class='caret'></span></button>";
+            contentToAdd += "<div class='dropdown-menu' aria-labelledby='btnGroupDropIO'>";
+            contentToAdd += "<button id='exportTestCaseMenuButton' type='button' class='btn btn-default' name='buttonExport'><span class='glyphicon glyphicon-export'></span> " + doc.getDocLabel("page_testcaselist", "btn_export") + "</button>";
+//            contentToAdd += "<button id='exportTestCaseMenuButtonSingleFile' type='button' class='btn btn-default' name='buttonExport'><span class='glyphicon glyphicon-export'></span> " + doc.getDocLabel("page_testcaselist", "btn_export1file") + "</button>";
             contentToAdd += "<button id='importTestCaseButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-import'></span> " + doc.getDocLabel("page_testcaselist", "btn_import") + "</button>";
+            contentToAdd += "<button id='importFromSIDETestCaseMenuButton' type='button' class='btn btn-default'><img height='20 px' src='./images/SeleniumIDE.jpg'></span> " + doc.getDocLabel("page_testcaselist", "btn_import_ide") + "</button>";
+            contentToAdd += "</div>";
+            contentToAdd += "</div>";
             contentToAdd += "<button id='createBrpMassButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-th-list'></span> " + doc.getDocLabel("page_global", "button_massAction") + "</button>";
             contentToAdd += "</div>";
 
@@ -177,7 +184,10 @@ function renderOptionsForTestCaseList(data) {
                     openModalTestCase(testQueryString, undefined, "ADD");
                 }
             });
-            $('#testCaseList #importTestCaseButton').click(importTestCaseClick);
+            $("#testCaseList #exportTestCaseMenuButton").click(exportTestCasesMenuClick);
+            $("#testCaseList #exportTestCaseMenuButtonSingleFile").click(exportTestCasesMenuClick);
+            $('#testCaseList #importTestCaseButton').click(importTestCasesMenuClick);
+            $('#testCaseList #importFromSIDETestCaseMenuButton').click(importTestCasesFromSIDEMenuClick);
             $('#testCaseList #createBrpMassButton').click(massActionClick);
         }
     }
@@ -335,31 +345,39 @@ function massActionModalSaveHandler_update() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function massActionModalSaveHandler_export() {
-    clearResponseMessage($('#massActionTestCaseModal'));
+function exportTestCasesMenuClick() {
+    var doc = new Doc();
+    clearResponseMessageMainPage();
 
-    $("input[data-line=select]:checked").each(function (index, file) {
-        var t = $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
-        var test = t.split("test=")[1].split("&testcase=")[0];
-        var testcase = t.split("test=")[1].split("&testcase=")[1];
+    // When creating a new item, Define here the default value.
+    var formList = $('#massActionForm');
+    if (formList.serialize().indexOf("test-") === -1) {
+        var localMessage = new Message("danger", doc.getDocLabel("page_global", "message_exportActionError"));
+        showMessage(localMessage, null);
+    } else {
+        $("input[data-line=select]:checked").each(function (index, file) {
+            var t = $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
+            var test = t.split("test=")[1].split("&testcase=")[0];
+            var testcase = t.split("test=")[1].split("&testcase=")[1];
 
-        var url = "./ExportTestCase?" + $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
-        let iframe = document.createElement('iframe');
-        iframe.style.visibility = 'collapse';
-        document.body.append(iframe);
+            var url = "./ExportTestCase?" + $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
+            let iframe = document.createElement('iframe');
+            iframe.style.visibility = 'collapse';
+            document.body.append(iframe);
 
-        iframe.contentDocument.write(
-                "<form action='" + url + "' method='GET'><input name='test' value='" + test + "'/><input name='testcase' value='" + testcase + "'/></form>"
-                );
-        iframe.contentDocument.forms[0].submit();
+            iframe.contentDocument.write(
+                    "<form action='" + url + "' method='GET'><input name='test' value='" + test + "'/><input name='testcase' value='" + testcase + "'/></form>"
+                    );
+            iframe.contentDocument.forms[0].submit();
 
-        setTimeout(() => iframe.remove(), 2000);
-    });
-    var data = '{"messageType":"OK","message":"Export OK"}';
-    showMessage(JSON.parse(data));
-    $('#testCaseTable').DataTable().draw();
-    $("#selectAll").prop("checked", false);
-    $('#massActionTestCaseModal').modal('hide');
+            setTimeout(() => iframe.remove(), 2000);
+        });
+        var data = '{"messageType":"OK","message":"Export OK"}';
+        showMessage(JSON.parse(data));
+        $('#testCaseTable').DataTable().draw();
+        $("#selectAll").prop("checked", false);
+    }
+
 }
 
 
@@ -466,7 +484,7 @@ function massActionClick() {
     }
 }
 
-function importTestCaseClick() {
+function importTestCasesMenuClick() {
     $("#importTestCaseButton").off("click");
 
     var fileInput = document.getElementById('files');
@@ -475,7 +493,7 @@ function importTestCaseClick() {
         for (var i = 0; i < fileInput.files.length; i++) {
             fileList.push(fileInput.files[i]);
         }
-        renderFileList(fileList);
+        renderFileList(fileList, 'file-list-display');
     });
 
     $("#importTestCaseButton").click(function () {
@@ -551,13 +569,100 @@ function confirmImportTestCaseModalHandler() {
  * @param {type} fileList
  * @return nothing
  */
-function renderFileList(fileList) {
-    var fileListDisplay = document.getElementById('file-list-display');
+function renderFileList(fileList, elementId) {
+    var fileListDisplay = document.getElementById(elementId);
     fileListDisplay.innerHTML = '';
     fileList.forEach(function (file, index) {
         var fileDisplayEl = document.createElement('p');
         fileDisplayEl.innerHTML = (index + 1) + ': ' + file.name;
         fileListDisplay.appendChild(fileDisplayEl);
+    });
+}
+
+function importTestCasesFromSIDEMenuClick() {
+    $("#importTestCaseFromSIDEButton").off("click");
+
+    var fileInput = document.getElementById('filesSIDE');
+    fileInput.addEventListener('change', function (evnt) {
+        fileList = [];
+        for (var i = 0; i < fileInput.files.length; i++) {
+            fileList.push(fileInput.files[i]);
+        }
+        renderFileSIDEList(fileList, 'fileside-list-display');
+    });
+
+    $("#importTestCaseFromSIDEButton").click(function () {
+        confirmImportTestCaseFromSIDEModalHandler();
+    });
+
+    var doc = new Doc();
+    var text = doc.getDocLabel("page_testcaselist", "import_testcase_msg");
+    $('#importTestCaseModalText').text(text);
+
+    $('#importTestCaseFromSIDEModalForm #targetTest').empty();
+    $('#importTestCaseFromSIDEModalForm #targetTest').select2(getComboConfigTest());
+
+    $('#importTestCaseFromSIDEModalForm #targetApplication').empty();
+    $('#importTestCaseFromSIDEModalForm #targetApplication').select2(getComboConfigApplication());
+
+    $('#importTestCaseFromSIDEModal').modal('show');
+}
+
+function renderFileSIDEList(fileList, elementId) {
+    console.log("render");
+    var fileListDisplay = document.getElementById(elementId);
+    fileListDisplay.innerHTML = '';
+    fileList.forEach(function (file, index) {
+        var fileDisplayEl = document.createElement('p');
+        fileDisplayEl.innerHTML = (index + 1) + ': ' + file.name;
+        fileListDisplay.appendChild(fileDisplayEl);
+    });
+}
+
+
+function confirmImportTestCaseFromSIDEModalHandler() {
+    clearResponseMessage($('#importTestCaseModal'));
+
+    var formEdit = $('#importTestCaseFromSIDEModal #importTestCaseFromSIDEModalForm');
+
+    var sa = formEdit.serializeArray();
+    var formData = new FormData();
+
+    for (var i in sa) {
+        formData.append(sa[i].name, sa[i].value);
+    }
+
+    var file = $("#importTestCaseFromSIDEModal input[type=file]");
+    for (var i = 0; i < $($(file).get(0)).prop("files").length; i++) {
+        formData.append("file", file.prop("files")[i]);
+    }
+
+    // Calculate servlet name to call.
+    var myServlet = "ImportTestCaseFromSIDE";
+
+    // Get the header data from the form.
+    showLoaderInModal('#importTestCaseFromSIDEModal');
+
+    $.ajax({
+        url: myServlet,
+        async: true,
+        method: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (data) {
+            data = JSON.parse(data);
+            if (getAlertType(data.messageType) === "success") {
+                var oTable = $("#testCaseTable").dataTable();
+                oTable.fnDraw(false);
+                $('#importTestCaseFromSIDEModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#importTestCaseFromSIDEModal'));
+            }
+            hideLoaderInModal('#importTestCaseFromSIDEModal');
+        },
+        error: showUnexpectedError
     });
 }
 
@@ -911,7 +1016,7 @@ function aoColumnsFunc(countries, tableId) {
             "data": "type",
             "visible": false,
             "sName": "tec.type",
-            "title": doc.getDocOnline("invariant", "Type"),
+            "title": doc.getDocOnline("invariant", "TESTCASE_TYPE"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
@@ -937,6 +1042,24 @@ function aoColumnsFunc(countries, tableId) {
             "sName": "tec.executor",
             "title": doc.getDocOnline("testcase", "Executor"),
             "sWidth": "50px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "origine",
+            "visible": false,
+            "sName": "tec.origine",
+            "like": false,
+            "title": doc.getDocOnline("testcase", "Origin"),
+            "sWidth": "50px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "refOrigine",
+            "visible": false,
+            "sName": "tec.refOrigine",
+            "like": true,
+            "title": doc.getDocOnline("testcase", "RefOrigin"),
+            "sWidth": "150px",
             "sDefaultContent": ""
         },
         {

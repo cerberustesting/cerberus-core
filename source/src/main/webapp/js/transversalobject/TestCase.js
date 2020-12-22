@@ -94,7 +94,7 @@ function initModalTestCase() {
     $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
     $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
     $("[name='executorField']").html(doc.getDocOnline("testcase", "Executor"));
-    $("[name='typeField']").html(doc.getDocOnline("invariant", "Type"));
+    $("[name='typeField']").html(doc.getDocOnline("invariant", "TESTCASE_TYPE"));
     $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
     $("[name='countriesLabel']").html(doc.getDocOnline("testcase", "countriesLabel"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
@@ -369,21 +369,7 @@ function feedTestCaseField(test, modalForm) {
             data: {test: encodeURIComponent(test), getMaxTC: true},
             dataType: "json",
             success: function (data) {
-                var testCaseNumber = data.maxTestCase + 1;
-                var tcnumber;
-
-                if (testCaseNumber < 10) {
-                    tcnumber = "000" + testCaseNumber.toString() + "A";
-                } else if (testCaseNumber >= 10 && testCaseNumber < 99) {
-                    tcnumber = "00" + testCaseNumber.toString() + "A";
-                } else if (testCaseNumber >= 100 && testCaseNumber < 999) {
-                    tcnumber = "0" + testCaseNumber.toString() + "A";
-                } else if (testCaseNumber >= 1000) {
-                    tcnumber = testCaseNumber.toString() + "A";
-                } else {
-                    tcnumber = "0001A";
-                }
-                $('#' + modalForm + ' [name="testCase"]').val(tcnumber);
+                $('#' + modalForm + ' [name="testCase"]').val(data.nextAvailableTestcaseId);
             },
             error: showUnexpectedError
         });
@@ -611,14 +597,14 @@ function confirmTestCaseModalHandler(mode) {
             if (getAlertType(dataMessage.messageType) === "success") {
                 if (isInTutorial) {
                     $('#confirmationModal').modal('hide');
-                    window.location.href = "TestCaseScript.jsp?test=" + encodeURI(data.test) + "&testcase=" + encodeURI(data.testCase) + "&tutorielId=" + GetURLParameter("tutorielId") + "&startStep=10";
+                    window.location.href = "TestCaseScript.jsp?test=" + encodeURI(data.test.replace(/\+/g, ' ')) + "&testcase=" + encodeURI(data.testCase.replace(/\+/g, ' ')) + "&tutorielId=" + GetURLParameter("tutorielId") + "&startStep=10";
                 } else {
                     if (((mode === "ADD") || (mode === "DUPLICATE"))) {
                         var doc = new Doc();
                         // If we created a testcase, We propose the user to go and edit testcase directly.
                         showModalConfirmation(function () {
                             $('#confirmationModal').modal('hide');
-                            window.location.href = "TestCaseScript.jsp?test=" + encodeURI(data.test) + "&testcase=" + encodeURI(data.testCase);
+                            window.location.href = "TestCaseScript.jsp?test=" + encodeURI(data.test.replace(/\+/g, ' ')) + "&testcase=" + encodeURI(data.testCase.replace(/\+/g, ' '));
                         }, function () {
                         }, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcaselist", "ask_edit_testcase"), "", "", "", "");
                     }
@@ -1177,7 +1163,7 @@ function appendTestCaseDepList(testCase) {
     $("#depenencyTable").find("tr").remove() // clean the table
 
     testCase.dependencies.forEach((dep) =>
-        addHtmlForDependencyLine(dep.id, dep.dependencyTest, dep.dependencyTestCase, dep.dependencyTestCase + " - " + dep.dependencyDescription, dep.active, dep.dependencyDescription)
+        addHtmlForDependencyLine(dep.id, dep.dependencyTest, dep.dependencyTestcase, dep.dependencyTestcase + " - " + dep.dependencyDescription, dep.active, dep.dependencyDescription)
     )
 }
 

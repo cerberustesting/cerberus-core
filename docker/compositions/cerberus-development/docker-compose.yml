@@ -1,0 +1,78 @@
+# Cerberus Copyright (C) 2016 Cerberus Testing
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+#
+# This file is part of Cerberus.
+#
+# Cerberus is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Cerberus is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Cerberus. If not, see <http://www.gnu.org/licenses/>.
+# Cerberus Glassfish MySQL composition.
+
+version: '3'
+services:
+
+  # cerberus database
+  database:
+    image: mysql:5.6
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      # information of the cerberus user (used by the application)
+      MYSQL_USER: cerberus
+      MYSQL_PASSWORD: cerberus
+      MYSQL_DATABASE: cerberus
+    ports:
+      - "13306:3306"
+    volumes:
+      - ./localdata/mysql-db:/var/lib/mysql
+#      - /etc/localtime:/etc/localtime:ro
+    restart: always
+
+  # cerberus project
+  cerberus:
+    build: ../../../source
+    ports:
+      - "8080:8080"
+    volumes:
+      # copy server.xml and context.xml (using volumes to avoid running instance problems)
+      - ./configuration/server.xml:/opt/bitnami/tomcat/conf/server.xml
+      - ./configuration/context.xml:/opt/bitnami/tomcat/conf/context.xml
+#      - ./localdata/cerberus-tomcat:/bitnami   
+    restart: always
+    depends_on:
+      - database
+
+  # keycloak database
+  keycloak_database:
+    image: postgres
+    volumes:
+      - ./localdata/keycloak_database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+
+  # keycloack    
+  keycloak:
+    image: jboss/keycloak
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: keycloak_database
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_SCHEMA: public
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: Pa55w0rd
+    ports:
+      - 38080:8080
+    depends_on:
+      - keycloak_database

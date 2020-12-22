@@ -42,16 +42,16 @@ public interface ITestCaseStepDAO {
      *
      * @param test
      * @param testcase
-     * @param Step
+     * @param StepId
      * @return
      */
-    TestCaseStep findTestCaseStep(String test, String testcase, Integer Step);
+    TestCaseStep findTestCaseStep(String test, String testcase, Integer StepId);
 
     public void deleteTestCaseStep(TestCaseStep tcs) throws CerberusException;
 
     public void updateTestCaseStep(TestCaseStep tcs) throws CerberusException;
 
-    List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testCase, int step) throws CerberusException;
+    List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testCase, int stepId) throws CerberusException;
 
     List<TestCaseStep> getTestCaseStepUsingTestCaseInParamter(String test, String testCase) throws CerberusException;
 
@@ -67,7 +67,7 @@ public interface ITestCaseStepDAO {
 
     AnswerList<TestCaseStep> readByTestTestCase(String test, String testcase);
 
-    AnswerList readByLibraryUsed(String test, String testcase, int step);
+    AnswerList readByLibraryUsed(String test, String testcase, int stepId);
 
     /**
      *

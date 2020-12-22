@@ -35,7 +35,7 @@ import java.util.List;
 public class TestCase {
 
     private String test;
-    private String testCase;
+    private String testcase;
     private String application;
     private String ticket;
     private String description;
@@ -365,12 +365,12 @@ public class TestCase {
         this.test = test;
     }
 
-    public String getTestCase() {
-        return testCase;
+    public String getTestcase() {
+        return testcase;
     }
 
-    public void setTestCase(String testCase) {
-        this.testCase = testCase;
+    public void setTestcase(String testcase) {
+        this.testcase = testcase;
     }
 
     public List<TestCaseCountryProperties> getTestCaseCountryProperties() {
@@ -397,6 +397,10 @@ public class TestCase {
         this.testCaseCountries = testCaseCountries;
     }
 
+    public void appendTestCaseCountries(TestCaseCountry testCaseCountry) {
+        this.testCaseCountries.add(testCaseCountry);
+    }
+
     public List<Invariant> getInvariantCountries() {
         return invariantCountries;
     }
@@ -411,6 +415,10 @@ public class TestCase {
 
     public void setSteps(List<TestCaseStep> steps) {
         this.steps = steps;
+    }
+
+    public void appendSteps(TestCaseStep step) {
+        this.steps.add(step);
     }
 
     public String getTicket() {
@@ -487,22 +495,24 @@ public class TestCase {
 
     /**
      * Generate a unique key for a TestCase.
+     *
      * @return
      */
+    @JsonIgnore
     public String getKey() {
-        return this.test + "##" + this.testCase;
+        return this.test + "##" + this.testcase;
     }
 
     @Override
     public String toString() {
-        return "TestCase{" + "test=" + test + ", testCase=" + testCase + ", application=" + application + ", ticket=" + ticket + ", description=" + description + ", detailedDescription=" + detailedDescription + ", priority=" + priority + ", version=" + version + ", status=" + status + ", isActive=" + isActive + ", isActiveQA=" + isActiveQA + ", isActiveUAT=" + isActiveUAT + ", isActivePROD=" + isActivePROD + ", conditionOperator=" + conditionOperator + ", conditionVal1=" + conditionVal1 + ", conditionVal2=" + conditionVal2 + ", conditionVal3=" + conditionVal3 + ", type=" + type + ", origine=" + origine + ", refOrigine=" + refOrigine + ", comment=" + comment + ", fromMajor=" + fromMajor + ", fromMinor=" + fromMinor + ", toMajor=" + toMajor + ", toMinor=" + toMinor + ", bugs=" + bugs + ", targetMajor=" + targetMajor + ", targetMinor=" + targetMinor + ", implementer=" + implementer + ", executor=" + executor + ", userAgent=" + userAgent + ", screenSize=" + screenSize + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", system=" + system + ", lastExecutionStatus=" + lastExecutionStatus + ", testCaseCountryProperties=" + testCaseCountryProperties + ", invariantCountries=" + invariantCountries + ", testCaseCountries=" + testCaseCountries + ", steps=" + steps + ", testCaseStepBatch=" + testCaseStepBatch + ", testCaseLabels=" + testCaseLabels + ", labels=" + labels + ", dependencies=" + dependencies + '}';
+        return "TestCase{" + "test=" + test + ", testCase=" + testcase + ", application=" + application + ", ticket=" + ticket + ", description=" + description + ", detailedDescription=" + detailedDescription + ", priority=" + priority + ", version=" + version + ", status=" + status + ", isActive=" + isActive + ", isActiveQA=" + isActiveQA + ", isActiveUAT=" + isActiveUAT + ", isActivePROD=" + isActivePROD + ", conditionOperator=" + conditionOperator + ", conditionVal1=" + conditionVal1 + ", conditionVal2=" + conditionVal2 + ", conditionVal3=" + conditionVal3 + ", type=" + type + ", origine=" + origine + ", refOrigine=" + refOrigine + ", comment=" + comment + ", fromMajor=" + fromMajor + ", fromMinor=" + fromMinor + ", toMajor=" + toMajor + ", toMinor=" + toMinor + ", bugs=" + bugs + ", targetMajor=" + targetMajor + ", targetMinor=" + targetMinor + ", implementer=" + implementer + ", executor=" + executor + ", userAgent=" + userAgent + ", screenSize=" + screenSize + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", system=" + system + ", lastExecutionStatus=" + lastExecutionStatus + ", testCaseCountryProperties=" + testCaseCountryProperties + ", invariantCountries=" + invariantCountries + ", testCaseCountries=" + testCaseCountries + ", steps=" + steps + ", testCaseStepBatch=" + testCaseStepBatch + ", testCaseLabels=" + testCaseLabels + ", labels=" + labels + ", dependencies=" + dependencies + '}';
     }
 
     public JSONObject toJson() {
         JSONObject testCaseJson = new JSONObject();
         try {
             testCaseJson.put("test", this.getTest());
-            testCaseJson.put("testcase", this.getTestCase());
+            testCaseJson.put("testcase", this.getTestcase());
             testCaseJson.put("application", this.getApplication());
             testCaseJson.put("system", this.getSystem());
             testCaseJson.put("status", this.getStatus());

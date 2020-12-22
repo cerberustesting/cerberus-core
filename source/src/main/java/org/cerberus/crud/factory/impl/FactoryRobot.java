@@ -35,14 +35,14 @@ public class FactoryRobot implements IFactoryRobot {
 
     @Override
     public Robot create(Integer robotID, String robot, String platform,
-            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize, String robotDecli, String type) {
-        Robot r = create(robotID, robot, platform, browser, version, active, lbexemethod, description, userAgent, screenSize, new ArrayList<>(), new ArrayList<>(), robotDecli, type);
+            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize, String profileFolder, String robotDecli, String type) {
+        Robot r = create(robotID, robot, platform, browser, version, active, lbexemethod, description, userAgent, screenSize, profileFolder, new ArrayList<>(), new ArrayList<>(), robotDecli, type);
         return r;
     }
 
     @Override
     public Robot create(Integer robotID, String robot, String platform, String browser, String version, String active, String lbexemethod, String description, String userAgent,
-             String screenSize, List<RobotCapability> capabilities, List<RobotExecutor> executors, String robotDecli, String type) {
+            String screenSize, String profileFolder, List<RobotCapability> capabilities, List<RobotExecutor> executors, String robotDecli, String type) {
         Robot newRobot = new Robot();
         newRobot.setRobotID(robotID);
         newRobot.setRobot(robot);
@@ -56,6 +56,7 @@ public class FactoryRobot implements IFactoryRobot {
         newRobot.setCapabilities(capabilities);
         newRobot.setExecutors(executors);
         newRobot.setScreenSize(screenSize);
+        newRobot.setProfileFolder(profileFolder);
         newRobot.setRobotDecli(robotDecli);
         newRobot.setType(type);
         return newRobot;

@@ -87,7 +87,7 @@
                     SQLInstruction = new ArrayList<String>();
                     appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
                     IDatabaseVersioningService databaseVersionService = appContext.getBean(IDatabaseVersioningService.class);
-                    SQLInstruction = databaseVersionService.getSQLScript();
+                    SQLInstruction = databaseVersionService.getSQLScriptFromFile();
 
                     // Initialize the array that will receive the RC of every execution.
                     SQLRC = new ArrayList<String>();

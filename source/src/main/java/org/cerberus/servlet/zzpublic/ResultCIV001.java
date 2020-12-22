@@ -37,6 +37,7 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.impl.TestCaseExecutionService;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
@@ -51,8 +52,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "ResultCIV001", urlPatterns = {"/ResultCIV001"})
 public class ResultCIV001 extends HttpServlet {
-    
+
     private static final Logger LOG = LogManager.getLogger(ResultCIV001.class);
+    private IAPIKeyService apiKeyService;
 
     protected void processRequest(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
@@ -60,6 +62,7 @@ public class ResultCIV001 extends HttpServlet {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        apiKeyService = appContext.getBean(IAPIKeyService.class);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
@@ -73,174 +76,177 @@ public class ResultCIV001 extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createForPublicCalls("/ResultCIV001", "CALL", "ResultCIV001 called : " + request.getRequestURL(), request);
 
-        try {
-            JSONObject jsonResponse = new JSONObject();
+        if (apiKeyService.checkAPIKey(request, response)) {
 
-            String tag = policy.sanitize(request.getParameter("tag"));
+            try {
+                JSONObject jsonResponse = new JSONObject();
 
-            String helpMessage = "This servlet is used to provide a json object with various execution counters as well as a global OK or KO status based on the number and status of the execution done on a specific tag. "
-                    + "The number of executions are ponderated by parameters by priority from cerberus_ci_okcoefprio1 to cerberus_ci_okcoefprio4. "
-                    + "Formula used is the following : "
-                    + "Nb Exe Prio 1 testcases * cerberus_ci_okcoefprio1 + Nb Exe Prio 2 testcases * cerberus_ci_okcoefprio2 + "
-                    + "Nb Exe Prio 3 testcases * cerberus_ci_okcoefprio3 + Nb Exe Prio 4 testcases * cerberus_ci_okcoefprio4."
-                    + "If no executions are found, the result is KO."
-                    + "With at least 1 execution, if result is < 1 then global servlet result is OK. If not, it is KO."
-                    + "All execution needs to have a status equal to KO, FA, NA or PE."
-                    + "Parameter list :"
-                    + "- tag [mandatory] : Execution Tag to filter the test cases execution. [" + tag + "]";
+                String tag = policy.sanitize(request.getParameter("tag"));
 
-            boolean error = false;
-            String error_message = "";
+                String helpMessage = "This servlet is used to provide a json object with various execution counters as well as a global OK or KO status based on the number and status of the execution done on a specific tag. "
+                        + "The number of executions are ponderated by parameters by priority from cerberus_ci_okcoefprio1 to cerberus_ci_okcoefprio4. "
+                        + "Formula used is the following : "
+                        + "Nb Exe Prio 1 testcases * cerberus_ci_okcoefprio1 + Nb Exe Prio 2 testcases * cerberus_ci_okcoefprio2 + "
+                        + "Nb Exe Prio 3 testcases * cerberus_ci_okcoefprio3 + Nb Exe Prio 4 testcases * cerberus_ci_okcoefprio4."
+                        + "If no executions are found, the result is KO."
+                        + "With at least 1 execution, if result is < 1 then global servlet result is OK. If not, it is KO."
+                        + "All execution needs to have a status equal to KO, FA, NA or PE."
+                        + "Parameter list :"
+                        + "- tag [mandatory] : Execution Tag to filter the test cases execution. [" + tag + "]";
 
-            // Checking the parameter validity. Tag is a mandatory parameter
-            if (StringUtils.isBlank(tag)) {
-                error_message = "Error - Parameter tag is mandatory.";
-                error = true;
-            }
+                boolean error = false;
+                String error_message = "";
 
-            if (!error) {
+                // Checking the parameter validity. Tag is a mandatory parameter
+                if (StringUtils.isBlank(tag)) {
+                    error_message = "Error - Parameter tag is mandatory.";
+                    error = true;
+                }
 
-                ITestCaseExecutionService MyTestExecutionService = appContext.getBean(TestCaseExecutionService.class);
-                List<TestCaseExecution> myList;
+                if (!error) {
 
-                int nbok = 0;
-                int nbko = 0;
-                int nbfa = 0;
-                int nbpe = 0;
-                int nbna = 0;
-                int nbca = 0;
-                int nbtotal = 0;
+                    ITestCaseExecutionService MyTestExecutionService = appContext.getBean(TestCaseExecutionService.class);
+                    List<TestCaseExecution> myList;
 
-                int nbkop1 = 0;
-                int nbkop2 = 0;
-                int nbkop3 = 0;
-                int nbkop4 = 0;
+                    int nbok = 0;
+                    int nbko = 0;
+                    int nbfa = 0;
+                    int nbpe = 0;
+                    int nbna = 0;
+                    int nbca = 0;
+                    int nbtotal = 0;
 
-                String exeStart = "";
-                long longStart = 0;
-                String exeEnd = "";
-                long longEnd = 0;
+                    int nbkop1 = 0;
+                    int nbkop2 = 0;
+                    int nbkop3 = 0;
+                    int nbkop4 = 0;
 
-                try {
-                    myList = MyTestExecutionService.convert(MyTestExecutionService.readByTag(tag));
+                    String exeStart = "";
+                    long longStart = 0;
+                    String exeEnd = "";
+                    long longEnd = 0;
 
-                    for (TestCaseExecution curExe : myList) {
+                    try {
+                        myList = MyTestExecutionService.convert(MyTestExecutionService.readByTag(tag));
 
-                        if (longStart == 0) {
-                            longStart = curExe.getStart();
-                        }
-                        if (curExe.getStart() < longStart) {
-                            longStart = curExe.getStart();
-                        }
+                        for (TestCaseExecution curExe : myList) {
 
-                        if (longEnd == 0) {
-                            longEnd = curExe.getEnd();
-                        }
-                        if (curExe.getEnd() > longEnd) {
-                            longEnd = curExe.getEnd();
-                        }
+                            if (longStart == 0) {
+                                longStart = curExe.getStart();
+                            }
+                            if (curExe.getStart() < longStart) {
+                                longStart = curExe.getStart();
+                            }
 
-                        nbtotal++;
+                            if (longEnd == 0) {
+                                longEnd = curExe.getEnd();
+                            }
+                            if (curExe.getEnd() > longEnd) {
+                                longEnd = curExe.getEnd();
+                            }
 
-                        switch (curExe.getControlStatus()) {
-                            case TestCaseExecution.CONTROLSTATUS_KO:
-                                nbko++;
-                                break;
-                            case TestCaseExecution.CONTROLSTATUS_OK:
-                                nbok++;
-                                break;
-                            case TestCaseExecution.CONTROLSTATUS_FA:
-                                nbfa++;
-                                break;
-                            case TestCaseExecution.CONTROLSTATUS_NA:
-                                nbna++;
-                                break;
-                            case TestCaseExecution.CONTROLSTATUS_CA:
-                                nbca++;
-                                break;
-                            case TestCaseExecution.CONTROLSTATUS_PE:
-                                nbpe++;
-                                break;
-                        }
+                            nbtotal++;
 
-                        if (!(curExe.getControlStatus().equals("OK"))) {
-                            switch (curExe.getTestCaseObj().getPriority()) {
-                                case 1:
-                                    nbkop1++;
+                            switch (curExe.getControlStatus()) {
+                                case TestCaseExecution.CONTROLSTATUS_KO:
+                                    nbko++;
                                     break;
-                                case 2:
-                                    nbkop2++;
+                                case TestCaseExecution.CONTROLSTATUS_OK:
+                                    nbok++;
                                     break;
-                                case 3:
-                                    nbkop3++;
+                                case TestCaseExecution.CONTROLSTATUS_FA:
+                                    nbfa++;
                                     break;
-                                case 4:
-                                    nbkop4++;
+                                case TestCaseExecution.CONTROLSTATUS_NA:
+                                    nbna++;
+                                    break;
+                                case TestCaseExecution.CONTROLSTATUS_CA:
+                                    nbca++;
+                                    break;
+                                case TestCaseExecution.CONTROLSTATUS_PE:
+                                    nbpe++;
                                     break;
                             }
+
+                            if (!(curExe.getControlStatus().equals("OK"))) {
+                                switch (curExe.getTestCaseObj().getPriority()) {
+                                    case 1:
+                                        nbkop1++;
+                                        break;
+                                    case 2:
+                                        nbkop2++;
+                                        break;
+                                    case 3:
+                                        nbkop3++;
+                                        break;
+                                    case 4:
+                                        nbkop4++;
+                                        break;
+                                }
+                            }
+
                         }
 
+                    } catch (CerberusException ex) {
+                        LOG.warn(ex);
                     }
 
-                } catch (CerberusException ex) {
-                    LOG.warn(ex);
-                }
+                    IParameterService parameterService = appContext.getBean(IParameterService.class);
 
-                IParameterService parameterService = appContext.getBean(IParameterService.class);
+                    float pond1 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio1", "", 0);
+                    float pond2 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio2", "", 0);
+                    float pond3 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio3", "", 0);
+                    float pond4 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio4", "", 0);
+                    String result;
+                    float resultCal = (nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4);
+                    if ((resultCal < 1) && (nbtotal > 0)) {
+                        result = "OK";
+                    } else {
+                        result = "KO";
+                    }
 
-                float pond1 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio1", "", 0);
-                float pond2 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio2", "", 0);
-                float pond3 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio3", "", 0);
-                float pond4 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio4", "", 0);
-                String result;
-                float resultCal = (nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4);
-                if ((resultCal < 1) && (nbtotal > 0)) {
-                    result = "OK";
+                    jsonResponse.put("messageType", "OK");
+                    jsonResponse.put("message", "CI result calculated with success.");
+                    jsonResponse.put("CI_OK_prio1", pond1);
+                    jsonResponse.put("CI_OK_prio2", pond2);
+                    jsonResponse.put("CI_OK_prio3", pond3);
+                    jsonResponse.put("CI_OK_prio4", pond4);
+                    jsonResponse.put("CI_finalResult", resultCal);
+                    jsonResponse.put("NonOK_prio1_nbOfExecution", nbkop1);
+                    jsonResponse.put("NonOK_prio2_nbOfExecution", nbkop2);
+                    jsonResponse.put("NonOK_prio3_nbOfExecution", nbkop3);
+                    jsonResponse.put("NonOK_prio4_nbOfExecution", nbkop4);
+                    jsonResponse.put("status_OK_nbOfExecution", nbok);
+                    jsonResponse.put("status_KO_nbOfExecution", nbko);
+                    jsonResponse.put("status_FA_nbOfExecution", nbfa);
+                    jsonResponse.put("status_PE_nbOfExecution", nbpe);
+                    jsonResponse.put("status_NA_nbOfExecution", nbna);
+                    jsonResponse.put("status_CA_nbOfExecution", nbca);
+                    jsonResponse.put("TOTAL_nbOfExecution", nbtotal);
+                    jsonResponse.put("result", result);
+                    jsonResponse.put("ExecutionStart", String.valueOf(new Timestamp(longStart)));
+                    jsonResponse.put("ExecutionEnd", String.valueOf(new Timestamp(longEnd)));
+
+                    response.getWriter().print(jsonResponse.toString());
+
+                    // Log the result with calculation detail.
+                    logEventService.createForPublicCalls("/ResultCIV001", "CALLRESULT", "ResultCIV001 calculated with result [" + result + "] : " + nbkop1 + "*" + pond1 + " + " + nbkop2 + "*" + pond2 + " + " + nbkop3 + "*" + pond3 + " + " + nbkop4 + "*" + pond4 + " = " + resultCal, request);
+
                 } else {
-                    result = "KO";
+
+                    jsonResponse.put("messageType", "KO");
+                    jsonResponse.put("message", error_message);
+                    jsonResponse.put("helpMessage", helpMessage);
+
+                    response.getWriter().print(jsonResponse.toString(1));
+
                 }
 
-                jsonResponse.put("messageType", "OK");
-                jsonResponse.put("message", "CI result calculated with success.");
-                jsonResponse.put("CI_OK_prio1", pond1);
-                jsonResponse.put("CI_OK_prio2", pond2);
-                jsonResponse.put("CI_OK_prio3", pond3);
-                jsonResponse.put("CI_OK_prio4", pond4);
-                jsonResponse.put("CI_finalResult", resultCal);
-                jsonResponse.put("NonOK_prio1_nbOfExecution", nbkop1);
-                jsonResponse.put("NonOK_prio2_nbOfExecution", nbkop2);
-                jsonResponse.put("NonOK_prio3_nbOfExecution", nbkop3);
-                jsonResponse.put("NonOK_prio4_nbOfExecution", nbkop4);
-                jsonResponse.put("status_OK_nbOfExecution", nbok);
-                jsonResponse.put("status_KO_nbOfExecution", nbko);
-                jsonResponse.put("status_FA_nbOfExecution", nbfa);
-                jsonResponse.put("status_PE_nbOfExecution", nbpe);
-                jsonResponse.put("status_NA_nbOfExecution", nbna);
-                jsonResponse.put("status_CA_nbOfExecution", nbca);
-                jsonResponse.put("TOTAL_nbOfExecution", nbtotal);
-                jsonResponse.put("result", result);
-                jsonResponse.put("ExecutionStart", String.valueOf(new Timestamp(longStart)));
-                jsonResponse.put("ExecutionEnd", String.valueOf(new Timestamp(longEnd)));
-
-                response.getWriter().print(jsonResponse.toString());
-
-                // Log the result with calculation detail.
-                logEventService.createForPublicCalls("/ResultCIV001", "CALLRESULT", "ResultCIV001 calculated with result [" + result + "] : " + nbkop1 + "*" + pond1 + " + " + nbkop2 + "*" + pond2 + " + " + nbkop3 + "*" + pond3 + " + " + nbkop4 + "*" + pond4 + " = " + resultCal, request);
-
-            } else {
-
-                jsonResponse.put("messageType", "KO");
-                jsonResponse.put("message", error_message);
-                jsonResponse.put("helpMessage", helpMessage);
-
-                response.getWriter().print(jsonResponse.toString());
-
+            } catch (JSONException e) {
+                LOG.warn(e);
+                //returns a default error message with the json format that is able to be parsed by the client-side
+                response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
             }
-
-        } catch (JSONException e) {
-            LOG.warn(e);
-            //returns a default error message with the json format that is able to be parsed by the client-side
-            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
 
     }

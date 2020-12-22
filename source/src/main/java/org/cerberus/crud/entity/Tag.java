@@ -61,10 +61,19 @@ public class Tag {
     private String reqEnvironmentList;
     private String reqCountryList;
     private String browserstackBuildHash;
+    private String lambdaTestBuild;
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
     private Timestamp DateModif;
+
+    public String getLambdaTestBuild() {
+        return lambdaTestBuild;
+    }
+
+    public void setLambdaTestBuild(String lambdaTestBuild) {
+        this.lambdaTestBuild = lambdaTestBuild;
+    }
 
     public long getId() {
         return id;
@@ -384,6 +393,7 @@ public class Tag {
             result.put("campaign", this.campaign);
             result.put("description", this.description);
             result.put("browserstackBuildHash", this.browserstackBuildHash);
+            result.put("lambdaTestBuild", this.lambdaTestBuild);
         } catch (JSONException ex) {
             LOG.error(ex.toString(), ex);
         } catch (Exception ex) {

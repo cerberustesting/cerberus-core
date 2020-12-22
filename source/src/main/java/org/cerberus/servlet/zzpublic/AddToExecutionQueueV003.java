@@ -58,6 +58,7 @@ import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONArray;
@@ -137,6 +138,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     private IRobotService robotService;
     private IFactoryRobot robotFactory;
     private IParameterService parameterService;
+    private IAPIKeyService apiKeyService;
+    private ITagService tagService;
 
     /**
      * Process request for both GET and POST method.
@@ -174,6 +177,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         robotService = appContext.getBean(IRobotService.class);
         robotFactory = appContext.getBean(IFactoryRobot.class);
         parameterService = appContext.getBean(IParameterService.class);
+        apiKeyService = appContext.getBean(IAPIKeyService.class);
+        tagService = appContext.getBean(ITagService.class);
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
@@ -190,6 +195,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createForPublicCalls("/AddToExecutionQueueV003", "CALL", "AddToExecutionQueueV003 called : " + request.getRequestURL(), request);
 
+        if (apiKeyService.checkAPIKey(request, response)) {
         // Parsing all parameters.
         // Execution scope parameters : Campaign, TestCases, Countries, Environment, Browser.
         String campaign = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_CAMPAIGN), null, charset);
@@ -397,7 +403,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     if (testcases.getDataList() != null) {
                         for (TestCase campaignTestCase : testcases.getDataList()) {
                             selectTest.add(campaignTestCase.getTest());
-                            selectTestCase.add(campaignTestCase.getTestCase());
+                            selectTestCase.add(campaignTestCase.getTestcase());
                         }
                     } else {
                         errorMessage.append("Error - ").append(testcases.getMessageDescription()).append("\n");
@@ -450,7 +456,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 // RobotIP is not defined and no robot are provided so the content is probably testcases that does not require robot definition.
                 if (manualExecution.equalsIgnoreCase("Y") || manualExecution.equalsIgnoreCase("A")) {
                     robotIP = "manual";
-                    robotsMap.put("", robotFactory.create(0, "", platform, browser, "", "Y", "", "", "", screenSize, browser, ""));
+                    robotsMap.put("", robotFactory.create(0, "", platform, browser, "", "Y", "", "", "", screenSize, "", browser, ""));
                 }
                 nbrobot = 1;
             } else {
@@ -470,7 +476,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             nbrobot = 1;
             robots = new ArrayList<>();
             robots.add("");
-            robotsMap.put("", robotFactory.create(0, "", platform, browser, "", "Y", "", "", "", screenSize, browser, ""));
+            robotsMap.put("", robotFactory.create(0, "", platform, browser, "", "Y", "", "", "", screenSize, "", browser, ""));
         }
 
         HashMap<String, Application> appMap = new HashMap<>();
@@ -529,7 +535,6 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                             // Create Tag only if not already done and defined.
                                             if (!StringUtil.isNullOrEmpty(tag) && !tagAlreadyAdded) {
                                                 // We create or update it.
-                                                ITagService tagService = appContext.getBean(ITagService.class);
                                                 tagService.createAuto(tag, campaign, user, envJSONArray, countryJSONArray);
                                                 tagAlreadyAdded = true;
                                             }
@@ -719,7 +724,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         }
         Date date1 = new Date();
         LOG.debug("TOTAL Duration : " + (date1.getTime() - requestDate.getTime()));
-
+        }
     }
 
     private HashMap<String, Application> updateMapWithApplication(String application, HashMap<String, Application> appMap) throws CerberusException {

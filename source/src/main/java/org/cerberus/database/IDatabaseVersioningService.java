@@ -28,21 +28,30 @@ public interface IDatabaseVersioningService {
 
     /**
      * @param SQLString String that contains the SQL that will be executed
-     *                  against the Cerberus database.
+     * against the Cerberus database.
      * @return "OK" if the SQL executed correctly and a string with the error
-     *         when not executed.
+     * when not executed.
      */
     String exeSQL(String SQLString);
 
     /**
      * @return true if the database is up to date and false if the database
-     *         needs to be upgraded.
+     * needs to be upgraded.
      */
     boolean isDatabaseUptodate();
 
     /**
      * @return an array of string that contain all the SQL instructions that
-     *         needs to be executed in order to build the Cerberus database.
+     * needs to be executed in order to build the Cerberus database. List of SQL
+     * are retrieved from the resource file.
      */
-    ArrayList<String> getSQLScript();
+    ArrayList<String> getSQLScriptFromFile();
+
+    /**
+     *
+     * @return
+     */
+    public int getSqlVersion();
+
+
 }

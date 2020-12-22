@@ -41,7 +41,7 @@ public interface ITestCaseStepActionControlDAO {
 
     void insertTestCaseStepActionControl(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException;
 
-    List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int step);
+    List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int stepId);
 
     public void updateTestCaseStepActionControl(TestCaseStepActionControl control) throws CerberusException;
 
@@ -55,11 +55,11 @@ public interface ITestCaseStepActionControlDAO {
      *
      * @param test
      * @param testcase
-     * @param step
+     * @param stepId
      * @param sequence
      * @return
      */
-    public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int step, int sequence);
+    public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int stepId, int sequence);
 
     Answer create(TestCaseStepActionControl testCaseStepActionControl);
 }

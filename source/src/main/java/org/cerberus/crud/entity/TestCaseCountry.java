@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 /**
@@ -37,6 +38,7 @@ public class TestCaseCountry {
     private List<TestCaseCountryProperties> testCaseCountryProperty;
     private TestCase testCaseObj;
 
+    @JsonIgnore
     public TestCase getTestCaseObj() {
         return testCaseObj;
     }

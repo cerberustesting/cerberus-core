@@ -1,0 +1,44 @@
+=== Import/Export
+
+In this section, you will find information on how to Import and Export testcases inside or outside Cerberus.
+Cerberus store the testcase in a relational model database. You may still want to export a list of test cases from a specific database in order to import it on a different database or any other system.
+In order to do so, Cerberus allow you to export any testcase into a json format.
+All import/export features are available from test case list page (menu : Test / Testcase List)
+
+=== Export
+
+In order to export a single testcase, just click on the export button of the testcase you want to export. The testcase will then be downloaded in a json Cerberus format from your browser to your local drive.
+
+image:exportSingle.png[Single Export]
+
+If you want to export a list of testcases, you need to select them first with the help of the checkbox and then choose the Export button from the Import/Export menu.
+
+image:exportMultiple.png[Multiple Export]
+
+=== Import
+
+In order to import any testcase, from a json Cerberus file, you can open the Import/Export menu and choose Import Button. Then select the json file you want to import and Cerberus will load it into the database.
+
+image:import.png[Import Testcase]
+
+NOTE : In order for the test to work correctly, you may need to create all the corresponding application, systems, datalib or library it may require.
+
+=== Import from Selenium IDE and Test Recorder
+
+You may want to record your web test using Selenium IDE plugin.
+Selenium IDE allow you to record live your test and save it into a specific json format. No need to export your test from Selenium IDE, just save them into the native Selenium file format (files ends with .side). Cerberus will allow you to import the native Selenium IDE format directly. 
+The advantage of that 'recorder' method is that it can save you a lot of time building the xpath or id that point to the various element of your scenario. The disadvantage is that the resulting scenario will need to be described and structured manually into steps in order to be maintained easily over time.
+
+In order to import from Selenium IDE files, just click on the 'Import Test Case From Selenium IDE' button on the 'Import / Export' menu.
+
+image:importSIDE.png[Import From Selenium IDE]
+
+The screen allow you to:
+
+* Choose an existing folder or define one on the fly. All imported testcases will be created inside that folder.
+* Select a 'GUI' application. Testcases will be attached to that application.
+* Select 1 or more SIDE files to be imported.
+
+Once imported, the column 'Origin' will take the value 'Selenium IDE' and 'Ref Origin' will have the Selenium IDE id of the testcase.
+
+image:importList.png[Test Cases Imported From Selenium IDE]

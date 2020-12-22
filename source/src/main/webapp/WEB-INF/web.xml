@@ -595,6 +595,11 @@
         <servlet-class>org.cerberus.servlet.zzpublic.AddToExecutionQueueV003</servlet-class>
     </servlet>
     <servlet>
+        <description>Add a test case to the execution queue.</description>
+        <servlet-name>AddToExecutionQueuePrivate</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.AddToExecutionQueuePrivate</servlet-class>
+    </servlet>
+    <servlet>
         <description>Execute the next record from the execution queue.</description>
         <servlet-name>GetExecutionsInQueue</servlet-name>
         <servlet-class>org.cerberus.servlet.administration.GetExecutionsInQueue</servlet-class>
@@ -1348,6 +1353,10 @@
         <url-pattern>/AddToExecutionQueueV003</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>AddToExecutionQueuePrivate</servlet-name>
+        <url-pattern>/AddToExecutionQueuePrivate</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>GetExecutionsInQueue</servlet-name>
         <url-pattern>/GetExecutionsInQueue</url-pattern>
     </servlet-mapping>
@@ -1798,6 +1807,7 @@
             <url-pattern>/ReadScheduleEntry</url-pattern>
             <url-pattern>/UpdateScheduleEntry</url-pattern>
             <url-pattern>/DeleteScheduleEntry</url-pattern>
+            <url-pattern>/AddToExecutionQueuePrivate</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>RunTest</description>
@@ -2009,8 +2019,8 @@
             <url-pattern>/DisableEnvironmentV000</url-pattern>
             <url-pattern>/NewEnvironmentEventV000</url-pattern>
             <url-pattern>/GetTagExecutions</url-pattern>
-            <url-pattern>/GetTestCasesV000</url-pattern>
-            <url-pattern>/manageV001</url-pattern>
+            <url-pattern>/GetTestCasesV001</url-pattern>
+            <url-pattern>/ManageV001</url-pattern>
             <!--            Password Management Servlets -->
             <url-pattern>/ForgotPassword</url-pattern>
             <url-pattern>/ForgotPasswordEmailConfirmation</url-pattern>

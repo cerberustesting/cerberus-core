@@ -8,11 +8,9 @@ This is the APi that can be used on the integration perimeter (change environmen
 
 | /NewBuildRevision | Used to inform Cerberus that a new Build and Revision has been deployed on a system. | **/NewBuildRevisionV000**
 
-| /NewEnvironmentEvent | Used to inform Cerberus about an event that occured on a given environment | **/NewEnvironmentEventV000**
+| /NewEnvironmentEvent | Used to inform Cerberus about an event that occured on a given environment. | **/NewEnvironmentEventV000**
 
 | /NewRelease | Used to create or update a release entry of an application in a 'NONE' build and 'NONE' revision. | **/NewRelease**
-
-| /Manage | This API should be used pior to perform database backup (global stop and start) or pior to restart an instance (instance stop). It is used to start and stop Cerberus instance or global system in a clean way by stopping submitting new executions and waiting pending execution to finish. 'token' parameter can be configured with Cerberus parameter 'cerberus_manage_token'. 'action' parameter can be either start or stop, 'scope' parameter can be either global or instance. The timeout in order to wait for all pending execution to stop can be configured with Cerberus parameter 'cerberus_manage_timeout' (default to 300 seconds).  | **/manageV001**
 
 |=== 
 

@@ -66,7 +66,7 @@ public class TestCaseStepBatchDAO implements ITestCaseStepBatchDAO {
      * @return Description text text text.
      */
     @Override
-    public List<TestCaseStepBatch> findTestCaseStepBatchByTestCaseStep(String test, String testcase, int stepNumber) {
+    public List<TestCaseStepBatch> findTestCaseStepBatchByTestCaseStep(String test, String testcase, int stepId) {
         List<TestCaseStepBatch> list = null;
         final String query = "SELECT * FROM testcasestepbatch WHERE test = ? AND testcase = ? AND step = ?";
 
@@ -76,13 +76,13 @@ public class TestCaseStepBatchDAO implements ITestCaseStepBatchDAO {
             
         	preStat.setString(1, test);
             preStat.setString(2, testcase);
-            preStat.setInt(3, stepNumber);
+            preStat.setInt(3, stepId);
             
             list = new ArrayList<TestCaseStepBatch>();
             try(ResultSet resultSet = preStat.executeQuery();) {
                 while (resultSet.next()) {
                     String batch = resultSet.getString("Batch");
-                    list.add(factoryTestCaseStepBatch.create(test, testcase, stepNumber, batch));
+                    list.add(factoryTestCaseStepBatch.create(test, testcase, stepId, batch));
                 }
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : "+exception.toString());

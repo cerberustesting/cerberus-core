@@ -23,85 +23,111 @@ import java.util.ResourceBundle;
 
 /**
  * Contains information about project.
- * 
+ *
  * <p>
  * Singleton class to use thanks to the {@link #getInstance()} method.
  * </p>
- * 
+ *
  * @author abourdon
  */
 public final class Infos {
 
-	/** {@link ResourceBundle} to the <code>infos</code> translation file */
-	public static final ResourceBundle TRANSLATOR_INFOS = ResourceBundle.getBundle("lang.infos");
+    /**
+     * {@link ResourceBundle} to the <code>infos</code> translation file
+     */
+    public static final ResourceBundle TRANSLATOR_INFOS = ResourceBundle.getBundle("lang.infos");
 
-	/** Version separator */
-	public static final String VERSION_SEPARATOR = "-";
+    /**
+     * Version separator
+     */
+    public static final String VERSION_SEPARATOR = "-";
 
-	/** Access to the single instance of this class */
-	private static final Infos INSTANCE = new Infos();
+    /**
+     * Access to the single instance of this class
+     */
+    private static final Infos INSTANCE = new Infos();
 
-	/**
-	 * Gets the single class instance
-	 * 
-	 * @return the single class instance
-	 */
-	public static Infos getInstance() {
-		return INSTANCE;
-	}
+    /**
+     * Gets the single class instance
+     *
+     * @return the single class instance
+     */
+    public static Infos getInstance() {
+        return INSTANCE;
+    }
 
-	/** The project name */
-	private String projectName;
+    /**
+     * The project name
+     */
+    private String projectName;
 
-	/** The project version */
-	private String projectVersion;
+    /**
+     * The project version
+     */
+    private String projectVersion;
 
-	/** Concatenation between project name and version */
-	private String projectNameAndVersion;
+    /**
+     * Concatenation between project name and version
+     */
+    private String projectNameAndVersion;
 
-	/**
-	 * Gets the project name
-	 * 
-	 * @return the project name
-	 */
-	public String getProjectName() {
-		return projectName;
-	}
+    /**
+     * Project Build ID
+     */
+    private String projectBuildId;
 
-	/**
-	 * Gets the project version
-	 * 
-	 * @return the project version
-	 */
-	public String getProjectVersion() {
-		return projectVersion;
-	}
+    /**
+     * Gets the project name
+     *
+     * @return the project name
+     */
+    public String getProjectName() {
+        return projectName;
+    }
 
-	/**
-	 * Gets the concatenation between the project name and version
-	 * 
-	 * @return the concatenation between the project name and version
-	 * @see #getProjectName()
-	 * @see #getProjectVersion()
-	 */
-	public String getProjectNameAndVersion() {
-		return projectNameAndVersion;
-	}
+    /**
+     * Gets the project version
+     *
+     * @return the project version
+     */
+    public String getProjectVersion() {
+        return projectVersion;
+    }
 
-	/**
-	 * Private constructor as singleton class
-	 */
-	public Infos() {
-		init();
-	}
+    /**
+     * Gets the concatenation between the project name and version
+     *
+     * @return the concatenation between the project name and version
+     * @see #getProjectName()
+     * @see #getProjectVersion()
+     */
+    public String getProjectNameAndVersion() {
+        return projectNameAndVersion;
+    }
 
-	/**
-	 * Initialisation process
-	 */
-	private void init() {
-		projectName = TRANSLATOR_INFOS.getString("project.name");
-		projectVersion = TRANSLATOR_INFOS.getString("project.version");
-		projectNameAndVersion = projectName + VERSION_SEPARATOR + projectVersion;
-	}
+    /**
+     *
+     * @return
+     */
+    public String getProjectBuildId() {
+        return projectBuildId;
+    }
+
+    /**
+     * Private constructor as singleton class
+     */
+    public Infos() {
+        init();
+    }
+
+    /**
+     * Initialisation process
+     */
+    private void init() {
+        projectName = TRANSLATOR_INFOS.getString("project.name");
+        projectVersion = TRANSLATOR_INFOS.getString("project.version");
+        projectNameAndVersion = projectName + VERSION_SEPARATOR + projectVersion;
+        projectBuildId = TRANSLATOR_INFOS.getString("project.build");
+    }
 
 }

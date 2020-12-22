@@ -56,6 +56,7 @@ import org.cerberus.service.cerberuscommand.ICerberusCommand;
 import org.cerberus.service.consolelog.IConsolelogService;
 import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.har.IHarService;
+import org.cerberus.service.har.entity.NetworkTrafficIndex;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.service.sikuli.impl.SikuliService;
@@ -248,6 +249,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE:
                     res = this.doActionMouseLeftButtonRelease(tCExecution, value1, value2);
                     break;
+                case TestCaseStepAction.ACTION_MOUSEMOVE:
+                    res = this.doActionMouseMove(tCExecution, value1, value2);
+                    break;
                 case TestCaseStepAction.ACTION_DOUBLECLICK:
                     res = this.doActionDoubleClick(tCExecution, value1, value2);
                     break;
@@ -355,7 +359,7 @@ public class ActionService implements IActionService {
                     res = this.doActionSetNetworkTrafficContent(tCExecution, testCaseStepActionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_INDEXNETWORKTRAFFIC:
-                    res = this.doActionIndexNetworkTraffic(tCExecution, testCaseStepActionExecution);
+                    res = this.doActionIndexNetworkTraffic(tCExecution, testCaseStepActionExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_SETCONSOLECONTENT:
                     res = this.doActionSetConsoleContent(tCExecution, testCaseStepActionExecution, value1);
@@ -554,6 +558,7 @@ public class ActionService implements IActionService {
              * Get Identifier (identifier, locator) and check it's valid
              */
             Identifier identifier = identifierService.convertStringToIdentifier(element);
+            LOG.debug("Click : " + identifier.toString());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
@@ -622,22 +627,26 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionMouseLeftButtonPress(TestCaseExecution tCExecution, String object, String property) {
+    private MessageEvent doActionMouseLeftButtonPress(TestCaseExecution tCExecution, String value1, String value2) {
         MessageEvent message;
         String element;
         try {
-            /**
-             * Get element to use String object if not empty, String property if
-             * object empty, throws Exception if both empty)
-             */
-            element = getElementToUse(object, property, "mouseLeftButtonPress", tCExecution);
-            /**
-             * Get Identifier (identifier, locator)
-             */
-            Identifier identifier = identifierService.convertStringToIdentifier(element);
-            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) || StringUtil.isNullOrEmpty(value1)) {
+                // If value1 is empty, the Sikuli engine must be used in order to click without element to click.
+                return sikuliService.doSikuliActionLeftButtonPress(tCExecution.getSession());
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                /**
+                 * Get element to use String object if not empty, String
+                 * property if object empty, throws Exception if both empty)
+                 */
+                element = getElementToUse(value1, value2, "mouseLeftButtonPress", tCExecution);
+                /**
+                 * Get Identifier (identifier, locator)
+                 */
+                Identifier identifier = identifierService.convertStringToIdentifier(value1);
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+
                 return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier, true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -691,22 +700,25 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionMouseLeftButtonRelease(TestCaseExecution tCExecution, String object, String property) {
+    private MessageEvent doActionMouseLeftButtonRelease(TestCaseExecution tCExecution, String value1, String value2) {
         MessageEvent message;
         String element;
         try {
-            /**
-             * Get element to use String object if not empty, String property if
-             * object empty, throws Exception if both empty)
-             */
-            element = getElementToUse(object, property, "mouseLeftButtonRelease", tCExecution);
-            /**
-             * Get Identifier (identifier, locator)
-             */
-            Identifier identifier = identifierService.convertStringToIdentifier(element);
-            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) || StringUtil.isNullOrEmpty(value1)) {
+                // If value1 is empty, the Sikuli engine must be used in order to click without element to click.
+                return sikuliService.doSikuliActionLeftButtonRelease(tCExecution.getSession());
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                /**
+                 * Get element to use String object if not empty, String
+                 * property if object empty, throws Exception if both empty)
+                 */
+                element = getElementToUse(value1, value2, "mouseLeftButtonRelease", tCExecution);
+                /**
+                 * Get Identifier (identifier, locator)
+                 */
+                Identifier identifier = identifierService.convertStringToIdentifier(element);
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 return webdriverService.doSeleniumActionMouseUp(tCExecution.getSession(), identifier, true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -717,6 +729,20 @@ public class ActionService implements IActionService {
             LOG.fatal("Error doing Action MouseUp :" + ex);
             return ex.getMessageError();
         }
+    }
+
+    private MessageEvent doActionMouseMove(TestCaseExecution tCExecution, String value1, String value2) {
+        MessageEvent message;
+        String element;
+
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) 
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+            return sikuliService.doSikuliActionMouseMove(tCExecution.getSession(), value1);
+        }
+        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+        message.setDescription(message.getDescription().replace("%ACTION%", "MouseMove"));
+        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+        return message;
     }
 
     private MessageEvent doActionSwitchToWindow(TestCaseExecution tCExecution, String object, String property) {
@@ -1269,19 +1295,19 @@ public class ActionService implements IActionService {
             /**
              * Get Identifier (identifier, locator)
              */
-            Identifier identifierObject = identifierService.convertStringToIdentifier(value1);
-            Identifier identifierValue = identifierService.convertStringToSelectIdentifier(value2);
+            Identifier identifierValue1 = identifierService.convertStringToIdentifier(value1);
+            Identifier identifierValue2 = identifierService.convertStringToSelectIdentifier(value2);
 
-            identifierService.checkWebElementIdentifier(identifierObject.getIdentifier());
-            identifierService.checkSelectOptionsIdentifier(identifierValue.getIdentifier());
+            identifierService.checkWebElementIdentifier(identifierValue1.getIdentifier());
+            identifierService.checkSelectOptionsIdentifier(identifierValue2.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
-                    return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierObject, identifierValue, false, false);
+                    return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierValue1, identifierValue2, false, false);
                 }
-                return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierObject, identifierValue, true, true);
+                return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierValue1, identifierValue2, true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "Select"));
@@ -1572,11 +1598,12 @@ public class ActionService implements IActionService {
             Integer indexFrom = 0;
             if (!exe.getNetworkTrafficIndexList().isEmpty()) {
                 // Take the value from the last entry.
-                indexFrom = exe.getNetworkTrafficIndexList().get(exe.getNetworkTrafficIndexList().size() - 1);
+                indexFrom = exe.getNetworkTrafficIndexList().get(exe.getNetworkTrafficIndexList().size() - 1).getIndexRequestNb();
             }
 
             // We now get the har data.
-            JSONObject har = executorService.getHar(null, false, exe.getRobotExecutorObj().getExecutorExtensionHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID(), exe.getSystem(), indexFrom);
+            boolean doWithResponse = ParameterParserUtil.parseBooleanParam(withResponseContent, false);
+            JSONObject har = executorService.getHar(urlToFilter, doWithResponse, exe.getRobotExecutorObj().getExecutorExtensionHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID(), exe.getSystem(), indexFrom);
 
             har = harService.enrichWithStats(har, exe.getCountryEnvironmentParameters().getDomain(), exe.getSystem(), exe.getNetworkTrafficIndexList());
 
@@ -1610,7 +1637,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionIndexNetworkTraffic(TestCaseExecution exe, TestCaseStepActionExecution actionexe) throws IOException {
+    private MessageEvent doActionIndexNetworkTraffic(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String value1) throws IOException {
         MessageEvent message;
         try {
             // Check that robot has executor activated
@@ -1621,15 +1648,16 @@ public class ActionService implements IActionService {
             }
 
             LOG.debug("Getting Network Traffic index");
-
             /**
              * Building the url to get the Latest index from cerberus-executor
              */
             Integer nbHits = executorService.getHitsNb(exe.getRobotExecutorObj().getExecutorExtensionHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID());
 
-            if (nbHits > 0) {
-                exe.appendNetworkTrafficIndexList(nbHits);
-            }
+            NetworkTrafficIndex nti = new NetworkTrafficIndex();
+            nti.setName(value1);
+            nti.setIndexRequestNb(nbHits);
+            exe.appendNetworkTrafficIndexList(nti);
+
             LOG.debug("New Index : " + exe.getNetworkTrafficIndexList());
 
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_INDEXNETWORKTRAFFIC).resolveDescription("NB", nbHits.toString()).resolveDescription("INDEX", String.valueOf(exe.getNetworkTrafficIndexList().size()));

@@ -169,6 +169,7 @@ public enum MessageEventEnum {
     PROPERTY_NOTPOSSIBLE(199, "FA", "can't calculate this property, no webdriver set on a manual execution", false, false, false, MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_NOCONNECTION),
     // *********** EXECUTION ACTIONS ***********
     ACTION_SUCCESS(200, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_BUTRETURNEDKO(210, "KO", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_OPENAPP(200, "OK", "Application '%APP%' opened.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLOSEAPP(200, "OK", "Application '%APP%' closed.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLOSEAPP_GENERIC(200, "OK", "Application closed.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -229,6 +230,7 @@ public enum MessageEventEnum {
     ACTION_SUCCESS_WAITNETWORKTRAFFICIDLE_TIMEOUT(200, "OK", "Waited for idle network but there were still some requests every %TIME% ms after %NB% checks (%HITS% requests reached after %NB% iterations of %TIME% ms).", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_SETSERVICECALLCONTENT(200, "OK", "Service Call JSON set to current content.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_FAILED(250, "FA", "Unknown Action Error.", true, true, false, MessageGeneralEnum.EXECUTION_FA),
+    ACTION_FAILED_WITHDETAIL(250, "FA", "Action Error : %DETAIL%", true, true, false, MessageGeneralEnum.EXECUTION_FA),
     ACTION_FAILED_CLICK(251, "FA", "Failed to click on '%ELEMENT%'. %MESS%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SELENIUM_CONNECTIVITY(252, "CA", "The test case is cancelled due to lost connection to Selenium Server! Detailed error : %ERROR%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_NO_SUCH_ELEMENT(253, "FA", "Identifier '%IDENTIFIER%=' isn't recognized! Use: id=, name=, class=, css= , xpath= , link= , picture= or data-cerberus=.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
@@ -488,6 +490,7 @@ public enum MessageEventEnum {
     CONDITIONEVAL_TRUE_IFELEMENTPRESENT(1240, "OK", "Element %ELEMENT% is present on Service/Page/Screen.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT(1240, "OK", "Element %ELEMENT% is not present on Service/Page/Screen.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITIONEVAL_TRUE_IFELEMENTVISIBLE(1240, "OK", "Element %STRING1% is visible on Service/Page/Screen.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_TRUEMANUAL_IFELEMENTVISIBLE(1240, "OK", "Please evaluate if element '%ELEMENT%' is visible.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITIONEVAL_TRUE_IFELEMENTNOTVISIBLE(1240, "OK", "Element %STRING1% is not visible on Service/Page/Screen.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITIONEVAL_TRUE_STRINGEQUAL(1210, "OK", "'%STR1%' is equal to '%STR2%', %STRING3%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITIONEVAL_TRUE_STRINGDIFFERENT(1210, "OK", "'%STR1%' is different from '%STR2%', %STRING3%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -512,8 +515,8 @@ public enum MessageEventEnum {
     CONDITION_TESTCASECONTROL_FAILED(1290, "FA", "Control not executed following %AREA%condition error : '%COND%'. %MESSAGE%", true, false, false, MessageGeneralEnum.EXECUTION_FA_CONDITION),
     // *********** DATA OPERATION ***********
     DECODE_SUCCESS(600, "OK", "Decode successful.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    DECODE_FAILED_VARIABLENOTDECODED(650, "FA", "Error on decoding %FIELD% because %NB% variable(s) is (are) unknown : (%VAR%). Please change the %FIELD% value with the correct syntax.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
-    DECODE_FAILED_GENERIC(650, "FA", "Error on decoding %FIELD% linked with a property calculation that went wrong : %ERROR%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    DECODE_FAILED_VARIABLENOTDECODED(650, "FA", "Error on decoding %FIELD% because %NB% variable(s) is (are) unknown : (%VAR%). Please change the %FIELD% value with the correct syntax.", true, true, true, MessageGeneralEnum.EXECUTION_FA),
+    DECODE_FAILED_GENERIC(650, "FA", "Error on decoding %FIELD% linked with a property calculation that went wrong : %ERROR%", true, true, true, MessageGeneralEnum.EXECUTION_FA),
     CASTING_OPERATION_FAILED(660, "FA", "Error on casting %FIELD% from string to integer : %ERROR%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     // *********** DATA OPERATION ***********
     DATA_OPERATION_OK(500, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "%ITEM% - %OPERATION% was finished with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),

@@ -136,7 +136,6 @@ function applyFiltersOnMultipleColumns(tableId, searchColumns, fromURL) {
             var searchObject = {
                 param: searchColumns[searchColumn],
                 values: param};
-            console.info(searchObject);
             searchArray.push(searchObject);
         }
     }
@@ -243,7 +242,11 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     $.each(oSettings.aoColumns, function (i, columns) {
         if (clientSide) {
             if (columns.sName !== "") {
-                orderedColumns.push(columns.sName.split(".")[1]);
+                if (columns.sName.split(".")[1] === undefined) {
+                    orderedColumns.push(columns.sName);
+                } else {
+                    orderedColumns.push(columns.sName.split(".")[1]);
+                }
             } else {
                 orderedColumns.push("labels");
             }

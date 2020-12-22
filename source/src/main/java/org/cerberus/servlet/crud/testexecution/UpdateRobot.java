@@ -102,6 +102,7 @@ public class UpdateRobot extends HttpServlet {
         String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), "", charset);
         String userAgent = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("useragent"), "", charset);
         String screenSize = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("screensize"), "", charset);
+        String profileFolder = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("profileFolder"), "", charset);
         String robotDecli = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("robotDecli"), null, charset);
         String lbexemethod = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("lbexemethod"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
@@ -212,6 +213,7 @@ public class UpdateRobot extends HttpServlet {
                 robotData.setDescription(description);
                 robotData.setUserAgent(userAgent);
                 robotData.setScreenSize(screenSize);
+                robotData.setProfileFolder(profileFolder);
                 robotData.setRobotDecli(robotDecli);
                 robotData.setLbexemethod(lbexemethod);
                 robotData.setCapabilities(capabilities);

@@ -70,9 +70,11 @@ import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.har.IHarService;
 import org.cerberus.service.proxy.IProxyService;
 import org.cerberus.service.rest.IRestService;
+import org.cerberus.service.robotproviders.ILambdaTestService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.Capabilities;
@@ -132,6 +134,8 @@ public class RobotServerService implements IRobotServerService {
     @Autowired
     private IHarService harService;
     @Autowired
+    private ILambdaTestService lambdaTestService;
+    @Autowired
     private IExecutorService executorService;
 
     private static Map<String, Boolean> apkAlreadyPrepare = new HashMap<>();
@@ -169,16 +173,18 @@ public class RobotServerService implements IRobotServerService {
              * else, take the one from parameter
              */
             Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout,
-                    cerberus_selenium_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout,
+                    cerberus_selenium_wait_element, cerberus_sikuli_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout,
                     cerberus_appium_action_longpress_wait, cerberus_selenium_autoscroll_vertical_offset, cerberus_selenium_autoscroll_horizontal_offset;
             boolean cerberus_selenium_autoscroll;
 
             if (!tCExecution.getTimeout().isEmpty()) {
                 cerberus_selenium_wait_element = Integer.valueOf(tCExecution.getTimeout());
+                cerberus_sikuli_wait_element = Integer.valueOf(tCExecution.getTimeout());
                 cerberus_appium_wait_element = Integer.valueOf(tCExecution.getTimeout());
             } else {
-                cerberus_selenium_wait_element = parameterService.getParameterIntegerByKey("cerberus_selenium_wait_element", system, 90000);
-                cerberus_appium_wait_element = parameterService.getParameterIntegerByKey("cerberus_appium_wait_element", system, 90000);
+                cerberus_selenium_wait_element = parameterService.getParameterIntegerByKey("cerberus_selenium_wait_element", system, 30000);
+                cerberus_sikuli_wait_element = parameterService.getParameterIntegerByKey("cerberus_sikuli_wait_element", system, 30000);
+                cerberus_appium_wait_element = parameterService.getParameterIntegerByKey("cerberus_appium_wait_element", system, 30000);
             }
 
             cerberus_selenium_pageLoadTimeout = parameterService.getParameterIntegerByKey("cerberus_selenium_pageLoadTimeout", system, 90000);
@@ -196,6 +202,7 @@ public class RobotServerService implements IRobotServerService {
             session.setCerberus_selenium_pageLoadTimeout(cerberus_selenium_pageLoadTimeout);
             session.setCerberus_selenium_setScriptTimeout(cerberus_selenium_setScriptTimeout);
             session.setCerberus_selenium_wait_element(cerberus_selenium_wait_element);
+            session.setCerberus_sikuli_wait_element(cerberus_sikuli_wait_element);
             session.setCerberus_appium_wait_element(cerberus_appium_wait_element);
             session.setCerberus_selenium_action_click_timeout(cerberus_selenium_action_click_timeout);
             session.setCerberus_appium_action_longpress_wait(cerberus_appium_action_longpress_wait);
@@ -203,9 +210,12 @@ public class RobotServerService implements IRobotServerService {
             session.setHostUser(tCExecution.getSeleniumIPUser());
             session.setHostPassword(tCExecution.getSeleniumIPPassword());
             session.setPort(tCExecution.getRobotPort());
+            session.setNodeHost(tCExecution.getSeleniumIP());
+            session.setNodePort(tCExecution.getSeleniumPort());
             session.setCerberus_selenium_autoscroll(cerberus_selenium_autoscroll);
             session.setCerberus_selenium_autoscroll_vertical_offset(cerberus_selenium_autoscroll_vertical_offset);
             session.setCerberus_selenium_autoscroll_horizontal_offset(cerberus_selenium_autoscroll_horizontal_offset);
+            session.setConsoleLogs(new JSONArray());
             tCExecution.setSession(session);
             tCExecution.setRobotProvider(guessRobotProvider(session.getHost()));
             LOG.debug("Session is set.");
@@ -348,7 +358,9 @@ public class RobotServerService implements IRobotServerService {
                     } else {
                         driver = new RemoteWebDriver(executor, caps);
                     }
-                    tCExecution.setRobotSessionID(getSession(driver, tCExecution.getRobotProvider()));
+                    tCExecution.setRobotProviderSessionID(getSession(driver, tCExecution.getRobotProvider()));
+                    tCExecution.setRobotSessionID(getSession(driver));
+
                     break;
                 case Application.TYPE_APK:
                     // add a lock on app path this part of code, because we can't install 2 apk with the same name simultaneously
@@ -375,13 +387,15 @@ public class RobotServerService implements IRobotServerService {
                     }
 
                     driver = (WebDriver) appiumDriver;
-                    tCExecution.setRobotSessionID(getSession(driver, tCExecution.getRobotProvider()));
+                    tCExecution.setRobotProviderSessionID(getSession(driver, tCExecution.getRobotProvider()));
+                    tCExecution.setRobotSessionID(getSession(driver));
                     break;
 
                 case Application.TYPE_IPA:
                     appiumDriver = new IOSDriver(url, caps);
                     driver = (WebDriver) appiumDriver;
-                    tCExecution.setRobotSessionID(getSession(driver, tCExecution.getRobotProvider()));
+                    tCExecution.setRobotProviderSessionID(getSession(driver, tCExecution.getRobotProvider()));
+                    tCExecution.setRobotSessionID(getSession(driver));
                     break;
                 case Application.TYPE_FAT:
                     /**
@@ -389,8 +403,8 @@ public class RobotServerService implements IRobotServerService {
                      */
                     if (!sikuliService.isSikuliServerReachable(session)) {
                         MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SIKULI_COULDNOTCONNECT);
-                        mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
-                        mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
+                        mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSession().getHost()));
+                        mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSession().getPort()));
                         throw new CerberusException(mes);
                     }
                     /**
@@ -516,11 +530,19 @@ public class RobotServerService implements IRobotServerService {
             case TestCaseExecution.ROBOTPROVIDER_KOBITON:
                 session = ((RemoteWebDriver) driver).getCapabilities().getCapability("kobitonSessionId").toString();
                 break;
+            case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
+            // For LambdaTest we get the exeid not here but by service call at the end of the execution.
             case TestCaseExecution.ROBOTPROVIDER_NONE:
                 session = ((RemoteWebDriver) driver).getSessionId().toString();
                 break;
             default:
         }
+        return session;
+    }
+
+    private String getSession(WebDriver driver) {
+        String session = "";
+        session = ((RemoteWebDriver) driver).getSessionId().toString();
         return session;
     }
 
@@ -530,6 +552,9 @@ public class RobotServerService implements IRobotServerService {
         }
         if (host.contains("kobiton")) {
             return TestCaseExecution.ROBOTPROVIDER_KOBITON;
+        }
+        if (host.contains("lambdatest")) {
+            return TestCaseExecution.ROBOTPROVIDER_LAMBDATEST;
         }
         return TestCaseExecution.ROBOTPROVIDER_NONE;
     }
@@ -685,6 +710,33 @@ public class RobotServerService implements IRobotServerService {
                     }
                 }
                 break;
+            case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
+                if (!StringUtil.isNullOrEmpty(tCExecution.getTag()) && isNotAlreadyDefined(caps, "build")) {
+                    caps.setCapability("build", tCExecution.getTag());
+                }
+                if (isNotAlreadyDefined(caps, "name")) {
+                    String externalExeName = parameterService.getParameterStringByKey("cerberus_lambdatest_defaultexename", tCExecution.getSystem(), "Exe : %EXEID% - %TESTDESCRIPTION%");
+                    externalExeName = externalExeName.replace("%EXEID%", String.valueOf(tCExecution.getId()));
+                    externalExeName = externalExeName.replace("%TESTFOLDER%", String.valueOf(tCExecution.getTest()));
+                    externalExeName = externalExeName.replace("%TESTID%", String.valueOf(tCExecution.getTestCase()));
+                    externalExeName = externalExeName.replace("%TESTDESCRIPTION%", String.valueOf(tCExecution.getDescription()));
+                    caps.setCapability("name", externalExeName);
+                }
+                if (tCExecution.getVerbose() >= 2) {
+                    if (isNotAlreadyDefined(caps, "video")) {
+                        caps.setCapability("video", true);
+                    }
+                    if (isNotAlreadyDefined(caps, "visual")) {
+                        caps.setCapability("visual", true);
+                    }
+                    if (isNotAlreadyDefined(caps, "network")) {
+                        caps.setCapability("network", true);
+                    }
+                    if (isNotAlreadyDefined(caps, "console")) {
+                        caps.setCapability("console", true);
+                    }
+                }
+                break;
             case TestCaseExecution.ROBOTPROVIDER_KOBITON:
                 if (isNotAlreadyDefined(caps, "sessionName")) {
                     String externalExeName = parameterService.getParameterStringByKey("cerberus_kobiton_defaultsessionname", tCExecution.getSystem(), "%EXEID% : %TEST% - %TESTCASE%");
@@ -760,6 +812,12 @@ public class RobotServerService implements IRobotServerService {
                         profile.setPreference("intl.accept_languages", "en");
                     }
 
+                    // Force a specific profile for that session (allow to reuse cookies and browser preferences).
+                    if (tCExecution.getRobotObj() != null && !StringUtil.isNullOrEmpty(tCExecution.getRobotObj().getProfileFolder())) {
+                        optionsFF.addArguments("--profile");
+                        optionsFF.addArguments(tCExecution.getRobotObj().getProfileFolder());
+                    }
+
                     // Set UserAgent if testCaseUserAgent or robotUserAgent is defined
                     if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
                         profile.setPreference("general.useragent.override", usedUserAgent);
@@ -799,11 +857,12 @@ public class RobotServerService implements IRobotServerService {
                         optionsCH.addArguments(sizeOpts);
                         LOG.debug("Selenium resolution (for Chrome) Activated : " + screenWidth + "*" + screenLength);
 
+                    } else {
+                        optionsCH.addArguments("start-maximized");
                     }
-                    optionsCH.addArguments("start-maximized");
-                    // TODO isolate the feature into a dedicated field.
-                    if (tCExecution.getRobotObj().getDescription().contains("session=")) {
-                        optionsCH.addArguments("user-data-dir=" + tCExecution.getRobotObj().getDescription().replace("session=", ""));
+                    // Force a specific profile for that session (allow to reuse cookies and browser preferences).
+                    if (tCExecution.getRobotObj() != null && !StringUtil.isNullOrEmpty(tCExecution.getRobotObj().getProfileFolder())) {
+                        optionsCH.addArguments("user-data-dir=" + tCExecution.getRobotObj().getProfileFolder());
                     }
                     if (tCExecution.getVerbose() <= 0) {
                         optionsCH.addArguments("--headless");
@@ -949,7 +1008,7 @@ public class RobotServerService implements IRobotServerService {
     @Override
     public boolean stopServer(TestCaseExecution tce) {
         Session session = tce.getSession();
-        if (session.isStarted()) {
+        if (session != null && session.isStarted()) {
             try {
                 // Wait 2 sec till HAR is exported
                 Thread.sleep(2000);
@@ -1109,13 +1168,15 @@ public class RobotServerService implements IRobotServerService {
             SessionId sessionId = ((RemoteWebDriver) session.getDriver()).getSessionId();
             String hostName = ce.getAddressOfRemoteServer().getHost();
             int port = ce.getAddressOfRemoteServer().getPort();
+
             HttpHost host = new HttpHost(hostName, port);
 
             HttpClient client = HttpClientBuilder.create().setRedirectStrategy(new LaxRedirectStrategy()).build();
 
             URL sessionURL = new URL(RobotServerService.getBaseUrl(session.getHost(), session.getPort()) + "/grid/api/testsession?session=" + sessionId);
 
-            BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("POST", sessionURL.toExternalForm());
+            BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("GET", sessionURL.toExternalForm());
+            LOG.debug("Calling Hub to get the node information. " + sessionURL.toString());
             HttpResponse response = client.execute(host, r);
             if (!response.getStatusLine().toString().contains("403")
                     && !response.getEntity().getContentType().getValue().contains("text/html")) {
@@ -1126,8 +1187,12 @@ public class RobotServerService implements IRobotServerService {
                 if (object.has("proxyId")) {
                     URL myURL = new URL(object.getString("proxyId"));
                     if ((myURL.getHost() != null) && (myURL.getPort() != -1)) {
+                        LOG.debug("Get remote node information : " + myURL.getHost() + " - " + myURL.getPort());
                         tCExecution.setRobotHost(myURL.getHost());
                         tCExecution.setRobotPort(String.valueOf(myURL.getPort()));
+                        // Node information at session level is now overwrite with real values.
+                        tCExecution.getSession().setNodeHost(myURL.getHost());
+                        tCExecution.getSession().setNodePort(String.valueOf(myURL.getPort()));
                     }
                 } else {
                     LOG.debug("'proxyId' json data not available from remote Selenium Server request : " + writer.toString());

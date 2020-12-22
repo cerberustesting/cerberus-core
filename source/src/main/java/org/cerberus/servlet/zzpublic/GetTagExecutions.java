@@ -30,6 +30,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.service.authentification.IAPIKeyService;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -46,6 +47,7 @@ public class GetTagExecutions extends HttpServlet {
 
     private final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
     private ITestCaseExecutionService testCaseExecutionService;
+    private IAPIKeyService apiKeyService;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -58,37 +60,40 @@ public class GetTagExecutions extends HttpServlet {
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         logEventService.createForPublicCalls("/GetTagExecutions", "CALL", "GetTagExecutions called : " + request.getRequestURL(), request);
-
+        
+        apiKeyService = appContext.getBean(IAPIKeyService.class);
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
 
-        String withUUID = policy.sanitize(request.getParameter("withUUID"));
+        if (apiKeyService.checkAPIKey(request, response)) {
 
-        List<String> listOfTags;
+            String withUUID = policy.sanitize(request.getParameter("withUUID"));
 
-        try{
-            JSONObject jsonResponse = new JSONObject();
-            if(withUUID != null && "true".equalsIgnoreCase(withUUID)) {
-                listOfTags = testCaseExecutionService.findDistinctTag(true);
-            } else {
-                listOfTags = testCaseExecutionService.findDistinctTag(false);
+            List<String> listOfTags;
+
+            try {
+                JSONObject jsonResponse = new JSONObject();
+                if (withUUID != null && "true".equalsIgnoreCase(withUUID)) {
+                    listOfTags = testCaseExecutionService.findDistinctTag(true);
+                } else {
+                    listOfTags = testCaseExecutionService.findDistinctTag(false);
+
+                }
+
+                jsonResponse.put("tags", listOfTags);
+
+                response.setContentType("application/json");
+                response.getWriter().print(jsonResponse.toString());
+
+            } catch (CerberusException ex) {
+                response.setContentType("text/html");
+                response.getWriter().print(ex.getMessageError().getDescription());
+
+            } catch (JSONException ex) {
+                response.setContentType("text/html");
+                response.getWriter().print(ex.getMessage());
 
             }
-            
-            jsonResponse.put("tags", listOfTags);
-            
-            response.setContentType("application/json");
-            response.getWriter().print(jsonResponse.toString());
-            
-        }catch(CerberusException ex) {
-            response.setContentType("text/html");
-            response.getWriter().print(ex.getMessageError().getDescription());
-
-        }catch(JSONException ex) {
-            response.setContentType("text/html");
-            response.getWriter().print(ex.getMessage());
-
         }
-
     }
 
 }

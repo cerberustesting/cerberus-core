@@ -20,6 +20,7 @@
 package org.cerberus.crud.factory.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -73,7 +74,7 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setTargetMinor(targetMinor);
         newTestCase.setTargetMajor(targetMajor);
         newTestCase.setTest(test);
-        newTestCase.setTestCase(testCase);
+        newTestCase.setTestcase(testCase);
         newTestCase.setToMinor(toMinor);
         newTestCase.setToMajor(toMajor);
         newTestCase.setUsrCreated(usrCreated);
@@ -120,7 +121,7 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setTargetMinor(targetMinor);
         newTestCase.setTargetMajor(targetMajor);
         newTestCase.setTest(test);
-        newTestCase.setTestCase(testCase);
+        newTestCase.setTestcase(testCase);
         newTestCase.setToMinor(toMinor);
         newTestCase.setToMajor(toMajor);
         newTestCase.setUsrCreated(usrCreated);
@@ -130,6 +131,10 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setUserAgent(userAgent);
         newTestCase.setScreenSize(screenSize);
         newTestCase.setVersion(version);
+        newTestCase.setSteps(new ArrayList<>());
+        newTestCase.setTestCaseCountries(new ArrayList<>());
+        newTestCase.setDependencies(new ArrayList<>());
+        newTestCase.setTestCaseLabels(new ArrayList<>());
 
         return newTestCase;
     }
@@ -138,7 +143,7 @@ public class FactoryTestCase implements IFactoryTestCase {
     public TestCase create(String test, String testCase) {
         TestCase newTestCase = new TestCase();
         newTestCase.setTest(test);
-        newTestCase.setTestCase(testCase);
+        newTestCase.setTestcase(testCase);
         return newTestCase;
     }
 
@@ -146,8 +151,16 @@ public class FactoryTestCase implements IFactoryTestCase {
     public TestCase create(String test, String testCase, String description) {
         TestCase newTestCase = new TestCase();
         newTestCase.setTest(test);
-        newTestCase.setTestCase(testCase);
+        newTestCase.setTestcase(testCase);
         newTestCase.setDescription(description);
+        newTestCase.setActive(true);
+        newTestCase.setActivePROD(true);
+        newTestCase.setActiveQA(true);
+        newTestCase.setActiveUAT(true);
+        newTestCase.setSteps(new ArrayList<>());
+        newTestCase.setTestCaseCountries(new ArrayList<>());
+        newTestCase.setDependencies(new ArrayList<>());
+        newTestCase.setTestCaseLabels(new ArrayList<>());
         return newTestCase;
     }
 }

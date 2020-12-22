@@ -1,10 +1,29 @@
 *Bug fixes*
 [square]
-* Fixed campaign testcase selection criteria on type information #2202
+* Fixed campaign testcase selection criteria on type information. #2202
+* Filtering requests table on Network tab of testcase execution page now display the column filtered.
+* Secure that a campaign report is displayed even if a country invariant has been deleted.
+* List of testcases used by a datalib was not displayed. #2222
+* When test folder contain a space the redirection to script page right after creation was not working. #2220 
+* Fixed the method to get the host and Port of the Selenium node (the Robot IP was always the one from the hub).
 
 *Improvements / New features*
 [square]
-* none
+* 'indexNetworkTraffic' action now allow to name the index of network traffic. #2163
+* Network tab on Execution detail now allows to filter by index name values. #2163
+* Advanced integration to LambdaTest device Farm cloud service (https://www.lambdatest.com/)
+* All Public API are now secured using API Key. You can enable the feature with parameter `cerberus_apikey_enable` 5 API Keys can be used from `cerberus_apikey_value1` to `cerberus_apikey_value5`. The API Key value must be added on every calls inside the HTTP header `apikey`. Please refer to documentation for further information.
+* Improved Campaign report over time when list of countries variations are huge
+* Allow to edit a description and a comment for each campaign execution (tag). That comment and description is then displayed on report by time. That allows to track the reasons of a particular campaign result.
+* You can now import Selenium IDE files. That allow Cerberus to have a recorder for both Firefox and Chrome.
+* You can now import Cerberus files creating new testcase ids (on the origin folder).
+* Export allow test folder and ids with spaces.
+* element that start by // now default to xpath. That allow to copy/paste xpath element from Cerberus to/from browser without beeing forced to add/remove xpath=
+* Allow configuration of Sikuli minSimilarity and duration of hightloght element for debug purpose from parameters 'cerberus_sikuli_minSimilarity' and 'cerberus_sikuli_highlightElement'
+* Various improvement on error management of Sikuli actions.
+* Support for  conditions verify[Not]Exist for sikuli engine.
+* new parameter 'cerberus_sikuli_wait_element' in order to tune sikuli timeout independently.
+* Added 'mouseMove' action. That action allow to move the mouse using Sikuli backbone.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

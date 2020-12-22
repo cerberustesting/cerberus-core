@@ -145,28 +145,28 @@ public class TestCaseService implements ITestCaseService {
             List<TestCaseStep> tcs = testCaseStepService.getListOfSteps(test, testCase);
             List<TestCaseStep> tcsToAdd = new ArrayList<>();
             for (TestCaseStep step : tcs) {
-                int stepNumber = step.getStep();
-                int initialStep = step.getStep();
-                if (step.getUseStep().equals("Y")) {
-                    test = step.getUseStepTest();
-                    testCase = step.getUseStepTestCase();
-                    stepNumber = step.getUseStepStep();
+                int stepId = step.getStepId();
+                int initialStep = step.getStepId();
+                if (step.isUsingLibraryStep()) {
+                    test = step.getLibraryStepTest();
+                    testCase = step.getLibraryStepTestcase();
+                    stepId = step.getLibraryStepStepId();
                 }
-                List<TestCaseStepAction> tcsa = testCaseStepActionService.getListOfAction(test, testCase, stepNumber);
+                List<TestCaseStepAction> tcsa = testCaseStepActionService.getListOfAction(test, testCase, stepId);
                 List<TestCaseStepAction> tcsaToAdd = new ArrayList<>();
                 for (TestCaseStepAction action : tcsa) {
-                    List<TestCaseStepActionControl> tcsac = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(test, testCase, stepNumber, action.getSequence());
+                    List<TestCaseStepActionControl> tcsac = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(test, testCase, stepId, action.getSequence());
                     List<TestCaseStepActionControl> tcsacToAdd = new ArrayList<>();
                     for (TestCaseStepActionControl control : tcsac) {
                         control.setTest(initialTest);
                         control.setTestCase(initialTc);
-                        control.setStep(initialStep);
+                        control.setStepId(initialStep);
                         tcsacToAdd.add(control);
                     }
                     action.setControls(tcsacToAdd);
                     action.setTest(initialTest);
                     action.setTestCase(initialTc);
-                    action.setStep(initialStep);
+                    action.setStepId(initialStep);
                     tcsaToAdd.add(action);
                 }
                 step.setActions(tcsaToAdd);
@@ -197,7 +197,7 @@ public class TestCaseService implements ITestCaseService {
             countryInvariants = invariantService.readByIdNameToHash("COUNTRY");
 
             answerTestCase.getItem().setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(testCaseCountries, countryInvariants));
-            answerTestCase.getItem().setDependencies(testCaseDepService.readByTestAndTestCase(answerTestCase.getItem().getTest(), answerTestCase.getItem().getTestCase()));
+            answerTestCase.getItem().setDependencies(testCaseDepService.readByTestAndTestCase(answerTestCase.getItem().getTest(), answerTestCase.getItem().getTestcase()));
             answerTestCase.getItem().setLabels(labelService.findLabelsFromTestCase(test, testCase, null).get(testCase));
             List<TestCase> testcases = new ArrayList<>();
             testcases.add(factoryTCase.create(test, testCase));
@@ -234,11 +234,11 @@ public class TestCaseService implements ITestCaseService {
                 if (testCaseCountryHash.containsKey(testCase.getKey())) {
                     testCase.setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(testCaseCountryHash.get(testCase.getKey()), countryInvariants));
                 }
-                if (labelsHash.containsKey(testCase.getKey())) {
-                    testCase.setLabels(labelsHash.get(testCase.getKey()));
+                if (labelsHash.containsKey(testCase.getTestcase())) {
+                    testCase.setLabels(labelsHash.get(testCase.getTestcase()));
                 }
-                if (testCaseDependenciesHash.containsKey(testCase.getKey())) {
-                    testCase.setDependencies(testCaseDependenciesHash.get(testCase.getKey()));
+                if (testCaseDependenciesHash.containsKey(testCase.getTestcase())) {
+                    testCase.setDependencies(testCaseDependenciesHash.get(testCase.getTestcase()));
                 }
             }
         }
@@ -347,7 +347,18 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public String getMaxNumberTestCase(String test) {
-        return this.testCaseDao.getMaxNumberTestCase(test);
+        String result = testCaseDao.getMaxNumberTestCase(test);
+        if (result == null) {
+            return "0001A";
+        }
+        int resultInt = 0;
+        try {
+            resultInt = Integer.valueOf(result);
+        } catch (NumberFormatException e) {
+            LOG.debug("Could not convert '" + result + "' to Integer.");
+        }
+        resultInt++;
+        return String.format("%04dA", resultInt);
     }
 
     @Override
@@ -363,7 +374,7 @@ public class TestCaseService implements ITestCaseService {
         } else {
             testCases = this.findTestCaseByCampaignNameAndCountries(campaign, null);
         }
-        
+
         return testCases;
     }
 
@@ -423,7 +434,7 @@ public class TestCaseService implements ITestCaseService {
         List<TestCase> result = new ArrayList<>();
         List<TestCaseStep> tcsList = testCaseStepService.getListOfSteps(test, testCase);
         for (TestCaseStep tcs : tcsList) {
-            if (("Y").equals(tcs.getUseStep())) {
+            if (tcs.isUsingLibraryStep()) {
                 /**
                  * We prepend the TestCase in order to leave at the end of the
                  * list the testcase with the higher prio (which correspond to
@@ -432,7 +443,7 @@ public class TestCaseService implements ITestCaseService {
                  * has the same name, the 1st step imported will define the
                  * property value.
                  */
-                result.add(0, this.findTestCaseByKey(tcs.getUseStepTest(), tcs.getUseStepTestCase()));
+                result.add(0, this.findTestCaseByKey(tcs.getLibraryStepTest(), tcs.getLibraryStepTestcase()));
             }
         }
         return result;
@@ -510,7 +521,7 @@ public class TestCaseService implements ITestCaseService {
         AnswerItem<TestCase> ai = testCaseDao.readByKey(test, testCase);
         if (ai.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ai.getItem() != null) {
             TestCase tc = (TestCase) ai.getItem();
-            AnswerList<TestCaseStep> al = testCaseStepService.readByTestTestCaseStepsWithDependencies(tc.getTest(), tc.getTestCase());
+            AnswerList<TestCaseStep> al = testCaseStepService.readByTestTestCaseStepsWithDependencies(tc.getTest(), tc.getTestcase());
             if (al.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && al.getDataList() != null) {
                 tc.setSteps(al.getDataList());
             }
@@ -628,16 +639,24 @@ public class TestCaseService implements ITestCaseService {
 
         //for tcstep, insert steps
         for (TestCaseStep tcs : testCase.getSteps()) {
+            tcs.setTest(testCase.getTest());
+            tcs.setTestcase(testCase.getTestcase());
             Answer testCaseStepImported = testCaseStepService.create(tcs);
             if (!testCaseStepImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                 throw new CerberusException(new MessageGeneral(testCaseStepImported.getResultMessage().getMessage()));
             }
+
             for (TestCaseStepAction tcsa : tcs.getActions()) {
+                tcsa.setTest(testCase.getTest());
+                tcsa.setTestCase(testCase.getTestcase());
                 Answer testCaseStepActionImported = testCaseStepActionService.create(tcsa);
                 if (!testCaseStepActionImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                     throw new CerberusException(new MessageGeneral(testCaseStepActionImported.getResultMessage().getMessage()));
                 }
+
                 for (TestCaseStepActionControl tcsac : tcsa.getControls()) {
+                    tcsac.setTest(testCase.getTest());
+                    tcsac.setTestCase(testCase.getTestcase());
                     Answer testCaseStepActionControlImported = testCaseStepActionControlService.create(tcsac);
                     if (!testCaseStepActionControlImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                         throw new CerberusException(new MessageGeneral(testCaseStepActionControlImported.getResultMessage().getMessage()));
@@ -648,12 +667,16 @@ public class TestCaseService implements ITestCaseService {
 
         //insert tccountry, insert countries
         for (TestCaseCountry tcc : testCase.getTestCaseCountries()) {
+            tcc.setTest(testCase.getTest());
+            tcc.setTestCase(testCase.getTestcase());
             Answer testCaseCountryImported = testCaseCountryService.create(tcc);
             if (!testCaseCountryImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                 throw new CerberusException(new MessageGeneral(testCaseCountryImported.getResultMessage().getMessage()));
             }
 
             for (TestCaseCountryProperties tccp : tcc.getTestCaseCountryProperty()) {
+                tccp.setTest(testCase.getTest());
+                tccp.setTestcase(testCase.getTestcase());
                 Answer testCaseCountryPropertiesImported = testCaseCountryPropertiesService.create(tccp);
                 if (!testCaseCountryPropertiesImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                     throw new CerberusException(new MessageGeneral(testCaseCountryPropertiesImported.getResultMessage().getMessage()));
@@ -663,11 +686,15 @@ public class TestCaseService implements ITestCaseService {
 
         //insert testcasedependencies
         for (TestCaseDep tcd : testCase.getDependencies()) {
+            tcd.setTest(testCase.getTest());
+            tcd.setTestCase(testCase.getTestcase());
             testCaseDepService.create(tcd);
         }
 
         //insert testcaselabel
         for (TestCaseLabel tcl : testCase.getTestCaseLabels()) {
+            tcl.setTest(testCase.getTest());
+            tcl.setTestcase(testCase.getTestcase());
             testCaseLabelService.create(tcl);
         }
 

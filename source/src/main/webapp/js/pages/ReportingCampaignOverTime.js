@@ -194,6 +194,8 @@ function loadPerfGraph(saveURLtoHistory, countries, environments, robotDeclis, g
     for (var i = 0; i < len; i++) {
         countriesQ += "&countries=" + encodeURI(countries[i]);
     }
+    if (countriesQ.length > 1000)
+        countriesQ = "";
 
     if ($("#envSelect").val() !== null) {
         environments = $("#envSelect").val();
@@ -534,6 +536,9 @@ function buildTagGraphs(data) {
             d3b.push(p);
         }
         let lab = getLabel("c.key.testcase.description", c.key.country, c.key.environment, c.key.robotdecli, undefined, undefined, undefined, c.key.campaign);
+        // If the nb of characters of the label is too big, we just put an index instead. That avoid to have the legend taking the full size of the graph.
+        if (lab.length > 100)
+            lab = i;
         var dataset1 = {
             label: lab,
             backgroundColor: "white",

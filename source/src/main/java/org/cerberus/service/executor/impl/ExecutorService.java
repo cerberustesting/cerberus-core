@@ -207,6 +207,7 @@ public class ExecutorService implements IExecutorService {
 
     @Override
     public String getExecutorURL(String urlFilter, boolean withContent, String exHost, Integer exPort, String exUuid) {
+        LOG.debug("Building URL : " + exUuid);
         String url = "http://" + exHost + ":" + exPort
                 + "/getHar?uuid=" + exUuid;
         if (!StringUtil.isNullOrEmpty(urlFilter)) {

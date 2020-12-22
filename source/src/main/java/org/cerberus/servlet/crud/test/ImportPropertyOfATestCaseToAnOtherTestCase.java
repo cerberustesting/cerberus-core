@@ -80,7 +80,7 @@ public class ImportPropertyOfATestCaseToAnOtherTestCase extends HttpServlet {
         try {
 
             String fromTest = request.getParameter("fromtest");
-            String fromTestCase = request.getParameter("fromtestcase");
+            String fromTestcase = request.getParameter("fromtestcase");
             String propertyName = request.getParameter("property");
             String toTest = request.getParameter("totest");
             String toTestCase = request.getParameter("totestcase");
@@ -109,7 +109,7 @@ public class ImportPropertyOfATestCaseToAnOtherTestCase extends HttpServlet {
                 }
 
                 // Retrieve the country of the source TestCase for the property, if empty do nothing
-                fromCountriesProp = testCaseCountryPropertiesService.findCountryByPropertyNameAndTestCase(fromTest, fromTestCase, propertyName);
+                fromCountriesProp = testCaseCountryPropertiesService.findCountryByPropertyNameAndTestCase(fromTest, fromTestcase, propertyName);
                 if (fromCountriesProp != null && fromCountriesProp.size() > 0) {
                     // Only retain country in the two TestCase for the property
                     toCountries.retainAll(fromCountriesProp);
@@ -120,11 +120,11 @@ public class ImportPropertyOfATestCaseToAnOtherTestCase extends HttpServlet {
                         for (String country : toCountries) {
                             try {
                                 // retrieve the source property for the current country
-                                countryProperties = testCaseCountryPropertiesService.findTestCaseCountryPropertiesByKey(fromTest, fromTestCase, country, propertyName);
+                                countryProperties = testCaseCountryPropertiesService.findTestCaseCountryPropertiesByKey(fromTest, fromTestcase, country, propertyName);
                                 if (countryProperties != null) {
                                     // change the TestCase information to the destination TestCase
                                     countryProperties.setTest(toTest);
-                                    countryProperties.setTestCase(toTestCase);
+                                    countryProperties.setTestcase(toTestCase);
                                     
                                     listOfPropertiesToInsert.add(countryProperties);
                                     // Insert the new property

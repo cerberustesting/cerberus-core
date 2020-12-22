@@ -34,7 +34,7 @@ public class TestCaseStepAction {
 
     private String test;
     private String testCase;
-    private int step;
+    private int stepId;
     private int sequence;
     private int sort;
     private String conditionOperator;
@@ -62,6 +62,7 @@ public class TestCaseStepAction {
     public static final String ACTION_LONGPRESS = "longPress";
     public static final String ACTION_MOUSELEFTBUTTONPRESS = "mouseLeftButtonPress";
     public static final String ACTION_MOUSELEFTBUTTONRELEASE = "mouseLeftButtonRelease";
+    public static final String ACTION_MOUSEMOVE = "mouseMove";
     public static final String ACTION_DOUBLECLICK = "doubleClick";
     public static final String ACTION_RIGHTCLICK = "rightClick";
     public static final String ACTION_MOUSEOVER = "mouseOver";
@@ -244,12 +245,12 @@ public class TestCaseStepAction {
         this.sort = sort;
     }
 
-    public int getStep() {
-        return step;
+    public int getStepId() {
+        return stepId;
     }
 
-    public void setStep(int step) {
-        this.step = step;
+    public void setStepId(int stepId) {
+        this.stepId = stepId;
     }
 
     public String getTest() {
@@ -290,7 +291,7 @@ public class TestCaseStepAction {
         if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
             return false;
         }
-        if (this.step != other.step) {
+        if (this.stepId != other.stepId) {
             return false;
         }
         if (this.sequence != other.sequence) {
@@ -304,7 +305,7 @@ public class TestCaseStepAction {
         int hash = 7;
         hash = 79 * hash + (this.test != null ? this.test.hashCode() : 0);
         hash = 79 * hash + (this.testCase != null ? this.testCase.hashCode() : 0);
-        hash = 79 * hash + this.step;
+        hash = 79 * hash + this.stepId;
         hash = 79 * hash + this.sequence;
         hash = 79 * hash + this.sort;
         hash = 79 * hash + (this.conditionOperator != null ? this.conditionOperator.hashCode() : 0);
@@ -335,7 +336,7 @@ public class TestCaseStepAction {
         if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
             return false;
         }
-        if (this.step != other.step) {
+        if (this.stepId != other.stepId) {
             return false;
         }
         if (this.sequence != other.sequence) {
@@ -382,14 +383,14 @@ public class TestCaseStepAction {
 
     @Override
     public String toString() {
-        return "TestCaseStepAction{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", action=" + action + ", object=" + value1 + ", property=" + value2 + ",value3= " + value3 + ", description=" + description + ", testCaseStepActionControl=" + controls + '}';
+        return "TestCaseStepAction{" + "test=" + test + ", testCase=" + testCase + ", step=" + stepId + ", sequence=" + sequence + ", action=" + action + ", object=" + value1 + ", property=" + value2 + ",value3= " + value3 + ", description=" + description + ", testCaseStepActionControl=" + controls + '}';
     }
 
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
             result.put("sort", this.getSort());
-            result.put("stepId", this.getStep());
+            result.put("stepId", this.getStepId());
             result.put("actionId", this.getSequence());
             result.put("description", this.getDescription());
             result.put("action", this.getAction());

@@ -52,13 +52,13 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     private ITestCaseStepActionControlService testCaseStepActionControlService;
 
     @Override
-    public TestCaseStepAction findTestCaseStepActionbyKey(String test, String testCase, int step, int sequence) {
-        return testCaseStepActionDAO.readByKey(test, testCase, step, sequence);
+    public TestCaseStepAction findTestCaseStepActionbyKey(String test, String testCase, int stepId, int sequence) {
+        return testCaseStepActionDAO.readByKey(test, testCase, stepId, sequence);
     }
 
     @Override
-    public List<TestCaseStepAction> getListOfAction(String test, String testcase, int step) {
-        return testCaseStepActionDAO.findActionByTestTestCaseStep(test, testcase, step);
+    public List<TestCaseStepAction> getListOfAction(String test, String testcase, int stepId) {
+        return testCaseStepActionDAO.findActionByTestTestCaseStep(test, testcase, stepId);
     }
 
     @Override
@@ -80,8 +80,8 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     }
 
     @Override
-    public boolean changeTestCaseStepActionSequence(String test, String testCase, int step, int oldSequence, int newSequence) {
-        return testCaseStepActionDAO.changeTestCaseStepActionSequence(test, testCase, step, oldSequence, newSequence);
+    public boolean changeTestCaseStepActionSequence(String test, String testCase, int stepId, int oldSequence, int newSequence) {
+        return testCaseStepActionDAO.changeTestCaseStepActionSequence(test, testCase, stepId, oldSequence, newSequence);
     }
 
     @Override
@@ -164,13 +164,13 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     }
 
     @Override
-    public AnswerList<TestCaseStepAction> readByVarious1WithDependency(String test, String testcase, int step) {
-        AnswerList<TestCaseStepAction> actions = testCaseStepActionDAO.readByVarious1(test, testcase, step);
+    public AnswerList<TestCaseStepAction> readByVarious1WithDependency(String test, String testcase, int stepId) {
+        AnswerList<TestCaseStepAction> actions = testCaseStepActionDAO.readByVarious1(test, testcase, stepId);
         AnswerList<TestCaseStepAction> response = null;
         List<TestCaseStepAction> tcsaList = new ArrayList<>();
         for (Object action : actions.getDataList()) {
             TestCaseStepAction tces = (TestCaseStepAction) action;
-            AnswerList<TestCaseStepActionControl> controls = testCaseStepActionControlService.readByVarious1(test, testcase, step, tces.getSequence());
+            AnswerList<TestCaseStepActionControl> controls = testCaseStepActionControlService.readByVarious1(test, testcase, stepId, tces.getSequence());
             tces.setControls((List<TestCaseStepActionControl>) controls.getDataList());
             tcsaList.add(tces);
         }

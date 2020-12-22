@@ -64,7 +64,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public TestCaseStepAction readByKey(String test, String testCase, int step, int sequence) {
+    public TestCaseStepAction readByKey(String test, String testCase, int stepId, int sequence) {
         TestCaseStepAction testCaseStepAction = null;
         final String query = "SELECT * FROM testcasestepaction tca WHERE tca.test = ? AND tca.testcase = ? AND tca.step = ? AND tca.sequence = ?";
 
@@ -80,7 +80,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             try {
                 preStat.setString(1, test);
                 preStat.setString(2, testCase);
-                preStat.setInt(3, step);
+                preStat.setInt(3, stepId);
                 preStat.setInt(4, sequence);
 
                 ResultSet resultSet = preStat.executeQuery();
@@ -122,7 +122,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         final StringBuilder query = new StringBuilder();
         query.append("SELECT tca.* ");
         query.append("FROM testcasestepaction AS tca ");
-        query.append("RIGHT JOIN testcasestep AS tcs ON tca.Test = tcs.Test AND tca.TestCase = tcs.TestCase AND tca.Step = tcs.Step ");
+        query.append("RIGHT JOIN testcasestep AS tcs ON tca.Test = tcs.Test AND tca.TestCase = tcs.TestCase AND tca.Step = tcs.StepId ");
         query.append("WHERE tca.Test = ? AND tca.TestCase = ? ");
         query.append("GROUP BY tca.Test, tca.TestCase, tca.Step, tca.Sequence ");
         query.append("ORDER BY tcs.Sort, tca.Sort ");
@@ -175,7 +175,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     }
 
     @Override
-    public List<TestCaseStepAction> findActionByTestTestCaseStep(String test, String testcase, int stepNumber) {
+    public List<TestCaseStepAction> findActionByTestTestCaseStep(String test, String testcase, int stepId) {
         List<TestCaseStepAction> list = null;
         final String query = "SELECT * FROM testcasestepaction tca WHERE tca.test = ? AND tca.testcase = ? AND tca.step = ? ORDER BY tca.sort";
 
@@ -184,7 +184,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.debug("SQL : " + query);
             LOG.debug("SQL.param.test : " + test);
             LOG.debug("SQL.param.testcase : " + testcase);
-            LOG.debug("SQL.param.step : " + stepNumber);
+            LOG.debug("SQL.param.step : " + stepId);
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -199,7 +199,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             try {
                 preStat.setString(1, test);
                 preStat.setString(2, testcase);
-                preStat.setInt(3, stepNumber);
+                preStat.setInt(3, stepId);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -327,7 +327,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     }
 
     @Override
-    public AnswerList<TestCaseStepAction> readByVarious1(String test, String testcase, int step) {
+    public AnswerList<TestCaseStepAction> readByVarious1(String test, String testcase, int stepId) {
         AnswerList<TestCaseStepAction> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -347,7 +347,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             try {
                 preStat.setString(1, test);
                 preStat.setString(2, testcase);
-                preStat.setInt(3, step);
+                preStat.setInt(3, stepId);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
@@ -440,7 +440,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                 int i = 1;
                 preStat.setString(i++, testCaseStepAction.getTest());
                 preStat.setString(i++, testCaseStepAction.getTestCase());
-                preStat.setInt(i++, testCaseStepAction.getStep());
+                preStat.setInt(i++, testCaseStepAction.getStepId());
                 preStat.setInt(i++, testCaseStepAction.getSequence());
                 preStat.setInt(i++, testCaseStepAction.getSort());
                 preStat.setString(i++, testCaseStepAction.getConditionOperator());
@@ -518,7 +518,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                 int i = 1;
                 preStat.setString(i++, testCaseStepAction.getTest());
                 preStat.setString(i++, testCaseStepAction.getTestCase());
-                preStat.setInt(i++, testCaseStepAction.getStep());
+                preStat.setInt(i++, testCaseStepAction.getStepId());
                 preStat.setInt(i++, testCaseStepAction.getSequence());
                 preStat.setInt(i++, testCaseStepAction.getSort());
                 preStat.setString(i++, testCaseStepAction.getConditionOperator());
@@ -535,7 +535,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
 
                 preStat.setString(i++, testCaseStepAction.getTest());
                 preStat.setString(i++, testCaseStepAction.getTestCase());
-                preStat.setInt(i++, testCaseStepAction.getStep());
+                preStat.setInt(i++, testCaseStepAction.getStepId());
                 preStat.setInt(i++, testCaseStepAction.getSequence());
 
                 preStat.executeUpdate();
@@ -581,7 +581,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             try {
                 preStat.setString(1, tcsa.getTest());
                 preStat.setString(2, tcsa.getTestCase());
-                preStat.setInt(3, tcsa.getStep());
+                preStat.setInt(3, tcsa.getStepId());
                 preStat.setInt(4, tcsa.getSequence());
 
                 throwExcep = preStat.executeUpdate() == 0;
@@ -609,7 +609,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     }
 
     @Override
-    public boolean changeTestCaseStepActionSequence(String test, String testCase, int step, int oldSequence, int newSequence) {
+    public boolean changeTestCaseStepActionSequence(String test, String testCase, int stepId, int oldSequence, int newSequence) {
         TestCaseStepAction testCaseStepAction = null;
         final String query = "update testcasestepaction set sequence = ? WHERE test = ? AND testcase = ? AND step = ? AND sequence = ?";
 
@@ -626,7 +626,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                 preStat.setInt(1, newSequence);
                 preStat.setString(2, test);
                 preStat.setString(3, testCase);
-                preStat.setInt(4, step);
+                preStat.setInt(4, stepId);
                 preStat.setInt(5, oldSequence);
 
                 int lines = preStat.executeUpdate();
@@ -673,7 +673,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             int i = 1;
             preStat.setString(i++, testCaseStepAction.getTest());
             preStat.setString(i++, testCaseStepAction.getTestCase());
-            preStat.setInt(i++, testCaseStepAction.getStep());
+            preStat.setInt(i++, testCaseStepAction.getStepId());
             preStat.setInt(i++, testCaseStepAction.getSequence());
             preStat.setInt(i++, testCaseStepAction.getSort());
             preStat.setString(i++, testCaseStepAction.getConditionOperator());
@@ -706,7 +706,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     private TestCaseStepAction loadFromResultSet(ResultSet resultSet) throws SQLException {
         String test = resultSet.getString("tca.Test");
         String testCase = resultSet.getString("tca.TestCase");
-        Integer step = resultSet.getInt("tca.Step");
+        Integer stepId = resultSet.getInt("tca.Step");
         Integer sequence = resultSet.getInt("tca.Sequence");
         Integer sort = resultSet.getInt("tca.Sort");
         String conditionOperator = resultSet.getString("tca.conditionOperator");
@@ -721,7 +721,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         String screenshotFilename = resultSet.getString("tca.screenshotFilename");
         String forceExeStatus = resultSet.getString("tca.forceExeStatus");
 
-        return factoryTestCaseStepAction.create(test, testCase, step, sequence, sort, conditionOperator, conditionVal1, conditionVal2, conditionVal3, action, value1, value2, value3, forceExeStatus, description, screenshotFilename);
+        return factoryTestCaseStepAction.create(test, testCase, stepId, sequence, sort, conditionOperator, conditionVal1, conditionVal2, conditionVal3, action, value1, value2, value3, forceExeStatus, description, screenshotFilename);
     }
 
 }
