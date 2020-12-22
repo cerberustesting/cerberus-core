@@ -94,26 +94,26 @@
 
                         <div class="row">
                             <div class="row" id="tuto-line">
-                                <div class="col-md-6 marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut1">  
+                                <div class="col-sm-6 hidden-sm hidden-xs marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut1">  
                                     <a href="./TestCaseList.jsp" class="btn btn-primary">  
                                         <div class="card" style="width: 18rem;">  
-                                            <span class="card-img-top glyphicon glyphicon-pencil marginBottom20 marginTop20" style="font-size:70px;"></span>  
+                                            <span class="card-img-top glyphicon glyphicon-pencil marginBottom20 marginTop20" style="font-size:50px;"></span>  
                                             <div class="card-body">  <p class="card-text">Create/Modify a Test</p>  
                                             </div>  
                                         </div>    
                                     </a>
                                 </div>
-                                <div class="col-md-6 marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut2">  
+                                <div class="col-sm-6 hidden-sm hidden-xs marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut2">  
                                     <a href="./RunTests.jsp" class="btn btn-primary">  
                                         <div class="card" style="width: 18rem;">  
-                                            <span class="card-img-top glyphicon glyphicon-cog marginBottom20 marginTop20" style="font-size:70px;"></span>  
+                                            <span class="card-img-top glyphicon glyphicon-cog marginBottom20 marginTop20" style="font-size:50px;"></span>  
                                             <div class="card-body">  <p class="card-text">Run a Test or a Campaign</p>  </div>  
                                         </div>    
                                     </a>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-4 marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut3">  
+                                <div class="col-sm-3 hidden-sm hidden-xs marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut3">  
                                     <a href="Application.jsp" class="btn btn-primary">  
                                         <div class="card" style="width: 12rem;">  
                                             <span class="card-img-top glyphicon glyphicon-wrench  marginBottom20 marginTop20" style="font-size:50px;"></span>  
@@ -121,7 +121,7 @@
                                         </div>    
                                     </a>
                                 </div>
-                                <div class="col-md-4 marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut3">  
+                                <div class="col-sm-3 hidden-sm hidden-xs marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut4">  
                                     <a href="AppServiceList.jsp" class="btn btn-primary">  
                                         <div class="card" style="width: 12rem;">  
                                             <span class="card-img-top glyphicon glyphicon-wrench  marginBottom20 marginTop20" style="font-size:50px;"></span>  
@@ -129,11 +129,19 @@
                                         </div>    
                                     </a>
                                 </div>
-                                <div class="col-md-4 marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut3">  
+                                <div class="col-sm-3 hidden-sm hidden-xs marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut5">  
                                     <a href="TestDataLibList.jsp" class="btn btn-primary">  
                                         <div class="card" style="width: 12rem;">  
                                             <span class="card-img-top glyphicon glyphicon-wrench  marginBottom20 marginTop20" style="font-size:50px;"></span>  
                                             <div class="card-body">  <p class="card-text">Create/Modify <br>a Data Library</p>  </div>  
+                                        </div>    
+                                    </a>
+                                </div>
+                                <div class="col-sm-3 hidden-sm hidden-xs marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut6">  
+                                    <a href="./documentation/documentation_en.html" target="_blank" class="btn btn-info">  
+                                        <div class="card" style="width: 12rem;">  
+                                            <span class="card-img-top glyphicon glyphicon-question-sign  marginBottom20 marginTop20" style="font-size:50px;"></span>  
+                                            <div class="card-body">  <p class="card-text">&nbsp;<br>Documentation</p>  </div>  
                                         </div>    
                                     </a>
                                 </div>
