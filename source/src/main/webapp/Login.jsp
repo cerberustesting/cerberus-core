@@ -56,7 +56,7 @@
                 cerberusWelcomeMessage = cerberusWelcomeMessage.replace("%SUPPORTEMAIL%", cerberusSupportEmail);
                 String errorMessage = "";
                 String display = "";
-                String cerberusVersion = Infos.getInstance().getProjectVersion() + "-" + databaseVersionService.getSQLScript().size();
+                String cerberusVersion = Infos.getInstance().getProjectVersion() + "-" + databaseVersionService.getSqlVersion();
 
                 if (request.getParameter("error") != null && request.getParameter("error").equalsIgnoreCase("1")) {
                     errorMessage = "User or password invalid !!!";
