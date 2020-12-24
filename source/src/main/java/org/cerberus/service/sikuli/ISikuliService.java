@@ -196,4 +196,12 @@ public interface ISikuliService {
      * @return
      */
     public MessageEvent doSikuliVerifyTextInPage(Session session, String locator);
+
+    /**
+     *
+     * @param session
+     * @return
+     */
+    public MessageEvent doSikuliEndExecution(Session session);
+
 }

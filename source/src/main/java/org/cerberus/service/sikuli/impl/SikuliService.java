@@ -85,6 +85,7 @@ public class SikuliService implements ISikuliService {
     public static final String SIKULI_VERIFYELEMENTNOTPRESENT = "notExists";
     public static final String SIKULI_VERIFYTEXTINPAGE = "findText";
     public static final String SIKULI_CAPTURE = "capture";
+    public static final String SIKULI_ENDEXECUTION = "endExecution";
 
     public static final String SIKULI_IDENTIFIER_PICTURE = "picture";
     public static final String SIKULI_IDENTIFIER_TEXT = "text";
@@ -591,6 +592,23 @@ public class SikuliService implements ISikuliService {
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINPAGE);
             mes.setDescription(mes.getDescription().replace("%STRING1%", text) + " - " + actionResult.getMessageDescription());
+            return mes;
+        }
+
+        return actionResult.getResultMessage();
+    }
+
+    @Override
+    public MessageEvent doSikuliEndExecution(Session session) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, SikuliService.SIKULI_ENDEXECUTION, null, "");
+
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
+            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
+            return message;
+        }
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
+            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_ENDEXECUTION);
+            mes.resolveDescription("DETAIL", actionResult.getMessageDescription());
             return mes;
         }
 

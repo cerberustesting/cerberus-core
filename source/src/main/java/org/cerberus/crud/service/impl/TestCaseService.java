@@ -234,8 +234,8 @@ public class TestCaseService implements ITestCaseService {
                 if (testCaseCountryHash.containsKey(testCase.getKey())) {
                     testCase.setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(testCaseCountryHash.get(testCase.getKey()), countryInvariants));
                 }
-                if (labelsHash.containsKey(testCase.getTestcase())) {
-                    testCase.setLabels(labelsHash.get(testCase.getTestcase()));
+                if (labelsHash.containsKey(testCase.getTest() + "##" + testCase.getTestcase())) {
+                    testCase.setLabels(labelsHash.get(testCase.getTest() + "##" + testCase.getTestcase()));
                 }
                 if (testCaseDependenciesHash.containsKey(testCase.getTestcase())) {
                     testCase.setDependencies(testCaseDependenciesHash.get(testCase.getTestcase()));

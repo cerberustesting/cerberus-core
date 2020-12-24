@@ -1634,6 +1634,10 @@ public class ExecutionRunService implements IExecutionRunService {
                 if (!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getIp())) {
                     this.sikuliService.doSikuliActionCloseApp(tCExecution.getSession(), tCExecution.getCountryEnvironmentParameters().getIp());
                 }
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Ask Sikuli to clean execution " + tCExecution.getId());
+                }
+                this.sikuliService.doSikuliEndExecution(tCExecution.getSession());
                 break;
             default:
         }

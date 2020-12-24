@@ -229,6 +229,7 @@ public enum MessageEventEnum {
     ACTION_SUCCESS_WAITNETWORKTRAFFICIDLE(200, "OK", "Waited for idle network successful (%HITS% requests reached after %NB% iterations of %TIME% ms).", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_WAITNETWORKTRAFFICIDLE_TIMEOUT(200, "OK", "Waited for idle network but there were still some requests every %TIME% ms after %NB% checks (%HITS% requests reached after %NB% iterations of %TIME% ms).", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_SETSERVICECALLCONTENT(200, "OK", "Service Call JSON set to current content.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_ENDEXECUTION(200, "OK", "Execution ended with Success on Sikuli robot side.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_FAILED(250, "FA", "Unknown Action Error.", true, true, false, MessageGeneralEnum.EXECUTION_FA),
     ACTION_FAILED_WITHDETAIL(250, "FA", "Action Error : %DETAIL%", true, true, false, MessageGeneralEnum.EXECUTION_FA),
     ACTION_FAILED_CLICK(251, "FA", "Failed to click on '%ELEMENT%'. %MESS%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
@@ -341,6 +342,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_INDEXNETWORKTRAFFIC(259, "FA", "Failed to index network traffic. %DETAIL%", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_INDEXNETWORKTRAFFIC_ROBOTEXECUTORPROXYNOTACTIVATED(259, "NE", "This action is not executed because robot proxy is not activated or proxy host not defined. Please configure the robot '%ROBOT%' executor '%EXECUTOR%' in order to enable the feature.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING),
     ACTION_FAILED_WAITNETWORKTRAFFICIDLE(259, "FA", "Failed to wait for idle network traffic. %DETAIL%", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_ENDEXECUTION(259, "FA", "Failed to end correctly the execution on Sikuli Robot. %DETAIL%", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     // *********** EXECUTION CONTROLS ***********
     CONTROL_SUCCESS(300, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS_EQUAL(300, "OK", "'%STRING1%' is equal to '%STRING2%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
