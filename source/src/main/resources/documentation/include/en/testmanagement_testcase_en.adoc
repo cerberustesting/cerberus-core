@@ -147,7 +147,7 @@ Usefull with ButtonPress to perform drag & drop but also to draw picture using S
 |=== 
 Allow to move the mouse.
 
-*[blue]#Value1#*	List of x and y relative move to perform separated by semi comma.
+*[blue]#Value1#*	List of x and y relative position to move the mouse pointer. Several move positions can be specified separated by semi comma. Top Left position of the screen correspond to 0,0 coords. You can specify absolute coords by using keywork `absolute` before the coords. `center` keyword can be used to move pointer to center of the screen.
 
 .Move pointer following a square of 50px on the right/bottom side of the pointer
 ====
@@ -155,7 +155,11 @@ Allow to move the mouse.
 ====
 .Move pointer following a line down the current pointer position.
 ====
-50,0 ; 0,50 ; -50,0 ; 0,-50
+0,50
+====
+.Move pointer to top left corner and then to center of the screen.
+====
+absolute 0,0 ; center
 ====
 ==== doubleClick 
 |=== 
