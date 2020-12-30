@@ -1,0 +1,4 @@
+*Bug fixes*
+[square]
+* Fixed issue on Login page when not using Keycloak.
+* Fixed display of Labels on TestCase list page.

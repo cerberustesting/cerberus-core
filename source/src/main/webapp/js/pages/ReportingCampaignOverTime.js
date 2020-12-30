@@ -404,11 +404,11 @@ function getOptions(title, unit, axisType) {
                         com += d.datasets[t.datasetIndex].data[t.index].comment;
                     }
                     if (unit === "size") {
-                        return xLabel + ': ' + formatNumber(Math.round(t.yLabel / 1024)) + " kb";
+                        return xLabel + ': ' + formatNumber(Math.round(t.yLabel / 1024)) + " kb" + com;
                     } else if (unit === "time") {
                         return xLabel + ': ' + t.yLabel.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1 ") + " min" + com;
                     } else {
-                        return xLabel + ': ' + t.yLabel;
+                        return xLabel + ': ' + t.yLabel + com;
                     }
                 }
             },
