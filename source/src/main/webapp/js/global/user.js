@@ -73,13 +73,19 @@ function getUser() {
         if (!user.isKeycloak) {
             if (user.request === 'Y') {
                 //user needs to change password
-                $(location).attr("href", "ChangePassword.jsp");
+                if (getPageName(window.location.pathname) !== "ChangePassword.jsp") {
+                    $(location).attr("href", "ChangePassword.jsp");
+                }
             }
         }
     }
     return user;
 }
 
+function getPageName(url) {
+    var index = url.lastIndexOf("/") + 1;
+    return url.substr(index);
+}
 
 function loadUserPreferences(user) {
     localStorage = user.userPreferences;
