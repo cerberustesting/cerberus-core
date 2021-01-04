@@ -1,6 +1,7 @@
 *Bug fixes*
 [square]
-* none
+* Fixed reset password page when not using Keycloak.
+* Fixed export integrity when testcase has steps that use library #2209.
 
 *Improvements / New features*
 [square]

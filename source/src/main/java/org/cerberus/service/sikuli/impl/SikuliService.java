@@ -218,50 +218,57 @@ public class SikuliService implements ISikuliService {
 
             in = new BufferedReader(
                     new InputStreamReader(connection.getInputStream()));
-            String inputLine;
+            String inputLine = "";
 
             /**
              * Wait here until receiving |ENDR| String
              */
-            while (!(inputLine = in.readLine()).equals("|ENDR|")) {
-                response.append(inputLine);
+            while (inputLine != null) {
+                inputLine = in.readLine();
+                if (inputLine!=null && !"|ENDR|".equals(inputLine)) {
+                    response.append(inputLine);
+                } else {
+                    break;
+                }
             }
 
-            /**
-             * Convert received string into JSONObject
-             *
-             */
-            JSONObject objReceived = new JSONObject(response.toString());
-            answer.setItem(objReceived);
-
             LOG.debug("Sikuli Answer: " + response.toString());
-            if (objReceived.has("status")) {
-                if ("OK".equals(objReceived.getString("status"))) {
-                    msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
-                } else if ("KO".equals(objReceived.getString("status"))) {
-                    msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_BUTRETURNEDKO);
-                } else {
-                    if (objReceived.has("message") && !StringUtil.isNullOrEmpty(objReceived.getString("message"))) {
-                        msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL);
-                        msg.resolveDescription("DETAIL", objReceived.getString("message"));
+
+            if (response.toString() != null && response.length() > 0) {
+                /**
+                 * Convert received string into JSONObject
+                 */
+                JSONObject objReceived = new JSONObject(response.toString());
+                answer.setItem(objReceived);
+                if (objReceived.has("status")) {
+                    if ("OK".equals(objReceived.getString("status"))) {
+                        msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+                    } else if ("KO".equals(objReceived.getString("status"))) {
+                        msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_BUTRETURNEDKO);
                     } else {
-                        msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
+                        if (objReceived.has("message") && !StringUtil.isNullOrEmpty(objReceived.getString("message"))) {
+                            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL);
+                            msg.resolveDescription("DETAIL", objReceived.getString("message"));
+                        } else {
+                            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
+                        }
                     }
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL).resolveDescription("DETAIL", "Sikuli Extention returned an invalid answer !! (Missing status information)");
                 }
             } else {
-                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL).resolveDescription("DETAIL", "Sikuli Extention returned an invalid answer !! (Missing status information)");
+                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL).resolveDescription("DETAIL", "Sikuli Extention returned an invalid answer !! (empty answer)");
+
             }
             in.close();
         } catch (MalformedURLException ex) {
             LOG.warn(ex, ex);
-            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_BADURL);
-            mes.setDescription(mes.getDescription().replace("%URL%", urlToConnect));
-            msg = mes;
+            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_BADURL);
+            msg.resolveDescription("URL", urlToConnect);
         } catch (FileNotFoundException ex) {
             LOG.warn(ex, ex);
-            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_BADURL);
-            mes.resolveDescription("URL", urlToConnect);
-            msg = mes;
+            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_BADURL);
+            msg.resolveDescription("URL", urlToConnect);
         } catch (IOException ex) {
             LOG.warn(ex, ex);
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
@@ -273,9 +280,8 @@ public class SikuliService implements ISikuliService {
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } catch (Exception ex) {
             LOG.warn(ex, ex);
-            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
-            mes.resolveDescription("URL", urlToConnect);
-            msg = mes;
+            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
+            msg.resolveDescription("URL", urlToConnect);
         } finally {
             if (os != null) {
                 os.close();

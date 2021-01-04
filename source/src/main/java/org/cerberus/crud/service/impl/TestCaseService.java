@@ -140,44 +140,31 @@ public class TestCaseService implements ITestCaseService {
             }
             newTcase.setTestCaseCountries(testCaseCountryToAdd);
 
-            String initialTest = test;
-            String initialTc = testCase;
             List<TestCaseStep> tcs = testCaseStepService.getListOfSteps(test, testCase);
             List<TestCaseStep> tcsToAdd = new ArrayList<>();
             for (TestCaseStep step : tcs) {
-                int stepId = step.getStepId();
-                int initialStep = step.getStepId();
-                if (step.isUsingLibraryStep()) {
-                    test = step.getLibraryStepTest();
-                    testCase = step.getLibraryStepTestcase();
-                    stepId = step.getLibraryStepStepId();
-                }
-                List<TestCaseStepAction> tcsa = testCaseStepActionService.getListOfAction(test, testCase, stepId);
                 List<TestCaseStepAction> tcsaToAdd = new ArrayList<>();
-                for (TestCaseStepAction action : tcsa) {
-                    List<TestCaseStepActionControl> tcsac = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(test, testCase, stepId, action.getSequence());
-                    List<TestCaseStepActionControl> tcsacToAdd = new ArrayList<>();
-                    for (TestCaseStepActionControl control : tcsac) {
-                        control.setTest(initialTest);
-                        control.setTestCase(initialTc);
-                        control.setStepId(initialStep);
-                        tcsacToAdd.add(control);
+                if (!step.isUsingLibraryStep()) {
+                    List<TestCaseStepAction> tcsa = testCaseStepActionService.getListOfAction(step.getTest(), step.getTestcase(), step.getStepId());
+                    for (TestCaseStepAction action : tcsa) {
+                        List<TestCaseStepActionControl> tcsacToAdd = new ArrayList<>();
+                        List<TestCaseStepActionControl> tcsac = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(action.getTest(), action.getTestCase(), action.getStepId(), action.getSequence());
+                        for (TestCaseStepActionControl control : tcsac) {
+                            tcsacToAdd.add(control);
+                        }
+                        action.setControls(tcsacToAdd);
+                        tcsaToAdd.add(action);
                     }
-                    action.setControls(tcsacToAdd);
-                    action.setTest(initialTest);
-                    action.setTestCase(initialTc);
-                    action.setStepId(initialStep);
-                    tcsaToAdd.add(action);
                 }
                 step.setActions(tcsaToAdd);
                 tcsToAdd.add(step);
             }
             newTcase.setSteps(tcsToAdd);
 
-            List<TestCaseDep> testCaseDependendies = testCaseDepService.readByTestAndTestCase(initialTest, initialTc);
+            List<TestCaseDep> testCaseDependendies = testCaseDepService.readByTestAndTestCase(test, testCase);
             newTcase.setDependencies(testCaseDependendies);
 
-            List<TestCaseLabel> testCaseLabel = testCaseLabelService.readByTestTestCase(initialTest, initialTc, null).getDataList();
+            List<TestCaseLabel> testCaseLabel = testCaseLabelService.readByTestTestCase(test, testCase, null).getDataList();
             newTcase.setTestCaseLabels(testCaseLabel);
 
         }
