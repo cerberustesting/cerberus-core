@@ -553,7 +553,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(value1, value2, TestCaseStepAction.ACTION_CLICK, tCExecution);
+            element = value1;
             /**
              * Get Identifier (identifier, locator) and check it's valid
              */
@@ -581,6 +581,9 @@ public class ActionService implements IActionService {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return iosAppiumService.click(tCExecution.getSession(), identifier);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+                if (StringUtil.isNullOrEmpty(identifier.getLocator())) {
+                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", "");
+                }
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                     return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
@@ -659,7 +662,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionRightClick(TestCaseExecution tCExecution, String object, String property) {
+    private MessageEvent doActionRightClick(TestCaseExecution tCExecution, String value1, String value2) {
         MessageEvent message;
         String element;
         try {
@@ -667,7 +670,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "rightClick", tCExecution);
+            element = value1;
             /**
              * Get Identifier (identifier, locator)
              */
@@ -683,6 +686,9 @@ public class ActionService implements IActionService {
                     return webdriverService.doSeleniumActionRightClick(tCExecution.getSession(), identifier);
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+                if (StringUtil.isNullOrEmpty(identifier.getLocator())) {
+                    return sikuliService.doSikuliActionRightClick(tCExecution.getSession(), "", "");
+                }
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                     return sikuliService.doSikuliActionRightClick(tCExecution.getSession(), identifier.getLocator(), "");
@@ -735,7 +741,7 @@ public class ActionService implements IActionService {
         MessageEvent message;
         String element;
 
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) 
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
             return sikuliService.doSikuliActionMouseMove(tCExecution.getSession(), value1);
         }
@@ -829,7 +835,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionDoubleClick(TestCaseExecution tCExecution, String object, String property) {
+    private MessageEvent doActionDoubleClick(TestCaseExecution tCExecution, String value1, String value2) {
         MessageEvent message;
         String element;
         try {
@@ -837,7 +843,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "doubleClick", tCExecution);
+            element = value1;
             /**
              * Get Identifier (identifier, locator)
              */
@@ -862,6 +868,9 @@ public class ActionService implements IActionService {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, true, false);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+                if (StringUtil.isNullOrEmpty(identifier.getLocator())) {
+                    return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), "", "");
+                }
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                     return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), identifier.getLocator(), "");

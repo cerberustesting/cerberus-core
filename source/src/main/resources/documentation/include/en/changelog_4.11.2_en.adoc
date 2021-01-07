@@ -2,10 +2,11 @@
 [square]
 * Fixed reset password page when not using Keycloak.
 * Fixed export integrity when testcase has steps that use library #2209.
+* Fixed activation flag on robot executor that could be wrongly set to active on 1st opening of the robot screen.
 
 *Improvements / New features*
 [square]
-* none
+* For FAT applications, click, doubleClick and rightClick actions can now be called without any element defined. Action will then be performed on current location of the cursor.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

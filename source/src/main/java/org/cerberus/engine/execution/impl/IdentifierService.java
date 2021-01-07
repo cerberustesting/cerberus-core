@@ -27,7 +27,6 @@ import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.engine.execution.IIdentifierService;
-import org.cerberus.engine.gwt.impl.ActionService;
 import org.springframework.stereotype.Service;
 
 /**
