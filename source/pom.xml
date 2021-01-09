@@ -684,10 +684,7 @@
                 <env>qa-demo</env>
                 <cerberus.demo.host>vm.cerberus-testing.org</cerberus.demo.host>
                 <cerberus.demo.upload.path>/opt/delivery</cerberus.demo.upload.path>
-                <cerberus.demo.tomcat.startup>/opt/bin/startQA.sh</cerberus.demo.tomcat.startup>
-                <cerberus.demo.tomcat.shutdown>/opt/bin/stopQA.sh</cerberus.demo.tomcat.shutdown>
                 <cerberus.demo.tomcat.deploy>/opt/bin/deployQA.sh</cerberus.demo.tomcat.deploy>
-                <cerberus.demo.tomcat.undeploy>/opt/bin/undeployQA.sh</cerberus.demo.tomcat.undeploy>
             </properties>
             <build>
                 <plugins>
@@ -705,7 +702,7 @@
                                 <configuration>
                                     <target>
                                         <!-- Upload artifact -->
-                                        <echo message="Uploading artifact to QA demo server..." />
+                                        <echo message="Uploading artifact to QA server..." />
                                         <scp file="${project.build.directory}/${project.build.finalName}.zip" todir="${cerberus.demo.qa.username}@${cerberus.demo.host}:${cerberus.demo.upload.path}" password="${cerberus.demo.qa.password}" trust="yes" />
                                         <!--
                                             Deploy artifact by:
@@ -714,7 +711,7 @@
                                                 3. Restarting current cluster.
                                         -->
                                         <echo message="Deploying..." />
-                                        <sshexec host="${cerberus.demo.host}" username="${cerberus.demo.qa.username}" password="${cerberus.demo.qa.password}" trust="yes" command=" unzip -o ${cerberus.demo.upload.path}/${project.build.finalName}.zip -d ${cerberus.demo.upload.path} &amp;&amp; ( ${cerberus.demo.tomcat.undeploy} ; ${cerberus.demo.tomcat.deploy} ${cerberus.demo.upload.path}/${project.build.finalName}/${project.build.finalName}.war ) &amp;&amp; ( ${cerberus.demo.tomcat.shutdown} ; ${cerberus.demo.tomcat.startup} ) " />
+                                        <sshexec host="${cerberus.demo.host}" username="${cerberus.demo.qa.username}" password="${cerberus.demo.qa.password}" trust="yes" command="unzip -o ${cerberus.demo.upload.path}/${project.build.finalName}.zip -d ${cerberus.demo.upload.path} &amp;&amp; ( ${cerberus.demo.tomcat.deploy} ${cerberus.demo.upload.path}/${project.build.finalName}/${project.build.finalName}.war )" />
                                     </target>
                                 </configuration>
                             </execution>
