@@ -89,7 +89,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6" id="MainActionsPanel">
+                <div class="col-lg-6 hidden-sm hidden-xs" id="MainActionsPanel">
                     <div class="panel panel-default" style="padding: 30px;">
 
                         <div class="row">

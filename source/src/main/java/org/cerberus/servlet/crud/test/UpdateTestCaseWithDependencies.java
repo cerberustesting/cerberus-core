@@ -248,7 +248,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
     /**
      * Get the highest stepId number from the given steps
      *
-     * @param steps a collection of steps from which get the highest stepId number
+     * @param steps a collection of steps from which get the highest stepId
+     * number
      * @return the highest stepId number from the given steps
      */
     private int getMaxStepNumber(Collection<TestCaseStep> steps) {
@@ -356,12 +357,12 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String libraryStepTestCase = step.getString("libraryStepTestCase");
             int libraryStepStepId = step.getInt("libraryStepStepId");
             boolean isLibraryStep = step.getBoolean("isLibraryStep");
-            boolean isExecutionForced  = step.getBoolean("isExecutionForced");
+            boolean isExecutionForced = "Y".equalsIgnoreCase(step.getString("isExecutionForced"));
             JSONArray stepActions = step.getJSONArray("actions");
 
             if (!delete) {
                 TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepId, sort, loop, conditionOperator, conditionValue1, conditionValue2, conditionValue3, description, isUsingLibraryStep, libraryStepTest,
-                        libraryStepTestCase, libraryStepStepId, isLibraryStep, isExecutionForced , null, null, request.getUserPrincipal().getName(), null);
+                        libraryStepTestCase, libraryStepStepId, isLibraryStep, isExecutionForced, null, null, request.getUserPrincipal().getName(), null);
 
                 if (!isUsingLibraryStep) {
                     tcStep.setActions(getTestCaseStepActionFromParameter(request, appContext, test, testCase, stepActions));
@@ -388,7 +389,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
         for (int i = 0; i < testCaseStepActionJson.length(); i++) {
             JSONObject tcsaJson = testCaseStepActionJson.getJSONObject(i);
-            
+
             boolean delete = tcsaJson.getBoolean("toDelete");
             int stepId = tcsaJson.isNull("stepId") ? -1 : tcsaJson.getInt("stepId");
             int sequence = tcsaJson.isNull("sequence") ? -1 : tcsaJson.getInt("sequence");

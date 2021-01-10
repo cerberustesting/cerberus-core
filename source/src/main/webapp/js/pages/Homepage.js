@@ -488,6 +488,8 @@ function loadTagExec() {
 
     if (tagList === null || tagList.length === 0) {
         tagList = readLastTagExec(searchTag);
+    } else {
+        nbTagLoadedTarget = tagList.length;
     }
 
     if (tagList.length > 0) {

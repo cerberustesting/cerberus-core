@@ -2775,7 +2775,11 @@ function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
     this.sort = json.sort;
     this.stepId = json.stepId;
     this.description = json.description;
-    this.isExecutionForced = json.isExecutionForced;
+    if (json.isExecutionForced) {
+        this.isExecutionForced = "Y";
+    } else {
+        this.isExecutionForced = "N";
+    }
     this.loop = json.loop;
     this.conditionOperator = json.conditionOperator;
     this.conditionValue1 = json.conditionValue1;

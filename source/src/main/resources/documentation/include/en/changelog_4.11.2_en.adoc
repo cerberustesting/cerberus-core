@@ -3,6 +3,7 @@
 * Fixed reset password page when not using Keycloak.
 * Fixed export integrity when testcase has steps that use library #2209.
 * Fixed activation flag on robot executor that could be wrongly set to active on 1st opening of the robot screen.
+* Fixed Force step update.
 
 *Improvements / New features*
 [square]
