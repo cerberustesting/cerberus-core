@@ -128,10 +128,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
         loadBuildRevTable();
 
         // Display Changelog;
-        $("#documentationFrame").attr("src", "./documentation/changelog_4.11.2_en.html");
+        $("#documentationFrame").attr("src", "./documentation/changelog_4.12_en.html");
         var windowsHeight = $(window).height() + 'px';
         $('#documentationFrame').css('height', '400px');
-        $("#changelogLabel").html("Changelog 4.11.2");
+        $("#changelogLabel").html("Changelog 4.12");
 
         //close all sidebar menu
         closeEveryNavbarMenu();
