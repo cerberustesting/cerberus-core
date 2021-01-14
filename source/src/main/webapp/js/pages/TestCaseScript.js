@@ -2810,7 +2810,7 @@ function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
     this.hasPermissionsStepLibrary = hasPermissionsStepLibrary;
 
     this.html = $("<li style='padding-right:5px'></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
-    this.textArea = $("<div></div>").addClass("col-sm-8 textArea").addClass("step-description").text("["+this.stepId + "] " + this.description);
+    this.textArea = $("<div></div>").addClass("col-sm-8 textArea").addClass("step-description").text("["+json.sort + "] " + this.description);
 }
 
 Step.prototype.draw = function () {
