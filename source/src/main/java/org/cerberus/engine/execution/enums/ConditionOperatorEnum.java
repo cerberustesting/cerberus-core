@@ -23,16 +23,14 @@ package org.cerberus.engine.execution.enums;
  *
  * @author mlombard
  */
-
-
 public enum ConditionOperatorEnum {
     
     CONDITIONOPERATOR_ALWAYS("always", false),
     CONDITIONOPERATOR_UNDEFINED("", false),
-    CONDITIONOPERATOR_IFELEMENTPRESENT("ifElementPresent", false),
-    CONDITIONOPERATOR_IFELEMENTNOTPRESENT("ifElementNotPresent", false),
+    CONDITIONOPERATOR_IFELEMENTPRESENT("ifElementPresent", true),
+    CONDITIONOPERATOR_IFELEMENTNOTPRESENT("ifElementNotPresent", true),
     CONDITIONOPERATOR_IFELEMENTVISIBLE("ifElementVisible", true),
-    CONDITIONOPERATOR_IFELEMENTNOTVISIBLE("ifElementNotVisible", false),
+    CONDITIONOPERATOR_IFELEMENTNOTVISIBLE("ifElementNotVisible", true),
     CONDITIONOPERATOR_IFPROPERTYEXIST("ifPropertyExist", false),
     CONDITIONOPERATOR_IFPROPERTYNOTEXIST("ifPropertyNotExist", false),
     CONDITIONOPERATOR_IFNUMERICEQUAL("ifNumericEqual", false),
@@ -52,6 +50,7 @@ public enum ConditionOperatorEnum {
     CONDITIONOPERATOR_NEVER("never", false);
     
     private final String condition;
+    // Boolean use to check if the condition need to be evaluated by an operator in case of manual execution
     private final boolean isOperatorEvaluationRequired;
 
     private ConditionOperatorEnum(String condition, boolean isOperatorEvaluationRequired) {

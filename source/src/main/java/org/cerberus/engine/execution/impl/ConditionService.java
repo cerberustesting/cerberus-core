@@ -343,7 +343,8 @@ public class ConditionService implements IConditionService {
         MessageEvent mes;
 
         if (tCExecution.getManualExecution().equals("Y")) {
-            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_NOTPOSSIBLE);
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUEMANUAL_IFELEMENTPRESENT);
+            mes.resolveDescription("ELEMENT", conditionValue1);
         } else if (StringUtil.isNullOrEmpty(conditionValue1)) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTPRESENT_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOperator));
@@ -480,7 +481,8 @@ public class ConditionService implements IConditionService {
         MessageEvent mes;
 
         if (tCExecution.getManualExecution().equals("Y")) {
-            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_NOTPOSSIBLE);
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUEMANUAL_IFELEMENTNOTPRESENT);
+            mes.resolveDescription("ELEMENT", conditionValue1);
         } else if (StringUtil.isNullOrEmpty(conditionValue1)) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTNOTPRESENT_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOperator));
@@ -614,34 +616,33 @@ public class ConditionService implements IConditionService {
         } else if (StringUtil.isNullOrEmpty(conditionValue1)) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTVISIBLE_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOperator));
-        } else {
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+        } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
 
-                try {
-                    Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);
-                    if (this.webdriverService.isElementVisible(tCExecution.getSession(), identifier)) {
-                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTVISIBLE);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
+            try {
+                Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);
+                if (this.webdriverService.isElementVisible(tCExecution.getSession(), identifier)) {
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTVISIBLE);
+                    mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
 
-                    } else {
-                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTVISIBLE);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTVISIBLE);
+                    mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
 
-                    }
-                } catch (WebDriverException exception) {
-                    mes = parseWebDriverException(exception);
                 }
-
-            } else {
-
-                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_MESSAGETYPE);
-                mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementVisible"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
-
+            } catch (WebDriverException exception) {
+                mes = parseWebDriverException(exception);
             }
+
+        } else {
+
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_MESSAGETYPE);
+            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementVisible"));
+            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+
         }
+
         ans.setResultMessage(mes);
         return ans;
     }
@@ -654,44 +655,43 @@ public class ConditionService implements IConditionService {
         MessageEvent mes;
 
         if (tCExecution.getManualExecution().equals("Y")) {
-            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_NOTPOSSIBLE);
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUEMANUAL_IFELEMENTNOTVISIBLE);
+            mes.resolveDescription("ELEMENT", conditionValue1);
         } else if (StringUtil.isNullOrEmpty(conditionValue1)) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTNOTVISIBLE_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOperator));
-        } else {
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+        } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
 
-                try {
-                    Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);
-                    if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
-                        if (this.webdriverService.isElementNotVisible(tCExecution.getSession(), identifier)) {
-                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTVISIBLE);
-                            mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
+            try {
+                Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);
+                if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                    if (this.webdriverService.isElementNotVisible(tCExecution.getSession(), identifier)) {
+                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTVISIBLE);
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
 
-                        } else {
-                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTVISIBLE);
-                            mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
-
-                        }
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTVISIBLE);
                         mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
 
                     }
-                } catch (WebDriverException exception) {
-                    mes = parseWebDriverException(exception);
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTVISIBLE);
+                    mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
+
                 }
-
-            } else {
-                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_MESSAGETYPE);
-                mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementNotVisible"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
-
+            } catch (WebDriverException exception) {
+                mes = parseWebDriverException(exception);
             }
 
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_MESSAGETYPE);
+            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementNotVisible"));
+            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+
         }
+
         ans.setResultMessage(mes);
         return ans;
     }
