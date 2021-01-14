@@ -74,7 +74,7 @@
         <java-image-scaling.version>0.8.5</java-image-scaling.version>
         <commons-email.version>1.5</commons-email.version>
         <commons-text.version>1.3</commons-text.version>
-        <poi.version>3.13</poi.version>
+        <poi.version>4.1.2</poi.version>
         <asciidoctor.version>2.1.0</asciidoctor.version>
         <apache.tika>1.22</apache.tika>
         <fluent-hc.version>4.5.3</fluent-hc.version>
