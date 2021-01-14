@@ -1569,6 +1569,7 @@ function setAllSort() {
                 actionArr.push(actionJson);
             }
             var stepJson = step.getJsonData();
+            $("li .step-description").eq(i).text("[" + (i + 1) + "] " + stepJson.description);
             stepJson.actions = actionArr;
             stepArr.push(stepJson);
         }
@@ -2810,7 +2811,7 @@ function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
     this.hasPermissionsStepLibrary = hasPermissionsStepLibrary;
 
     this.html = $("<li style='padding-right:5px'></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
-    this.textArea = $("<div></div>").addClass("col-sm-8 textArea").addClass("step-description").text("["+json.sort + "] " + this.description);
+    this.textArea = $("<div></div>").addClass("col-sm-8 textArea").addClass("step-description").text("[" + (steps.length + 1) + "] " + this.description);
 }
 
 Step.prototype.draw = function () {
