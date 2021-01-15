@@ -202,31 +202,45 @@ public class ConditionService implements IConditionService {
     private AnswerItem<Boolean> evaluateCondition_ifTextInElement(TestCaseExecution tCExecution, String path, String expected, String isCaseSensitive) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking ifTextInElement on " + path + " element against value: " + expected);
-
         }
+        
         AnswerItem<Boolean> ans = new AnswerItem<>();
-        MessageEvent resultControlMes = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+        MessageEvent resultControlMes;
 
         isCaseSensitive = defaultIsSensitiveValue(isCaseSensitive);
 
-        resultControlMes = controlService.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTEQUAL, tCExecution, path, expected, isCaseSensitive);
-
-        if ("OK".equals(resultControlMes.getCodeString())) {
-
-            MessageEvent resultCondMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_TEXTINELEMENT);
-            ans.setItem(true);
-            ans.setResultMessage(resultCondMes);
-            return ans;
-
+        if (tCExecution.getManualExecution().equals("Y")) {
+            resultControlMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUEMANUAL_TEXTINELEMENT);
+            resultControlMes.resolveDescription("STRING1", path);
+            resultControlMes.resolveDescription("STRING2", expected);
+            resultControlMes.resolveDescription("STRING3", isCaseSensitive);
         } else {
+            
+            resultControlMes = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
 
-            MessageEvent resultCondMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_TEXTINELEMENT);
-            resultCondMes.setDescription(resultCondMes.getDescription().replace("%ERRORMESS%", resultControlMes.getDescription()));
-            ans.setItem(false);
-            ans.setResultMessage(resultCondMes);
-            return ans;
+            // TODO AJOUTER DANS CONDITION OPERATOR ENUM = TRUE + nouveau message
+            resultControlMes = controlService.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTEQUAL, tCExecution, path, expected, isCaseSensitive);
 
+            if ("OK".equals(resultControlMes.getCodeString())) {
+
+                MessageEvent resultCondMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_TEXTINELEMENT);
+                ans.setItem(true);
+                ans.setResultMessage(resultCondMes);
+                return ans;
+
+            } else {
+
+                MessageEvent resultCondMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_TEXTINELEMENT);
+                resultCondMes.setDescription(resultCondMes.getDescription().replace("%ERRORMESS%", resultControlMes.getDescription()));
+                ans.setItem(false);
+                ans.setResultMessage(resultCondMes);
+                return ans;
+
+            }
         }
+        
+        ans.setResultMessage(resultControlMes);
+        return ans;
 
     }
 
@@ -235,29 +249,42 @@ public class ConditionService implements IConditionService {
             LOG.debug("Checking ifTextInElement on " + path + " element against value: " + expected);
 
         }
-        AnswerItem<Boolean> ans = new AnswerItem<>();
-        MessageEvent resultMes = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
 
+        AnswerItem<Boolean> ans = new AnswerItem<>();
+        MessageEvent resultMes;
         isCaseSensitive = defaultIsSensitiveValue(isCaseSensitive);
 
-        resultMes = controlService.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTDIFFERENT, tCExecution, path, expected, isCaseSensitive);
-
-        if ("OK".equals(resultMes.getCodeString())) {
-
-            MessageEvent resultCondMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_TEXTNOTINELEMENT);
-            ans.setItem(true);
-            ans.setResultMessage(resultCondMes);
-            return ans;
-
+        if (tCExecution.getManualExecution().equals("Y")) {
+            resultMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUEMANUAL_TEXTNOTINELEMENT);
+            resultMes.resolveDescription("STRING1", path);
+            resultMes.resolveDescription("STRING2", expected);
+            resultMes.resolveDescription("STRING3", isCaseSensitive);
         } else {
 
-            MessageEvent resultCondMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_TEXTNOTINELEMENT);
-            resultCondMes.setDescription(resultCondMes.getDescription().replace("%ERRORMESS%", resultMes.getDescription()));
-            ans.setItem(false);
-            ans.setResultMessage(resultCondMes);
-            return ans;
+            resultMes = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
 
+            resultMes = controlService.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTDIFFERENT, tCExecution, path, expected, isCaseSensitive);
+
+            if ("OK".equals(resultMes.getCodeString())) {
+
+                MessageEvent resultCondMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_TEXTNOTINELEMENT);
+                ans.setItem(true);
+                ans.setResultMessage(resultCondMes);
+                return ans;
+
+            } else {
+
+                MessageEvent resultCondMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_TEXTNOTINELEMENT);
+                resultCondMes.setDescription(resultCondMes.getDescription().replace("%ERRORMESS%", resultMes.getDescription()));
+                ans.setItem(false);
+                ans.setResultMessage(resultCondMes);
+                return ans;
+
+            }
         }
+
+        ans.setResultMessage(resultMes);
+        return ans;
 
     }
 

@@ -45,12 +45,14 @@ public enum ConditionOperatorEnum {
     CONDITIONOPERATOR_IFSTRINGMINOR("ifStringMinor", false),
     CONDITIONOPERATOR_IFSTRINGCONTAINS("ifStringContains", false),
     CONDITIONOPERATOR_IFSTRINGNOTCONTAINS("ifStringNotContains", false),
-    CONDITIONOPERATOR_IFTEXTINELEMENT("ifTextInElement", false),
-    CONDITIONOPERATOR_IFTEXTNOTINELEMENT("ifTextNotInElement", false),
+    CONDITIONOPERATOR_IFTEXTINELEMENT("ifTextInElement", true),
+    CONDITIONOPERATOR_IFTEXTNOTINELEMENT("ifTextNotInElement", true),
     CONDITIONOPERATOR_NEVER("never", false);
     
     private final String condition;
-    // Boolean use to check if the condition need to be evaluated by an operator in case of manual execution
+    /**
+     * Boolean use to check if the condition need to be evaluated by an operator in case of manual execution
+     */
     private final boolean isOperatorEvaluationRequired;
 
     private ConditionOperatorEnum(String condition, boolean isOperatorEvaluationRequired) {
@@ -62,6 +64,9 @@ public enum ConditionOperatorEnum {
         return condition;
     }
 
+    /**
+     * Boolean use to check if the condition need to be evaluated by an operator in case of manual execution
+     */
     public boolean isOperatorEvaluationRequired() {
         return isOperatorEvaluationRequired;
     }
