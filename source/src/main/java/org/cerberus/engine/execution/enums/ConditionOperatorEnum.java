@@ -23,16 +23,14 @@ package org.cerberus.engine.execution.enums;
  *
  * @author mlombard
  */
-
-
 public enum ConditionOperatorEnum {
     
     CONDITIONOPERATOR_ALWAYS("always", false),
     CONDITIONOPERATOR_UNDEFINED("", false),
-    CONDITIONOPERATOR_IFELEMENTPRESENT("ifElementPresent", false),
-    CONDITIONOPERATOR_IFELEMENTNOTPRESENT("ifElementNotPresent", false),
+    CONDITIONOPERATOR_IFELEMENTPRESENT("ifElementPresent", true),
+    CONDITIONOPERATOR_IFELEMENTNOTPRESENT("ifElementNotPresent", true),
     CONDITIONOPERATOR_IFELEMENTVISIBLE("ifElementVisible", true),
-    CONDITIONOPERATOR_IFELEMENTNOTVISIBLE("ifElementNotVisible", false),
+    CONDITIONOPERATOR_IFELEMENTNOTVISIBLE("ifElementNotVisible", true),
     CONDITIONOPERATOR_IFPROPERTYEXIST("ifPropertyExist", false),
     CONDITIONOPERATOR_IFPROPERTYNOTEXIST("ifPropertyNotExist", false),
     CONDITIONOPERATOR_IFNUMERICEQUAL("ifNumericEqual", false),
@@ -47,11 +45,14 @@ public enum ConditionOperatorEnum {
     CONDITIONOPERATOR_IFSTRINGMINOR("ifStringMinor", false),
     CONDITIONOPERATOR_IFSTRINGCONTAINS("ifStringContains", false),
     CONDITIONOPERATOR_IFSTRINGNOTCONTAINS("ifStringNotContains", false),
-    CONDITIONOPERATOR_IFTEXTINELEMENT("ifTextInElement", false),
-    CONDITIONOPERATOR_IFTEXTNOTINELEMENT("ifTextNotInElement", false),
+    CONDITIONOPERATOR_IFTEXTINELEMENT("ifTextInElement", true),
+    CONDITIONOPERATOR_IFTEXTNOTINELEMENT("ifTextNotInElement", true),
     CONDITIONOPERATOR_NEVER("never", false);
     
     private final String condition;
+    /**
+     * Boolean use to check if the condition need to be evaluated by an operator in case of manual execution
+     */
     private final boolean isOperatorEvaluationRequired;
 
     private ConditionOperatorEnum(String condition, boolean isOperatorEvaluationRequired) {
@@ -63,6 +64,9 @@ public enum ConditionOperatorEnum {
         return condition;
     }
 
+    /**
+     * Boolean use to check if the condition need to be evaluated by an operator in case of manual execution
+     */
     public boolean isOperatorEvaluationRequired() {
         return isOperatorEvaluationRequired;
     }

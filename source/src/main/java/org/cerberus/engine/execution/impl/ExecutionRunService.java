@@ -793,7 +793,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                     si oui concaténer la description de la step avec le message de execution de la condition
                                      */
                                     if (tCExecution.getManualExecution().equals("Y") && testcaseStepConditionEnum.isOperatorEvaluationRequired()) {
-                                        testCaseStepExecution.setDescription(testCaseStep.getDescription() + " - " + testcaseStepConditionEnum.getCondition());
+                                        testCaseStepExecution.setDescription(testCaseStep.getDescription() + " - " + conditionAnswer.getMessageDescription());
                                     }
 
                                     testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
@@ -1156,8 +1156,15 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
             if (!(conditionDecodeError)) {
+
+                ConditionOperatorEnum actionConditionOperatorEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(testCaseStepActionExecution.getConditionOperator());
+
                 conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionExecution.getConditionOperator(), testCaseStepActionExecution.getConditionVal1(), testCaseStepActionExecution.getConditionVal2(), testCaseStepActionExecution.getConditionVal3(), tcExecution);
                 boolean execute_Action = (boolean) conditionAnswer.getItem();
+
+                if (tcExecution.getManualExecution().equals("Y") && actionConditionOperatorEnum.isOperatorEvaluationRequired()) {
+                    testCaseStepActionExecution.setDescription(testCaseStepActionExecution.getDescription() + " - " + conditionAnswer.getMessageDescription());
+                }
 
                 /**
                  * If condition OK or if manual execution, then execute the
@@ -1287,8 +1294,6 @@ public class ExecutionRunService implements IExecutionRunService {
 
     private TestCaseStepActionExecution executeAction(TestCaseStepActionExecution actionExe, TestCaseExecution exe) {
 
-        ConditionOperatorEnum actionConditionOperatorEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(actionExe.getConditionOperator());
-
         LOG.debug("Starting execute Action : " + actionExe.getAction());
         AnswerItem<String> answerDecode = new AnswerItem<>();
 
@@ -1320,10 +1325,6 @@ public class ExecutionRunService implements IExecutionRunService {
          * Register Action in database
          */
         LOG.debug("Registering Action : " + actionExe.getAction());
-
-        if (exe.getManualExecution().equals("Y") && actionConditionOperatorEnum.isOperatorEvaluationRequired()) {
-            actionExe.setDescription(actionExe.getDescription() + " - " + actionConditionOperatorEnum.getCondition());
-        }
 
         this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(actionExe);
         LOG.debug("Registered Action");
@@ -1433,8 +1434,14 @@ public class ExecutionRunService implements IExecutionRunService {
 
             if (!(conditionDecodeError)) {
 
+                ConditionOperatorEnum controlConditionOperatorEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(controlExe.getConditionOperator());
+
                 conditionAnswer = this.conditionService.evaluateCondition(controlExe.getConditionOperator(), controlExe.getConditionVal1(), controlExe.getConditionVal2(), controlExe.getConditionVal3(), exe);
                 boolean execute_Control = (boolean) conditionAnswer.getItem();
+
+                if (exe.getManualExecution().equals("Y") && controlConditionOperatorEnum.isOperatorEvaluationRequired()) {
+                    controlExe.setDescription(controlExe.getDescription() + " - " + conditionAnswer.getMessageDescription());
+                }
                 /**
                  * If condition OK or if manual execution, then execute the
                  * control
@@ -1575,8 +1582,6 @@ public class ExecutionRunService implements IExecutionRunService {
 
     private TestCaseStepActionControlExecution executeControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution, TestCaseExecution tcExecution) {
 
-        ConditionOperatorEnum controlConditionOperatorEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(testCaseStepActionControlExecution.getConditionOperator());
-
         /**
          * If execution is not manual, do control and record files
          */
@@ -1600,9 +1605,6 @@ public class ExecutionRunService implements IExecutionRunService {
          * Register Control in database
          */
         LOG.debug("Registering Control : " + testCaseStepActionControlExecution.getControlSequence());
-        if (tcExecution.getManualExecution().equals("Y") && controlConditionOperatorEnum.isOperatorEvaluationRequired()) {
-            testCaseStepActionControlExecution.setDescription(testCaseStepActionControlExecution.getDescription() + " - " + controlConditionOperatorEnum.getCondition());
-        }
         this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
         LOG.debug("Registered Control");
 
