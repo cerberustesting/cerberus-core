@@ -373,7 +373,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 LOG.debug(logPrefix + "Selenium capabitities loaded.");
             } else if ((tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) && !tCExecution.getManualExecution().equals("Y")) {
                 //do nothing, and keep the robot name
-            } else {
+            } else if (!tCExecution.getManualExecution().equals("Y")) {
                 // If Selenium is not needed, the selenium and browser info is set to empty.
                 tCExecution.setSeleniumIP("");
                 tCExecution.setSeleniumPort("");
