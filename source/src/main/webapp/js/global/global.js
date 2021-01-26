@@ -1937,6 +1937,8 @@ function envTuning(myenv) {
     // Background color is light yellow if the environment is not production.
     if ((myenv !== "prd") && (myenv !== "prod") && (myenv !== "PROD") && (myenv !== "demo")) {
         document.body.style.background = "#FFFFCC";
+        document.getElementById("menuDocumentationV2").style.display = "none";
+    } else {
     }
 }
 

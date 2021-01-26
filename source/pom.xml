@@ -571,19 +571,32 @@
                 <version>${asciidoctor-maven-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>output-html</id>
+                        <id>outputv1-html</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>process-asciidoc</goal>
                         </goals>
+                        <configuration>
+                            <sourceDirectory>${basedir}/src/main/resources/documentation/V1</sourceDirectory>
+                            <outputDirectory>${basedir}/src/main/webapp/documentation/V1</outputDirectory>
+                            <backend>html</backend>
+                            <doctype>book</doctype>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>outputv2-html</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${basedir}/src/main/resources/documentation/V2</sourceDirectory>
+                            <outputDirectory>${basedir}/src/main/webapp/documentation/V2</outputDirectory>
+                            <backend>html</backend>
+                            <doctype>book</doctype>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <sourceDirectory>${basedir}/src/main/resources/documentation</sourceDirectory>
-                    <outputDirectory>${basedir}/src/main/webapp/documentation</outputDirectory>
-                    <backend>html</backend>
-                    <doctype>book</doctype>
-                </configuration>
             </plugin>
             
             <plugin>

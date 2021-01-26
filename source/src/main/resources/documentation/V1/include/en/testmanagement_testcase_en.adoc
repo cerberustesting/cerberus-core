@@ -650,6 +650,14 @@ It also require at least version 1.1 of the executor.
 |=== 
 Force current content of the test case on the last service call in a JSON format. That JSON will allow controls on the structure of the last call for both Request and Response including information such as http header, http protocol version, or return code. Any control attached to that action will take json path as element syntax for direct controls. If no calls were performed before that action, action will end in NE Status and all attached controls ignored. Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
 
+==== setConsoleContent
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Force current content of the test case to the console logs in a JSON format. That JSON will allow controls on the all the logs collected between each call to that action (logs contents are reset after each call to get them). Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
+
 ==== doNothing
 |=== 
 

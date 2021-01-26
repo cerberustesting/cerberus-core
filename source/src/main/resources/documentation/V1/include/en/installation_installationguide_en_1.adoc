@@ -1,0 +1,30 @@
+==== Manual installation
+
+Please refer to INSTALL File in the Cerberus.zip package file.
+
+==== Docker installation
+
+. *[RED]#For Windows#* :
+.. Install Git for Windows --> https://git-for-windows.github.io/
+.. Install Docker for Windows --> https://docs.docker.com/docker-for-windows/
+.. Install Docker Toolbox for Windows --> https://docs.docker.com/toolbox/toolbox_install_windows/
+.. Clone Cerberus-source to the desired location :
+... Go to the desired location folder
+... Right click into the folder, and click Git Bash Here image:installationinstallationguidegitbashhere.png[gitBashHere,float="right",align="center"]
+... Type the following command into Git Cmd Prompt : "git clone https://github.com/cerberustesting/cerberus-source.git" image:installationinstallationguidegitbashprompt.png[gitBashPrompt,float="right",align="center"]
+... Wait for cerberus-source to clone...
+.. Run Docker. /!\ You may have to go into Docker settings to "share the drive" on which you put cerberus
+.. Run Windows Command Prompt as administrator, navigate to your desired location, then subfolders compositions/cerberus-glassfish-mysql image:installationinstallationwincmdprompt.png[winCmdPrompt,float="right",align="center"]
+.. Execute the following command :
+... either "docker-compose up" to run the docker-compose normally
+... or "docker-compose up -d" to run the docker-compose asynchronously
+... or "docker-compose up -d --remove-orphans" to run the docker-compose and remove already existing images
+... or "docker-compose scale selenium-node-firefox=3 selenium-node-chrome=3" to add more nodes to your Selenium Grid
+.. Wait for the images to startup
+.. Open your favorite browser and go to <docker_host>:18080/Cerberus, where <docker_host> is your Docker host
+
+Further details available at https://github.com/cerberustesting/cerberus-source/tree/master/docker/compositions/cerberus-glassfish-mysql
+
+. *[RED]#For Mac#* :
+
+. *[RED]#For Linux#* :
