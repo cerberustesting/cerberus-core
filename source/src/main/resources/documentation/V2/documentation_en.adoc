@@ -37,7 +37,7 @@ include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/V2/include/en/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
-== Docker
+== Docker Test
 :file-to-include: installation_docker_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
 
