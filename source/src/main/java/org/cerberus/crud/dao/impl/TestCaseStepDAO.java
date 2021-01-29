@@ -754,8 +754,8 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     }
 
     @Override
-    public AnswerList readByLibraryUsed(String test, String testcase, int stepId) {
-        AnswerList response = new AnswerList<>();
+    public AnswerList<TestCaseStep> readByLibraryUsed(String test, String testcase, int stepId) {
+        AnswerList<TestCaseStep> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStep> stepList = new ArrayList<TestCaseStep>();

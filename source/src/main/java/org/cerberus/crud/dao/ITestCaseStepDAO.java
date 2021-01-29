@@ -67,7 +67,7 @@ public interface ITestCaseStepDAO {
 
     AnswerList<TestCaseStep> readByTestTestCase(String test, String testcase);
 
-    AnswerList readByLibraryUsed(String test, String testcase, int stepId);
+    AnswerList<TestCaseStep> readByLibraryUsed(String test, String testcase, int stepId);
 
     /**
      *

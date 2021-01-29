@@ -196,7 +196,7 @@ public class TestCaseStepService implements ITestCaseStepService {
     }
 
     @Override
-    public AnswerList readByLibraryUsed(String test, String testcase, int stepId) {
+    public AnswerList<TestCaseStep> readByLibraryUsed(String test, String testcase, int stepId) {
         return testCaseStepDAO.readByLibraryUsed(test, testcase, stepId);
     }
 
@@ -209,6 +209,7 @@ public class TestCaseStepService implements ITestCaseStepService {
         List<TestCaseStep> steps = new ArrayList<>();
         for (TestCaseStep step : answerSteps.getDataList()) {
             if (step.isUsingLibraryStep()) {
+                //TODO changer pour readByLibraryUsed
                 TestCaseStep usedStep = this.findTestCaseStep(step.getLibraryStepTest(), step.getLibraryStepTestcase(), step.getLibraryStepStepId());
                 step.setLibraryStepSort(usedStep.getSort());
                 actions = testCaseStepActionService.readByVarious1WithDependency(step.getLibraryStepTest(), step.getLibraryStepTestcase(), step.getLibraryStepStepId());
@@ -220,6 +221,13 @@ public class TestCaseStepService implements ITestCaseStepService {
         }
         response = new AnswerList<>(steps, answerSteps.getTotalRows(), new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         return response;
+    }
+    
+    public TestCaseStep readTestcaseStepWithDependencies(String test, String testcase, int stepId) {
+       TestCaseStep testcaseStep = this.findTestCaseStep(test, testcase, stepId);
+       AnswerList<TestCaseStepAction> actions = testCaseStepActionService.readByVarious1WithDependency(test, testcase, testcaseStep.getStepId());
+       testcaseStep.setActions(actions.getDataList());
+       return testcaseStep;       
     }
 
     @Override

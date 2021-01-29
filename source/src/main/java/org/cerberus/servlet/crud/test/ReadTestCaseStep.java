@@ -56,6 +56,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadTestCaseStep extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ReadTestCaseStep.class);
+    
+    ITestCaseStepService testCaseStepService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -69,24 +71,24 @@ public class ReadTestCaseStep extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-
         response.setContentType("application/json");
-        response.setCharacterEncoding("utf8");
+        response.setCharacterEncoding("utf8");    
+        testCaseStepService = appContext.getBean(TestCaseStepService.class);
 
         try {
-
             JSONObject jsonResponse = new JSONObject();
-
             AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             String test = request.getParameter("test");
-            String testCase = request.getParameter("testcase");
+            String testcase = request.getParameter("testcase");
             int stepId = Integer.parseInt(request.getParameter("stepId"));
-            boolean getUses = ParameterParserUtil.parseBooleanParam(request.getParameter("getUses"), false);
+            boolean isUsingLibraryStep = ParameterParserUtil.parseBooleanParam(request.getParameter("getUses"), false);
 
-            if (getUses) {
-                jsonResponse = getStepUsesByKey(test, testCase, stepId, appContext, response);
+            LOG.debug(test + " + " + testcase + " + " + stepId + " + " + isUsingLibraryStep);
+            
+            if (isUsingLibraryStep) {
+                jsonResponse = getStepUsesByKey(test, testcase, stepId, appContext);
             } else {
-                jsonResponse = getStepByKey(test, testCase, stepId, appContext, response);
+                jsonResponse = getStepByKey(test, testcase, stepId, appContext);
             }
 
             jsonResponse.put("messageType", "OK");
@@ -99,21 +101,15 @@ public class ReadTestCaseStep extends HttpServlet {
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
-
     }
 
-    private JSONObject getStepUsesByKey(String test, String testcase, int stepId, ApplicationContext appContext, HttpServletResponse response) throws JSONException {
+    private JSONObject getStepUsesByKey(String test, String testcase, int stepId, ApplicationContext appContext) throws JSONException {
         JSONObject jsonResponse = new JSONObject();
-
-        ITestCaseStepService stepService = appContext.getBean(TestCaseStepService.class);
-
-        AnswerList answer = stepService.readByLibraryUsed(test, testcase, stepId);
+        AnswerList<TestCaseStep> steps = testCaseStepService.readByLibraryUsed(test, testcase, stepId);
         JSONArray res = new JSONArray();
 
-        for (Object obj : answer.getDataList()) {
-            TestCaseStep testCaseStep = (TestCaseStep) obj;
-            JSONObject result = testCaseStep.toJson();
-            res.put(result);
+        for (TestCaseStep testcaseStep : steps.getDataList()) {
+            res.put(testcaseStep.toJson());
         }
 
         jsonResponse.put("step", res);
@@ -121,43 +117,12 @@ public class ReadTestCaseStep extends HttpServlet {
         return jsonResponse;
     }
 
-    private JSONObject getStepByKey(String test, String testcase, int stepId, ApplicationContext appContext, HttpServletResponse response) throws JSONException {
+    private JSONObject getStepByKey(String test, String testcase, int stepId, ApplicationContext appContext) throws JSONException {
         JSONObject jsonResponse = new JSONObject();
 
-        ITestCaseStepService stepService = appContext.getBean(TestCaseStepService.class);
-        ITestCaseStepActionService stepActionService = appContext.getBean(TestCaseStepActionService.class);
-        ITestCaseStepActionControlService stepActionControlService = appContext.getBean(TestCaseStepActionControlService.class);
+        TestCaseStep testcaseStep = testCaseStepService.readTestcaseStepWithDependencies(test, testcase, stepId);
 
-        TestCaseStep testCaseStep = stepService.findTestCaseStep(test, testcase, stepId);
-        JSONObject result = testCaseStep.toJson();
-        jsonResponse.put("step", result);
-        //jsonResponse.put("stepId", testCaseStep);
-
-        List<TestCaseStepAction> tcsActions = stepActionService.getListOfAction(test, testcase, stepId);
-
-        if (tcsActions != null) {
-            JSONArray list = new JSONArray();
-            for (TestCaseStepAction testCaseStepAction : tcsActions) {
-                JSONObject obj = testCaseStepAction.toJson();
-                obj.put("controls", new JSONArray());
-                obj.put("objType", "action");
-                list.put(obj);
-            }
-            jsonResponse.put("actions", list);
-        }
-
-        List<TestCaseStepActionControl> tcsActionControls = stepActionControlService.findControlByTestTestCaseStep(test, testcase, stepId);
-
-        if (tcsActionControls != null) {
-            JSONArray list2 = new JSONArray();
-            for (TestCaseStepActionControl testCaseStepActionControl : tcsActionControls) {
-                JSONObject obj = testCaseStepActionControl.toJson();
-                list2.put(obj);
-            }
-            jsonResponse.put("controls", list2);
-        }
-
-        return jsonResponse;
+        return jsonResponse.put("step", testcaseStep.toJson());
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

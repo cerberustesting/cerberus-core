@@ -85,7 +85,7 @@ public interface ITestCaseStepService {
 
     AnswerList<TestCaseStep> readByTestTestCase(String test, String testcase);
 
-    AnswerList readByLibraryUsed(String test, String testcase, int stepId);
+    AnswerList<TestCaseStep> readByLibraryUsed(String test, String testcase, int stepId);
 
     /**
      *
@@ -94,6 +94,8 @@ public interface ITestCaseStepService {
      * @return
      */
     AnswerList<TestCaseStep> readByTestTestCaseStepsWithDependencies(String test, String testcase);
+    
+    TestCaseStep readTestcaseStepWithDependencies(String test, String testcase, int stepId);
 
     /**
      *
