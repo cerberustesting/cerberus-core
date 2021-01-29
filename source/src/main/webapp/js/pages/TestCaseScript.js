@@ -1577,6 +1577,23 @@ function setAllSort() {
     return stepArr;
 }
 
+/*
+ * Used to convert an array of country string to an array of object {value: countryName}
+ * @param {type} array
+ * @returns {undefined}
+ */
+function convertPropertiesCountriesArrayToObj(array) {
+    for (let i = 0; i < array.length; i++) {
+        let newCountries = [];
+        for (let j = 0; j < array[i].country.length; j++) {
+            newCountries.push({value: array[i].country[j]});
+        }
+        array[i].countries = newCountries;
+        newCountries = [];
+    }
+    console.log(array);
+    return array;
+}
 
 function saveScript(property) {
 
@@ -1630,7 +1647,7 @@ function saveScript(property) {
                 informationTest: GetURLParameter("test"),
                 informationTestCase: GetURLParameter("testcase"),
                 steps: stepArr,
-                properties: propArr
+                properties: convertPropertiesCountriesArrayToObj(propArr)
             }),
             success: function () {
 
@@ -2407,7 +2424,7 @@ function addStep(event) {
 
                     $.ajax({
                         url: "ReadTestCaseStep",
-                        data: {test: useStep.test, testcase: useStep.testCase, stepid: useStep.stepId},
+                        data: {test: useStep.test, testcase: useStep.testCase, stepId: useStep.stepId},
                         async: false,
                         success: function (data) {
                             step.actions = data.actions;

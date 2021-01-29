@@ -37,10 +37,12 @@ import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
 import org.cerberus.crud.factory.IFactoryTestCaseStepAction;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControl;
 import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
+import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseService;
@@ -70,6 +72,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class UpdateTestCaseWithDependencies extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(UpdateTestCaseWithDependencies.class);
+    private ITestCaseService testCaseService;
+    private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
+    private ITestCaseStepService tcsService;
+    private ITestCaseStepActionService tcsaService;
+    private ITestCaseStepActionControlService tcsacService;
+    private IFactoryTestCaseCountryProperties testCaseCountryPropertiesFactory;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -108,17 +116,17 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         JSONObject jObj = new JSONObject(sb.toString());
         String initialTest = jObj.getString("informationInitialTest");
         String initialTestCase = jObj.getString("informationInitialTestCase");
-        String test = jObj.getString("informationTest");
-        String testCase = jObj.getString("informationTestCase");
+        String testId = jObj.getString("informationTest");
+        String testCaseId = jObj.getString("informationTestCase");
         JSONArray properties = jObj.getJSONArray("properties");
-        JSONArray stepArray = jObj.getJSONArray("steps");
+        JSONArray steps = jObj.getJSONArray("steps");
 
         boolean duplicate = false;
 
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(test) || StringUtil.isNullOrEmpty(testCase)) {
+        if (StringUtil.isNullOrEmpty(testId) || StringUtil.isNullOrEmpty(testCaseId)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Case")
                     .replace("%OPERATION%", "Update")
@@ -126,15 +134,16 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             ans.setResultMessage(msg);
         } else {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
-            ITestCaseCountryPropertiesService tccpService = appContext.getBean(ITestCaseCountryPropertiesService.class);
-            ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
-            ITestCaseStepActionService tcsaService = appContext.getBean(ITestCaseStepActionService.class);
-            ITestCaseStepActionControlService tcsacService = appContext.getBean(ITestCaseStepActionControlService.class);
+            testCaseService = appContext.getBean(ITestCaseService.class);
+            testCaseCountryPropertiesService = appContext.getBean(ITestCaseCountryPropertiesService.class);
+            tcsService = appContext.getBean(ITestCaseStepService.class);
+            tcsaService = appContext.getBean(ITestCaseStepActionService.class);
+            tcsacService = appContext.getBean(ITestCaseStepActionControlService.class);
+            testCaseCountryPropertiesFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
 
-            AnswerItem resp = testCaseService.readByKey(test, testCase);
-            TestCase tc = (TestCase) resp.getItem();
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
+            AnswerItem<TestCase> testcaseAnswerItem = testCaseService.readByKey(testId, testCaseId);
+            TestCase testcase = testcaseAnswerItem.getItem();
+            if (!(testcaseAnswerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && testcaseAnswerItem.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
@@ -144,48 +153,47 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                         .replace("%REASON%", "TestCase does not exist."));
                 ans.setResultMessage(msg);
 
-            } else /**
-             * The service was able to perform the query and confirm the object
-             * exist, then we can update it.
-             */
-            if (!testCaseService.hasPermissionsUpdate(tc, request)) { // We cannot update the testcase if the user is not at least in Test role.
+            } else if (!testCaseService.hasPermissionsUpdate(testcase, request)) { // We cannot update the testcase if the user is not at least in Test role.
+                /**
+                 * The service was able to perform the query and confirm the
+                 * object exist, then we can update it.
+                 */
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
                         .replace("%OPERATION%", "Update")
                         .replace("%REASON%", "Not enought privilege to update the testcase. You mut belong to Test Privilege or even TestAdmin in case the test is in WORKING status."));
                 ans.setResultMessage(msg);
 
-            } else {
+            } else { // Test Case exist and we can update it so Global update start here
 
-                // Test Case exist and we can update it so Global update start here //
                 /**
                  * TestcaseCountryProperties Update.
                  */
-                List<TestCaseCountryProperties> tccpFromPage = getTestCaseCountryPropertiesFromParameter(request, appContext, test, testCase, properties);
-                tccpService.compareListAndUpdateInsertDeleteElements(initialTest, initialTestCase, tccpFromPage);
+                List<TestCaseCountryProperties> testcaseCountryPropertiesFromPage = getTestCaseCountryPropertiesFromParameter(testcase, properties);
+                testCaseCountryPropertiesService.compareListAndUpdateInsertDeleteElements(initialTest, initialTestCase, testcaseCountryPropertiesFromPage);
 
                 /*
                  * Get steps, actions and controls from page by:
                  * - generating a new stepId, action or control number,
                  * - setting the correct related stepId and action for action or control
                  */
-                List<TestCaseStep> tcsFromPage = getTestCaseStepFromParameter(request, appContext, test, testCase, duplicate, stepArray);
-                List<TestCaseStepAction> tcsaFromPage = new ArrayList<>();
-                List<TestCaseStepActionControl> tcsacFromPage = new ArrayList<>();
+                List<TestCaseStep> testcaseStepsFromPage = getTestCaseStepsFromParameter(request, appContext, testId, testCaseId, duplicate, steps);
+                List<TestCaseStepAction> testcaseStepActionsFromPage = new ArrayList<>();
+                List<TestCaseStepActionControl> testcaseStepActionControlsFromPage = new ArrayList<>();
 
-                int nextStepNumber = getMaxStepNumber(tcsFromPage);
-                for (TestCaseStep tcs : tcsFromPage) {
-                    if (tcs.getStepId() == -1) {
-                        tcs.setStepId(++nextStepNumber);
+                int nextStepNumber = getMaxStepNumber(testcaseStepsFromPage);
+                for (TestCaseStep testcaseStepFromPage : testcaseStepsFromPage) {
+                    if (testcaseStepFromPage.getStepId() == -1) {
+                        testcaseStepFromPage.setStepId(++nextStepNumber);
                     }
 
-                    if (tcs.getActions() != null) {
-                        int nextSequenceNumber = getMaxSequenceNumber(tcs.getActions());
-                        for (TestCaseStepAction tcsa : tcs.getActions()) {
+                    if (testcaseStepFromPage.getActions() != null) {
+                        int nextSequenceNumber = getMaxSequenceNumber(testcaseStepFromPage.getActions());
+                        for (TestCaseStepAction tcsa : testcaseStepFromPage.getActions()) {
                             if (tcsa.getSequence() == -1) {
                                 tcsa.setSequence(++nextSequenceNumber);
                             }
-                            tcsa.setStepId(tcs.getStepId());
+                            tcsa.setStepId(testcaseStepFromPage.getStepId());
 
                             if (tcsa.getControls() != null) {
                                 int nextControlNumber = getMaxControlNumber(tcsa.getControls());
@@ -193,13 +201,13 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                                     if (tscac.getControlSequence() == -1) {
                                         tscac.setControlSequence(++nextControlNumber);
                                     }
-                                    tscac.setStepId(tcs.getStepId());
+                                    tscac.setStepId(testcaseStepFromPage.getStepId());
                                     tscac.setSequence(tcsa.getSequence());
                                 }
-                                tcsacFromPage.addAll(tcsa.getControls());
+                                testcaseStepActionControlsFromPage.addAll(tcsa.getControls());
                             }
                         }
-                        tcsaFromPage.addAll(tcs.getActions());
+                        testcaseStepActionsFromPage.addAll(testcaseStepFromPage.getActions());
                     }
                 }
 
@@ -207,18 +215,18 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                  * Create, update or delete stepId, action and control according to the needs
                  */
                 List<TestCaseStep> tcsFromDtb = new ArrayList<>(tcsService.getListOfSteps(initialTest, initialTestCase));
-                tcsService.compareListAndUpdateInsertDeleteElements(tcsFromPage, tcsFromDtb, duplicate);
+                tcsService.compareListAndUpdateInsertDeleteElements(testcaseStepsFromPage, tcsFromDtb, duplicate);
 
                 List<TestCaseStepAction> tcsaFromDtb = new ArrayList<>(tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
-                tcsaService.compareListAndUpdateInsertDeleteElements(tcsaFromPage, tcsaFromDtb, duplicate);
+                tcsaService.compareListAndUpdateInsertDeleteElements(testcaseStepActionsFromPage, tcsaFromDtb, duplicate);
 
                 List<TestCaseStepActionControl> tcsacFromDtb = new ArrayList<>(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
-                tcsacService.compareListAndUpdateInsertDeleteElements(tcsacFromPage, tcsacFromDtb, duplicate);
+                tcsacService.compareListAndUpdateInsertDeleteElements(testcaseStepActionControlsFromPage, tcsacFromDtb, duplicate);
 
-                tc.setUsrModif(request.getUserPrincipal().getName());
-                tc.setVersion(tc.getVersion() + 1);
+                testcase.setUsrModif(request.getUserPrincipal().getName());
+                testcase.setVersion(testcase.getVersion() + 1);
 
-                testCaseService.update(tc.getTest(), tc.getTestcase(), tc);
+                testCaseService.update(testcase.getTest(), testcase.getTestcase(), testcase);
 
                 /**
                  * Adding Log entry.
@@ -228,7 +236,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                      * Update was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateTestCaseWithDependencies", "UPDATE", "Update TestCase Script : ['" + tc.getTest() + "'|'" + tc.getTestcase() + "'] version : " + tc.getVersion(), request);
+                    logEventService.createForPrivateCalls("/UpdateTestCaseWithDependencies", "UPDATE", "Update TestCase Script : ['" + testcase.getTest() + "'|'" + testcase.getTestcase() + "'] version : " + testcase.getVersion(), request);
                 }
 
             }
@@ -302,10 +310,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         return nextControlNumber;
     }
 
-    private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray properties) throws JSONException {
+    private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(TestCase testcase, JSONArray properties) throws JSONException {
         List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList<>();
-//        String[] testcase_properties_increment = getParameterValuesIfExists(request, "property_increment");
-        IFactoryTestCaseCountryProperties testCaseCountryPropertiesFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
+
         for (int i = 0; i < properties.length(); i++) {
             JSONObject propJson = properties.getJSONObject(i);
             boolean delete = propJson.getBoolean("toDelete");
@@ -322,12 +329,11 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             int rank = propJson.optInt("rank");
             String nature = propJson.getString("nature");
             String database = propJson.getString("database");
-            JSONArray countries = propJson.getJSONArray("country");
+            JSONArray countries = propJson.getJSONArray("countries");
             if (!delete && !property.equals("")) {
                 for (int j = 0; j < countries.length(); j++) {
-                    String country = countries.getString(j);
-
-                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature,
+                    String country = countries.getJSONObject(j).getString("value");
+                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(testcase.getTest(), testcase.getTestcase(), country, property, description, type, database, value, value2, length, rowLimit, nature,
                             retryNb, retryPeriod, cacheExpire, rank, null, null, null, null));
                 }
             }
@@ -335,7 +341,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         return testCaseCountryProp;
     }
 
-    private List<TestCaseStep> getTestCaseStepFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, boolean duplicate, JSONArray stepArray) throws JSONException {
+    private List<TestCaseStep> getTestCaseStepsFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, boolean duplicate, JSONArray stepArray) throws JSONException {
         List<TestCaseStep> testCaseStep = new ArrayList<>();
         ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
         IFactoryTestCaseStep testCaseStepFactory = appContext.getBean(IFactoryTestCaseStep.class);
@@ -365,7 +371,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                         libraryStepTestCase, libraryStepStepId, isLibraryStep, isExecutionForced, null, null, request.getUserPrincipal().getName(), null);
 
                 if (!isUsingLibraryStep) {
-                    tcStep.setActions(getTestCaseStepActionFromParameter(request, appContext, test, testCase, stepActions));
+                    tcStep.setActions(getTestCaseStepActionsFromParameter(request, appContext, test, testCase, stepActions));
                 } else {
                     TestCaseStep tcs = null;
                     if (libraryStepStepId != -1 && !libraryStepTest.equals("") && !libraryStepTestCase.equals("")) {
@@ -383,7 +389,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         return testCaseStep;
     }
 
-    private List<TestCaseStepAction> getTestCaseStepActionFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray testCaseStepActionJson) throws JSONException {
+    private List<TestCaseStepAction> getTestCaseStepActionsFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray testCaseStepActionJson) throws JSONException {
         List<TestCaseStepAction> testCaseStepAction = new ArrayList<>();
         IFactoryTestCaseStepAction testCaseStepActionFactory = appContext.getBean(IFactoryTestCaseStepAction.class);
 
@@ -409,14 +415,14 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
             if (!delete) {
                 TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, stepId, sequence, sort, conditionOperator, conditionVal1, conditionVal2, conditionVal3, action, object, property, value3, forceExeStatus, description, screenshot);
-                tcsa.setControls(getTestCaseStepActionControlFromParameter(request, appContext, test, testCase, controlArray));
+                tcsa.setControls(getTestCaseStepActionControlsFromParameter(request, appContext, test, testCase, controlArray));
                 testCaseStepAction.add(tcsa);
             }
         }
         return testCaseStepAction;
     }
 
-    private List<TestCaseStepActionControl> getTestCaseStepActionControlFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray controlArray) throws JSONException {
+    private List<TestCaseStepActionControl> getTestCaseStepActionControlsFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray controlArray) throws JSONException {
         List<TestCaseStepActionControl> testCaseStepActionControl = new ArrayList<>();
         IFactoryTestCaseStepActionControl testCaseStepActionControlFactory = appContext.getBean(IFactoryTestCaseStepActionControl.class);
 
