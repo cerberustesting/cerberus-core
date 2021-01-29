@@ -669,7 +669,7 @@ function confirmImportTestCaseFromSIDEModalHandler() {
 
 function setActive(checkbox) {
     var test = checkbox.dataset.test;
-    var testCase = checkbox.name;
+    var testcase = checkbox.name;
     var active;
 
     if (checkbox.checked === true) {
@@ -681,13 +681,13 @@ function setActive(checkbox) {
     $.ajax({
         url: "UpdateTestCase",
         method: "POST",
-        data: {test: test, testCase: testCase, originalTest: test, originalTestCase: testCase, isActive: active},
+        data: {test: test, testcase: testcase, originalTest: test, originalTestcase: testcase, isActive: active},
         dataType: "json",
         success: function (data) {
             if (active) {
-                $('[id="runTest' + encodeURIComponent(test) + encodeURIComponent(testCase) + '"]').removeAttr("disabled");
+                $('[id="runTest' + encodeURIComponent(test) + encodeURIComponent(testcase) + '"]').removeAttr("disabled");
             } else {
-                $('[id="runTest' + encodeURIComponent(test) + encodeURIComponent(testCase) + '"]').attr("disabled", "disabled");
+                $('[id="runTest' + encodeURIComponent(test) + encodeURIComponent(testcase) + '"]').attr("disabled", "disabled");
             }
             clearResponseMessageMainPage();
             var messageType = getAlertType(data.messageType);

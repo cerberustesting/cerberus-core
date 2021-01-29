@@ -556,9 +556,9 @@ function confirmTestCaseModalHandler(mode) {
         method: "POST",
         data: {
             test: data.test,
-            testCase: data.testCase,
+            testcase: data.testCase,
             originalTest: data.originalTest,
-            originalTestCase: data.originalTestCase,
+            originalTestcase: data.originalTestCase,
             isActive: data.isActive,
             isActivePROD: data.isActivePROD,
             isActiveQA: data.isActiveQA,

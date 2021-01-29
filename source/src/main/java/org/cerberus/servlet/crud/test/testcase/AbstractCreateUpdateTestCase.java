@@ -97,9 +97,9 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
          * Parsing and securing all required parameters.
          */
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
-        String testcase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("testCase"), "");
+        String testcase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("testcase"), "");
         String originalTest = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("originalTest"), "");
-        String originalTestCase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("originalTestCase"), "");
+        String originalTestCase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("originalTestcase"), "");
 
         boolean primaryKeyChanged = !(originalTest != null && originalTestCase != null && originalTest.equals(test) && originalTestCase.equals(testcase));
 
