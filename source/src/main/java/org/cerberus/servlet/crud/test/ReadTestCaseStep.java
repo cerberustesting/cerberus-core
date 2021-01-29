@@ -74,6 +74,8 @@ public class ReadTestCaseStep extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");    
         testCaseStepService = appContext.getBean(TestCaseStepService.class);
+        
+        LOG.debug("READTESTCASESTEP ===========================");
 
         try {
             JSONObject jsonResponse = new JSONObject();

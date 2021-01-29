@@ -1591,7 +1591,6 @@ function convertPropertiesCountriesArrayToObj(array) {
         array[i].countries = newCountries;
         newCountries = [];
     }
-    console.log(array);
     return array;
 }
 
@@ -2424,20 +2423,10 @@ function addStep(event) {
 
                     $.ajax({
                         url: "ReadTestCaseStep",
-                        data: {test: useStep.test, testcase: useStep.testCase, stepId: useStep.stepId},
+                        data: {test: useStep.test, testcase: useStep.testCase, stepId: useStep.step},
                         async: false,
                         success: function (data) {
-                            step.actions = data.actions;
-                            for (var index = 0; index < data.controls.length; index++) {
-                                var control = data.controls[index];
-
-                                for (var i = 0; i < step.actions.length; i++) {
-                                    if (step.actions[i].actionId === control.actionId) {
-                                        step.actions[i].controls.push(control);
-                                        break;
-                                    }
-                                }
-                            }
+                            step.actions = data.step.actions;
                             sortStep(step);
                         }
                     });
