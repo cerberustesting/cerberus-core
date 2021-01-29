@@ -86,7 +86,7 @@ include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/V2/include/en/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
-== User Managemenbt
+== User Management
 :file-to-include: template_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
 
