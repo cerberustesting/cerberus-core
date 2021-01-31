@@ -138,7 +138,7 @@
                                     </a>
                                 </div>
                                 <div class="col-sm-3 hidden-sm hidden-xs marginTop10 marginBottom10 text-center" data-dismiss="modal" id="shortcut6">  
-                                    <a href="./documentation/documentation_en.html" target="_blank" class="btn btn-info">  
+                                    <a href="./documentation/V1/documentation_en.html" target="_blank" class="btn btn-info">  
                                         <div class="card" style="width: 12rem;">  
                                             <span class="card-img-top glyphicon glyphicon-question-sign  marginBottom20 marginTop20" style="font-size:50px;"></span>  
                                             <div class="card-body">  <p class="card-text">&nbsp;<br>Documentation</p>  </div>  

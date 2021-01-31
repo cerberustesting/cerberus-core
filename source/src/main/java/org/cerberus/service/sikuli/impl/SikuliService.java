@@ -271,7 +271,8 @@ public class SikuliService implements ISikuliService {
             msg.resolveDescription("URL", urlToConnect);
         } catch (IOException ex) {
             LOG.warn(ex, ex);
-            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
+            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_BADURL);
+            msg.resolveDescription("URL", urlToConnect);
         } catch (JSONException ex) {
             LOG.warn("Exception when converting response to JSON : " + response.toString(), ex);
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
