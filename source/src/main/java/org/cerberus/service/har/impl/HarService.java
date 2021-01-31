@@ -413,6 +413,21 @@ public class HarService implements IHarService {
                         urlEntry.put("postData", pD);
                     }
                 }
+
+                if (entryReq.has("queryString")) {      
+                    JSONObject pD = new JSONObject();
+                    JSONArray pData = new JSONArray();
+                    pData = entryReq.getJSONArray("queryString");
+                    JSONObject pA = new JSONObject();
+                    for (int i = 0; i < pData.length(); i++) {
+                        pA = pData.getJSONObject(i);
+                        if ((pA.has("name")) && (!StringUtil.isNullOrEmpty(pA.getString("name").trim()))) {
+                            pD.put(pA.getString("name").trim(), pA.getString("value"));
+                        }
+                    }
+                    urlEntry.put("queryString", pD);                    
+                }
+
                 harStat.appendUrlList(urlEntry);
             }
 
