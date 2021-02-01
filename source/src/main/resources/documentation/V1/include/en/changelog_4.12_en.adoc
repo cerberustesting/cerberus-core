@@ -1,6 +1,6 @@
 *Bug fixes*
 [square]
-* none
+* When step is using a library the correct information is displayed on the GUI (both when loading the page and attaching a new step from modal). #2182.
 
 *Improvements / New features*
 [square]
