@@ -74,6 +74,7 @@ import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.jboss.aerogear.security.otp.Totp;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -755,6 +756,10 @@ public class PropertyService implements IPropertyService {
                             testCaseExecutionData = this.property_getFromNetworkTraffic(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
                             break;
 
+                        case TestCaseCountryProperties.TYPE_GETOTP:
+                            testCaseExecutionData = this.property_getOTP(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
+                            break;
+
                         // DEPRECATED Property types.
                         case TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB: // DEPRECATED
                             testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
@@ -1026,6 +1031,38 @@ public class PropertyService implements IPropertyService {
             res.setDescription(res.getDescription().replace("%EXECUTOR%", tCExecution.getRobotExecutor()));
             testCaseExecutionData.setPropertyResultMessage(res);
 
+        }
+
+        return testCaseExecutionData;
+    }
+
+    private TestCaseExecutionData property_getOTP(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
+
+        if (StringUtil.isNullOrEmpty(testCaseExecutionData.getValue1())) {
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETOTP_MISSINGPARAMETER);
+            testCaseExecutionData.setPropertyResultMessage(res);
+            testCaseExecutionData.setEnd(new Date().getTime());
+            return testCaseExecutionData;
+        }
+
+        try {
+
+            String secretKey = testCaseExecutionData.getValue1();
+            Totp totp = new Totp(secretKey);
+
+            String val = totp.now();
+            testCaseExecutionData.setValue(val);
+            testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETOTP).resolveDescription("VALUE", val));
+
+        } catch (Exception ex) {
+            LOG.warn("Exception when getting property from OTP secret.", ex);
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETOTP);
+            res.setDescription(res.getDescription().replace("%DETAIL%", ex.toString()));
+
+            testCaseExecutionData.setPropertyResultMessage(res);
+
+            testCaseExecutionData.setEnd(new Date().getTime());
+            return testCaseExecutionData;
         }
 
         return testCaseExecutionData;

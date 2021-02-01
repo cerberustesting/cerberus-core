@@ -353,6 +353,20 @@ var propertyUIList = {
             "period": null
         },
         {
+            "type": "getOTP",
+            "value1": "Récupérer un code OTP à partir d'une valeur de clé",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/cerberus",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
             "type": "executeSoapFromLib",
             "value1": "Service lib name",
             "value1Class": "col-sm-8",
@@ -609,6 +623,20 @@ var propertyUIList = {
         {
             "type": "getElementPosition",
             "value1": "Get an element pixel position (use id=/xpath=/etc syntax - return \"px;py\")",
+            "value1Class": "col-sm-8",
+            "value1EditorMode": "ace/mode/cerberus",
+            "value2": null,
+            "database": null,
+            "length": null,
+            "cacheExpire": "[opt] cache Expire (s)",
+            "rowLimit": null,
+            "nature": null,
+            "retry": null,
+            "period": null
+        },
+        {
+            "type": "getOTP",
+            "value1": "Get an OTP code from a secret key",
             "value1Class": "col-sm-8",
             "value1EditorMode": "ace/mode/cerberus",
             "value2": null,

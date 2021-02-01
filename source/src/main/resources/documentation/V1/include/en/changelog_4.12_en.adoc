@@ -4,8 +4,8 @@
 
 *Improvements / New features*
 [square]
-* none
+* new property getOTP. That allow to get an OTP connection code from a secret key allowing to manage the Two Factor authentication use case.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* updated Groovy library to 2.4.21. Check your script behavior before upgrading.

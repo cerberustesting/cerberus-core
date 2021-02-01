@@ -5634,3 +5634,7 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 INSERT INTO invariant (idname, value, sort, description, VeryShortDesc)
   VALUES('ACTION', 'mouseMove', 4500, 'Move the mouse', 'Move the mouse');
 
+-- 1584
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)
+  VALUES  ('PROPERTYTYPE', 'getOTP', '90', 'get OTP Code', '');
+

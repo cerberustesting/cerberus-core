@@ -83,6 +83,7 @@ public class TestCaseCountryProperties {
     public static final String TYPE_GETFROMCOMMAND = "getFromCommand";
     public static final String TYPE_GETELEMENTPOSITION = "getElementPosition";
     public static final String TYPE_GETFROMNETWORKTRAFFIC = "getFromNetworkTraffic";
+    public static final String TYPE_GETOTP = "getOTP";
 
     // DEPRECATED
     public static final String TYPE_EXECUTESQLFROMLIB = "executeSqlFromLib";
