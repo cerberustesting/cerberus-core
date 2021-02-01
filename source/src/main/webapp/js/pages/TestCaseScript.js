@@ -2456,6 +2456,11 @@ function addStep(event) {
                         async: false,
                         success: function (data) {
                             step.actions = data.step.actions;
+                            step.conditionOperator = data.step.conditionOperator;
+                            step.conditionValue1 = data.step.conditionValue1;
+                            step.conditionValue2 = data.step.conditionValue2;
+                            step.conditionValue3 = data.step.conditionValue3;
+                            step.loop = data.step.loop;
                             sortStep(step);
                         }
                     });

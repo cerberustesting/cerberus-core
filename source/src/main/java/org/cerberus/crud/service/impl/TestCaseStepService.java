@@ -159,7 +159,6 @@ public class TestCaseStepService implements ITestCaseStepService {
 //            }
 //        }
 //    }
-
     @Override
     public List<TestCaseStep> getTestCaseStepUsingTestCaseInParamter(String test, String testCase) throws CerberusException {
         return testCaseStepDAO.getTestCaseStepUsingTestCaseInParamter(test, testCase);
@@ -210,8 +209,9 @@ public class TestCaseStepService implements ITestCaseStepService {
         for (TestCaseStep step : answerSteps.getDataList()) {
             if (step.isUsingLibraryStep()) {
                 //TODO changer pour readByLibraryUsed
-                TestCaseStep usedStep = this.findTestCaseStep(step.getLibraryStepTest(), step.getLibraryStepTestcase(), step.getLibraryStepStepId());
-                step.setLibraryStepSort(usedStep.getSort());
+                TestCaseStep usedStep = this.modifyTestCaseStepDataFromUsedStep(step);
+                step = usedStep;
+//                step.setLibraryStepSort(usedStep.getSort());
                 actions = testCaseStepActionService.readByVarious1WithDependency(step.getLibraryStepTest(), step.getLibraryStepTestcase(), step.getLibraryStepStepId());
             } else {
                 actions = testCaseStepActionService.readByVarious1WithDependency(test, testcase, step.getStepId());
@@ -222,12 +222,12 @@ public class TestCaseStepService implements ITestCaseStepService {
         response = new AnswerList<>(steps, answerSteps.getTotalRows(), new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         return response;
     }
-    
+
     public TestCaseStep readTestcaseStepWithDependencies(String test, String testcase, int stepId) {
-       TestCaseStep testcaseStep = this.findTestCaseStep(test, testcase, stepId);
-       AnswerList<TestCaseStepAction> actions = testCaseStepActionService.readByVarious1WithDependency(test, testcase, testcaseStep.getStepId());
-       testcaseStep.setActions(actions.getDataList());
-       return testcaseStep;       
+        TestCaseStep testcaseStep = this.findTestCaseStep(test, testcase, stepId);
+        AnswerList<TestCaseStepAction> actions = testCaseStepActionService.readByVarious1WithDependency(test, testcase, testcaseStep.getStepId());
+        testcaseStep.setActions(actions.getDataList());
+        return testcaseStep;
     }
 
     @Override
