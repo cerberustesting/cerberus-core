@@ -26,7 +26,6 @@ import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseStep;
-import org.cerberus.crud.entity.TestCaseStepBatch;
 import org.json.JSONArray;
 
 /**
@@ -72,17 +71,16 @@ public interface IFactoryTestCase {
      * @param testCaseCountry
      * @param testCaseCountryProperties
      * @param testCaseStep
-     * @param testCaseStepBatch
-     * @return
+     * @return the org.cerberus.crud.entity.TestCase
      */
-    TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
-            String implementer, String executor, String usrModif, String application,
-            boolean isActiveQA, boolean isActiveUAT, boolean isActivePROD, int priority, String type, String status,
-            String description, String detailedDescription, boolean isActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, String fromMajor,
-            String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugs,
-            String targetMajor, String targetMinor, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry,
-            List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep,
-            List<TestCaseStepBatch> testCaseStepBatch);
+    TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, 
+            String implementer, String executor, String usrModif, String application, boolean isActiveQA, boolean isActiveUAT, 
+            boolean isActivePROD, int priority, String type, String status, String description, String detailedDescription, 
+            boolean isActive, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3, 
+            String fromMajor, String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugs,
+            String targetMajor, String targetMinor, String comment, String userAgent, String screenSize, 
+            List<TestCaseCountry> testCaseCountry, List<TestCaseCountryProperties> testCaseCountryProperties, 
+            List<TestCaseStep> testCaseStep);
 
     /**
      *

@@ -81,7 +81,6 @@ public class TestCase {
     private List<Invariant> invariantCountries;
     private List<TestCaseCountry> testCaseCountries;
     private List<TestCaseStep> steps;
-    private List<TestCaseStepBatch> testCaseStepBatch;
     private List<TestCaseLabel> testCaseLabels;
     private List<Label> labels;
     private List<TestCaseDep> dependencies;
@@ -114,14 +113,6 @@ public class TestCase {
 
     public void setDateCreated(Timestamp dateCreated) {
         this.dateCreated = dateCreated;
-    }
-
-    public List<TestCaseStepBatch> getTestCaseStepBatch() {
-        return testCaseStepBatch;
-    }
-
-    public void setTestCaseStepBatch(List<TestCaseStepBatch> testCaseStepBatch) {
-        this.testCaseStepBatch = testCaseStepBatch;
     }
 
     public boolean isActive() {
@@ -505,7 +496,7 @@ public class TestCase {
 
     @Override
     public String toString() {
-        return "TestCase{" + "test=" + test + ", testCase=" + testcase + ", application=" + application + ", ticket=" + ticket + ", description=" + description + ", detailedDescription=" + detailedDescription + ", priority=" + priority + ", version=" + version + ", status=" + status + ", isActive=" + isActive + ", isActiveQA=" + isActiveQA + ", isActiveUAT=" + isActiveUAT + ", isActivePROD=" + isActivePROD + ", conditionOperator=" + conditionOperator + ", conditionVal1=" + conditionVal1 + ", conditionVal2=" + conditionVal2 + ", conditionVal3=" + conditionVal3 + ", type=" + type + ", origine=" + origine + ", refOrigine=" + refOrigine + ", comment=" + comment + ", fromMajor=" + fromMajor + ", fromMinor=" + fromMinor + ", toMajor=" + toMajor + ", toMinor=" + toMinor + ", bugs=" + bugs + ", targetMajor=" + targetMajor + ", targetMinor=" + targetMinor + ", implementer=" + implementer + ", executor=" + executor + ", userAgent=" + userAgent + ", screenSize=" + screenSize + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", system=" + system + ", lastExecutionStatus=" + lastExecutionStatus + ", testCaseCountryProperties=" + testCaseCountryProperties + ", invariantCountries=" + invariantCountries + ", testCaseCountries=" + testCaseCountries + ", steps=" + steps + ", testCaseStepBatch=" + testCaseStepBatch + ", testCaseLabels=" + testCaseLabels + ", labels=" + labels + ", dependencies=" + dependencies + '}';
+        return "TestCase{" + "test=" + test + ", testCase=" + testcase + ", application=" + application + ", ticket=" + ticket + ", description=" + description + ", detailedDescription=" + detailedDescription + ", priority=" + priority + ", version=" + version + ", status=" + status + ", isActive=" + isActive + ", isActiveQA=" + isActiveQA + ", isActiveUAT=" + isActiveUAT + ", isActivePROD=" + isActivePROD + ", conditionOperator=" + conditionOperator + ", conditionVal1=" + conditionVal1 + ", conditionVal2=" + conditionVal2 + ", conditionVal3=" + conditionVal3 + ", type=" + type + ", origine=" + origine + ", refOrigine=" + refOrigine + ", comment=" + comment + ", fromMajor=" + fromMajor + ", fromMinor=" + fromMinor + ", toMajor=" + toMajor + ", toMinor=" + toMinor + ", bugs=" + bugs + ", targetMajor=" + targetMajor + ", targetMinor=" + targetMinor + ", implementer=" + implementer + ", executor=" + executor + ", userAgent=" + userAgent + ", screenSize=" + screenSize + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", system=" + system + ", lastExecutionStatus=" + lastExecutionStatus + ", testCaseCountryProperties=" + testCaseCountryProperties + ", invariantCountries=" + invariantCountries + ", testCaseCountries=" + testCaseCountries + ", steps=" + steps + ", testCaseLabels=" + testCaseLabels + ", labels=" + labels + ", dependencies=" + dependencies + '}';
     }
 
     public JSONObject toJson() {

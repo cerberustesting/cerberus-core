@@ -5638,3 +5638,7 @@ INSERT INTO invariant (idname, value, sort, description, VeryShortDesc)
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)
   VALUES  ('PROPERTYTYPE', 'getOTP', '90', 'get OTP Code', '');
 
+-- 1585
+DROP TABLE testcasestepbatch;
+
+
