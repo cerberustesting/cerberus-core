@@ -42,7 +42,7 @@ public class TestCaseExecutionHttpStat {
     private String system;
     private String application;
     private String test;
-    private String testCase;
+    private String testcase;
     private String country;
     private String environment;
     private String robotDecli;
@@ -123,12 +123,12 @@ public class TestCaseExecutionHttpStat {
         this.test = test;
     }
 
-    public String getTestCase() {
-        return testCase;
+    public String getTestcase() {
+        return testcase;
     }
 
-    public void setTestCase(String testCase) {
-        this.testCase = testCase;
+    public void setTestcase(String testcase) {
+        this.testcase = testcase;
     }
 
     public String getCountry() {
@@ -384,7 +384,7 @@ public class TestCaseExecutionHttpStat {
         try {
             result.put("id", this.getId());
             result.put("test", this.getTest());
-            result.put("testcase", this.getTestCase());
+            result.put("testcase", this.getTestcase());
             result.put("environment", this.getEnvironment());
             result.put("country", this.getCountry());
             result.put("start", this.getStart());

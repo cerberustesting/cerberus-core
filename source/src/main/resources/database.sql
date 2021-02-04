@@ -5651,3 +5651,7 @@ ALTER TABLE label
 -- 1587
 ALTER TABLE testcaselabel
   CHANGE COLUMN TestCase Testcase VARCHAR(45) NOT NULL;
+
+-- 1588
+ALTER TABLE testcaseexecutionhttpstat
+  CHANGE COLUMN TestCase Tescase VARCHAR(45);

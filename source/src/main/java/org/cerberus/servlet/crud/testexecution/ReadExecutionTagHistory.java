@@ -320,7 +320,7 @@ public class ReadExecutionTagHistory extends HttpServlet {
     }
 
     private String getKeyCurve(TestCaseExecutionHttpStat stat, String party, String type, String unit) {
-        return type + "/" + party + "/" + unit + "/" + stat.getTest() + "/" + stat.getTestCase() + "/" + stat.getCountry() + "/" + stat.getEnvironment() + "/" + stat.getRobotDecli() + "/" + stat.getSystem() + "/" + stat.getApplication();
+        return type + "/" + party + "/" + unit + "/" + stat.getTest() + "/" + stat.getTestcase() + "/" + stat.getCountry() + "/" + stat.getEnvironment() + "/" + stat.getRobotDecli() + "/" + stat.getSystem() + "/" + stat.getApplication();
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

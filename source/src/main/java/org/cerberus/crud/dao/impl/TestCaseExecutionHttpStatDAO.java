@@ -119,7 +119,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
                 preStat.setString(i++, object.getSystem());
                 preStat.setString(i++, object.getApplication());
                 preStat.setString(i++, object.getTest());
-                preStat.setString(i++, object.getTestCase());
+                preStat.setString(i++, object.getTestcase());
                 preStat.setString(i++, object.getCountry());
                 preStat.setString(i++, object.getEnvironment());
                 preStat.setString(i++, object.getRobotDecli());
@@ -283,7 +283,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
         }
         // from and to
         searchSQL.append(" and start >= ? and start <= ? ");
-        // testCase
+        // testcase
         StringBuilder testcaseSQL = new StringBuilder();
         for (TestCase testcase : testcases) {
             testcaseSQL.append(" (test = ? and testcase = ?) or ");
@@ -463,7 +463,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
         }
         // from and to
         searchSQL.append(" and start >= ? and start <= ? ");
-        // testCase
+        // testcase
         StringBuilder testcaseSQL = new StringBuilder();
         for (TestCase testcase : testcases) {
             testcaseSQL.append(" (test = ? and testcase = ?) or ");
@@ -582,9 +582,9 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
 
                                                 curveObj = new JSONObject();
                                                 curveObj.put("key", curveKey);
-                                                TestCase a = factoryTestCase.create(curStat.getTest(), curStat.getTestCase());
+                                                TestCase a = factoryTestCase.create(curStat.getTest(), curStat.getTestcase());
                                                 try {
-                                                    a = testCaseService.convert(testCaseService.readByKey(curStat.getTest(), curStat.getTestCase()));
+                                                    a = testCaseService.convert(testCaseService.readByKey(curStat.getTest(), curStat.getTestcase()));
                                                 } catch (CerberusException ex) {
                                                     LOG.error("Exception when getting TestCase details", ex);
                                                 }
@@ -731,7 +731,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
     }
 
     private String getKeyCurve(TestCaseExecutionHttpStat stat, String party, String type, String unit) {
-        return type + "/" + party + "/" + unit + "/" + stat.getTest() + "/" + stat.getTestCase() + "/" + stat.getCountry() + "/" + stat.getEnvironment() + "/" + stat.getRobotDecli() + "/" + stat.getSystem() + "/" + stat.getApplication();
+        return type + "/" + party + "/" + unit + "/" + stat.getTest() + "/" + stat.getTestcase() + "/" + stat.getCountry() + "/" + stat.getEnvironment() + "/" + stat.getRobotDecli() + "/" + stat.getSystem() + "/" + stat.getApplication();
     }
 
     @Override
@@ -742,7 +742,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
         String system = ParameterParserUtil.parseStringParam(rs.getString("ehs.system"), "");
         String application = ParameterParserUtil.parseStringParam(rs.getString("ehs.application"), "");
         String test = ParameterParserUtil.parseStringParam(rs.getString("ehs.test"), "");
-        String testCase = ParameterParserUtil.parseStringParam(rs.getString("ehs.testcase"), "");
+        String testcase = ParameterParserUtil.parseStringParam(rs.getString("ehs.testcase"), "");
         String country = ParameterParserUtil.parseStringParam(rs.getString("ehs.country"), "");
         String environment = ParameterParserUtil.parseStringParam(rs.getString("ehs.environment"), "");
         String robotdecli = ParameterParserUtil.parseStringParam(rs.getString("ehs.robotdecli"), "");
@@ -781,7 +781,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
             LOG.warn("Exception when parsing statdetail column to JSON.", ex);
         }
 
-        return factoryTestCaseExecutionHttpStat.create(id, time, controlStatus, system, application, test, testCase, country, environment, robotdecli,
+        return factoryTestCaseExecutionHttpStat.create(id, time, controlStatus, system, application, test, testcase, country, environment, robotdecli,
                 tothits, totsize, tottime,
                 inthits, intsize, inttime,
                 imgsize, imgsizem, imghits,
@@ -789,7 +789,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
                 csssize, csssizem, csshits,
                 htmlsize, htmlsizem, htmlhits,
                 mediasize, mediasizem, mediahits,
-                nbt, crbVersion, statJS, testCase, time, system, time);
+                nbt, crbVersion, statJS, testcase, time, system, time);
     }
 
 }

@@ -92,7 +92,7 @@ public class FactoryTestCaseExecutionHttpStat implements IFactoryTestCaseExecuti
         obj.setSystem(system);
         obj.setApplication(application);
         obj.setTest(test);
-        obj.setTestCase(testCase);
+        obj.setTestcase(testCase);
         obj.setCountry(country);
         obj.setEnvironment(environment);
         obj.setRobotDecli(robotDecli);
