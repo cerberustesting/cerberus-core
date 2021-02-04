@@ -49,11 +49,11 @@ public interface ITestCaseLabelDAO {
     /**
      *
      * @param test
-     * @param testCase
+     * @param testcase
      * @param id
      * @return
      */
-    AnswerItem<TestCaseLabel> readByKey(String test, String testCase, Integer id);
+    AnswerItem<TestCaseLabel> readByKey(String test, String testcase, Integer id);
 
     /**
      *
@@ -104,11 +104,11 @@ public interface ITestCaseLabelDAO {
     /**
      *
      * @param test
-     * @param testCase
-     * @param testCaseList
+     * @param testcase
+     * @param testcaseList
      * @return
      */
-    AnswerList<TestCaseLabel> readByTestTestCase(String test, String testCase, List<TestCase> testCaseList);
+    AnswerList<TestCaseLabel> readByTestTestCase(String test, String testcase, List<TestCase> testcaseList);
     
     /**
      *

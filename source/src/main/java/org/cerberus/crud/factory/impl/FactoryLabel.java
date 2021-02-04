@@ -44,10 +44,10 @@ public class FactoryLabel implements IFactoryLabel {
         labelObject.setUsrCreated(usrCreated);
         labelObject.setUsrModif(usrModif);
         labelObject.setDescription(description);
-        labelObject.setLongDesc(longDesc);
-        labelObject.setReqCriticity(reqCriticity);
-        labelObject.setReqStatus(reqStatus);
-        labelObject.setReqType(reqType);
+        labelObject.setLongDescription(longDesc);
+        labelObject.setRequirementCriticity(reqCriticity);
+        labelObject.setRequirementStatus(reqStatus);
+        labelObject.setRequirementType(reqType);
         
         return labelObject;
     }

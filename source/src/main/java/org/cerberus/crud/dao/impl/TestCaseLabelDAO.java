@@ -119,7 +119,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
     }
 
     @Override
-    public AnswerItem<TestCaseLabel> readByKey(String test, String testCase, Integer labelId) {
+    public AnswerItem<TestCaseLabel> readByKey(String test, String testcase, Integer labelId) {
         AnswerItem<TestCaseLabel> ans = new AnswerItem<>();
         TestCaseLabel result = null;
         final String query = "SELECT * FROM `testcaselabel` tel WHERE `labelid` = ? and `test` = ? and `testcase` = ?";
@@ -131,7 +131,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             LOG.debug("SQL : " + query);
             LOG.debug("SQL.param.label : " + labelId);
             LOG.debug("SQL.param.test : " + test);
-            LOG.debug("SQL.param.testcase : " + testCase);
+            LOG.debug("SQL.param.testcase : " + testcase);
         }
 
         try (Connection connection = databaseSpring.connect();
@@ -139,7 +139,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             //prepare and execute query
             preStat.setInt(1, labelId);
             preStat.setString(2, test);
-            preStat.setString(3, testCase);
+            preStat.setString(3, testcase);
 
             try (ResultSet resultSet = preStat.executeQuery();) {
                 //parse query
@@ -393,7 +393,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
     }
 
     @Override
-    public AnswerList<TestCaseLabel> readByTestTestCase(String test, String testCase, List<TestCase> testCaseList) {
+    public AnswerList<TestCaseLabel> readByTestTestCase(String test, String testcase, List<TestCase> testcaseList) {
         AnswerList<TestCaseLabel> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -407,13 +407,13 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
 
         query.append(" WHERE 1=1");
 
-        HashMap<String, String> testCaseMap = new HashMap<>();
-        if ((testCaseList != null) && !testCaseList.isEmpty()) {
-            if (testCaseList.size() < 101) {
+        HashMap<String, String> testcaseMap = new HashMap<>();
+        if ((testcaseList != null) && !testcaseList.isEmpty()) {
+            if (testcaseList.size() < 101) {
                 // if more than 100 testcases to filter, we only filter by testfolder (this is to reduce the size of SQL sent to database engine)
                 query.append(" AND (");
                 int j = 0;
-                for (TestCase testCase1 : testCaseList) {
+                for (TestCase testcase1 : testcaseList) {
                     if (j != 0) {
                         query.append(" OR");
                     }
@@ -422,12 +422,12 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
                 }
                 query.append(" )");
             } else {
-                for (TestCase testCaseObject : testCaseList) {
-                    testCaseMap.put(testCaseObject.getTest(), null);
+                for (TestCase testcaseObject : testcaseList) {
+                    testcaseMap.put(testcaseObject.getTest(), null);
                 }
                 query.append(" AND (");
                 int j = 0;
-                for (Map.Entry<String, String> entry : testCaseMap.entrySet()) {
+                for (Map.Entry<String, String> entry : testcaseMap.entrySet()) {
                     if (j != 0) {
                         query.append(" OR");
                     }
@@ -441,7 +441,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
         if (!Strings.isNullOrEmpty(test)) {
             query.append(" AND tel.test = ?");
         }
-        if (testCase != null) {
+        if (testcase != null) {
             query.append(" AND tel.testcase = ?");
         }
 
@@ -455,14 +455,14 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
                 Statement stm = connection.createStatement();) {
             int i = 1;
-            if ((testCaseList != null) && !testCaseList.isEmpty()) {
-                if (testCaseList.size() < 101) {
-                    for (TestCase testCase1 : testCaseList) {
-                        preStat.setString(i++, testCase1.getTest());
-                        preStat.setString(i++, testCase1.getTestcase());
+            if ((testcaseList != null) && !testcaseList.isEmpty()) {
+                if (testcaseList.size() < 101) {
+                    for (TestCase testcase1 : testcaseList) {
+                        preStat.setString(i++, testcase1.getTest());
+                        preStat.setString(i++, testcase1.getTestcase());
                     }
                 } else {
-                    for (Map.Entry<String, String> entry : testCaseMap.entrySet()) {
+                    for (Map.Entry<String, String> entry : testcaseMap.entrySet()) {
                         String key = entry.getKey();
                         preStat.setString(i++, key);
                     }
@@ -471,8 +471,8 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             if (!Strings.isNullOrEmpty(test)) {
                 preStat.setString(i++, test);
             }
-            if (testCase != null) {
-                preStat.setString(i++, testCase);
+            if (testcase != null) {
+                preStat.setString(i++, testcase);
             }
 
             try (ResultSet resultSet = preStat.executeQuery();

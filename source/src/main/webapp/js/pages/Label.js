@@ -382,12 +382,12 @@ function editEntryClick(id, system) {
         formEdit.find("#type").prop("value", obj["type"]);
         formEdit.find("#description").prop("value", obj["description"]);
         formEdit.find("#longdesc").prop("value", obj["longDesc"]);
-        formEdit.find("#reqtype").prop("value", obj["reqType"]);
-        formEdit.find("#reqstatus").prop("value", obj["reqStatus"]);
-        formEdit.find("#reqcriticity").prop("value", obj["reqCriticity"]);
+        formEdit.find("#reqtype").prop("value", obj["requirementType"]);
+        formEdit.find("#reqstatus").prop("value", obj["requirementStatus"]);
+        formEdit.find("#reqcriticity").prop("value", obj["requirementCriticity"]);
         formEdit.find("#system").prop("value", obj["system"]);
         if (tinyMCE.get('longdesc') != null)
-            tinyMCE.get('longdesc').setContent(obj["longDesc"]);
+            tinyMCE.get('longdesc').setContent(obj["longDescription"]);
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
             formEdit.find("#label").prop("readonly", "readonly");
             formEdit.find("#color").prop("readonly", "readonly");
@@ -527,11 +527,11 @@ function aoColumnsFunc(tableId) {
             "sWidth": "50px",
             "sName": "label",
             "title": doc.getDocOnline("label", "label")},
-        {"data": "longDesc",
+        {"data": "longDescription",
             "visible": false,
             "like": true,
             "sWidth": "100px",
-            "sName": "longDesc",
+            "sName": "longDescription",
             "title": doc.getDocOnline("label", "longdesc")},
         {"data": "description",
             "like": true,
@@ -571,20 +571,20 @@ function aoColumnsFunc(tableId) {
                     return '';
                 }
             }},
-        {"data": "reqType",
+        {"data": "requirementType",
             "visible": false,
             "sWidth": "30px",
-            "sName": "reqType",
+            "sName": "requirementType",
             "title": doc.getDocOnline("label", "reqtype")},
-        {"data": "reqStatus",
+        {"data": "requirementStatus",
             "visible": false,
             "sWidth": "30px",
-            "sName": "reqStatus",
+            "sName": "requirementStatus",
             "title": doc.getDocOnline("label", "reqstatus")},
-        {"data": "reqCriticity",
+        {"data": "requirementCriticity",
             "visible": false,
             "sWidth": "30px",
-            "sName": "reqCriticity",
+            "sName": "requirementCriticity",
             "title": doc.getDocOnline("label", "reqcriticity")},
         {"data": "usrCreated",
             "visible": false,

@@ -36,11 +36,11 @@ public class Label {
     private String type;
     private String color;
     private Integer parentLabelID;
-    private String reqType;
-    private String reqStatus;
-    private String reqCriticity;
+    private String requirementType;
+    private String requirementStatus;
+    private String requirementCriticity;
     private String description;
-    private String longDesc;
+    private String longDescription;
     private String usrCreated;
     private Timestamp dateCreated;
     private String usrModif;
@@ -72,36 +72,36 @@ public class Label {
         this.parentLabelID = parentLabelID;
     }
 
-    public String getReqType() {
-        return reqType;
+    public String getRequirementType() {
+        return requirementType;
     }
 
-    public void setReqType(String reqType) {
-        this.reqType = reqType;
+    public void setRequirementType(String requirementType) {
+        this.requirementType = requirementType;
     }
 
-    public String getReqStatus() {
-        return reqStatus;
+    public String getRequirementStatus() {
+        return requirementStatus;
     }
 
-    public void setReqStatus(String reqStatus) {
-        this.reqStatus = reqStatus;
+    public void setRequirementStatus(String requirementStatus) {
+        this.requirementStatus = requirementStatus;
     }
 
-    public String getReqCriticity() {
-        return reqCriticity;
+    public String getRequirementCriticity() {
+        return requirementCriticity;
     }
 
-    public void setReqCriticity(String reqCriticity) {
-        this.reqCriticity = reqCriticity;
+    public void setRequirementCriticity(String requirementCriticity) {
+        this.requirementCriticity = requirementCriticity;
     }
 
-    public String getLongDesc() {
-        return longDesc;
+    public String getLongDescription() {
+        return longDescription;
     }
 
-    public void setLongDesc(String longDesc) {
-        this.longDesc = longDesc;
+    public void setLongDescription(String longDescription) {
+        this.longDescription = longDescription;
     }
 
     public Integer getId() {
@@ -193,11 +193,11 @@ public class Label {
             labelJson.put("type", this.getType());
             labelJson.put("color", this.getColor());
             labelJson.put("parentLabelID", this.getParentLabelID());
-            labelJson.put("requirementStatusType", this.getReqType());
-            labelJson.put("requirementStatus", this.getReqStatus());
-            labelJson.put("requirementStatusCriticity", this.getReqCriticity());
+            labelJson.put("requirementType", this.getRequirementType());
+            labelJson.put("requirementStatus", this.getRequirementStatus());
+            labelJson.put("requirementCriticity", this.getRequirementCriticity());
             labelJson.put("description", this.getDescription());
-            labelJson.put("longDesc", this.getLongDesc());
+            labelJson.put("longDescription", this.getLongDescription());
             labelJson.put("usrCreated", this.getUsrCreated());
             labelJson.put("dateCreated", this.getDateCreated());
             labelJson.put("usrModif", this.getUsrModif());
@@ -224,6 +224,6 @@ public class Label {
 
     @Override
     public String toString() {
-        return "Label{" + "id=" + id + ", system=" + system + ", label=" + label + ", type=" + type + ", color=" + color + ", parentLabelID=" + parentLabelID + ", reqType=" + reqType + ", reqStatus=" + reqStatus + ", reqCriticity=" + reqCriticity + ", description=" + description + ", longDesc=" + longDesc + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", counter1=" + counter1 + '}';
+        return "Label{" + "id=" + id + ", system=" + system + ", label=" + label + ", type=" + type + ", color=" + color + ", parentLabelID=" + parentLabelID + ", requirementType=" + requirementType + ", requirementStatus=" + requirementStatus + ", requirementCriticity=" + requirementCriticity + ", description=" + description + ", longDescription=" + longDescription + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", counter1=" + counter1 + '}';
     }
 }

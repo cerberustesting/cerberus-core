@@ -503,12 +503,12 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
         String label = ParameterParserUtil.parseStringParam(rs.getString("lab.label"), "");
         String type = ParameterParserUtil.parseStringParam(rs.getString("lab.type"), "");
         String color = ParameterParserUtil.parseStringParam(rs.getString("lab.color"), "");
-        String reqType = ParameterParserUtil.parseStringParam(rs.getString("lab.ReqType"), "");
-        String reqStatus = ParameterParserUtil.parseStringParam(rs.getString("lab.ReqStatus"), "");
-        String reqCriticity = ParameterParserUtil.parseStringParam(rs.getString("lab.ReqCriticity"), "");
+        String reqType = ParameterParserUtil.parseStringParam(rs.getString("lab.RequirementType"), "");
+        String reqStatus = ParameterParserUtil.parseStringParam(rs.getString("lab.RequirementStatus"), "");
+        String reqCriticity = ParameterParserUtil.parseStringParam(rs.getString("lab.RequirementCriticity"), "");
         Integer parentLabel = Integer.valueOf(ParameterParserUtil.parseStringParam(rs.getString("lab.parentLabelid"), "0"));
         String description = ParameterParserUtil.parseStringParam(rs.getString("lab.description"), "");
-        String longDesc = ParameterParserUtil.parseStringParam(rs.getString("lab.LongDesc"), "");
+        String longDesc = ParameterParserUtil.parseStringParam(rs.getString("lab.LongDescription"), "");
         String usrCreated1 = ParameterParserUtil.parseStringParam(rs.getString("lab.usrCreated"), "");
         Timestamp dateCreated1 = rs.getTimestamp("lab.dateCreated");
         String usrModif1 = ParameterParserUtil.parseStringParam(rs.getString("lab.usrModif"), "");

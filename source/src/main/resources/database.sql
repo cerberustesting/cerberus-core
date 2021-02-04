@@ -5641,4 +5641,13 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDes
 -- 1585
 DROP TABLE testcasestepbatch;
 
+-- 1586
+ALTER TABLE label
+  CHANGE COLUMN ReqType RequirementType VARCHAR(100) NOT NULL DEFAULT '',
+  CHANGE COLUMN ReqStatus RequirementStatus VARCHAR(100) NOT NULL DEFAULT '',
+  CHANGE COLUMN ReqCriticity RequirementCriticity VARCHAR(100) NOT NULL DEFAULT '',
+  CHANGE COLUMN LongDesc LongDescription TEXT NOT NULL;
 
+-- 1587
+ALTER TABLE testcaselabel
+  CHANGE COLUMN TestCase Testcase VARCHAR(45) NOT NULL;

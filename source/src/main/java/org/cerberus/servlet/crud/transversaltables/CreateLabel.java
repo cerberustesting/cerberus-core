@@ -83,6 +83,8 @@ public class CreateLabel extends HttpServlet {
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
         
+        LOG.debug("PASSAGE PAR CreateLabel");
+        
         /**
          * Parsing and securing all required parameters.
          */

@@ -342,14 +342,14 @@ public class ReadLabel extends HttpServlet {
                 // Standard pills
                 List<String> attributList = new ArrayList<>();
                 if (Label.TYPE_REQUIREMENT.equals(label.getType())) {
-                    if (!StringUtil.isNullOrEmpty(label.getReqType()) && !"unknown".equalsIgnoreCase(label.getReqType())) {
-                        attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getReqType() + "</span>");
+                    if (!StringUtil.isNullOrEmpty(label.getRequirementType()) && !"unknown".equalsIgnoreCase(label.getRequirementType())) {
+                        attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getRequirementType() + "</span>");
                     }
-                    if (!StringUtil.isNullOrEmpty(label.getReqStatus()) && !"unknown".equalsIgnoreCase(label.getReqStatus())) {
-                        attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getReqStatus() + "</span>");
+                    if (!StringUtil.isNullOrEmpty(label.getRequirementStatus()) && !"unknown".equalsIgnoreCase(label.getRequirementStatus())) {
+                        attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getRequirementStatus() + "</span>");
                     }
-                    if (!StringUtil.isNullOrEmpty(label.getReqCriticity()) && !"unknown".equalsIgnoreCase(label.getReqCriticity())) {
-                        attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getReqCriticity() + "</span>");
+                    if (!StringUtil.isNullOrEmpty(label.getRequirementCriticity()) && !"unknown".equalsIgnoreCase(label.getRequirementCriticity())) {
+                        attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getRequirementCriticity() + "</span>");
                     }
                 }
                 if ("".equals(label.getSystem())) {
