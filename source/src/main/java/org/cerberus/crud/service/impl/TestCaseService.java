@@ -655,7 +655,7 @@ public class TestCaseService implements ITestCaseService {
         //insert tccountry, insert countries
         for (TestCaseCountry tcc : testCase.getTestCaseCountries()) {
             tcc.setTest(testCase.getTest());
-            tcc.setTestCase(testCase.getTestcase());
+            tcc.setTestcase(testCase.getTestcase());
             Answer testCaseCountryImported = testCaseCountryService.create(tcc);
             if (!testCaseCountryImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                 throw new CerberusException(new MessageGeneral(testCaseCountryImported.getResultMessage().getMessage()));

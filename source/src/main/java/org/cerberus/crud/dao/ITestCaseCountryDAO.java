@@ -37,13 +37,15 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestCaseCountryDAO {
 
-    TestCaseCountry findTestCaseCountryByKey(String test, String testcase, String country) throws CerberusException;
 
+    /**
+     * 
+     * @param test
+     * @param testcase
+     * @return 
+     */
     List<TestCaseCountry> findTestCaseCountryByTestTestCase(String test, String testcase);
 
-    void insertTestCaseCountry(TestCaseCountry testCaseCountry) throws CerberusException;
-
-    void deleteTestCaseCountry(TestCaseCountry tcc) throws CerberusException;
 
     /**
      *

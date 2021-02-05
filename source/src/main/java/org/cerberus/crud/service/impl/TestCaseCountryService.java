@@ -48,41 +48,31 @@ import org.springframework.stereotype.Service;
 public class TestCaseCountryService implements ITestCaseCountryService {
 
     @Autowired
-    ITestCaseCountryDAO tccDao;
+    ITestCaseCountryDAO testcaseCountryDAO;
 
     private final String OBJECT_NAME = "TestCaseCountry";
 
     private static final Logger LOG = LogManager.getLogger(TestCaseCountryService.class);
 
     @Override
-    public List<TestCaseCountry> findTestCaseCountryByTestTestCase(String test, String testCase) {
-        return tccDao.findTestCaseCountryByTestTestCase(test, testCase);
+    public List<TestCaseCountry> findTestCaseCountryByTestTestCase(String test, String testcase) {
+        return testcaseCountryDAO.findTestCaseCountryByTestTestCase(test, testcase);
     }
 
     @Override
     public List<String> findListOfCountryByTestTestCase(String test, String testcase) {
-        List<String> result = new ArrayList<String>();
-        for (TestCaseCountry tcc : this.tccDao.findTestCaseCountryByTestTestCase(test, testcase)) {
-            result.add(tcc.getCountry());
-        }
-        return result;
-    }
-
-    @Override
-    public TestCaseCountry findTestCaseCountryByKey(String test, String testCase, String country) throws CerberusException {
-        return this.tccDao.findTestCaseCountryByKey(test, testCase, country);
-    }
-
-    @Override
-    public void insertTestCaseCountry(TestCaseCountry testCaseCountry) throws CerberusException {
-        tccDao.insertTestCaseCountry(testCaseCountry);
+        List<String> countries = new ArrayList<>();
+        this.testcaseCountryDAO.findTestCaseCountryByTestTestCase(test, testcase).forEach(testcaseCountry -> {
+            countries.add(testcaseCountry.getCountry());
+        });
+        return countries;
     }
 
     @Override
     public boolean insertListTestCaseCountry(List<TestCaseCountry> testCaseCountryList) {
         for (TestCaseCountry tcc : testCaseCountryList) {
             try {
-                insertTestCaseCountry(tcc);
+                this.convert(create(tcc));
             } catch (CerberusException ex) {
                 LOG.warn(ex.toString());
                 return false;
@@ -92,39 +82,34 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     }
 
 //    @Override
-//    public void updateTestCaseCountry(TestCaseCountry tcc) throws CerberusException {
-//        tccDao.updateTestCaseCountry(tcc);
+//    public void updateTestCaseCountry(TestCaseCountry testcaseCountry) throws CerberusException {
+//        testcaseCountryDAO.updateTestCaseCountry(testcaseCountry);
 //    }
     @Override
     public void deleteListTestCaseCountry(List<TestCaseCountry> tccToDelete) throws CerberusException {
         for (TestCaseCountry tcc : tccToDelete) {
-            deleteTestCaseCountry(tcc);
+            this.convert(this.delete(tcc));
         }
     }
 
     @Override
-    public void deleteTestCaseCountry(TestCaseCountry tcc) throws CerberusException {
-        tccDao.deleteTestCaseCountry(tcc);
-    }
-
-    @Override
     public AnswerItem readByKey(String test, String testCase, String country) {
-        return tccDao.readByKey(test, testCase, country);
+        return testcaseCountryDAO.readByKey(test, testCase, country);
     }
 
     @Override
     public AnswerList<TestCaseCountry> readByTestTestCase(List<String> system, String test, String testCase, List<TestCase> testCaseList) {
-        return tccDao.readByVarious1(system, test, testCase, testCaseList);
+        return testcaseCountryDAO.readByVarious1(system, test, testCase, testCaseList);
     }
 
     @Override
     public HashMap<String, TestCaseCountry> readByTestTestCaseToHashCountryAsKey(String test, String testCase) {
 
-        HashMap<String, TestCaseCountry> testCaseCountries = new HashMap<String, TestCaseCountry>();
-        for (TestCaseCountry testCaseCountry : this.readByTestTestCase(null, test, testCase, null).getDataList()) {
-            testCaseCountries.put(testCaseCountry.getCountry(), testCaseCountry);
-        }
-        return testCaseCountries;
+        HashMap<String, TestCaseCountry> testcaseCountries = new HashMap<>();
+        this.readByTestTestCase(null, test, testCase, null).getDataList().forEach(testcaseCountry -> {
+            testcaseCountries.put(testcaseCountry.getCountry(), testcaseCountry);
+        });
+        return testcaseCountries;
     }
 
     @Override
@@ -132,7 +117,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
 
         HashMap<String, HashMap<String, TestCaseCountry>> testCaseCountries = new HashMap<>();
         for (TestCaseCountry testCaseCountry : testCaseCountryList) {
-            String key = testCaseCountry.getTest() + "##" + testCaseCountry.getTestCase();
+            String key = testCaseCountry.getTest() + "##" + testCaseCountry.getTestcase();
             if (testCaseCountries.containsKey(key)) {
                 testCaseCountries.get(key).put(testCaseCountry.getCountry(), testCaseCountry);
             } else {
@@ -151,24 +136,24 @@ public class TestCaseCountryService implements ITestCaseCountryService {
 
     @Override
     public Answer create(TestCaseCountry testDataLibData) {
-        return tccDao.create(testDataLibData);
+        return testcaseCountryDAO.create(testDataLibData);
     }
 
     @Override
     public Answer update(TestCaseCountry testDataLibData) {
-        return tccDao.update(testDataLibData);
+        return testcaseCountryDAO.update(testDataLibData);
     }
 
     @Override
     public Answer delete(TestCaseCountry testDataLibData) {
-        return tccDao.delete(testDataLibData);
+        return testcaseCountryDAO.delete(testDataLibData);
     }
 
     @Override
     public Answer createList(List<TestCaseCountry> objectList) {
         Answer ans = new Answer(null);
         for (TestCaseCountry objectToCreate : objectList) {
-            ans = tccDao.create(objectToCreate);
+            ans = testcaseCountryDAO.create(objectToCreate);
         }
         return ans;
     }
@@ -177,7 +162,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     public Answer deleteList(List<TestCaseCountry> objectList) {
         Answer ans = new Answer(null);
         for (TestCaseCountry objectToCreate : objectList) {
-            ans = tccDao.delete(objectToCreate);
+            ans = testcaseCountryDAO.delete(objectToCreate);
         }
         return ans;
     }
@@ -244,7 +229,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     public TestCaseCountry convert(AnswerItem<TestCaseCountry> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (TestCaseCountry) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -253,18 +238,16 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     public List<TestCaseCountry> convert(AnswerList<TestCaseCountry> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<TestCaseCountry>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
 
     @Override
     public void convert(Answer answer) throws CerberusException {
-        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            //if the service returns an OK message then we can get the item
-            return;
+        if (!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
         }
-        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
 
     @Override
@@ -273,7 +256,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
         List<TestCaseCountry> listToCreate = new ArrayList<>();
         for (TestCaseCountry objectToDuplicate : objectList) {
             objectToDuplicate.setTest(targetTest);
-            objectToDuplicate.setTestCase(targetTestCase);
+            objectToDuplicate.setTestcase(targetTestCase);
             listToCreate.add(objectToDuplicate);
         }
         ans = createList(listToCreate);

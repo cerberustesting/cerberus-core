@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory;
 
+import java.sql.Timestamp;
 import org.cerberus.crud.entity.TestCaseCountry;
 
 /**
@@ -28,4 +29,6 @@ import org.cerberus.crud.entity.TestCaseCountry;
 public interface IFactoryTestCaseCountry {
     
     TestCaseCountry create(String test,String testCase,String country);
+    
+    TestCaseCountry create(String test,String testCase,String country, Timestamp dateCreated, String usrCreated, Timestamp dateModif, String usrModif);
 }

@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,10 +34,7 @@ import org.cerberus.crud.dao.ITestCaseCountryDAO;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestCaseCountry;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestCaseCountry;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.SqlUtil;
@@ -56,9 +54,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class TestCaseCountryDAO implements ITestCaseCountryDAO {
 
-    /**
-     * Description of the variable here.
-     */
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
@@ -71,229 +66,67 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public TestCaseCountry findTestCaseCountryByKey(String test, String testCase, String country) throws CerberusException {
-        final String query = "SELECT * FROM testcasecountry tcc WHERE test = ? AND testcase = ? AND country = ? ";
-        TestCaseCountry result = null;
-        boolean throwException = false;
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testCase);
-                preStat.setString(3, country);
-
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = factoryTestCaseCountry.create(test, testCase, country);
-                    } else {
-                        throwException = true;
-                    }
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-        if (throwException) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-        return result;
-    }
-
-    @Override
-    public List<TestCaseCountry> findTestCaseCountryByTestTestCase(String test, String testCase) {
-        List<TestCaseCountry> result = null;
+    public List<TestCaseCountry> findTestCaseCountryByTestTestCase(String test, String testcase) {
+        List<TestCaseCountry> testCaseCountries = null;
         final String query = "SELECT * FROM testcasecountry tcc WHERE test = ? AND testcase = ?";
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testCase);
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    result = new ArrayList<TestCaseCountry>();
+            int i = 1;
+            preStat.setString(i++, test);
+            preStat.setString(i++, testcase);
 
-                    while (resultSet.next()) {
-                        String country = resultSet.getString("Country");
-                        result.add(factoryTestCaseCountry.create(test, testCase, country));
-                    }
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                testCaseCountries = new ArrayList<>();
+
+                while (resultSet.next()) {
+                    testCaseCountries.add(loadFromResultSet(resultSet));
                 }
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
-        return result;
+        return testCaseCountries;
     }
 
     @Override
-    public void insertTestCaseCountry(TestCaseCountry testCaseCountry) throws CerberusException {
-        boolean throwExcep = false;
-        StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasecountry (`test`, `testCase`, `country`) ");
-        query.append("VALUES (?,?,?)");
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                preStat.setString(1, testCaseCountry.getTest());
-                preStat.setString(2, testCaseCountry.getTestCase());
-                preStat.setString(3, testCaseCountry.getCountry());
-
-                preStat.executeUpdate();
-                throwExcep = false;
-
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        }
-    }
-
-    @Override
-    public void deleteTestCaseCountry(TestCaseCountry tcc) throws CerberusException {
-        boolean throwExcep = false;
-        final String query = "DELETE FROM testcasecountry WHERE test = ? and testcase = ? and country = ?";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, tcc.getTest());
-                preStat.setString(2, tcc.getTestCase());
-                preStat.setString(3, tcc.getCountry());
-
-                throwExcep = preStat.executeUpdate() == 0;
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        }
-    }
-
-    @Override
-    public AnswerItem<TestCaseCountry> readByKey(String test, String testCase, String country) {
+    public AnswerItem<TestCaseCountry> readByKey(String test, String testcase, String country) {
         AnswerItem<TestCaseCountry> answer = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        TestCaseCountry result = new TestCaseCountry();
+        TestCaseCountry testCaseCountry;
         final String query = "SELECT * FROM testcasecountry tcc WHERE test = ? AND testcase = ? AND country = ?";
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
 
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testCase);
-                preStat.setString(3, country);
-                ResultSet resultSet = preStat.executeQuery();
+            int i = 1;
+            preStat.setString(i++, test);
+            preStat.setString(i++, testcase);
+            preStat.setString(i++, country);
 
-                try {
-                    if (resultSet.first()) {
-                        result = loadFromResultSet(resultSet);
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        answer.setItem(result);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                } finally {
-                    resultSet.close();
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                if (resultSet.first()) {
+                    testCaseCountry = loadFromResultSet(resultSet);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    answer.setItem(testCaseCountry);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the entry!"));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
 
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-        } finally {
-            try {
-                if (!this.databaseSpring.isOnTransaction()) {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
 
         answer.setResultMessage(msg);
@@ -301,11 +134,11 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
     }
 
     @Override
-    public AnswerList<TestCaseCountry> readByVarious1(List<String> system, String test, String testCase, List<TestCase> testCaseList) {
+    public AnswerList<TestCaseCountry> readByVarious1(List<String> system, String test, String testcase, List<TestCase> testCaseList) {
         AnswerList<TestCaseCountry> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCaseCountry> testCaseCountryList = new ArrayList<TestCaseCountry>();
+        List<TestCaseCountry> testCaseCountryList = new ArrayList<>();
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT * FROM testcasecountry tcc ");
@@ -318,13 +151,13 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
 
         if ((testCaseList != null) && !testCaseList.isEmpty() && testCaseList.size() < 5000) {
             query.append(" AND (");
-            int j = 0;
+            int i = 0;
             for (TestCase testCase1 : testCaseList) {
-                if (j != 0) {
+                if (i != 0) {
                     query.append(" OR");
                 }
                 query.append(" (tcc.`test` = ? and tcc.testcase = ?) ");
-                j++;
+                i++;
             }
             query.append(" )");
         }
@@ -336,7 +169,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         if (!Strings.isNullOrEmpty(test)) {
             query.append(" AND tcc.test = ?");
         }
-        if (testCase != null) {
+        if (testcase != null) {
             query.append(" AND tcc.testcase = ?");
         }
 
@@ -344,222 +177,158 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
             LOG.debug("SQL.param.test : " + test);
-            LOG.debug("SQL.param.testCase : " + testCase);
+            LOG.debug("SQL.param.testCase : " + testcase);
         }
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
-            try {
-                int i = 1;
+            int i = 1;
+            if ((testCaseList != null) && !testCaseList.isEmpty() && testCaseList.size() < 5000) {
+                for (TestCase testCase1 : testCaseList) {
+                    preStat.setString(i++, testCase1.getTest());
+                    preStat.setString(i++, testCase1.getTestcase());
+                }
+            }
 
-                if ((testCaseList != null) && !testCaseList.isEmpty() && testCaseList.size() < 5000) {
-                    for (TestCase testCase1 : testCaseList) {
-                        preStat.setString(i++, testCase1.getTest());
-                        preStat.setString(i++, testCase1.getTestcase());
-                    }
+            if (system != null && !system.isEmpty()) {
+                for (String string : system) {
+                    preStat.setString(i++, string);
+                }
+            }
+            if (!Strings.isNullOrEmpty(test)) {
+                preStat.setString(i++, test);
+            }
+            if (testcase != null) {
+                preStat.setString(i++, testcase);
+            }
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                //gets the data
+                while (resultSet.next()) {
+                    testCaseCountryList.add(this.loadFromResultSet(resultSet));
                 }
 
-                if (system != null && !system.isEmpty()) {
-                    for (String string : system) {
-                        preStat.setString(i++, string);
-                    }
-                }
-                if (!Strings.isNullOrEmpty(test)) {
-                    preStat.setString(i++, test);
-                }
-                if (testCase != null) {
-                    preStat.setString(i++, testCase);
-                }
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    //gets the data
-                    while (resultSet.next()) {
-                        testCaseCountryList.add(this.loadFromResultSet(resultSet));
-                    }
-
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList<>(testCaseCountryList, testCaseCountryList.size());
-
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                }
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                answer = new AnswerList<>(testCaseCountryList, testCaseCountryList.size());
 
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
-            }
 
+            }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-        } finally {
-            try {
-                if (!this.databaseSpring.isOnTransaction()) {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
-
         answer.setResultMessage(msg);
         return answer;
     }
 
     @Override
-    public Answer create(TestCaseCountry object) {
+    public Answer create(TestCaseCountry testCaseCountry) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasecountry (`test`, `testCase`, `country`) ");
-        query.append("VALUES (?,?,?)");
+        query.append("INSERT INTO testcasecountry (`test`, `testCase`, `country`, `UsrCreated`) ");
+        query.append("VALUES (?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
-            LOG.debug("SQL.param.country : " + object.getCountry());
+            LOG.debug("SQL.param.country : " + testCaseCountry.getCountry());
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                preStat.setString(1, object.getTest());
-                preStat.setString(2, object.getTestCase());
-                preStat.setString(3, object.getCountry());
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+            int i = 1;
+            preStat.setString(i++, testCaseCountry.getTest());
+            preStat.setString(i++, testCaseCountry.getTestcase());
+            preStat.setString(i++, testCaseCountry.getCountry());
+            preStat.setString(i++, testCaseCountry.getUsrCreated() == null ? "" : testCaseCountry.getUsrCreated());
 
-                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
-                } else {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                }
-            } finally {
-                preStat.close();
-            }
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to close connection : " + exception.toString());
+
+            if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
+            } else {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
         }
         return new Answer(msg);
     }
 
     @Override
-    public Answer delete(TestCaseCountry object) {
+    public Answer delete(TestCaseCountry testCaseCountry) {
         MessageEvent msg = null;
         final String query = "DELETE FROM testcasecountry WHERE test = ? and testcase = ? and country = ? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.country : " + object.getCountry());
+            LOG.debug("SQL.param.country : " + testCaseCountry.getCountry());
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, object.getTest());
-                preStat.setString(2, object.getTestCase());
-                preStat.setString(3, object.getCountry());
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
+            int i = 1;
+            preStat.setString(i++, testCaseCountry.getTest());
+            preStat.setString(i++, testCaseCountry.getTestcase());
+            preStat.setString(i++, testCaseCountry.getCountry());
+
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
 
     @Override
-    public Answer update(TestCaseCountry object) {
-        MessageEvent msg = null;
-        final String query = "UPDATE testcasecountry SET 1 = 1, WHERE Test = ? and TestCase = ? and Country = ? ";
+    public Answer update(TestCaseCountry testCaseCountry) {
+        MessageEvent msg;
+        StringBuilder query = new StringBuilder();
+        query.append("UPDATE testcasecountry SET");
+        query.append("1 = 1,");
+        query.append("`UsrModif` = ?, ");
+        query.append("`DateModif` = CURRENT_TIMESTAMP ");
+        query.append("WHERE Test = ? and TestCase = ? and Country = ? ");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, object.getTest());
-                preStat.setString(2, object.getTestCase());
-                preStat.setString(3, object.getCountry());
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+
+            int i = 1;
+            preStat.setString(i++, testCaseCountry.getUsrModif() == null ? "" : testCaseCountry.getUsrModif());
+            preStat.setString(i++, testCaseCountry.getTest());
+            preStat.setString(i++, testCaseCountry.getTestcase());
+            preStat.setString(i++, testCaseCountry.getCountry());
+
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
@@ -568,8 +337,12 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         String test = resultSet.getString("tcc.test") == null ? "" : resultSet.getString("test");
         String testcase = resultSet.getString("tcc.testcase") == null ? "" : resultSet.getString("testcase");
         String country = resultSet.getString("tcc.country") == null ? "" : resultSet.getString("country");
+        String usrCreated = resultSet.getString("tcc.usrCreated");
+        Timestamp dateCreated = resultSet.getTimestamp("tcc.dateCreated");
+        String usrModif = resultSet.getString("tcc.usrModif");
+        Timestamp dateModif = resultSet.getTimestamp("tcc.dateModif");
 
-        return factoryTestCaseCountry.create(test, testcase, country);
+        return factoryTestCaseCountry.create(test, testcase, country, dateCreated, usrCreated, dateModif, usrModif);
     }
 
 }

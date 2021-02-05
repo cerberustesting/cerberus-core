@@ -20,6 +20,7 @@
 package org.cerberus.crud.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -29,8 +30,12 @@ import java.util.List;
 public class TestCaseCountry {
 
     private String test;
-    private String testCase;
+    private String testcase;
     private String country;
+    private String usrCreated;
+    private Timestamp dateCreated;
+    private String usrModif;
+    private Timestamp dateModif;
 
     /**
      * From here are data outside database model.
@@ -71,13 +76,47 @@ public class TestCaseCountry {
         this.test = test;
     }
 
-    public String getTestCase() {
-        return testCase;
+    public String getTestcase() {
+        return testcase;
     }
 
-    public void setTestCase(String testCase) {
-        this.testCase = testCase;
+    public void setTestcase(String testcase) {
+        this.testcase = testcase;
     }
+
+    public String getUsrCreated() {
+        return usrCreated;
+    }
+
+    public void setUsrCreated(String usrCreated) {
+        this.usrCreated = usrCreated;
+    }
+
+    public Timestamp getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Timestamp dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public String getUsrModif() {
+        return usrModif;
+    }
+
+    public void setUsrModif(String usrModif) {
+        this.usrModif = usrModif;
+    }
+
+    public Timestamp getDateModif() {
+        return dateModif;
+    }
+
+    public void setDateModif(Timestamp dateModif) {
+        this.dateModif = dateModif;
+    }
+    
+    
 
     public boolean hasSameKey(TestCaseCountry obj) {
         if (obj == null) {
@@ -90,7 +129,7 @@ public class TestCaseCountry {
         if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
             return false;
         }
-        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
+        if ((this.testcase == null) ? (other.testcase != null) : !this.testcase.equals(other.testcase)) {
             return false;
         }
         if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
@@ -103,7 +142,7 @@ public class TestCaseCountry {
     public int hashCode() {
         int hash = 7;
         hash = 41 * hash + (this.test != null ? this.test.hashCode() : 0);
-        hash = 41 * hash + (this.testCase != null ? this.testCase.hashCode() : 0);
+        hash = 41 * hash + (this.testcase != null ? this.testcase.hashCode() : 0);
         hash = 41 * hash + (this.country != null ? this.country.hashCode() : 0);
         return hash;
     }
@@ -120,7 +159,7 @@ public class TestCaseCountry {
         if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
             return false;
         }
-        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
+        if ((this.testcase == null) ? (other.testcase != null) : !this.testcase.equals(other.testcase)) {
             return false;
         }
         if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
@@ -131,7 +170,7 @@ public class TestCaseCountry {
 
     @Override
     public String toString() {
-        return "TestCaseCountry{" + "test=" + test + ", testCase=" + testCase + ", country=" + country + '}';
+        return "TestCaseCountry{" + "test=" + test + ", testcase=" + testcase + ", country=" + country + '}';
     }
 
 }

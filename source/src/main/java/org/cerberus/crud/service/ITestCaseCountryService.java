@@ -35,14 +35,6 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestCaseCountryService {
 
-    /**
-     *
-     * @param test
-     * @param testCase
-     * @param Country
-     * @return
-     */
-    TestCaseCountry findTestCaseCountryByKey(String test, String testCase, String Country) throws CerberusException;
 
     List<TestCaseCountry> findTestCaseCountryByTestTestCase(String test, String testCase);
 
@@ -51,13 +43,10 @@ public interface ITestCaseCountryService {
     HashMap<String, TestCaseCountry> readByTestTestCaseToHashCountryAsKey(String test, String testCase);
     
     public HashMap<String, HashMap<String, TestCaseCountry>> convertListToHashMapTestTestCaseAsKey(List<TestCaseCountry> testCaseCountryList);
-    
-    void insertTestCaseCountry(TestCaseCountry testCaseCountry) throws CerberusException;
 
     boolean insertListTestCaseCountry(List<TestCaseCountry> testCaseCountryList);
 
     //void updateTestCaseCountry(TestCaseCountry tccLeft) throws CerberusException;
-    void deleteTestCaseCountry(TestCaseCountry tcc) throws CerberusException;
 
     void deleteListTestCaseCountry(List<TestCaseCountry> tccToDelete) throws CerberusException;
 

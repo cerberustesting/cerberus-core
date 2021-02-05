@@ -61,7 +61,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
     public List<TestCaseCountryProperties> loadProperties(TestCaseCountry testCaseCountry) {
 
         return this.testCaseCountryPropertiesService.findListOfPropertyPerTestTestCaseCountry(
-                testCaseCountry.getTest(), testCaseCountry.getTestCase(),
+                testCaseCountry.getTest(), testCaseCountry.getTestcase(),
                 testCaseCountry.getCountry());
     }
 

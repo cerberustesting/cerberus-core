@@ -321,7 +321,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
             LOG.debug("Checking if country is setup for this testcase. " + tCExecution.getTest() + "-" + tCExecution.getTestCase() + "-" + tCExecution.getCountry());
         }
         try {
-            testCaseCountryService.findTestCaseCountryByKey(tCExecution.getTest(), tCExecution.getTestCase(), tCExecution.getCountry());
+            testCaseCountryService.convert(testCaseCountryService.readByKey(tCExecution.getTest(), tCExecution.getTestCase(), tCExecution.getCountry()));
         } catch (CerberusException e) {
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRY_NOTDEFINED);
             return false;

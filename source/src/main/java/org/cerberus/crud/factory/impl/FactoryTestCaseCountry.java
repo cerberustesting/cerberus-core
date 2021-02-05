@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.factory.IFactoryTestCaseCountry;
@@ -34,10 +35,27 @@ public class FactoryTestCaseCountry implements IFactoryTestCaseCountry {
     public TestCaseCountry create(String test, String testCase, String country) {
         TestCaseCountry testCaseCountry = new TestCaseCountry();
         testCaseCountry.setTest(test);
-        testCaseCountry.setTestCase(testCase);
+        testCaseCountry.setTestcase(testCase);
         testCaseCountry.setCountry(country);
         testCaseCountry.setTestCaseCountryProperty(new ArrayList<>());
         return testCaseCountry;
     }
+
+    @Override
+    public TestCaseCountry create(String test, String testCase, String country, Timestamp dateCreated, String usrCreated, Timestamp dateModif, String usrModif) {
+        TestCaseCountry testCaseCountry = new TestCaseCountry();
+        testCaseCountry.setTest(test);
+        testCaseCountry.setTestcase(testCase);
+        testCaseCountry.setCountry(country);
+        testCaseCountry.setTestCaseCountryProperty(new ArrayList<>());
+        testCaseCountry.setDateCreated(dateCreated);
+        testCaseCountry.setUsrCreated(usrCreated == null ? "" : usrCreated);
+        testCaseCountry.setDateModif(dateModif);
+        testCaseCountry.setUsrModif(usrModif == null ? "" : usrModif);
+
+        return testCaseCountry;
+    }
+    
+    
     
 }
