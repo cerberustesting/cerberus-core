@@ -23,18 +23,21 @@ import org.cerberus.engine.entity.MessageEvent;
 
 /**
  * Auxiliary class that is used to store an answer that contains only a message.
+ *
  * @author FNogueira
  */
 public class Answer {
+
     protected MessageEvent resultMessage;
 
-    public Answer(){
-        
+    public Answer() {
+
     }
-    public Answer(MessageEvent resultMessage){
+
+    public Answer(MessageEvent resultMessage) {
         this.resultMessage = resultMessage;
     }
-    
+
     public MessageEvent getResultMessage() {
         return resultMessage;
     }
@@ -42,19 +45,20 @@ public class Answer {
     public void setResultMessage(MessageEvent resultMessage) {
         this.resultMessage = resultMessage;
     }
-    
-    public String getMessageDescription(){
+
+    public String getMessageDescription() {
         return this.resultMessage.getDescription();
     }
-    
-    public String getMessageCodeString(){
+
+    public String getMessageCodeString() {
         return this.resultMessage.getCodeString();
     }
-    
-    public boolean isCodeStringEquals(String code){
+
+    public boolean isCodeStringEquals(String code) {
         return code.equals(this.resultMessage.getCodeString());
     }
-    public boolean isCodeEquals(int code){
+
+    public boolean isCodeEquals(int code) {
         return code == this.resultMessage.getCode();
     }
 }

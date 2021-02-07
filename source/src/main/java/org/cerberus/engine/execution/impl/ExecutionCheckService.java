@@ -71,31 +71,35 @@ public class ExecutionCheckService implements IExecutionCheckService {
 
     @Override
     public MessageGeneral checkTestCaseExecution(TestCaseExecution tCExecution) {
-        if (tCExecution.getManualURL() >= 1) {
+        LOG.debug("Starting checks with manualURL : " + tCExecution.getManualURL());
+        if (tCExecution.getManualURL() == 1) {
             /**
              * Manual application connectivity parameter
              */
             if (this.checkTestCaseActive(tCExecution.getTestCaseObj())
                     && this.checkTestActive(tCExecution.getTestObj())
                     && this.checkCountry(tCExecution)
-                    && this.checkMaintenanceTime(tCExecution)) {
+                    && this.checkExecutorProxy(tCExecution)) {
                 LOG.debug("Execution is checked and can proceed.");
                 return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
             }
-        } else /**
-         * Automatic application connectivity parameter (from database)
-         */
-        if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
-                && this.checkRangeBuildRevision(tCExecution.getTestCaseObj(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision(), tCExecution.getCountryEnvParam().getSystem())
-                && this.checkTargetMajorRevision(tCExecution)
-                && this.checkActiveEnvironmentGroup(tCExecution)
-                && this.checkTestCaseActive(tCExecution.getTestCaseObj())
-                && this.checkTestActive(tCExecution.getTestObj())
-                && this.checkCountry(tCExecution)
-                && this.checkMaintenanceTime(tCExecution)
-                && this.checkExecutorProxy(tCExecution)) {
-            LOG.debug("Execution is checked and can proceed.");
-            return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
+        } else {
+            /**
+             * Automatic application connectivity parameter (from database)
+             * Correspond to manualURL = 1 or = 2 (override)
+             */
+            if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
+                    && this.checkRangeBuildRevision(tCExecution.getTestCaseObj(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision(), tCExecution.getCountryEnvParam().getSystem())
+                    && this.checkTargetMajorRevision(tCExecution)
+                    && this.checkActiveEnvironmentGroup(tCExecution)
+                    && this.checkTestCaseActive(tCExecution.getTestCaseObj())
+                    && this.checkTestActive(tCExecution.getTestObj())
+                    && this.checkCountry(tCExecution)
+                    && this.checkMaintenanceTime(tCExecution)
+                    && this.checkExecutorProxy(tCExecution)) {
+                LOG.debug("Execution is checked and can proceed.");
+                return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
+            }
         }
         return message;
     }
@@ -320,13 +324,12 @@ public class ExecutionCheckService implements IExecutionCheckService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if country is setup for this testcase. " + tCExecution.getTest() + "-" + tCExecution.getTestCase() + "-" + tCExecution.getCountry());
         }
-        try {
-            testCaseCountryService.convert(testCaseCountryService.readByKey(tCExecution.getTest(), tCExecution.getTestCase(), tCExecution.getCountry()));
-        } catch (CerberusException e) {
+        if (testCaseCountryService.exist(tCExecution.getTest(), tCExecution.getTestCase(), tCExecution.getCountry())) {
+            return true;
+        } else {
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRY_NOTDEFINED);
             return false;
         }
-        return true;
     }
 
     private int compareBuild(String build1, String build2, String system) throws CerberusException {

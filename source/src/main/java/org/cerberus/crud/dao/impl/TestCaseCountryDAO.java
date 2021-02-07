@@ -70,6 +70,13 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         List<TestCaseCountry> testCaseCountries = null;
         final String query = "SELECT * FROM testcasecountry tcc WHERE test = ? AND testcase = ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.test : " + test);
+            LOG.debug("SQL.param.testCase : " + testcase);
+        }
+
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query);) {
 
@@ -99,6 +106,14 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         TestCaseCountry testCaseCountry;
         final String query = "SELECT * FROM testcasecountry tcc WHERE test = ? AND testcase = ? AND country = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.test : " + test);
+            LOG.debug("SQL.param.testCase : " + testcase);
+            LOG.debug("SQL.param.country : " + country);
+        }
 
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query);) {

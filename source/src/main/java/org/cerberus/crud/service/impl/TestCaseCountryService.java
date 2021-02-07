@@ -93,7 +93,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     }
 
     @Override
-    public AnswerItem readByKey(String test, String testCase, String country) {
+    public AnswerItem<TestCaseCountry> readByKey(String test, String testCase, String country) {
         return testcaseCountryDAO.readByKey(test, testCase, country);
     }
 
@@ -121,7 +121,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
             if (testCaseCountries.containsKey(key)) {
                 testCaseCountries.get(key).put(testCaseCountry.getCountry(), testCaseCountry);
             } else {
-                testCaseCountries.put(key, new HashMap<String, TestCaseCountry>());
+                testCaseCountries.put(key, new HashMap<>());
                 testCaseCountries.get(key).put(testCaseCountry.getCountry(), testCaseCountry);
             }
         }
@@ -130,8 +130,8 @@ public class TestCaseCountryService implements ITestCaseCountryService {
 
     @Override
     public boolean exist(String test, String testcase, String country) {
-        AnswerItem objectAnswer = readByKey(test, testcase, country);
-        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
+            AnswerItem objectAnswer = readByKey(test, testcase, country);
+            return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
     }
 
     @Override
