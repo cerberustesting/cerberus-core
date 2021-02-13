@@ -1663,6 +1663,9 @@ public class ActionService implements IActionService {
             Integer nbHits = executorService.getHitsNb(exe.getRobotExecutorObj().getExecutorExtensionHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID());
 
             NetworkTrafficIndex nti = new NetworkTrafficIndex();
+            if (StringUtil.isNullOrEmpty(value1)) {
+                value1 = "INDEX" + (exe.getNetworkTrafficIndexList().size() + 1);
+            }
             nti.setName(value1);
             nti.setIndexRequestNb(nbHits);
             exe.appendNetworkTrafficIndexList(nti);

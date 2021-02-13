@@ -835,10 +835,18 @@ In addition to standard HAR structure, Cerberus will add a `stat` json entry in 
             {
                 "size": 79565,
                 "provider": "internal",
+                "indexName": "n/a",
                 "domain": "www.domain.com",
                 "httpStatus": 200,
                 "start": 0,
+                "index": 0,
                 "time": 325,
+                "queryString": {
+                    "txn_id": "o2hke",
+                    "tw_sale_amount": "0",
+                    "p_user_id": "0",
+                    "tw_order_quantity": "0"
+                },
                 "contentType": "html",
                 "url": "https://www.domain.com/"
             },
