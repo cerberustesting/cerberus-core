@@ -54,7 +54,8 @@ public interface IHarService {
      *
      * @param har
      * @param indexStart
+     * @param urlFilter
      * @return The new har removed from the log entries from 0 to #indexStart
      */
-    JSONObject removeFirstHits(JSONObject har, Integer indexStart);
+    JSONObject removeFirstHitsandFilterURL(JSONObject har, Integer indexStart, String urlFilter);
 }

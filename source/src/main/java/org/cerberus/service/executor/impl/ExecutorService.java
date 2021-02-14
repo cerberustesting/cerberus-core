@@ -183,7 +183,7 @@ public class ExecutorService implements IExecutorService {
         try {
 
             // Generate URL to Cerberus executor with parameter to reduce the answer size by removing response content.
-            String url = getExecutorURL(urlFilter, withContent, exHost, exPort, exUuid);
+            String url = getExecutorURL("", withContent, exHost, exPort, exUuid);
 
             LOG.debug("Getting Network Traffic content from URL : " + url);
             AnswerItem<AppService> result = new AnswerItem<>();
@@ -192,10 +192,8 @@ public class ExecutorService implements IExecutorService {
             AppService appSrv = result.getItem();
             har = new JSONObject(appSrv.getResponseHTTPBody());
 
-            // remove the 1st entries is index exist in order to get only the hits since last index.
-            if (indexFrom > 0) {
-                har = harService.removeFirstHits(har, indexFrom);
-            }
+            // remove the 1st entries and filter them based on the url.
+            har = harService.removeFirstHitsandFilterURL(har, indexFrom, urlFilter);
 
             return har;
 

@@ -414,7 +414,7 @@ public class HarService implements IHarService {
                     }
                 }
 
-                if (entryReq.has("queryString")) {      
+                if (entryReq.has("queryString")) {
                     JSONObject pD = new JSONObject();
                     JSONArray pData = new JSONArray();
                     pData = entryReq.getJSONArray("queryString");
@@ -425,7 +425,7 @@ public class HarService implements IHarService {
                             pD.put(pA.getString("name").trim(), pA.getString("value"));
                         }
                     }
-                    urlEntry.put("queryString", pD);                    
+                    urlEntry.put("queryString", pD);
                 }
 
                 harStat.appendUrlList(urlEntry);
@@ -972,9 +972,9 @@ public class HarService implements IHarService {
     }
 
     @Override
-    public JSONObject removeFirstHits(JSONObject har, Integer indexStart) {
-        LOG.debug("Remove First entries from HAR file from index " + indexStart);
-        if (indexStart < 1) {
+    public JSONObject removeFirstHitsandFilterURL(JSONObject har, Integer indexStart, String urlFilter) {
+        LOG.debug("Remove First entries from HAR file from index " + indexStart + " and Filter using : " + urlFilter);
+        if ((indexStart < 1) && StringUtil.isNullOrEmpty(urlFilter)) {
             return har;
         }
         try {
@@ -983,12 +983,14 @@ public class HarService implements IHarService {
 
             for (int i = 0; i < harEntries.length(); i++) {
                 if (i >= indexStart) {
-                    // Only add the entries if index is reached.
-                    newLogEntries.put(harEntries.getJSONObject(i));
+                    // Only add the entries if index is reached
+                    if (!StringUtil.isNullOrEmpty(urlFilter) && harEntries.getJSONObject(i).getJSONObject("request").getString("url").contains(urlFilter)) {
+                        // Only add the entries if the url to filter is defined and url contains it.
+                        newLogEntries.put(harEntries.getJSONObject(i));
+                    }
                 }
             }
-            LOG.debug(newLogEntries.length());
-            LOG.debug(newLogEntries.toString());
+
             JSONObject log = new JSONObject();
             log = har.getJSONObject("log");
             log.put("entries", newLogEntries);

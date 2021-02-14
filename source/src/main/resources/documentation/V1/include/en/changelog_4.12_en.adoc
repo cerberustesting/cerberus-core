@@ -1,6 +1,8 @@
 *Bug fixes*
 [square]
 * When step is using a library the correct information is displayed on the GUI (both when loading the page and attaching a new step from modal). #2182.
+* Fixed Error message when delete an application object.
+* Fixed issue when using setNetworkTraffic with both urlFilter and index previously used during the test case.
 
 *Improvements / New features*
 [square]

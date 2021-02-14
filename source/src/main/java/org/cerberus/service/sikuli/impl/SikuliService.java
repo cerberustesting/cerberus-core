@@ -225,7 +225,7 @@ public class SikuliService implements ISikuliService {
              */
             while (inputLine != null) {
                 inputLine = in.readLine();
-                if (inputLine!=null && !"|ENDR|".equals(inputLine)) {
+                if (inputLine != null && !"|ENDR|".equals(inputLine)) {
                     response.append(inputLine);
                 } else {
                     break;
@@ -637,7 +637,7 @@ public class SikuliService implements ISikuliService {
 
             if (image != null) {
                 //logs for debug purposes
-                LOG.info("screen-shot taken with succes: " + image.getName() + "(size" + image.length() + ")");
+                LOG.info("screen-shot taken with succes: " + image.getName() + " (size : " + image.length() + " b)");
             } else {
                 LOG.warn("screen-shot returned null: ");
             }

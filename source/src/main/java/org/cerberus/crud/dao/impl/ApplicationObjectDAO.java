@@ -107,12 +107,12 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         /**
          * Remove an existing {@link ApplicationObject}
          */
-        String DELETE = "DELETE FROM `applicationobject` obj WHERE `ID` = ?";
+        String DELETE = "DELETE FROM `applicationobject` WHERE `ID` = ?";
 
         /**
          * Remove all {@link ApplicationObject} of a {@link Application}
          */
-        String DELETE_BY_APP = "DELETE FROM `applicationobject` obj WHERE `application` = ?";
+        String DELETE_BY_APP = "DELETE FROM `applicationobject` WHERE `application` = ?";
     }
 
     @Override
@@ -633,7 +633,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                     .resolveDescription("OPERATION", "CREATE");
         } catch (Exception e) {
-            LOG.warn("Unable to create campaign object: " + e.getMessage());
+            LOG.warn("Unable to delete application object: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
         } finally {
