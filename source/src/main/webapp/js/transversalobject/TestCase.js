@@ -523,7 +523,7 @@ function confirmTestCaseModalHandler(mode) {
     $("#depenencyTable").find("tr")
             .each((t, v) =>
                 testcaseDependencies.push(
-                        {id: $(v).attr("testcaseid"), test: $(v).attr("test"), testcase: $(v).attr("testcase"), description: $(v).find("[name='depDescription']").val(), active: $(v).find("[name='activate']").is(":checked")}
+                        {id: $(v).attr("testcaseid"), test: $(v).attr("test"), testcase: $(v).attr("testcase"), description: $(v).find("[name='depDescription']").val(), isActive: $(v).find("[name='activate']").is(":checked")}
                 )
             )
 

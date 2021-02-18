@@ -29,25 +29,25 @@ import java.sql.Timestamp;
 public class FactoryTestCaseDep implements IFactoryTestCaseDep {
 
     @Override
-    public TestCaseDep create(Long id, String test, String testCase, String depTest, String depTestCase, String depEvent, String type, String active, String description
+    public TestCaseDep create(Long id, String test, String testcase, String dependencyTest, String dependencyTestcase, String dependencyEvent, String type, boolean isActive, String description
             , String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
-        TestCaseDep dep = new TestCaseDep();
+        TestCaseDep testcaseDependency = new TestCaseDep();
 
-        dep.setId(id);
-        dep.setTest(test);
-        dep.setTestCase(testCase);
-        dep.setDepTest(depTest);
-        dep.setDepTestCase(depTestCase);
-        dep.setType(type);
-        dep.setDepEvent(depEvent);
-        dep.setActive(active);
-        dep.setDescription(description);
-        dep.setUsrCreated(usrCreated);
-        dep.setDateCreated(dateCreated);
-        dep.setUsrModif(usrModif);
-        dep.setDateModif(dateModif);
+        testcaseDependency.setId(id);
+        testcaseDependency.setTest(test);
+        testcaseDependency.setTestcase(testcase);
+        testcaseDependency.setDependencyTest(dependencyTest);
+        testcaseDependency.setDependencyTestcase(dependencyTestcase);
+        testcaseDependency.setType(type);
+        testcaseDependency.setDependencyEvent(dependencyEvent);
+        testcaseDependency.setActive(isActive);
+        testcaseDependency.setDescription(description);
+        testcaseDependency.setUsrCreated(usrCreated);
+        testcaseDependency.setDateCreated(dateCreated);
+        testcaseDependency.setUsrModif(usrModif);
+        testcaseDependency.setDateModif(dateModif);
 
-        return dep;
+        return testcaseDependency;
     }
 
 

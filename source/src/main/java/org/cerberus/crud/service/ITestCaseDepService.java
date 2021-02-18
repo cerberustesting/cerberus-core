@@ -30,10 +30,10 @@ public interface ITestCaseDepService {
 
     TestCaseDep readByKey(String test, String testcase, String testDep, String testcaseDep) throws CerberusException;
 
-    List<TestCaseDep> readByTestAndTestCase(String test, String testcase) throws CerberusException;
-    List<TestCaseDep> readByTestAndTestCase(List<TestCase> testCaseList) throws CerberusException;
+    List<TestCaseDep> readByTestAndTestcase(String test, String testcase) throws CerberusException;
+    List<TestCaseDep> readByTestAndTestcase(List<TestCase> testCaseList) throws CerberusException;
     
-    HashMap<String, List<TestCaseDep>> convertTestCaseDepListToHash(List<TestCaseDep> testCaseDependencies);
+    HashMap<String, List<TestCaseDep>> convertTestCaseDependencyListToHash(List<TestCaseDep> testCaseDependencies);
 
     void create(TestCaseDep testCaseDep) throws CerberusException;
 

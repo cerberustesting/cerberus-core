@@ -161,7 +161,7 @@ public class TestCaseService implements ITestCaseService {
             }
             newTcase.setSteps(tcsToAdd);
 
-            List<TestCaseDep> testCaseDependendies = testCaseDepService.readByTestAndTestCase(test, testCase);
+            List<TestCaseDep> testCaseDependendies = testCaseDepService.readByTestAndTestcase(test, testCase);
             newTcase.setDependencies(testCaseDependendies);
 
             List<TestCaseLabel> testCaseLabel = testCaseLabelService.readByTestTestCase(test, testCase, null).getDataList();
@@ -184,7 +184,7 @@ public class TestCaseService implements ITestCaseService {
             countryInvariants = invariantService.readByIdNameToHash("COUNTRY");
 
             answerTestCase.getItem().setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(testCaseCountries, countryInvariants));
-            answerTestCase.getItem().setDependencies(testCaseDepService.readByTestAndTestCase(answerTestCase.getItem().getTest(), answerTestCase.getItem().getTestcase()));
+            answerTestCase.getItem().setDependencies(testCaseDepService.readByTestAndTestcase(answerTestCase.getItem().getTest(), answerTestCase.getItem().getTestcase()));
             answerTestCase.getItem().setLabels(labelService.findLabelsFromTestCase(test, testCase, null).get(testCase));
             List<TestCase> testcases = new ArrayList<>();
             testcases.add(factoryTCase.create(test, testCase));
@@ -213,8 +213,8 @@ public class TestCaseService implements ITestCaseService {
             HashMap<String, Invariant> countryInvariants = invariantService.readByIdNameToHash("COUNTRY");
             List<TestCaseCountry> testCaseCountries = testCaseCountryService.readByTestTestCase(system, test, null, testCases.getDataList()).getDataList();
             HashMap<String, HashMap<String, TestCaseCountry>> testCaseCountryHash = testCaseCountryService.convertListToHashMapTestTestCaseAsKey(testCaseCountries);
-            List<TestCaseDep> testCaseDependencies = testCaseDepService.readByTestAndTestCase(testCases.getDataList());
-            HashMap<String, List<TestCaseDep>> testCaseDependenciesHash = testCaseDepService.convertTestCaseDepListToHash(testCaseDependencies);
+            List<TestCaseDep> testCaseDependencies = testCaseDepService.readByTestAndTestcase(testCases.getDataList());
+            HashMap<String, List<TestCaseDep>> testCaseDependenciesHash = testCaseDepService.convertTestCaseDependencyListToHash(testCaseDependencies);
             HashMap<String, List<Label>> labelsHash = labelService.findLabelsFromTestCase(test, null, testCases.getDataList());
 
             for (TestCase testCase : testCases.getDataList()) {
@@ -674,7 +674,7 @@ public class TestCaseService implements ITestCaseService {
         //insert testcasedependencies
         for (TestCaseDep tcd : testCase.getDependencies()) {
             tcd.setTest(testCase.getTest());
-            tcd.setTestCase(testCase.getTestcase());
+            tcd.setTestcase(testCase.getTestcase());
             testCaseDepService.create(tcd);
         }
 
