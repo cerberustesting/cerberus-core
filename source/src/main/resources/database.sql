@@ -5677,3 +5677,6 @@ UPDATE testcasedep SET IsActive = 1 WHERE IsActive = 'Y';
 
 -- 1592
 UPDATE testcasedep SET IsActive = 0 WHERE IsActive != '1';
+
+-- 1593
+ALTER TABLE testcasedep MODIFY IsActive BOOLEAN DEFAULT 1;
