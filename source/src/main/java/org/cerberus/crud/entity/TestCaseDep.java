@@ -43,7 +43,7 @@ public class TestCaseDep {
     private Timestamp dateCreated;
     private String usrModif;
     private Timestamp dateModif;
-    private String dependencyDescription;
+    private String testcaseDescription;
 
     /**
      * Not included in table.
@@ -157,12 +157,12 @@ public class TestCaseDep {
         this.dateModif = dateModif;
     }
 
-    public String getDependencyDescription() {
-        return dependencyDescription;
+    public String getTestcaseDescription() {
+        return testcaseDescription;
     }
 
-    public void setDependencyDescription(String dependencyDescription) {
-        this.dependencyDescription = dependencyDescription;
+    public void setTestcaseDescription(String testcaseDescription) {
+        this.testcaseDescription = testcaseDescription;
     }
 
     public boolean hasSameKey(TestCaseDep tcd) {
@@ -180,7 +180,8 @@ public class TestCaseDep {
             testCaseDependencyJson.put("dependencyTestcase", this.getDependencyTestcase());
             testCaseDependencyJson.put("type", this.getType());
             testCaseDependencyJson.put("isActive", this.isActive());
-            testCaseDependencyJson.put("dependencyDescription", this.getDependencyDescription());
+            testCaseDependencyJson.put("description", this.getDescription());
+            testCaseDependencyJson.put("testcaseDescription", this.getTestcaseDescription());
             testCaseDependencyJson.put("dependencyEvent", this.getDependencyEvent());
         } catch (JSONException ex) {
             LOG.error(ex.toString(), ex);
@@ -190,6 +191,6 @@ public class TestCaseDep {
 
     @Override
     public String toString() {
-        return "TestCaseDep{" + "id=" + id + ", test=" + test + ", testcase=" + testcase + ", type=" + type + ", dependencyTest=" + dependencyTest + ", dependencyTestcase=" + dependencyTestcase + ", dependencyEvent=" + dependencyEvent + ", isActive=" + isActive + ", description=" + description + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", dependencyDescription=" + dependencyDescription + '}';
+        return "TestCaseDep{" + "id=" + id + ", test=" + test + ", testcase=" + testcase + ", type=" + type + ", dependencyTest=" + dependencyTest + ", dependencyTestcase=" + dependencyTestcase + ", dependencyEvent=" + dependencyEvent + ", isActive=" + isActive + ", description=" + description + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", dependencyDescription=" + testcaseDescription + '}';
     }
 }

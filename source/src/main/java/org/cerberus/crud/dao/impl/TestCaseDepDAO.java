@@ -63,7 +63,7 @@ public class TestCaseDepDAO implements ITestCaseDepDAO {
 
     @Override
     public List<TestCaseDep> readByTestAndTestCase(String test, String testcase) throws CerberusException {
-        String query = "SELECT tcd.*, tc.description as DependencyDescription FROM `testcasedep` tcd " +
+        String query = "SELECT tcd.*, tc.description as TestcaseDescription FROM `testcasedep` tcd " +
                 "inner join testcase tc on tcd.DependencyTest = tc.Test and tcd.DependencyTestcase = tc.Testcase " +
                 "where tcd.Test = ? and tcd.Testcase = ?";
 
@@ -75,7 +75,7 @@ public class TestCaseDepDAO implements ITestCaseDepDAO {
                     },
                     resultSet -> {
                         TestCaseDep testcaseDependency = this.loadResult(resultSet);
-                        testcaseDependency.setDependencyDescription(resultSet.getString("DependencyDescription"));
+                        testcaseDependency.setTestcaseDescription(resultSet.getString("TestcaseDescription"));
                         return testcaseDependency;
                     }
             );
@@ -83,7 +83,7 @@ public class TestCaseDepDAO implements ITestCaseDepDAO {
 
     @Override
     public List<TestCaseDep> readByTestAndTestCase(List<TestCase> testcases) throws CerberusException {
-        String query = "SELECT tcd.*, tc.description as DependencyDescription FROM `testcasedep` tcd " +
+        String query = "SELECT tcd.*, tc.description as TestcaseDescription FROM `testcasedep` tcd " +
                 "inner join testcase tc on tcd.DependencyTest = tc.Test and tcd.DependencyTestcase = tc.Testcase " +
                 "where 1=1" +
                 testcases.stream().map(s -> " and tcd.Test = ? and tcd.Testcase = ?").collect(Collectors.joining());
@@ -98,7 +98,7 @@ public class TestCaseDepDAO implements ITestCaseDepDAO {
                 },
                 resultSet -> {
                     TestCaseDep testcaseDependency = this.loadResult(resultSet);
-                    testcaseDependency.setDependencyDescription(resultSet.getString("DependencyDescription"));
+                    testcaseDependency.setTestcaseDescription(resultSet.getString("TestcaseDescription"));
                     return testcaseDependency;
                 }
          );

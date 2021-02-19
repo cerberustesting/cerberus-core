@@ -178,9 +178,9 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
 
                 // update testcaseId dependency
                 if (request.getParameter("dependencies") != null) {
-                    List<TestCaseDep> tcdList = getDependencyFromRequest(request, tc);
+                    List<TestCaseDep> testcaseDependencies = getDependencyFromRequest(request, tc);
 
-                    testCaseDepService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestcase(), tcdList);
+                    testCaseDepService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestcase(), testcaseDependencies);
                 }
 
                 if (primaryKeyChanged) {
@@ -271,22 +271,18 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
     }
 
     protected List<TestCaseDep> getDependencyFromRequest(HttpServletRequest request, TestCase testcase) throws JSONException {
-        List<TestCaseDep> res = new LinkedList<>();
+        List<TestCaseDep> testcaseDependencies = new LinkedList<>();
         jsonArrayFoEach(request, "dependencies", (jsonObj) -> {
             String testcaseId = jsonObj.getString("testcase");
             Long testcaseDependencyId = jsonObj.getLong("id");
             String test = jsonObj.getString("test");
             String description = jsonObj.getString("description");
-
             boolean isActive = Boolean.valueOf(jsonObj.getString("isActive"));
-
-            Timestamp creationDate = new Timestamp(new Date().getTime());
-
-            res.add(testCaseDepFactory.create(testcaseDependencyId, testcase.getTest(), testcase.getTestcase(), test, testcaseId, "", TestCaseExecutionQueueDep.TYPE_TCEXEEND, isActive, description, request.getRemoteUser(), creationDate, request.getRemoteUser(), creationDate));
-        }
-        );
-
-        return res;
+            Timestamp creationDate = new Timestamp(new Date().getTime());       
+            
+            testcaseDependencies.add(testCaseDepFactory.create(testcaseDependencyId, testcase.getTest(), testcase.getTestcase(), test, testcaseId, "", TestCaseExecutionQueueDep.TYPE_TCEXEEND, isActive, description, request.getRemoteUser(), creationDate, request.getRemoteUser(), creationDate));
+        });
+        return testcaseDependencies;
     }
 
     @FunctionalInterface

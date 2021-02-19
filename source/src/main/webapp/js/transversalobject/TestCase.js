@@ -679,6 +679,8 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
             var currentSys = getUser().defaultSystem;
             var t = appData.contentTable;
             bugTrackerUrl = t.bugTrackerUrl;
+            
+            
 
             feedTestCaseData(testCase, modalId, mode, testperm, undefined, bugTrackerUrl);
 
@@ -795,6 +797,7 @@ function fillTestAndTestCaseSelect(selectorTestSelect, selectorTestCaseSelect, t
 
 
 function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, defaultTest, bugTrackerUrl) {
+
     var formEdit = $('#' + modalId);
     var doc = new Doc();
 
@@ -1160,11 +1163,11 @@ function appendBuildRevListOnTestCase(system, editData) {
 }
 
 function appendTestCaseDepList(testCase) {
-    $("#depenencyTable").find("tr").remove() // clean the table
+    $("#depenencyTable").find("tr").remove();// clean the table
 
-    testCase.dependencies.forEach((dep) =>
-        addHtmlForDependencyLine(dep.id, dep.dependencyTest, dep.dependencyTestcase, dep.dependencyTestcase + " - " + dep.dependencyDescription, dep.active, dep.dependencyDescription)
-    )
+    testCase.dependencies.forEach((dep) => {
+        addHtmlForDependencyLine(dep.id, dep.dependencyTest, dep.dependencyTestcase, dep.dependencyTestcase + " - " + dep.testcaseDescription, dep.isActive, dep.description);
+        });
 }
 
 

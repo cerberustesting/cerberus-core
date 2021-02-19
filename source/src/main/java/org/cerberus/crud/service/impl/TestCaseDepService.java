@@ -112,7 +112,7 @@ public class TestCaseDepService implements ITestCaseDepService {
 
     @Override
     public void compareListAndUpdateInsertDeleteElements(String test, String testcase, List<TestCaseDep> newTestcaseDependencies) throws CerberusException {
-
+        
         List<TestCaseDep> oldTestcaseDependencies = testCaseDepDao.readByTestAndTestCase(test, testcase);
 
         // toUpdate = all in newTestcaseDependencies and in oldTestcaseDependencies
