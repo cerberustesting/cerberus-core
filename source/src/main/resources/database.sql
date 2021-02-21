@@ -5663,3 +5663,20 @@ ALTER TABLE testcasecountry
   ADD COLUMN UsrModif VARCHAR(45) NOT NULL DEFAULT '',
   CHANGE COLUMN TestCase Testcase VARCHAR(45) NOT NULL,
   CHANGE COLUMN last_modified DateModif TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER UsrModif;
+
+-- 1590
+ALTER TABLE testcasedep
+  CHANGE COLUMN TestCase Testcase VARCHAR(45) DEFAULT NULL,
+  CHANGE COLUMN DepTest DependencyTest VARCHAR(45) DEFAULT NULL,
+  CHANGE COLUMN DepTestCase DependencyTestcase VARCHAR(45) DEFAULT NULL,
+  CHANGE COLUMN DepEvent DependencyEvent VARCHAR(100) DEFAULT NULL,
+  CHANGE COLUMN Active IsActive VARCHAR(1) NOT NULL;
+
+-- 1591
+UPDATE testcasedep SET IsActive = 1 WHERE IsActive = 'Y';
+
+-- 1592
+UPDATE testcasedep SET IsActive = 0 WHERE IsActive != '1';
+
+-- 1593
+ALTER TABLE testcasedep MODIFY IsActive BOOLEAN DEFAULT 1;

@@ -162,7 +162,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
                     List<TestCaseCountryProperties> newTccpList = new ArrayList<>();
                     if (primaryKeyChanged && !tccList.isEmpty() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         tccpList = testCaseCountryPropertiesService.findListOfPropertyPerTestTestCase(originalTest, originalTestCase);
-                        //Build a new list with the countries that exist for the testcase.
+                        //Build a new list with the countries that exist for the testcaseId.
                         for (TestCaseCountryProperties curTccp : tccpList) {
                             if (testCaseCountryService.exist(test, testcase, curTccp.getCountry())) {
                                 newTccpList.add(curTccp);
@@ -176,11 +176,11 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
 
                 }
 
-                // update testcase dependency
+                // update testcaseId dependency
                 if (request.getParameter("dependencies") != null) {
-                    List<TestCaseDep> tcdList = getDependencyFromRequest(request, tc);
+                    List<TestCaseDep> testcaseDependencies = getDependencyFromRequest(request, tc);
 
-                    testCaseDepService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestcase(), tcdList);
+                    testCaseDepService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestcase(), testcaseDependencies);
                 }
 
                 if (primaryKeyChanged) {
@@ -270,28 +270,19 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
         return labelList;
     }
 
-    protected List<TestCaseDep> getDependencyFromRequest(HttpServletRequest request, TestCase tc) throws JSONException {
-        List<TestCaseDep> res = new LinkedList<>();
+    protected List<TestCaseDep> getDependencyFromRequest(HttpServletRequest request, TestCase testcase) throws JSONException {
+        List<TestCaseDep> testcaseDependencies = new LinkedList<>();
         jsonArrayFoEach(request, "dependencies", (jsonObj) -> {
-            String testcase = jsonObj.getString("testcase");
-            Long testcaseid = jsonObj.getLong("id");
+            String testcaseId = jsonObj.getString("testcase");
+            Long testcaseDependencyId = jsonObj.getLong("id");
             String test = jsonObj.getString("test");
             String description = jsonObj.getString("description");
-
-            String active = jsonObj.getString("active");
-            if (Boolean.valueOf(active)) {
-                active = "Y";
-            } else {
-                active = "N";
-            }
-
-            Timestamp creationDate = new Timestamp(new Date().getTime());
-
-            res.add(testCaseDepFactory.create(testcaseid, tc.getTest(), tc.getTestcase(), test, testcase, "", TestCaseExecutionQueueDep.TYPE_TCEXEEND, active, description, request.getRemoteUser(), creationDate, request.getRemoteUser(), creationDate));
-        }
-        );
-
-        return res;
+            boolean isActive = Boolean.valueOf(jsonObj.getString("isActive"));
+            Timestamp creationDate = new Timestamp(new Date().getTime());       
+            
+            testcaseDependencies.add(testCaseDepFactory.create(testcaseDependencyId, testcase.getTest(), testcase.getTestcase(), test, testcaseId, "", TestCaseExecutionQueueDep.TYPE_TCEXEEND, isActive, description, request.getRemoteUser(), creationDate, request.getRemoteUser(), creationDate));
+        });
+        return testcaseDependencies;
     }
 
     @FunctionalInterface

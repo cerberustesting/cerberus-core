@@ -39,18 +39,18 @@ public class TestCaseDepService implements ITestCaseDepService {
     private ITestCaseDepDAO testCaseDepDao;
 
     @Override
-    public TestCaseDep readByKey(String test, String testcase, String testDep, String testcaseDep) throws CerberusException {
-        return testCaseDepDao.readByKey(test, testcase, testDep, testcaseDep);
+    public TestCaseDep readByKey(String test, String testcase, String dependencyTest, String testcaseDependency) throws CerberusException {
+        return testCaseDepDao.readByKey(test, testcase, dependencyTest, testcaseDependency);
     }
 
     @Override
-    public List<TestCaseDep> readByTestAndTestCase(String test, String testcase) throws CerberusException {
+    public List<TestCaseDep> readByTestAndTestcase(String test, String testcase) throws CerberusException {
         return testCaseDepDao.readByTestAndTestCase(test, testcase);
     }
 
     @Override
-    public List<TestCaseDep> readByTestAndTestCase(List<TestCase> testCaseList) throws CerberusException {
-        return testCaseDepDao.readByTestAndTestCase(testCaseList);
+    public List<TestCaseDep> readByTestAndTestcase(List<TestCase> testcases) throws CerberusException {
+        return testCaseDepDao.readByTestAndTestCase(testcases);
     }
 
     /**
@@ -59,10 +59,10 @@ public class TestCaseDepService implements ITestCaseDepService {
      * @return HashMap<String, List<TestCaseDep>> with testCase as Key
      */
     @Override
-    public HashMap<String, List<TestCaseDep>> convertTestCaseDepListToHash(List<TestCaseDep> testCaseDependencies) {
+    public HashMap<String, List<TestCaseDep>> convertTestCaseDependencyListToHash(List<TestCaseDep> testCaseDependencies) {
         HashMap<String, List<TestCaseDep>> testCaseDependenciesHash = new HashMap<>();
         for (TestCaseDep testCaseDependency : testCaseDependencies) {
-            String key = testCaseDependency.getTest() + "##" + testCaseDependency.getTestCase();
+            String key = testCaseDependency.getTest() + "##" + testCaseDependency.getTestcase();
             if (testCaseDependenciesHash.containsKey(key)) {
                 testCaseDependenciesHash.get(key).add(testCaseDependency);
             } else {
@@ -74,66 +74,66 @@ public class TestCaseDepService implements ITestCaseDepService {
     }
 
     @Override
-    public void create(TestCaseDep testCaseDep) throws CerberusException {
-        testCaseDepDao.create(testCaseDep);
+    public void create(TestCaseDep testcaseDependency) throws CerberusException {
+        testCaseDepDao.create(testcaseDependency);
     }
 
     @Override
-    public void update(TestCaseDep testCaseDep) throws CerberusException {
-        testCaseDepDao.update(testCaseDep);
+    public void update(TestCaseDep testcaseDependency) throws CerberusException {
+        testCaseDepDao.update(testcaseDependency);
     }
 
     @Override
-    public void delete(TestCaseDep testCaseDep) throws CerberusException {
-        testCaseDepDao.delete(testCaseDep);
+    public void delete(TestCaseDep testcaseDependency) throws CerberusException {
+        testCaseDepDao.delete(testcaseDependency);
     }
 
     @Override
-    public void createList(List<TestCaseDep> testCaseDepList) throws CerberusException {
-        for (TestCaseDep tc : testCaseDepList) {
-            this.create(tc);
+    public void createList(List<TestCaseDep> testcaseDependencies) throws CerberusException {
+        for (TestCaseDep testcaseDependency : testcaseDependencies) {
+            this.create(testcaseDependency);
         }
     }
 
     @Override
-    public void updateList(List<TestCaseDep> testCaseDepList) throws CerberusException {
-        for (TestCaseDep tc : testCaseDepList) {
-            this.update(tc);
+    public void updateList(List<TestCaseDep> testcaseDependencies) throws CerberusException {
+        for (TestCaseDep TestcaseDependency : testcaseDependencies) {
+            this.update(TestcaseDependency);
         }
     }
 
     @Override
-    public void deleteList(List<TestCaseDep> testCaseDepList) throws CerberusException {
-        for (TestCaseDep tc : testCaseDepList) {
-            this.delete(tc);
+    public void deleteList(List<TestCaseDep> testcaseDependencies) throws CerberusException {
+        for (TestCaseDep testcaseDependency : testcaseDependencies) {
+            this.delete(testcaseDependency);
         }
 
     }
 
     @Override
-    public void compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseDep> newList) throws CerberusException {
+    public void compareListAndUpdateInsertDeleteElements(String test, String testcase, List<TestCaseDep> newTestcaseDependencies) throws CerberusException {
+        
+        List<TestCaseDep> oldTestcaseDependencies = testCaseDepDao.readByTestAndTestCase(test, testcase);
 
-        List<TestCaseDep> oldList = testCaseDepDao.readByTestAndTestCase(test, testCase);
-
-        // toUpdate = all in newList and in oldList
-        List<TestCaseDep> toUpdate = this.getObjectWithSameKey(newList, oldList);
+        // toUpdate = all in newTestcaseDependencies and in oldTestcaseDependencies
+        List<TestCaseDep> toUpdate = this.getObjectWithSameKey(newTestcaseDependencies, oldTestcaseDependencies);
         this.updateList(toUpdate);
 
-        // toInsert = all in newList not in oldList
-        List<TestCaseDep> toInsert = new ArrayList<>(newList);
-        toInsert.removeIf(tcd1 -> oldList.stream().anyMatch(tcd2 -> tcd2.hasSameKey(tcd1))); // remove if it is the same key
+        // toInsert = all in newTestcaseDependencies not in oldTestcaseDependencies
+        List<TestCaseDep> toInsert = new ArrayList<>(newTestcaseDependencies);
+        toInsert.removeIf(testcaseDependencyA -> oldTestcaseDependencies.stream().anyMatch(testcaseDependencyB -> testcaseDependencyB.hasSameKey(testcaseDependencyA))); // remove if it is the same key
         this.createList(toInsert);
 
-        // toDelete = all in oldList and in newList
-        List<TestCaseDep> toDelete = new ArrayList<>(oldList);
-        toDelete.removeIf(tcd1 -> newList.stream().anyMatch(tcd2 -> tcd2.hasSameKey(tcd1))); // remove if it is the same key
+        // toDelete = all in oldTestcaseDependencies and in newTestcaseDependencies
+        List<TestCaseDep> toDelete = new ArrayList<>(oldTestcaseDependencies);
+        toDelete.removeIf(testcaseDependencyA -> newTestcaseDependencies.stream().anyMatch(testcaseDependencyB -> testcaseDependencyB.hasSameKey(testcaseDependencyA))); // remove if it is the same key
         this.deleteList(toDelete);
 
     }
 
-    private List<TestCaseDep> getObjectWithSameKey(List<TestCaseDep> lst1, List<TestCaseDep> lst2) {
-        return lst1.stream()
-                .filter((tcd1) -> lst2.stream().anyMatch((tcd2) -> tcd2.hasSameKey(tcd1)))
+    private List<TestCaseDep> getObjectWithSameKey(List<TestCaseDep> testcaseDependenciesA, List<TestCaseDep> testcaseDependenciesB) {
+        return testcaseDependenciesA.stream()
+                .filter((testcaseDependencyA) -> testcaseDependenciesB.stream().anyMatch((testcaseDependencyB) -> testcaseDependencyB.hasSameKey(testcaseDependencyA)))
                 .collect(Collectors.toList());
     }
 }

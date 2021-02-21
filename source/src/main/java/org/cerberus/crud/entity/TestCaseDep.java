@@ -32,23 +32,23 @@ public class TestCaseDep {
 
     private long id;
     private String test;
-    private String testCase;
+    private String testcase;
     private String type;
-    private String depTest;
-    private String depTestCase;
-    private String depEvent;
-    private String active;
+    private String dependencyTest;
+    private String dependencyTestcase;
+    private String dependencyEvent;
+    private boolean isActive;
     private String description;
     private String usrCreated;
     private Timestamp dateCreated;
     private String usrModif;
     private Timestamp dateModif;
-    private String depDescription;
+    private String testcaseDescription;
 
     /**
      * Not included in table.
      */
-    public static final String TYPE_TCEXEEND = "TCEXEEND"; // End of a testCase Execution.
+    public static final String TYPE_TCEXEEND = "TCEXEEND"; // End of a testcase Execution.
     public static final String TYPE_EVENT = "EVENT"; // Creation of an Event.
 
     private static final Logger LOG = LogManager.getLogger(TestCaseDep.class);
@@ -69,12 +69,12 @@ public class TestCaseDep {
         this.test = test;
     }
 
-    public String getTestCase() {
-        return testCase;
+    public String getTestcase() {
+        return testcase;
     }
 
-    public void setTestCase(String testCase) {
-        this.testCase = testCase;
+    public void setTestcase(String testcase) {
+        this.testcase = testcase;
     }
 
     public String getType() {
@@ -85,36 +85,36 @@ public class TestCaseDep {
         this.type = type;
     }
 
-    public String getDepTest() {
-        return depTest;
+    public String getDependencyTest() {
+        return dependencyTest;
     }
 
-    public void setDepTest(String depTest) {
-        this.depTest = depTest;
+    public void setDependencyTest(String dependencyTest) {
+        this.dependencyTest = dependencyTest;
     }
 
-    public String getDepTestCase() {
-        return depTestCase;
+    public String getDependencyTestcase() {
+        return dependencyTestcase;
     }
 
-    public void setDepTestCase(String depTestCase) {
-        this.depTestCase = depTestCase;
+    public void setDependencyTestcase(String dependencyTestcase) {
+        this.dependencyTestcase = dependencyTestcase;
     }
 
-    public String getDepEvent() {
-        return depEvent;
+    public String getDependencyEvent() {
+        return dependencyEvent;
     }
 
-    public void setDepEvent(String depEvent) {
-        this.depEvent = depEvent;
+    public void setDependencyEvent(String dependencyEvent) {
+        this.dependencyEvent = dependencyEvent;
     }
 
-    public String getActive() {
-        return active;
+    public boolean isActive() {
+        return isActive;
     }
 
-    public void setActive(String active) {
-        this.active = active;
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     public String getDescription() {
@@ -157,31 +157,32 @@ public class TestCaseDep {
         this.dateModif = dateModif;
     }
 
-    public String getDepDescription() {
-        return depDescription;
+    public String getTestcaseDescription() {
+        return testcaseDescription;
     }
 
-    public void setDepDescription(String depDescription) {
-        this.depDescription = depDescription;
+    public void setTestcaseDescription(String testcaseDescription) {
+        this.testcaseDescription = testcaseDescription;
     }
 
     public boolean hasSameKey(TestCaseDep tcd) {
         return this.getTest().equals(tcd.getTest())
-                && this.getTestCase().equals(tcd.getTestCase())
-                && this.getDepTest().equals(tcd.getDepTest())
-                && this.getDepTestCase().equals(tcd.getDepTestCase());
+                && this.getTestcase().equals(tcd.getTestcase())
+                && this.getDependencyTest().equals(tcd.getDependencyTest())
+                && this.getDependencyTestcase().equals(tcd.getDependencyTestcase());
     }
 
     public JSONObject toJson() {
         JSONObject testCaseDependencyJson = new JSONObject();
         try {
             testCaseDependencyJson.put("id", this.getId());
-            testCaseDependencyJson.put("dependencyTest", this.getDepTest());
-            testCaseDependencyJson.put("dependencyTestcase", this.getDepTestCase());
+            testCaseDependencyJson.put("dependencyTest", this.getDependencyTest());
+            testCaseDependencyJson.put("dependencyTestcase", this.getDependencyTestcase());
             testCaseDependencyJson.put("type", this.getType());
-            testCaseDependencyJson.put("active", "Y".equals(this.getActive()));
-            testCaseDependencyJson.put("dependencyDescription", this.getDepDescription());
-            testCaseDependencyJson.put("event", this.getDepEvent());
+            testCaseDependencyJson.put("isActive", this.isActive());
+            testCaseDependencyJson.put("description", this.getDescription());
+            testCaseDependencyJson.put("testcaseDescription", this.getTestcaseDescription());
+            testCaseDependencyJson.put("dependencyEvent", this.getDependencyEvent());
         } catch (JSONException ex) {
             LOG.error(ex.toString(), ex);
         }
@@ -190,6 +191,6 @@ public class TestCaseDep {
 
     @Override
     public String toString() {
-        return "TestCaseDep{" + "id=" + id + ", test=" + test + ", testCase=" + testCase + ", type=" + type + ", depTest=" + depTest + ", depTestCase=" + depTestCase + ", depEvent=" + depEvent + ", active=" + active + ", description=" + description + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", depDescription=" + depDescription + '}';
+        return "TestCaseDep{" + "id=" + id + ", test=" + test + ", testcase=" + testcase + ", type=" + type + ", dependencyTest=" + dependencyTest + ", dependencyTestcase=" + dependencyTestcase + ", dependencyEvent=" + dependencyEvent + ", isActive=" + isActive + ", description=" + description + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", dependencyDescription=" + testcaseDescription + '}';
     }
 }
