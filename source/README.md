@@ -10,29 +10,41 @@ All you need to build and launch Cerberus locally is Docker, in this folder you 
 - `Dockerfile` building the tomcat image
 - `docker-compose.yml` running the maven build and running the tomcat & DB instance
 
-#### Step #1: Maven
+#### Step 1: Maven
 
 Run `docker-compose up maven`
 
 This will build Cerberus and provides `.war` and `.zip` file in the `target` folder.
 
-#### Step #2: DB
+If launched for the first time, dependencies will be downloaded and cached (in `localdata/maven-cache`) for the next build.
 
-Run `docker-compose up database -d`
+#### Step 2: DB
+
+Run `docker-compose run -d database`
 
 This will run the MySQL database and use the cached data in `localdata` folder.
 
 If run for the first time, the DB will empty.
 
-#### Step #3: Tomcat
+#### Step 3: Tomcat
 
 Run `docker-compose build`
 
 This will launch the `Dockerfile` instructions and build on your machine a tomcat image packaged with the built artifact from step #1 (mandatory)
 
-On completion, run `docker-compose up cerberus-tomcat -d`
+On completion, run `docker-compose run -d tomcat`
 
 You should be able to access Cerberus on [localhost:8080](http://localhost:8080).
+
+#### Makefile
+
+All above commands are encapuslated in an Makefile.
+
+Make sure to add the `make` command on your CLI first.
+
+Simply run `make refresh` to test your new code.
+
+`make destroy` will shutdown every docker instances once you're done.
     
 ### Manual installation
 

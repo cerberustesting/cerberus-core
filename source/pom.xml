@@ -625,6 +625,7 @@
                     </includes>
                     <excludes>
                         <exclude>src/main/webapp/dependencies/**</exclude>
+                        <exclude>localdata/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>

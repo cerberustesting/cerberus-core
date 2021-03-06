@@ -28,7 +28,6 @@ RUN echo "Download & install MySQL JDBC Drivers" && \
     mv /tmp/${MYSQL_JAVA_CONNECTOR_NAME}/${MYSQL_JAVA_CONNECTOR_NAME}-bin.jar /usr/local/tomcat/lib/ && \
     echo "Clean temp directory" && \
     rm /tmp/* -rf
-#COPY mysql-connector-java-5.1.20-bin.jar /usr/local/tomcat/lib/
 
 # Only for debug purpose
 #RUN ls -al /usr/local/tomcat/lib/
@@ -42,7 +41,6 @@ RUN echo "Unzip & Install Cerberus Application" && \
     cp /tmp/${CERBERUS_PACKAGE_NAME}/${CERBERUS_PACKAGE_NAME}.war /usr/local/tomcat/webapps/ROOT.war && \
     echo "Clean temp directory" && \
     rm /tmp/* -rf
-#COPY Cerberus-3.12-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
 
 # Only for debug purpose
 #RUN ls -al /usr/local/tomcat/webapps/
