@@ -506,6 +506,14 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                         envMap.put(envParam.getSystem() + LOCAL_SEPARATOR + envParam.getCountry() + LOCAL_SEPARATOR + envParam.getEnvironment(), envParam);
                     }
 
+                    if (!StringUtil.isNullOrEmpty(campaign)) {
+                        LOG.info("Campaign [" + campaign + "] asked to triggered.");
+                        LOG.info(" [" + campaign + "] tests : " + selectTest);
+                        LOG.info(" [" + campaign + "] testcases : " + selectTestCase);
+                        LOG.info(" [" + campaign + "] environments : " + environments);
+                        LOG.info(" [" + campaign + "] countries : " + countries);
+                        LOG.info(" [" + campaign + "] robots : " + robotsMap);
+                    }
                     LOG.debug("Nb of TestCase : " + selectTest.size());
                     for (int i = 0; i < selectTest.size(); i++) {
 
@@ -679,6 +687,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 // Message that everything went fine.
                 msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
 
+            } else {
+                LOG.info("No execution triggered from AddToExecutionQueue : " + errorMessage.toString());
             }
 
             // Init Answer with potencial error from Parsing parameter.
