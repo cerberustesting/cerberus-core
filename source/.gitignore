@@ -3,3 +3,4 @@ target/
 .settings
 .project
 /src/main/webapp/documentation/
+localdata

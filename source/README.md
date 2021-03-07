@@ -1,6 +1,40 @@
-## Cerberus Source
+# Cerberus Source
+
+## Run a local environment
+
+### Using Docker
+Cerberus is a Java project build with Maven and recommended to use with Tomcat.
+It rely on a MySQL (or MariaDB) database.
+
+All you need to build and launch Cerberus locally is Docker, in this folder you will find
+- `Dockerfile` building the tomcat image
+- `docker-compose.yml` running the maven build and running the tomcat & DB instance
+
+#### Step #1: Maven
+
+Run `docker-compose up maven`
+
+This will build Cerberus and provides `.war` and `.zip` file in the `target` folder.
+
+#### Step #2: DB
+
+Run `docker-compose up database -d`
+
+This will run the MySQL database and use the cached data in `localdata` folder.
+
+If run for the first time, the DB will empty.
+
+#### Step #3: Tomcat
+
+Run `docker-compose build`
+
+This will launch the `Dockerfile` instructions and build on your machine a tomcat image packaged with the built artifact from step #1 (mandatory)
+
+On completion, run `docker-compose up cerberus-tomcat -d`
+
+You should be able to access Cerberus on [localhost:8080](http://localhost:8080).
     
-### How to install my development environment ?
+### Manual installation
 
 #### Install mysql
 ```
@@ -25,7 +59,7 @@ CREATE DATABASE IF NOT EXISTS `cerberus` ;
 GRANT ALL PRIVILEGES ON `cerberus` . * TO 'cerberus'@'%';
 ```
 
-#### Install Glassfish
+#### Install Glassfish (deprecated)
 
 https://javaee.github.io/glassfish/download
 
