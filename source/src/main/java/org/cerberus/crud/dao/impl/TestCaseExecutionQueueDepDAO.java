@@ -478,7 +478,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
         AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
         final String query = "INSERT INTO testcaseexecutionqueuedep(ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status) "
-                + "SELECT ?, ?, ?, ?, Type, DependencyTest, DependencyTestcase, DependencyEvent, 'WAITING' FROM testcasedep "
+                + "SELECT ?, ?, ?, ?, Type, DependencyTest DepTest, DependencyTestcase DepTestCase, DependencyEvent DepEvent, 'WAITING' FROM testcasedep "
                 + "WHERE Test=? and TestCase=? and IsActive=1;";
 
         // Debug message on SQL.
