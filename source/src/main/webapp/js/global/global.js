@@ -36,22 +36,22 @@ var showSettings = false;
             showBurger = false;
         }
 
-    })
+    });
 
     $("#burger-setting").unbind("click").click(function () {
         if (showSettings === false) {
             $(".nav.navbar-top-links.navbar-right").show();
-            $(".navbar-header").show()
+            $(".navbar-header").show();
             showSettings = true;
         } else {
             $(".nav.navbar-top-links.navbar-right").hide();
-            $(".navbar-header").hide()
+            $(".navbar-header").hide();
             showSettings = false;
         }
 
-    })
+    });
 
-})()
+})();
 
 function handleErrorAjaxAfterTimeout(result) {
     var doc = new Doc();
@@ -109,8 +109,8 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
     }
 
     var async = true;
-    if (asyn != undefined) {
-        async = asyn
+    if (asyn !== undefined) {
+        async = asyn;
     }
 
     var cacheEntryName = "INVARIANT_" + idName;
@@ -283,31 +283,31 @@ function displayDataLibList(selectName, defaultValue, data) {
         let value = "";
         let context = "";
         if (!isEmpty(data.contentTable[option].system)) {
-            system = data.contentTable[option].system + " - "
+            system = data.contentTable[option].system + " - ";
         }
         if (!isEmpty(data.contentTable[option].environment)) {
-            environment = data.contentTable[option].environment + " - "
+            environment = data.contentTable[option].environment + " - ";
         }
         if (!isEmpty(data.contentTable[option].country)) {
-            country = data.contentTable[option].country + " - "
+            country = data.contentTable[option].country + " - ";
         }
 
         if (data.contentTable[option].type === "INTERNAL") {
             if (!isEmpty(data.contentTable[option].subDataValue)) {
-                value = data.contentTable[option].subDataValue + " - "
+                value = data.contentTable[option].subDataValue + " - ";
             }
         }
 
         if (!isEmpty(system) || !isEmpty(environment) || !isEmpty(country) || !isEmpty(value)) {
-            context = system + environment + country + value
-            context = context.substr(0, context.length - 3)
-            context = " [" + context + "]"
+            context = system + environment + country + value;
+            context = context.substr(0, context.length - 3);
+            context = " [" + context + "]";
         }
 
         $("#" + selectName).parent().find("select").append($('<option></option>').text(data.contentTable[option].name + context).val(data.contentTable[option].testDataLibID));
     }
 
-    if (defaultValue != undefined) {
+    if (defaultValue !== undefined) {
         $("#" + selectName).parent().find("select").val(defaultValue);
     }
 }
@@ -773,7 +773,7 @@ function getSelectApplication(system, forceReload) {
 
 function getSelectApplicationWithoutSystem() {
 
-    var list = []
+    var list = [];
 
     var select = $("<select></select>").addClass("form-control input-sm");
 
@@ -856,7 +856,7 @@ function getParameter(param, sys, forceReload) {
             data: {},
             async: false,
             success: function (data) {
-                sessionStorage.setItem(cacheEntryName, JSON.stringify(data.contentTable))
+                sessionStorage.setItem(cacheEntryName, JSON.stringify(data.contentTable));
                 result = data.contentTable;
             }
         });
@@ -1502,13 +1502,13 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         }
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
 
-            var like = ""
+            var like = "";
 
             $.each(oSettings.aoColumns, function (index, value) {
                 if (oSettings.aoColumns[index].like) {
-                    like += oSettings.aoColumns[index].sName + ","
+                    like += oSettings.aoColumns[index].sName + ",";
                 }
-            })
+            });
 
             like = like.substring(0, like.length - 1);
 
@@ -1568,7 +1568,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
                         JSON.stringify(data)
                         );
             } catch (e) {
-                console.error("access denied, " + e)
+                console.error("access denied, " + e);
             }
             afterDatatableFeedsForServerSide(tableConfigurations.aaData, tableConfigurations.divId, oSettings);
         };
@@ -1588,13 +1588,13 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
 
             if ("" !== user.userPreferences && undefined !== user.userPreferences && null !== user.userPreferences) {
                 var userPref = JSON.parse(user.userPreferences);
-                var currentTable = userPref['DataTables_' + settings.sInstance + '_' + location.pathname]
+                var currentTable = userPref['DataTables_' + settings.sInstance + '_' + location.pathname];
                 if (undefined !== currentTable) {
                     for (var i = 0; i < JSON.parse(currentTable)["columns"].length; i++) {
                         var currentSearch = JSON.parse(currentTable)["columns"][i]["search"]["search"];
-                        var search = currentSearch.substr(1, currentSearch.length - 2)
-                        search = search.split("|")
-                        columnSearchValuesForClientSide.push(search)
+                        var search = currentSearch.substr(1, currentSearch.length - 2);
+                        search = search.split("|");
+                        columnSearchValuesForClientSide.push(search);
                     }
                     return JSON.parse(currentTable);
                 }
@@ -2246,7 +2246,7 @@ var testDataLibNameRestriction = /[\(\.\,\)\'\"]/g;
 function autocompleteVariable(identifier, Tags) {
 
     function split(val, separator) {
-        return val.split(new RegExp(separator + "(?!.*" + separator + ")"))
+        return val.split(new RegExp(separator + "(?!.*" + separator + ")"));
     }
 
     function extractLast(term, separator) {
@@ -2309,7 +2309,7 @@ function autocompleteVariable(identifier, Tags) {
                                 this.currentIndexTag = tag;
                                 var arrayToDisplay = $.ui.autocomplete.filter(
                                         arrayLabels, extractLast(identifier, Tags[tag].regex));
-                                if (Tags[tag].isCreatable && extractLast(identifier, Tags[tag].regex) != "") {
+                                if (Tags[tag].isCreatable && extractLast(identifier, Tags[tag].regex) !== "") {
                                     arrayToDisplay.push(extractLast(identifier, Tags[tag].regex));
                                 }
                                 response(arrayToDisplay);
@@ -2506,7 +2506,7 @@ var DEFAULT_LINKIFY_OPTIONS = {
  * @see http://soapbox.github.io/linkifyjs/
  */
 function safeLinkify(str, options) {
-    return str == undefined ? str : str.linkify(options == undefined ? DEFAULT_LINKIFY_OPTIONS : options);
+    return str === undefined ? str : str.linkify(options === undefined ? DEFAULT_LINKIFY_OPTIONS : options);
 }
 
 /**
@@ -2531,7 +2531,7 @@ function isJson(str) {
 function isHTMLorXML(str) {
     var doc = new DOMParser().parseFromString(str, "text/html");
     return Array.from(doc.body.childNodes).some(function (node) {
-        return node.nodeType === 1
+        return node.nodeType === 1;
     });// Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
 }
 

@@ -363,7 +363,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String libraryStepTestCase = step.getString("libraryStepTestCase");
             int libraryStepStepId = step.getInt("libraryStepStepId");
             boolean isLibraryStep = step.getBoolean("isLibraryStep");
-            boolean isExecutionForced = "Y".equalsIgnoreCase(step.getString("isExecutionForced"));
+            boolean isExecutionForced = step.getBoolean("isExecutionForced");
             JSONArray stepActions = step.getJSONArray("actions");
 
             if (!delete) {

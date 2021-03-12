@@ -18,6 +18,8 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* global getSelectInvariant */
+
 var canUpdate = false;
 var allDelete = false;
 var loadedPropertiesNumber = -1;
@@ -1071,7 +1073,7 @@ var controlUIList = {
         {"type": "verifyTextInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8", "value3": null, "fatal": ""},
         {"type": "verifyTextNotInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8", "value3": null, "fatal": ""},
         {"type": "verifyTitle", "value2": null, "value1": "Title", "acol1": "col-lg-6", "value3": "[opt] Case Sensitive (Y/N)", "acol3": "col-lg-2", "fatal": ""},
-        {"type": "verifyUrl", "value2": null, "acol2": null, "value1": "URL", "acol1": "col-lg-8", "value3": null, "acol2": null, "fatal": ""},
+        {"type": "verifyUrl", "value2": null, "acol2": null, "value1": "URL", "acol1": "col-lg-8", "value3": null, "fatal": ""},
         {"type": "verifyTextInDialog", "value2": null, "value1": "Text", "acol1": "col-lg-8", "value3": null, "fatal": ""},
         {"type": "verifyXmlTreeStructure", "value2": "Tree", "acol2": "col-lg-4", "value1": "XPath", "acol1": "col-lg-4", "value3": null, "fatal": ""},
         {"type": "takeScreenshot", "value2": null, "value1": "[opt] Crop values in pixels (left,right,top,bottom)", "acol1": "col-lg-8", "value3": null, "fatal": null},
@@ -1140,7 +1142,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
         $("#addStepModal [name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
 
 
-        fillTestAndTestCaseSelect(".testTestCase #test", "#testCaseSelect", test, testcase, false)
+        fillTestAndTestCaseSelect(".testTestCase #test", "#testCaseSelect", test, testcase, false);
 
         $("#testCaseSelect").bind("change", function (event) {
             window.location.href = "./TestCaseScript.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI($(this).val());
@@ -1326,7 +1328,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
             });
 
             $("#addAction").click(function () {
-                addActionAndFocus()
+                addActionAndFocus();
             });
 
             // CONTEXT SAVE MENU
@@ -1360,9 +1362,9 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                     if (!jQuery.isEmptyObject(data.contentTable)) {
                         $("#seeLastExecUniq").parent().attr("href", "./TestCaseExecution.jsp?executionId=" + encodeURI(data.contentTable.id));
                         $("#seeLastExec").parent().attr("href", "./TestCaseExecutionList.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI(testcase));
-                        $("#rerunTestCase").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
+                        $("#rerunTestCase").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end);
                         $("#rerunTestCase").parent().attr("href", "./RunTests.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI(testcase) + "&country=" + encodeURI(data.contentTable.country) + "&environment=" + encodeURI(data.contentTable.env));
-                        $("#rerunFromQueue").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
+                        $("#rerunFromQueue").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end);
                         if (data.contentTable.queueId > 0) {
                             $("#rerunFromQueue").click(function () {
                                 openModalTestCaseExecutionQueue(data.contentTable.queueId, "DUPLICATE");
@@ -1370,7 +1372,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                         } else {
                             $("#rerunFromQueue").attr("disabled", true);
                         }
-                        $("#rerunFromQueueandSee").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
+                        $("#rerunFromQueueandSee").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end);
                         if (data.contentTable.queueId > 0) {
                             $("#rerunFromQueueandSee").click(function () {
                                 triggerTestCaseExecutionQueueandSeeFromTC(data.contentTable.queueId);
@@ -1571,7 +1573,7 @@ function setAllSort() {
                     action.setSort(j + 1);
 
                     // Set the action's step
-                    action.setStep(i + 1);
+                    action.setStepId(i + 1);
 
                     // Get action's controls
                     var controls = action.html.children(".control");
@@ -1584,8 +1586,8 @@ function setAllSort() {
                             // Set the control's sort
                             control.setParentActionSort(j + 1);
                             control.setSort(k + 1);
-                            control.setStep(i + 1);
-                            control.setControlSequence(k + i)
+                            control.setStepId(i + 1);
+                            control.setControlId(k + i);
 
                             // Then push control into result array
                             controlArr.push(control.getJsonData());
@@ -1656,7 +1658,7 @@ function saveScript(property) {
     if (property !== undefined) {
         for (i in propArr) {
             if (propArr[i].property === property) {
-                propArr[i].toDelete = true
+                propArr[i].toDelete = true;
             }
         }
     }
@@ -1691,7 +1693,7 @@ function saveScript(property) {
                 var startStep = GetURLParameter("startStep", null);
 
                 var tutorialParameters = "";
-                if (tutorielId != null && startStep != null) {
+                if (tutorielId !== null && startStep !== null) {
                     tutorialParameters = "&tutorielId=" + tutorielId + "&startStep=" + startStep;
                 }
 
@@ -1793,15 +1795,15 @@ function drawPropertyList(property, index, isSecondary) {
                         $(this).find("button.add-btn.btn-danger").trigger("click");
                     }
                 }
-            })
+            });
         } else {
             $("div.list-group-item").each(function () {
                 if ($(this).find("#propName").val() === property) {
                     $(this).find("button.add-btn.btn-danger").trigger("click");
                 }
-            })
+            });
         }
-    })
+    });
 
     $("#propList").append(htmlElement);
 }
@@ -1911,7 +1913,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
                         allDelete = true;
                     }
                     if (stopNothing !== true) {
-                        nothing = false
+                        nothing = false;
                         stopNothing = true;
                     }
                 } else {
@@ -1924,7 +1926,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
                     }
                 }
             }
-        })
+        });
 
         $("#propListWrapper li a").each(function () {
             if ($(this).text() === property.property)
@@ -2186,7 +2188,7 @@ function loadPropertiesAndDraw(test, testcase, testcaseinfo, propertyToFocus, ca
 
                 data.sort(function (a, b) {
                     return compareStrings(a.property, b.property);
-                })
+                });
 
                 for (var index = 0; index < data.length; index++) {
                     var property = data[index];
@@ -2216,9 +2218,9 @@ function loadPropertiesAndDraw(test, testcase, testcaseinfo, propertyToFocus, ca
                 sortSecondaryProperties("#propTable");
 
                 var scope = undefined;
-                if (propertyToFocus != undefined && propertyToFocus != null) {
+                if (propertyToFocus !== undefined && propertyToFocus !== null) {
                     $("#propTable #propName").each(function (i) {
-                        if ($(this).val() == propertyToFocus) {
+                        if ($(this).val() === propertyToFocus) {
                             scope = this;
                             $("#propertiesModal").on("shown.bs.modal", function (e) {
                                 $(scope).focus();
@@ -2241,7 +2243,7 @@ function loadPropertiesAndDraw(test, testcase, testcaseinfo, propertyToFocus, ca
 
                 array.sort(function (a, b) {
                     return compareStrings(a, b);
-                })
+                });
 
 
                 resolve(propertyListUnique);
@@ -2503,7 +2505,7 @@ function createSteps(data, steps, stepIndex, canUpdate, hasPermissionsStepLibrar
     if (stepIndex !== undefined) {
         var find = false;
         for (var i = 0; i < steps.length; i++) {
-            if (steps[i].sort == stepIndex) {
+            if (steps[i].sort === stepIndex) {
                 find = true;
                 $(steps[i].html[0]).click();
             }
@@ -2540,7 +2542,7 @@ var getModif, setModif, initModification;
     initModification = function () {
         $(".panel-body input, .panel-body select, .panel-body textarea").change(function () {
             setModif(true);
-        })
+        });
     };
 })();
 
@@ -2653,7 +2655,7 @@ function showStepUsesLibraryInConfirmationModal(object) {
         success: function (data) {
             var content = "";
             for (var i = 0; i < data.step.length; i++) {
-                content += "<a target='_blank' href='./TestCaseScript.jsp?test=" + encodeURI(data.step[i].test) + "&testcase=" + encodeURI(data.step[i].testcase) + "&stepId=" + encodeURI(data.step[i].sort) + "'>" + data.step[i].test + " - " + data.step[i].testcase + " - " + data.step[i].sort + " - " + data.step[i].description + "</a><br/>"
+                content += "<a target='_blank' href='./TestCaseScript.jsp?test=" + encodeURI(data.step[i].test) + "&testcase=" + encodeURI(data.step[i].testcase) + "&stepId=" + encodeURI(data.step[i].sort) + "'>" + data.step[i].test + " - " + data.step[i].testcase + " - " + data.step[i].sort + " - " + data.step[i].description + "</a><br/>";
             }
             $("#confirmationModal #otherStepThatUseIt").empty().append(content);
         }
@@ -2854,10 +2856,10 @@ Step.prototype.draw = function () {
     var drag = $("<div></div>").addClass("col-sm-1 drag-step").css("padding-left", "5px").css("padding-right", "2px").prop("draggable", true)
             .append($("<span></span>").addClass("fa fa-ellipsis-v"));
 
-    var loopIcon = $("<div></div>").addClass("col-sm-1 loop-Icon")
-    var libraryIcon = $("<div></div>").addClass("col-sm-1 library-Icon")
+    var loopIcon = $("<div></div>").addClass("col-sm-1 loop-Icon");
+    var libraryIcon = $("<div></div>").addClass("col-sm-1 library-Icon");
 
-    if (this.loop != "onceIfConditionTrue" && this.loop != "onceIfConditionFalse") {
+    if (this.loop !== "onceIfConditionTrue" && this.loop !== "onceIfConditionFalse") {
         loopIcon = $("<span class='loopIcon'></span>").addClass("glyphicon glyphicon-refresh loop-Icon");
     }
 
@@ -2970,7 +2972,7 @@ Step.prototype.show = function () {
     $("#stepForceExe").replaceWith(getSelectInvariant("STEPFORCEEXE", true, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepForceExe"));
     $("#stepForceExe").unbind("change").change(function () {
         setModif(true);
-        object.isExecutionForced = $(this).val();
+        object.isExecutionForced = $(this).val() === "true" ? true : false;
     });
 
     $("#stepConditionVal1").unbind("change").change(function () {
@@ -3014,7 +3016,6 @@ Step.prototype.show = function () {
             }, undefined, doc.getDocLabel("page_testcasescript", "unlink_useStep"), doc.getDocLabel("page_testcasescript", "unlink_useStep_warning"), "", "", "", "");
         }
     });
-
     $("#stepLoop").val(object.loop);
     $("#stepConditionOperator").val(object.conditionOperator);
     $("#stepConditionVal1").val(object.conditionValue1);
@@ -3078,7 +3079,7 @@ Step.prototype.setDelete = function () {
     if ($("#contentWrapper").hasClass("list-group-item-danger")) {
         $("#contentWrapper").removeClass("list-group-item-danger");
     } else {
-        $("#contentWrapper").removeClass("well").addClass("list-group-item-danger well")
+        $("#contentWrapper").removeClass("well").addClass("list-group-item-danger well");
     }
 
     if (this.toDelete) {
@@ -3102,11 +3103,11 @@ Step.prototype.setDelete = function () {
     }
 };
 
-Step.prototype.setStep = function (stepId) {
+Step.prototype.setStepId = function (stepId) {
     this.stepId = stepId;
 };
 
-Step.prototype.getStep = function () {
+Step.prototype.getStepId = function () {
     return this.stepId;
 };
 
@@ -3180,7 +3181,7 @@ function Action(json, parentStep, canUpdate) {
         this.object = "";
         this.property = "";
         */
-        this.isFatal = "";
+        this.isFatal = false;
         this.conditionOperator = "always";
         this.conditionValue1 = "";
         this.conditionValue2 = "";
@@ -3600,7 +3601,7 @@ Control.prototype.draw = function (afterControl) {
     setPlaceholderCondition(htmlElement);
     listenEnterKeypressWhenFocusingOnDescription(htmlElement);
 
-    if (afterControl == undefined) {
+    if (afterControl === undefined) {
         this.parentAction.html.append(htmlElement);
     } else {
         afterControl.html.after(htmlElement);
@@ -3608,7 +3609,7 @@ Control.prototype.draw = function (afterControl) {
     this.refreshSort();
 };
 
-Control.prototype.setStep = function (stepId) {
+Control.prototype.setStepId = function (stepId) {
     this.stepId = stepId;
 };
 
@@ -3618,11 +3619,11 @@ Control.prototype.setActionId = function (actionId) {
 
 Control.prototype.getControl = function () {
     return this.control;
-}
+};
 
 Control.prototype.setControlId = function (controlId) {
     this.controlId = controlId;
-}
+};
 
 Control.prototype.setControl = function (control) {
     this.control = control;
@@ -3717,7 +3718,7 @@ Control.prototype.generateContent = function () {
     });
 
     controlValue1Field.val(this.value1);
-    controlValue1Field.css("width", "84%")
+    controlValue1Field.css("width", "84%");
     controlValue1Field.on("change", function () {
         setModif(true);
         obj.value1 = controlValue1Field.val();
@@ -3738,7 +3739,7 @@ Control.prototype.generateContent = function () {
     });
 
     fatalList = getSelectInvariant("CTRLFATAL", false, true);
-    fatalList.val(this.fatal);
+    fatalList.val(this.isFatal);
     fatalList.css("width", "100%");
     fatalList.on("change", function () {
         setModif(true);
@@ -3898,13 +3899,13 @@ function loadGuiProperties() {
     $("div.list-group-item").each(function () {
         var editor = ace.edit($(this).find("pre").attr("id"));
         let info = new Object();
-        info["name"] = $(this).find("#propName").val()
+        info["name"] = $(this).find("#propName").val();
         info["type"] = $(this).find("select").val();
         info["value"] = editor.getValue();
         if (!($(this).find("#propName").val() in propArr)) {
             propArr[$(this).find("#propName").val()] = info;
         }
-    })
+    });
     return propArr;
 }
 
@@ -3944,7 +3945,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
             } else {
                 initAutocompleteWithTags($(this), configs, contextInfo);
             }
-        })
+        });
 
         $(document).on('settingsButton', ".content div.fieldRow input:not('.description')", function (e) {
             var doc = new Doc();
@@ -3979,7 +3980,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                     }
                     break;
                 case 'calculateProperty':
-                    let data = loadGuiProperties()
+                    let data = loadGuiProperties();
                     var viewEntry = $('<span class="input-group-btn ' + $(htmlElement).val() + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
         				class="buttonObject btn btn-default input-sm " \n\
         				title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
