@@ -75,12 +75,12 @@ public class UseTestCaseStep extends HttpServlet {
          */
         String test = request.getParameter("Test");
         String testCase = request.getParameter("TestCase");
-        Integer stepId = Integer.valueOf(request.getParameter("Step"));
+        Integer stepId = Integer.valueOf(request.getParameter("StepId"));
         String loop = request.getParameter("Loop");
         String conditionOperator = request.getParameter("conditionOperator");
-        String conditionValue1 = request.getParameter("ConditionVal1");
-        String conditionValue2 = request.getParameter("ConditionVal2");
-        String conditionValue3 = request.getParameter("ConditionVal3");
+        String conditionValue1 = request.getParameter("ConditionValue1");
+        String conditionValue2 = request.getParameter("ConditionValue2");
+        String conditionValue3 = request.getParameter("ConditionValue3");
         String description = request.getParameter("Description");
         String libraryStepTest = request.getParameter("FromTest");
         String libraryStepTestCase = request.getParameter("FromTestCase");

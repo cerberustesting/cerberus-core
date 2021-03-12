@@ -174,8 +174,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
                 /*
                  * Get steps, actions and controls from page by:
-                 * - generating a new stepId, action or control number,
-                 * - setting the correct related stepId and action for action or control
+                 * - generating a new stepId, action or controlId number,
+                 * - setting the correct related stepId and action for action or controlId
                  */
                 List<TestCaseStep> testcaseStepsFromPage = getTestCaseStepsFromParameter(request, appContext, testId, testCaseId, duplicate, steps);
                 List<TestCaseStepAction> testcaseStepActionsFromPage = new ArrayList<>();
@@ -190,19 +190,19 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                     if (testcaseStepFromPage.getActions() != null) {
                         int nextSequenceNumber = getMaxSequenceNumber(testcaseStepFromPage.getActions());
                         for (TestCaseStepAction tcsa : testcaseStepFromPage.getActions()) {
-                            if (tcsa.getSequence() == -1) {
-                                tcsa.setSequence(++nextSequenceNumber);
+                            if (tcsa.getActionId() == -1) {
+                                tcsa.setActionId(++nextSequenceNumber);
                             }
                             tcsa.setStepId(testcaseStepFromPage.getStepId());
 
                             if (tcsa.getControls() != null) {
                                 int nextControlNumber = getMaxControlNumber(tcsa.getControls());
                                 for (TestCaseStepActionControl tscac : tcsa.getControls()) {
-                                    if (tscac.getControlSequence() == -1) {
-                                        tscac.setControlSequence(++nextControlNumber);
+                                    if (tscac.getControlId() == -1) {
+                                        tscac.setControlId(++nextControlNumber);
                                     }
                                     tscac.setStepId(testcaseStepFromPage.getStepId());
-                                    tscac.setSequence(tcsa.getSequence());
+                                    tscac.setActionId(tcsa.getActionId());
                                 }
                                 testcaseStepActionControlsFromPage.addAll(tcsa.getControls());
                             }
@@ -212,7 +212,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 }
 
                 /*
-                 * Create, update or delete stepId, action and control according to the needs
+                 * Create, update or delete stepId, action and controlId according to the needs
                  */
                 List<TestCaseStep> tcsFromDtb = new ArrayList<>(tcsService.getListOfSteps(initialTest, initialTestCase));
                 tcsService.compareListAndUpdateInsertDeleteElements(testcaseStepsFromPage, tcsFromDtb, duplicate);
@@ -283,8 +283,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         int nextSequenceNumber = 0;
         if (actions != null) {
             for (TestCaseStepAction action : actions) {
-                if (nextSequenceNumber < action.getSequence()) {
-                    nextSequenceNumber = action.getSequence();
+                if (nextSequenceNumber < action.getActionId()) {
+                    nextSequenceNumber = action.getActionId();
                 }
             }
         }
@@ -292,18 +292,18 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
     }
 
     /**
-     * Get the highest control number from the given controls
+     * Get the highest controlId number from the given controls
      *
      * @param controls a collection of controls from which get the highest
-     * control number
-     * @return the highest control number from the given controls
+ controlId number
+     * @return the highest controlId number from the given controls
      */
     private int getMaxControlNumber(Collection<TestCaseStepActionControl> controls) {
         int nextControlNumber = 0;
         if (controls != null) {
             for (TestCaseStepActionControl control : controls) {
-                if (nextControlNumber < control.getControlSequence()) {
-                    nextControlNumber = control.getControlSequence();
+                if (nextControlNumber < control.getControlId()) {
+                    nextControlNumber = control.getControlId();
                 }
             }
         }
@@ -312,7 +312,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
     private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(TestCase testcase, JSONArray properties) throws JSONException {
         List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList<>();
-
+       
         for (int i = 0; i < properties.length(); i++) {
             JSONObject propJson = properties.getJSONObject(i);
             boolean delete = propJson.getBoolean("toDelete");
@@ -389,7 +389,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         return testCaseStep;
     }
 
-    private List<TestCaseStepAction> getTestCaseStepActionsFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray testCaseStepActionJson) throws JSONException {
+    private List<TestCaseStepAction> getTestCaseStepActionsFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testcase, JSONArray testCaseStepActionJson) throws JSONException {
         List<TestCaseStepAction> testCaseStepAction = new ArrayList<>();
         IFactoryTestCaseStepAction testCaseStepActionFactory = appContext.getBean(IFactoryTestCaseStepAction.class);
 
@@ -398,24 +398,24 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
             boolean delete = tcsaJson.getBoolean("toDelete");
             int stepId = tcsaJson.isNull("stepId") ? -1 : tcsaJson.getInt("stepId");
-            int sequence = tcsaJson.isNull("sequence") ? -1 : tcsaJson.getInt("sequence");
+            int actionId = tcsaJson.isNull("actionId") ? -1 : tcsaJson.getInt("actionId");
             int sort = tcsaJson.isNull("sort") ? -1 : tcsaJson.getInt("sort");
             String conditionOperator = tcsaJson.getString("conditionOperator");
-            String conditionVal1 = tcsaJson.getString("conditionVal1");
-            String conditionVal2 = tcsaJson.getString("conditionVal2");
-            String conditionVal3 = tcsaJson.getString("conditionVal3");
+            String conditionValue1 = tcsaJson.getString("conditionValue1");
+            String conditionValue2 = tcsaJson.getString("conditionValue2");
+            String conditionValue3 = tcsaJson.getString("conditionValue3");
             String action = tcsaJson.getString("action");
-            String object = tcsaJson.getString("object");
-            String property = tcsaJson.getString("property");
+            String value1 = tcsaJson.getString("object");
+            String value2 = tcsaJson.getString("property");
             String value3 = tcsaJson.getString("value3");
-            String forceExeStatus = tcsaJson.getString("forceExeStatus");
+            boolean isFatal = tcsaJson.getBoolean("isFatal");
             String description = tcsaJson.getString("description");
             String screenshot = tcsaJson.getString("screenshotFileName");
             JSONArray controlArray = tcsaJson.getJSONArray("controls");
 
             if (!delete) {
-                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, stepId, sequence, sort, conditionOperator, conditionVal1, conditionVal2, conditionVal3, action, object, property, value3, forceExeStatus, description, screenshot);
-                tcsa.setControls(getTestCaseStepActionControlsFromParameter(request, appContext, test, testCase, controlArray));
+                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testcase, stepId, actionId, sort, conditionOperator, conditionValue1, conditionValue2, conditionValue3, action, value1, value2, value3, isFatal, description, screenshot);
+                tcsa.setControls(getTestCaseStepActionControlsFromParameter(request, appContext, test, testcase, controlArray));
                 testCaseStepAction.add(tcsa);
             }
         }
@@ -431,23 +431,23 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
             boolean delete = controlJson.getBoolean("toDelete");
             int stepId = controlJson.isNull("stepId") ? -1 : controlJson.getInt("stepId");
-            int sequence = controlJson.isNull("sequence") ? -1 : controlJson.getInt("sequence");
-            int control = controlJson.isNull("controlSequence") ? -1 : controlJson.getInt("controlSequence");
+            int actionId = controlJson.isNull("actionId") ? -1 : controlJson.getInt("actionId");
+            int controlId = controlJson.isNull("controlId") ? -1 : controlJson.getInt("controlId");
             int sort = controlJson.isNull("sort") ? -1 : controlJson.getInt("sort");
             String conditionOperator = controlJson.isNull("conditionOperator") ? "always" : controlJson.getString("conditionOperator");
-            String conditionVal1 = controlJson.isNull("conditionVal1") ? "" : controlJson.getString("conditionVal1");
-            String conditionVal2 = controlJson.isNull("conditionVal2") ? "" : controlJson.getString("conditionVal2");
-            String conditionVal3 = controlJson.isNull("conditionVal3") ? "" : controlJson.getString("conditionVal3");
+            String conditionValue1 = controlJson.isNull("conditionValue1") ? "" : controlJson.getString("conditionValue1");
+            String conditionValue2 = controlJson.isNull("conditionValue2") ? "" : controlJson.getString("conditionValue2");
+            String conditionValue3 = controlJson.isNull("conditionValue3") ? "" : controlJson.getString("conditionValue3");
             //String type = controlJson.getString("objType");
             String controlValue = controlJson.getString("control");
             String value1 = controlJson.getString("value1");
             String value2 = controlJson.getString("value2");
             String value3 = controlJson.isNull("value3") ? "" : controlJson.getString("value3");
-            String fatal = controlJson.getString("fatal");
+            boolean isFatal = controlJson.getBoolean("isFatal");
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");
             if (!delete) {
-                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, stepId, sequence, control, sort, conditionOperator, conditionVal1, conditionVal2, conditionVal3, controlValue, value1, value2, value3, fatal, description, screenshot));
+                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, stepId, actionId, controlId, sort, conditionOperator, conditionValue1, conditionValue2, conditionValue3, controlValue, value1, value2, value3, isFatal, description, screenshot));
             }
         }
         return testCaseStepActionControl;

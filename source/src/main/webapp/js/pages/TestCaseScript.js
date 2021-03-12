@@ -1124,7 +1124,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
         getSelectInvariant("PROPERTYTYPE", false, true);
         getSelectInvariant("PROPERTYDATABASE", false, true);
         getSelectInvariant("PROPERTYNATURE", false, true);
-        getSelectInvariant("ACTIONFORCEEXESTATUS", false, true);
+        getSelectInvariant("ACTIONFATAL", false, true);
         getSelectInvariant("STEPLOOP", false, true);
         getSelectInvariant("STEPCONDITIONOPERATOR", false, true);
         bindToggleCollapse();
@@ -2452,7 +2452,7 @@ function addStep(event) {
 
                     $.ajax({
                         url: "ReadTestCaseStep",
-                        data: {test: useStep.test, testcase: useStep.testCase, stepId: useStep.step},
+                        data: {test: useStep.test, testcase: useStep.testcase, stepId: useStep.stepId},
                         async: false,
                         success: function (data) {
                             step.actions = data.step.actions;
@@ -2467,8 +2467,8 @@ function addStep(event) {
                     if ($("#" + generateImportInfoId(useStep)).find("[name='useStep']").prop("checked")) {
                         step.isUsingLibraryStep = true;
                         step.libraryStepTest = useStep.test;
-                        step.libraryStepTestCase = useStep.testCase;
-                        step.libraryStepStepId = useStep.step;
+                        step.libraryStepTestCase = useStep.testcase;
+                        step.libraryStepStepId = useStep.stepId;
                         step.libraryStepSort = useStep.sort;
                     }
                 }
@@ -2815,11 +2815,7 @@ function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
     this.sort = json.sort;
     this.stepId = json.stepId;
     this.description = json.description;
-    if (json.isExecutionForced) {
-        this.isExecutionForced = "Y";
-    } else {
-        this.isExecutionForced = "N";
-    }
+    this.isExecutionForced = json.isExecutionForced;
     this.loop = json.loop;
     this.conditionOperator = json.conditionOperator;
     this.conditionValue1 = json.conditionValue1;
@@ -3155,7 +3151,7 @@ function Action(json, parentStep, canUpdate) {
         this.test = json.test;
         this.testcase = json.testcase;
         this.stepId = json.stepId;
-        this.sequence = json.actionId;
+        this.actionId = json.actionId;
         this.sort = json.sort;
         this.description = json.description;
         this.action = json.action;
@@ -3163,11 +3159,11 @@ function Action(json, parentStep, canUpdate) {
         //this.object = json.value1;
         //this.property = json.value2;
         // FIN SUPPR
-        this.forceExeStatus = json.isFatal;
+        this.isFatal = json.isFatal;
         this.conditionOperator = json.conditionOperator;
-        this.conditionVal1 = json.conditionVal1;
-        this.conditionVal2 = json.conditionVal2;
-        this.conditionVal3 = json.conditionVal3;
+        this.conditionValue1 = json.conditionValue1;
+        this.conditionValue2 = json.conditionValue2;
+        this.conditionValue3 = json.conditionValue3;
         this.screenshotFileName = json.screenshotFileName;
         this.value1 = json.value1;
         this.value2 = json.value2;
@@ -3180,13 +3176,15 @@ function Action(json, parentStep, canUpdate) {
         this.stepId = parentStep.stepId;
         this.description = "";
         this.action = "doNothing";
+        /*
         this.object = "";
         this.property = "";
-        this.forceExeStatus = "";
+        */
+        this.isFatal = "";
         this.conditionOperator = "always";
-        this.conditionVal1 = "";
-        this.conditionVal2 = "";
-        this.conditionVal3 = "";
+        this.conditionValue1 = "";
+        this.conditionValue2 = "";
+        this.conditionValue3 = "";
         this.screenshotFileName = "";
         this.value1 = "";
         this.value2 = "";
@@ -3290,16 +3288,16 @@ Action.prototype.setControl = function (control, afterControl, canUpdate) {
     }
 };
 
-Action.prototype.setStep = function (stepId) {
+Action.prototype.setStepId = function (stepId) {
     this.stepId = stepId;
 };
 
-Action.prototype.setSequence = function (sequence) {
-    this.sequence = sequence;
+Action.prototype.setActionId = function (actionId) {
+    this.actionId = actionId;
 };
 
-Action.prototype.getSequence = function () {
-    return this.sequence;
+Action.prototype.getActionId = function () {
+    return this.actionId;
 };
 
 Action.prototype.setSort = function (sort) {
@@ -3366,23 +3364,23 @@ Action.prototype.generateContent = function () {
     actionconditionval1.css("width", "100%");
     actionconditionval1.on("change", function () {
         setModif(true);
-        obj.conditionVal1 = actionconditionval1.val();
+        obj.conditionValue1 = actionconditionval1.val();
     });
-    actionconditionval1.val(this.conditionVal1);
+    actionconditionval1.val(this.conditionValue1);
 
     actionconditionval2.css("width", "100%");
     actionconditionval2.on("change", function () {
         setModif(true);
-        obj.conditionVal2 = actionconditionval2.val();
+        obj.conditionValue2 = actionconditionval2.val();
     });
-    actionconditionval2.val(this.conditionVal2);
+    actionconditionval2.val(this.conditionValue2);
 
     actionconditionval3.css("width", "100%");
     actionconditionval3.on("change", function () {
         setModif(true);
-        obj.conditionVal3 = actionconditionval3.val();
+        obj.conditionValue3 = actionconditionval3.val();
     });
-    actionconditionval3.val(this.conditionVal3);
+    actionconditionval3.val(this.conditionValue3);
 
     actions = getSelectInvariant("ACTION", false, true).css("width", "100%").attr("id", "actionSelect");
     actions.val(this.action);
@@ -3393,11 +3391,11 @@ Action.prototype.generateContent = function () {
         $(actions).parent().parent().find(".input-group-btn").remove();
     });
 
-    forceExeStatusList = getSelectInvariant("ACTIONFORCEEXESTATUS", false, true).css("width", "100%");
-    forceExeStatusList.val(this.forceExeStatus);
+    forceExeStatusList = getSelectInvariant("ACTIONFATAL", false, true).css("width", "100%");
+    forceExeStatusList.val(this.isFatal);
     forceExeStatusList.on("change", function () {
         setModif(true);
-        obj.forceExeStatus = forceExeStatusList.val();
+        obj.isFatal = forceExeStatusList.val();
     });
 
     value1Field.val(this.value1);
@@ -3465,18 +3463,18 @@ Action.prototype.getJsonData = function () {
     json.test = this.test;
     json.testcase = this.testcase;
     json.stepId = this.stepId;
-    json.sequence = this.sequence;
+    json.actionId = this.actionId;
     json.sort = this.sort;
     json.description = this.description;
     json.action = this.action;
     json.object = this.value1;
     json.property = this.value2;
     json.value3 = this.value3;
-    json.forceExeStatus = this.forceExeStatus;
+    json.isFatal = this.isFatal;
     json.conditionOperator = this.conditionOperator;
-    json.conditionVal1 = this.conditionVal1;
-    json.conditionVal2 = this.conditionVal2;
-    json.conditionVal3 = this.conditionVal3;
+    json.conditionValue1 = this.conditionValue1;
+    json.conditionValue2 = this.conditionValue2;
+    json.conditionValue3 = this.conditionValue3;
     json.screenshotFileName = "";
 
     return json;
@@ -3487,37 +3485,37 @@ function Control(json, parentAction, canUpdate) {
         this.test = json.test;
         this.testcase = json.testcase;
         this.stepId = json.stepId;
-        this.sequence = json.actionId;
+        this.actionId = json.actionId;
         this.control = json.control;
         this.sort = json.sort;
         this.description = json.description;
         //this.objType = json.objType;
-        this.controlSequence = json.controlId;
+        this.controlId = json.controlId;
         this.value1 = json.value1;
         this.value2 = json.value2;
         this.value3 = json.value3;
-        this.fatal = json.isFatal;
+        this.isFatal = json.isFatal;
         this.conditionOperator = json.conditionOperator;
-        this.conditionVal1 = json.conditionVal1;
-        this.conditionVal2 = json.conditionVal2;
-        this.conditionVal3 = json.conditionVal3;
+        this.conditionValue1 = json.conditionValue1;
+        this.conditionValue2 = json.conditionValue2;
+        this.conditionValue3 = json.conditionValue3;
         this.screenshotFileName = "";
     } else {
         this.test = "";
         this.testcase = "";
         this.stepId = parentAction.stepId;
-        this.sequence = parentAction.actionId;
+        this.actionId = parentAction.actionId;
         this.control = "Unknown";
         this.description = "";
         this.objType = "Unknown";
         this.value1 = "";
         this.value2 = "";
         this.value3 = "";
-        this.fatal = "N";
+        this.isFatal = false;
         this.conditionOperator = "always";
-        this.conditionVal1 = "";
-        this.conditionVal2 = "";
-        this.conditionVal3 = "";
+        this.conditionValue1 = "";
+        this.conditionValue2 = "";
+        this.conditionValue3 = "";
         this.screenshotFileName = "";
     }
 
@@ -3614,16 +3612,16 @@ Control.prototype.setStep = function (stepId) {
     this.stepId = stepId;
 };
 
-Control.prototype.setSequence = function (sequence) {
-    this.sequence = sequence;
+Control.prototype.setActionId = function (actionId) {
+    this.actionId = actionId;
 };
 
 Control.prototype.getControl = function () {
     return this.control;
 }
 
-Control.prototype.setControlSequence = function (controlSequence) {
-    this.controlSequence = controlSequence;
+Control.prototype.setControlId = function (controlId) {
+    this.controlId = controlId;
 }
 
 Control.prototype.setControl = function (control) {
@@ -3687,25 +3685,25 @@ Control.prototype.generateContent = function () {
     });
     controlconditionoperator.val(this.conditionOperator).trigger("change");
 
-    controlconditionval1.val(this.conditionVal1);
+    controlconditionval1.val(this.conditionValue1);
     controlconditionval1.css("width", "100%");
     controlconditionval1.on("change", function () {
         setModif(true);
-        obj.conditionVal1 = controlconditionval1.val();
+        obj.conditionValue1 = controlconditionval1.val();
     });
 
-    controlconditionval2.val(this.conditionVal2);
+    controlconditionval2.val(this.conditionValue2);
     controlconditionval2.css("width", "100%");
     controlconditionval2.on("change", function () {
         setModif(true);
-        obj.conditionVal2 = controlconditionval2.val();
+        obj.conditionValue2 = controlconditionval2.val();
     });
 
-    controlconditionval3.val(this.conditionVal3);
+    controlconditionval3.val(this.conditionValue3);
     controlconditionval3.css("width", "100%");
     controlconditionval3.on("change", function () {
         setModif(true);
-        obj.conditionVal3 = controlconditionval3.val();
+        obj.conditionValue3 = controlconditionval3.val();
     });
 
 
@@ -3744,7 +3742,7 @@ Control.prototype.generateContent = function () {
     fatalList.css("width", "100%");
     fatalList.on("change", function () {
         setModif(true);
-        obj.fatal = fatalList.val();
+        obj.isFatal = fatalList.val();
     });
 
     firstRow.append(descContainer);
@@ -3789,19 +3787,19 @@ Control.prototype.getJsonData = function () {
     json.test = this.test;
     json.testcase = this.testcase;
     json.stepId = this.stepId;
-    json.sequence = this.sequence;
+    json.actionId = this.actionId;
     json.control = this.control;
     json.sort = this.sort;
     json.description = this.description;
-    json.controlSequence = this.controlSequence;
+    json.controlId = this.controlId;
     json.value1 = this.value1;
     json.value2 = this.value2;
     json.value3 = this.value3;
-    json.fatal = this.fatal;
+    json.isFatal = this.isFatal;
     json.conditionOperator = this.conditionOperator;
-    json.conditionVal1 = this.conditionVal1;
-    json.conditionVal2 = this.conditionVal2;
-    json.conditionVal3 = this.conditionVal3;
+    json.conditionValue1 = this.conditionValue1;
+    json.conditionValue2 = this.conditionValue2;
+    json.conditionValue3 = this.conditionValue3;
 
     json.screenshotFileName = this.screenshotFileName;
 

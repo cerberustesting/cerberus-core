@@ -294,7 +294,7 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                     }
             }
             if (action != null) {
-                newAction = testcaseStepActionFactory.create(targetFolder, targetTestcase, 1, i, i, TestCaseStepAction.CONDITIONOPERATOR_ALWAYS, "", "", "", action, value1, value2, "", "N", description, null);
+                newAction = testcaseStepActionFactory.create(targetFolder, targetTestcase, 1, i, i, TestCaseStepAction.CONDITIONOPERATOR_ALWAYS, "", "", "", action, value1, value2, "", false, description, null);
             }
         } catch (JSONException ex) {
             LOG.error(ex, ex);

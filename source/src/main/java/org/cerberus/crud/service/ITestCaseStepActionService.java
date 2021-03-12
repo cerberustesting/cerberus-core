@@ -32,7 +32,7 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestCaseStepActionService {
     
-    TestCaseStepAction findTestCaseStepActionbyKey (String test, String testCase, int stepId, int sequence);
+    TestCaseStepAction findTestCaseStepActionbyKey (String test, String testCase, int stepId, int actionId);
 
     List<TestCaseStepAction> getListOfAction(String test, String testcase, int stepId);
     
@@ -40,7 +40,7 @@ public interface ITestCaseStepActionService {
     
     boolean insertListTestCaseStepAction(List<TestCaseStepAction> testCaseStepActionList);
     
-    boolean changeTestCaseStepActionSequence(String test, String testCase, int stepId, int oldSequence, int newSequence);
+    boolean changeTestCaseStepActionActionId(String test, String testCase, int stepId, int oldActionId, int newActionId);
 
     public boolean updateTestCaseStepAction(TestCaseStepAction tcsa);
 

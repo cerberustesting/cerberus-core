@@ -5680,3 +5680,98 @@ UPDATE testcasedep SET IsActive = 0 WHERE IsActive != '1';
 
 -- 1593
 ALTER TABLE testcasedep MODIFY IsActive BOOLEAN DEFAULT 1;
+
+-- 1594
+ALTER TABLE testcasestepactioncontrol DROP FOREIGN KEY FK_testcasestepactioncontrol_01;
+
+-- 1595
+ALTER TABLE testcasestepaction DROP FOREIGN KEY FK_testcasestepaction_01;
+
+-- 1596
+ALTER TABLE testcasestepactioncontrol
+  ADD COLUMN UsrCreated VARCHAR(45) NOT NULL DEFAULT '',
+  ADD COLUMN DateCreated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  ADD COLUMN UsrModif VARCHAR(45) NOT NULL DEFAULT '',
+  CHANGE COLUMN TestCase Testcase VARCHAR(45) NOT NULL,
+  CHANGE COLUMN Step StepId INT(10) UNSIGNED NOT NULL,
+  CHANGE COLUMN Sequence ActionId INT(10) UNSIGNED NOT NULL,
+  CHANGE COLUMN ControlSequence ControlId INT(10) UNSIGNED NOT NULL,
+  CHANGE COLUMN ConditionVal1 ConditionValue1 TEXT,
+  CHANGE COLUMN ConditionVal2 ConditionValue2 TEXT,
+  CHANGE COLUMN ConditionVal3 ConditionValue3 TEXT,
+  CHANGE COLUMN Fatal IsFatal VARCHAR(1),
+  CHANGE COLUMN last_modified DateModif TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER UsrModif;
+
+-- 1597
+UPDATE testcasestepactioncontrol SET IsFatal = 1 WHERE IsFatal = 'Y';
+
+-- 1598
+UPDATE testcasestepactioncontrol SET IsFatal = 0 WHERE IsFatal != '1';
+
+-- 1599
+ALTER TABLE testcasestepactioncontrol MODIFY IsFatal BOOLEAN DEFAULT 0;
+
+-- 1600
+ALTER TABLE testcasestepaction
+  ADD COLUMN UsrCreated VARCHAR(45) NOT NULL DEFAULT '',
+  ADD COLUMN DateCreated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  ADD COLUMN UsrModif VARCHAR(45) NOT NULL DEFAULT '',
+  CHANGE COLUMN TestCase Testcase VARCHAR(45) NOT NULL,
+  CHANGE COLUMN Step StepId INT(10) UNSIGNED NOT NULL,
+  CHANGE COLUMN Sequence ActionId INT(10) UNSIGNED NOT NULL,
+  CHANGE COLUMN ConditionVal1 ConditionValue1 TEXT,
+  CHANGE COLUMN ConditionVal2 ConditionValue2 TEXT,
+  CHANGE COLUMN ConditionVal3 ConditionValue3 TEXT,
+  CHANGE COLUMN ForceExeStatus IsFatal VARCHAR(45) NOT NULL,
+  CHANGE COLUMN last_modified DateModif TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER UsrModif;
+
+-- 1601
+UPDATE testcasestepaction SET IsFatal = 0 WHERE IsFatal = 'PE';
+
+-- 1602
+UPDATE testcasestepaction SET IsFatal = 1 WHERE IsFatal != '0';
+
+-- 1603
+ALTER TABLE testcasestepaction MODIFY IsFatal BOOLEAN DEFAULT 0;
+
+-- 1604
+ALTER TABLE testcasestepaction
+  ADD CONSTRAINT FK_testcasestepaction_01
+  FOREIGN KEY (Test , Testcase , StepId)
+  REFERENCES testcasestep (Test , Testcase , StepId)
+  ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- 1605
+ALTER TABLE testcasestepactioncontrol
+  ADD CONSTRAINT FK_testcasestepactioncontrol_01
+  FOREIGN KEY (Test , Testcase , StepId , ActionId)
+  REFERENCES testcasestepaction (Test , Testcase , StepId , ActionId)
+  ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- 1606
+ALTER TABLE testcase
+    CHANGE TestCase Testcase VARCHAR(45) NOT NULL,
+    CHANGE COLUMN ConditionVal1 ConditionValue1 TEXT,
+    CHANGE COLUMN ConditionVal2 ConditionValue2 TEXT,
+    CHANGE COLUMN ConditionVal3 ConditionValue3 TEXT;
+
+-- 1607
+UPDATE invariant SET value = 'false' where idname = 'STEPFORCEEXE' AND value = 'N';
+
+-- 1608
+UPDATE invariant SET value = 'true' where idname = 'STEPFORCEEXE' AND value = 'Y';
+
+-- 1609
+UPDATE invariant SET idname = 'ACTIONFATAL' WHERE idname = 'ACTIONFORCEEXESTATUS';
+
+-- 1610
+UPDATE invariant SET value = 'true' WHERE idname = 'ACTIONFATAL' AND value = 'PE';
+
+-- 1611
+UPDATE invariant SET value = 'false' WHERE idname = 'ACTIONFATAL' AND value != 'true';
+
+-- 1612
+UPDATE invariant SET value = 'true' WHERE idname = 'CTRLFATAL' AND value = 'Y';
+
+-- 1613
+UPDATE invariant SET value = 'false' WHERE idname = 'CTRLFATAL' AND value != 'true';

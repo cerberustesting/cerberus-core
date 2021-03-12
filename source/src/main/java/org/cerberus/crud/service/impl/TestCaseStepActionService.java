@@ -52,8 +52,8 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     private ITestCaseStepActionControlService testCaseStepActionControlService;
 
     @Override
-    public TestCaseStepAction findTestCaseStepActionbyKey(String test, String testCase, int stepId, int sequence) {
-        return testCaseStepActionDAO.readByKey(test, testCase, stepId, sequence);
+    public TestCaseStepAction findTestCaseStepActionbyKey(String test, String testcase, int stepId, int actionId) {
+        return testCaseStepActionDAO.readByKey(test, testcase, stepId, actionId);
     }
 
     @Override
@@ -80,8 +80,8 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     }
 
     @Override
-    public boolean changeTestCaseStepActionSequence(String test, String testCase, int stepId, int oldSequence, int newSequence) {
-        return testCaseStepActionDAO.changeTestCaseStepActionSequence(test, testCase, stepId, oldSequence, newSequence);
+    public boolean changeTestCaseStepActionActionId(String test, String testcase, int stepId, int oldActionId, int newActionId) {
+        return testCaseStepActionDAO.changeTestCaseStepActionActionId(test, testcase, stepId, oldActionId, newActionId);
     }
 
     @Override
@@ -96,8 +96,8 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     }
 
     @Override
-    public List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testCase) throws CerberusException {
-        return testCaseStepActionDAO.findTestCaseStepActionbyTestTestCase(test, testCase);
+    public List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testcase) throws CerberusException {
+        return testCaseStepActionDAO.findTestCaseStepActionbyTestTestCase(test, testcase);
 
     }
 
@@ -170,7 +170,7 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
         List<TestCaseStepAction> tcsaList = new ArrayList<>();
         for (Object action : actions.getDataList()) {
             TestCaseStepAction tces = (TestCaseStepAction) action;
-            AnswerList<TestCaseStepActionControl> controls = testCaseStepActionControlService.readByVarious1(test, testcase, stepId, tces.getSequence());
+            AnswerList<TestCaseStepActionControl> controls = testCaseStepActionControlService.readByVarious1(test, testcase, stepId, tces.getActionId());
             tces.setControls((List<TestCaseStepActionControl>) controls.getDataList());
             tcsaList.add(tces);
         }
@@ -198,7 +198,7 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
         List<TestCaseStepAction> listToCreate = new ArrayList<>();
         for (TestCaseStepAction objectToDuplicate : objectList) {
             objectToDuplicate.setTest(targetTest);
-            objectToDuplicate.setTestCase(targetTestCase);
+            objectToDuplicate.setTestcase(targetTestCase);
             listToCreate.add(objectToDuplicate);
         }
         ans = createList(listToCreate);

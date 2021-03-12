@@ -19,11 +19,13 @@
  */
 package org.cerberus.crud.entity;
 
+import java.sql.Timestamp;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,21 +35,25 @@ import org.apache.logging.log4j.Logger;
 public class TestCaseStepAction {
 
     private String test;
-    private String testCase;
+    private String testcase;
     private int stepId;
-    private int sequence;
+    private int actionId;
     private int sort;
     private String conditionOperator;
-    private String conditionVal1;
-    private String conditionVal2;
-    private String conditionVal3;
+    private String conditionValue1;
+    private String conditionValue2;
+    private String conditionValue3;
     private String action;
     private String value1;
     private String value2;
     private String value3;
-    private String forceExeStatus;
+    private boolean isFatal;
     private String description;
     private String screenshotFilename;
+    private String usrCreated;
+    private Timestamp dateCreated;
+    private String usrModif;
+    private Timestamp dateModif;
 
     /**
      * From here are data outside database model.
@@ -149,28 +155,28 @@ public class TestCaseStepAction {
         this.conditionOperator = conditionOperator;
     }
 
-    public String getConditionVal1() {
-        return conditionVal1;
+    public String getConditionValue1() {
+        return conditionValue1;
     }
 
-    public void setConditionVal1(String conditionVal1) {
-        this.conditionVal1 = conditionVal1;
+    public void setConditionValue1(String conditionValue1) {
+        this.conditionValue1 = conditionValue1;
     }
 
-    public String getConditionVal2() {
-        return conditionVal2;
+    public String getConditionValue2() {
+        return conditionValue2;
     }
 
-    public void setConditionVal2(String conditionVal2) {
-        this.conditionVal2 = conditionVal2;
+    public void setConditionValue2(String conditionValue2) {
+        this.conditionValue2 = conditionValue2;
     }
 
-    public String getConditionVal3() {
-        return conditionVal3;
+    public String getConditionValue3() {
+        return conditionValue3;
     }
 
-    public void setConditionVal3(String conditionVal3) {
-        this.conditionVal3 = conditionVal3;
+    public void setConditionValue3(String conditionValue3) {
+        this.conditionValue3 = conditionValue3;
     }
 
     public String getScreenshotFilename() {
@@ -221,20 +227,20 @@ public class TestCaseStepAction {
         this.value3 = value3;
     }
 
-    public String getForceExeStatus() {
-        return forceExeStatus;
+    public boolean isFatal() {
+        return isFatal;
     }
 
-    public void setForceExeStatus(String forceExeStatus) {
-        this.forceExeStatus = forceExeStatus;
+    public void setFatal(boolean isFatal) {
+        this.isFatal = isFatal;
     }
 
-    public int getSequence() {
-        return sequence;
+    public int getActionId() {
+        return actionId;
     }
 
-    public void setSequence(int sequence) {
-        this.sequence = sequence;
+    public void setActionId(int actionId) {
+        this.actionId = actionId;
     }
 
     public int getSort() {
@@ -269,12 +275,44 @@ public class TestCaseStepAction {
         this.description = description;
     }
 
-    public String getTestCase() {
-        return testCase;
+    public String getTestcase() {
+        return testcase;
     }
 
-    public void setTestCase(String testCase) {
-        this.testCase = testCase;
+    public void setTestcase(String testcase) {
+        this.testcase = testcase;
+    }
+
+    public String getUsrCreated() {
+        return usrCreated;
+    }
+
+    public void setUsrCreated(String usrCreated) {
+        this.usrCreated = usrCreated;
+    }
+
+    public Timestamp getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Timestamp dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public String getUsrModif() {
+        return usrModif;
+    }
+
+    public void setUsrModif(String usrModif) {
+        this.usrModif = usrModif;
+    }
+
+    public Timestamp getDateModif() {
+        return dateModif;
+    }
+
+    public void setDateModif(Timestamp dateModif) {
+        this.dateModif = dateModif;
     }
 
     public boolean hasSameKey(TestCaseStepAction obj) {
@@ -288,13 +326,13 @@ public class TestCaseStepAction {
         if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
             return false;
         }
-        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
+        if ((this.testcase == null) ? (other.testcase != null) : !this.testcase.equals(other.testcase)) {
             return false;
         }
         if (this.stepId != other.stepId) {
             return false;
         }
-        if (this.sequence != other.sequence) {
+        if (this.actionId != other.actionId) {
             return false;
         }
         return true;
@@ -303,26 +341,30 @@ public class TestCaseStepAction {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 79 * hash + (this.test != null ? this.test.hashCode() : 0);
-        hash = 79 * hash + (this.testCase != null ? this.testCase.hashCode() : 0);
-        hash = 79 * hash + this.stepId;
-        hash = 79 * hash + this.sequence;
-        hash = 79 * hash + this.sort;
-        hash = 79 * hash + (this.conditionOperator != null ? this.conditionOperator.hashCode() : 0);
-        hash = 79 * hash + (this.conditionVal1 != null ? this.conditionVal1.hashCode() : 0);
-        hash = 79 * hash + (this.conditionVal2 != null ? this.conditionVal2.hashCode() : 0);
-        hash = 79 * hash + (this.conditionVal3 != null ? this.conditionVal3.hashCode() : 0);
-        hash = 79 * hash + (this.action != null ? this.action.hashCode() : 0);
-        hash = 79 * hash + (this.value1 != null ? this.value1.hashCode() : 0);
-        hash = 79 * hash + (this.value2 != null ? this.value2.hashCode() : 0);
-        hash = 79 * hash + (this.value3 != null ? this.value3.hashCode() : 0);
-        hash = 79 * hash + (this.forceExeStatus != null ? this.forceExeStatus.hashCode() : 0);
-        hash = 79 * hash + (this.description != null ? this.description.hashCode() : 0);
+        hash = 97 * hash + Objects.hashCode(this.test);
+        hash = 97 * hash + Objects.hashCode(this.testcase);
+        hash = 97 * hash + this.stepId;
+        hash = 97 * hash + this.actionId;
+        hash = 97 * hash + this.sort;
+        hash = 97 * hash + Objects.hashCode(this.conditionOperator);
+        hash = 97 * hash + Objects.hashCode(this.conditionValue1);
+        hash = 97 * hash + Objects.hashCode(this.conditionValue2);
+        hash = 97 * hash + Objects.hashCode(this.conditionValue3);
+        hash = 97 * hash + Objects.hashCode(this.action);
+        hash = 97 * hash + Objects.hashCode(this.value1);
+        hash = 97 * hash + Objects.hashCode(this.value2);
+        hash = 97 * hash + Objects.hashCode(this.value3);
+        hash = 97 * hash + (this.isFatal ? 1 : 0);
+        hash = 97 * hash + Objects.hashCode(this.description);
+        hash = 97 * hash + Objects.hashCode(this.screenshotFilename);
         return hash;
     }
 
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
         if (obj == null) {
             return false;
         }
@@ -330,60 +372,62 @@ public class TestCaseStepAction {
             return false;
         }
         final TestCaseStepAction other = (TestCaseStepAction) obj;
-        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
-            return false;
-        }
-        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
-            return false;
-        }
         if (this.stepId != other.stepId) {
             return false;
         }
-        if (this.sequence != other.sequence) {
+        if (this.actionId != other.actionId) {
             return false;
         }
         if (this.sort != other.sort) {
             return false;
         }
-        if ((this.conditionOperator == null) ? (other.conditionOperator != null) : !this.conditionOperator.equals(other.conditionOperator)) {
+        if (this.isFatal != other.isFatal) {
             return false;
         }
-        if ((this.conditionVal1 == null) ? (other.conditionVal1 != null) : !this.conditionVal1.equals(other.conditionVal1)) {
+        if (!Objects.equals(this.test, other.test)) {
             return false;
         }
-        if ((this.conditionVal2 == null) ? (other.conditionVal2 != null) : !this.conditionVal2.equals(other.conditionVal2)) {
+        if (!Objects.equals(this.testcase, other.testcase)) {
             return false;
         }
-        if ((this.conditionVal3 == null) ? (other.conditionVal3 != null) : !this.conditionVal3.equals(other.conditionVal3)) {
+        if (!Objects.equals(this.conditionOperator, other.conditionOperator)) {
             return false;
         }
-        if ((this.action == null) ? (other.action != null) : !this.action.equals(other.action)) {
+        if (!Objects.equals(this.conditionValue1, other.conditionValue1)) {
             return false;
         }
-        if ((this.value1 == null) ? (other.value1 != null) : !this.value1.equals(other.value1)) {
+        if (!Objects.equals(this.conditionValue2, other.conditionValue2)) {
             return false;
         }
-        if ((this.value2 == null) ? (other.value2 != null) : !this.value2.equals(other.value2)) {
+        if (!Objects.equals(this.conditionValue3, other.conditionValue3)) {
             return false;
         }
-        if ((this.value3 == null) ? (other.value3 != null) : !this.value3.equals(other.value3)) {
+        if (!Objects.equals(this.action, other.action)) {
             return false;
         }
-        if ((this.forceExeStatus == null) ? (other.forceExeStatus != null) : !this.forceExeStatus.equals(other.forceExeStatus)) {
+        if (!Objects.equals(this.value1, other.value1)) {
             return false;
         }
-        if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
+        if (!Objects.equals(this.value2, other.value2)) {
             return false;
         }
-        if ((this.screenshotFilename == null) ? (other.screenshotFilename != null) : !this.screenshotFilename.equals(other.screenshotFilename)) {
+        if (!Objects.equals(this.value3, other.value3)) {
+            return false;
+        }
+        if (!Objects.equals(this.description, other.description)) {
+            return false;
+        }
+        if (!Objects.equals(this.screenshotFilename, other.screenshotFilename)) {
             return false;
         }
         return true;
     }
 
+
+
     @Override
     public String toString() {
-        return "TestCaseStepAction{" + "test=" + test + ", testCase=" + testCase + ", step=" + stepId + ", sequence=" + sequence + ", action=" + action + ", object=" + value1 + ", property=" + value2 + ",value3= " + value3 + ", description=" + description + ", testCaseStepActionControl=" + controls + '}';
+        return "TestCaseStepAction{" + "test=" + test + ", testcase=" + testcase + ", stepId=" + stepId + ", actionId=" + actionId + ", sort=" + sort + ", conditionOperator=" + conditionOperator + ", conditionValue1=" + conditionValue1 + ", conditionValue2=" + conditionValue2 + ", conditionValue3=" + conditionValue3 + ", action=" + action + ", value1=" + value1 + ", value2=" + value2 + ", value3=" + value3 + ", forceExeStatus=" + isFatal + ", description=" + description + ", screenshotFilename=" + screenshotFilename + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", controls=" + controls + '}';
     }
 
     public JSONObject toJson() {
@@ -391,20 +435,20 @@ public class TestCaseStepAction {
         try {
             result.put("sort", this.getSort());
             result.put("stepId", this.getStepId());
-            result.put("actionId", this.getSequence());
+            result.put("actionId", this.getActionId());
             result.put("description", this.getDescription());
             result.put("action", this.getAction());
             result.put("value1", this.getValue1());
             result.put("value2", this.getValue2());
             result.put("value3", this.getValue3());
             result.put("conditionOperator", this.getConditionOperator());
-            result.put("conditionVal1", this.getConditionVal1());
-            result.put("conditionVal2", this.getConditionVal2());
-            result.put("conditionVal3", this.getConditionVal3());
-            result.put("isFatal", this.getForceExeStatus());
+            result.put("conditionValue1", this.getConditionValue1());
+            result.put("conditionValue2", this.getConditionValue2());
+            result.put("conditionValue3", this.getConditionValue3());
+            result.put("isFatal", this.isFatal());
             result.put("screenshotFilename", this.getScreenshotFilename());
             result.put("test", this.getTest());
-            result.put("testcase", this.getTestCase());
+            result.put("testcase", this.getTestcase());
 
             JSONArray controlsJson = new JSONArray();
             if (this.getControls() != null) {

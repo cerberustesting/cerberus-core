@@ -35,13 +35,13 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestCaseStepActionControlDAO {
 
-    TestCaseStepActionControl findTestCaseStepActionControlByKey(String test, String testcase, int stepNumber, int sequence, int control);
+    TestCaseStepActionControl findTestCaseStepActionControlByKey(String test, String testcase, int stepNumber, int actionId, int control);
 
-    List<TestCaseStepActionControl> findControlByTestTestCaseStepSequence(String test, String testcase, int stepNumber, int sequence);
+    List<TestCaseStepActionControl> findControlByTestTestCaseStepIdActionId(String test, String testcase, int stepNumber, int actionId);
 
     void insertTestCaseStepActionControl(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException;
 
-    List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int stepId);
+    List<TestCaseStepActionControl> findControlByTestTestCaseStepId(String test, String testcase, int stepId);
 
     public void updateTestCaseStepActionControl(TestCaseStepActionControl control) throws CerberusException;
 
@@ -56,10 +56,10 @@ public interface ITestCaseStepActionControlDAO {
      * @param test
      * @param testcase
      * @param stepId
-     * @param sequence
+     * @param actionId
      * @return
      */
-    public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int stepId, int sequence);
+    public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int stepId, int actionId);
 
     Answer create(TestCaseStepActionControl testCaseStepActionControl);
 }

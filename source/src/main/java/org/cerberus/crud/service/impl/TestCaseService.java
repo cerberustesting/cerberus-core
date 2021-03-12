@@ -148,7 +148,7 @@ public class TestCaseService implements ITestCaseService {
                     List<TestCaseStepAction> tcsa = testCaseStepActionService.getListOfAction(step.getTest(), step.getTestcase(), step.getStepId());
                     for (TestCaseStepAction action : tcsa) {
                         List<TestCaseStepActionControl> tcsacToAdd = new ArrayList<>();
-                        List<TestCaseStepActionControl> tcsac = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(action.getTest(), action.getTestCase(), action.getStepId(), action.getSequence());
+                        List<TestCaseStepActionControl> tcsac = testCaseStepActionControlService.findControlByTestTestCaseStepIdActionId(action.getTest(), action.getTestcase(), action.getStepId(), action.getActionId());
                         for (TestCaseStepActionControl control : tcsac) {
                             tcsacToAdd.add(control);
                         }
@@ -635,7 +635,7 @@ public class TestCaseService implements ITestCaseService {
 
             for (TestCaseStepAction tcsa : tcs.getActions()) {
                 tcsa.setTest(testCase.getTest());
-                tcsa.setTestCase(testCase.getTestcase());
+                tcsa.setTestcase(testCase.getTestcase());
                 Answer testCaseStepActionImported = testCaseStepActionService.create(tcsa);
                 if (!testCaseStepActionImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                     throw new CerberusException(new MessageGeneral(testCaseStepActionImported.getResultMessage().getMessage()));
@@ -643,7 +643,7 @@ public class TestCaseService implements ITestCaseService {
 
                 for (TestCaseStepActionControl tcsac : tcsa.getControls()) {
                     tcsac.setTest(testCase.getTest());
-                    tcsac.setTestCase(testCase.getTestcase());
+                    tcsac.setTestcase(testCase.getTestcase());
                     Answer testCaseStepActionControlImported = testCaseStepActionControlService.create(tcsac);
                     if (!testCaseStepActionControlImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                         throw new CerberusException(new MessageGeneral(testCaseStepActionControlImported.getResultMessage().getMessage()));

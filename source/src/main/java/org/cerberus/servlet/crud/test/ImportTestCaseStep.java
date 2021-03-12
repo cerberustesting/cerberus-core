@@ -94,7 +94,7 @@ public class ImportTestCaseStep extends HttpServlet {
          */
         TestCaseStep fromTcs = testCaseStepService.findTestCaseStep(fromTest, fromTestcase, fromStep);
         List<TestCaseStepAction> fromTcsa = testCaseStepActionService.getListOfAction(fromTest, fromTestcase, fromStep);
-        List<TestCaseStepActionControl> fromTcsac = testCaseStepActionControlService.findControlByTestTestCaseStep(fromTest, fromTestcase, fromStep);
+        List<TestCaseStepActionControl> fromTcsac = testCaseStepActionControlService.findControlByTestTestCaseStepId(fromTest, fromTestcase, fromStep);
 
         /**
          * Get List of Country of the origin testcase and the destination
@@ -121,7 +121,7 @@ public class ImportTestCaseStep extends HttpServlet {
         List<String> propertyNamesOfStep = new ArrayList<String>();
         for (TestCaseStepAction tcsa : fromTcsa) {
             tcsa.setTest(test);
-            tcsa.setTestCase(testCase);
+            tcsa.setTestcase(testCase);
             tcsa.setStepId(stepId);
             tcsaToImport.add(tcsa);
             if (!propertyNamesOfStep.contains(tcsa.getValue2())) {
@@ -133,7 +133,7 @@ public class ImportTestCaseStep extends HttpServlet {
         List<TestCaseStepActionControl> tcsacToImport = new ArrayList<>();
         for (TestCaseStepActionControl tcsac : fromTcsac) {
             tcsac.setTest(test);
-            tcsac.setTestCase(testCase);
+            tcsac.setTestcase(testCase);
             tcsac.setStepId(stepId);
             tcsacToImport.add(tcsac);
         }
@@ -168,7 +168,7 @@ public class ImportTestCaseStep extends HttpServlet {
         LOG.debug("Import Step");
         testCaseStepService.create(fromTcs);
         testCaseStepActionService.insertListTestCaseStepAction(tcsaToImport);
-        testCaseStepActionControlService.insertListTestCaseStepActionControl(tcsacToImport);
+        testCaseStepActionControlService.createList(tcsacToImport);
         if (importProperty.equalsIgnoreCase("Y")) {
 //        testCaseCountry.insertListTestCaseCountry(tccToImport);
             testCaseCountryProperties.insertListTestCaseCountryProperties(tccpToImport);

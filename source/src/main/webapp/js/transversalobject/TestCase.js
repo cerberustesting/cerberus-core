@@ -581,9 +581,9 @@ function confirmTestCaseModalHandler(mode) {
             targetMinor: data.targetMinor,
             targetMajor: data.targetMajor,
             conditionOperator: data.conditionOperator,
-            conditionVal1: data.conditionVal1,
-            conditionVal2: data.conditionVal2,
-            conditionVal3: data.conditionVal3,
+            conditionValue1: data.conditionValue1,
+            conditionValue2: data.conditionValue2,
+            conditionValue3: data.conditionValue3,
             ticket: data.ticket,
             toMinor: data.toMinor,
             toMajor: data.toMajor,
@@ -924,9 +924,9 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         });
 
         formEdit.find("#conditionOperator").prop("value", testCase.conditionOperator);
-        formEdit.find("#conditionVal1").prop("value", testCase.conditionVal1);
-        formEdit.find("#conditionVal2").prop("value", testCase.conditionVal2);
-        formEdit.find("#conditionVal3").prop("value", testCase.conditionVal3);
+        formEdit.find("#conditionVal1").prop("value", testCase.conditionValue1);
+        formEdit.find("#conditionVal2").prop("value", testCase.conditionValue2);
+        formEdit.find("#conditionVal3").prop("value", testCase.conditionValue3);
         formEdit.find("#comment").prop("value", testCase.comment);
         formEdit.find("#version").prop("value", testCase.version);
         appendTestCaseDepList(testCase);

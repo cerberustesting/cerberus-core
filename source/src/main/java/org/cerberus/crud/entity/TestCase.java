@@ -48,9 +48,9 @@ public class TestCase {
     private boolean isActiveUAT;
     private boolean isActivePROD;
     private String conditionOperator;
-    private String conditionVal1;
-    private String conditionVal2;
-    private String conditionVal3;
+    private String conditionValue1;
+    private String conditionValue2;
+    private String conditionValue3;
     private String type;
     private String origine;
     private String refOrigine;
@@ -131,28 +131,28 @@ public class TestCase {
         this.conditionOperator = conditionOperator;
     }
 
-    public String getConditionVal1() {
-        return conditionVal1;
+    public String getConditionValue1() {
+        return conditionValue1;
     }
 
-    public void setConditionVal1(String conditionVal1) {
-        this.conditionVal1 = conditionVal1;
+    public void setConditionValue1(String conditionValue1) {
+        this.conditionValue1 = conditionValue1;
     }
 
-    public String getConditionVal2() {
-        return conditionVal2;
+    public String getConditionValue2() {
+        return conditionValue2;
     }
 
-    public void setConditionVal2(String conditionVal2) {
-        this.conditionVal2 = conditionVal2;
+    public void setConditionValue2(String conditionValue2) {
+        this.conditionValue2 = conditionValue2;
     }
 
-    public String getConditionVal3() {
-        return conditionVal3;
+    public String getConditionValue3() {
+        return conditionValue3;
     }
 
-    public void setConditionVal3(String conditionVal3) {
-        this.conditionVal3 = conditionVal3;
+    public void setConditionValue3(String conditionValue3) {
+        this.conditionValue3 = conditionValue3;
     }
 
     public String getApplication() {
@@ -496,8 +496,10 @@ public class TestCase {
 
     @Override
     public String toString() {
-        return "TestCase{" + "test=" + test + ", testCase=" + testcase + ", application=" + application + ", ticket=" + ticket + ", description=" + description + ", detailedDescription=" + detailedDescription + ", priority=" + priority + ", version=" + version + ", status=" + status + ", isActive=" + isActive + ", isActiveQA=" + isActiveQA + ", isActiveUAT=" + isActiveUAT + ", isActivePROD=" + isActivePROD + ", conditionOperator=" + conditionOperator + ", conditionVal1=" + conditionVal1 + ", conditionVal2=" + conditionVal2 + ", conditionVal3=" + conditionVal3 + ", type=" + type + ", origine=" + origine + ", refOrigine=" + refOrigine + ", comment=" + comment + ", fromMajor=" + fromMajor + ", fromMinor=" + fromMinor + ", toMajor=" + toMajor + ", toMinor=" + toMinor + ", bugs=" + bugs + ", targetMajor=" + targetMajor + ", targetMinor=" + targetMinor + ", implementer=" + implementer + ", executor=" + executor + ", userAgent=" + userAgent + ", screenSize=" + screenSize + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", system=" + system + ", lastExecutionStatus=" + lastExecutionStatus + ", testCaseCountryProperties=" + testCaseCountryProperties + ", invariantCountries=" + invariantCountries + ", testCaseCountries=" + testCaseCountries + ", steps=" + steps + ", testCaseLabels=" + testCaseLabels + ", labels=" + labels + ", dependencies=" + dependencies + '}';
+        return "TestCase{" + "test=" + test + ", testcase=" + testcase + ", application=" + application + ", ticket=" + ticket + ", description=" + description + ", detailedDescription=" + detailedDescription + ", priority=" + priority + ", version=" + version + ", status=" + status + ", isActive=" + isActive + ", isActiveQA=" + isActiveQA + ", isActiveUAT=" + isActiveUAT + ", isActivePROD=" + isActivePROD + ", conditionOperator=" + conditionOperator + ", conditionValue1=" + conditionValue1 + ", conditionValue2=" + conditionValue2 + ", conditionValue3=" + conditionValue3 + ", type=" + type + ", origine=" + origine + ", refOrigine=" + refOrigine + ", comment=" + comment + ", fromMajor=" + fromMajor + ", fromMinor=" + fromMinor + ", toMajor=" + toMajor + ", toMinor=" + toMinor + ", bugs=" + bugs + ", targetMajor=" + targetMajor + ", targetMinor=" + targetMinor + ", implementer=" + implementer + ", executor=" + executor + ", userAgent=" + userAgent + ", screenSize=" + screenSize + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", system=" + system + ", lastExecutionStatus=" + lastExecutionStatus + ", testCaseCountryProperties=" + testCaseCountryProperties + ", testCaseInheritedProperties=" + testCaseInheritedProperties + ", invariantCountries=" + invariantCountries + ", testCaseCountries=" + testCaseCountries + ", steps=" + steps + ", testCaseLabels=" + testCaseLabels + ", labels=" + labels + ", dependencies=" + dependencies + '}';
     }
+
+
 
     public JSONObject toJson() {
         JSONObject testCaseJson = new JSONObject();
@@ -522,9 +524,9 @@ public class TestCase {
             testCaseJson.put("toMinor", this.getToMinor());
             testCaseJson.put("targetMinor", this.getTargetMinor());
             testCaseJson.put("conditionOperator", this.getConditionOperator());
-            testCaseJson.put("conditionValue1", this.getConditionVal1());
-            testCaseJson.put("conditionValue2", this.getConditionVal2());
-            testCaseJson.put("conditionValue3", this.getConditionVal3());
+            testCaseJson.put("conditionValue1", this.getConditionValue1());
+            testCaseJson.put("conditionValue2", this.getConditionValue2());
+            testCaseJson.put("conditionValue3", this.getConditionValue3());
             testCaseJson.put("usrAgent", this.getUserAgent());
             testCaseJson.put("screenSize", this.getScreenSize());
             testCaseJson.put("bugs", this.getBugs());

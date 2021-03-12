@@ -49,10 +49,6 @@
         <servlet-class>org.cerberus.servlet.crud.test.GetTestCaseList</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.GetTestCase</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>ReadDocumentation</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.ReadDocumentation</servlet-class>
     </servlet>
@@ -969,10 +965,6 @@
         <url-pattern>/GetTestCaseList</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetTestCase</servlet-name>
-        <url-pattern>/GetTestCase</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>GetParameter</servlet-name>
         <url-pattern>/GetParameter</url-pattern>
     </servlet-mapping>
@@ -1653,7 +1645,6 @@
             <url-pattern>/ReadExecutionPools</url-pattern>
             <url-pattern>/GetTestCaseList</url-pattern>
             <url-pattern>/ReadTestCaseExecutionMedia</url-pattern>
-            <url-pattern>/GetTestCase</url-pattern>
             <url-pattern>/TestcaseList</url-pattern>
             <url-pattern>/GetDataForTestCaseSearch</url-pattern>
             <url-pattern>/TCEwwwDetail</url-pattern>

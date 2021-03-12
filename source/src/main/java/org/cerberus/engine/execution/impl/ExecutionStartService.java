@@ -161,12 +161,12 @@ public class ExecutionStartService implements IExecutionStartService {
                 tCExecution.setTestCaseObj(tCase);
                 tCExecution.setDescription(tCase.getDescription());
                 tCExecution.setConditionOperator(tCase.getConditionOperator());
-                tCExecution.setConditionVal1(tCase.getConditionVal1());
-                tCExecution.setConditionVal1Init(tCase.getConditionVal1());
-                tCExecution.setConditionVal2(tCase.getConditionVal2());
-                tCExecution.setConditionVal2Init(tCase.getConditionVal2());
-                tCExecution.setConditionVal3(tCase.getConditionVal3());
-                tCExecution.setConditionVal3Init(tCase.getConditionVal3());
+                tCExecution.setConditionVal1(tCase.getConditionValue1());
+                tCExecution.setConditionVal1Init(tCase.getConditionValue1());
+                tCExecution.setConditionVal2(tCase.getConditionValue2());
+                tCExecution.setConditionVal2Init(tCase.getConditionValue2());
+                tCExecution.setConditionVal3(tCase.getConditionValue3());
+                tCExecution.setConditionVal3Init(tCase.getConditionValue3());
                 tCExecution.setTestCaseVersion(tCase.getVersion());
                 tCExecution.setTestCasePriority(tCase.getPriority());
             } else {

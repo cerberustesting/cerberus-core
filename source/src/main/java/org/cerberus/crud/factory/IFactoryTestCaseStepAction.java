@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory;
 
+import java.sql.Timestamp;
 import org.cerberus.crud.entity.TestCaseStepAction;
 
 /**
@@ -26,7 +27,10 @@ import org.cerberus.crud.entity.TestCaseStepAction;
  */
 public interface IFactoryTestCaseStepAction {
 
-    TestCaseStepAction create(String test, String testCase, int stepId, int sequence, int sort, String conditionOperator, String conditionVal1, String conditionVal2, String conditionVal3,
-            String action, String value1, String value2, String value3, String forceExeStatus, String description, String screenshotFilename);
+    TestCaseStepAction create(String test, String testcase, int stepId, int actionId, int sort, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3,
+            String action, String value1, String value2, String value3, boolean isFatal, String description, String screenshotFilename);
+
+    TestCaseStepAction create(String test, String testcase, int stepId, int actionId, int sort, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3,
+            String action, String value1, String value2, String value3, boolean isFatal, String description, String screenshotFilename, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
 }

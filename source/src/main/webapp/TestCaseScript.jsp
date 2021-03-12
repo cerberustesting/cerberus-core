@@ -200,7 +200,7 @@
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-lg-3 form-group">
-                                                        <label>Force Exe:</label>
+                                                        <label>Force Execution</label>
                                                         <select class="form-control input-sm" id="stepForceExe"></select>
                                                     </div>
                                                 </div>

@@ -122,7 +122,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
              * Update the test, Testcase, Step in case of useStep
              */
             testCaseStepAction.setTest(testCaseStep.getTest());
-            testCaseStepAction.setTestCase(testCaseStep.getTestcase());
+            testCaseStepAction.setTestcase(testCaseStep.getTestcase());
             testCaseStepAction.setStepId(testCaseStep.getStepId());
             result.add(testCaseStepAction);
 
@@ -132,11 +132,11 @@ public class LoadTestCaseService implements ILoadTestCaseService {
 
     public List<TestCaseStepActionControl> loadTestCaseStepActionControl(TestCaseStep testCaseStep, TestCaseStepAction testCaseAction) {
         List<TestCaseStepActionControl> result = new ArrayList<>();
-        List<TestCaseStepActionControl> controlList = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(testCaseAction.getTest(), testCaseAction.getTestCase(), testCaseAction.getStepId(), testCaseAction.getSequence());
+        List<TestCaseStepActionControl> controlList = testCaseStepActionControlService.findControlByTestTestCaseStepIdActionId(testCaseAction.getTest(), testCaseAction.getTestcase(), testCaseAction.getStepId(), testCaseAction.getActionId());
         if (controlList != null) {
             for (TestCaseStepActionControl testCaseStepActionControl : controlList) {
                 testCaseStepActionControl.setTest(testCaseStep.getTest());
-                testCaseStepActionControl.setTestCase(testCaseStep.getTestcase());
+                testCaseStepActionControl.setTestcase(testCaseStep.getTestcase());
                 testCaseStepActionControl.setStepId(testCaseStep.getStepId());
                 result.add(testCaseStepActionControl);
             }

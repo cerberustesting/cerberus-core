@@ -1081,13 +1081,13 @@ public class ExecutionRunService implements IExecutionRunService {
              * Create and Register TestCaseStepActionExecution.
              */
             TestCaseStepActionExecution testCaseStepActionExecution = factoryTestCaseStepActionExecution.create(
-                    testCaseStepExecution.getId(), testCaseStepAction.getTest(), testCaseStepAction.getTestCase(),
-                    testCaseStepAction.getStepId(), testCaseStepExecution.getIndex(), testCaseStepAction.getSequence(), testCaseStepAction.getSort(), null, null,
-                    testCaseStepAction.getConditionOperator(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), testCaseStepAction.getConditionVal3(),
-                    testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), testCaseStepAction.getConditionVal3(),
+                    testCaseStepExecution.getId(), testCaseStepAction.getTest(), testCaseStepAction.getTestcase(),
+                    testCaseStepAction.getStepId(), testCaseStepExecution.getIndex(), testCaseStepAction.getActionId(), testCaseStepAction.getSort(), null, null,
+                    testCaseStepAction.getConditionOperator(), testCaseStepAction.getConditionValue1(), testCaseStepAction.getConditionValue2(), testCaseStepAction.getConditionValue3(),
+                    testCaseStepAction.getConditionValue1(), testCaseStepAction.getConditionValue2(), testCaseStepAction.getConditionValue3(),
                     testCaseStepAction.getAction(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(), testCaseStepAction.getValue3(), testCaseStepAction.getValue1(),
                     testCaseStepAction.getValue2(), testCaseStepAction.getValue3(),
-                    testCaseStepAction.getForceExeStatus(), startAction, startAction, startAction, startAction, new MessageEvent(MessageEventEnum.ACTION_PENDING),
+                    (testCaseStepAction.isFatal() ? "Y" : "N"), startAction, startAction, startAction, startAction, new MessageEvent(MessageEventEnum.ACTION_PENDING),
                     testCaseStepAction.getDescription(), testCaseStepAction, testCaseStepExecution);
             this.testCaseStepActionExecutionService.insertTestCaseStepActionExecution(testCaseStepActionExecution);
 
@@ -1361,12 +1361,12 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             LOG.debug("Creating TestCaseStepActionControlExecution");
             TestCaseStepActionControlExecution controlExe
-                    = factoryTestCaseStepActionControlExecution.create(actionExe.getId(), control.getTest(), control.getTestCase(),
-                            control.getStepId(), actionExe.getIndex(), control.getSequence(), control.getControlSequence(), control.getSort(),
+                    = factoryTestCaseStepActionControlExecution.create(actionExe.getId(), control.getTest(), control.getTestcase(),
+                            control.getStepId(), actionExe.getIndex(), control.getActionId(), control.getControlId(), control.getSort(),
                             null, null,
-                            control.getConditionOperator(), control.getConditionVal1(), control.getConditionVal2(), control.getConditionVal3(), control.getConditionVal1(), control.getConditionVal2(), control.getConditionVal3(),
+                            control.getConditionOperator(), control.getConditionValue1(), control.getConditionValue2(), control.getConditionValue3(), control.getConditionValue1(), control.getConditionValue2(), control.getConditionValue3(),
                             control.getControl(), control.getValue1(), control.getValue2(), control.getValue3(), control.getValue1(), control.getValue2(),
-                            control.getValue3(), control.getFatal(), startControl, 0, 0, 0,
+                            control.getValue3(), (control.isFatal() ? "Y" : "N"), startControl, 0, 0, 0,
                             control.getDescription(), actionExe, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(controlExe);
 

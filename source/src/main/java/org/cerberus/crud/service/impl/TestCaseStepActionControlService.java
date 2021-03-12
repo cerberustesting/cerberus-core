@@ -46,40 +46,22 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
     private ITestCaseStepActionControlDAO testCaseStepActionControlDao;
 
     @Override
-    public TestCaseStepActionControl findTestCaseStepActionControlByKey(String test, String testcase, int stepId, int sequence, int control) {
-        return testCaseStepActionControlDao.findTestCaseStepActionControlByKey(test, testcase, stepId, sequence, control);
+    public TestCaseStepActionControl findTestCaseStepActionControlByKey(String test, String testcase, int stepId, int actionId, int control) {
+        return testCaseStepActionControlDao.findTestCaseStepActionControlByKey(test, testcase, stepId, actionId, control);
     }
 
     @Override
-    public List<TestCaseStepActionControl> findControlByTestTestCaseStepSequence(String test, String testcase, int stepId, int sequence) {
-        return testCaseStepActionControlDao.findControlByTestTestCaseStepSequence(test, testcase, stepId, sequence);
+    public List<TestCaseStepActionControl> findControlByTestTestCaseStepIdActionId(String test, String testcase, int stepId, int actionId) {
+        return testCaseStepActionControlDao.findControlByTestTestCaseStepIdActionId(test, testcase, stepId, actionId);
     }
 
     @Override
-    public void insertTestCaseStepActionControl(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException {
-        testCaseStepActionControlDao.insertTestCaseStepActionControl(testCaseStepActionControl);
+    public List<TestCaseStepActionControl> findControlByTestTestCaseStepId(String test, String testcase, int stepId) {
+        return testCaseStepActionControlDao.findControlByTestTestCaseStepId(test, testcase, stepId);
     }
 
     @Override
-    public boolean insertListTestCaseStepActionControl(List<TestCaseStepActionControl> testCaseStepActionControlList) {
-        for (TestCaseStepActionControl tcs : testCaseStepActionControlList) {
-            try {
-                insertTestCaseStepActionControl(tcs);
-            } catch (CerberusException ex) {
-                LOG.warn(ex.toString());
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int stepId) {
-        return testCaseStepActionControlDao.findControlByTestTestCaseStep(test, testcase, stepId);
-    }
-
-    @Override
-    public boolean updateTestCaseStepActionControl(TestCaseStepActionControl control) {
+    public boolean update(TestCaseStepActionControl control) {
         try {
             testCaseStepActionControlDao.updateTestCaseStepActionControl(control);
         } catch (CerberusException ex) {
@@ -90,19 +72,19 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
     }
 
     @Override
-    public List<TestCaseStepActionControl> findControlByTestTestCase(String test, String testCase) throws CerberusException {
-        return testCaseStepActionControlDao.findControlByTestTestCase(test, testCase);
+    public List<TestCaseStepActionControl> findControlByTestTestCase(String test, String testcase) throws CerberusException {
+        return testCaseStepActionControlDao.findControlByTestTestCase(test, testcase);
     }
 
     @Override
-    public void deleteListTestCaseStepActionControl(List<TestCaseStepActionControl> tcsacToDelete) throws CerberusException {
+    public void deleteList(List<TestCaseStepActionControl> tcsacToDelete) throws CerberusException {
         for (TestCaseStepActionControl tcsac : tcsacToDelete) {
-            deleteTestCaseStepActionControl(tcsac);
+            delete(tcsac);
         }
     }
 
     @Override
-    public void deleteTestCaseStepActionControl(TestCaseStepActionControl tcsac) throws CerberusException {
+    public void delete(TestCaseStepActionControl tcsac) throws CerberusException {
         testCaseStepActionControlDao.deleteTestCaseStepActionControl(tcsac);
     }
 
@@ -121,7 +103,7 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
         for (TestCaseStepActionControl tcsacDifference : tcsacToUpdateOrInsertToIterate) {
             for (TestCaseStepActionControl tcsacInDatabase : oldList) {
                 if (tcsacDifference.hasSameKey(tcsacInDatabase)) {
-                    this.updateTestCaseStepActionControl(tcsacDifference);
+                    this.update(tcsacDifference);
                     tcsacToUpdateOrInsert.remove(tcsacDifference);
                 }
             }
@@ -144,11 +126,11 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
                     }
                 }
             }
-            this.deleteListTestCaseStepActionControl(tcsacToDelete);
+            this.deleteList(tcsacToDelete);
         }
 
         // We insert only at the end (after deletion of all potencial enreg - linked with #1281)
-        this.insertListTestCaseStepActionControl(tcsacToUpdateOrInsert);
+        this.createList(tcsacToUpdateOrInsert);
 
     }
 
@@ -158,19 +140,19 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
     }
 
     @Override
-    public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int stepId, int sequence) {
-        return testCaseStepActionControlDao.readByVarious1(test, testcase, stepId, sequence);
+    public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int stepId, int actionId) {
+        return testCaseStepActionControlDao.readByVarious1(test, testcase, stepId, actionId);
     }
 
     @Override
-    public Answer create(TestCaseStepActionControl object) {
-        return testCaseStepActionControlDao.create(object);
+    public Answer create(TestCaseStepActionControl testCaseStepActionControl) {
+        return testCaseStepActionControlDao.create(testCaseStepActionControl);
     }
 
     @Override
-    public Answer createList(List<TestCaseStepActionControl> objectList) {
+    public Answer createList(List<TestCaseStepActionControl> testCaseStepActionControls) {
         Answer ans = new Answer(null);
-        for (TestCaseStepActionControl objectToCreate : objectList) {
+        for (TestCaseStepActionControl objectToCreate : testCaseStepActionControls) {
             ans = create(objectToCreate);
         }
         return ans;
@@ -182,7 +164,7 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
         List<TestCaseStepActionControl> listToCreate = new ArrayList<>();
         for (TestCaseStepActionControl objectToDuplicate : objectList) {
             objectToDuplicate.setTest(targetTest);
-            objectToDuplicate.setTestCase(targetTestCase);
+            objectToDuplicate.setTestcase(targetTestCase);
             listToCreate.add(objectToDuplicate);
         }
         ans = createList(listToCreate);

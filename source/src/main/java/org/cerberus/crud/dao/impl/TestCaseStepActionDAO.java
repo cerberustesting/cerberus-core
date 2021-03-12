@@ -64,112 +64,70 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public TestCaseStepAction readByKey(String test, String testCase, int stepId, int sequence) {
+    public TestCaseStepAction readByKey(String test, String testcase, int stepId, int actionId) {
         TestCaseStepAction testCaseStepAction = null;
-        final String query = "SELECT * FROM testcasestepaction tca WHERE tca.test = ? AND tca.testcase = ? AND tca.step = ? AND tca.sequence = ?";
+        final String query = "SELECT * FROM testcasestepaction tca WHERE tca.test = ? AND tca.testcase = ? AND tca.stepId = ? AND tca.actionId = ?";
 
-        Connection connection = this.databaseSpring.connect();
-        
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
 
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testCase);
-                preStat.setInt(3, stepId);
-                preStat.setInt(4, sequence);
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query)) {
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        testCaseStepAction = this.loadFromResultSet(resultSet);
-                    }
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
+            preStat.setString(1, test);
+            preStat.setString(2, testcase);
+            preStat.setInt(3, stepId);
+            preStat.setInt(4, actionId);
+
+            try (ResultSet resultSet = preStat.executeQuery()) {
+                if (resultSet.first()) {
+                    testCaseStepAction = this.loadFromResultSet(resultSet);
                 }
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
             }
+
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
+
         return testCaseStepAction;
     }
 
     @Override
-    public List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testCase) throws CerberusException {
+    public List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testcase) throws CerberusException {
         List<TestCaseStepAction> list = null;
         final StringBuilder query = new StringBuilder();
         query.append("SELECT tca.* ");
         query.append("FROM testcasestepaction AS tca ");
-        query.append("RIGHT JOIN testcasestep AS tcs ON tca.Test = tcs.Test AND tca.TestCase = tcs.TestCase AND tca.Step = tcs.StepId ");
-        query.append("WHERE tca.Test = ? AND tca.TestCase = ? ");
-        query.append("GROUP BY tca.Test, tca.TestCase, tca.Step, tca.Sequence ");
+        query.append("RIGHT JOIN testcasestep AS tcs ON tca.Test = tcs.Test AND tca.Testcase = tcs.Testcase AND tca.StepId = tcs.StepId ");
+        query.append("WHERE tca.Test = ? AND tca.Testcase = ? ");
+        query.append("GROUP BY tca.Test, tca.Testcase, tca.StepId, tca.actionId ");
         query.append("ORDER BY tcs.Sort, tca.Sort ");
 
-        Connection connection = this.databaseSpring.connect();
-        
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
 
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testCase);
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<TestCaseStepAction>();
-                    while (resultSet.next()) {
-                        list.add(this.loadFromResultSet(resultSet));
-                    }
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
+            preStat.setString(1, test);
+            preStat.setString(2, testcase);
+
+            try (ResultSet resultSet = preStat.executeQuery()) {
+                list = new ArrayList<>();
+                while (resultSet.next()) {
+                    list.add(this.loadFromResultSet(resultSet));
                 }
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
             }
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
         return list;
     }
@@ -177,60 +135,34 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     @Override
     public List<TestCaseStepAction> findActionByTestTestCaseStep(String test, String testcase, int stepId) {
         List<TestCaseStepAction> list = null;
-        final String query = "SELECT * FROM testcasestepaction tca WHERE tca.test = ? AND tca.testcase = ? AND tca.step = ? ORDER BY tca.sort";
+        final String query = "SELECT * FROM testcasestepaction tca WHERE tca.test = ? AND tca.testcase = ? AND tca.stepId = ? ORDER BY tca.sort";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
             LOG.debug("SQL.param.test : " + test);
             LOG.debug("SQL.param.testcase : " + testcase);
-            LOG.debug("SQL.param.step : " + stepId);
+            LOG.debug("SQL.param.stepId : " + stepId);
         }
 
-        Connection connection = this.databaseSpring.connect();
-        
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
 
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testcase);
-                preStat.setInt(3, stepId);
+            preStat.setString(1, test);
+            preStat.setString(2, testcase);
+            preStat.setInt(3, stepId);
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<TestCaseStepAction>();
-                    while (resultSet.next()) {
-                        list.add(this.loadFromResultSet(resultSet));
-                    }
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                list = new ArrayList<>();
+                while (resultSet.next()) {
+                    list.add(this.loadFromResultSet(resultSet));
                 }
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
             }
+
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
         return list;
     }
@@ -240,24 +172,24 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         AnswerList<TestCaseStepAction> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCaseStepAction> actionList = new ArrayList<TestCaseStepAction>();
+        List<TestCaseStepAction> actionList = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepaction tca WHERE tca.test = ? AND tca.testcase = ?");
 
-        Connection connection = this.databaseSpring.connect();
-        
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
 
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+
             try {
                 preStat.setString(1, test);
                 preStat.setString(2, testcase);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
+
                     //gets the data
                     while (resultSet.next()) {
                         actionList.add(this.loadFromResultSet(resultSet));
@@ -310,16 +242,6 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-        } finally {
-            try {
-                if (!this.databaseSpring.isOnTransaction()) {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
 
         response.setResultMessage(msg);
@@ -328,26 +250,28 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
 
     @Override
     public AnswerList<TestCaseStepAction> readByVarious1(String test, String testcase, int stepId) {
+
         AnswerList<TestCaseStepAction> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCaseStepAction> actionList = new ArrayList<TestCaseStepAction>();
+        List<TestCaseStepAction> actionList = new ArrayList<>();
         StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM testcasestepaction tca WHERE tca.test = ? AND tca.testcase = ? AND tca.step = ?");
+        query.append("SELECT * FROM testcasestepaction tca WHERE tca.test = ? AND tca.testcase = ? AND tca.stepId = ?");
 
-        Connection connection = this.databaseSpring.connect();
-        
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
 
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+
+            preStat.setString(1, test);
+            preStat.setString(2, testcase);
+            preStat.setInt(3, stepId);
+
             try {
-                preStat.setString(1, test);
-                preStat.setString(2, testcase);
-                preStat.setInt(3, stepId);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
@@ -402,16 +326,6 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-        } finally {
-            try {
-                if (!this.databaseSpring.isOnTransaction()) {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
 
         response.setResultMessage(msg);
@@ -420,234 +334,164 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
 
     @Override
     public void createTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException {
-        boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasestepaction (`test`, `testCase`, `step`, `sequence`, `sort`, ")
-                .append("`conditionOperator`, `conditionVal1`, `conditionVal2`, `conditionVal3`, `action`, ")
-                .append("`value1`, `value2`, `value3`, `ForceExeStatus`, `description`, `screenshotfilename`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO testcasestepaction (`test`, `testcase`, `stepId`, `actionId`, `sort`, ")
+                .append("`conditionOperator`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `action`, ")
+                .append("`value1`, `value2`, `value3`, `IsFatal`, `description`, `screenshotfilename`, `usrCreated`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
-        Connection connection = this.databaseSpring.connect();
-        
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
 
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                int i = 1;
-                preStat.setString(i++, testCaseStepAction.getTest());
-                preStat.setString(i++, testCaseStepAction.getTestCase());
-                preStat.setInt(i++, testCaseStepAction.getStepId());
-                preStat.setInt(i++, testCaseStepAction.getSequence());
-                preStat.setInt(i++, testCaseStepAction.getSort());
-                preStat.setString(i++, testCaseStepAction.getConditionOperator());
-                preStat.setString(i++, testCaseStepAction.getConditionVal1());
-                preStat.setString(i++, testCaseStepAction.getConditionVal2());
-                preStat.setString(i++, testCaseStepAction.getConditionVal3());
-                preStat.setString(i++, testCaseStepAction.getAction());
-                preStat.setString(i++, testCaseStepAction.getValue1());
-                preStat.setString(i++, testCaseStepAction.getValue2());
-                preStat.setString(i++, testCaseStepAction.getValue3());
-                preStat.setString(i++, testCaseStepAction.getForceExeStatus());
-                preStat.setString(i++, testCaseStepAction.getDescription());
-                preStat.setString(i++, testCaseStepAction.getScreenshotFilename());
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
-                preStat.executeUpdate();
-                throwExcep = false;
+            int i = 1;
+            preStat.setString(i++, testCaseStepAction.getTest());
+            preStat.setString(i++, testCaseStepAction.getTestcase());
+            preStat.setInt(i++, testCaseStepAction.getStepId());
+            preStat.setInt(i++, testCaseStepAction.getActionId());
+            preStat.setInt(i++, testCaseStepAction.getSort());
+            preStat.setString(i++, testCaseStepAction.getConditionOperator());
+            preStat.setString(i++, testCaseStepAction.getConditionValue1());
+            preStat.setString(i++, testCaseStepAction.getConditionValue2());
+            preStat.setString(i++, testCaseStepAction.getConditionValue3());
+            preStat.setString(i++, testCaseStepAction.getAction());
+            preStat.setString(i++, testCaseStepAction.getValue1());
+            preStat.setString(i++, testCaseStepAction.getValue2());
+            preStat.setString(i++, testCaseStepAction.getValue3());
+            preStat.setBoolean(i++, testCaseStepAction.isFatal());
+            preStat.setString(i++, testCaseStepAction.getDescription());
+            preStat.setString(i++, testCaseStepAction.getScreenshotFilename());
+            preStat.setString(i++, testCaseStepAction.getUsrCreated() == null ? "" : testCaseStepAction.getUsrCreated());
 
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
-            }
+            preStat.executeUpdate();
+
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
     }
 
     @Override
     public void update(TestCaseStepAction testCaseStepAction) throws CerberusException {
-        boolean throwExcep = false;
         final String query = new StringBuilder("UPDATE `testcasestepaction` ")
                 .append("SET ")
                 .append("`Test` = ?, ")
-                .append("`TestCase` = ?, ")
-                .append("`Step` = ?, ")
-                .append("`Sequence` = ?, ")
+                .append("`Testcase` = ?, ")
+                .append("`StepId` = ?, ")
+                .append("`actionId` = ?, ")
                 .append("`Sort` = ?, ")
                 .append("`conditionOperator` = ?, ")
-                .append("`ConditionVal1` = ?, ")
-                .append("`ConditionVal2` = ?, ")
-                .append("`ConditionVal3` = ?, ")
+                .append("`ConditionValue1` = ?, ")
+                .append("`ConditionValue2` = ?, ")
+                .append("`ConditionValue3` = ?, ")
                 .append("`Action` = ?, ")
                 .append("`Value1` = ?, ")
                 .append("`Value2` = ?, ")
                 .append("`Value3` = ?, ")
-                .append("`ForceExeStatus` = ?, ")
+                .append("`IsFatal` = ?, ")
                 .append("`Description` = ?, ")
-                .append("`ScreenshotFilename` = ? ")
-                .append("WHERE `Test` = ? AND `TestCase` = ? AND `Step` = ? AND `Sequence` = ? ")
+                .append("`ScreenshotFilename` = ?, ")
+                .append("`UsrModif` = ?, ")
+                .append("`dateModif` = CURRENT_TIMESTAMP ")
+                .append("WHERE `Test` = ? AND `Testcase` = ? AND `StepId` = ? AND `actionId` = ? ")
                 .toString();
 
-        LOG.debug("SQL " + query);
-        LOG.debug("SQL.param.conditionOperator " + testCaseStepAction.getConditionOperator());
-        LOG.debug("SQL.param.conditionVal1 " + testCaseStepAction.getConditionVal1());
-        LOG.debug("SQL.param.conditionVal2 " + testCaseStepAction.getConditionVal2());
-        LOG.debug("SQL.param.conditionVal3 " + testCaseStepAction.getConditionVal3());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL " + query);
+            LOG.debug("SQL.param.conditionOperator " + testCaseStepAction.getConditionOperator());
+            LOG.debug("SQL.param.conditionValue1 " + testCaseStepAction.getConditionValue1());
+            LOG.debug("SQL.param.conditionValue2 " + testCaseStepAction.getConditionValue2());
+            LOG.debug("SQL.param.conditionValue3 " + testCaseStepAction.getConditionValue3());
+        }
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                int i = 1;
-                preStat.setString(i++, testCaseStepAction.getTest());
-                preStat.setString(i++, testCaseStepAction.getTestCase());
-                preStat.setInt(i++, testCaseStepAction.getStepId());
-                preStat.setInt(i++, testCaseStepAction.getSequence());
-                preStat.setInt(i++, testCaseStepAction.getSort());
-                preStat.setString(i++, testCaseStepAction.getConditionOperator());
-                preStat.setString(i++, testCaseStepAction.getConditionVal1());
-                preStat.setString(i++, testCaseStepAction.getConditionVal2());
-                preStat.setString(i++, testCaseStepAction.getConditionVal3());
-                preStat.setString(i++, testCaseStepAction.getAction());
-                preStat.setString(i++, testCaseStepAction.getValue1());
-                preStat.setString(i++, testCaseStepAction.getValue2());
-                preStat.setString(i++, testCaseStepAction.getValue3());
-                preStat.setString(i++, testCaseStepAction.getForceExeStatus());
-                preStat.setString(i++, testCaseStepAction.getDescription());
-                preStat.setString(i++, testCaseStepAction.getScreenshotFilename());
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
 
-                preStat.setString(i++, testCaseStepAction.getTest());
-                preStat.setString(i++, testCaseStepAction.getTestCase());
-                preStat.setInt(i++, testCaseStepAction.getStepId());
-                preStat.setInt(i++, testCaseStepAction.getSequence());
+            int i = 1;
+            preStat.setString(i++, testCaseStepAction.getTest());
+            preStat.setString(i++, testCaseStepAction.getTestcase());
+            preStat.setInt(i++, testCaseStepAction.getStepId());
+            preStat.setInt(i++, testCaseStepAction.getActionId());
+            preStat.setInt(i++, testCaseStepAction.getSort());
+            preStat.setString(i++, testCaseStepAction.getConditionOperator());
+            preStat.setString(i++, testCaseStepAction.getConditionValue1());
+            preStat.setString(i++, testCaseStepAction.getConditionValue2());
+            preStat.setString(i++, testCaseStepAction.getConditionValue3());
+            preStat.setString(i++, testCaseStepAction.getAction());
+            preStat.setString(i++, testCaseStepAction.getValue1());
+            preStat.setString(i++, testCaseStepAction.getValue2());
+            preStat.setString(i++, testCaseStepAction.getValue3());
+            preStat.setBoolean(i++, testCaseStepAction.isFatal());
+            preStat.setString(i++, testCaseStepAction.getDescription());
+            preStat.setString(i++, testCaseStepAction.getScreenshotFilename());
+            preStat.setString(i++, testCaseStepAction.getUsrModif() == null ? "" : testCaseStepAction.getUsrModif());
 
-                preStat.executeUpdate();
-                throwExcep = false;
+            preStat.setString(i++, testCaseStepAction.getTest());
+            preStat.setString(i++, testCaseStepAction.getTestcase());
+            preStat.setInt(i++, testCaseStepAction.getStepId());
+            preStat.setInt(i++, testCaseStepAction.getActionId());
 
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
-            }
+            preStat.executeUpdate();
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
     }
 
     @Override
     public void delete(TestCaseStepAction tcsa) throws CerberusException {
         boolean throwExcep = false;
-        final String query = "DELETE FROM testcasestepaction WHERE test = ? and testcase = ? and step = ? and `sequence` = ?";
+        final String query = "DELETE FROM testcasestepaction WHERE test = ? and testcase = ? and stepId = ? and `actionId` = ?";
 
-        Connection connection = this.databaseSpring.connect();
-        
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
 
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, tcsa.getTest());
-                preStat.setString(2, tcsa.getTestCase());
-                preStat.setInt(3, tcsa.getStepId());
-                preStat.setInt(4, tcsa.getSequence());
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
 
-                throwExcep = preStat.executeUpdate() == 0;
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
-            }
+            preStat.setString(1, tcsa.getTest());
+            preStat.setString(2, tcsa.getTestcase());
+            preStat.setInt(3, tcsa.getStepId());
+            preStat.setInt(4, tcsa.getActionId());
+
+            throwExcep = preStat.executeUpdate() == 0;
+
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
+
         if (throwExcep) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
     }
 
     @Override
-    public boolean changeTestCaseStepActionSequence(String test, String testCase, int stepId, int oldSequence, int newSequence) {
-        TestCaseStepAction testCaseStepAction = null;
-        final String query = "update testcasestepaction set sequence = ? WHERE test = ? AND testcase = ? AND step = ? AND sequence = ?";
+    public boolean changeTestCaseStepActionActionId(String test, String testcase, int stepId, int oldActionId, int newActionId) {
+        final String query = "update testcasestepaction set actionId = ? WHERE test = ? AND testcase = ? AND stepId = ? AND actionId = ?";
 
-        Connection connection = this.databaseSpring.connect();
-        
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
 
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setInt(1, newSequence);
-                preStat.setString(2, test);
-                preStat.setString(3, testCase);
-                preStat.setInt(4, stepId);
-                preStat.setInt(5, oldSequence);
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
 
-                int lines = preStat.executeUpdate();
-                return (lines > 0);
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
-            }
+            preStat.setInt(1, newActionId);
+            preStat.setString(2, test);
+            preStat.setString(3, testcase);
+            preStat.setInt(4, stepId);
+            preStat.setInt(5, oldActionId);
+
+            int lines = preStat.executeUpdate();
+            return (lines > 0);
+
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
         return false;
     }
@@ -657,11 +501,10 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         Answer ans = new Answer();
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasestepaction (`test`, `testCase`, `step`, `sequence`, `sort`, ")
-                .append("`conditionOperator`, `conditionVal1`, `conditionVal2`, `conditionVal3`, `action`, `Value1`, `Value2`, `Value3`, `ForceExeStatus`, `description`, `screenshotfilename`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO testcasestepaction (`test`, `testcase`, `stepId`, `actionId`, `sort`, ")
+                .append("`conditionOperator`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `action`, `Value1`, `Value2`, `Value3`, `IsFatal`, `description`, `screenshotfilename`, `usrCreated`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
-        
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
@@ -672,21 +515,22 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             // Prepare and execute query
             int i = 1;
             preStat.setString(i++, testCaseStepAction.getTest());
-            preStat.setString(i++, testCaseStepAction.getTestCase());
+            preStat.setString(i++, testCaseStepAction.getTestcase());
             preStat.setInt(i++, testCaseStepAction.getStepId());
-            preStat.setInt(i++, testCaseStepAction.getSequence());
+            preStat.setInt(i++, testCaseStepAction.getActionId());
             preStat.setInt(i++, testCaseStepAction.getSort());
             preStat.setString(i++, testCaseStepAction.getConditionOperator());
-            preStat.setString(i++, testCaseStepAction.getConditionVal1());
-            preStat.setString(i++, testCaseStepAction.getConditionVal2());
-            preStat.setString(i++, testCaseStepAction.getConditionVal3());
+            preStat.setString(i++, testCaseStepAction.getConditionValue1());
+            preStat.setString(i++, testCaseStepAction.getConditionValue2());
+            preStat.setString(i++, testCaseStepAction.getConditionValue3());
             preStat.setString(i++, testCaseStepAction.getAction());
             preStat.setString(i++, testCaseStepAction.getValue1());
             preStat.setString(i++, testCaseStepAction.getValue2());
             preStat.setString(i++, testCaseStepAction.getValue3());
-            preStat.setString(i++, testCaseStepAction.getForceExeStatus());
+            preStat.setBoolean(i++, testCaseStepAction.isFatal());
             preStat.setString(i++, testCaseStepAction.getDescription());
             preStat.setString(i++, testCaseStepAction.getScreenshotFilename());
+            preStat.setString(i++, testCaseStepAction.getUsrCreated() == null ? "" : testCaseStepAction.getUsrCreated());
             preStat.executeUpdate();
 
             // Set the final message
@@ -705,23 +549,23 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
 
     private TestCaseStepAction loadFromResultSet(ResultSet resultSet) throws SQLException {
         String test = resultSet.getString("tca.Test");
-        String testCase = resultSet.getString("tca.TestCase");
-        Integer stepId = resultSet.getInt("tca.Step");
-        Integer sequence = resultSet.getInt("tca.Sequence");
+        String testcase = resultSet.getString("tca.Testcase");
+        Integer stepId = resultSet.getInt("tca.StepId");
+        Integer actionId = resultSet.getInt("tca.actionId");
         Integer sort = resultSet.getInt("tca.Sort");
         String conditionOperator = resultSet.getString("tca.conditionOperator");
-        String conditionVal1 = resultSet.getString("tca.ConditionVal1");
-        String conditionVal2 = resultSet.getString("tca.ConditionVal2");
-        String conditionVal3 = resultSet.getString("tca.conditionVal3");
+        String conditionValue1 = resultSet.getString("tca.ConditionValue1");
+        String conditionValue2 = resultSet.getString("tca.ConditionValue2");
+        String conditionValue3 = resultSet.getString("tca.conditionValue3");
         String action = resultSet.getString("tca.Action");
         String value1 = resultSet.getString("tca.Value1");
         String value2 = resultSet.getString("tca.Value2");
         String value3 = resultSet.getString("tca.Value3");
         String description = resultSet.getString("tca.description");
         String screenshotFilename = resultSet.getString("tca.screenshotFilename");
-        String forceExeStatus = resultSet.getString("tca.forceExeStatus");
+        boolean isFatal = resultSet.getBoolean("tca.isFatal");
 
-        return factoryTestCaseStepAction.create(test, testCase, stepId, sequence, sort, conditionOperator, conditionVal1, conditionVal2, conditionVal3, action, value1, value2, value3, forceExeStatus, description, screenshotFilename);
+        return factoryTestCaseStepAction.create(test, testcase, stepId, actionId, sort, conditionOperator, conditionValue1, conditionValue2, conditionValue3, action, value1, value2, value3, isFatal, description, screenshotFilename);
     }
 
 }

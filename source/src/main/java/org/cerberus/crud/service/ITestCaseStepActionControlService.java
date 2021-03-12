@@ -32,23 +32,19 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestCaseStepActionControlService {
 
-    TestCaseStepActionControl findTestCaseStepActionControlByKey(String test, String testcase, int stepId, int sequence, int control);
+    TestCaseStepActionControl findTestCaseStepActionControlByKey(String test, String testcase, int stepId, int actionId, int control);
 
-    List<TestCaseStepActionControl> findControlByTestTestCaseStepSequence(String test, String testcase, int stepId, int sequence);
+    List<TestCaseStepActionControl> findControlByTestTestCaseStepIdActionId(String test, String testcase, int stepId, int actionId);
 
-    void insertTestCaseStepActionControl(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException;
+    List<TestCaseStepActionControl> findControlByTestTestCaseStepId(String test, String testcase, int stepId);
 
-    boolean insertListTestCaseStepActionControl(List<TestCaseStepActionControl> testCaseStepActionControlList);
-
-    List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int stepId);
-
-    public boolean updateTestCaseStepActionControl(TestCaseStepActionControl control);
+    public boolean update(TestCaseStepActionControl testCaseStepActionControl);
 
     public List<TestCaseStepActionControl> findControlByTestTestCase(String initialTest, String initialTestCase) throws CerberusException;
 
-    public void deleteListTestCaseStepActionControl(List<TestCaseStepActionControl> tcsacToDelete) throws CerberusException;
+    public void deleteList(List<TestCaseStepActionControl> tcsacToDelete) throws CerberusException;
 
-    public void deleteTestCaseStepActionControl(TestCaseStepActionControl tcsac) throws CerberusException;
+    public void delete(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException;
 
     public void compareListAndUpdateInsertDeleteElements(List<TestCaseStepActionControl> newList, List<TestCaseStepActionControl> oldList, boolean duplicate) throws CerberusException;
 
@@ -59,14 +55,14 @@ public interface ITestCaseStepActionControlService {
      * @param test
      * @param testcase
      * @param stepId
-     * @param sequence
+     * @param actionId
      * @return
      */
-    public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int stepId, int sequence);
+    public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int stepId, int actionId);
 
-    Answer create(TestCaseStepActionControl object);
-    
-    Answer createList(List<TestCaseStepActionControl> objectList);
+    Answer create(TestCaseStepActionControl testCaseStepActionControl);
 
-    Answer duplicateList(List<TestCaseStepActionControl> objectList, String test, String testCase);
+    Answer createList(List<TestCaseStepActionControl> testCaseStepActionControls);
+
+    Answer duplicateList(List<TestCaseStepActionControl> testCaseStepActionControls, String test, String testcase);
 }

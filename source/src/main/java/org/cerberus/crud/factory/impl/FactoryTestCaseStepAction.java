@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
@@ -32,26 +33,56 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepAction implements IFactoryTestCaseStepAction {
 
     @Override
-    public TestCaseStepAction create(String test, String testCase, int stepId, int sequence, int sort, String conditionOperator,
-            String conditionVal1, String conditionVal2, String conditionVal3, String action, String value1, String value2, String value3, String forceExeStatus, String description, String screenshotFilename) {
+    public TestCaseStepAction create(String test, String testcase, int stepId, int actionId, int sort, String conditionOperator,
+            String conditionValue1, String conditionValue2, String conditionValue3, String action, String value1, String value2, String value3, boolean isFatal, String description, String screenshotFilename) {
         TestCaseStepAction testCaseStepAction = new TestCaseStepAction();
         testCaseStepAction.setConditionOperator(conditionOperator);
-        testCaseStepAction.setConditionVal1(conditionVal1);
-        testCaseStepAction.setConditionVal2(conditionVal2);
-        testCaseStepAction.setConditionVal3(conditionVal3);
+        testCaseStepAction.setConditionValue1(conditionValue1);
+        testCaseStepAction.setConditionValue2(conditionValue2);
+        testCaseStepAction.setConditionValue3(conditionValue3);
         testCaseStepAction.setAction(action);
         testCaseStepAction.setValue1(value1);
         testCaseStepAction.setValue2(value2);
         testCaseStepAction.setValue3(value3);
-        testCaseStepAction.setForceExeStatus(forceExeStatus);
-        testCaseStepAction.setSequence(sequence);
+        testCaseStepAction.setFatal(isFatal);
+        testCaseStepAction.setActionId(actionId);
         testCaseStepAction.setStepId(stepId);
         testCaseStepAction.setSort(sort);
         testCaseStepAction.setTest(test);
-        testCaseStepAction.setTestCase(testCase);
+        testCaseStepAction.setTestcase(testcase);
         testCaseStepAction.setDescription(description);
         testCaseStepAction.setScreenshotFilename(screenshotFilename);
         testCaseStepAction.setControls(new ArrayList<>());
+
+        return testCaseStepAction;
+    }
+
+    @Override
+    public TestCaseStepAction create(String test, String testcase, int stepId, int actionId, int sort, String conditionOperator,
+            String conditionValue1, String conditionValue2, String conditionValue3, String action, String value1, String value2, String value3, boolean isFatal, String description, String screenshotFilename,
+            String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
+        TestCaseStepAction testCaseStepAction = new TestCaseStepAction();
+        testCaseStepAction.setConditionOperator(conditionOperator);
+        testCaseStepAction.setConditionValue1(conditionValue1);
+        testCaseStepAction.setConditionValue2(conditionValue2);
+        testCaseStepAction.setConditionValue3(conditionValue3);
+        testCaseStepAction.setAction(action);
+        testCaseStepAction.setValue1(value1);
+        testCaseStepAction.setValue2(value2);
+        testCaseStepAction.setValue3(value3);
+        testCaseStepAction.setFatal(isFatal);
+        testCaseStepAction.setActionId(actionId);
+        testCaseStepAction.setStepId(stepId);
+        testCaseStepAction.setSort(sort);
+        testCaseStepAction.setTest(test);
+        testCaseStepAction.setTestcase(testcase);
+        testCaseStepAction.setDescription(description);
+        testCaseStepAction.setScreenshotFilename(screenshotFilename);
+        testCaseStepAction.setControls(new ArrayList<>());
+        testCaseStepAction.setUsrCreated(usrCreated);
+        testCaseStepAction.setDateCreated(dateCreated);
+        testCaseStepAction.setUsrModif(usrModif);
+        testCaseStepAction.setDateModif(dateModif);
 
         return testCaseStepAction;
     }
