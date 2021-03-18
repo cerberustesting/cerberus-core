@@ -527,7 +527,7 @@ public class TestCase {
             testCaseJson.put("conditionValue1", this.getConditionValue1());
             testCaseJson.put("conditionValue2", this.getConditionValue2());
             testCaseJson.put("conditionValue3", this.getConditionValue3());
-            testCaseJson.put("usrAgent", this.getUserAgent());
+            testCaseJson.put("userAgent", this.getUserAgent());
             testCaseJson.put("screenSize", this.getScreenSize());
             testCaseJson.put("bugs", this.getBugs());
             testCaseJson.put("comment", this.getComment());
