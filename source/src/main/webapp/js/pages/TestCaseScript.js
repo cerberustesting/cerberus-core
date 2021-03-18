@@ -2434,7 +2434,6 @@ function addStep(event) {
     $("#addStepConfirm").unbind("click").click(function (event) {
         setModif(true);
 
-
         if ($("[name='importInfo']").length === 0) { // added a new step
             var step = initStep();
             step.description = $("#addStepModal #description").val();
@@ -2446,7 +2445,6 @@ function addStep(event) {
             // added a library step
             $("[name='importInfo']").each(function (idx, importInfo) {
                 var step = initStep();
-
                 if ($(importInfo).data("stepInfo")) {
                     var useStep = $(importInfo).data("stepInfo");
 
@@ -2454,7 +2452,7 @@ function addStep(event) {
 
                     $.ajax({
                         url: "ReadTestCaseStep",
-                        data: {test: useStep.test, testcase: useStep.testcase, stepId: useStep.stepId},
+                        data: {test: useStep.test, testcase: useStep.testCase, stepId: useStep.step},
                         async: false,
                         success: function (data) {
                             step.actions = data.step.actions;
@@ -2469,8 +2467,8 @@ function addStep(event) {
                     if ($("#" + generateImportInfoId(useStep)).find("[name='useStep']").prop("checked")) {
                         step.isUsingLibraryStep = true;
                         step.libraryStepTest = useStep.test;
-                        step.libraryStepTestCase = useStep.testcase;
-                        step.libraryStepStepId = useStep.stepId;
+                        step.libraryStepTestCase = useStep.testCase;
+                        step.libraryStepStepId = useStep.step;
                         step.libraryStepSort = useStep.sort;
                     }
                 }
