@@ -3020,7 +3020,11 @@ Step.prototype.show = function () {
     $("#stepConditionVal2").val(object.conditionValue2);
     $("#stepConditionVal3").val(object.conditionValue3);
     $("#stepDescription").val(object.description);
-    $("#stepForceExe").val(object.isExecutionForced);
+    if (object.isExecutionForced) {
+        $("#stepForceExe").val("true");
+    } else {
+        $("#stepForceExe").val("false");
+    }
     $("#stepId").text(object.sort);
     $("#stepInfo").show();
     $("#addActionContainer").show();
@@ -3176,9 +3180,9 @@ function Action(json, parentStep, canUpdate) {
         this.description = "";
         this.action = "doNothing";
         /*
-        this.object = "";
-        this.property = "";
-        */
+         this.object = "";
+         this.property = "";
+         */
         this.isFatal = false;
         this.conditionOperator = "always";
         this.conditionValue1 = "";
@@ -3391,10 +3395,14 @@ Action.prototype.generateContent = function () {
     });
 
     forceExeStatusList = getSelectInvariant("ACTIONFATAL", false, true).css("width", "100%");
-    forceExeStatusList.val(this.isFatal);
+    if (this.isFatal) {
+        forceExeStatusList.val("true");
+    } else {
+        forceExeStatusList.val("false");
+    }
     forceExeStatusList.on("change", function () {
         setModif(true);
-        obj.isFatal = forceExeStatusList.val();
+        obj.isFatal = forceExeStatusList.val() === "true" ? true : false;
     });
 
     value1Field.val(this.value1);
@@ -3737,11 +3745,15 @@ Control.prototype.generateContent = function () {
     });
 
     fatalList = getSelectInvariant("CTRLFATAL", false, true);
-    fatalList.val(this.isFatal);
+    if (this.isFatal) {
+        fatalList.val("true");
+    } else {
+        fatalList.val("false");
+    }
     fatalList.css("width", "100%");
     fatalList.on("change", function () {
         setModif(true);
-        obj.isFatal = fatalList.val();
+        obj.isFatal = fatalList.val() === "true" ? true : false;
     });
 
     firstRow.append(descContainer);
@@ -3754,7 +3766,7 @@ Control.prototype.generateContent = function () {
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval1));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval2));
     thirdRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval3));
-    thirdRow.append($("<div></div>").addClass("col-lg-1 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "fatal_field"))).append(fatalList));
+    thirdRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "fatal_field"))).append(fatalList));
 
     thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(controlconditionoperator));
 
