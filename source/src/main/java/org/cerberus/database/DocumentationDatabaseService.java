@@ -2218,8 +2218,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcasescript','feed_propertydescription','','fr','Remplissez la description','',NULL)");
         b.append(",('page_testcasescript','feed_propertyname','','en','Feed Property name','',NULL)");
         b.append(",('page_testcasescript','feed_propertyname','','fr','Remplissez le nom de la propriété','',NULL)");
-        b.append(",('page_testcasescript','force_execution_field','','en','Force Execution','',NULL)");
-        b.append(",('page_testcasescript','force_execution_field','','fr','Forcer l\\'execution','',NULL)");
+        b.append(",('page_testcasescript','force_execution_field','','en','Fatal','',NULL)");
+        b.append(",('page_testcasescript','force_execution_field','','fr','Fatal','',NULL)");
         b.append(",('page_testcasescript','goto','','en','Go To','',NULL)");
         b.append(",('page_testcasescript','goto','','fr','Aller','',NULL)");
         b.append(",('page_testcasescript','imported_from','','en','Imported from','',NULL)");
