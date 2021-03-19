@@ -185,7 +185,7 @@ public class TestCaseService implements ITestCaseService {
 
             answerTestCase.getItem().setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(testCaseCountries, countryInvariants));
             answerTestCase.getItem().setDependencies(testCaseDepService.readByTestAndTestcase(answerTestCase.getItem().getTest(), answerTestCase.getItem().getTestcase()));
-            answerTestCase.getItem().setLabels(labelService.findLabelsFromTestCase(test, testCase, null).get(testCase));
+            answerTestCase.getItem().setLabels(labelService.findLabelsFromTestCase(test, testCase, null).get(test + "##" + testCase));
             List<TestCase> testcases = new ArrayList<>();
             testcases.add(factoryTCase.create(test, testCase));
             answerTestCase.getItem().setTestCaseCountryProperties(testCaseCountryPropertiesService.findDistinctPropertiesOfTestCaseFromTestcaseList(testcases, countryInvariants));
