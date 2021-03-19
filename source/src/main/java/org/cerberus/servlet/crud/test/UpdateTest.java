@@ -82,8 +82,8 @@ public class UpdateTest extends HttpServlet {
          */
         String originalTest = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("originalTest"), "");
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
-        String description = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Description"), "");
-        boolean isActive = ParameterParserUtil.parseBooleanParam(request.getParameter("Active"), false);
+        String description = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("description"), "");
+        boolean isActive = ParameterParserUtil.parseBooleanParam(request.getParameter("isActive"), false);
         String automated = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Automated"), "");
 
         /**

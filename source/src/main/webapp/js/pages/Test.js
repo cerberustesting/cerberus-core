@@ -44,7 +44,7 @@ function initPage() {
     displayGlobalLabel(doc);
     displayPageLabel(doc);
     displayFooter(doc);
-    displayInvariantList("Active", "TESTACTIVE", false);
+    displayInvariantList("isActive", "TESTACTIVE", false);
     displayInvariantList("Automated", "TESTAUTOMATED", false);
 
 }
@@ -59,7 +59,7 @@ function displayPageLabel(doc) {
     $("[name='testField']").html(doc.getDocOnline("test", "Test"));
     $("[name='activeField']").html(doc.getDocOnline("test", "isActive"));
     $("[name='automatedField']").html(doc.getDocOnline("test", "Automated"));
-    $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
+    $("[name='descriptionField']").html(doc.getDocOnline("test", "description"));
 }
 
 function renderOptionsForTest(data) {
@@ -117,7 +117,6 @@ function addEntryModalSaveHandler() {
     
     // if the Test field contains '&'
     var nameElementInvalid = nameElement.prop("value").search("&");
-    console.log("nameElementInvalid: " + nameElementInvalid)
     
     if (nameElementEmpty) {
         var localMessage = new Message("danger", "Please specify the name of the test!");
@@ -172,15 +171,13 @@ function editEntryClick(test) {
 
         formEdit.find("#test").prop("value", obj.test);
         formEdit.find("#originalTest").prop("value", obj.test);
-        console.log(formEdit.find("#active"));
-        formEdit.find("#active").prop("value", obj.isActive);
-        console.log(formEdit.find("#active"));
+        formEdit.find("#isActive").prop("value", obj.isActive);
         formEdit.find("#description").prop("value", obj.description);
         formEdit.find("#automated").prop("value", obj.automated);
 
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
             formEdit.find("#test").prop("readonly", "readonly");
-            formEdit.find("#active").prop("disabled", "disabled");
+            formEdit.find("#isActive").prop("disabled", "disabled");
             formEdit.find("#description").prop("readonly", "readonly");
             formEdit.find("#automated").prop("disabled", "disabled");
 
@@ -196,7 +193,6 @@ function displayWarningOnChangeTestKey() {
     // Compare with original value in order to display the warning message.
     let old1 = $("#originalTest").val();
     let new1 = $('#editEntryModal input[name="test"]').val();
-    console.info(old1 + " " + new1);
     if (old1 !== new1) {
         var localMessage = new Message("WARNING", "If you rename that test, it will loose the corresponding execution historic of all corresponding test cases.");
         showMessage(localMessage, $('#editEntryModal'));
@@ -251,7 +247,7 @@ function aoColumnsFunc() {
             "sName": "description",
             "like":true,
             "sWidth": "100px",
-            "title": doc.getDocOnline("test", "Description")
+            "title": doc.getDocOnline("test", "description")
         },
         {
             "data": "isActive",
