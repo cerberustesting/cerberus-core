@@ -478,12 +478,12 @@ function confirmTestCaseModalHandler(mode) {
     for (var i = 0; i < countries.length; i++) {
         if (countries[i].checked === true) {
             var countryValue = {
-                country: $(countries[i]).attr("name"),
+                value: $(countries[i]).attr("name"),
                 toDelete: false
             }
         } else {
             countryValue = {
-                country: $(countries[i]).attr("name"),
+                value: $(countries[i]).attr("name"),
                 toDelete: true
             }
         }

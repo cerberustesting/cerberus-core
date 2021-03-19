@@ -238,7 +238,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
 
             // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
             boolean delete = objectJson.getBoolean("toDelete");
-            String country = objectJson.getString("country");
+            String country = objectJson.getString("value");
             // Parameter that needs to be secured --> We SECURE+DECODE them
             // NONE
             // Parameter that we cannot secure as we need the html --> We DECODE them
