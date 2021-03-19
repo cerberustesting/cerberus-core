@@ -470,8 +470,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('test','Automated','','fr','Automatisé','Boléen qui définit si le test est automatisé ou non','_test')");
         b.append(",('test','dateCreation','','en','Creation date','The date when the test have been created','_test')");
         b.append(",('test','dateCreation','','fr','Date de création','Date à laquelle le test a été créé','_test')");
-        b.append(",('test','Description','','en','Folder Description','This is the description of the <code class=\\'doc-crbvvoca\\'>test</code>.','_test')");
-        b.append(",('test','Description','','fr','Description du dossier','Description du <code class=\\'doc-crbvvoca\\'>test</code>.','_test')");
+        b.append(",('test','description','','en','Folder Description','This is the description of the <code class=\\'doc-crbvvoca\\'>test</code>.','_test')");
+        b.append(",('test','description','','fr','Description du dossier','Description du <code class=\\'doc-crbvvoca\\'>test</code>.','_test')");
         b.append(",('test','Test','','en','Test Folder','A <code class=\\'doc-crbvvoca\\'>test</code> is grouping some <code class=\\'doc-crbvvoca\\'>test case</code> together. The criteria that groups the <code class=\\'doc-crbvvoca\\'>test cases</code> can be an application page or a feature.','_test')");
         b.append(",('test','Test','','fr','Dossier de Test','Un <code class=\\'doc-crbvvoca\\'>test</code> regroupe plusieurs <code class=\\'doc-crbvvoca\\'>Cas de tests</code> ensemble.','_test')");
         b.append(",('testcampaign','distribList','','en','Distribution List','This is the list of email adresses that will receive the notification.<br>Format is ; separated.<br><br>Ex: <br><pre><code>&lt;name1&gt; name1@mail.com; &lt;name2&gt; name2@mail.com</code></pre>',NULL)");
