@@ -1112,8 +1112,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','buildrevisionlink','','fr','BuildRev liée','',NULL)");
         b.append(",('page_executiondetail','cerberusversion','','en','Cerberus Version','',NULL)");
         b.append(",('page_executiondetail','cerberusversion','','fr','Version de Cerberus','',NULL)");
-        b.append(",('page_executiondetail','ConditionOperator','','en','Condition Operator','',NULL)");
-        b.append(",('page_executiondetail','ConditionOperator','','fr','Condition Opérateur','',NULL)");
+        b.append(",('page_executiondetail','conditionOperator','','en','Condition Operator','',NULL)");
+        b.append(",('page_executiondetail','conditionOperator','','fr','Condition Opérateur','',NULL)");
         b.append(",('page_executiondetail','conditionVal1','','en','Condition Value1','',NULL)");
         b.append(",('page_executiondetail','conditionVal1','','fr','Condition Value1','',NULL)");
         b.append(",('page_executiondetail','conditionVal1Init','','en','Condition Value1 Initial','',NULL)");
@@ -1152,8 +1152,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','fatal','','fr','Fatal','',NULL)");
         b.append(",('page_executiondetail','finished','','en','Finished','',NULL)");
         b.append(",('page_executiondetail','finished','','fr','Fini','',NULL)");
-        b.append(",('page_executiondetail','forceexec','','en','Force Execution','',NULL)");
-        b.append(",('page_executiondetail','forceexec','','fr','Forcer L\\'Execution','',NULL)");
+        b.append(",('page_executiondetail','forceexec','','en','Fatal','',NULL)");
+        b.append(",('page_executiondetail','forceexec','','fr','Fatal','',NULL)");
         b.append(",('page_executiondetail','goto','','en','Go To','',NULL)");
         b.append(",('page_executiondetail','goto','','fr','Aller','',NULL)");
         b.append(",('page_executiondetail','id','','en','ID','',NULL)");

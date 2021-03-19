@@ -1087,7 +1087,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     testCaseStepAction.getConditionValue1(), testCaseStepAction.getConditionValue2(), testCaseStepAction.getConditionValue3(),
                     testCaseStepAction.getAction(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(), testCaseStepAction.getValue3(), testCaseStepAction.getValue1(),
                     testCaseStepAction.getValue2(), testCaseStepAction.getValue3(),
-                    (!testCaseStepAction.isFatal() ? "Y" : "N"), startAction, startAction, startAction, startAction, new MessageEvent(MessageEventEnum.ACTION_PENDING),
+                    (testCaseStepAction.isFatal() ? "Y" : "N"), startAction, startAction, startAction, startAction, new MessageEvent(MessageEventEnum.ACTION_PENDING),
                     testCaseStepAction.getDescription(), testCaseStepAction, testCaseStepExecution);
             this.testCaseStepActionExecutionService.insertTestCaseStepActionExecution(testCaseStepActionExecution);
 
@@ -1183,7 +1183,6 @@ public class ExecutionRunService implements IExecutionRunService {
                          * We execute the Action
                          */
                         testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution, tcExecution);
-
                         /**
                          * If Action or property reported to stop the testcase,
                          * we stop it and update the step with the message.
@@ -1240,8 +1239,7 @@ public class ExecutionRunService implements IExecutionRunService {
                             .resolveDescription("AREA", "action ")
                             .resolveDescription("COND", testCaseStepActionExecution.getConditionOperator())
                             .resolveDescription("MESSAGE", conditionAnswer.getResultMessage().getDescription()));
-
-                    if (testCaseStepActionExecution.getForceExeStatus().equals("PE")) {
+                    if (testCaseStepActionExecution.isFatal().equals("N")) {
                         testCaseStepActionExecution.setStopExecution(false);
                         MessageEvent actionMes = testCaseStepActionExecution.getActionResultMessage();
                         actionMes.setDescription(testCaseStepActionExecution.getActionResultMessage().getDescription() + " -- Execution forced to continue.");

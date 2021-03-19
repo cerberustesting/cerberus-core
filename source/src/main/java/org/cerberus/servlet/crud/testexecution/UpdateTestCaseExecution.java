@@ -360,7 +360,7 @@ public class UpdateTestCaseExecution extends HttpServlet {
         testCaseStepActionExecution.setValue1Init(value1Init);
         testCaseStepActionExecution.setValue2Init(value2Init);
         testCaseStepActionExecution.setValue3Init(value3Init);
-        testCaseStepActionExecution.setForceExeStatus(forceExeStatus);
+        testCaseStepActionExecution.setFatal(forceExeStatus);
         testCaseStepActionExecution.setReturnCode(returnCode);
         testCaseStepActionExecution.setReturnMessage(returnMessage);
         testCaseStepActionExecution.setSequence(sequence);

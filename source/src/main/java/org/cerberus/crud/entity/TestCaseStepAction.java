@@ -423,11 +423,9 @@ public class TestCaseStepAction {
         return true;
     }
 
-
-
     @Override
     public String toString() {
-        return "TestCaseStepAction{" + "test=" + test + ", testcase=" + testcase + ", stepId=" + stepId + ", actionId=" + actionId + ", sort=" + sort + ", conditionOperator=" + conditionOperator + ", conditionValue1=" + conditionValue1 + ", conditionValue2=" + conditionValue2 + ", conditionValue3=" + conditionValue3 + ", action=" + action + ", value1=" + value1 + ", value2=" + value2 + ", value3=" + value3 + ", forceExeStatus=" + isFatal + ", description=" + description + ", screenshotFilename=" + screenshotFilename + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", controls=" + controls + '}';
+        return "TestCaseStepAction{" + "test=" + test + ", testcase=" + testcase + ", stepId=" + stepId + ", actionId=" + actionId + ", sort=" + sort + ", conditionOperator=" + conditionOperator + ", conditionValue1=" + conditionValue1 + ", conditionValue2=" + conditionValue2 + ", conditionValue3=" + conditionValue3 + ", action=" + action + ", value1=" + value1 + ", value2=" + value2 + ", value3=" + value3 + ", isFatal=" + isFatal + ", description=" + description + ", screenshotFilename=" + screenshotFilename + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", controls=" + controls + '}';
     }
 
     public JSONObject toJson() {

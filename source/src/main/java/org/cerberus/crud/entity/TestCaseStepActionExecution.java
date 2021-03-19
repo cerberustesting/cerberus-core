@@ -54,7 +54,7 @@ public class TestCaseStepActionExecution {
     private String value1;
     private String value2;
     private String value3;
-    private String forceExeStatus;
+    private String isFatal; // FORCEEXESTATUS IN DATABASE
     private String description;
     private String returnCode;
     private String returnMessage;
@@ -176,12 +176,12 @@ public class TestCaseStepActionExecution {
         this.value3Init = value3Init;
     }
 
-    public String getForceExeStatus() {
-        return forceExeStatus;
+    public String isFatal() {
+        return isFatal;
     }
 
-    public void setForceExeStatus(String forceExeStatus) {
-        this.forceExeStatus = forceExeStatus;
+    public void setFatal(String isFatal) {
+        this.isFatal = isFatal;
     }
 
     public String getPropertyName() {
@@ -410,6 +410,12 @@ public class TestCaseStepActionExecution {
         this.description = description;
     }
 
+    @Override
+    public String toString() {
+        return "TestCaseStepActionExecution{" + "id=" + id + ", test=" + test + ", testCase=" + testCase + ", stepId=" + stepId + ", index=" + index + ", sequence=" + sequence + ", sort=" + sort + ", conditionOperator=" + conditionOperator + ", conditionVal1Init=" + conditionVal1Init + ", conditionVal2Init=" + conditionVal2Init + ", conditionVal3Init=" + conditionVal3Init + ", conditionVal1=" + conditionVal1 + ", conditionVal2=" + conditionVal2 + ", conditionVal3=" + conditionVal3 + ", action=" + action + ", value1Init=" + value1Init + ", value2Init=" + value2Init + ", value3Init=" + value3Init + ", value1=" + value1 + ", value2=" + value2 + ", value3=" + value3 + ", isFatal=" + isFatal + ", description=" + description + ", returnCode=" + returnCode + ", returnMessage=" + returnMessage + ", start=" + start + ", end=" + end + ", startLong=" + startLong + ", endLong=" + endLong + ", testCaseStepAction=" + testCaseStepAction + ", testCaseStepExecution=" + testCaseStepExecution + ", actionResultMessage=" + actionResultMessage + ", executionResultMessage=" + executionResultMessage + ", propertyName=" + propertyName + ", stopExecution=" + stopExecution + ", fileList=" + fileList + ", testCaseExecutionDataList=" + testCaseExecutionDataList + ", testCaseStepActionControlExecutionList=" + testCaseStepActionControlExecutionList + '}';
+    }
+
+
     /**
      * Convert the current TestCaseStepActionExecution into JSON format Note
      * that if withChilds and withParents are both set to true, only the child
@@ -448,7 +454,7 @@ public class TestCaseStepActionExecution {
             result.put("value1init", this.getValue1Init());
             result.put("value2init", this.getValue2Init());
             result.put("value3init", this.getValue3Init());
-            result.put("forceExeStatus", this.getForceExeStatus());
+            result.put("forceExeStatus", this.isFatal());
             result.put("start", this.getStart());
             result.put("end", this.getEnd());
             result.put("startlong", this.getStartLong());

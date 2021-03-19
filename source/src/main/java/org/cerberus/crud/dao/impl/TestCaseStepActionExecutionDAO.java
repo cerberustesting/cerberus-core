@@ -361,7 +361,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue1(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getValue2(), testCaseStepActionExecution.getPropertyName()), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue3(), 65000));
-                preStat.setString(i++, testCaseStepActionExecution.getForceExeStatus());
+                preStat.setString(i++, testCaseStepActionExecution.isFatal());
                 if (testCaseStepActionExecution.getStart() != 0) {
                     preStat.setTimestamp(i++, new Timestamp(testCaseStepActionExecution.getStart()));
                 } else {
@@ -429,7 +429,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue1(), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getValue2(), testCaseStepActionExecution.getPropertyName()), 65000));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue3(), 65000));
-                preStat.setString(i++, testCaseStepActionExecution.getForceExeStatus());
+                preStat.setString(i++, testCaseStepActionExecution.isFatal());
                 if (testCaseStepActionExecution.getStart() != 0) {
                     preStat.setTimestamp(i++, new Timestamp(testCaseStepActionExecution.getStart()));
                 } else {

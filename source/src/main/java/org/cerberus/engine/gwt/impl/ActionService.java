@@ -401,12 +401,12 @@ public class ActionService implements IActionService {
         LOG.debug("Result of the action : " + res.getCodeString() + " " + res.getDescription());
 
         /**
-         * In case 1/ the action is flaged as being Forced with a specific
-         * return code = PE and 2/ the return of the action is stoping the test
+         * In case 1/ the action is flaged as not fatal with a specific
+         * return code = N and 2/ the return of the action is stoping the test
          * --> whatever the return of the action is, we force the return to move
          * forward the test with no screenshot, pagesource.
          */
-        if (testCaseStepActionExecution.getForceExeStatus().equals("PE") && res.isStopTest()) {
+        if (testCaseStepActionExecution.isFatal().equals("N") && res.isStopTest()) {
             res.setDescription(res.getDescription() + " -- Execution forced to continue.");
             res.setDoScreenshot(false);
             res.setGetPageSource(false);
