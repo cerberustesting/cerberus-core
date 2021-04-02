@@ -53,6 +53,7 @@ run:
 # rebuild from scratch the app and runs it.
 ####################################################################
 refresh: package
+	@$(MAKE) destroy
 	@$(MAKE) build
 	@$(MAKE) run
 

@@ -54,7 +54,6 @@ services:
       - "8080:8080"
     volumes:
       - ./localdata/cerberusmedia:/opt/CerberusMedias/
-    restart: always
     depends_on:
       - database
     links:
@@ -72,4 +71,3 @@ services:
       - "3306:3306"
     volumes:
       - ./localdata/mysql-db:/var/lib/mysql
-    restart: always
