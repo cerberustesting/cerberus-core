@@ -47,6 +47,18 @@ Docker images are available for [MySQL](https://hub.docker.com/r/cerberustesting
 * [sarahaccp.com](https://sarahaccp.com/)
 * ...
 
+# Talks and Conferences
+
+| Engagement | Link |
+| --- | --- |
+| 🎤 Meetup | [Cerberus Testing User Group ](https://www.meetup.com/pt-BR/cerberus-testing-user-group/) |
+| 📺 Youtube | [Cerberus Testing Youtube Channel](https://www.youtube.com/channel/UCkG4csTjR0V5gl77BHhldBQ) |
+| 🌎 ICST | [Cerberus: an Automated Tool for Continuous Testing](https://icst2020.info/details/icst-2020-Tools-Demo-Track/5/Cerberus-an-Automated-Tool-for-Continuous-Testing) |
+| 🌎 FOSDEM | [Daily Deploys with 6500+ Automated Tests powered by Open Source](https://fosdem.org/2021/schedule/event/daily_deploys_6500_automated_tests/) |
+| 🌎 Open Source Lisbon | [Cerberus, an Open-Source integrated testing solution from retail player"](https://www.syone.com/events/open-source-lisbon-2018) |
+| 🌎 JFTL (French ISTQB) | [Deploy Daily with more than 5000+ non-regression automated tests ](https://www.cftl.fr/wp-content/uploads/2018/04/JFTL-2018-La-redoute-d%C3%A9ploie-ses-sites-de-production.pdf) |
+| 🌎 TestCon Europe 2021 | [96% Successful Daily Deploys with 6500+ Functional Automated Tests](https://testcon.lt/antoine-craske/) |
+
 # For Developers
 
 A Slack channel is available [here](https://cerberustesting.slack.com). The open source community is [here](https://github.com/cerberustesting).
