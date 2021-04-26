@@ -20,11 +20,8 @@
 package org.cerberus.servlet.zzpublic;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -32,11 +29,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
-
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.entity.Invariant;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.IInvariantService;
@@ -44,24 +38,17 @@ import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
-import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.crud.service.impl.ParameterService;
-import org.cerberus.dto.SummaryStatisticsDTO;
 import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.util.ParameterParserUtil;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.JavaScriptUtils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.xmlbeans.impl.tool.XSTCTester.TestCase;
 
 /**
  *
@@ -70,7 +57,6 @@ import org.apache.xmlbeans.impl.tool.XSTCTester.TestCase;
 @WebServlet(name = "TagDetails", urlPatterns = { "/TagDetails" })
 public class TagDetails extends HttpServlet {
 
-    private final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
     private ITestCaseExecutionService testCaseExecutionService;
     private IAPIKeyService apiKeyService;
     private ITagService tagService;
@@ -99,28 +85,21 @@ public class TagDetails extends HttpServlet {
 
         apiKeyService = appContext.getBean(IAPIKeyService.class);
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
-
         if (apiKeyService.checkAPIKey(request, response)) {
-
             List<TestCaseExecution> listOfExecutions;
             List<JSONObject> listOfExecutionsJSON = new ArrayList<JSONObject>();
             List<Invariant> prioritiesList = new ArrayList<Invariant>();
             List<Invariant> countriesList = new ArrayList<Invariant>();
             List<Invariant> environmentsList = new ArrayList<Invariant>();
-
             try {
-
                 prioritiesList = invariantService.readByIdName("PRIORITY");
                 countriesList = invariantService.readByIdName("COUNTRY");
                 environmentsList = invariantService.readByIdName("ENVIRONMENT");
                 JSONObject jsonResponse = new JSONObject();
-
                 Tag tag = tagService.convert(tagService.readByKey(Tag));
                 String cerberusUrlParameter = formatCerberusURL(
                         parameterService.findParameterByKey("cerberus_url", "").getValue());
-
                 if (tag != null) {
-
                     jsonResponse.put("tag", Tag);
                     jsonResponse.put("tagDurationInMs",
                             (tag.getDateEndQueue().getTime() - tag.getDateCreated().getTime()));
@@ -129,9 +108,7 @@ public class TagDetails extends HttpServlet {
                     jsonResponse.put("end", tag.getDateEndQueue());
                     JSONObject results = convertTagToResultsJSONObject(tag);
                     jsonResponse.put("results", results);
-
                     listOfExecutions = testCaseExecutionService.convert(testCaseExecutionService.readByTag(Tag));
-
                     for (int i = 0; i < listOfExecutions.size(); i++) {
                         TestCaseExecution execution = listOfExecutions.get(i);
                         JSONObject executionJSON = new JSONObject();
@@ -179,52 +156,16 @@ public class TagDetails extends HttpServlet {
                         executionJSON.put("robot", robot);
                         listOfExecutionsJSON.add(executionJSON);
                     }
-
                     jsonResponse.put("executions", listOfExecutionsJSON);
-
                     response.setContentType("application/json");
                     response.getWriter().print(jsonResponse.toString());
                 }
-
             } catch (CerberusException ex) {
                 LOG.debug(ex.getMessageError().getDescription());
             } catch (JSONException ex) {
                 LOG.debug(ex.getMessage());
             }
         }
-    }
-
-    private JSONObject getStatusList(HttpServletRequest request) {
-        JSONObject statusList = new JSONObject();
-        try {
-            statusList.put("OK", ParameterParserUtil.parseStringParam(request.getParameter("OK"), "off"));
-            statusList.put("KO", ParameterParserUtil.parseStringParam(request.getParameter("KO"), "off"));
-            statusList.put("NA", ParameterParserUtil.parseStringParam(request.getParameter("NA"), "off"));
-            statusList.put("NE", ParameterParserUtil.parseStringParam(request.getParameter("NE"), "off"));
-            statusList.put("WE", ParameterParserUtil.parseStringParam(request.getParameter("WE"), "off"));
-            statusList.put("PE", ParameterParserUtil.parseStringParam(request.getParameter("PE"), "off"));
-            statusList.put("FA", ParameterParserUtil.parseStringParam(request.getParameter("FA"), "off"));
-            statusList.put("CA", ParameterParserUtil.parseStringParam(request.getParameter("CA"), "off"));
-            statusList.put("QU", ParameterParserUtil.parseStringParam(request.getParameter("QU"), "off"));
-            statusList.put("QE", ParameterParserUtil.parseStringParam(request.getParameter("QE"), "off"));
-        } catch (JSONException ex) {
-            LOG.error("Error on getStatusList : " + ex, ex);
-        }
-        return statusList;
-    }
-
-    private JSONObject getCountryList(HttpServletRequest request, ApplicationContext appContext) {
-        JSONObject countryList = new JSONObject();
-        try {
-            IInvariantService invariantService = appContext.getBean(InvariantService.class);
-            for (Invariant country : (List<Invariant>) invariantService.readByIdName("COUNTRY")) {
-                countryList.put(country.getValue(),
-                        ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
-            }
-        } catch (JSONException | CerberusException ex) {
-            LOG.error("Error on getCountryList : " + ex, ex);
-        }
-        return countryList;
     }
 
     private JSONObject convertTagToResultsJSONObject(Tag tag) throws JSONException {
