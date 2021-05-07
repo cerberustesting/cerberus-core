@@ -35,12 +35,13 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -83,6 +84,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import mantu.lab.treematching.*;
 
 /**
  *
@@ -193,8 +195,30 @@ public class WebDriverService implements IWebDriverService {
     private AnswerItem<WebElement> getSeleniumElement(Session session, Identifier identifier, boolean visible, boolean clickable) {
         AnswerItem<WebElement> answer = new AnswerItem<>();
         MessageEvent msg;
-        By locator = this.getBy(identifier);
+        By locator;
+        String erratumMessage = "";
         LOG.debug("Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+
+        if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_ERRATUM) && identifier.getLocator() != null) {
+            LOG.debug("ERRATUM SELECTED ============================================");
+            String newXpath = getNewXPathFromErratum(session, identifier);
+            LOG.debug("NEW XPATH = " + newXpath);
+            if (newXpath != "") {
+                locator = By.xpath(newXpath);
+                identifier.setIdentifier(Identifier.IDENTIFIER_XPATH);
+                identifier.setLocator(newXpath);
+                erratumMessage = " (converted by erratum)";
+            } else {
+                LOG.warn("No valid xpath found by Erratum");
+                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
+                msg.setDescription(msg.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator() + erratumMessage));
+                answer.setResultMessage(msg);
+                return answer;
+            }
+        } else {
+            locator = this.getBy(identifier);
+        }
+
         try {
             WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
             WebElement element;
@@ -213,15 +237,110 @@ public class WebDriverService implements IWebDriverService {
             }
             answer.setItem(element);
             msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
-            msg.setDescription(msg.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            msg.setDescription(msg.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator() + erratumMessage));
         } catch (TimeoutException exception) {
             LOG.warn("Exception waiting for element :" + exception);
             //throw new NoSuchElementException(identifier.getIdentifier() + "=" + identifier.getLocator());
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
-            msg.setDescription(msg.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            msg.setDescription(msg.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator() + erratumMessage));
         }
         answer.setResultMessage(msg);
         return answer;
+    }
+
+    private String getNewXPathFromErratum(Session session, Identifier identifier) {
+
+        LOG.debug("INSIDE ERRATUM METHOD ============================================================");
+        String[] result = identifier.getLocator().split(",");
+        String oldXpath = validXpathToErratumXpath(result[0]);
+        LOG.debug("OLD XPATH = " + oldXpath);
+        String oldHtml = result[1];
+        LOG.debug("OLD HTML = " + oldHtml);
+        String newHtml = "";
+        String newXpath = "";
+
+        // Erratum loop with 30 attempts max
+        for (int i = 0; i < 30; i++) {
+
+            LOG.debug("ERRATUM ATTEMPT NUMBER " + i);
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                LOG.error(ex);
+            }
+
+            newHtml = this.getPageSource(session);
+
+            LOG.debug("NEW HTML = " + newHtml);
+
+            TreeMatcherResponse treeMatcherResponse = TreeMatcher.matchWebpages(oldHtml, newHtml);
+
+            // TEMPORARY LOG for each node
+            treeMatcherResponse.getEdges()
+                    .stream()
+                    .forEach((edge) -> {
+                        if (edge.getSource() == null) {
+                            LOG.debug("OLD XPATH NULL");
+                        } else {
+                            LOG.debug("OLD XPATH = " + edge.getSource().getXPath());
+                        }
+
+                        if (edge.getTarget() == null) {
+                            LOG.debug("NEW XPATH NULL");
+                        } else {
+                            LOG.debug("NEW XPATH = " + edge.getTarget().getXPath());
+                        }
+                    });
+
+            // Filtering on non null edges and new map with old xpath as key
+            Map<String, Edge> edges = treeMatcherResponse.getEdges()
+                    .stream()
+                    .filter(edge -> !(edge.getSource() == null || edge.getTarget() == null))
+                    .collect(Collectors.toMap(
+                            edge -> edge.getSource().getXPath(),
+                            edge -> edge
+                    ));
+
+            // Verifying if errratum has found the new xpath
+            if (edges.containsKey(oldXpath)) {
+                newXpath = erratumXpathToValidXpath(edges.get(oldXpath).getTarget().getXPath());
+                LOG.debug("NEW XPATH FOUND : " + newXpath);
+                break;
+            }
+        }
+
+        return newXpath;
+    }
+
+    private String erratumXpathToValidXpath(String erratumXpath) {
+        String[] splittedXpath = erratumXpath.split("\\[0\\]");
+        String validXpath = "/html";
+
+        for (int i = 0; i < splittedXpath.length; i++) {
+            validXpath += splittedXpath[i];
+        }
+
+        LOG.debug("ERRATUM XPATH " + erratumXpath + " TO VALID XPATH " + validXpath);
+
+        return validXpath;
+    }
+
+    private String validXpathToErratumXpath(String validXpath) {
+        String[] splittedXpath = validXpath.split("/");
+        String erratumXpath = "";
+        for (int i = 2; i < splittedXpath.length; i++) {
+            LOG.debug(splittedXpath[i]);
+            if (splittedXpath[i].equalsIgnoreCase("body")) {
+                erratumXpath += "/" + splittedXpath[i];
+            } else {
+                erratumXpath += "/" + splittedXpath[i] + "[0]";
+            }
+        }
+
+        LOG.debug("VALID XPATH " + validXpath + " TO ERRATUM XPATH " + erratumXpath);
+
+        return erratumXpath;
     }
 
     @Override
@@ -558,9 +677,9 @@ public class WebDriverService implements IWebDriverService {
         MessageEvent message;
         try {
 
-            AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
+            AnswerItem<WebElement> answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
-                final WebElement webElement = (WebElement) answer.getItem();
+                final WebElement webElement = answer.getItem();
 
                 if (webElement != null) {
                     /**

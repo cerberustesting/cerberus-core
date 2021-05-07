@@ -297,6 +297,11 @@
             <version>2.2.6</version>
         </dependency>
         <dependency>
+            <groupId>io.github.amaris</groupId>
+            <artifactId>sftm-tree-matching</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
             <version>${javaee-web-api}</version>
