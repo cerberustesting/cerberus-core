@@ -77,7 +77,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         boolean throwEx = false;
         final String query = "INSERT INTO testcaseexecution(test, testcase, description, build, revision, environment, environmentData, country, browser, application, robothost, "
                 + "url, robotport, tag, status, start, controlstatus, controlMessage, crbversion, executor, screensize, conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, "
-                + "manualExecution, UserAgent, queueId, testCaseVersion, TestCasePriority, system, robotdecli, robot, robotexecutor, RobotProvider, RobotProviderSessionId, RobotSessionId, UsrCreated) "
+                + "manualExecution, UserAgent, queueId, testCaseVersion, TestCasePriority, `system`, robotdecli, robot, robotexecutor, RobotProvider, RobotProviderSessionId, RobotSessionId, UsrCreated) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Debug message on SQL.
@@ -178,7 +178,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 + ", browser = ?, application = ?, robothost = ?, url = ?, robotport = ?, tag = ?, status = ?"
                 + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ? "
                 + ", version = ?, platform = ?, executor = ?, screensize = ? "
-                + ", conditionOperator = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal3Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ConditionVal3 = ?, ManualExecution = ?, UserAgent = ?, queueId = ?, testCaseVersion = ?, testCasePriority = ?, system = ? "
+                + ", conditionOperator = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal3Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ConditionVal3 = ?, ManualExecution = ?, UserAgent = ?, queueId = ?, testCaseVersion = ?, testCasePriority = ?, `system` = ? "
                 + ", robotdecli = ?, robot = ?, robotexecutor = ?, RobotProvider = ?, RobotSessionId = ?, RobotProviderSessionId = ?, UsrModif = ?, DateModif = NOW() WHERE id = ?";
 
         // Debug message on SQL.
@@ -189,7 +189,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 int i = 1;
                 preStat.setString(i++, tCExecution.getTest());
@@ -272,7 +272,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 preStat.setString(1, test);
                 preStat.setString(2, testcase);
@@ -340,7 +340,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            PreparedStatement preStat = connection.prepareStatement(query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 int i = 1;
                 if (!StringUtil.isNullOrEmpty(application)) {
@@ -399,7 +399,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("ORDER BY exe.id DESC").toString();
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
             preStat.setString(1, test);
             preStat.setString(2, testcase);
             preStat.setString(3, environment);
@@ -434,7 +434,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("ORDER BY exe.id DESC").toString();
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
             preStat.setString(1, test);
             preStat.setString(2, testCase);
             preStat.setString(3, ParameterParserUtil.wildcardIfEmpty(environment));
@@ -472,7 +472,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("AND exe.status LIKE ?").toString();
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
             preStat.setString(1, dateLimit);
             preStat.setString(2, test);
             preStat.setString(3, testCase);
@@ -515,7 +515,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             LOG.debug("SQL : " + query);
         }
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
             preStat.setLong(1, id);
             try (ResultSet resultSet = preStat.executeQuery();) {
                 if (resultSet.first()) {
@@ -540,7 +540,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append("WHERE Test= ? and TestCase= ? and ControlStatus!='PE')");
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
 
             preStat.setString(1, test);
             preStat.setString(2, testCase);
@@ -1133,10 +1133,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
 
         if (system != null && !system.isEmpty()) {
-            query.append(" and " + SqlUtil.generateInClause("exe.system", system) + " ");
+            query.append(" and " + SqlUtil.generateInClause("exe.`system`", system) + " ");
         }
 
-        query.append(" AND " + UserSecurity.getSystemAllowForSQL("exe.system"));
+        query.append(" AND " + UserSecurity.getSystemAllowForSQL("exe.`system`"));
 
         if (!StringUtil.isNullOrEmpty(sort)) {
             query.append(" order by ").append(sort);
@@ -1547,7 +1547,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String conditionVal3Init = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal3Init"), "");
         String manualExecution = ParameterParserUtil.parseStringParam(resultSet.getString("exe.manualExecution"), "N");
         String userAgent = ParameterParserUtil.parseStringParam(resultSet.getString("exe.userAgent"), "");
-        String system = ParameterParserUtil.parseStringParam(resultSet.getString("exe.system"), "");
+        String system = ParameterParserUtil.parseStringParam(resultSet.getString("exe.System"), "");
         long queueId = ParameterParserUtil.parseLongParam(resultSet.getString("exe.queueId"), 0);
         int testCaseVersion = ParameterParserUtil.parseIntegerParam(resultSet.getInt("exe.testCaseVersion"), 0);
         int testCasePriority = ParameterParserUtil.parseIntegerParam(resultSet.getInt("exe.testCasePriority"), 0);

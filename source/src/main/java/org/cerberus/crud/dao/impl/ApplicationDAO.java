@@ -84,7 +84,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 preStat.setString(1, application);
                 ResultSet resultSet = preStat.executeQuery();
@@ -293,16 +293,16 @@ public class ApplicationDAO implements IApplicationDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         StringBuilder query = new StringBuilder();
-        query.append("SELECT a.system as SystemName, a.application as ApplicationName, inv.`value` as `Status`, count(inv.`value`) as CountStatus ");
+        query.append("SELECT a.`system` as SystemName, a.application as ApplicationName, inv.`value` as `Status`, count(inv.`value`) as CountStatus ");
         query.append("FROM application a ");
-        query.append("JOIN invariant isys ON isys.value=a.system and isys.idname='SYSTEM' ");
+        query.append("JOIN invariant isys ON isys.value=a.`system` and isys.idname='SYSTEM' ");
         query.append("inner join testcase tc on a.application = tc.application ");
         query.append("inner join invariant inv on tc.`Status` = inv.`value` ");
         query.append("where ");
-        query.append(SqlUtil.generateInClause("a.system", system));
+        query.append(SqlUtil.generateInClause("a.`system`", system));
         query.append(" and inv.idname='TCSTATUS' and inv.gp1<>'N' ");
-        query.append("group by isys.sort asc, a.system, a.application, inv.`value` ");
-        query.append("order by isys.sort, a.system, a.application ");
+        query.append("group by isys.sort , a.`system`, a.application, inv.`value` ");
+        query.append("order by isys.sort asc, a.`system`, a.application ");
 
         HashMap<String, HashMap<String, Integer>> result = new HashMap<String, HashMap<String, Integer>>();
 

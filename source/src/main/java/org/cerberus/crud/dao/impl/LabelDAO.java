@@ -169,7 +169,7 @@ public class LabelDAO implements ILabelDAO {
         query.append(" group by lab.id ");
 
         if (!StringUtil.isNullOrEmpty(column)) {
-            query.append(" order by ").append(column).append(" ").append(dir);
+            query.append(" order by `").append(column).append("` ").append(dir);
         }
 
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {

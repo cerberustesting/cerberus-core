@@ -115,7 +115,7 @@ public class RobotDAO implements IRobotDAO {
                 ps -> ps.setString(1, robot),
                 rs -> loadFromResultSet(rs)
         );
-
+        
         //sets the message
         return result;
     }
@@ -145,10 +145,9 @@ public class RobotDAO implements IRobotDAO {
         }
         query.append(searchSQL);
 
-        if(! StringUtil.isNullOrEmpty(typeRobot)) {
+        if (!StringUtil.isNullOrEmpty(typeRobot)) {
             query.append(" and type=? ");
         }
-
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -165,7 +164,7 @@ public class RobotDAO implements IRobotDAO {
                     }
                 }
 
-                if(! StringUtil.isNullOrEmpty(typeRobot)) {
+                if (!StringUtil.isNullOrEmpty(typeRobot)) {
                     preStat.setString(i++, typeRobot);
                 }
 

@@ -137,7 +137,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         }
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 preStat.setLong(1, queueid);
                 ResultSet resultSet = preStat.executeQuery();

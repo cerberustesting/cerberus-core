@@ -160,7 +160,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         }
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             try {
                 preStat.setString(1, system);
                 preStat.setString(2, country);
@@ -617,7 +617,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS ");
 
-        query.append(" max(cev.system) system, max(cev.country) country, Environment, '' Description,  ");
+        query.append(" max(cev.`system`) `system`, max(cev.country) country, Environment, '' Description,  ");
         query.append(" max(cev.build) build, max(cev.revision) revision, max(cev.chain) chain, '' DistribList, ");
         query.append(" '' EMailBodyRevision, max(cev.Type) type, '' EMailBodyChain, '' EMailBodyDisableEnvironment,  ");
         query.append(" max(cev.Active) active, max(cev.maintenanceact) maintenanceact, max(cev.maintenancestr) maintenancestr, max(cev.maintenanceend) maintenanceend, ");

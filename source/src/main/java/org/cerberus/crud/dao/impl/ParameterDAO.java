@@ -109,7 +109,7 @@ public class ParameterDAO implements IParameterDAO {
             LOG.debug("SQL : " + query);
         }
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 preStat.setString(1, system);
                 preStat.setString(2, key);
@@ -165,7 +165,7 @@ public class ParameterDAO implements IParameterDAO {
             LOG.debug("SQL : " + query);
         }
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
             try {
                 ResultSet resultSet = preStat.executeQuery();
@@ -228,7 +228,7 @@ public class ParameterDAO implements IParameterDAO {
         }
 
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             preStat.setString(1, mySystem1);
             preStat.setString(1, mySystem);
 
@@ -288,8 +288,8 @@ public class ParameterDAO implements IParameterDAO {
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS par.param, par.`value`, par.description, ? system1, par1.`value` system1Value FROM parameter par ");
-        query.append(" LEFT OUTER JOIN ( SELECT * from parameter WHERE system = ? ) as par1 ON par1.`param` = par.`param` ");
-        query.append(" WHERE par.system = ?");
+        query.append(" LEFT OUTER JOIN ( SELECT * from parameter WHERE `system` = ? ) as par1 ON par1.`param` = par.`param` ");
+        query.append(" WHERE par.`system` = ?");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (par.param like ?");
@@ -335,7 +335,7 @@ public class ParameterDAO implements IParameterDAO {
         }
 
         try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            PreparedStatement preStat = connection.prepareStatement(query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 int i = 1;
 
@@ -432,7 +432,7 @@ public class ParameterDAO implements IParameterDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         query.append("SELECT par.param, par.`value`, par.description, ? system1, par1.`value` system1value FROM parameter par "
-                + "LEFT OUTER JOIN (SELECT * FROM parameter WHERE system = ? and param = ?) as par1 ON par.param = par1.param WHERE par.system = ? AND par.param = ?");
+                + "LEFT OUTER JOIN (SELECT * FROM parameter WHERE `system` = ? and param = ?) as par1 ON par.param = par1.param WHERE par.`system` = ? AND par.param = ?");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -442,7 +442,7 @@ public class ParameterDAO implements IParameterDAO {
             LOG.debug("SQL.param.key : " + key);
         }
 
-        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
 
             preStat.setString(1, system1);
             preStat.setString(2, system1);
@@ -545,7 +545,7 @@ public class ParameterDAO implements IParameterDAO {
             LOG.debug("SQL : " + query.toString());
         }
 
-        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement();) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(system1)) {
@@ -610,7 +610,7 @@ public class ParameterDAO implements IParameterDAO {
         AnswerItem<Parameter> ans = new AnswerItem<>();
         MessageEvent msg = null;
 
-        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
 
             // Debug message on SQL.
             if (LOG.isDebugEnabled()) {
@@ -651,7 +651,7 @@ public class ParameterDAO implements IParameterDAO {
         Answer ans = new Answer();
         MessageEvent msg = null;
 
-        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(Query.UPDATE, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
 
             // Debug message on SQL.
             if (LOG.isDebugEnabled()) {
@@ -684,7 +684,7 @@ public class ParameterDAO implements IParameterDAO {
         Answer ans = new Answer();
         MessageEvent msg = null;
 
-        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(Query.UPDATE, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
 
             // Debug message on SQL.
             if (LOG.isDebugEnabled()) {
@@ -717,7 +717,7 @@ public class ParameterDAO implements IParameterDAO {
         Answer ans = new Answer();
         MessageEvent msg = null;
 
-        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(Query.CREATE, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
 
             // Debug message on SQL.
             if (LOG.isDebugEnabled()) {

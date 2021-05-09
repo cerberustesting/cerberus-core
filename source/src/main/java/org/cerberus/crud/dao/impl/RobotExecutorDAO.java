@@ -80,7 +80,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
             LOG.debug("SQL.param.executor : " + executor);
         }
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
             preStat.setString(1, robot);
             preStat.setString(2, executor);
 

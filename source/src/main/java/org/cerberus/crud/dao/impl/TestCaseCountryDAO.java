@@ -78,7 +78,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
 
             int i = 1;
             preStat.setString(i++, test);
@@ -116,7 +116,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
 
             int i = 1;
             preStat.setString(i++, test);

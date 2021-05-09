@@ -250,7 +250,7 @@ public class WebDriverService implements IWebDriverService {
 
     private String getNewXPathFromErratum(Session session, Identifier identifier) {
 
-        LOG.debug("INSIDE ERRATUM METHOD ============================================================");
+        LOG.debug("Entering ERRATUM Method ============================================================");
         String[] result = identifier.getLocator().split(",");
         String oldXpath = validXpathToErratumXpath(result[0]);
         LOG.debug("OLD XPATH = " + oldXpath);
@@ -262,7 +262,7 @@ public class WebDriverService implements IWebDriverService {
         // Erratum loop with 30 attempts max
         for (int i = 0; i < 30; i++) {
 
-            LOG.debug("ERRATUM ATTEMPT NUMBER " + i);
+            LOG.debug("ERRATUM ATTEMPT #" + i);
 
             try {
                 Thread.sleep(1000);
@@ -272,40 +272,26 @@ public class WebDriverService implements IWebDriverService {
 
             newHtml = this.getPageSource(session);
 
-            LOG.debug("NEW HTML = " + newHtml);
+            LOG.debug("NEW HTML = " + newHtml.replace("\n", ""));
 
+            LOG.debug("Getting Erratum TreeMatcherResponse.");
             TreeMatcherResponse treeMatcherResponse = TreeMatcher.matchWebpages(oldHtml, newHtml);
 
-            // TEMPORARY LOG for each node
-            treeMatcherResponse.getEdges()
-                    .stream()
-                    .forEach((edge) -> {
-                        if (edge.getSource() == null) {
-                            LOG.debug("OLD XPATH NULL");
-                        } else {
-                            LOG.debug("OLD XPATH = " + edge.getSource().getXPath());
-                        }
-
-                        if (edge.getTarget() == null) {
-                            LOG.debug("NEW XPATH NULL");
-                        } else {
-                            LOG.debug("NEW XPATH = " + edge.getTarget().getXPath());
-                        }
-                    });
-
             // Filtering on non null edges and new map with old xpath as key
-            Map<String, Edge> edges = treeMatcherResponse.getEdges()
+            Map<String, String> edges = treeMatcherResponse.getEdges()
                     .stream()
                     .filter(edge -> !(edge.getSource() == null || edge.getTarget() == null))
                     .collect(Collectors.toMap(
                             edge -> edge.getSource().getXPath(),
-                            edge -> edge
+                            edge -> edge.getTarget().getXPath()
                     ));
+            LOG.debug("Erratum TreeMatcherResponse Mapping result :");
+            LOG.debug(edges);
 
             // Verifying if errratum has found the new xpath
             if (edges.containsKey(oldXpath)) {
-                newXpath = erratumXpathToValidXpath(edges.get(oldXpath).getTarget().getXPath());
-                LOG.debug("NEW XPATH FOUND : " + newXpath);
+                newXpath = erratumXpathToValidXpath(edges.get(oldXpath));
+                LOG.debug("Old XPath " + oldXpath + " found and converted to : " + newXpath);
                 break;
             }
         }
@@ -330,7 +316,6 @@ public class WebDriverService implements IWebDriverService {
         String[] splittedXpath = validXpath.split("/");
         String erratumXpath = "";
         for (int i = 2; i < splittedXpath.length; i++) {
-            LOG.debug(splittedXpath[i]);
             if (splittedXpath[i].equalsIgnoreCase("body")) {
                 erratumXpath += "/" + splittedXpath[i];
             } else {

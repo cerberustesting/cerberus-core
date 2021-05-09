@@ -1007,7 +1007,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(createInClauseFromList(priority, "tec.priority", "AND ", " "));
         query.append(createInClauseFromList(type, "tec.type", "AND ", " "));
         query.append(createInClauseFromList(status, "tec.status", "AND ", " "));
-        query.append(createInClauseFromList(system, "app.system", "AND ", " "));
+        query.append(createInClauseFromList(system, "app.`system`", "AND ", " "));
         query.append(SqlUtil.createWhereInClauseInteger("tel.labelid", labelid, "AND ", " "));
         if (campaign != null) {
             query.append(createInClauseFromList(campaign, "cpl.campaign", " AND (", ") "));
@@ -1741,7 +1741,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
             preStat.setString(1, test);
             preStat.setString(2, testCase);
             try (ResultSet resultSet = preStat.executeQuery();) {

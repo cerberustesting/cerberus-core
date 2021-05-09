@@ -670,10 +670,17 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStep> stepList = new ArrayList<>();
         StringBuilder query = new StringBuilder();
-        query.append("SELECT tcs.*, CASE WHEN tcs1.test + tcs1.testcase + tcs1.stepId is NULL THEN 0 ELSE 1 END as isStepInUseByOtherTestCase "
+        query.append("SELECT tcs.*, CASE WHEN tcs1.test + tcs1.testcase + tcs1.stepId is NULL THEN 0 ELSE 1 END as isStepInUseByOtherTestCase , tcs.test, tcs.testcase, tcs.stepId, tcs.sort "
                 + "FROM testcasestep tcs LEFT JOIN testcasestep tcs1 "
                 + "ON tcs1.isUsingLibraryStep = true AND tcs1.libraryStepTest = ? AND tcs1.libraryStepTestcase = ? AND tcs1.libraryStepStepId = tcs.stepId WHERE tcs.test = ? AND tcs.testcase = ? "
-                + "GROUP BY tcs.test, tcs.testcase, tcs.stepId ORDER BY tcs.sort");
+                + "ORDER BY tcs.sort");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.test : " + test);
+            LOG.debug("SQL.param.testcase : " + testcase);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -923,7 +930,6 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         if (resultSet == null) {
             return null;
         }
-        
 
         String test = resultSet.getString("test") == null ? "" : resultSet.getString("test");
         String testcase = resultSet.getString("testcase") == null ? "" : resultSet.getString("testcase");
@@ -948,7 +954,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
 
         TestCaseStep tcs = factoryTestCaseStep.create(test, testcase, stepId, sort, loop, conditionOperator, conditionValue1, conditionValue2, conditionValue3, description, isUsingLibraryStep, libraryStepTest, libraryStepTestcase, libraryStepStepId,
                 isLibraryStep, isExecutionForced, usrCreated, dateCreated, usrModif, dateModif);
-        
+
         LOG.debug(tcs.toJson());
 
         try {

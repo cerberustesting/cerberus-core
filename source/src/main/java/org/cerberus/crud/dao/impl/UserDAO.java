@@ -74,7 +74,7 @@ public class UserDAO implements IUserDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             try {
                 preStat.setString(1, login);
 
@@ -391,7 +391,7 @@ public class UserDAO implements IUserDAO {
         MessageEvent msg = null;
         final String sql = "UPDATE user SET resetPasswordToken = '' WHERE Login LIKE ?";
 
-        try ( Connection connection = databaseSpring.connect();  PreparedStatement preStat = connection.prepareStatement(sql)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql)) {
             // Prepare and execute query
             preStat.setString(1, user.getLogin());
             preStat.executeUpdate();

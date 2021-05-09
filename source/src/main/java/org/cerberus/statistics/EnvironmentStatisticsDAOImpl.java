@@ -61,7 +61,7 @@ public class EnvironmentStatisticsDAOImpl implements IEnvironmentStatisticsDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT distinct c.system, c.Build, c.Revision, PROD.cnt PROD, UAT.cnt UAT, QA.cnt QA, DEV.cnt DEV ");
+        query.append("SELECT distinct c.system, c.Build, c.Revision, PROD.cnt PROD, UAT.cnt UAT, QA.cnt QA, DEV.cnt DEV, isys.sort, c.system, bri1.seq, bri2.seq ");
         query.append("FROM `countryenvparam` c ");
         query.append("  JOIN invariant isys ON isys.value=c.system and isys.idname='SYSTEM' ");
         query.append("  LEFT OUTER JOIN ( SELECT Build, Revision, count(*) cnt from countryenvparam ");
@@ -86,7 +86,7 @@ public class EnvironmentStatisticsDAOImpl implements IEnvironmentStatisticsDAO {
         query.append(SqlUtil.generateInClause("bri2.`System`", system));
         query.append("WHERE c.build is not null and c.build not in ('','NA') and Active='Y' and ");
         query.append(SqlUtil.generateInClause("c.`System`", system));
-        query.append("ORDER BY  isys.sort asc, c.system asc, bri1.seq asc, bri2.seq asc;");
+        query.append("ORDER BY  isys.sort asc, c.`system` asc, bri1.seq asc, bri2.seq asc;");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {

@@ -344,7 +344,7 @@ INSERT INTO `test`
   VALUES ('Examples','Example Tests','Y','Y','2012-06-19 09:56:06')
   ,('Performance Monitor','Performance Monitor Tests','Y','Y','2012-06-19 09:56:06')
   ,('Business Activity Monitor','Business Activity Monitor Tests','Y','Y','2012-06-19 09:56:06')
-  ,('Pre Testing','Preliminary Tests','Y','Y','0000-00-00 00:00:00');
+  ,('Pre Testing','Preliminary Tests','Y','Y','1970-01-01 01:01:01');
 
 -- 21
 CREATE TABLE `testcase` (  `Test` varchar(45) NOT NULL,  `TestCase` varchar(45) NOT NULL,  `Application` varchar(45) DEFAULT NULL,  `Project` varchar(45) DEFAULT NULL,  `Ticket` varchar(20) DEFAULT '',  `Description` varchar(500) NOT NULL,  `BehaviorOrValueExpected` varchar(2500) NOT NULL,  `ReadOnly` varchar(1) DEFAULT 'N',  `ChainNumberNeeded` int(10) unsigned DEFAULT NULL,  `Priority` int(1) unsigned NOT NULL,  `Status` varchar(25) NOT NULL,  `TcActive` varchar(1) NOT NULL,  `Group` varchar(45) DEFAULT NULL,  `Origine` varchar(45) DEFAULT NULL,  `RefOrigine` varchar(45) DEFAULT NULL,  `HowTo` varchar(2500) DEFAULT NULL,  `Comment` varchar(500) DEFAULT NULL,  `TCDateCrea` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,  `FromBuild` varchar(10) DEFAULT NULL,  `FromRev` varchar(20) DEFAULT NULL,  `ToBuild` varchar(10) DEFAULT NULL,  `ToRev` varchar(20) DEFAULT NULL,  `BugID` varchar(10) DEFAULT NULL,  `TargetBuild` varchar(10) DEFAULT NULL,  `TargetRev` varchar(20) DEFAULT NULL,  `Creator` varchar(45) DEFAULT NULL,  `Implementer` varchar(45) DEFAULT NULL,  `LastModifier` varchar(45) DEFAULT NULL,  `Sla` varchar(45) DEFAULT NULL,  `activeQA` varchar(1) DEFAULT 'Y',  `activeUAT` varchar(1) DEFAULT 'Y',  `activePROD` varchar(1) DEFAULT 'N',  PRIMARY KEY (`Test`,`TestCase`),  KEY `Index_2` (`Group`),  KEY `Index_3` (`Test`,`TestCase`,`Application`,`TcActive`,`Group`),  KEY `FK_testcase_2` (`Application`),  KEY `FK_testcase_3` (`Project`),  CONSTRAINT `FK_testcase_1` FOREIGN KEY (`Test`) REFERENCES `test` (`Test`) ON DELETE CASCADE ON UPDATE CASCADE,  CONSTRAINT `FK_testcase_2` FOREIGN KEY (`Application`) REFERENCES `application` (`Application`) ON DELETE CASCADE ON UPDATE CASCADE,  CONSTRAINT `FK_testcase_3` FOREIGN KEY (`Project`) REFERENCES `project` (`idproject`) ON DELETE CASCADE ON UPDATE CASCADE)
@@ -415,7 +415,7 @@ CREATE TABLE `logeventchange` (  `LogEventChangeID` int(10) unsigned NOT NULL AU
   ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 -- 38
-CREATE TABLE `testcaseexecution` (  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,  `Test` varchar(45) NOT NULL,  `TestCase` varchar(45) NOT NULL,  `Build` varchar(10) DEFAULT NULL,  `Revision` varchar(5) DEFAULT NULL,  `Environment` varchar(45) DEFAULT NULL,  `Country` varchar(2) DEFAULT NULL,  `Browser` varchar(20) DEFAULT NULL,  `Start` timestamp NULL DEFAULT CURRENT_TIMESTAMP,  `End` timestamp NULL DEFAULT '0000-00-00 00:00:00',  `ControlStatus` varchar(2) DEFAULT NULL,  `Application` varchar(45) DEFAULT NULL,  `IP` varchar(45) DEFAULT NULL,  `URL` varchar(150) DEFAULT NULL,  `Port` varchar(45) DEFAULT NULL,  `Tag` varchar(50) DEFAULT NULL,  `Finished` varchar(1) DEFAULT NULL,  `Verbose` varchar(1) DEFAULT NULL,  `Status` varchar(25) DEFAULT NULL,  PRIMARY KEY (`ID`),  KEY `FK_TestCaseExecution_1` (`Test`,`TestCase`),  KEY `fk_testcaseexecution_2` (`Tag`),  KEY `index_1` (`Start`),  KEY `IX_test_testcase_country` (`Test`,`TestCase`,`Country`,`Start`,`ControlStatus`),  KEY `index_buildrev` (`Build`,`Revision`),  KEY `FK_testcaseexecution_3` (`Application`),  KEY `fk_test` (`Test`),  KEY `ix_TestcaseExecution` (`Test`,`TestCase`,`Build`,`Revision`,`Environment`,`Country`,`ID`),  CONSTRAINT `FK_testcaseexecution_1` FOREIGN KEY (`Test`, `TestCase`) REFERENCES `testcase` (`Test`, `TestCase`) ON DELETE CASCADE ON UPDATE CASCADE,  CONSTRAINT `FK_testcaseexecution_3` FOREIGN KEY (`Application`) REFERENCES `application` (`Application`) ON DELETE CASCADE ON UPDATE CASCADE)
+CREATE TABLE `testcaseexecution` (  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,  `Test` varchar(45) NOT NULL,  `TestCase` varchar(45) NOT NULL,  `Build` varchar(10) DEFAULT NULL,  `Revision` varchar(5) DEFAULT NULL,  `Environment` varchar(45) DEFAULT NULL,  `Country` varchar(2) DEFAULT NULL,  `Browser` varchar(20) DEFAULT NULL,  `Start` timestamp NULL DEFAULT CURRENT_TIMESTAMP,  `End` timestamp NULL DEFAULT '1970-01-01 01:01:01',  `ControlStatus` varchar(2) DEFAULT NULL,  `Application` varchar(45) DEFAULT NULL,  `IP` varchar(45) DEFAULT NULL,  `URL` varchar(150) DEFAULT NULL,  `Port` varchar(45) DEFAULT NULL,  `Tag` varchar(50) DEFAULT NULL,  `Finished` varchar(1) DEFAULT NULL,  `Verbose` varchar(1) DEFAULT NULL,  `Status` varchar(25) DEFAULT NULL,  PRIMARY KEY (`ID`),  KEY `FK_TestCaseExecution_1` (`Test`,`TestCase`),  KEY `fk_testcaseexecution_2` (`Tag`),  KEY `index_1` (`Start`),  KEY `IX_test_testcase_country` (`Test`,`TestCase`,`Country`,`Start`,`ControlStatus`),  KEY `index_buildrev` (`Build`,`Revision`),  KEY `FK_testcaseexecution_3` (`Application`),  KEY `fk_test` (`Test`),  KEY `ix_TestcaseExecution` (`Test`,`TestCase`,`Build`,`Revision`,`Environment`,`Country`,`ID`),  CONSTRAINT `FK_testcaseexecution_1` FOREIGN KEY (`Test`, `TestCase`) REFERENCES `testcase` (`Test`, `TestCase`) ON DELETE CASCADE ON UPDATE CASCADE,  CONSTRAINT `FK_testcaseexecution_3` FOREIGN KEY (`Application`) REFERENCES `application` (`Application`) ON DELETE CASCADE ON UPDATE CASCADE)
   ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8;
 
 -- 39
@@ -435,7 +435,7 @@ CREATE TABLE `testcasestepactionexecution` (  `ID` bigint(20) NOT NULL,  `Step` 
   ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 43
-CREATE TABLE `testcasestepexecution` (  `ID` bigint(20) unsigned NOT NULL,  `Step` int(10) unsigned NOT NULL,  `BatNumExe` varchar(45) DEFAULT NULL,  `Start` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,  `End` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',  `FullStart` bigint(20) unsigned DEFAULT NULL,  `FullEnd` bigint(20) unsigned DEFAULT NULL,  `TimeElapsed` decimal(10,3) DEFAULT NULL,  `ReturnCode` varchar(2) DEFAULT NULL,  PRIMARY KEY (`ID`,`Step`),  CONSTRAINT `FK_testcasestepexecution_1` FOREIGN KEY (`ID`) REFERENCES `testcaseexecution` (`ID`) ON DELETE CASCADE)
+CREATE TABLE `testcasestepexecution` (  `ID` bigint(20) unsigned NOT NULL,  `Step` int(10) unsigned NOT NULL,  `BatNumExe` varchar(45) DEFAULT NULL,  `Start` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,  `End` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',  `FullStart` bigint(20) unsigned DEFAULT NULL,  `FullEnd` bigint(20) unsigned DEFAULT NULL,  `TimeElapsed` decimal(10,3) DEFAULT NULL,  `ReturnCode` varchar(2) DEFAULT NULL,  PRIMARY KEY (`ID`,`Step`),  CONSTRAINT `FK_testcasestepexecution_1` FOREIGN KEY (`ID`) REFERENCES `testcaseexecution` (`ID`) ON DELETE CASCADE)
   ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 44
@@ -510,10 +510,10 @@ ALTER TABLE `application` CHANGE COLUMN `System` `System` VARCHAR(45) NOT NULL D
 ALTER TABLE `application` ADD COLUMN `SubSystem` VARCHAR(45) NOT NULL DEFAULT ''  AFTER `System` ;
 
 -- 62
-UPDATE application SET subsystem=system;
+UPDATE application SET subsystem='system';
 
 -- 63
-UPDATE application SET system='DEFAULT';
+UPDATE application SET `system`='DEFAULT';
 
 -- 64
 SELECT 1 FROM dual;
@@ -2158,25 +2158,25 @@ SELECT 1 FROM dual;
 ALTER TABLE `testcasestepexecution`  ADD COLUMN `ReturnMessage` VARCHAR(500) NULL DEFAULT NULL AFTER `ReturnCode`;
 
 -- 561
-ALTER TABLE `test` ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;
+ALTER TABLE `test` ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT '1970-01-01 01:01:01';
 
 -- 562
-ALTER TABLE `testcase` ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;
+ALTER TABLE `testcase` ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT '1970-01-01 01:01:01';
 
 -- 563
-ALTER TABLE `testcasecountry` ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;
+ALTER TABLE `testcasecountry` ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT '1970-01-01 01:01:01';
 
 -- 564
-ALTER TABLE `testcasecountryproperties` ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;
+ALTER TABLE `testcasecountryproperties` ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT '1970-01-01 01:01:01';
 
 -- 565
-ALTER TABLE `testcasestep` ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;
+ALTER TABLE `testcasestep` ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT '1970-01-01 01:01:01';
 
 -- 566
-ALTER TABLE `testcasestepaction` ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;
+ALTER TABLE `testcasestepaction` ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT '1970-01-01 01:01:01';
 
 -- 567
-ALTER TABLE `testcasestepactioncontrol` ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;
+ALTER TABLE `testcasestepactioncontrol` ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT '1970-01-01 01:01:01';
 
 -- 568
 ALTER TABLE `testcasestepaction` ADD COLUMN `ScreenshotFileName` VARCHAR(150) NULL DEFAULT NULL AFTER `Description`;
@@ -2672,7 +2672,7 @@ ALTER TABLE `logevent`  ADD INDEX `IX_logevent_01` (`Time` ASC);
 UPDATE `testcasecountryproperties`  SET type='getFromDataLib_BETA' where type='getFromDataLib';
 
 -- 723
-UPDATE `testdatalib`  SET Created = '2000-01-01 00:00:00' WHERE Created = '0000-00-00 00:00:00';
+UPDATE `testdatalib`  SET Created = '2000-01-01 00:00:00' WHERE Created = '1970-01-01 01:01:01';
 
 -- 724
 SELECT 1 FROM dual;
@@ -2931,31 +2931,31 @@ ALTER TABLE `testcasestepactionexecution` ADD COLUMN `Description` VARCHAR(255) 
 ALTER TABLE `testcasestepactioncontrolexecution`  ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `PageSourceFilename`;
 
 -- 798
-UPDATE `testdatalib` SET `LastModified` =  '1970-01-01 01:01:01' WHERE `LastModified` = '0000-00-00 00:00:00';
+UPDATE `testdatalib` SET `LastModified` =  '1970-01-01 01:01:01' WHERE `LastModified` = '1970-01-01 01:01:01';
 
 -- 799
-UPDATE `test` SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';
+UPDATE `test` SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '1970-01-01 01:01:01';
 
 -- 800
-UPDATE `testcase` SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';
+UPDATE `testcase` SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '1970-01-01 01:01:01';
 
 -- 801
-UPDATE `testcasecountry` SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';
+UPDATE `testcasecountry` SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '1970-01-01 01:01:01';
 
 -- 802
-UPDATE `testcasecountryproperties` SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';
+UPDATE `testcasecountryproperties` SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '1970-01-01 01:01:01';
 
 -- 803
-UPDATE `testcasestep` SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';
+UPDATE `testcasestep` SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '1970-01-01 01:01:01';
 
 -- 804
-UPDATE `testcasestepaction` SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';
+UPDATE `testcasestepaction` SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '1970-01-01 01:01:01';
 
 -- 805
-UPDATE `testcasestepactioncontrol` SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';
+UPDATE `testcasestepactioncontrol` SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '1970-01-01 01:01:01';
 
 -- 806
-UPDATE `testcase` SET `TCDateCrea` =  '1970-01-01 01:01:01' WHERE `TCDateCrea` = '0000-00-00 00:00:00';
+UPDATE `testcase` SET `TCDateCrea` =  '1970-01-01 01:01:01' WHERE `TCDateCrea` = '1970-01-01 01:01:01';
 
 -- 807
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)
@@ -3829,7 +3829,7 @@ select 1 from DUAL;
 select 1 from DUAL;
 
 -- 1066
-UPDATE appservice SET DateCreated = '1970-01-01 01:01:01' WHERE DateCreated = '0000-00-00 00:00:00';
+UPDATE appservice SET DateCreated = '1970-01-01 01:01:01' WHERE DateCreated = '1970-01-01 01:01:01';
 
 -- 1067
 CREATE TABLE `appservicecontent` (  `Service` VARCHAR(255) NOT NULL ,  `Key` VARCHAR(255) NOT NULL ,  `Value` TEXT NULL ,  `Sort` INT NULL DEFAULT 0 ,  `Active` VARCHAR(45) NULL DEFAULT 'Y' ,  `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' ,  `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,  `UsrModif` VARCHAR(45) NULL DEFAULT '' ,  `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ,  PRIMARY KEY (`Service`, `Key`),    CONSTRAINT `FK_appservicecontent_01` FOREIGN KEY (`Service`) REFERENCES `appservice` (`Service`) ON DELETE CASCADE ON UPDATE CASCADE) 
@@ -4159,7 +4159,7 @@ ALTER TABLE `testcaseexecutionqueue` ADD COLUMN `ScreenSize` VARCHAR(45) NULL DE
 DELETE from parameter where param='cerberus_executiondetail_use';
 
 -- 1163
-UPDATE test SET TDateCrea = '1970-01-01 01:01:01' where TDateCrea = '0000-00-00 00:00:00';
+UPDATE test SET TDateCrea = '1970-01-01 01:01:01' where TDateCrea = '1970-01-01 01:01:01';
 
 -- 1164
 UPDATE `invariant` SET sort = sort*10 where idname='CONTROL' and sort < 1500 and sort > 10;
@@ -4342,16 +4342,16 @@ CREATE TABLE `tag` (  `id` INT(11) NOT NULL AUTO_INCREMENT,  `Tag` VARCHAR(50) N
 ALTER TABLE `tag` ADD CONSTRAINT `FK_tag_1` FOREIGN KEY (`Campaign`) REFERENCES `campaign` (`campaign`)  ON DELETE SET NULL  ON UPDATE CASCADE;
 
 -- 1218
-INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != "")  order by id asc ON DUPLICATE KEY UPDATE Tag=a.tag;
+INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != "")  ON DUPLICATE KEY UPDATE Tag=a.tag;
 
 -- 1219
-INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecution a where tag != "")  order by id asc ON DUPLICATE KEY UPDATE Tag=a.tag;
+INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecution a where tag != "")  ON DUPLICATE KEY UPDATE Tag=a.tag;
 
 -- 1220
-INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != "")  order by id asc ON DUPLICATE KEY UPDATE Tag=a.tag;
+INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != "")  ON DUPLICATE KEY UPDATE Tag=a.tag;
 
 -- 1221
-INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecution a where tag != "")  order by id asc ON DUPLICATE KEY UPDATE Tag=a.tag;
+INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecution a where tag != "")  ON DUPLICATE KEY UPDATE Tag=a.tag;
 
 -- 1222
 select 1 from DUAL;
@@ -4409,7 +4409,7 @@ select 1 from DUAL;
 select 1 from DUAL;
 
 -- 1238
-INSERT INTO `parameter` (`system`, `param`, `value`, `description`)  SELECT '', 'cerberus_loginpage_welcomemessagehtml', concat('If you don\'t have login, please contact ' , p.`value`) , 'Message that will appear in login page. %SUPPORTEMAIL% will be replaced by parameter cerberus_support_email.' FROM parameter p WHERE param = 'cerberus_support_email' and system='';
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)  SELECT '', 'cerberus_loginpage_welcomemessagehtml', concat('If you don\'t have login, please contact ' , p.`value`) , 'Message that will appear in login page. %SUPPORTEMAIL% will be replaced by parameter cerberus_support_email.' FROM parameter p WHERE param = 'cerberus_support_email' and `system`='';
 
 -- 1239
 UPDATE `parameter` SET `value`='', `description`='Support Email for Cerberus.' WHERE `system`='' and`param`='cerberus_support_email';
@@ -5337,7 +5337,7 @@ UPDATE testcasestepaction set Value2=concat("{'command': '", Value1, "', 'args':
 UPDATE testcasecountryproperties set Value2=concat("{'command': '", Value1, "', 'args': ['']}"), Value1="mobile: shell" where Type='getFromCommand';
 
 -- 1494
-ALTER TABLE testcase CHANGE testcase.`Group` `Type` VARCHAR(45);
+ALTER TABLE testcase CHANGE `Group` `Type` VARCHAR(45);
 
 -- 1495
 UPDATE invariant SET idname='TESTCASE_TYPE', description='Type of interactive tests' WHERE idname='GROUP' AND value='AUTOMATED';
@@ -5388,7 +5388,7 @@ UPDATE invariant set idname = 'ACTIONCONDITIONOPERATOR' WHERE idname = 'ACTIONCO
 UPDATE invariant set idname = 'CONTROLCONDITIONOPERATOR' WHERE idname = 'CONTROLCONDITIONOPER';
 
 -- 1511
-ALTER TABLE testcase DROP function;
+ALTER TABLE testcase DROP `function`;
 
 -- 1512
 ALTER TABLE testcase CHANGE TcActive isActive VARCHAR(1),CHANGE activeQA isActiveQA VARCHAR(1),CHANGE activeUAT isActiveUAT VARCHAR(1),CHANGE activePROD isActivePROD VARCHAR(1);

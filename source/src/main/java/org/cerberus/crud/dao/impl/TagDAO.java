@@ -84,7 +84,7 @@ public class TagDAO implements ITagDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 preStat.setString(1, tag);
                 ResultSet resultSet = preStat.executeQuery();
