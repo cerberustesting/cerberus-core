@@ -28,6 +28,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import net.minidev.json.JSONArray;
+import net.minidev.json.JSONStyle;
 import org.cerberus.service.json.IJsonService;
 import org.cerberus.util.StringUtil;
 import org.json.JSONObject;
@@ -117,7 +118,9 @@ public class JsonService implements IJsonService {
              * Maybe it is a string.
              */
             LOG.debug("JSON PATH trying Object : " + jsonPath);
-            Object obj = JsonPath.read(document, jsonPath);
+            String obj = JsonPath.read(json, jsonPath);
+            JSONObject res = new JSONObject(obj);
+
             return String.valueOf(obj);
 
         } catch (Exception exString) {
@@ -145,7 +148,7 @@ public class JsonService implements IJsonService {
                          */
                         LOG.debug("JSON PATH trying JSONArray : " + jsonPath);
                         JSONArray toto = JsonPath.read(document, jsonPath);
-                        return toto.toJSONString();
+                        return toto.toString(JSONStyle.LT_COMPRESS);
 
                     } catch (Exception exArray) {
                         return DEFAULT_GET_FROM_JSON_VALUE;

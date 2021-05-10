@@ -59,7 +59,7 @@
         <!-- Log4J Version -->
         <log4j.version>2.13.3</log4j.version>
         <!-- jsonpath -->
-        <jsonxpath.version>2.4.0</jsonxpath.version>
+        <jsonxpath.version>2.5.0</jsonxpath.version>
         <!-- Compile scope -->
         <javaee-web-api>8.0</javaee-web-api>
         <javax.servlet-api.version>4.0.0</javax.servlet-api.version>
