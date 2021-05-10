@@ -300,32 +300,34 @@ public class WebDriverService implements IWebDriverService {
     }
 
     private String erratumXpathToValidXpath(String erratumXpath) {
-        String[] splittedXpath = erratumXpath.split("\\[0\\]");
-        String validXpath = "/html";
-
-        for (int i = 0; i < splittedXpath.length; i++) {
-            validXpath += splittedXpath[i];
-        }
-
-        LOG.debug("ERRATUM XPATH " + erratumXpath + " TO VALID XPATH " + validXpath);
-
-        return validXpath;
+        return erratumXpath;
+//        String[] splittedXpath = erratumXpath.split("\\[0\\]");
+//        String validXpath = "/html";
+//
+//        for (int i = 0; i < splittedXpath.length; i++) {
+//            validXpath += splittedXpath[i];
+//        }
+//
+//        LOG.debug("ERRATUM XPATH " + erratumXpath + " TO VALID XPATH " + validXpath);
+//
+//        return validXpath;
     }
 
     private String validXpathToErratumXpath(String validXpath) {
-        String[] splittedXpath = validXpath.split("/");
-        String erratumXpath = "";
-        for (int i = 2; i < splittedXpath.length; i++) {
-            if (splittedXpath[i].equalsIgnoreCase("body")) {
-                erratumXpath += "/" + splittedXpath[i];
-            } else {
-                erratumXpath += "/" + splittedXpath[i] + "[0]";
-            }
-        }
-
-        LOG.debug("VALID XPATH " + validXpath + " TO ERRATUM XPATH " + erratumXpath);
-
-        return erratumXpath;
+        return validXpath;
+//        String[] splittedXpath = validXpath.split("/");
+//        String erratumXpath = "";
+//        for (int i = 2; i < splittedXpath.length; i++) {
+//            if (splittedXpath[i].equalsIgnoreCase("body")) {
+//                erratumXpath += "/" + splittedXpath[i];
+//            } else {
+//                erratumXpath += "/" + splittedXpath[i] + "[0]";
+//            }
+//        }
+//
+//        LOG.debug("VALID XPATH " + validXpath + " TO ERRATUM XPATH " + erratumXpath);
+//
+//        return erratumXpath;
     }
 
     @Override
