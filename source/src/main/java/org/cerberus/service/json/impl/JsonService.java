@@ -117,11 +117,9 @@ public class JsonService implements IJsonService {
             /**
              * Maybe it is a string.
              */
-            LOG.debug("JSON PATH trying Object : " + jsonPath);
-            String obj = JsonPath.read(json, jsonPath);
-            JSONObject res = new JSONObject(obj);
-
-            return String.valueOf(obj);
+            LOG.debug("JSON PATH trying String : " + jsonPath);
+            String tryString = JsonPath.read(json, jsonPath);
+            return String.valueOf(tryString);
 
         } catch (Exception exString) {
             try {
@@ -129,8 +127,8 @@ public class JsonService implements IJsonService {
                  * Maybe it is an Integer.
                  */
                 LOG.debug("JSON PATH trying Integer : " + jsonPath);
-                int toto = JsonPath.read(document, jsonPath);
-                return String.valueOf(toto);
+                int tryInt = JsonPath.read(document, jsonPath);
+                return String.valueOf(tryInt);
 
             } catch (Exception exInt) {
                 try {
@@ -138,8 +136,8 @@ public class JsonService implements IJsonService {
                      * Maybe it is a Boolean.
                      */
                     LOG.debug("JSON PATH trying Boolean : " + jsonPath);
-                    Boolean toto = JsonPath.read(document, jsonPath);
-                    return toto.toString();
+                    Boolean tryBoolean = JsonPath.read(document, jsonPath);
+                    return tryBoolean.toString();
 
                 } catch (Exception exBool) {
                     try {
@@ -147,8 +145,8 @@ public class JsonService implements IJsonService {
                          * Maybe it is an JSONArray.
                          */
                         LOG.debug("JSON PATH trying JSONArray : " + jsonPath);
-                        JSONArray toto = JsonPath.read(document, jsonPath);
-                        return toto.toString(JSONStyle.LT_COMPRESS);
+                        JSONArray tryJSONArray = JsonPath.read(document, jsonPath);
+                        return tryJSONArray.toString(JSONStyle.LT_COMPRESS);
 
                     } catch (Exception exArray) {
                         return DEFAULT_GET_FROM_JSON_VALUE;
