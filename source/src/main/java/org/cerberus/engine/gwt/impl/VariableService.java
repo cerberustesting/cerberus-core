@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
+import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.engine.gwt.IVariableService;
@@ -78,6 +79,12 @@ public class VariableService implements IVariableService {
         if (StringUtil.isNullOrEmpty(result)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Stop Decoding : Nothing to decode on : " + result);
+            }
+            return answer;
+        }
+        if (result.startsWith(Identifier.IDENTIFIER_ERRATUM + "=")) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Stop Decoding : String starts by erratum= : " + result);
             }
             return answer;
         }

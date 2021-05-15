@@ -629,7 +629,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 }
 
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCaseStep>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         String t = resultSet.getString("test");

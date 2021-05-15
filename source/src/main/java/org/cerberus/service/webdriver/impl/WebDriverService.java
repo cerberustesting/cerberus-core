@@ -95,6 +95,7 @@ public class WebDriverService implements IWebDriverService {
 
     private static final int TIMEOUT_WEBELEMENT = 300;
     private static final int TIMEOUT_FOCUS = 1000;
+    private static final String ERRATUM_SEPARATOR = ",";
 
     private static final Logger LOG = LogManager.getLogger("WebDriverService");
 
@@ -203,7 +204,7 @@ public class WebDriverService implements IWebDriverService {
             LOG.debug("ERRATUM SELECTED ============================================");
             String newXpath = getNewXPathFromErratum(session, identifier);
             LOG.debug("NEW XPATH = " + newXpath);
-            if (newXpath != "") {
+            if (!StringUtil.isNullOrEmpty(newXpath)) {
                 locator = By.xpath(newXpath);
                 identifier.setIdentifier(Identifier.IDENTIFIER_XPATH);
                 identifier.setLocator(newXpath);
@@ -251,18 +252,26 @@ public class WebDriverService implements IWebDriverService {
     private String getNewXPathFromErratum(Session session, Identifier identifier) {
 
         LOG.debug("Entering ERRATUM Method ============================================================");
-        String[] result = identifier.getLocator().split(",");
+        String[] result = identifier.getLocator().split(ERRATUM_SEPARATOR);
         String oldXpath = validXpathToErratumXpath(result[0]);
         LOG.debug("OLD XPATH = " + oldXpath);
-        String oldHtml = result[1];
+        String oldHtml = identifier.getLocator().replace(oldXpath + ERRATUM_SEPARATOR,"");
         LOG.debug("OLD HTML = " + oldHtml);
         String newHtml = "";
         String newXpath = "";
 
-        // Erratum loop with 30 attempts max
-        for (int i = 0; i < 30; i++) {
+        long start = new Date().getTime();
 
-            LOG.debug("ERRATUM ATTEMPT #" + i);
+        // Erratum loop with 30 attempts max
+        int i = 0;
+        long elapsedSinceStart = new Date().getTime() - start;
+        while ((elapsedSinceStart < session.getCerberus_selenium_wait_element()) && (i < 100)) {
+
+//        }
+//        for (int i = 0; i < 30; i++) {
+            elapsedSinceStart = new Date().getTime() - start;
+            i++;
+            LOG.debug("ERRATUM ATTEMPT #" + i + " / Elapsed time from begining : " + elapsedSinceStart + " (timeout : " + session.getCerberus_selenium_wait_element() + ")");
 
             try {
                 Thread.sleep(1000);

@@ -5775,3 +5775,81 @@ UPDATE invariant SET value = 'true' WHERE idname = 'CTRLFATAL' AND value = 'Y';
 
 -- 1613
 UPDATE invariant SET value = 'false' WHERE idname = 'CTRLFATAL' AND value != 'true';
+
+-- 1614
+ALTER TABLE `testcase` 
+    CHANGE COLUMN `ConditionValue1` `ConditionValue1` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionValue2` `ConditionValue2` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionValue3` `ConditionValue3` LONGTEXT NULL DEFAULT NULL ;
+
+-- 1615
+ALTER TABLE `testcasestep` 
+    CHANGE COLUMN `ConditionValue1` `ConditionValue1` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionValue2` `ConditionValue2` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionValue3` `ConditionValue3` LONGTEXT NULL DEFAULT NULL ;
+
+-- 1616
+ALTER TABLE `testcasestepaction` 
+    CHANGE COLUMN `ConditionValue1` `ConditionValue1` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionValue2` `ConditionValue2` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionValue3` `ConditionValue3` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value1` `Value1` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value2` `Value2` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value3` `Value3` LONGTEXT NULL DEFAULT NULL ;
+
+-- 1617
+ALTER TABLE `testcasestepactioncontrol` 
+    CHANGE COLUMN `ConditionValue1` `ConditionValue1` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionValue2` `ConditionValue2` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionValue3` `ConditionValue3` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value1` `Value1` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value2` `Value2` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value3` `Value3` LONGTEXT NULL DEFAULT NULL ;
+
+-- 1618
+ALTER TABLE `testcaseexecution` 
+    CHANGE COLUMN `ConditionVal1` `ConditionVal1` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal2` `ConditionVal2` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal3` `ConditionVal3` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal1Init` `ConditionVal1Init` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal2Init` `ConditionVal2Init` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal3Init` `ConditionVal3Init` LONGTEXT NULL DEFAULT NULL ;
+
+-- 1619
+ALTER TABLE `testcasestepexecution` 
+    CHANGE COLUMN `ConditionVal1` `ConditionVal1` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal2` `ConditionVal2` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal3` `ConditionVal3` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal1Init` `ConditionVal1Init` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal2Init` `ConditionVal2Init` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal3Init` `ConditionVal3Init` LONGTEXT NULL DEFAULT NULL ;
+
+-- 1620
+ALTER TABLE `testcasestepactionexecution` 
+    CHANGE COLUMN `ConditionVal1` `ConditionVal1` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal2` `ConditionVal2` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal3` `ConditionVal3` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal1Init` `ConditionVal1Init` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal2Init` `ConditionVal2Init` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal3Init` `ConditionVal3Init` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value1` `Value1` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value2` `Value2` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value3` `Value3` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value1Init` `Value1Init` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value2Init` `Value2Init` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value3Init` `Value3Init` LONGTEXT NULL DEFAULT NULL ;
+
+-- 1621
+ALTER TABLE `testcasestepactioncontrolexecution` 
+    CHANGE COLUMN `ConditionVal1` `ConditionVal1` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal2` `ConditionVal2` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal3` `ConditionVal3` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal1Init` `ConditionVal1Init` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal2Init` `ConditionVal2Init` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `ConditionVal3Init` `ConditionVal3Init` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value1` `Value1` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value2` `Value2` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value3` `Value3` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value1Init` `Value1Init` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value2Init` `Value2Init` LONGTEXT NULL DEFAULT NULL ,
+    CHANGE COLUMN `Value3Init` `Value3Init` LONGTEXT NULL DEFAULT NULL ;
