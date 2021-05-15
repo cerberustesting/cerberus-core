@@ -3405,11 +3405,10 @@ Action.prototype.generateContent = function () {
         obj.isFatal = forceExeStatusList.val() === "true" ? true : false;
     });
 
-    value1Field.val(this.value1);
+    value1Field.val(cleanErratum(this.value1));
     value1Field.css("width", "100%");
     value1Field.on("change", function () {
-        setModif(true);
-        obj.value1 = value1Field.val();
+        obj.value1 = convertValueWithErratum(obj.value1, value1Field.val());
     });
 
     value2Field.val(this.value2);
@@ -3462,6 +3461,45 @@ Action.prototype.generateContent = function () {
 
     return content;
 };
+
+
+function cleanErratum(oldValue) {
+    if (oldValue.startsWith('erratum=')) {
+        if (oldValue.includes(",")) {
+            return oldValue.split(',')[0] + ",[HTML-SOURCE-CONTENT]";
+        } else {
+            return oldValue;
+        }
+    } else {
+        return oldValue;
+    }
+}
+
+function convertValueWithErratum(oldValue, newValue) {
+    if (newValue.startsWith('erratum=')) {
+        setModif(true);
+        let newXpath = newValue.split(',')[0];
+        let newSource = newValue.split(newXpath)[1];
+        let oldXpath = oldValue.split(',')[0];
+        let oldSource = oldValue.split(oldXpath)[1];
+        if (newValue.endsWith("[HTML-SOURCE-CONTENT]")) {
+//                console.log(newXpath+oldSource);
+            return newXpath + oldSource;
+        } else {
+//                console.log(newValue);
+            return newValue;
+        }
+//            console.log(newXpath);
+//            console.log(newSource);
+//            console.log(oldSource);
+//            let newSource = value1Field.val().split(xpath)[1];
+    } else {
+        setModif(true);
+//            console.log(value1Field.val());
+        return newValue;
+    }
+
+}
 
 Action.prototype.getJsonData = function () {
     var json = {};

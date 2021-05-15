@@ -55,7 +55,7 @@ public class MessageEvent {
     private boolean doScreenshot;
     private boolean getPageSource;
     private MessageGeneralEnum message;
-    
+
     private MessageEventEnum source;
 
     public MessageEvent(MessageEventEnum tempMessage) {
@@ -81,11 +81,10 @@ public class MessageEvent {
     }
 
     public MessageEvent(String codeString, String description) {
-        this.code=0;
-        this.codeString=codeString;
-        this.description=description;
+        this.code = 0;
+        this.codeString = codeString;
+        this.description = description;
     }
-
 
     public int getCode() {
         return this.code;
@@ -157,9 +156,11 @@ public class MessageEvent {
      * Resolve description by injecting the given value for the given key
      * <p>
      * A key is a {@link MessageEvent} variable that follows the given pattern:
-     * {@link MessageEvent#VARIABLE_DELIMITER}[variable name]{@link MessageEvent#VARIABLE_DELIMITER}
+     * {@link MessageEvent#VARIABLE_DELIMITER}[variable
+     * name]{@link MessageEvent#VARIABLE_DELIMITER}
      *
-     * @param key   the variable name to replace on the {@link MessageEvent} description
+     * @param key the variable name to replace on the {@link MessageEvent}
+     * description
      * @param value the value to replace for the given variable name
      * @return this {@link MessageEvent} instance
      */
@@ -174,6 +175,5 @@ public class MessageEvent {
     public String toString() {
         return "MessageEvent{" + "code=" + code + ", codeString=" + codeString + ", description=" + description + ", stopTest=" + stopTest + ", doScreenshot=" + doScreenshot + ", getPageSource=" + getPageSource + ", message=" + message.toString() + '}';
     }
-
 
 }

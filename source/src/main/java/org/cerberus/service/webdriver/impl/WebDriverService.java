@@ -202,6 +202,13 @@ public class WebDriverService implements IWebDriverService {
 
         if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_ERRATUM) && identifier.getLocator() != null) {
             LOG.debug("ERRATUM SELECTED ============================================");
+            if (!identifier.getLocator().contains(ERRATUM_SEPARATOR)) {
+                LOG.warn("Erratum value is missing separator");
+                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_ERRATUM_MISSING_SEPARATOR);
+                msg.resolveDescription("SEPARATOR", ERRATUM_SEPARATOR);
+                answer.setResultMessage(msg);
+                return answer;
+            }
             String newXpath = getNewXPathFromErratum(session, identifier);
             LOG.debug("NEW XPATH = " + newXpath);
             if (!StringUtil.isNullOrEmpty(newXpath)) {
@@ -211,8 +218,7 @@ public class WebDriverService implements IWebDriverService {
                 erratumMessage = " (converted by erratum)";
             } else {
                 LOG.warn("No valid xpath found by Erratum");
-                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
-                msg.setDescription(msg.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator() + erratumMessage));
+                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_ERRATUM_ELEMENT_NOT_FOUND);
                 answer.setResultMessage(msg);
                 return answer;
             }
@@ -238,12 +244,13 @@ public class WebDriverService implements IWebDriverService {
             }
             answer.setItem(element);
             msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
-            msg.setDescription(msg.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator() + erratumMessage));
+            msg.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator() + erratumMessage);
+
         } catch (TimeoutException exception) {
             LOG.warn("Exception waiting for element :" + exception);
             //throw new NoSuchElementException(identifier.getIdentifier() + "=" + identifier.getLocator());
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
-            msg.setDescription(msg.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator() + erratumMessage));
+            msg.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator() + erratumMessage);
         }
         answer.setResultMessage(msg);
         return answer;
@@ -255,7 +262,7 @@ public class WebDriverService implements IWebDriverService {
         String[] result = identifier.getLocator().split(ERRATUM_SEPARATOR);
         String oldXpath = validXpathToErratumXpath(result[0]);
         LOG.debug("OLD XPATH = " + oldXpath);
-        String oldHtml = identifier.getLocator().replace(oldXpath + ERRATUM_SEPARATOR,"");
+        String oldHtml = identifier.getLocator().replace(oldXpath + ERRATUM_SEPARATOR, "");
         LOG.debug("OLD HTML = " + oldHtml);
         String newHtml = "";
         String newXpath = "";

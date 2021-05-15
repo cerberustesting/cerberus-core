@@ -359,9 +359,15 @@ function initTags(configs,context){
         ];
         var availableIdentifiers = [
             "data-cerberus",
-            "picture",
             "id",
-            "xpath"
+            "name",
+            "class",
+            "css",
+            "xpath",
+            "link",
+            "erratum",
+            "picture",
+            "text"
         ];
         tags = [
             {

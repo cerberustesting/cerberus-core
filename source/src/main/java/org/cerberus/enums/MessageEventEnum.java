@@ -272,6 +272,8 @@ public enum MessageEventEnum {
     ACTION_FAILED_TYPE_NO_SUCH_ELEMENT(269, "FA", "Failed to type because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT(270, "FA", "Failed to move mouse over because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_WAIT_NO_SUCH_ELEMENT(271, "FA", "Failed to wait because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_WAIT_ERRATUM_MISSING_SEPARATOR(271, "FA", "Failed to wait because syntax error on erratum value (separator '%SEPARATOR%' is missing) !", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_WAIT_ERRATUM_ELEMENT_NOT_FOUND(271, "FA", "Failed to wait because Erratum could not match the element on new page ! That can happen if page is too different from the original one.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_KEYPRESS_NO_SUCH_ELEMENT(272, "FA", "Failed to keyPress key because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SELECT_NO_SUCH_ELEMENT(273, "FA", "Failed to select because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SELECT_NO_IDENTIFIER(274, "FA", "Identifier '%IDENTIFIER%=' isn't recognized! Use: value=, label= or index=.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
