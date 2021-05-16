@@ -1,13 +1,24 @@
 *Bug fixes*
 [square]
-* When step is using a library the correct information is displayed on the GUI (both when loading the page and attaching a new step from modal). #2182.
+* When step is using a library the correct information is displayed on the GUI (both when loading the page and attaching a new step from modal). #2182 
 * Fixed Error message when delete an application object.
 * Fixed issue when using setNetworkTraffic with both urlFilter and index previously used during the test case.
+* Fixed properties autocomplete issue on testcase script page.
+* Fixed Robotdecli information when running testcase in manual mode. #2232
+* Cleaned extra Backslash on GetFromJSON properties when spash caracter is retreived inside an Array #2242
 
 *Improvements / New features*
 [square]
-* new property getOTP. That allow to get an OTP connection code from a secret key allowing to manage the Two Factor authentication use case.
+* new property getOTP. That allow to get an OTP connection code from a secret key allowing to manage the Two Factor authentication use case. #2234
+* new Erratum element that allow selfhealing feature. #2252
+* Added all element indentifier on autocomplete on testcase script page.
+* Avoid error on Condition evaluation that require Selenium engine when running testcase in manual mode. #2161
+* Improved NetworkTraffic for JSON Structure for GET requests. (Thanks @vitoo)
+* Added a default value for index name for network traffic.
+* New public servlet for getting campaign execution details /TagDetails. #2204
+* Added Step number in testcase script page. (Thanks @vitoo)
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * updated Groovy library to 2.4.21. Check your script behavior before upgrading.
+* Database tables on testcase perimeter has been masivly refactored.
