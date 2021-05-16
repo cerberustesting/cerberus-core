@@ -20,10 +20,13 @@
 package org.cerberus.engine.execution.impl;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import org.cerberus.enums.MessageGeneralEnum;
 import java.text.ParseException;
@@ -416,28 +419,41 @@ public class ExecutionCheckService implements IExecutionCheckService {
                 tce.getRobotExecutorObj().setExecutorExtensionHost(tce.getRobotExecutorObj().getHost());
             }
 
-            String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/check";
-            LOG.debug("Url to check Proxy Executor : " + url);
+            String urlString = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/check";
+            LOG.debug("Url to check Proxy Executor : " + urlString);
 
-            try (InputStream is = new URL(url).openStream()) {
-                BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-                StringBuilder sb = new StringBuilder();
-                int cp;
-                while ((cp = rd.read()) != -1) {
-                    sb.append((char) cp);
+            URL url;
+            try {
+                url = new URL(urlString);
+                URLConnection urlConn = url.openConnection();
+                urlConn.setConnectTimeout(15000);
+                urlConn.setReadTimeout(15000);
+
+                try (InputStream is = urlConn.getInputStream()) {
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+                    StringBuilder sb = new StringBuilder();
+                    int cp;
+                    while ((cp = rd.read()) != -1) {
+                        sb.append((char) cp);
+                    }
+                    String jsonText = sb.toString();
+
+                    JSONObject json = new JSONObject(jsonText);
+
+                    if ("OK".equals(json.getString("message"))) {
+                        return true;
+                    }
+
+                } catch (ConnectException ex) {
+                    LOG.warn("Exception Reaching Cerberus Extension " + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString());
+                } catch (Exception ex) {
+                    LOG.error("Exception Reaching Cerberus Extension " + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString(), ex);
                 }
-                String jsonText = sb.toString();
 
-                JSONObject json = new JSONObject(jsonText);
-
-                if ("OK".equals(json.getString("message"))) {
-                    return true;
-                }
-
-            } catch (ConnectException ex) {
+            } catch (MalformedURLException ex) {
                 LOG.warn("Exception Reaching Cerberus Extension " + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString());
-            } catch (Exception ex) {
-                LOG.error("Exception Reaching Cerberus Extension " + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString(), ex);
+            } catch (IOException ex) {
+                LOG.warn("Exception Reaching Cerberus Extension " + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString());
             }
 
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_CERBERUSEXECUTORNOTAVAILABLE);
