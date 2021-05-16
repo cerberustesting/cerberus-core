@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -43,6 +42,8 @@ import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.execution.IIdentifierService;
 import org.cerberus.engine.execution.IRecorderService;
+import org.cerberus.engine.execution.IRobotServerService;
+import org.cerberus.engine.execution.impl.RobotServerService;
 import org.cerberus.engine.gwt.IControlService;
 import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
@@ -88,6 +89,8 @@ public class ControlService implements IControlService {
     private IRecorderService recorderService;
     @Autowired
     private IVariableService variableService;
+    @Autowired
+    private IRobotServerService robotServerService;
 
     @Override
     public TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
@@ -216,6 +219,12 @@ public class ControlService implements IControlService {
         // When starting a new control, we reset the property list that was already calculated.
         tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
+        // Define Timeout
+        if (testCaseStepActionControlExecution.getDescription().contains(RobotServerService.TIMEOUT_DEFINITION_SYNTAX)) {
+            Integer newTimeout = Integer.valueOf(testCaseStepActionControlExecution.getDescription().split(RobotServerService.TIMEOUT_DEFINITION_SYNTAX)[1].split(" ")[0]);
+            robotServerService.setTimeOut(tCExecution.getSession(), newTimeout);
+        }
+
         try {
 
             switch (testCaseStepActionControlExecution.getControl()) {
@@ -342,7 +351,11 @@ public class ControlService implements IControlService {
             res = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC).resolveDescription("ERROR", unexpected.getMessage());
         }
 
+        // Reset Timeout to default
+        robotServerService.setTimeOutToDefault(tCExecution.getSession());
+
         testCaseStepActionControlExecution.setControlResultMessage(res);
+
         /**
          * Updating Control result message only if control is not successful.
          * This is to keep the last KO information and preventing KO to be

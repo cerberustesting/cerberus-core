@@ -54,4 +54,17 @@ public interface IRobotServerService {
      */
     Capabilities getUsedCapabilities(Session session);
 
+    /**
+     *
+     * @param session
+     * @param timeout
+     */
+    public void setTimeOut(Session session, Integer timeout);
+
+    /**
+     *
+     * @param session
+     */
+    public void setTimeOutToDefault(Session session);
+
 }

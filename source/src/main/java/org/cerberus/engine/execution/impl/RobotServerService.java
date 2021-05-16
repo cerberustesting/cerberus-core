@@ -153,6 +153,8 @@ public class RobotServerService implements IRobotServerService {
     private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
 
+    public static final String TIMEOUT_DEFINITION_SYNTAX = "_timeout_=";
+
     @Override
     public void startServer(TestCaseExecution tCExecution) throws CerberusException {
 
@@ -202,6 +204,7 @@ public class RobotServerService implements IRobotServerService {
             session.setCerberus_selenium_pageLoadTimeout(cerberus_selenium_pageLoadTimeout);
             session.setCerberus_selenium_setScriptTimeout(cerberus_selenium_setScriptTimeout);
             session.setCerberus_selenium_wait_element(cerberus_selenium_wait_element);
+            session.setCerberus_selenium_wait_element_default(cerberus_selenium_wait_element);
             session.setCerberus_sikuli_wait_element(cerberus_sikuli_wait_element);
             session.setCerberus_appium_wait_element(cerberus_appium_wait_element);
             session.setCerberus_selenium_action_click_timeout(cerberus_selenium_action_click_timeout);
@@ -435,7 +438,7 @@ public class RobotServerService implements IRobotServerService {
             }
 
             /**
-             * Defining the timeout at the driver level. Only in case of not
+             * Defining the timeout at the driver level. Only in case of no
              * Appium Driver (see
              * https://github.com/vertigo17/Cerberus/issues/754)
              */
@@ -1233,6 +1236,22 @@ public class RobotServerService implements IRobotServerService {
         }
 
         return baseurl;
+    }
+
+    @Override
+    public void setTimeOut(Session session, Integer timeout) {
+        LOG.debug("Setting Robot Timeout to : " + timeout);
+        session.setCerberus_selenium_wait_element(timeout);
+        session.setCerberus_appium_wait_element(timeout);
+        session.setCerberus_sikuli_wait_element(timeout);
+    }
+
+    @Override
+    public void setTimeOutToDefault(Session session) {
+        LOG.debug("Setting Robot Timeout back to default values : Selenium " + session.getCerberus_selenium_wait_element_default() + " Appium " + session.getCerberus_appium_wait_element_default() + " Sikuli " + session.getCerberus_sikuli_wait_element_default());
+        session.setCerberus_selenium_wait_element(session.getCerberus_selenium_wait_element_default());
+        session.setCerberus_appium_wait_element(session.getCerberus_appium_wait_element_default());
+        session.setCerberus_sikuli_wait_element(session.getCerberus_sikuli_wait_element_default());
     }
 
 }

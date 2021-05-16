@@ -37,21 +37,31 @@ public class Session {
     private String port;
     private String nodeHost;
     private String nodePort;
+
+    private boolean started;
     private WebDriver driver;
     private AppiumDriver appiumDriver;
+
     private Integer cerberus_selenium_pageLoadTimeout;
     private Integer cerberus_selenium_implicitlyWait;
     private Integer cerberus_selenium_setScriptTimeout;
-    private Integer cerberus_selenium_wait_element;
-    private Integer cerberus_sikuli_wait_element;
-    private Integer cerberus_appium_wait_element;
+
+    private Integer cerberus_selenium_wait_element; // Current Value. This one is the one used by the engine.
+    private Integer cerberus_selenium_wait_element_default; // Default value
+    private Integer cerberus_sikuli_wait_element; // Current Value. This one is the one used by the engine.
+    private Integer cerberus_sikuli_wait_element_default; // Default value
+    private Integer cerberus_appium_wait_element; // Current Value. This one is the one used by the engine.
+    private Integer cerberus_appium_wait_element_default; // Default value
+
     private Integer cerberus_selenium_action_click_timeout;
     private Integer cerberus_appium_action_longpress_wait;
-    private boolean started;
+
     private boolean cerberus_selenium_autoscroll;
     private Integer cerberus_selenium_autoscroll_vertical_offset;
     private Integer cerberus_selenium_autoscroll_horizontal_offset;
+
     private MutableCapabilities desiredCapabilities;
+
     private JSONArray consoleLogs;
 
     public String getNodeHost() {
@@ -109,6 +119,14 @@ public class Session {
         this.cerberus_selenium_setScriptTimeout = cerberus_selenium_setScriptTimeout;
     }
 
+    public Integer getCerberus_sikuli_wait_element_default() {
+        return cerberus_sikuli_wait_element_default;
+    }
+
+    public void setCerberus_sikuli_wait_element_default(Integer cerberus_sikuli_wait_element_default) {
+        this.cerberus_sikuli_wait_element_default = cerberus_sikuli_wait_element_default;
+    }
+
     public Integer getCerberus_sikuli_wait_element() {
         return cerberus_sikuli_wait_element;
     }
@@ -117,12 +135,28 @@ public class Session {
         this.cerberus_sikuli_wait_element = cerberus_sikuli_wait_element;
     }
 
+    public Integer getCerberus_selenium_wait_element_default() {
+        return cerberus_selenium_wait_element_default;
+    }
+
+    public void setCerberus_selenium_wait_element_default(Integer cerberus_selenium_wait_element_default) {
+        this.cerberus_selenium_wait_element_default = cerberus_selenium_wait_element_default;
+    }
+
     public Integer getCerberus_selenium_wait_element() {
         return cerberus_selenium_wait_element;
     }
 
     public void setCerberus_selenium_wait_element(Integer cerberus_selenium_wait_element) {
         this.cerberus_selenium_wait_element = cerberus_selenium_wait_element;
+    }
+
+    public Integer getCerberus_appium_wait_element_default() {
+        return cerberus_appium_wait_element_default;
+    }
+
+    public void setCerberus_appium_wait_element_default(Integer cerberus_appium_wait_element_default) {
+        this.cerberus_appium_wait_element_default = cerberus_appium_wait_element_default;
     }
 
     public Integer getCerberus_appium_wait_element() {

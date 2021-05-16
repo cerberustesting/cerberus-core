@@ -43,6 +43,8 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.SwipeAction;
 import org.cerberus.engine.execution.IIdentifierService;
 import org.cerberus.engine.execution.IRecorderService;
+import org.cerberus.engine.execution.IRobotServerService;
+import org.cerberus.engine.execution.impl.RobotServerService;
 import org.cerberus.engine.gwt.IActionService;
 import org.cerberus.engine.gwt.IPropertyService;
 import org.cerberus.engine.gwt.IVariableService;
@@ -130,6 +132,8 @@ public class ActionService implements IActionService {
     private IFactoryAppService factoryAppService;
     @Autowired
     private ITestCaseExecutionDataService testCaseExecutionDataService;
+    @Autowired
+    private IRobotServerService robotServerService;
 
     private static final Logger LOG = LogManager.getLogger(ActionService.class);
     private static final String MESSAGE_DEPRECATED = "[DEPRECATED]";
@@ -221,8 +225,7 @@ public class ActionService implements IActionService {
         }
 
         /**
-         * Timestamp starts after the decode. TODO protect when property is
-         * null.
+         * Timestamp starts after the decode.
          */
         testCaseStepActionExecution.setStart(new Date().getTime());
 
@@ -234,6 +237,12 @@ public class ActionService implements IActionService {
 
         // When starting a new action, we reset the property list that was already calculated.
         tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+
+        // Define Timeout
+        if (testCaseStepActionExecution.getDescription().contains(RobotServerService.TIMEOUT_DEFINITION_SYNTAX)) {
+            Integer newTimeout = Integer.valueOf(testCaseStepActionExecution.getDescription().split(RobotServerService.TIMEOUT_DEFINITION_SYNTAX)[1].split(" ")[0]);
+            robotServerService.setTimeOut(tCExecution.getSession(), newTimeout);
+        }
 
         try {
             switch (testCaseStepActionExecution.getAction()) {
@@ -400,10 +409,13 @@ public class ActionService implements IActionService {
 
         LOG.debug("Result of the action : " + res.getCodeString() + " " + res.getDescription());
 
+        // Reset Timeout to default
+        robotServerService.setTimeOutToDefault(tCExecution.getSession());
+
         /**
-         * In case 1/ the action is flaged as not fatal with a specific
-         * return code = N and 2/ the return of the action is stoping the test
-         * --> whatever the return of the action is, we force the return to move
+         * In case 1/ the action is flagged as not fatal with a specific return
+         * code = N and 2/ the return of the action is stopping the test -->
+         * whatever the return of the action is, we force the return to move
          * forward the test with no screenshot, pagesource.
          */
         if (testCaseStepActionExecution.isFatal().equals("N") && res.isStopTest()) {
@@ -428,7 +440,11 @@ public class ActionService implements IActionService {
          */
         testCaseStepActionExecution.setStopExecution(res.isStopTest());
 
+        /**
+         * Timestamp stops here.
+         */
         testCaseStepActionExecution.setEnd(new Date().getTime());
+
         return testCaseStepActionExecution;
     }
 

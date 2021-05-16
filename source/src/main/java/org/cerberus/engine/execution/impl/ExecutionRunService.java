@@ -553,7 +553,10 @@ public class ExecutionRunService implements IExecutionRunService {
 
             if (!conditionDecodeError) {
 
-                conditionAnswerTc = this.conditionService.evaluateCondition(tCExecution.getConditionOperator(), tCExecution.getConditionVal1(), tCExecution.getConditionVal2(), tCExecution.getConditionVal3(), tCExecution);
+                conditionAnswerTc = this.conditionService.evaluateCondition(tCExecution.getConditionOperator(),
+                        tCExecution.getConditionVal1(), tCExecution.getConditionVal2(), tCExecution.getConditionVal3(),
+                        tCExecution, tCExecution.getDescription());
+
                 boolean execute_TestCase = (boolean) conditionAnswerTc.getItem();
 
                 if (execute_TestCase || tCExecution.getManualExecution().equals("Y")) {
@@ -686,7 +689,11 @@ public class ExecutionRunService implements IExecutionRunService {
                                     }
                                     if (!(descriptionOrConditionStepDecodeError)) {
 
-                                        conditionAnswer = this.conditionService.evaluateCondition(testCaseStepExecution.getConditionOperator(), testCaseStepExecution.getConditionValue1(), testCaseStepExecution.getConditionValue2(), testCaseStepExecution.getConditionValue3(), tCExecution);
+                                        conditionAnswer = this.conditionService.evaluateCondition(
+                                                testCaseStepExecution.getConditionOperator(),
+                                                testCaseStepExecution.getConditionValue1(), testCaseStepExecution.getConditionValue2(), testCaseStepExecution.getConditionValue3(),
+                                                tCExecution, testCaseStepExecution.getDescription());
+
                                         execute_Step = (boolean) conditionAnswer.getItem();
                                         if (conditionAnswer.getResultMessage().getMessage().getCodeString().equals("PE")) {
                                             // There were no error when performing the condition evaluation.
@@ -1159,7 +1166,9 @@ public class ExecutionRunService implements IExecutionRunService {
 
                 ConditionOperatorEnum actionConditionOperatorEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(testCaseStepActionExecution.getConditionOperator());
 
-                conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionExecution.getConditionOperator(), testCaseStepActionExecution.getConditionVal1(), testCaseStepActionExecution.getConditionVal2(), testCaseStepActionExecution.getConditionVal3(), tcExecution);
+                conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionExecution.getConditionOperator(),
+                        testCaseStepActionExecution.getConditionVal1(), testCaseStepActionExecution.getConditionVal2(), testCaseStepActionExecution.getConditionVal3(),
+                        tcExecution, testCaseStepActionExecution.getDescription());
                 boolean execute_Action = (boolean) conditionAnswer.getItem();
 
                 if (tcExecution.getManualExecution().equals("Y") && actionConditionOperatorEnum.isOperatorEvaluationRequired()) {
@@ -1434,7 +1443,10 @@ public class ExecutionRunService implements IExecutionRunService {
 
                 ConditionOperatorEnum controlConditionOperatorEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(controlExe.getConditionOperator());
 
-                conditionAnswer = this.conditionService.evaluateCondition(controlExe.getConditionOperator(), controlExe.getConditionVal1(), controlExe.getConditionVal2(), controlExe.getConditionVal3(), exe);
+                conditionAnswer = this.conditionService.evaluateCondition(controlExe.getConditionOperator(),
+                        controlExe.getConditionVal1(), controlExe.getConditionVal2(), controlExe.getConditionVal3(),
+                        exe, controlExe.getDescription());
+
                 boolean execute_Control = (boolean) conditionAnswer.getItem();
 
                 if (exe.getManualExecution().equals("Y") && controlConditionOperatorEnum.isOperatorEvaluationRequired()) {

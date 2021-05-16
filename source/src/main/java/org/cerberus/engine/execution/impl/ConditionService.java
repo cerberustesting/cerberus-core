@@ -33,6 +33,7 @@ import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.execution.IConditionService;
 import org.cerberus.engine.execution.IIdentifierService;
+import org.cerberus.engine.execution.IRobotServerService;
 import org.cerberus.engine.execution.enums.ConditionOperatorEnum;
 import org.cerberus.engine.gwt.IControlService;
 import org.cerberus.enums.MessageEventEnum;
@@ -68,6 +69,8 @@ public class ConditionService implements IConditionService {
     private IWebDriverService webdriverService;
     @Autowired
     private IControlService controlService;
+    @Autowired
+    private IRobotServerService robotServerService;
 
     /**
      * The associated {@link org.apache.logging.log4j.Logger} to this class
@@ -75,7 +78,7 @@ public class ConditionService implements IConditionService {
     private static final Logger LOG = LogManager.getLogger(ConditionService.class);
 
     @Override
-    public AnswerItem<Boolean> evaluateCondition(String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution tCExecution) {
+    public AnswerItem<Boolean> evaluateCondition(String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution tCExecution, String options) {
 
         LOG.debug("Starting Evaluation condition : " + conditionOperator);
 
@@ -84,6 +87,12 @@ public class ConditionService implements IConditionService {
         AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
         boolean isOperationToBeExecuted = true;
+
+        // Define Timeout
+        if (options.contains(RobotServerService.TIMEOUT_DEFINITION_SYNTAX)) {
+            Integer newTimeout = Integer.valueOf(options.split(RobotServerService.TIMEOUT_DEFINITION_SYNTAX)[1].split(" ")[0]);
+            robotServerService.setTimeOut(tCExecution.getSession(), newTimeout);
+        }
 
         /**
          * CONDITION Management is treated here. Checking if the
@@ -187,15 +196,15 @@ public class ConditionService implements IConditionService {
         }
         LOG.debug("Finished Evaluation condition : " + mes.getCodeString());
 
+        // Reset Timeout to default
+        robotServerService.setTimeOutToDefault(tCExecution.getSession());
+
         // the decision whether we execute the action/control/step is taken from the codeString of the message.
-        if (mes.getCodeString().equals("OK")) { // If code is OK, we execute the Operation.
-            isOperationToBeExecuted = true;
-        } else { // Any other status and we don't execute anything.
-            isOperationToBeExecuted = false;
-        }
+        isOperationToBeExecuted = mes.getCodeString().equals("OK");
 
         ans.setItem(isOperationToBeExecuted);
         ans.setResultMessage(mes);
+
         return ans;
     }
 
@@ -203,7 +212,7 @@ public class ConditionService implements IConditionService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking ifTextInElement on " + path + " element against value: " + expected);
         }
-        
+
         AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent resultControlMes;
 
@@ -215,7 +224,7 @@ public class ConditionService implements IConditionService {
             resultControlMes.resolveDescription("STRING2", expected);
             resultControlMes.resolveDescription("STRING3", isCaseSensitive);
         } else {
-            
+
             resultControlMes = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
 
             // TODO AJOUTER DANS CONDITION OPERATOR ENUM = TRUE + nouveau message
@@ -238,7 +247,7 @@ public class ConditionService implements IConditionService {
 
             }
         }
-        
+
         ans.setResultMessage(resultControlMes);
         return ans;
 
