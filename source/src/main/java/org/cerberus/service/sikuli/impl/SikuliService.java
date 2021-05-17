@@ -90,7 +90,7 @@ public class SikuliService implements ISikuliService {
     public static final String SIKULI_IDENTIFIER_PICTURE = "picture";
     public static final String SIKULI_IDENTIFIER_TEXT = "text";
 
-    private JSONObject generatePostParameters(String action, String locator, String text, long defaultWait) throws JSONException, IOException, MalformedURLException, MimeTypeException {
+    private JSONObject generatePostParameters(String action, String locator, String text, long defaultWait, String minSimilarity, Integer hightlightElement) throws JSONException, IOException, MalformedURLException, MimeTypeException {
         JSONObject result = new JSONObject();
         String picture = "";
         String extension = "";
@@ -128,8 +128,8 @@ public class SikuliService implements ISikuliService {
         result.put("text", text);
         result.put("defaultWait", defaultWait);
         result.put("pictureExtension", extension);
-        result.put("minSimilarity", parameterService.getParameterStringByKey("cerberus_sikuli_minSimilarity", "", ""));
-        result.put("highlightElement", parameterService.getParameterStringByKey("cerberus_sikuli_highlightElement", "", "0"));
+        result.put("minSimilarity", minSimilarity);
+        result.put("highlightElement", hightlightElement);
         return result;
     }
 
@@ -173,7 +173,7 @@ public class SikuliService implements ISikuliService {
 
     @Override
     public AnswerItem<JSONObject> doSikuliAction(Session session, String action, String locator, String text) {
-        AnswerItem<JSONObject> answer = new AnswerItem<JSONObject>();
+        AnswerItem<JSONObject> answer = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
         HttpURLConnection connection = null;
         BufferedReader in = null;
@@ -197,7 +197,10 @@ public class SikuliService implements ISikuliService {
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
             connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-            JSONObject postParameters = generatePostParameters(action, locator, text, session.getCerberus_sikuli_wait_element());
+            JSONObject postParameters = generatePostParameters(action, locator, text,
+                    session.getCerberus_sikuli_wait_element(),
+                    session.getCerberus_sikuli_minSimilarity(),
+                    session.getCerberus_highlightElement());
             connection.setDoOutput(true);
 
             // Send post request

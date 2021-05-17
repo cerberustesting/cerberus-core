@@ -153,7 +153,9 @@ public class RobotServerService implements IRobotServerService {
     private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
 
-    public static final String TIMEOUT_DEFINITION_SYNTAX = "_timeout_=";
+    public static final String OPTIONS_TIMEOUT_SYNTAX = "_timeout_=";
+    public static final String OPTIONS_HIGHLIGHTELEMENT_SYNTAX = "_highlightElement_=";
+    public static final String OPTIONS_MINSIMILARITY_SYNTAX = "_minSimilarity_=";
 
     @Override
     public void startServer(TestCaseExecution tCExecution) throws CerberusException {
@@ -176,8 +178,9 @@ public class RobotServerService implements IRobotServerService {
              */
             Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout,
                     cerberus_selenium_wait_element, cerberus_sikuli_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout,
-                    cerberus_appium_action_longpress_wait, cerberus_selenium_autoscroll_vertical_offset, cerberus_selenium_autoscroll_horizontal_offset;
+                    cerberus_appium_action_longpress_wait, cerberus_selenium_autoscroll_vertical_offset, cerberus_selenium_autoscroll_horizontal_offset, cerberus_highlightElement;
             boolean cerberus_selenium_autoscroll;
+            String cerberus_sikuli_minSimilarity;
 
             if (!tCExecution.getTimeout().isEmpty()) {
                 cerberus_selenium_wait_element = Integer.valueOf(tCExecution.getTimeout());
@@ -197,16 +200,25 @@ public class RobotServerService implements IRobotServerService {
             cerberus_selenium_autoscroll_vertical_offset = parameterService.getParameterIntegerByKey("cerberus_selenium_autoscroll_vertical_offset", system, 0);
             cerberus_selenium_autoscroll_horizontal_offset = parameterService.getParameterIntegerByKey("cerberus_selenium_autoscroll_horizontal_offset", system, 0);
             cerberus_appium_action_longpress_wait = parameterService.getParameterIntegerByKey("cerberus_appium_action_longpress_wait", system, 8000);
+            cerberus_highlightElement = parameterService.getParameterIntegerByKey("cerberus_sikuli_highlightElement", "", 0);
+            cerberus_sikuli_minSimilarity = parameterService.getParameterStringByKey("cerberus_sikuli_minSimilarity", "", "");
+
             LOG.debug("TimeOut defined on session : " + cerberus_selenium_wait_element);
 
             Session session = new Session();
             session.setCerberus_selenium_implicitlyWait(cerberus_selenium_implicitlyWait);
             session.setCerberus_selenium_pageLoadTimeout(cerberus_selenium_pageLoadTimeout);
             session.setCerberus_selenium_setScriptTimeout(cerberus_selenium_setScriptTimeout);
+
             session.setCerberus_selenium_wait_element(cerberus_selenium_wait_element);
             session.setCerberus_selenium_wait_element_default(cerberus_selenium_wait_element);
+
             session.setCerberus_sikuli_wait_element(cerberus_sikuli_wait_element);
+            session.setCerberus_sikuli_wait_element_default(cerberus_sikuli_wait_element);
+
             session.setCerberus_appium_wait_element(cerberus_appium_wait_element);
+            session.setCerberus_appium_wait_element_default(cerberus_appium_wait_element);
+
             session.setCerberus_selenium_action_click_timeout(cerberus_selenium_action_click_timeout);
             session.setCerberus_appium_action_longpress_wait(cerberus_appium_action_longpress_wait);
             session.setHost(tCExecution.getSeleniumIP());
@@ -219,6 +231,12 @@ public class RobotServerService implements IRobotServerService {
             session.setCerberus_selenium_autoscroll_vertical_offset(cerberus_selenium_autoscroll_vertical_offset);
             session.setCerberus_selenium_autoscroll_horizontal_offset(cerberus_selenium_autoscroll_horizontal_offset);
             session.setConsoleLogs(new JSONArray());
+
+            session.setCerberus_sikuli_minSimilarity(cerberus_sikuli_minSimilarity);
+            session.setCerberus_sikuli_minSimilarity_default(cerberus_sikuli_minSimilarity);
+            session.setCerberus_highlightElement(cerberus_highlightElement);
+            session.setCerberus_highlightElement_default(cerberus_highlightElement);
+
             tCExecution.setSession(session);
             tCExecution.setRobotProvider(guessRobotProvider(session.getHost()));
             LOG.debug("Session is set.");
@@ -1239,9 +1257,9 @@ public class RobotServerService implements IRobotServerService {
     }
 
     @Override
-    public void setTimeOut(Session session, Integer timeout) {
+    public void setOptionsTimeout(Session session, Integer timeout) {
         if (session != null) {
-            LOG.debug("Setting Robot Timeout to : " + timeout);
+            LOG.debug("Setting Robot Options timeout to : " + timeout);
             session.setCerberus_selenium_wait_element(timeout);
             session.setCerberus_appium_wait_element(timeout);
             session.setCerberus_sikuli_wait_element(timeout);
@@ -1249,12 +1267,30 @@ public class RobotServerService implements IRobotServerService {
     }
 
     @Override
-    public void setTimeOutToDefault(Session session) {
+    public void setOptionsHightlightElement(Session session, Integer hightlightElement) {
+        if (session != null) {
+            LOG.debug("Setting Robot Option highlightElement to : " + hightlightElement);
+            session.setCerberus_highlightElement(hightlightElement);
+        }
+    }
+
+    @Override
+    public void setOptionsMinSimilarity(Session session, String minSimilarity) {
+        if (session != null) {
+            LOG.debug("Setting Robot Option minSimilarity to : " + minSimilarity);
+            session.setCerberus_sikuli_minSimilarity(minSimilarity);
+        }
+    }
+
+    @Override
+    public void setOptionsToDefault(Session session) {
         if (session != null) {
             LOG.debug("Setting Robot Timeout back to default values : Selenium " + session.getCerberus_selenium_wait_element_default() + " Appium " + session.getCerberus_appium_wait_element_default() + " Sikuli " + session.getCerberus_sikuli_wait_element_default());
             session.setCerberus_selenium_wait_element(session.getCerberus_selenium_wait_element_default());
             session.setCerberus_appium_wait_element(session.getCerberus_appium_wait_element_default());
             session.setCerberus_sikuli_wait_element(session.getCerberus_sikuli_wait_element_default());
+            session.setCerberus_highlightElement(session.getCerberus_highlightElement_default());
+            session.setCerberus_sikuli_minSimilarity(session.getCerberus_sikuli_minSimilarity_default());
         }
     }
 

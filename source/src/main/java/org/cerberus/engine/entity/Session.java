@@ -60,9 +60,47 @@ public class Session {
     private Integer cerberus_selenium_autoscroll_vertical_offset;
     private Integer cerberus_selenium_autoscroll_horizontal_offset;
 
+    private Integer cerberus_highlightElement;
+    private Integer cerberus_highlightElement_default;
+
+    private String cerberus_sikuli_minSimilarity;
+    private String cerberus_sikuli_minSimilarity_default;
+
     private MutableCapabilities desiredCapabilities;
 
     private JSONArray consoleLogs;
+
+    public Integer getCerberus_highlightElement_default() {
+        return cerberus_highlightElement_default;
+    }
+
+    public void setCerberus_highlightElement_default(Integer cerberus_highlightElement_default) {
+        this.cerberus_highlightElement_default = cerberus_highlightElement_default;
+    }
+
+    public String getCerberus_sikuli_minSimilarity_default() {
+        return cerberus_sikuli_minSimilarity_default;
+    }
+
+    public void setCerberus_sikuli_minSimilarity_default(String cerberus_sikuli_minSimilarity_default) {
+        this.cerberus_sikuli_minSimilarity_default = cerberus_sikuli_minSimilarity_default;
+    }
+
+    public Integer getCerberus_highlightElement() {
+        return cerberus_highlightElement;
+    }
+
+    public void setCerberus_highlightElement(Integer cerberus_highlightElement) {
+        this.cerberus_highlightElement = cerberus_highlightElement;
+    }
+
+    public String getCerberus_sikuli_minSimilarity() {
+        return cerberus_sikuli_minSimilarity;
+    }
+
+    public void setCerberus_sikuli_minSimilarity(String cerberus_sikuli_minSimilarity) {
+        this.cerberus_sikuli_minSimilarity = cerberus_sikuli_minSimilarity;
+    }
 
     public String getNodeHost() {
         return nodeHost;

@@ -239,9 +239,17 @@ public class ActionService implements IActionService {
         tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
         // Define Timeout
-        if (testCaseStepActionExecution.getDescription().contains(RobotServerService.TIMEOUT_DEFINITION_SYNTAX)) {
-            Integer newTimeout = Integer.valueOf(testCaseStepActionExecution.getDescription().split(RobotServerService.TIMEOUT_DEFINITION_SYNTAX)[1].split(" ")[0]);
-            robotServerService.setTimeOut(tCExecution.getSession(), newTimeout);
+        if (testCaseStepActionExecution.getDescription().contains(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)) {
+            Integer newTimeout = Integer.valueOf(testCaseStepActionExecution.getDescription().split(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)[1].split(" ")[0]);
+            robotServerService.setOptionsTimeout(tCExecution.getSession(), newTimeout);
+        }
+        if (testCaseStepActionExecution.getDescription().contains(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)) {
+            Integer newHighlightElement = Integer.valueOf(testCaseStepActionExecution.getDescription().split(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)[1].split(" ")[0]);
+            robotServerService.setOptionsHightlightElement(tCExecution.getSession(), newHighlightElement);
+        }
+        if (testCaseStepActionExecution.getDescription().contains(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)) {
+            String minSimilarity = testCaseStepActionExecution.getDescription().split(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)[1].split(" ")[0];
+            robotServerService.setOptionsMinSimilarity(tCExecution.getSession(), minSimilarity);
         }
 
         try {
@@ -410,7 +418,7 @@ public class ActionService implements IActionService {
         LOG.debug("Result of the action : " + res.getCodeString() + " " + res.getDescription());
 
         // Reset Timeout to default
-        robotServerService.setTimeOutToDefault(tCExecution.getSession());
+        robotServerService.setOptionsToDefault(tCExecution.getSession());
 
         /**
          * In case 1/ the action is flagged as not fatal with a specific return

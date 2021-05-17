@@ -220,9 +220,17 @@ public class ControlService implements IControlService {
         tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
         // Define Timeout
-        if (testCaseStepActionControlExecution.getDescription().contains(RobotServerService.TIMEOUT_DEFINITION_SYNTAX)) {
-            Integer newTimeout = Integer.valueOf(testCaseStepActionControlExecution.getDescription().split(RobotServerService.TIMEOUT_DEFINITION_SYNTAX)[1].split(" ")[0]);
-            robotServerService.setTimeOut(tCExecution.getSession(), newTimeout);
+        if (testCaseStepActionControlExecution.getDescription().contains(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)) {
+            Integer newTimeout = Integer.valueOf(testCaseStepActionControlExecution.getDescription().split(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)[1].split(" ")[0]);
+            robotServerService.setOptionsTimeout(tCExecution.getSession(), newTimeout);
+        }
+        if (testCaseStepActionControlExecution.getDescription().contains(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)) {
+            Integer newHighlightElement = Integer.valueOf(testCaseStepActionControlExecution.getDescription().split(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)[1].split(" ")[0]);
+            robotServerService.setOptionsHightlightElement(tCExecution.getSession(), newHighlightElement);
+        }
+        if (testCaseStepActionControlExecution.getDescription().contains(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)) {
+            String minSimilarity = testCaseStepActionControlExecution.getDescription().split(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)[1].split(" ")[0];
+            robotServerService.setOptionsMinSimilarity(tCExecution.getSession(), minSimilarity);
         }
 
         try {
@@ -352,7 +360,7 @@ public class ControlService implements IControlService {
         }
 
         // Reset Timeout to default
-        robotServerService.setTimeOutToDefault(tCExecution.getSession());
+        robotServerService.setOptionsToDefault(tCExecution.getSession());
 
         testCaseStepActionControlExecution.setControlResultMessage(res);
 

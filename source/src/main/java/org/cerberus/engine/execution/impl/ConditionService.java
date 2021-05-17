@@ -88,10 +88,18 @@ public class ConditionService implements IConditionService {
         MessageEvent mes;
         boolean isOperationToBeExecuted = true;
 
-        // Define Timeout
-        if (options.contains(RobotServerService.TIMEOUT_DEFINITION_SYNTAX)) {
-            Integer newTimeout = Integer.valueOf(options.split(RobotServerService.TIMEOUT_DEFINITION_SYNTAX)[1].split(" ")[0]);
-            robotServerService.setTimeOut(tCExecution.getSession(), newTimeout);
+        // Define Options
+        if (options.contains(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)) {
+            Integer newTimeout = Integer.valueOf(options.split(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)[1].split(" ")[0]);
+            robotServerService.setOptionsTimeout(tCExecution.getSession(), newTimeout);
+        }
+        if (options.contains(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)) {
+            Integer newHighlightElement = Integer.valueOf(options.split(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)[1].split(" ")[0]);
+            robotServerService.setOptionsHightlightElement(tCExecution.getSession(), newHighlightElement);
+        }
+        if (options.contains(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)) {
+            String minSimilarity = options.split(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)[1].split(" ")[0];
+            robotServerService.setOptionsMinSimilarity(tCExecution.getSession(), minSimilarity);
         }
 
         /**
@@ -197,7 +205,7 @@ public class ConditionService implements IConditionService {
         LOG.debug("Finished Evaluation condition : " + mes.getCodeString());
 
         // Reset Timeout to default
-        robotServerService.setTimeOutToDefault(tCExecution.getSession());
+        robotServerService.setOptionsToDefault(tCExecution.getSession());
 
         // the decision whether we execute the action/control/step is taken from the codeString of the message.
         isOperationToBeExecuted = mes.getCodeString().equals("OK");

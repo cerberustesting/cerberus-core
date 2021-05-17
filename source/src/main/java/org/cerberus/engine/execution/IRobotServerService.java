@@ -59,12 +59,26 @@ public interface IRobotServerService {
      * @param session
      * @param timeout
      */
-    public void setTimeOut(Session session, Integer timeout);
+    public void setOptionsTimeout(Session session, Integer timeout);
+    
+    /**
+     *
+     * @param session
+     * @param hightlightElement
+     */
+    public void setOptionsHightlightElement(Session session, Integer hightlightElement);
+
+    /**
+     *
+     * @param session
+     * @param minSimilarity
+     */
+    public void setOptionsMinSimilarity(Session session, String minSimilarity);
 
     /**
      *
      * @param session
      */
-    public void setTimeOutToDefault(Session session);
+    public void setOptionsToDefault(Session session);
 
 }
