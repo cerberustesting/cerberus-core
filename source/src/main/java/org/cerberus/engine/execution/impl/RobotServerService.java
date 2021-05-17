@@ -1240,18 +1240,22 @@ public class RobotServerService implements IRobotServerService {
 
     @Override
     public void setTimeOut(Session session, Integer timeout) {
-        LOG.debug("Setting Robot Timeout to : " + timeout);
-        session.setCerberus_selenium_wait_element(timeout);
-        session.setCerberus_appium_wait_element(timeout);
-        session.setCerberus_sikuli_wait_element(timeout);
+        if (session != null) {
+            LOG.debug("Setting Robot Timeout to : " + timeout);
+            session.setCerberus_selenium_wait_element(timeout);
+            session.setCerberus_appium_wait_element(timeout);
+            session.setCerberus_sikuli_wait_element(timeout);
+        }
     }
 
     @Override
     public void setTimeOutToDefault(Session session) {
-        LOG.debug("Setting Robot Timeout back to default values : Selenium " + session.getCerberus_selenium_wait_element_default() + " Appium " + session.getCerberus_appium_wait_element_default() + " Sikuli " + session.getCerberus_sikuli_wait_element_default());
-        session.setCerberus_selenium_wait_element(session.getCerberus_selenium_wait_element_default());
-        session.setCerberus_appium_wait_element(session.getCerberus_appium_wait_element_default());
-        session.setCerberus_sikuli_wait_element(session.getCerberus_sikuli_wait_element_default());
+        if (session != null) {
+            LOG.debug("Setting Robot Timeout back to default values : Selenium " + session.getCerberus_selenium_wait_element_default() + " Appium " + session.getCerberus_appium_wait_element_default() + " Sikuli " + session.getCerberus_sikuli_wait_element_default());
+            session.setCerberus_selenium_wait_element(session.getCerberus_selenium_wait_element_default());
+            session.setCerberus_appium_wait_element(session.getCerberus_appium_wait_element_default());
+            session.setCerberus_sikuli_wait_element(session.getCerberus_sikuli_wait_element_default());
+        }
     }
 
 }
