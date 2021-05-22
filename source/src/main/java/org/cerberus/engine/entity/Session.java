@@ -60,8 +60,10 @@ public class Session {
     private Integer cerberus_selenium_autoscroll_vertical_offset;
     private Integer cerberus_selenium_autoscroll_horizontal_offset;
 
-    private Integer cerberus_highlightElement;
-    private Integer cerberus_highlightElement_default;
+    private Integer cerberus_selenium_highlightElement;
+    private Integer cerberus_selenium_highlightElement_default;
+    private Integer cerberus_sikuli_highlightElement;
+    private Integer cerberus_sikuli_highlightElement_default;
 
     private String cerberus_sikuli_minSimilarity;
     private String cerberus_sikuli_minSimilarity_default;
@@ -70,12 +72,12 @@ public class Session {
 
     private JSONArray consoleLogs;
 
-    public Integer getCerberus_highlightElement_default() {
-        return cerberus_highlightElement_default;
+    public Integer getCerberus_selenium_highlightElement_default() {
+        return cerberus_selenium_highlightElement_default;
     }
 
-    public void setCerberus_highlightElement_default(Integer cerberus_highlightElement_default) {
-        this.cerberus_highlightElement_default = cerberus_highlightElement_default;
+    public void setCerberus_selenium_highlightElement_default(Integer cerberus_selenium_highlightElement_default) {
+        this.cerberus_selenium_highlightElement_default = cerberus_selenium_highlightElement_default;
     }
 
     public String getCerberus_sikuli_minSimilarity_default() {
@@ -86,12 +88,28 @@ public class Session {
         this.cerberus_sikuli_minSimilarity_default = cerberus_sikuli_minSimilarity_default;
     }
 
-    public Integer getCerberus_highlightElement() {
-        return cerberus_highlightElement;
+    public Integer getCerberus_selenium_highlightElement() {
+        return cerberus_selenium_highlightElement;
     }
 
-    public void setCerberus_highlightElement(Integer cerberus_highlightElement) {
-        this.cerberus_highlightElement = cerberus_highlightElement;
+    public void setCerberus_selenium_highlightElement(Integer cerberus_selenium_highlightElement) {
+        this.cerberus_selenium_highlightElement = cerberus_selenium_highlightElement;
+    }
+
+    public Integer getCerberus_sikuli_highlightElement() {
+        return cerberus_sikuli_highlightElement;
+    }
+
+    public void setCerberus_sikuli_highlightElement(Integer cerberus_sikuli_highlightElement) {
+        this.cerberus_sikuli_highlightElement = cerberus_sikuli_highlightElement;
+    }
+
+    public Integer getCerberus_sikuli_highlightElement_default() {
+        return cerberus_sikuli_highlightElement_default;
+    }
+
+    public void setCerberus_sikuli_highlightElement_default(Integer cerberus_sikuli_highlightElement_default) {
+        this.cerberus_sikuli_highlightElement_default = cerberus_sikuli_highlightElement_default;
     }
 
     public String getCerberus_sikuli_minSimilarity() {

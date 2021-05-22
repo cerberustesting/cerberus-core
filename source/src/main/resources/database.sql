@@ -5853,3 +5853,25 @@ ALTER TABLE `testcasestepactioncontrolexecution`
     CHANGE COLUMN `Value1Init` `Value1Init` LONGTEXT NULL DEFAULT NULL ,
     CHANGE COLUMN `Value2Init` `Value2Init` LONGTEXT NULL DEFAULT NULL ,
     CHANGE COLUMN `Value3Init` `Value3Init` LONGTEXT NULL DEFAULT NULL ;
+
+-- 1622
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES  ('', 'cerberus_selenium_highlightElement', '', 'Number of second Selenium will hightlight the element when interacting with it. Default to 0 second.');
+
+-- 1623
+ALTER TABLE `testcase` 
+    ADD COLUMN `ConditionOptions` TEXT NULL DEFAULT '[]' AFTER `ConditionValue3`;
+
+-- 1624
+ALTER TABLE `testcasestep` 
+    ADD COLUMN `ConditionOptions` TEXT NULL DEFAULT '[]' AFTER `ConditionValue3`;
+
+-- 1625
+ALTER TABLE `testcasestepaction` 
+    ADD COLUMN `ConditionOptions` TEXT NULL DEFAULT '[]' AFTER `ConditionValue3`,
+    ADD COLUMN `Options` TEXT NULL DEFAULT '[]' AFTER `Value3`;
+
+-- 1626
+ALTER TABLE `testcasestepactioncontrol` 
+    ADD COLUMN `ConditionOptions` TEXT NULL DEFAULT '[]' AFTER `ConditionValue3`,
+    ADD COLUMN `Options` TEXT NULL DEFAULT '[]' AFTER `Value3`;

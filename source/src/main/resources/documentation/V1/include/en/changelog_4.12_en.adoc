@@ -18,8 +18,10 @@
 * New public servlet for getting campaign execution details /TagDetails. #2204
 * Added Step number in testcase script page. (Thanks @vitoo)
 * Executor checks before execution starts now timeout after 15 seconds (in stead of 2 minutes).
+* Support for highlighting selenium element using new parameter 'cerberus_selenium_highlightElement'
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * updated Groovy library to 2.4.21. Check your script behavior before upgrading.
-* Database tables on testcase perimeter has been massively refactored.
+* Database tables on testcase perimeter has been massively refactored. 
+* Expect some long ALTER queries on execution tables.

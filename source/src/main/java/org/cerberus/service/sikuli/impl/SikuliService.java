@@ -200,7 +200,7 @@ public class SikuliService implements ISikuliService {
             JSONObject postParameters = generatePostParameters(action, locator, text,
                     session.getCerberus_sikuli_wait_element(),
                     session.getCerberus_sikuli_minSimilarity(),
-                    session.getCerberus_highlightElement());
+                    session.getCerberus_selenium_highlightElement());
             connection.setDoOutput(true);
 
             // Send post request
