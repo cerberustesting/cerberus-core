@@ -5860,18 +5860,18 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 
 -- 1623
 ALTER TABLE `testcase` 
-    ADD COLUMN `ConditionOptions` TEXT NULL DEFAULT '[]' AFTER `ConditionValue3`;
+    ADD COLUMN `ConditionOptions` TEXT NULL DEFAULT NULL AFTER `ConditionValue3`;
 
 -- 1624
 ALTER TABLE `testcasestep` 
-    ADD COLUMN `ConditionOptions` TEXT NULL DEFAULT '[]' AFTER `ConditionValue3`;
+    ADD COLUMN `ConditionOptions` TEXT NULL DEFAULT NULL AFTER `ConditionValue3`;
 
 -- 1625
 ALTER TABLE `testcasestepaction` 
-    ADD COLUMN `ConditionOptions` TEXT NULL DEFAULT '[]' AFTER `ConditionValue3`,
-    ADD COLUMN `Options` TEXT NULL DEFAULT '[]' AFTER `Value3`;
+    ADD COLUMN `ConditionOptions` TEXT NULL DEFAULT NULL AFTER `ConditionValue3`,
+    ADD COLUMN `Options` TEXT NULL DEFAULT NULL AFTER `Value3`;
 
 -- 1626
 ALTER TABLE `testcasestepactioncontrol` 
-    ADD COLUMN `ConditionOptions` TEXT NULL DEFAULT '[]' AFTER `ConditionValue3`,
-    ADD COLUMN `Options` TEXT NULL DEFAULT '[]' AFTER `Value3`;
+    ADD COLUMN `ConditionOptions` TEXT NULL DEFAULT NULL AFTER `ConditionValue3`,
+    ADD COLUMN `Options` TEXT NULL DEFAULT NULL AFTER `Value3`;
