@@ -21,6 +21,7 @@ package org.cerberus.engine.gwt.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -220,16 +221,17 @@ public class ControlService implements IControlService {
         tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
         // Define Timeout
-        if (testCaseStepActionControlExecution.getDescription().contains(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)) {
-            Integer newTimeout = Integer.valueOf(testCaseStepActionControlExecution.getDescription().split(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)[1].split(" ")[0]);
+        HashMap<String, String> optionsMap = robotServerService.getMapFromOptions(testCaseStepActionControlExecution.getOptions());
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)) {
+            Integer newTimeout = Integer.valueOf(optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
             robotServerService.setOptionsTimeout(tCExecution.getSession(), newTimeout);
         }
-        if (testCaseStepActionControlExecution.getDescription().contains(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)) {
-            Integer newHighlightElement = Integer.valueOf(testCaseStepActionControlExecution.getDescription().split(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)[1].split(" ")[0]);
-            robotServerService.setOptionsHightlightElement(tCExecution.getSession(), newHighlightElement);
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)) {
+            Integer newHighlightElement = Integer.valueOf(optionsMap.get(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX));
+            robotServerService.setOptionsHighlightElement(tCExecution.getSession(), newHighlightElement);
         }
-        if (testCaseStepActionControlExecution.getDescription().contains(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)) {
-            String minSimilarity = testCaseStepActionControlExecution.getDescription().split(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)[1].split(" ")[0];
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)) {
+            String minSimilarity = optionsMap.get(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX);
             robotServerService.setOptionsMinSimilarity(tCExecution.getSession(), minSimilarity);
         }
 

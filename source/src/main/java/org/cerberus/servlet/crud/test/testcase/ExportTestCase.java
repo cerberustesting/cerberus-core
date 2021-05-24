@@ -90,6 +90,8 @@ public class ExportTestCase extends HttpServlet {
             JSONObject tcInfoJSON = new JSONObject(mapper.writeValueAsString(tcInfo));
             tcInfoJSON.remove("bugs");
             tcInfoJSON.put("bugs", tcInfo.getBugs());
+            tcInfoJSON.remove("conditionOptions");
+            tcInfoJSON.put("conditionOptions", tcInfo.getConditionOptions());
             JSONArray tcJA = new JSONArray();
             tcJA.add(tcInfoJSON);
             export.put("testcases", tcJA);

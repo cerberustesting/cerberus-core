@@ -75,6 +75,24 @@ public class TestCaseStepActionExecution {
     private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at stepId level
     private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data that was previously calculated and that will be used to calculate during the calculation of any property during the action.
     private List<TestCaseStepActionControlExecution> testCaseStepActionControlExecutionList; // Host the full list of data that was previously calculated and that will be used to calculate during the calculation of any property during the action.
+    private JSONArray conditionOptions;
+    private JSONArray options;
+
+    public JSONArray getConditionOptions() {
+        return conditionOptions;
+    }
+
+    public void setConditionOptions(JSONArray conditionOptions) {
+        this.conditionOptions = conditionOptions;
+    }
+
+    public JSONArray getOptions() {
+        return options;
+    }
+
+    public void setOptions(JSONArray options) {
+        this.options = options;
+    }
 
     public List<TestCaseExecutionFile> getFileList() {
         return fileList;
@@ -414,7 +432,6 @@ public class TestCaseStepActionExecution {
     public String toString() {
         return "TestCaseStepActionExecution{" + "id=" + id + ", test=" + test + ", testCase=" + testCase + ", stepId=" + stepId + ", index=" + index + ", sequence=" + sequence + ", sort=" + sort + ", conditionOperator=" + conditionOperator + ", conditionVal1Init=" + conditionVal1Init + ", conditionVal2Init=" + conditionVal2Init + ", conditionVal3Init=" + conditionVal3Init + ", conditionVal1=" + conditionVal1 + ", conditionVal2=" + conditionVal2 + ", conditionVal3=" + conditionVal3 + ", action=" + action + ", value1Init=" + value1Init + ", value2Init=" + value2Init + ", value3Init=" + value3Init + ", value1=" + value1 + ", value2=" + value2 + ", value3=" + value3 + ", isFatal=" + isFatal + ", description=" + description + ", returnCode=" + returnCode + ", returnMessage=" + returnMessage + ", start=" + start + ", end=" + end + ", startLong=" + startLong + ", endLong=" + endLong + ", testCaseStepAction=" + testCaseStepAction + ", testCaseStepExecution=" + testCaseStepExecution + ", actionResultMessage=" + actionResultMessage + ", executionResultMessage=" + executionResultMessage + ", propertyName=" + propertyName + ", stopExecution=" + stopExecution + ", fileList=" + fileList + ", testCaseExecutionDataList=" + testCaseExecutionDataList + ", testCaseStepActionControlExecutionList=" + testCaseStepActionControlExecutionList + '}';
     }
-
 
     /**
      * Convert the current TestCaseStepActionExecution into JSON format Note

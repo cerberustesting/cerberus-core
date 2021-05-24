@@ -21,6 +21,7 @@ package org.cerberus.crud.factory;
 
 import java.sql.Timestamp;
 import org.cerberus.crud.entity.TestCaseStep;
+import org.json.JSONArray;
 
 /**
  * @author bcivel
@@ -38,6 +39,7 @@ public interface IFactoryTestCaseStep {
      * @param conditionValue1
      * @param conditionValue2
      * @param conditionValue3
+     * @param conditionOptions
      * @param description
      * @param isUsingLibraryStep 
      * @param libraryStepTest
@@ -51,7 +53,7 @@ public interface IFactoryTestCaseStep {
      * @param dateModif
      * @return 
      */
-    TestCaseStep create(String test, String testCase, int stepId, int sort, String loop, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, String description,
+    TestCaseStep create(String test, String testCase, int stepId, int sort, String loop, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions, String description,
             boolean isUsingLibraryStep , String libraryStepTest, String libraryStepTestcase, Integer libraryStepStepId, boolean isLibraryTest, boolean isExecutionForced, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
 }

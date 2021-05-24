@@ -46,7 +46,7 @@ public class FactoryTestCase implements IFactoryTestCase {
     public TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, String implementer, 
             String executor, String usrModif, String application, boolean isActiveQA, boolean isActiveUAT, boolean isActivePROD, 
             int priority, String type, String status, String description, String detailedDescription, boolean isActive, 
-            String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, String fromMajor, 
+            String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions, String fromMajor, 
             String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugs, String targetMajor, 
             String targetMinor, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry, 
             List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep) {
@@ -56,6 +56,7 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setConditionValue1(conditionValue1);
         newTestCase.setConditionValue2(conditionValue2);
         newTestCase.setConditionValue3(conditionValue3);
+        newTestCase.setConditionOptions(conditionOptions);
         newTestCase.setApplication(application);
         newTestCase.setBugs(bugs);
         newTestCase.setComment(comment);
@@ -93,7 +94,7 @@ public class FactoryTestCase implements IFactoryTestCase {
 
     @Override
     public TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, String implementer, String executor, String usrModif, String application,
-            boolean isActiveQA, boolean isActiveUAT, boolean isActivePROD, int priority, String type, String status, String description, String detailedDescription, boolean isActive, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, String fromMajor, String fromMinor,
+            boolean isActiveQA, boolean isActiveUAT, boolean isActivePROD, int priority, String type, String status, String description, String detailedDescription, boolean isActive, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions, String fromMajor, String fromMinor,
             String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugs, String targetMajor, String targetMinor, String comment, Timestamp dateCreated, String userAgent, String screenSize, Timestamp dateModif, int version) {
         TestCase newTestCase = new TestCase();
         newTestCase.setActive(isActive);
@@ -101,6 +102,7 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setConditionValue1(conditionValue1);
         newTestCase.setConditionValue2(conditionValue2);
         newTestCase.setConditionValue3(conditionValue3);
+        newTestCase.setConditionOptions(conditionOptions);
         newTestCase.setApplication(application);
         newTestCase.setBugs(bugs);
         newTestCase.setComment(comment);

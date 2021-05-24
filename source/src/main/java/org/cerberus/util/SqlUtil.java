@@ -19,16 +19,24 @@
  */
 package org.cerberus.util;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 /**
  *
  * @author memiks
  */
 public class SqlUtil {
+
+    private static final Logger LOG = LogManager.getLogger(SqlUtil.class);
 
     private SqlUtil() {
     }
@@ -197,12 +205,10 @@ public class SqlUtil {
     }
 
     /**
-     * Generates an IN (?, ?) clause. The IN clause uses the ? wildcard to
-     * represent each parameter included in the IN's set.
-     *
      * @param field
      * @param list
-     * @return
+     * @return Generates an IN (?, ?) clause. The IN clause uses the ? wildcard
+     * to represent each parameter included in the IN's set.
      */
     public static String generateInClause(String field, List<String> list) {
         StringBuilder clause = new StringBuilder();
@@ -213,5 +219,27 @@ public class SqlUtil {
         }
 
         return clause.toString().replace("?, )", "?)");
+    }
+
+    /**
+     *
+     * @param resultSet
+     * @param columnName
+     * @return a JSONArray from the column name and resultset defined.
+     * @throws SQLException
+     */
+    public static JSONArray getJSONArrayFromColumn(ResultSet resultSet, String columnName) throws SQLException {
+        String colValueString = resultSet.getString(columnName);
+        JSONArray colValue = new JSONArray();
+        try {
+            if (!StringUtil.isNullOrEmpty(colValueString)) {
+                colValue = new JSONArray(colValueString);
+            } else {
+                colValue = new JSONArray();
+            }
+        } catch (JSONException ex) {
+            LOG.error("Could not convert '" + colValueString + "' to JSONArray.", ex);
+        }
+        return colValue;
     }
 }

@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
+import org.json.JSONArray;
 import org.springframework.stereotype.Service;
 
 /**
@@ -56,7 +57,7 @@ public class FactoryTestCaseStep implements IFactoryTestCaseStep {
      * @return
      */
     @Override
-    public TestCaseStep create(String test, String testCase, int stepId, int sort, String loop, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, String description, boolean isUsingLibraryStep,
+    public TestCaseStep create(String test, String testCase, int stepId, int sort, String loop, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions, String description, boolean isUsingLibraryStep,
             String libraryStepTest, String libraryStepTestcase, Integer libraryStepStepId, boolean isLibraryStep, boolean isExecutionForced, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         TestCaseStep testCaseStep = new TestCaseStep();
         testCaseStep.setDescription(description);
@@ -67,6 +68,7 @@ public class FactoryTestCaseStep implements IFactoryTestCaseStep {
         testCaseStep.setConditionValue1(conditionValue1);
         testCaseStep.setConditionValue2(conditionValue2);
         testCaseStep.setConditionValue3(conditionValue3);
+        testCaseStep.setConditionOptions(conditionOptions);
         testCaseStep.setTest(test);
         testCaseStep.setTestcase(testCase);
         testCaseStep.setUsingLibraryStep(isUsingLibraryStep);

@@ -19,9 +19,11 @@
  */
 package org.cerberus.engine.execution;
 
+import java.util.HashMap;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
+import org.json.JSONArray;
 import org.openqa.selenium.Capabilities;
 
 /**
@@ -56,17 +58,24 @@ public interface IRobotServerService {
 
     /**
      *
+     * @param options
+     * @return
+     */
+    public HashMap<String, String> getMapFromOptions(JSONArray options);
+
+    /**
+     *
      * @param session
      * @param timeout
      */
     public void setOptionsTimeout(Session session, Integer timeout);
-    
+
     /**
      *
      * @param session
-     * @param hightlightElement
+     * @param highlightElement
      */
-    public void setOptionsHightlightElement(Session session, Integer hightlightElement);
+    public void setOptionsHighlightElement(Session session, Integer highlightElement);
 
     /**
      *

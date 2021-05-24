@@ -71,6 +71,24 @@ public class TestCaseStepActionControlExecution {
     private MessageEvent controlResultMessage;
     private MessageGeneral executionResultMessage;
     private boolean stopExecution;
+    private JSONArray conditionOptions;
+    private JSONArray options;
+
+    public JSONArray getConditionOptions() {
+        return conditionOptions;
+    }
+
+    public void setConditionOptions(JSONArray conditionOptions) {
+        this.conditionOptions = conditionOptions;
+    }
+
+    public JSONArray getOptions() {
+        return options;
+    }
+
+    public void setOptions(JSONArray options) {
+        this.options = options;
+    }
 
     public List<TestCaseExecutionFile> getFileList() {
         return fileList;

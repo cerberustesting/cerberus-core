@@ -5621,7 +5621,7 @@ UPDATE invariant SET value='TESTCASE_TYPE' WHERE idname='INVARIANTPRIVATE' AND v
 -- 1580
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES  ('', 'cerberus_sikuli_minSimilarity', '', 'Define similarity value used by Sikuli. Value can take from 0 (minumum similarity) to 1 (maximum similarity). Sikuli default to 0.7.')
-  ,('', 'cerberus_sikuli_highlightElement', '', 'Number of second Sikuli will hightlight the element when interacting with it. Default to 2 seconds.');
+  ,('', 'cerberus_sikuli_highlightElement', '', 'Number of second Sikuli will highlight the element when interacting with it. Default to 2 seconds.');
 
 -- 1581
 ALTER TABLE robot ADD COLUMN `ProfileFolder` VARCHAR(400) NOT NULL DEFAULT '' AFTER `screensize`;
@@ -5856,7 +5856,7 @@ ALTER TABLE `testcasestepactioncontrolexecution`
 
 -- 1622
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
-  VALUES  ('', 'cerberus_selenium_highlightElement', '', 'Number of second Selenium will hightlight the element when interacting with it. Default to 0 second.');
+  VALUES  ('', 'cerberus_selenium_highlightElement', '', 'Number of second Selenium will highlight the element when interacting with it. Default to 0 second.');
 
 -- 1623
 ALTER TABLE `testcase` 

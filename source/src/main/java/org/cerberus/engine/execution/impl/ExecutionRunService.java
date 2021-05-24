@@ -555,7 +555,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                 conditionAnswerTc = this.conditionService.evaluateCondition(tCExecution.getConditionOperator(),
                         tCExecution.getConditionVal1(), tCExecution.getConditionVal2(), tCExecution.getConditionVal3(),
-                        tCExecution, tCExecution.getDescription());
+                        tCExecution, tCExecution.getConditionOptions());
 
                 boolean execute_TestCase = (boolean) conditionAnswerTc.getItem();
 
@@ -596,6 +596,8 @@ public class ExecutionRunService implements IExecutionRunService {
                                         startStep, startStep, startStep, startStep, new BigDecimal("0"), null, stepMess, testCaseStep, tCExecution,
                                         testCaseStep.isUsingLibraryStep(), testCaseStep.getLibraryStepTest(), testCaseStep.getLibraryStepTestcase(), testCaseStep.getLibraryStepStepId(), testCaseStep.getDescription());
                                 testCaseStepExecution.setLoop(testCaseStep.getLoop());
+                                testCaseStepExecution.setConditionOptions(testCaseStep.getConditionOptionsActive());
+
                                 testCaseStepExecutionService.insertTestCaseStepExecution(testCaseStepExecution);
                                 testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
 
@@ -692,7 +694,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                         conditionAnswer = this.conditionService.evaluateCondition(
                                                 testCaseStepExecution.getConditionOperator(),
                                                 testCaseStepExecution.getConditionValue1(), testCaseStepExecution.getConditionValue2(), testCaseStepExecution.getConditionValue3(),
-                                                tCExecution, testCaseStepExecution.getDescription());
+                                                tCExecution, testCaseStepExecution.getConditionOptions());
 
                                         execute_Step = (boolean) conditionAnswer.getItem();
                                         if (conditionAnswer.getResultMessage().getMessage().getCodeString().equals("PE")) {
@@ -1096,6 +1098,9 @@ public class ExecutionRunService implements IExecutionRunService {
                     testCaseStepAction.getValue2(), testCaseStepAction.getValue3(),
                     (testCaseStepAction.isFatal() ? "Y" : "N"), startAction, startAction, startAction, startAction, new MessageEvent(MessageEventEnum.ACTION_PENDING),
                     testCaseStepAction.getDescription(), testCaseStepAction, testCaseStepExecution);
+            testCaseStepActionExecution.setOptions(testCaseStepAction.getOptionsActive());
+            testCaseStepActionExecution.setConditionOptions(testCaseStepAction.getConditionOptionsActive());
+
             this.testCaseStepActionExecutionService.insertTestCaseStepActionExecution(testCaseStepActionExecution);
 
             /**
@@ -1168,7 +1173,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                 conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionExecution.getConditionOperator(),
                         testCaseStepActionExecution.getConditionVal1(), testCaseStepActionExecution.getConditionVal2(), testCaseStepActionExecution.getConditionVal3(),
-                        tcExecution, testCaseStepActionExecution.getDescription());
+                        tcExecution, testCaseStepActionExecution.getConditionOptions());
                 boolean execute_Action = (boolean) conditionAnswer.getItem();
 
                 if (tcExecution.getManualExecution().equals("Y") && actionConditionOperatorEnum.isOperatorEvaluationRequired()) {
@@ -1375,6 +1380,9 @@ public class ExecutionRunService implements IExecutionRunService {
                             control.getControl(), control.getValue1(), control.getValue2(), control.getValue3(), control.getValue1(), control.getValue2(),
                             control.getValue3(), (control.isFatal() ? "Y" : "N"), startControl, 0, 0, 0,
                             control.getDescription(), actionExe, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
+            controlExe.setConditionOptions(control.getConditionOptionsActive());
+            controlExe.setOptions(control.getOptionsActive());
+
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(controlExe);
 
             LOG.debug("Executing control : " + controlExe.getControlSequence() + " type : " + controlExe.getControl());
@@ -1445,7 +1453,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                 conditionAnswer = this.conditionService.evaluateCondition(controlExe.getConditionOperator(),
                         controlExe.getConditionVal1(), controlExe.getConditionVal2(), controlExe.getConditionVal3(),
-                        exe, controlExe.getDescription());
+                        exe, controlExe.getConditionOptions());
 
                 boolean execute_Control = (boolean) conditionAnswer.getItem();
 

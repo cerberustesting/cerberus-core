@@ -129,15 +129,16 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             tc.setType(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), tc.getType(), charset));
             tc.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), tc.getStatus(), charset));
             tc.setDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), tc.getDescription(), charset));
-            String bug = tc.getBugs() == null ? "" : tc.getBugs().toString();
-            String bugsString = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugs"), bug, charset);
-            JSONArray bugs = new JSONArray();
-            try {
-                bugs = new JSONArray(bugsString);
-            } catch (JSONException ex) {
-                LOG.error("Could not convert '" + bugsString + "' to JSONArray.", ex);
-            }
-            tc.setBugs(bugs);
+            tc.setBugs(ParameterParserUtil.parseJSONArrayParamAndDecode(request.getParameter("bugs"), tc.getBugs(), charset));
+//            String bug = tc.getBugs() == null ? "" : tc.getBugs().toString();
+//            String bugsString = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugs"), bug, charset);
+//            JSONArray bugs = new JSONArray();
+//            try {
+//                bugs = new JSONArray(bugsString);
+//            } catch (JSONException ex) {
+//                LOG.error("Could not convert '" + bugsString + "' to JSONArray.", ex);
+//            }
+//            tc.setBugs(bugs);
             tc.setComment(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("comment"), tc.getComment(), charset));
             tc.setUserAgent(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("userAgent"), tc.getUserAgent(), charset));
             tc.setScreenSize(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("screenSize"), tc.getScreenSize(), charset));
@@ -149,6 +150,18 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             tc.setConditionValue1(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionValue1"), tc.getConditionValue1(), charset));
             tc.setConditionValue2(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionValue2"), tc.getConditionValue2(), charset));
             tc.setConditionValue3(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionValue3"), tc.getConditionValue3(), charset));
+            tc.setConditionOptions(ParameterParserUtil.parseJSONArrayParamAndDecode(request.getParameter("conditionOptions"), tc.getConditionOptions(), charset));
+            
+//            String condOpt = tc.getConditionOptions() == null ? "" : tc.getConditionOptions().toString();
+//            String condOptsString = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionOptions"), condOpt, charset);
+//            JSONArray condOpts = new JSONArray();
+//            try {
+//                condOpts = new JSONArray(condOptsString);
+//            } catch (JSONException ex) {
+//                LOG.error("Could not convert '" + condOptsString + "' to JSONArray.", ex);
+//            }
+//            tc.setConditionOptions(condOpts);
+            
 
             return tc;
         } catch (UnsupportedOperationException e) {

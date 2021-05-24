@@ -19,10 +19,12 @@
  */
 package org.cerberus.crud.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.sql.Timestamp;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,6 +33,9 @@ import org.json.JSONObject;
  */
 public class TestCaseStepActionControl {
 
+    
+    private static final Logger LOG = LogManager.getLogger(TestCaseStepActionControl.class);
+    
     private String test;
     private String testcase;
     private int stepId;
@@ -41,10 +46,12 @@ public class TestCaseStepActionControl {
     private String conditionValue1;
     private String conditionValue2;
     private String conditionValue3;
+    private JSONArray conditionOptions;
     private String control;
     private String value1;
     private String value2;
     private String value3;
+    private JSONArray options;
     private boolean isFatal;
     private String description;
     private String screenshotFilename;
@@ -165,6 +172,31 @@ public class TestCaseStepActionControl {
         this.conditionValue3 = conditionValue3;
     }
 
+    @JsonIgnore
+    public JSONArray getConditionOptions() {
+        return conditionOptions;
+    }
+
+    @JsonIgnore
+    public JSONArray getConditionOptionsActive() {
+        JSONArray res = new JSONArray();
+        for (int i = 0; i < conditionOptions.length(); i++) {
+            try {
+                JSONObject jo = conditionOptions.getJSONObject(i);
+                if (jo.getBoolean("act")) {
+                    res.put(jo);
+                }
+            } catch (JSONException ex) {
+                LOG.error(ex);
+            }
+        }
+        return res;
+    }
+
+    public void setConditionOptions(JSONArray conditionOptions) {
+        this.conditionOptions = conditionOptions;
+    }
+
     public String getValue2() {
         return value2;
     }
@@ -187,6 +219,31 @@ public class TestCaseStepActionControl {
 
     public void setValue3(String value3) {
         this.value3 = value3;
+    }
+
+    @JsonIgnore
+    public JSONArray getOptions() {
+        return options;
+    }
+
+    @JsonIgnore
+    public JSONArray getOptionsActive() {
+        JSONArray res = new JSONArray();
+        for (int i = 0; i < options.length(); i++) {
+            try {
+                JSONObject jo = options.getJSONObject(i);
+                if (jo.getBoolean("act")) {
+                    res.put(jo);
+                }
+            } catch (JSONException ex) {
+                LOG.error(ex);
+            }
+        }
+        return res;
+    }
+
+    public void setOptions(JSONArray options) {
+        this.options = options;
     }
 
     public boolean isFatal() {
@@ -404,19 +461,19 @@ public class TestCaseStepActionControl {
             result.put("value1", this.getValue1());
             result.put("value2", this.getValue2());
             result.put("value3", this.getValue3());
+            result.put("options", this.getOptions());
             result.put("conditionOperator", this.getConditionOperator());
             result.put("conditionValue1", this.getConditionValue1());
             result.put("conditionValue2", this.getConditionValue2());
             result.put("conditionValue3", this.getConditionValue3());
+            result.put("conditionOptions", this.getConditionOptions());
             result.put("isFatal", this.isFatal());
             result.put("screenshotFilename", this.getScreenshotFilename());
             result.put("test", this.getTest());
             result.put("testcase", this.getTestcase());
 
         } catch (JSONException ex) {
-            Logger LOG = LogManager.getLogger(TestCaseStepActionControl.class);
             LOG.warn(ex);
-
         }
         return result;
     }

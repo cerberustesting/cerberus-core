@@ -90,7 +90,7 @@ public class SikuliService implements ISikuliService {
     public static final String SIKULI_IDENTIFIER_PICTURE = "picture";
     public static final String SIKULI_IDENTIFIER_TEXT = "text";
 
-    private JSONObject generatePostParameters(String action, String locator, String text, long defaultWait, String minSimilarity, Integer hightlightElement) throws JSONException, IOException, MalformedURLException, MimeTypeException {
+    private JSONObject generatePostParameters(String action, String locator, String text, long defaultWait, String minSimilarity, Integer highlightElement) throws JSONException, IOException, MalformedURLException, MimeTypeException {
         JSONObject result = new JSONObject();
         String picture = "";
         String extension = "";
@@ -129,7 +129,7 @@ public class SikuliService implements ISikuliService {
         result.put("defaultWait", defaultWait);
         result.put("pictureExtension", extension);
         result.put("minSimilarity", minSimilarity);
-        result.put("highlightElement", hightlightElement);
+        result.put("highlightElement", highlightElement);
         return result;
     }
 

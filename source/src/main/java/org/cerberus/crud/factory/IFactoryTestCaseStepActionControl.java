@@ -21,17 +21,68 @@ package org.cerberus.crud.factory;
 
 import java.sql.Timestamp;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
+import org.json.JSONArray;
 
 /**
  * @author bcivel
  */
 public interface IFactoryTestCaseStepActionControl {
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param stepId
+     * @param actionId
+     * @param controlId
+     * @param sort
+     * @param conditionOperator
+     * @param conditionValue1
+     * @param conditionValue2
+     * @param conditionValue3
+     * @param conditionOptions
+     * @param control
+     * @param value1
+     * @param value2
+     * @param value3
+     * @param isFatal
+     * @param options
+     * @param description
+     * @param screenshotFilename
+     * @return
+     */
     TestCaseStepActionControl create(String test, String testCase, int stepId, int actionId, int controlId, int sort,
-            String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, String control, String value1,
-            String value2, String value3, boolean isFatal, String description, String screenshotFilename);
+            String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions, String control, String value1,
+            String value2, String value3, JSONArray options, boolean isFatal, String description, String screenshotFilename);
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param stepId
+     * @param actionId
+     * @param controlId
+     * @param sort
+     * @param conditionOperator
+     * @param conditionValue1
+     * @param conditionValue2
+     * @param conditionValue3
+     * @param conditionOptions
+     * @param control
+     * @param value1
+     * @param value2
+     * @param value3
+     * @param options
+     * @param isFatal
+     * @param description
+     * @param screenshotFilename
+     * @param usrCreated
+     * @param dateCreated
+     * @param usrModif
+     * @param dateModif
+     * @return
+     */
     TestCaseStepActionControl create(String test, String testCase, int stepId, int actionId, int controlId, int sort,
-            String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, String control, String value1,
-            String value2, String value3, boolean isFatal, String description, String screenshotFilename, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
+            String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions, String control, String value1,
+            String value2, String value3, JSONArray options, boolean isFatal, String description, String screenshotFilename, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 }

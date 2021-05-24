@@ -21,6 +21,7 @@ package org.cerberus.engine.execution;
 
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.util.answer.AnswerItem;
+import org.json.JSONArray;
 
 /**
  * {Insert class description here}
@@ -39,5 +40,5 @@ public interface IConditionService {
      * @param options
      * @return
      */
-    AnswerItem<Boolean> evaluateCondition(String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution tCExecution, String options);
+    AnswerItem<Boolean> evaluateCondition(String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution tCExecution, JSONArray options);
 }

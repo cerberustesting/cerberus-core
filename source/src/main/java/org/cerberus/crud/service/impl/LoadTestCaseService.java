@@ -80,7 +80,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
             } else {
                 // Step is used from another testcase.
                 List<TestCaseStepAction> tcsa = this.loadTestCaseStepAction(testCaseStep, factoryTCS.create(testCaseStep.getLibraryStepTest(),
-                        testCaseStep.getLibraryStepTestcase(), testCaseStep.getLibraryStepStepId(), testCaseStep.getSort(), null, null, null, null, null, null, false, null, null, 0, false, false, null, null, null, null));
+                        testCaseStep.getLibraryStepTestcase(), testCaseStep.getLibraryStepStepId(), testCaseStep.getSort(), null, null, null, null, null, null, null, false, null, null, 0, false, false, null, null, null, null));
                 if (tcsa != null) {
                     testCaseStep.setActions(tcsa);
                 }

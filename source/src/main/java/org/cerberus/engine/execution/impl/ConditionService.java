@@ -19,6 +19,7 @@
  */
 package org.cerberus.engine.execution.impl;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 import org.apache.logging.log4j.Logger;
@@ -44,6 +45,7 @@ import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.json.JSONArray;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,7 +80,7 @@ public class ConditionService implements IConditionService {
     private static final Logger LOG = LogManager.getLogger(ConditionService.class);
 
     @Override
-    public AnswerItem<Boolean> evaluateCondition(String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution tCExecution, String options) {
+    public AnswerItem<Boolean> evaluateCondition(String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution tCExecution, JSONArray options) {
 
         LOG.debug("Starting Evaluation condition : " + conditionOperator);
 
@@ -89,16 +91,17 @@ public class ConditionService implements IConditionService {
         boolean isOperationToBeExecuted = true;
 
         // Define Options
-        if (options.contains(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)) {
-            Integer newTimeout = Integer.valueOf(options.split(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)[1].split(" ")[0]);
+        HashMap<String, String> optionsMap = robotServerService.getMapFromOptions(options);
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)) {
+            Integer newTimeout = Integer.valueOf(optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
             robotServerService.setOptionsTimeout(tCExecution.getSession(), newTimeout);
         }
-        if (options.contains(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)) {
-            Integer newHighlightElement = Integer.valueOf(options.split(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)[1].split(" ")[0]);
-            robotServerService.setOptionsHightlightElement(tCExecution.getSession(), newHighlightElement);
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)) {
+            Integer newHighlightElement = Integer.valueOf(optionsMap.get(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX));
+            robotServerService.setOptionsHighlightElement(tCExecution.getSession(), newHighlightElement);
         }
-        if (options.contains(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)) {
-            String minSimilarity = options.split(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)[1].split(" ")[0];
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)) {
+            String minSimilarity = optionsMap.get(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX);
             robotServerService.setOptionsMinSimilarity(tCExecution.getSession(), minSimilarity);
         }
 

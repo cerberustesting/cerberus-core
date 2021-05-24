@@ -39,6 +39,9 @@ import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.crud.service.ITestCaseStepService;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.SqlUtil;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -81,6 +84,7 @@ public class UseTestCaseStep extends HttpServlet {
         String conditionValue1 = request.getParameter("ConditionValue1");
         String conditionValue2 = request.getParameter("ConditionValue2");
         String conditionValue3 = request.getParameter("ConditionValue3");
+        JSONArray conditionOptions = ParameterParserUtil.parseJSONArrayParamAndDecode(request.getParameter("ConditionOptions"), new JSONArray(), "UTF8");
         String description = request.getParameter("Description");
         String libraryStepTest = request.getParameter("FromTest");
         String libraryStepTestCase = request.getParameter("FromTestCase");
@@ -91,7 +95,7 @@ public class UseTestCaseStep extends HttpServlet {
             importProperty = request.getParameter("ImportProperty");
         }
 
-        TestCaseStep tcs = testCaseStepFactory.create(test, testCase, stepId, stepId, loop, conditionOperator, conditionValue1, conditionValue2, conditionValue3, description, true, libraryStepTest, libraryStepTestCase, libraryStepStepId, false, false, null, null, null, null);
+        TestCaseStep tcs = testCaseStepFactory.create(test, testCase, stepId, stepId, loop, conditionOperator, conditionValue1, conditionValue2, conditionValue3, conditionOptions, description, true, libraryStepTest, libraryStepTestCase, libraryStepStepId, false, false, null, null, null, null);
 
         /**
          * Import Step, properties

@@ -590,7 +590,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.DetailedDescription = ?, tc.isActiveQA = ?, tc.isActiveUAT = ?, tc.isActivePROD = ?, "
                 + "tc.Priority = ?, tc.Status = ?, tc.isActive = ?, tc.Description = ?, tc.Type = ?, tc.Comment = ?, tc.FromMajor = ?, "
                 + "tc.FromMinor = ?, tc.ToMajor = ?, tc.ToMinor = ?, tc.Bugs = ?, tc.TargetMajor = ?, tc.Implementer = ?, tc.Executor = ?, tc.LastModifier = ?, tc.TargetMinor = ?, "
-                + "tc.conditionOperator = ?, tc.conditionValue1 = ?, tc.conditionValue2 = ? , tc.conditionValue3 = ? "
+                + "tc.conditionOperator = ?, tc.conditionValue1 = ?, tc.conditionValue2 = ? , tc.conditionValue3 = ?, tc.conditionOptions = ? "
                 + "WHERE tc.Test = ? AND tc.Testcase = ?";
 
         // Debug message on SQL.
@@ -627,6 +627,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue1(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue2(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue3(), ""));
+                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOptions().toString(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestcase(), ""));
 
@@ -749,9 +750,9 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append("`FromMajor`, `FromMinor`, `ToMajor`, `ToMinor`, ")
                 .append("`Bugs`, `TargetMajor`, `TargetMinor`, `UsrCreated`, ")
                 .append("`Implementer`, `Executor`, `UsrModif`, `isActiveQA`, `isActiveUAT`, `isActivePROD`, `useragent`, `screensize`, ")
-                .append("`conditionOperator`, `conditionValue1`, `conditionValue2`, `conditionValue3`) ")
+                .append("`conditionOperator`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `conditionOptions`) ")
                 .append("VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ")
-                .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ");
+                .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ? ); ");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -794,6 +795,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue1(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue2(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue3(), ""));
+                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOptions().toString(), ""));
 
                 res = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
@@ -1160,7 +1162,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.DetailedDescription = ?, tc.isActiveQA = ?, tc.isActiveUAT = ?, tc.isActivePROD = ?, "
                 + "tc.Priority = ?, tc.Status = ?, tc.isActive = ?, tc.Description = ?, tc.Type = ?, tc.Comment = ?, tc.FromMajor = ?, "
                 + "tc.FromMinor = ?, tc.ToMajor = ?, tc.ToMinor = ?, tc.Bugs = ?, tc.TargetMajor = ?, tc.Implementer = ?, tc.Executor = ?, tc.UsrModif = ?, tc.TargetMinor = ?,"
-                + " `conditionOperator` = ?, `conditionValue1` = ?, `conditionValue2` = ?, `conditionValue3` = ?, `useragent` = ?, `screensize` = ?, `version` = ?, dateModif = CURRENT_TIMESTAMP "
+                + " `conditionOperator` = ?, `conditionValue1` = ?, `conditionValue2` = ?, `conditionValue3` = ?, `ConditionOptions` = ?, `useragent` = ?, `screensize` = ?, `version` = ?, dateModif = CURRENT_TIMESTAMP "
                 + "WHERE tc.Test = ? AND tc.Testcase = ?";
 
         // Debug message on SQL.
@@ -1197,6 +1199,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue1(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue2(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue3(), ""));
+                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOptions().toString(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUserAgent(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getScreenSize(), ""));
                 preStat.setInt(i++, ParameterParserUtil.parseIntegerParam(testCase.getVersion(), 0));
@@ -1960,6 +1963,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(" conditionValue1 = ?,");
         query.append(" conditionValue2 = ?,");
         query.append(" conditionValue3 = ?,");
+        query.append(" ConditionOptions = ?,");
         query.append(" version = ?,");
         query.append(" DateModif = CURRENT_TIMESTAMP");
         query.append(" WHERE test = ? AND testcase = ?;");
@@ -2003,6 +2007,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, tc.getConditionValue1());
                 preStat.setString(i++, tc.getConditionValue2());
                 preStat.setString(i++, tc.getConditionValue3());
+                preStat.setString(i++, tc.getConditionOptions().toString());
                 preStat.setInt(i++, tc.getVersion());
                 preStat.setString(i++, keyTest);
                 preStat.setString(i++, keyTestCase);
@@ -2045,9 +2050,9 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append("`FromMajor`, `FromMinor`, `ToMajor`, `ToMinor`, ")
                 .append("`Bugs`, `TargetMajor`, `TargetMinor`, `UsrCreated`, ")
                 .append("`Implementer`, `Executor`, `isActiveQA`, `isActiveUAT`, `isActivePROD`, `useragent`, `screenSize`, ")
-                .append("`conditionOperator`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `version`) ")
+                .append("`conditionOperator`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `conditionOptions`, `version`) ")
                 .append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ")
-                .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ");
+                .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -2093,6 +2098,11 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue1(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue2(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue3(), ""));
+                if (testCase.getConditionOptions() != null) {
+                    preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOptions().toString(), ""));
+                } else {
+                    preStat.setString(i++, "[]");
+                }
                 preStat.setInt(i++, ParameterParserUtil.parseIntegerParam(testCase.getVersion(), 0));
 
                 preStat.executeUpdate();
@@ -2185,6 +2195,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         String conditionValue1 = resultSet.getString("tec.ConditionValue1");
         String conditionValue2 = resultSet.getString("tec.ConditionValue2");
         String conditionValue3 = resultSet.getString("tec.ConditionValue3");
+        JSONArray condOpts = SqlUtil.getJSONArrayFromColumn(resultSet, "tec.ConditionOptions");
         String type = resultSet.getString("tec.Type");
         String origin = resultSet.getString("tec.Origine");
         String refOrigin = resultSet.getString("tec.RefOrigine");
@@ -2193,17 +2204,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         String fromMinor = resultSet.getString("tec.FromMinor");
         String toMajor = resultSet.getString("tec.ToMajor");
         String toMinor = resultSet.getString("tec.ToMinor");
-        String bugsString = resultSet.getString("tec.Bugs");
-        JSONArray bugs = new JSONArray();
-        try {
-            if (bugsString != null) {
-                bugs = new JSONArray(bugsString);
-            } else {
-                bugs = new JSONArray();
-            }
-        } catch (JSONException ex) {
-            LOG.error("Could not convert '" + bugsString + "' to JSONArray.", ex);
-        }
+        JSONArray bugs = SqlUtil.getJSONArrayFromColumn(resultSet, "tec.Bugs");
         String targetMajor = resultSet.getString("tec.TargetMajor");
         String targetMinor = resultSet.getString("tec.TargetMinor");
         String implementer = resultSet.getString("tec.Implementer");
@@ -2226,7 +2227,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         TestCase newTestCase = factoryTestCase.create(test, testCase, origin, refOrigin, usrCreated, implementer, executor,
                 usrModif, tcapplication, isActiveQA, isActiveUAT, isActivePROD, priority, type,
-                status, description, detailedDescription, isActive, conditionOperator, conditionValue1, conditionValue2, conditionValue3, fromMajor, fromMinor, toMajor,
+                status, description, detailedDescription, isActive, conditionOperator, conditionValue1, conditionValue2, conditionValue3, condOpts, fromMajor, fromMinor, toMajor,
                 toMinor, status, bugs, targetMajor, targetMinor, comment, dateCreated, userAgent, screenSize, dateModif, version);
         newTestCase.setSystem(system);
         return newTestCase;
@@ -2243,7 +2244,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
 
         TestCase newTestCase = factoryTestCase.create(null, null, null, null, null, null, null, null, null, false, false, false, 0, null, status, null,
-                null, false, null, null, null, null, null, null, null, null, status, null, null, null, null, dateCreated, null, null, null, 0);
+                null, false, null, null, null, null, null, null, null, null, null, status, null, null, null, null, dateCreated, null, null, null, 0);
         newTestCase.setSystem(system);
         return newTestCase;
     }
