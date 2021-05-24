@@ -200,6 +200,10 @@ public class WebDriverService implements IWebDriverService {
         String erratumMessage = "";
         LOG.debug("Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
 
+        /**
+         * If the identifier is using erratum, we trigger here the Erratum algo
+         * and convert to xpath.
+         */
         if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_ERRATUM) && identifier.getLocator() != null) {
             LOG.debug("ERRATUM SELECTED ============================================");
             if (!identifier.getLocator().contains(ERRATUM_SEPARATOR)) {
@@ -226,6 +230,10 @@ public class WebDriverService implements IWebDriverService {
             locator = this.getBy(identifier);
         }
 
+        /**
+         * locator now content the right definition so we can wait the element
+         * with the required condition (visible or clickable)
+         */
         try {
             WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
             WebElement element;
@@ -246,6 +254,21 @@ public class WebDriverService implements IWebDriverService {
             msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
             msg.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator() + erratumMessage);
 
+            /**
+             * Element was found so we can now highlight it if requested.
+             */
+            if (session.getCerberus_selenium_highlightElement() > 0) {
+                JavascriptExecutor js = (JavascriptExecutor) session.getDriver();
+                js.executeScript("arguments[0].setAttribute('style', 'background: yellow; border: 2px solid red;');", element);
+                try {
+                    Thread.sleep(session.getCerberus_selenium_highlightElement() * 1000);
+                } catch (InterruptedException ex) {
+                    LOG.error(ex);
+                }
+//                js.executeScript("arguments[0].setAttribute('style', 'background: yellow;');", element);
+                js.executeScript("arguments[0].removeAttribute('style','');", element);
+            }
+
         } catch (TimeoutException exception) {
             LOG.warn("Exception waiting for element :" + exception);
             //throw new NoSuchElementException(identifier.getIdentifier() + "=" + identifier.getLocator());
@@ -256,6 +279,15 @@ public class WebDriverService implements IWebDriverService {
         return answer;
     }
 
+    /**
+     *
+     * @param session
+     * @param identifier
+     * @return the new xpath value calculated using Erratum algorithm. Cerberus
+     * will attempt to convert during the timeeout parameter period or after a
+     * maximum of 100 iterations.
+     *
+     */
     private String getNewXPathFromErratum(Session session, Identifier identifier) {
 
         LOG.debug("Entering ERRATUM Method ============================================================");
@@ -274,8 +306,6 @@ public class WebDriverService implements IWebDriverService {
         long elapsedSinceStart = new Date().getTime() - start;
         while ((elapsedSinceStart < session.getCerberus_selenium_wait_element()) && (i < 100)) {
 
-//        }
-//        for (int i = 0; i < 30; i++) {
             elapsedSinceStart = new Date().getTime() - start;
             i++;
             LOG.debug("ERRATUM ATTEMPT #" + i + " / Elapsed time from begining : " + elapsedSinceStart + " (timeout : " + session.getCerberus_selenium_wait_element() + ")");
@@ -317,33 +347,10 @@ public class WebDriverService implements IWebDriverService {
 
     private String erratumXpathToValidXpath(String erratumXpath) {
         return erratumXpath;
-//        String[] splittedXpath = erratumXpath.split("\\[0\\]");
-//        String validXpath = "/html";
-//
-//        for (int i = 0; i < splittedXpath.length; i++) {
-//            validXpath += splittedXpath[i];
-//        }
-//
-//        LOG.debug("ERRATUM XPATH " + erratumXpath + " TO VALID XPATH " + validXpath);
-//
-//        return validXpath;
     }
 
     private String validXpathToErratumXpath(String validXpath) {
         return validXpath;
-//        String[] splittedXpath = validXpath.split("/");
-//        String erratumXpath = "";
-//        for (int i = 2; i < splittedXpath.length; i++) {
-//            if (splittedXpath[i].equalsIgnoreCase("body")) {
-//                erratumXpath += "/" + splittedXpath[i];
-//            } else {
-//                erratumXpath += "/" + splittedXpath[i] + "[0]";
-//            }
-//        }
-//
-//        LOG.debug("VALID XPATH " + validXpath + " TO ERRATUM XPATH " + erratumXpath);
-//
-//        return erratumXpath;
     }
 
     @Override

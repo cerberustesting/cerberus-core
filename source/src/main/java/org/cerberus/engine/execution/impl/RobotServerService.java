@@ -178,7 +178,8 @@ public class RobotServerService implements IRobotServerService {
              */
             Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout,
                     cerberus_selenium_wait_element, cerberus_sikuli_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout,
-                    cerberus_appium_action_longpress_wait, cerberus_selenium_autoscroll_vertical_offset, cerberus_selenium_autoscroll_horizontal_offset, cerberus_highlightElement;
+                    cerberus_appium_action_longpress_wait, cerberus_selenium_autoscroll_vertical_offset, cerberus_selenium_autoscroll_horizontal_offset, 
+                    cerberus_selenium_highlightElement, cerberus_sikuli_highlightElement;
             boolean cerberus_selenium_autoscroll;
             String cerberus_sikuli_minSimilarity;
 
@@ -200,7 +201,8 @@ public class RobotServerService implements IRobotServerService {
             cerberus_selenium_autoscroll_vertical_offset = parameterService.getParameterIntegerByKey("cerberus_selenium_autoscroll_vertical_offset", system, 0);
             cerberus_selenium_autoscroll_horizontal_offset = parameterService.getParameterIntegerByKey("cerberus_selenium_autoscroll_horizontal_offset", system, 0);
             cerberus_appium_action_longpress_wait = parameterService.getParameterIntegerByKey("cerberus_appium_action_longpress_wait", system, 8000);
-            cerberus_highlightElement = parameterService.getParameterIntegerByKey("cerberus_sikuli_highlightElement", "", 0);
+            cerberus_selenium_highlightElement = parameterService.getParameterIntegerByKey("cerberus_selenium_highlightElement", "", 0);
+            cerberus_sikuli_highlightElement = parameterService.getParameterIntegerByKey("cerberus_sikuli_highlightElement", "", 0);
             cerberus_sikuli_minSimilarity = parameterService.getParameterStringByKey("cerberus_sikuli_minSimilarity", "", "");
 
             LOG.debug("TimeOut defined on session : " + cerberus_selenium_wait_element);
@@ -210,15 +212,30 @@ public class RobotServerService implements IRobotServerService {
             session.setCerberus_selenium_pageLoadTimeout(cerberus_selenium_pageLoadTimeout);
             session.setCerberus_selenium_setScriptTimeout(cerberus_selenium_setScriptTimeout);
 
+            // _wait_element parameters
             session.setCerberus_selenium_wait_element(cerberus_selenium_wait_element);
             session.setCerberus_selenium_wait_element_default(cerberus_selenium_wait_element);
-
             session.setCerberus_sikuli_wait_element(cerberus_sikuli_wait_element);
             session.setCerberus_sikuli_wait_element_default(cerberus_sikuli_wait_element);
-
             session.setCerberus_appium_wait_element(cerberus_appium_wait_element);
             session.setCerberus_appium_wait_element_default(cerberus_appium_wait_element);
 
+            // minSimilarity parameters
+            session.setCerberus_sikuli_minSimilarity(cerberus_sikuli_minSimilarity);
+            session.setCerberus_sikuli_minSimilarity_default(cerberus_sikuli_minSimilarity);
+
+            // highlightElement parameters
+            session.setCerberus_selenium_highlightElement(cerberus_selenium_highlightElement);
+            session.setCerberus_selenium_highlightElement_default(cerberus_selenium_highlightElement);
+            session.setCerberus_sikuli_highlightElement(cerberus_sikuli_highlightElement);
+            session.setCerberus_sikuli_highlightElement_default(cerberus_sikuli_highlightElement);
+            
+            // auto scroll parameters
+            session.setCerberus_selenium_autoscroll(cerberus_selenium_autoscroll);
+            session.setCerberus_selenium_autoscroll_vertical_offset(cerberus_selenium_autoscroll_vertical_offset);
+            session.setCerberus_selenium_autoscroll_horizontal_offset(cerberus_selenium_autoscroll_horizontal_offset);
+
+            
             session.setCerberus_selenium_action_click_timeout(cerberus_selenium_action_click_timeout);
             session.setCerberus_appium_action_longpress_wait(cerberus_appium_action_longpress_wait);
             session.setHost(tCExecution.getSeleniumIP());
@@ -227,15 +244,8 @@ public class RobotServerService implements IRobotServerService {
             session.setPort(tCExecution.getRobotPort());
             session.setNodeHost(tCExecution.getSeleniumIP());
             session.setNodePort(tCExecution.getSeleniumPort());
-            session.setCerberus_selenium_autoscroll(cerberus_selenium_autoscroll);
-            session.setCerberus_selenium_autoscroll_vertical_offset(cerberus_selenium_autoscroll_vertical_offset);
-            session.setCerberus_selenium_autoscroll_horizontal_offset(cerberus_selenium_autoscroll_horizontal_offset);
             session.setConsoleLogs(new JSONArray());
 
-            session.setCerberus_sikuli_minSimilarity(cerberus_sikuli_minSimilarity);
-            session.setCerberus_sikuli_minSimilarity_default(cerberus_sikuli_minSimilarity);
-            session.setCerberus_highlightElement(cerberus_highlightElement);
-            session.setCerberus_highlightElement_default(cerberus_highlightElement);
 
             tCExecution.setSession(session);
             tCExecution.setRobotProvider(guessRobotProvider(session.getHost()));
@@ -1270,7 +1280,8 @@ public class RobotServerService implements IRobotServerService {
     public void setOptionsHightlightElement(Session session, Integer hightlightElement) {
         if (session != null) {
             LOG.debug("Setting Robot Option highlightElement to : " + hightlightElement);
-            session.setCerberus_highlightElement(hightlightElement);
+            session.setCerberus_selenium_highlightElement(hightlightElement);
+            session.setCerberus_sikuli_highlightElement(hightlightElement);
         }
     }
 
@@ -1289,7 +1300,10 @@ public class RobotServerService implements IRobotServerService {
             session.setCerberus_selenium_wait_element(session.getCerberus_selenium_wait_element_default());
             session.setCerberus_appium_wait_element(session.getCerberus_appium_wait_element_default());
             session.setCerberus_sikuli_wait_element(session.getCerberus_sikuli_wait_element_default());
-            session.setCerberus_highlightElement(session.getCerberus_highlightElement_default());
+            LOG.debug("Setting Robot highlightElement back to default values : Selenium " + session.getCerberus_selenium_highlightElement_default() + " Sikuli " + session.getCerberus_sikuli_highlightElement_default());
+            session.setCerberus_selenium_highlightElement(session.getCerberus_selenium_highlightElement_default());
+            session.setCerberus_sikuli_highlightElement(session.getCerberus_sikuli_highlightElement_default());
+            LOG.debug("Setting Robot minSimilarity back to default values : " + session.getCerberus_sikuli_minSimilarity_default());
             session.setCerberus_sikuli_minSimilarity(session.getCerberus_sikuli_minSimilarity_default());
         }
     }
