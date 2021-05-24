@@ -302,6 +302,13 @@ public class DocumentationDAO implements IDocumentationDAO {
         final String query = "SELECT DocTable, DocField, DocValue, DocLabel, DocDesc, DocAnchor FROM documentation where Lang = ? and docValue='' ORDER BY DocTable, DocField, DocValue asc";
 
         Connection connection = this.databaseSpring.connect();
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.lang : " + lang);
+        }
+
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {

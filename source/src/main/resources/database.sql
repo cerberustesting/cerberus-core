@@ -5875,3 +5875,7 @@ ALTER TABLE `testcasestepaction`
 ALTER TABLE `testcasestepactioncontrol` 
     ADD COLUMN `ConditionOptions` TEXT NULL DEFAULT NULL AFTER `ConditionValue3`,
     ADD COLUMN `Options` TEXT NULL DEFAULT NULL AFTER `Value3`;
+
+-- 1627
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `veryshortdesc`)
+  VALUES ('LANGUAGE', 'ru', 300, 'русский', 'русский');
