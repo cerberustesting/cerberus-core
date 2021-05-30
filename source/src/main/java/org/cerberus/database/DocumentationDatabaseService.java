@@ -84,6 +84,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         // Init Documentation table.
         b = new StringBuilder();
         b.append("INSERT INTO `documentation` VALUES ('application','Application','','en','Application','','_application_attributes')");
+		b.append("INSERT INTO `documentation` VALUES ('application','Application','','ru','Приложение','','_application_attributes')");																																   
         /**
          * Cerberus Official Standard TABLES.
          */
@@ -130,6 +131,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
 	b.append(",('applicationObject','Value','','ru','Значение','',NULL)");
         b.append(",('applicationObject','Value','','fr','Valeur','',NULL)");
         b.append(",('appservice','application','','en','Application','','_service_library')");
+		b.append(",('appservice','application','','ru','Приложение','','_service_library')");																						 
         b.append(",('appservice','application','','fr','Application','','_librairie_de_services')");
         b.append(",('appservice','description','','en','Description','','_service_library')");
         b.append(",('appservice','description','','fr','Description','','_librairie_de_services')");
@@ -192,6 +194,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('buildrevisioninvariant','versionname02','','en','Revision','','_build_revision_invariant_attributes')");
         b.append(",('buildrevisioninvariant','versionname02','','fr','Revision','','_build_revision_invariant_attributes')");
         b.append(",('buildrevisionparameters','application','','en','Application','','_build_content')");
+		b.append(",('buildrevisionparameters','application','','ru','Приложение','','_build_content')");																									
         b.append(",('buildrevisionparameters','application','','fr','Application','','_contenu_des_builds')");
         b.append(",('buildrevisionparameters','BugIDFixed','','en','Associated Bug ID','This is the bug ID which has been solved with the <code class=\\'doc-crbvvoca\\'>release</code>.','_build_content')");
         b.append(",('buildrevisionparameters','BugIDFixed','','fr','ID du Bug associé','ID du bug dont la release est associée.','_contenu_des_builds')");
@@ -240,6 +243,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('countryenvironmentdatabase','Database','','en','Database','','_environment')");
         b.append(",('countryenvironmentdatabase','Database','','fr','Base de donnée','','_environnement')");
         b.append(",('countryenvironmentparameters','domain','','en','Domain','Domain of the Application. Can be used inside any test execution with %SYS_APP_DOMAIN% variable.','_environment')");
+		b.append(",('countryenvironmentparameters','domain','','ru','Домен','Домен приложения. Может быть мспользован внутри любого тестового выполнения с переменной %SYS_APP_DOMAIN%.','_environment')");																																																																			   
         b.append(",('countryenvironmentparameters','domain','','fr','Domaine','Domaine Internet de l\\'application. Peut être utilisé pendant l\\'execution des tests avec la variable %SYS_APP_DOMAIN%.','_environnement')");
         b.append(",('countryenvironmentparameters','IP','','en','Host','Ressource location of the application.<br><br>Examples for GUI, IPA and APK applications:<br><doc class=\"examples\"><code class=\\'doc-url\\'>www.domain.com</code><br><code class=\\'doc-url\\'>192.168.1.1:80</code><br><code class=\\'doc-url\\'>user:pass@www.domain.com:8080</code><br><code class=\\'doc-url\\'>user:pass@192.168.1.1:80</code><br><code class=\\'doc-url\\'>http://www.laredoute.fr</code><br><code class=\\'doc-url\\'>https://www.facebook.com</code><br></doc><br>Examples for FAT applications:<br><doc class=\"examples\"><code class=\\'doc-url\\'>/usr/bin/kate</code><br><code class=\\'doc-url\\'>C:Programsprog.exe</code><br></doc><br>NB : For GUI applications, if the protocol is not specified, the default selected is http://<br>In case you want to test an https:// application, this ressource location must begin by https://.','_environment')");
         b.append(",('countryenvironmentparameters','IP','','fr','Hote','Chemin de l\\'application.<br><br>Exemples pour applications GUI, IPA et APK :<br><doc class=\"examples\"><code class=\\'doc-url\\'>www.domain.com</code><br><code class=\\'doc-url\\'>192.168.1.1:80</code><br><code class=\\'doc-url\\'>user:password@www.domain.com:8080</code><br><code class=\\'doc-url\\'>user:password@192.168.1.1:80</code><br><code class=\\'doc-url\\'>http://www.laredoute.fr</code><br><code class=\\'doc-url\\'>https://www.facebook.com</code><br></doc><br>Exemples pour les applications FAT :<br><doc class=\"examples\"><code class=\\'doc-url\\'>/usr/bin/kate</code><br><code class=\\'doc-url\\'>C:Programsprog.exe</code><br></doc><br>NB : Pour les applications GUI, si le protocole n\\'est pas specifié, le protocople par default utilisé est http://<br>En cas de test d\\'une application en https, il faut commencer l\\'URL par https://.','_environnement')");
@@ -879,13 +883,16 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.','_user_management')");
         b.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL,'_management_des_utilisateurs')");
         /**
-         * Cerberus Pages Documentation.
+		* Cerberus Pages Documentation.
          */
         b.append(",('page_application','button_create','','en','Create new Application','',NULL)");
+		b.append(",('page_application','button_create','','ru','Создать новое приложение','',NULL)");
         b.append(",('page_application','button_create','','fr','Créer une nouvelle Application','',NULL)");
         b.append(",('page_application','button_delete','','en','Delete Application','',NULL)");
+		b.append(",('page_application','button_delete','','ru','Удалить приложение','',NULL)");
         b.append(",('page_application','button_delete','','fr','Supprimer l\\'Application','',NULL)");
         b.append(",('page_application','button_edit','','en','Edit Application','',NULL)");
+		b.append(",('page_application','button_edit','','ru','Редактировать приложение','',NULL)");
         b.append(",('page_application','button_edit','','fr','Modifier l\\'Application','',NULL)");
         b.append(",('page_application','button_manage','','en','Manage Objects','',NULL)");
         b.append(",('page_application','button_manage','','fr','Gerer les Objets','',NULL)");
@@ -896,46 +903,55 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_application','tabEnv','','en','Environments','',NULL)");
         b.append(",('page_application','tabEnv','','fr','Environnements','',NULL)");
         b.append(",('page_application','table_application','','en','Application List',NULL,NULL)");
+		b.append(",('page_application','table_application','','ru','Список приложений',NULL,NULL)");
         b.append(",('page_application','table_application','','fr','Liste des Applications',NULL,NULL)");
         b.append(",('page_application','title','','en','Application','This page can be used to manage the applications.','_application')");
+		b.append(",('page_application','title','','ru','Приложение','Эта страница может быть использована для управления приложениями.','_application')");
         b.append(",('page_application','title','','fr','Application','Cette page permet de gérer et créer des applications.','_application')");
         b.append(",('page_applicationObject','Application','','en','Application','',NULL)");
+		b.append(",('page_applicationObject','Application','','ru','Приложение','',NULL)");
         b.append(",('page_applicationObject','Application','','fr','Application','',NULL)");
         b.append(",('page_applicationObject','applicationfield','','en','Application','',NULL)");
+		b.append(",('page_applicationObject','applicationfield','','ru','Приложение','',NULL)");
         b.append(",('page_applicationObject','applicationfield','','fr','Application','',NULL)");
         b.append(",('page_applicationObject','button_add','','en','Add','',NULL)");
         b.append(",('page_applicationObject','button_add','','fr','Ajouter','',NULL)");
         b.append(",('page_applicationObject','button_close','','en','Close','',NULL)");
         b.append(",('page_applicationObject','button_close','','fr','Fermer','',NULL)");
         b.append(",('page_applicationObject','button_create','','en','Create an Application Object','',NULL)");
+		b.append(",('page_applicationObject','button_create','','ru','Создать объект приложения','',NULL)");
         b.append(",('page_applicationObject','button_create','','fr','Créer un objet d\\'application','',NULL)");
         b.append(",('page_applicationObject','button_delete','','en','Delete Object','',NULL)");
         b.append(",('page_applicationObject','button_delete','','fr','Supprimer l\\'objet','',NULL)");
         b.append(",('page_applicationObject','button_edit','','en','Edit Object','',NULL)");
         b.append(",('page_applicationObject','button_edit','','fr','Modifier l\\'objet','',NULL)");
         b.append(",('page_applicationObject','createapplicationobjectfield','','en','Create Application Object','',NULL)");
+		b.append(",('page_applicationObject','createapplicationobjectfield','','ru','Создать объект приложения','',NULL)");
         b.append(",('page_applicationObject','createapplicationobjectfield','','fr','Créer un object d\\'application','',NULL)");
         b.append(",('page_applicationObject','DateCreated','','en','Creation date','',NULL)");
         b.append(",('page_applicationObject','DateCreated','','fr','Date de création','',NULL)");
         b.append(",('page_applicationObject','DateModif','','en','Last modification date','',NULL)");
         b.append(",('page_applicationObject','DateModif','','fr','Date de dernière modification','',NULL)");
         b.append(",('page_applicationObject','editapplicationobjectfield','','en','Edit Application Object','',NULL)");
+		b.append(",('page_applicationObject','editapplicationobjectfield','','ru','Редактировать объект приложения','',NULL)");
         b.append(",('page_applicationObject','editapplicationobjectfield','','fr','Modifier un objet d\\'application','',NULL)");
         b.append(",('page_applicationObject','message_delete','','en','Do you want to delete Application Object <b>\\'%ENTRY%\\'</b> ?','',NULL)");
         b.append(",('page_applicationObject','message_delete','','fr','Confirmez vous la suppression de l\\'objet <b>\\'%ENTRY%\\'</b> ?','',NULL)");
         b.append(",('page_applicationObject','Object','','en','Object','',NULL)");
-	b.append(",('page_applicationObject','Object','','ru','Объект','',NULL)");
+		b.append(",('page_applicationObject','Object','','ru','Объект','',NULL)");
         b.append(",('page_applicationObject','Object','','fr','Objet','',NULL)");
         b.append(",('page_applicationObject','objectfield','','en','Object','',NULL)");
-	b.append(",('page_applicationObject','objectfield','','ru','Объект','',NULL)");
+		b.append(",('page_applicationObject','objectfield','','ru','Объект','',NULL)");
         b.append(",('page_applicationObject','objectfield','','fr','Objet','',NULL)");
         b.append(",('page_applicationObject','ScreenshotFileName','','en','File Name','',NULL)");
         b.append(",('page_applicationObject','ScreenshotFileName','','fr','Nom du fichier','',NULL)");
         b.append(",('page_applicationObject','screenshotfilenamefield','','en','FileName','',NULL)");
         b.append(",('page_applicationObject','screenshotfilenamefield','','fr','Nom du ficher','',NULL)");
         b.append(",('page_applicationObject','table_applicationobject','','en','Application Object List',NULL,NULL)");
+		b.append(",('page_applicationObject','table_applicationobject','','ru','Список объектов приложения',NULL,NULL)");
         b.append(",('page_applicationObject','table_applicationobject','','fr','Liste des Objets d\\'Application',NULL,NULL)");
         b.append(",('page_applicationObject','title','','en','Application Object','This page can be used to manage the application objects.','_application_object')");
+		b.append(",('page_applicationObject','title','','ru','Объект приложения','Эта страница может быть использована для управления объектами приложения','_application_object')");																																										   
         b.append(",('page_applicationObject','title','','fr','Objet d\\'application','Cette page permet de gérer et créer des objets d\\'application.','_objet_d_application')");
         b.append(",('page_applicationObject','UsrCreated','','en','Creator','',NULL)");
         b.append(",('page_applicationObject','UsrCreated','','fr','Createur','',NULL)");
@@ -1096,6 +1112,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_environment','subject','','en','Subject','',NULL)");
         b.append(",('page_environment','subject','','fr','Sujet','',NULL)");
         b.append(",('page_environment','tabApplication','','en','Applications','',NULL)");
+		b.append(",('page_environment','tabApplication','','ru','Приложения','',NULL)");																							
         b.append(",('page_environment','tabApplication','','fr','Applications','',NULL)");
         b.append(",('page_environment','tabBuild','','en','Build/Revision','',NULL)");
         b.append(",('page_environment','tabBuild','','fr','Build/Revision','',NULL)");
@@ -1124,6 +1141,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','action','','en','Action','',NULL)");
         b.append(",('page_executiondetail','action','','fr','Action','',NULL)");
         b.append(",('page_executiondetail','application','','en','Application','',NULL)");
+		b.append(",('page_executiondetail','application','','ru','Приложение','',NULL)");																					 
         b.append(",('page_executiondetail','application','','fr','Application','',NULL)");
         b.append(",('page_executiondetail','browser','','en','Browser','',NULL)");
         b.append(",('page_executiondetail','browser','','fr','Navigateur','',NULL)");
@@ -1417,8 +1435,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_header','menuAdmin','','en','Administration','',NULL)");
         b.append(",('page_header','menuAdmin','','fr','Administration','',NULL)");
         b.append(",('page_header','menuApplicationObjects','','en','Application Object','',NULL)");
+		b.append(",('page_header','menuApplicationObjects','','ru','Объект приложения','',NULL)");																									
         b.append(",('page_header','menuApplicationObjects','','fr','Objet d\\'application','',NULL)");
         b.append(",('page_header','menuApplications','','en','Application','',NULL)");
+		b.append(",('page_header','menuApplications','','ru','Приложение','',NULL)");																				 
         b.append(",('page_header','menuApplications','','fr','Application','',NULL)");
         b.append(",('page_header','menuAppService','','en','Service Library','',NULL)");
         b.append(",('page_header','menuAppService','','fr','Bibliothèque de Service','',NULL)");
@@ -1643,6 +1663,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_reportbytag','filters','','en','Filters','Filters for the report',NULL)");
         b.append(",('page_reportbytag','filters','','fr','Filtres','Filtres du rapport',NULL)");
         b.append(",('page_reportbytag','report_envcountrybrowser','','en','Report By Application Environment Country RobotDecli','Report of the execution filtering by Application Environment Country and Robot Decli',NULL)");
+		b.append(",('page_reportbytag','report_envcountrybrowser','','ru','Отчет по приложению окружения страны и отклонению роботом','Отчет о фильтрации выполнения по стране среды приложения и отклоннеию роботом',NULL)");																																																																																	 
         b.append(",('page_reportbytag','report_envcountrybrowser','','fr','Rapport par Application / Environnement / Pays / Variation Robot','Rapport d\\'execution filtré par Application Envrionnment Pays et declinaison de Robot',NULL)");
         b.append(",('page_reportbytag','report_testfolder','','en','Report by Test folder','A bar chart with the number of execution and their status for each test folder',NULL)");
         b.append(",('page_reportbytag','report_testfolder','','fr','Rapport par fichier Test','diagramme en bâtons contenant le nombre d\\'execution par status pour chaque fichier Test',NULL)");
@@ -1683,6 +1704,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_runtest','addtoqueueandrun','','en','Add to queue and run','',NULL)");
         b.append(",('page_runtest','addtoqueueandrun','','fr','Ajouter à la liste et executer','',NULL)");
         b.append(",('page_runtest','application','','en','Application','',NULL)");
+		b.append(",('page_runtest','application','','ru','Приложение','',NULL)");																			 
         b.append(",('page_runtest','application','','fr','Application','',NULL)");
         b.append(",('page_runtest','automatic','','en','Automatic','',NULL)");
         b.append(",('page_runtest','automatic','','fr','Automatique','',NULL)");
@@ -2262,6 +2284,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcasescript','nature_field','','en','Nature','',NULL)");
         b.append(",('page_testcasescript','nature_field','','fr','Nature','',NULL)");
         b.append(",('page_testcasescript','not_application_object','','en','It is not an Application Object','',NULL)");
+		b.append(",('page_testcasescript','not_application_object','','ru','Это не объект приложения','',NULL)");																														
         b.append(",('page_testcasescript','not_application_object','','fr','Ce n\\'est pas un object de l\\'application','',NULL)");
         b.append(",('page_testcasescript','not_property','','en','It is not a property','',NULL)");
         b.append(",('page_testcasescript','not_property','','fr','Ce n\\'est pas une propriété','',NULL)");
