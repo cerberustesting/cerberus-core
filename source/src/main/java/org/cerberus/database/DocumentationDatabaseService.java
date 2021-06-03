@@ -108,7 +108,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('application','sort','','ru','Сортировка','Это соответствует цифровому значению, которое используется в качестве критерия сортировки для различных полей со списком в графическом интерфейсе Cerberus.','_application_attributes')");
         b.append(",('application','sort','','fr','identifiant de Tri','Correspond à une valeur entière et utilisée pour trier les differentes valeurs dans l\\'interface graphique.','_application_attributes')");
         b.append(",('application','subsystem','','en','Subsystem','A <code class=\\'doc-crbvvoca\\'>Subsystem</code> define a group of <code class=\\'doc-crbvvoca\\'>application</code> inside a <code class=\\'doc-crbvvoca\\'>system</code>.','_application_attributes')");
-        b.append(",('application','subsystem','','ru','Система','<code class=\\'doc-crbvvoca\\'>Система</code> определяет группу <code class=\\'doc-crbvvoca\\'>приложения</code> внутри <code class=\\'doc-crbvvoca\\'>системы</code>.','_application_attributes')");
+        b.append(",('application','subsystem','','ru','Подсистема','<code class=\\'doc-crbvvoca\\'>Подсистема</code> определяет группу <code class=\\'doc-crbvvoca\\'>приложения</code> внутри <code class=\\'doc-crbvvoca\\'>системы</code>.','_application_attributes')");
         b.append(",('application','subsystem','','fr','Sous Système','Le <code class=\\'doc-crbvvoca\\'>Sous système</code> regroupe un ensemble d\\'<code class=\\'doc-crbvvoca\\'>application</code> au sein d\\'un même <code class=\\'doc-crbvvoca\\'>système</code>.','_application_attributes')");
         b.append(",('application','poolSize','','en','Pool size','Maximal number of testcases that can be executed in same time by Cerberus','_environment')");
         b.append(",('application','poolSize','','ru','Размер буфера','Максимальное количество тестовых случаев которые могут быть выполнены в Cerberus','_environment')");
@@ -123,6 +123,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('application','type','','ru','Тип','Тип <code class=\\'doc-crbvvoca\\'>приложения</code> определяет <code class=\\'doc-crbvvoca\\'>application</code> есть ли это приложение с графическим интерфейсом, сервис или приложение пакетной обработки.<br>Автоматизированный <code class=\\'doc-crbvvoca\\'>тесткейс</code> основанный на приложении с <code class=\\'doc-crbvvoca\\'>графическим интерфейсом</code> для выполнения требуется сервер selenium.','_application_attributes')");
         b.append(",('application','type','','fr','Type','Le type de l\\'<code class=\\'doc-crbvvoca\\'>application</code> defini si l\\'<code class=\\'doc-crbvvoca\\'>application</code> est une interface graphique (GUI), un fournisseur de Service ou un traitement batch.<br>Un <code class=\\'doc-crbvvoca\\'>cas de test</code> automatisé basé sur une <code class=\\'doc-crbvvoca\\'>application</code> de type GUI necessitera un serveur Selenium pour s\\'executer.','_application_attributes')");
         b.append(",('applicationObject','Object','','en','Object','',NULL)");
+		b.append(",('applicationObject','Object','','ru','Объект','',NULL)");
         b.append(",('applicationObject','Object','','fr','Objet','',NULL)");
         b.append(",('applicationObject','ScreenshotFileName','','en','Image Filename','',NULL)");
         b.append(",('applicationObject','ScreenshotFileName','','fr','Nom de fichier de l\\'image','',NULL)");
@@ -915,8 +916,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_applicationObject','message_delete','','en','Do you want to delete Application Object <b>\\'%ENTRY%\\'</b> ?','',NULL)");
         b.append(",('page_applicationObject','message_delete','','fr','Confirmez vous la suppression de l\\'objet <b>\\'%ENTRY%\\'</b> ?','',NULL)");
         b.append(",('page_applicationObject','Object','','en','Object','',NULL)");
+		b.append(",('page_applicationObject','Object','','ru','Объект','',NULL)");
         b.append(",('page_applicationObject','Object','','fr','Objet','',NULL)");
         b.append(",('page_applicationObject','objectfield','','en','Object','',NULL)");
+		b.append(",('page_applicationObject','objectfield','','ru','Объект','',NULL)");
         b.append(",('page_applicationObject','objectfield','','fr','Objet','',NULL)");
         b.append(",('page_applicationObject','ScreenshotFileName','','en','File Name','',NULL)");
         b.append(",('page_applicationObject','ScreenshotFileName','','fr','Nom du fichier','',NULL)");
