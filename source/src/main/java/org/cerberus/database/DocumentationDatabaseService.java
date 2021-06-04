@@ -134,6 +134,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
 		b.append(",('appservice','application','','ru','Приложение','','_service_library')");																						 
         b.append(",('appservice','application','','fr','Application','','_librairie_de_services')");
         b.append(",('appservice','description','','en','Description','','_service_library')");
+		 b.append(",('appservice','description','','ru','Описание','','_service_library')");
         b.append(",('appservice','description','','fr','Description','','_librairie_de_services')");
         b.append(",('appservice','group','','en','Group','','_service_library')");
         b.append(",('appservice','group','','fr','Groupe','','_librairie_de_services')");
@@ -157,6 +158,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
 	b.append(",('appservicecontent','Value','','ru','Значение','','_service_library')");
         b.append(",('appservicecontent','Value','','fr','Valeur','','_librairie_de_services')");
         b.append(",('appservicecontent','Description','','en','Description','','_service_library')");
+		b.append(",('appservicecontent','Description','','ru','Описание','','_service_library')");
         b.append(",('appservicecontent','Description','','fr','Description','','_librairie_de_services')");
         b.append(",('appserviceheader','Sort','','en','Sort','','_service_library')");
         b.append(",('appserviceheader','Sort','','fr','Tri','','_librairie_de_services')");
@@ -166,10 +168,12 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
 	b.append(",('appserviceheader','Value','','ru','Значение','','_service_library')");
         b.append(",('appserviceheader','Value','','fr','Valeur','','_librairie_de_services')");
         b.append(",('appserviceheader','Description','','en','Description','','_service_library')");
+		b.append(",('appserviceheader','Description','','ru','Описание','','_service_library')");
         b.append(",('appserviceheader','Description','','fr','Description','','_librairie_de_services')");
         b.append(",('batchinvariant','Batch','','en','Batch','','_batch_invariant_attributes')");
         b.append(",('batchinvariant','Batch','','fr','Batch','','_batch_invariant_attributes')");
         b.append(",('batchinvariant','Description','','en','Description','Description of the batch.','_batch_invariant_attributes')");
+		b.append(",('batchinvariant','Description','','ru','Описание','Описание набора.','_batch_invariant_attributes')");
         b.append(",('batchinvariant','Description','','fr','Description','Description du batch','_batch_invariant_attributes')");
         b.append(",('batchinvariant','system','','en','System','System of the batch','_batch_invariant_attributes')");
         b.append(",('batchinvariant','system','','fr','System','System du batch','_batch_invariant_attributes')");
@@ -225,6 +229,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('buildrevisionparameters','Revision','','en','Revision','','_build_content')");
         b.append(",('buildrevisionparameters','Revision','','fr','Revision','','_contenu_des_builds')");
         b.append(",('buildrevisionparameters','subject','','en','Description','','_build_content')");
+		b.append(",('buildrevisionparameters','subject','','ru','Описание','','_build_content')");
         b.append(",('buildrevisionparameters','subject','','fr','Description','','_contenu_des_builds')");
         b.append(",('buildrevisionparameters','TicketIDFixed','','en','Associated Ticket ID','This is the Ticket ID which has been delivered with the <code class=\\'doc-crbvvoca\\'>release</code>.','_build_content')");
         b.append(",('buildrevisionparameters','TicketIDFixed','','fr','ID du Ticket associé','ID du ticket dont la release est associée.','_contenu_des_builds')");
@@ -233,6 +238,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('campaign','CIScoreThreshold','','en','CI Score Threshold','Maximum score above which the result of the tag is KO. You can leave this value empty so that global parameter will be used.','')");
         b.append(",('campaign','CIScoreThreshold','','fr','Seuil du Score CI','Score maximum au dela duquel le resultat est KO. Si vide, le parametre global sera utilisé.','')");
         b.append(",('campaign','longDescription','','en','Long Description','','')");
+		b.append(",('campaign','longDescription','','ru','Полное описание','','')");
         b.append(",('campaign','longDescription','','fr','Description longue','','')");
         b.append(",('campaign','tag','','en','Tag','Tag that will be used when running the campaign. The variables %TIMESTAMP%, %USER%, %REQENVIRONMENTLIST% and %REQCOUNTRYLIST% can be used.','')");
         b.append(",('campaign','tag','','fr','Tag','Tag qui sera utilisé au moment de l\\'execution de la campagne. Les variables %TIMESTAMP%, %USER%, %REQENVIRONMENTLIST%  et %REQCOUNTRYLIST% peuvent être utilisées.','')");
@@ -276,6 +282,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('countryenvparam','chain','','en','Chain','','_environment')");
         b.append(",('countryenvparam','chain','','fr','Chaine','','_environnement')");
         b.append(",('countryenvparam','Description','','en','Description','','_environment')");
+		b.append(",('countryenvparam','Description','','ru','Описание','','_environment')");
         b.append(",('countryenvparam','Description','','fr','Description','','_environnement')");
         b.append(",('countryenvparam','DistribList','','en','Recipent list of Notification Email','This is the list of email adresses that will receive the notification on any environment event.<br>Format is ; separated.<br>Ex: &lt;name1&gt; name1@mail.com; &lt;name2&gt; name2@mail.com','_environment')");
         b.append(",('countryenvparam','DistribList','','fr','Emails des destinataires','','_environnement')");
@@ -300,10 +307,12 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('countryenvparam_log','datecre','','en','Date & Time','',NULL)");
         b.append(",('countryenvparam_log','datecre','','fr','Date & Heure','',NULL)");
         b.append(",('countryenvparam_log','Description','','en','Description','',NULL)");
+		b.append(",('countryenvparam_log','Description','','ru','Описание','',NULL)");
         b.append(",('countryenvparam_log','Description','','fr','Description','',NULL)");
         b.append(",('deploytype','deploytype','','en','Deployment Type','',NULL)");
         b.append(",('deploytype','deploytype','','fr','Type de deploiement','',NULL)");
         b.append(",('deploytype','description','','en','Description','',NULL)");
+		b.append(",('deploytype','description','','ru','Описание','',NULL)");
         b.append(",('deploytype','description','','fr','Description','',NULL)");
         b.append(",('host','active','','en','Active','',NULL)");
         b.append(",('host','host','','en','Host','',NULL)");
@@ -331,6 +340,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('label','color','','en','Color','<p>This field is the color that will be applyied to the label. It could be any value understable by the brower.</p><p>Examples: blue |  #00FF00 | #000 </p>',NULL)");
         b.append(",('label','color','','fr','Couleur','<p>Cette valeur représente la couleur appliquée au label. Cela peut-être toute valeur reconnue comme couleur par le navigateur.</p><p>Exemples: blue |  #00FF00 | #000 </p>',NULL)");
         b.append(",('label','description','','en','Description','<p>Description of the label.</p>',NULL)");
+		b.append(",('label','description','','ru','Описание','<p>Описание названия.</p>',NULL)");
         b.append(",('label','description','','fr','Description','<p>Description du label.</p>',NULL)");
         b.append(",('label','id','','en','ID','',NULL)");
         b.append(",('label','id','','fr','ID','',NULL)");
@@ -343,6 +353,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('label','labelsBATTERY','','en','Batteries','<p>This value is the Battery label attached to testcase for the purpose of identification or to give other information.</p>',NULL)");
         b.append(",('label','labelsBATTERY','','fr','Batteries','<p>Cette valeur représente le label de type battery qui sera attaché au testcase à des fins d\\'identification ou de regroupement.</p>',NULL)");
         b.append(",('label','longdesc','','en','Long Description','',NULL)");
+		b.append(",('label','longdesc','','ru','Полное описание','',NULL)");
         b.append(",('label','longdesc','','fr','Description Longue','',NULL)");
         b.append(",('label','parentid','','en','Parent LabelID','<p>This value represent the labelID of the parent label. This allow to group or create hierachy in label</p>',NULL)");
         b.append(",('label','parentid','','fr','ID du label parent','<p>Cette valeur est l\\'ID du label parent. Cela permet de grouper ou de créer une hiérarchie au sein des labels</p>',NULL)");
@@ -383,6 +394,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('project','dateCreation','','en','Created','This is the date when the project has been created.',NULL)");
         b.append(",('project','dateCreation','','fr','Date de Création','Date de création du projet.',NULL)");
         b.append(",('project','description','','en','Description','This is the description of the project',NULL)");
+		b.append(",('project','description','','ru','Описание','Это описание проекта',NULL)");
         b.append(",('project','description','','fr','Description','Description du projet',NULL)");
         b.append(",('project','idproject','','en','Project','This is the id of the project that provided the implementation of the <code class=\\'doc-crbvvoca\\'>test case</code>.',NULL)");
         b.append(",('project','idproject','','fr','Projet','Identifiant du projet qui est à l\\'origine de la création d\\'un <code class=\\'doc-crbvvoca\\'>cas de test</code>.',NULL)");
@@ -396,6 +408,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
 	b.append(",('robot','capabilityValue','','ru','Значение','Возможное значение.',NULL)");
         b.append(",('robot','capabilityValue','','fr','Valeur','Valeur de la capabilité.',NULL)");
         b.append(",('robot','description','','en','Description','Robot Description.',NULL)");
+		b.append(",('robot','description','','ru','Описаник','Описание робота.',NULL)");
         b.append(",('robot','description','','fr','Description','Description du robot.',NULL)");
         b.append(",('robot','host','','en','Hostname','IP Adress or host that host the selenium server that will execute the test case.',NULL)");
         b.append(",('robot','host','','fr','Hostname','Address IP ou nom de server qui heberge le robot et qui sera utilisé lors l\\'excution du cas de test.',NULL)");
@@ -444,6 +457,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('robotexecutor','deviceLockUnlock','','en','Unlock / Lock Device','Unlock the device before and lock devices after a testcase',NULL)");
         b.append(",('robotexecutor','deviceLockUnlock','','fr','Déverrouiller / Verrouiller le device','Déverrouiller le device avant et verrouiller après un test case',NULL)");
         b.append(",('robotexecutor','description','','en','Description','',NULL)");
+		b.append(",('robotexecutor','description','','ru','Описание','',NULL)");
         b.append(",('robotexecutor','description','','fr','Description','',NULL)");
         b.append(",('robotexecutor','dateLastExeSubmitted','','en','Timestamp of last Exe Submitted','',NULL)");
         b.append(",('robotexecutor','dateLastExeSubmitted','','fr','Timestamp de la dernière execution soumise','',NULL)");
@@ -461,6 +475,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('scheduleentry','cronDefinition','','en','Quartz Cron Expression','Cron expression use to schedule campaign',NULL)");
         b.append(",('scheduleentry','description','','fr','Description','',NULL)");
         b.append(",('scheduleentry','description','','en','Description','',NULL)");
+		b.append(",('scheduleentry','description','','ru','Описание','',NULL)");
         b.append(",('scheduleentry','active','','en','Active','Scheduler activity',NULL)");
         b.append(",('scheduleentry','active','','fr','Active','Activité du scheduler',NULL)");
         b.append(",('scheduleentry','lastexecution','','en','Last Execution','',NULL)");
@@ -470,6 +485,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('tag','tag','','en','Tag','',NULL)");
         b.append(",('tag','tag','','fr','Tag','',NULL)");
         b.append(",('tag','description','','en','Description','Description of the tag',NULL)");
+		b.append(",('tag','description','','ru','Описание','Описание ярлыка',NULL)");
         b.append(",('tag','description','','fr','Description','Description du Tag',NULL)");
         b.append(",('tag','campaign','','en','Campaign','Campaign that was at the origin of the creation of the Tag.',NULL)");
         b.append(",('tag','campaign','','fr','Campagne','Campagne à l\\'origine de la création du Tag',NULL)");
@@ -492,6 +508,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('test','dateCreation','','en','Creation date','The date when the test have been created','_test')");
         b.append(",('test','dateCreation','','fr','Date de création','Date à laquelle le test a été créé','_test')");
         b.append(",('test','description','','en','Folder Description','This is the description of the <code class=\\'doc-crbvvoca\\'>test</code>.','_test')");
+		b.append(",('test','description','','ru','Описание папки','Это описание <code class=\\'doc-crbvvoca\\'>теста</code>.','_test')");
         b.append(",('test','description','','fr','Description du dossier','Description du <code class=\\'doc-crbvvoca\\'>test</code>.','_test')");
         b.append(",('test','Test','','en','Test Folder','A <code class=\\'doc-crbvvoca\\'>test</code> is grouping some <code class=\\'doc-crbvvoca\\'>test case</code> together. The criteria that groups the <code class=\\'doc-crbvvoca\\'>test cases</code> can be an application page or a feature.','_test')");
         b.append(",('test','Test','','fr','Dossier de Test','Un <code class=\\'doc-crbvvoca\\'>test</code> regroupe plusieurs <code class=\\'doc-crbvvoca\\'>Cas de tests</code> ensemble.','_test')");
@@ -533,6 +550,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','Creator','','en','Creator','This is the name of the Cerberus user who created the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','Creator','','fr','Créateur','','_cas_de_test')");
         b.append(",('testcase','Description','','en','Test case short description','It is a synthetic description of what the <code class=\\'doc-crbvvoca\\'>test case</code> do.','_testcase')");
+		b.append(",('testcase','Description','','ru','Короткое описание тестового случая','Это описание что проверяется в <code class=\\'doc-crbvvoca\\'>тестовом случае</code>.','_testcase')");
         b.append(",('testcase','Description','','fr','Description courte','','_cas_de_test')");
         b.append(",('testcase','FromMajor','','en','From Major',' ','_testcase')");
         b.append(",('testcase','FromMajor','','fr','De Majeure','','_cas_de_test')");
@@ -578,6 +596,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','robotConstraints','','fr','Contraintes Robot','Paramètres robot spécifiques au cas de test','_cas_de_test')");
         b.append(",('testcasecountryproperties','Database','','en','DTB','Database where the SQL will be executed.<br>This is only applicable if the property type is <code class=\\'doc-fixed\\'>executeSql</code> or <code class=\\'doc-fixed\\'>executeSqlFromLib</code>.',NULL)");
         b.append(",('testcasecountryproperties','Description','','en','Description','Description of the property.',NULL)");
+		b.append(",('testcasecountryproperties','Description','','ru','Описание','Описание свойства.',NULL)");
         b.append(",('testcasecountryproperties','Length','','en','Length','It is the length parameter of the property.<br>The parameter usage depend on the <code class=\\'doc-fixed\\'>type</code> of the property.',NULL)");
         b.append(",('testcasecountryproperties','Nature','','en','Nature','Nature is the parameter which define the unicity of the property calculation for this testcase in every execution.<br><br>It can take the following values :',NULL)");
         b.append(",('testcasecountryproperties','Nature','','fr','Nature',NULL,NULL)");
@@ -747,6 +766,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcasestepaction','Action','Unknown','en','Unknown action.','This is the default action defined inside Cerberus.<br>It can be used when the action has not been identified or clarified yet.<br>NB : It is not implemented and will report a FA status on the corresponding execution.',NULL)");
         b.append(",('testcasestepaction','Action','wait','en','Wait for a certain amount of time.','<b>wait :</b> When the action expected is to wait 5 seconds.<br><br><dd><u><i>How to feed it :</i></u> <br><br><dd><i>Action =</i> wait, <i>Value =</i> null  and  <i>Property =</i> null.<br><br><br>',NULL)");
         b.append(",('testcasestepaction','description','','en','Description','This is the functional desciption of the action.',NULL)");
+		b.append(",('testcasestepaction','description','','ru','Описание','Это функциональное описание действия.',NULL)");
         b.append(",('testcasestepaction','ForceExeStatus','','en','Exe RC','<p>This parameter can be used in order to change the behaviour of the Cerberus execution engine.</p><p>If the field is empty, there will be no impact on the behaviour of the engine.</p>If PE, the execution will continue (stay pending) after the execution of the action no matter what is the result of the action. This value can be used in case an action needs to be done to perform the test but should not impact the result of the test if it fails (Ex : closing a marketing layer on a website).',NULL)");
         b.append(",('testcasestepaction','ForceExeStatus','','fr','Exe CR',NULL,NULL)");
         b.append(",('testcasestepaction','image','','en','Picture','',NULL)");
@@ -791,7 +811,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcasestepactioncontrol','Control','verifyXmlTreeStructure','en','Check if XML tree Structure is correct.','TBD',NULL)");
         b.append(",('testcasestepactioncontrol','ControlSequence','','en','CtrlNum','This is the number of the control.<br>If you have more than one control attached to an action, use this value to order their execution.',NULL)");
         b.append(",('testcasestepactioncontrol','ControlSequence','','fr','CtrlNum',NULL,NULL)");
-        b.append(",('testcasestepactioncontrol','Description','','en','Description','This is the functional desciption of the control.',NULL)");
+        b.append(",('testcasestepactioncontrol','Description','','en','Description','This is the functional description of the control.',NULL)");
+		b.append(",('testcasestepactioncontrol','Description','','ru','Описание','Это функциональное описание элемента управления.',NULL)");
         b.append(",('testcasestepactioncontrol','Fatal','','en','Fatal','This define if the control is fatal.<br><br>If the control is fatal and KO, the execution will stop and execution status will report KO.<br>If the control is not fatal and KO, the execution will continue but execution status will still report a KO.',NULL)");
         b.append(",('testcasestepactioncontrol','Sequence','','en','Sequence','It is the number of the sequence in which the control will be performed.<br><br>NB : Controls are performed after each action.',NULL)");
         b.append(",('testcasestepactioncontrol','Sequence','','fr','Séquence',NULL,NULL)");
@@ -826,6 +847,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalib','databaseUrl','','en','Database','<p>Specifies the database where the <i>Service Path</i> will be requested. </p> You can then configure the left part of the Service URL on that database at the environment level. That allows to create testdata independant from the environment where the testcase is executed.','_data_library')");
         b.append(",('testdatalib','databaseUrl','','fr','Base de données','','_librairie_de_données')");
         b.append(",('testdatalib','description','','en','Description','<p>Textual description of the entry.</p>','_data_library')");
+		b.append(",('testdatalib','description','','ru','Описание','<p>Текстовое описание записи.</p>','_data_library')");
         b.append(",('testdatalib','description','','fr','Description',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','envelope','','en','Envelope','<p>Envelope that should be sent in the SOAP request.</p>','_data_library')");
         b.append(",('testdatalib','envelope','','fr','Enveloppe','<p>Enveloppe qui doit être envoyée dans la requête SOAP</p>','_librairie_de_données')");
@@ -866,6 +888,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalibdata','columnPosition','','en','Column Position','<p>Column position [1,2,3…] representing the value that should be obtained after parsing a CSV file.</p>','_data_library')");
         b.append(",('testdatalibdata','columnPosition','','fr','Position','<p>Position [1,2,3…] de la valeur à obtenir lors du décryptage du CSV.</p>','_librairie_de_données')");
         b.append(",('testdatalibdata','description','','en','Description','<p>Textual description for the sub-data entry.</p>','_data_library')");
+		b.append(",('testdatalibdata','description','','ru','Описание','<p>Текстовое описание для ввода дополнительных данных.</p>','_data_library')");
         b.append(",('testdatalibdata','description','','fr','Description',NULL,'_librairie_de_données')");
         b.append(",('testdatalibdata','encrypt','','en','Encrypt','<p>Encrypt STATIC value and value calculated during the execution.</p>','_data_library')");
         b.append(",('testdatalibdata','encrypt','','fr','Crypter','<p>Crypte la valeur STATIC, ainsi que la valeur calculée lors de l\\'execution.</p>','_librairie_de_données')");
@@ -1178,6 +1201,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','country','','en','Country','',NULL)");
         b.append(",('page_executiondetail','country','','fr','Pays','',NULL)");
         b.append(",('page_executiondetail','description','','en','Description','',NULL)");
+		b.append(",('page_executiondetail','description','','ru','Описание','',NULL)");
         b.append(",('page_executiondetail','description','','fr','Description','',NULL)");
         b.append(",('page_executiondetail','edittc','','en','Edit Test Case','',NULL)");
         b.append(",('page_executiondetail','edittc','','fr','Editer le TestCase','',NULL)");
@@ -1547,6 +1571,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_invariant','button_remove','','en','Delete Invariant',NULL,NULL)");
         b.append(",('page_invariant','button_remove','','fr','Supprimer l\\'Invariant',NULL,NULL)");
         b.append(",('page_invariant','description','','en','Description','',NULL)");
+		b.append(",('page_invariant','description','','ru','Описание','',NULL)");
         b.append(",('page_invariant','description','','fr','Description','',NULL)");
         b.append(",('page_invariant','editinvariant_field','','en','Edit Invariant','',NULL)");
         b.append(",('page_invariant','editinvariant_field','','fr','Editer un Invariant','',NULL)");
@@ -1588,6 +1613,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
 	b.append(",('page_invariant','value','','ru','Значение','',NULL)");
         b.append(",('page_invariant','value','','fr','Valeur','',NULL)");
         b.append(",('page_invariant','veryShortDesc','','en','Very Short Description','',NULL)");
+		b.append(",('page_invariant','veryShortDesc','','ru','Очень короткое сообщение','',NULL)");
         b.append(",('page_invariant','veryShortDesc','','fr','Description Courte','',NULL)");
         b.append(",('page_label','btn_create','','en','Create Label','',NULL)");
         b.append(",('page_label','btn_create','','fr','Créer un Label','',NULL)");
@@ -1627,8 +1653,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_parameter','close_btn','','en','Close','',NULL)");
         b.append(",('page_parameter','close_btn','','fr','Fermer','',NULL)");
         b.append(",('page_parameter','description_col','','en','Description','',NULL)");
+		b.append(",('page_parameter','description_col','','ru','Описание','',NULL)");
         b.append(",('page_parameter','description_col','','fr','Description','',NULL)");
         b.append(",('page_parameter','description_field','','en','Description','',NULL)");
+		b.append(",('page_parameter','description_field','','ru','Описание','',NULL)");
         b.append(",('page_parameter','description_field','','fr','Description','',NULL)");
         b.append(",('page_parameter','editparameter_field','','en','Edit Parameter','',NULL)");
         b.append(",('page_parameter','editparameter_field','','fr','Modifier le paramètre','',NULL)");
@@ -1874,8 +1902,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_sqlLibrary','database_field','','en','Database','',NULL)");
         b.append(",('page_sqlLibrary','database_field','','fr','Base de donnée','',NULL)");
         b.append(",('page_sqlLibrary','description_col','','en','Description','',NULL)");
+		b.append(",('page_sqlLibrary','description_col','','ru','Описание','',NULL)");
         b.append(",('page_sqlLibrary','description_col','','fr','Description','',NULL)");
         b.append(",('page_sqlLibrary','description_field','','en','Description','',NULL)");
+		b.append(",('page_sqlLibrary','description_field','','ru','Описание','',NULL)");
         b.append(",('page_sqlLibrary','description_field','','fr','Description','',NULL)");
         b.append(",('page_sqlLibrary','editSqlLibrary_field','','en','Edit Library','',NULL)");
         b.append(",('page_sqlLibrary','editSqlLibrary_field','','fr','Editer la librairie','',NULL)");
@@ -1961,10 +1991,13 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testbattery','close_btn','','en','Close','',NULL)");
         b.append(",('page_testbattery','close_btn','','fr','Fermer','',NULL)");
         b.append(",('page_testbattery','description_col','','en','Description','',NULL)");
+		b.append(",('page_testbattery','description_col','','ru','Описание','',NULL)");
         b.append(",('page_testbattery','description_col','','fr','Description','',NULL)");
         b.append(",('page_testbattery','description_field','','en','Description','',NULL)");
+		b.append(",('page_testbattery','description_field','','ru','Описание','',NULL)");
         b.append(",('page_testbattery','description_field','','fr','Description','',NULL)");
         b.append(",('page_testbattery','description_tab','','en','Description','',NULL)");
+		b.append(",('page_testbattery','description_tab','','ru','Описание','',NULL)");
         b.append(",('page_testbattery','description_tab','','fr','Description','',NULL)");
         b.append(",('page_testbattery','edittestbattery_field','','en','Edit Battery','',NULL)");
         b.append(",('page_testbattery','edittestbattery_field','','fr','Modifier la Batterie','',NULL)");
@@ -2017,10 +2050,13 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcampaign','close_btn','','en','Close','',NULL)");
         b.append(",('page_testcampaign','close_btn','','fr','Fermer','',NULL)");
         b.append(",('page_testcampaign','description_col','','en','Description','',NULL)");
+		b.append(",('page_testcampaign','description_col','','ru','Описание','',NULL)");
         b.append(",('page_testcampaign','description_col','','fr','Description','',NULL)");
         b.append(",('page_testcampaign','description_field','','en','Description','',NULL)");
+		b.append(",('page_testcampaign','description_field','','ru','Описание','',NULL)");
         b.append(",('page_testcampaign','description_field','','fr','Description','',NULL)");
         b.append(",('page_testcampaign','description_tab','','en','Description','',NULL)");
+		b.append(",('page_testcampaign','description_tab','','ru','Описание','',NULL)");
         b.append(",('page_testcampaign','description_tab','','fr','Description','',NULL)");
         b.append(",('page_testcampaign','edittestcampaign_field','','en','Edit Campaign','',NULL)");
         b.append(",('page_testcampaign','edittestcampaign_field','','fr','Modifier la Campagne','',NULL)");
@@ -2258,12 +2294,14 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcasescript','describe_control','','en','Describe Control','',NULL)");
         b.append(",('page_testcasescript','describe_control','','fr','Décrivez ce control','',NULL)");
         b.append(",('page_testcasescript','description_field','','en','Description','',NULL)");
+		b.append(",('page_testcasescript','description_field','','ru','Описание','',NULL)");
         b.append(",('page_testcasescript','description_field','','fr','Description','',NULL)");
         b.append(",('page_testcasescript','edit_testcase','','en','Edit TestCase Header','',NULL)");
         b.append(",('page_testcasescript','edit_testcase','','fr','Modifier l\\'Entete du TestCase','',NULL)");
         b.append(",('page_testcasescript','fatal_field','','en','Fatal','',NULL)");
         b.append(",('page_testcasescript','fatal_field','','fr','Fatal','',NULL)");
         b.append(",('page_testcasescript','feed_propertydescription','','en','Feed Property Description','',NULL)");
+		b.append(",('page_testcasescript','feed_propertydescription','','ru','Описание источника подачи','',NULL)");
         b.append(",('page_testcasescript','feed_propertydescription','','fr','Remplissez la description','',NULL)");
         b.append(",('page_testcasescript','feed_propertyname','','en','Feed Property name','',NULL)");
         b.append(",('page_testcasescript','feed_propertyname','','fr','Remplissez le nom de la propriété','',NULL)");
@@ -2374,7 +2412,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcasescript','warning_one_empty_prop','','en','There is at least one property with no name defined. If you save it will be removed. Do you still want to save ?','',NULL)");
         b.append(",('page_testcasescript','warning_one_empty_prop','','fr','Il y a au moins une propriétée sans pays. Si vous sauvegardez elle sera supprimée. Voulez-vous vraiment sauvegarder ?','',NULL)");
         b.append(",('page_testcasesearch','text','','en','Text','Insert here the text that will search against the following Fields of every <code class=\\'doc-crbvvoca\\'>test case</code> :<br>- Short Description,<br>- Detailed description / Value Expected,<br>- HowTo<br>- Comment<br><br>NB : Search is case insensitive.',NULL)");
-        b.append(",('page_testcasesearch','text','','fr','Texte',NULL,NULL)");
+        b.append(",('page_testcasesearch','text','','ru','Текст','Вставте сюда текст для поиска в последующих полях каждого <code class=\\'doc-crbvvoca\\'>тестового случая</code> :<br>- Короткое описание,<br>- Детальное описание / Ожидаемое описание,<br>- HowTo<br>- Коментарий<br><br>NB : Поиск регистро-чувствительный.',NULL)");
+		b.append(",('page_testcasesearch','text','','fr','Texte',NULL,NULL)");
         b.append(",('page_testcase_m_addPicture','error_message_empty','','en','The URL value is empty!','',NULL)");
         b.append(",('page_testcase_m_addPicture','error_message_empty','','fr','La valeur de l\\'URL est vide',NULL,NULL)");
         b.append(",('page_testcase_m_addPicture','lbl_feedurl','','en','Feed URL','',NULL)");
@@ -2734,7 +2773,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('interactiveTutoStep', '2.step.30', '', 'en', '<h3>Test Case ID</h3><p>Cerberus automatically generates a unique ID for that folder, but you can change it to any other value if you prefer. This ID, together with its corresponding Test Folder, will identify the test case.</p><p class=\\'tutoA\\'>Click on <b>Next</b></p>', '','') ");
         b.append(",('interactiveTutoStep', '2.step.30', '', 'fr', '<h3>ID de cas de test</h3><p>Cerberus génère automatiquement un identifiant unique pour ce dossier, mais vous pouvez le changer pour toute autre valeur que vous préférez. Cet ID, ainsi que son dossier de test correspondant, identifiera le scénario de test de manière unique.</p><p class=\\'tutoA\\'>Cliquez sur <b>Suivant</b></p>', '','') ");
         b.append(",('interactiveTutoStep', '2.step.35', '', 'en', '<h3>Test Case Description</h3><p>Fill in the <b>test case description</b>, for example with:</p><p><b><i>As a web user, I want to access Google</i></b></p><p class=\\'tutoA\\'>Click on <b>Next</b> once finished.</p>', '','') ");
-        b.append(",('interactiveTutoStep', '2.step.35', '', 'fr', '<h3>Description du scénario de test</h3><p>Remplissez la <b>description du scénario de test</b>, par exemple avec:</p><p><b><i>En tant qu\\'utilisateur Web, je souhaite accéder à Google</i></b></p><p class=\\'tutoA\\'>Cliquez sur <b>Suivant</b> une fois terminé.</p>', '','') ");
+        b.append(",('interactiveTutoStep', '2.step.35', '', 'ru', '<h3>Описание тестового случая</h3><p>Заполнить <b>описание тестового случая</b>, к примеру с:</p><p><b><i>Как веб-пользователь, я хочу я хочу получить доступ к Google</i></b></p><p class=\\'tutoA\\'>Нажать на <b>Далее</b> после завершения.</p>', '','') ");
+		b.append(",('interactiveTutoStep', '2.step.35', '', 'fr', '<h3>Description du scénario de test</h3><p>Remplissez la <b>description du scénario de test</b>, par exemple avec:</p><p><b><i>En tant qu\\'utilisateur Web, je souhaite accéder à Google</i></b></p><p class=\\'tutoA\\'>Cliquez sur <b>Suivant</b> une fois terminé.</p>', '','') ");
         b.append(",('interactiveTutoStep', '2.step.40', '', 'en', '<h3>Test Case Application</h3><p>A Test Case must be associated with an Application (which, for example, defines the environments and the URLs where the test can be run).</p><p class=\\'tutoA\\'><b>Select Google</b> in the list and then, Click on <b>Next</b>.</p>', '','') ");
         b.append(",('interactiveTutoStep', '2.step.40', '', 'fr', '<h3>Application du cas de test</h3><p>Un scénario de test doit être associé à une application (qui, par exemple, définit les environnements et les URL dans lesquels le test peut être exécuté).</p><p class=\\'tutoA\\'><b>Sélectionnez Google</b> dans la liste, puis cliquez sur <b>Suivant</b>.</p>', '','') ");
         b.append(",('interactiveTutoStep', '2.step.45', '', 'en', '<h3>Test Case Creation Confirmation</h3><p class=\\'tutoA\\'>Confirm the Test Case creation by clicking on <b>Create</b></p>', '','') ");
@@ -2746,11 +2786,13 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('interactiveTutoStep', '2.step.80', '', 'en', '<h3>Test Case Action</h3><p>Let\\'s create our action!</p><p class=\\'tutoA\\'>Click on <b>Add Action</b> button.</p>', '','') ");
         b.append(",('interactiveTutoStep', '2.step.80', '', 'fr', '<h3>Action de cas de test</h3><p>Créons notre action !</p><p class=\\'tutoA\\'>Cliquez sur le bouton <b>Ajouter une action</b>.</p>', '','') ");
         b.append(",('interactiveTutoStep', '2.step.85', '', 'en', '<h3>Test Case Action</h3><p>Describe and select your desired action from the low code library.</p><p class=\\'tutoA\\'><ul><li>Fill in the <b>Description</b> with <b><i>Open the google url</i></b></li><li><b>Select the Action</b> on the box <b><i>openUrl</i></b></li><li>Fill in the <b>parameter</b> with <b><i>www.google.com</i></b></li></ul></p><p class=\\'tutoA\\'>Click on <b>Next</b> once finished.</p>', '','') ");
+		b.append(",('interactiveTutoStep', '2.step.85', '', 'ru', '<h3>Действие тестового примера</h3><p>Опишите и выберите желаемое действие из библиотеки низкоуровневого кода.</p><p class=\\'tutoA\\'><ul><li>Заполните <b>Описание</b> с <b><i>Открыть интернет-адрес google</i></b></li><li><b>Выбрать действие</b> в поле <b><i>открыть интернет-адрес</i></b></li><li>Заполнить <b>параметр</b> с <b><i>www.google.com</i></b></li></ul></p><p class=\\'tutoA\\'>Нажать на <b>Далее</b> по завершению.</p>', '','') ");
         b.append(",('interactiveTutoStep', '2.step.85', '', 'fr', '<h3>Action de cas de test</h3><p>Décrivez et sélectionnez l\\'action souhaitée dans la bibliothèque d\\'action.</p><p class=\\'tutoA\\'><ul><li>Remplissez la <b>Description</b> avec <b><i>Ouvrir l\\'URL google</i></b></li><li><b>Sélectionnez l\\'action</b> sur la combo <b><i>openUrl</i></b></li><liRemplissez le <b>paramètre</b> avec <b><i>www.google.com</i></b></li></ul></p><p class=\\'tutoA\\'>Cliquez sur <b>Suivant</b> une fois terminé.</p>', '','') ");
         b.append(",('interactiveTutoStep', '2.step.90', '', 'en', '<h3>Test Case Control</h3><p>You are almost there! Let\\'s add one control.</p><p><b>Quick Tip:</b> In every action, you can add or remove actions and controls from your test</p><ul><li>The <b>Blue</b> button <b>Adds an action</b></li><li>The <b>Green</b> button <b>Adds a control</b></li><li>The <b>Red</b> button <b>Removes</b> the action.</li></ul><p class=\\'tutoA\\'>Click on the <b>Green Plus Symbol</b> to Add a control.</p>', '','') ");
         b.append(",('interactiveTutoStep', '2.step.90', '', 'fr', '<h3>Contrôle de cas de test</h3><p>Nous y sommes presque ! Ajoutons maintenant un contrôle.</p><p><b>Astuce : </b>Dans chaque action, vous pouvez ajouter ou supprimer des actions et des contrôles :</p><ul><li>Le bouton <b>Bleu Ajoute une action</b></li><li>Le bouton <b>Vert ajoute un contrôle</b></li><li>Le bouton <b>Rouge supprime</b> l\\'action.</li></ul><p class=\\'tutoA\\'>Cliquez sur le <b>symbole vert +</b> pour ajouter un contrôle.</p>', '','') ");
         b.append(",('interactiveTutoStep', '2.step.95', '', 'en', '<h3>Test Case Control</h3><p>We will now define our Control using the available library.</p><p class=\\'tutoA\\'>Start by:<ul><li>Fill in the <b>Description</b> with <b><i>Verify access to google page</i></b></li><li><b>Select the Control</b> in the box <b>verifyTextInPage</b></li><li><b>Fill in the parameter</b> with <b>Google</b></li></ul></p><p class=\\'tutoA\\'>Click on <b>Next</b> once finished.</p>', '','') ");
-        b.append(",('interactiveTutoStep', '2.step.95', '', 'fr', '<h3>Contrôle de cas de test</h3><p>Nous allons maintenant définir notre Contrôle en utilisant ceux disponibles.</p><p class=\\'tutoA\\'>Par étape :<ul><li>Remplissez la <b>description</b> avec <b><i>Vérifier l\\'accès à la page Google</i></b></li><li><b>Sélectionnez le contrôle verifyTextInPage</b></li><li><b>Remplissez le paramètre</b> avec <b>Google</b></li></ul></p><p class=\\'tutoA\\'>Cliquez sur <b>Suivant</b> une fois terminé.</p>', '','') ");
+        b.append(",('interactiveTutoStep', '2.step.95', '', 'ru', '<h3>Управление тестовым примером</h3><p>Теперь мы определим наш пример используя доступную библиотеку.</p><p class=\\'tutoA\\'>Начать с:<ul><li>Заполнить <b>Описаниеn</b> с <b><i>кПроверить доступ к странице google</i></b></li><li><b>Выбрать действие</b> в поле <b>Проверить текст на странице</b></li><li><b>Заполнить параметр</b> с <b>Google</b></li></ul></p><p class=\\'tutoA\\'>Нажать на <b>Далее</b> по завершению.</p>', '','') ");
+		b.append(",('interactiveTutoStep', '2.step.95', '', 'fr', '<h3>Contrôle de cas de test</h3><p>Nous allons maintenant définir notre Contrôle en utilisant ceux disponibles.</p><p class=\\'tutoA\\'>Par étape :<ul><li>Remplissez la <b>description</b> avec <b><i>Vérifier l\\'accès à la page Google</i></b></li><li><b>Sélectionnez le contrôle verifyTextInPage</b></li><li><b>Remplissez le paramètre</b> avec <b>Google</b></li></ul></p><p class=\\'tutoA\\'>Cliquez sur <b>Suivant</b> une fois terminé.</p>', '','') ");
         b.append(",('interactiveTutoStep', '2.step.100', '', 'en', '<h3>Save Test Case</h3><p>You need to save your test case to keep your changes.</p><p class=\\'tutoA\\'>Click on the <b>Save Test Case</b> button</p>', '','') ");
         b.append(",('interactiveTutoStep', '2.step.100', '', 'fr', '<h3>Enregistrer le cas de test</h3><p>Vous devez enregistrer votre scénario de test pour conserver vos modifications.</p><p class=\\'tutoA\\'>Cliquez sur le bouton <b>Sauvegarder</b></p>', '','') ");
         b.append(",('interactiveTutoStep', '2.step.105', '', 'en', '<h3>Create a Test Tutorial Completed</h3><p>Great job! You just finished the Create a Test Tutorial.</p><p>We hope it has helped you better understand the main steps to manage your tests and test cases and how to add actions and controls.</p><p>You can now try the Run a Test tutorial and enjoy Cerberus Testing!</p><p>Happy Testing!</p><p class=\\'tutoA\\'>Click on <b>Done</b> to leave the tutorial.</p>', '','') ");
