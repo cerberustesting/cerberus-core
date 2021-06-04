@@ -315,6 +315,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
 		b.append(",('deploytype','description','','ru','Описание','',NULL)");
         b.append(",('deploytype','description','','fr','Description','',NULL)");
         b.append(",('host','active','','en','Active','',NULL)");
+		b.append(",('host','active','','ru','Активный','',NULL)");
         b.append(",('host','host','','en','Host','',NULL)");
 		b.append(",('host','host','','ru','Адрес','',NULL)");
         b.append(",('host','port','','en','port','',NULL)");
