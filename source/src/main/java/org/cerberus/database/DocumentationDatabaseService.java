@@ -316,7 +316,9 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('deploytype','description','','fr','Description','',NULL)");
         b.append(",('host','active','','en','Active','',NULL)");
         b.append(",('host','host','','en','Host','',NULL)");
+		b.append(",('host','host','','ru','Адрес','',NULL)");
         b.append(",('host','port','','en','port','',NULL)");
+		b.append(",('host','port','','ru','порт','',NULL)");
         b.append(",('host','secure','','en','secure','',NULL)");
         b.append(",('host','secure','','fr','garantie',NULL,NULL)");
         b.append(",('host','Server','','en','Server','This is used to define different host on different server for resilence purpose. You can use that for PRIMARY and BACKUP access.',NULL)");
