@@ -22,6 +22,7 @@ package org.cerberus.engine.gwt.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
@@ -239,16 +240,18 @@ public class ActionService implements IActionService {
         tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
         // Define Timeout
-        if (testCaseStepActionExecution.getDescription().contains(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)) {
-            Integer newTimeout = Integer.valueOf(testCaseStepActionExecution.getDescription().split(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)[1].split(" ")[0]);
+        HashMap<String, String> optionsMap = robotServerService.getMapFromOptions(testCaseStepActionExecution.getOptions());
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)) {
+            Integer newTimeout = Integer.valueOf(optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
             robotServerService.setOptionsTimeout(tCExecution.getSession(), newTimeout);
         }
-        if (testCaseStepActionExecution.getDescription().contains(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)) {
-            Integer newHighlightElement = Integer.valueOf(testCaseStepActionExecution.getDescription().split(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)[1].split(" ")[0]);
-            robotServerService.setOptionsHightlightElement(tCExecution.getSession(), newHighlightElement);
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)) {
+            LOG.debug("toto set he : " + optionsMap.get(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX));
+            Integer newHighlightElement = Integer.valueOf(optionsMap.get(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX));
+            robotServerService.setOptionsHighlightElement(tCExecution.getSession(), newHighlightElement);
         }
-        if (testCaseStepActionExecution.getDescription().contains(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)) {
-            String minSimilarity = testCaseStepActionExecution.getDescription().split(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)[1].split(" ")[0];
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)) {
+            String minSimilarity = optionsMap.get(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX);
             robotServerService.setOptionsMinSimilarity(tCExecution.getSession(), minSimilarity);
         }
 

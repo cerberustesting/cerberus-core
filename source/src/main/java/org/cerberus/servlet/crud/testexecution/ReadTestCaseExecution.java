@@ -558,13 +558,6 @@ public class ReadTestCaseExecution extends HttpServlet {
         JSONArray bugs = new JSONArray();
         if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
                 && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugs() != null) {
-//            bugId = testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID());
-//            bugId = new StringBuffer("<a href='")
-//                    .append(bugId)
-//                    .append("' target='reportBugID'>")
-//                    .append(testCaseExecution.getTestCaseObj().getBugID())
-//                    .append("</a>")
-//                    .toString();
         } else {
             bugs = testCaseExecution.getTestCaseObj().getBugs();
         }

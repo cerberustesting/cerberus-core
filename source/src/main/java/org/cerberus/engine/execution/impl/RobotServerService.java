@@ -153,9 +153,9 @@ public class RobotServerService implements IRobotServerService {
     private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
 
-    public static final String OPTIONS_TIMEOUT_SYNTAX = "_timeout_=";
-    public static final String OPTIONS_HIGHLIGHTELEMENT_SYNTAX = "_highlightElement_=";
-    public static final String OPTIONS_MINSIMILARITY_SYNTAX = "_minSimilarity_=";
+    public static final String OPTIONS_TIMEOUT_SYNTAX = "timeout";
+    public static final String OPTIONS_HIGHLIGHTELEMENT_SYNTAX = "highlightElement";
+    public static final String OPTIONS_MINSIMILARITY_SYNTAX = "minSimilarity";
 
     @Override
     public void startServer(TestCaseExecution tCExecution) throws CerberusException {
@@ -178,7 +178,7 @@ public class RobotServerService implements IRobotServerService {
              */
             Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout,
                     cerberus_selenium_wait_element, cerberus_sikuli_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout,
-                    cerberus_appium_action_longpress_wait, cerberus_selenium_autoscroll_vertical_offset, cerberus_selenium_autoscroll_horizontal_offset, 
+                    cerberus_appium_action_longpress_wait, cerberus_selenium_autoscroll_vertical_offset, cerberus_selenium_autoscroll_horizontal_offset,
                     cerberus_selenium_highlightElement, cerberus_sikuli_highlightElement;
             boolean cerberus_selenium_autoscroll;
             String cerberus_sikuli_minSimilarity;
@@ -229,13 +229,12 @@ public class RobotServerService implements IRobotServerService {
             session.setCerberus_selenium_highlightElement_default(cerberus_selenium_highlightElement);
             session.setCerberus_sikuli_highlightElement(cerberus_sikuli_highlightElement);
             session.setCerberus_sikuli_highlightElement_default(cerberus_sikuli_highlightElement);
-            
+
             // auto scroll parameters
             session.setCerberus_selenium_autoscroll(cerberus_selenium_autoscroll);
             session.setCerberus_selenium_autoscroll_vertical_offset(cerberus_selenium_autoscroll_vertical_offset);
             session.setCerberus_selenium_autoscroll_horizontal_offset(cerberus_selenium_autoscroll_horizontal_offset);
 
-            
             session.setCerberus_selenium_action_click_timeout(cerberus_selenium_action_click_timeout);
             session.setCerberus_appium_action_longpress_wait(cerberus_appium_action_longpress_wait);
             session.setHost(tCExecution.getSeleniumIP());
@@ -245,7 +244,6 @@ public class RobotServerService implements IRobotServerService {
             session.setNodeHost(tCExecution.getSeleniumIP());
             session.setNodePort(tCExecution.getSeleniumPort());
             session.setConsoleLogs(new JSONArray());
-
 
             tCExecution.setSession(session);
             tCExecution.setRobotProvider(guessRobotProvider(session.getHost()));
@@ -1267,6 +1265,26 @@ public class RobotServerService implements IRobotServerService {
     }
 
     @Override
+    public HashMap<String, String> getMapFromOptions(JSONArray options) {
+        HashMap<String, String> result = new HashMap<>();
+        if (options.length() > 0) {
+            LOG.debug("Converting " + options.toString() + " To Map.");
+            for (int i = 0; i < options.length(); i++) {
+                try {
+                    JSONObject option = options.getJSONObject(i);
+                    if (option.getBoolean("act")) {
+                        result.put(option.getString("option"), option.getString("value"));
+                    }
+                } catch (JSONException ex) {
+                    LOG.error(ex, ex);
+                    return result;
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
     public void setOptionsTimeout(Session session, Integer timeout) {
         if (session != null) {
             LOG.debug("Setting Robot Options timeout to : " + timeout);
@@ -1277,11 +1295,11 @@ public class RobotServerService implements IRobotServerService {
     }
 
     @Override
-    public void setOptionsHightlightElement(Session session, Integer hightlightElement) {
+    public void setOptionsHighlightElement(Session session, Integer highlightElement) {
         if (session != null) {
-            LOG.debug("Setting Robot Option highlightElement to : " + hightlightElement);
-            session.setCerberus_selenium_highlightElement(hightlightElement);
-            session.setCerberus_sikuli_highlightElement(hightlightElement);
+            LOG.debug("Setting Robot Option highlightElement to : " + highlightElement);
+            session.setCerberus_selenium_highlightElement(highlightElement);
+            session.setCerberus_sikuli_highlightElement(highlightElement);
         }
     }
 

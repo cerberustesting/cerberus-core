@@ -51,6 +51,7 @@ public class TestCase {
     private String conditionValue1;
     private String conditionValue2;
     private String conditionValue3;
+    private JSONArray conditionOptions;
     private String type;
     private String origine;
     private String refOrigine;
@@ -153,6 +154,31 @@ public class TestCase {
 
     public void setConditionValue3(String conditionValue3) {
         this.conditionValue3 = conditionValue3;
+    }
+
+    @JsonIgnore
+    public JSONArray getConditionOptions() {
+        return conditionOptions;
+    }
+
+    @JsonIgnore
+    public JSONArray getConditionOptionsActive() {
+        JSONArray res = new JSONArray();
+        for (int i = 0; i < conditionOptions.length(); i++) {
+            try {
+                JSONObject jo = conditionOptions.getJSONObject(i);
+                if (jo.getBoolean("act")) {
+                    res.put(jo);
+                }
+            } catch (JSONException ex) {
+                LOG.error(ex);
+            }
+        }
+        return res;
+    }
+
+    public void setConditionOptions(JSONArray conditionOptions) {
+        this.conditionOptions = conditionOptions;
     }
 
     public String getApplication() {
@@ -527,6 +553,7 @@ public class TestCase {
             testCaseJson.put("conditionValue1", this.getConditionValue1());
             testCaseJson.put("conditionValue2", this.getConditionValue2());
             testCaseJson.put("conditionValue3", this.getConditionValue3());
+            testCaseJson.put("conditionOptions", this.getConditionOptions());
             testCaseJson.put("userAgent", this.getUserAgent());
             testCaseJson.put("screenSize", this.getScreenSize());
             testCaseJson.put("bugs", this.getBugs());

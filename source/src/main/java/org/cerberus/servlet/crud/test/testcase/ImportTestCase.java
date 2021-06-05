@@ -118,6 +118,8 @@ public class ImportTestCase extends HttpServlet {
                             }
                             JSONArray bugs = tcJson.getJSONArray("bugs");
                             tcJson.remove("bugs");
+                            JSONArray condOpts = tcJson.getJSONArray("conditionOptions");
+                            tcJson.remove("conditionOptions");
 
                             if ("2".equalsIgnoreCase(importOption)) {
                                 String targetTestcase = testcaseService.getMaxNumberTestCase(tcJson.getString("test"));
@@ -128,6 +130,7 @@ public class ImportTestCase extends HttpServlet {
 
                             TestCase tcInfo = mapper.readValue(tcJson.toString(), TestCase.class);
                             tcInfo.setBugs(bugs);
+                            tcInfo.setConditionOptions(condOpts);
                             try {
                                 testcaseService.importWithDependency(tcInfo);
 

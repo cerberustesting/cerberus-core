@@ -74,6 +74,15 @@ public class TestCaseStepExecution {
     private String libraryStepTest;
     private String libraryStepTestcase;
     private int useStepTestCaseStep;
+    private JSONArray conditionOptions;
+
+    public JSONArray getConditionOptions() {
+        return conditionOptions;
+    }
+
+    public void setConditionOptions(JSONArray conditionOptions) {
+        this.conditionOptions = conditionOptions;
+    }
 
     public List<TestCaseExecutionFile> getFileList() {
         return fileList;

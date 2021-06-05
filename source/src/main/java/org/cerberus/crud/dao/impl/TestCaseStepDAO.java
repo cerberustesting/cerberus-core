@@ -44,7 +44,9 @@ import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.cerberus.crud.factory.IFactoryTestCase;
+import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
+import org.json.JSONArray;
 
 /**
  * {Insert class description here}
@@ -425,7 +427,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         int s = resultSet.getInt("libraryStepStepId");
                         int sort = resultSet.getInt("sort");
                         String description = resultSet.getString("description");
-                        list.add(factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, null, description, false, null, null, 0, false, false, null, null, null, null));
+                        list.add(factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, null, null, description, false, null, null, 0, false, false, null, null, null, null));
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -482,7 +484,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         int s = resultSet.getInt("stepId");
                         int sort = resultSet.getInt("sort");
                         String description = resultSet.getString("description");
-                        TestCaseStep tcs = factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, null, description, false, null, null, 0, false, false, null, null, null, null);
+                        TestCaseStep tcs = factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, null, null, description, false, null, null, 0, false, false, null, null, null, null);
                         TestCase tcObj = factoryTestCase.create(t, tc, tcdesc);
                         tcs.setTestcaseObj(tcObj);
                         list.add(tcs);
@@ -558,7 +560,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         String tcdesc = resultSet.getString("tcdesc");
                         TestCase tcToAdd = factoryTestCase.create(t, tc, tcdesc);
                         tcToAdd.setApplication(resultSet.getString("tcapp"));
-                        TestCaseStep tcsToAdd = factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, null, description, false, null, null, 0, false, false, null, null, null, null);
+                        TestCaseStep tcsToAdd = factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, null, null, description, false, null, null, 0, false, false, null, null, null, null);
                         tcsToAdd.setTestcaseObj(tcToAdd);
                         list.add(tcsToAdd);
                     }
@@ -637,7 +639,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         int s = resultSet.getInt("stepId");
                         int sort = resultSet.getInt("sort");
                         String description = resultSet.getString("description");
-                        list.add(factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, null, description, false, null, null, 0, false, false, null, null, null, null));
+                        list.add(factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, null, null, description, false, null, null, 0, false, false, null, null, null, null));
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -940,6 +942,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         String conditionValue1 = resultSet.getString("conditionValue1") == null ? "" : resultSet.getString("conditionValue1");
         String conditionValue2 = resultSet.getString("conditionValue2") == null ? "" : resultSet.getString("conditionValue2");
         String conditionValue3 = resultSet.getString("conditionValue3") == null ? "" : resultSet.getString("conditionValue3");
+        JSONArray conditionOptions = SqlUtil.getJSONArrayFromColumn(resultSet, "conditionOptions");
         String description = resultSet.getString("description") == null ? "" : resultSet.getString("description");
         boolean isUsingLibraryStep = resultSet.getBoolean("isUsingLibraryStep");
         String libraryStepTest = resultSet.getString("libraryStepTest") == null ? "" : resultSet.getString("libraryStepTest");
@@ -952,7 +955,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         String usrModif = resultSet.getString("UsrModif");
         Timestamp dateModif = resultSet.getTimestamp("DateModif");
 
-        TestCaseStep tcs = factoryTestCaseStep.create(test, testcase, stepId, sort, loop, conditionOperator, conditionValue1, conditionValue2, conditionValue3, description, isUsingLibraryStep, libraryStepTest, libraryStepTestcase, libraryStepStepId,
+        TestCaseStep tcs = factoryTestCaseStep.create(test, testcase, stepId, sort, loop, conditionOperator, conditionValue1, conditionValue2, conditionValue3, conditionOptions, description, isUsingLibraryStep, libraryStepTest, libraryStepTestcase, libraryStepStepId,
                 isLibraryStep, isExecutionForced, usrCreated, dateCreated, usrModif, dateModif);
 
         LOG.debug(tcs.toJson());

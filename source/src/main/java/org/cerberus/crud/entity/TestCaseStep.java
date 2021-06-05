@@ -19,13 +19,13 @@
  */
 package org.cerberus.crud.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.sql.Timestamp;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
-import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,6 +43,7 @@ public class TestCaseStep {
     private String conditionValue1;
     private String conditionValue2;
     private String conditionValue3;
+    private JSONArray conditionOptions;
     private String description;
     private boolean isUsingLibraryStep;  //  true if the stepId use a stepId from another test
     private String libraryStepTest; //  The test of the used stepId
@@ -72,6 +73,8 @@ public class TestCaseStep {
     public static final String LOOP_DOWHILECONDITIONFALSE = "doWhileConditionFalse";
     public static final String LOOP_WHILECONDITIONTRUEDO = "whileConditionTrueDo";
     public static final String LOOP_WHILECONDITIONFALSEDO = "whileConditionFalseDo";
+
+    private static final Logger LOG = LogManager.getLogger(TestCaseStep.class);
 
     public boolean isExecutionForced() {
         return isExecutionForced;
@@ -257,6 +260,31 @@ public class TestCaseStep {
         this.conditionValue3 = conditionValue3;
     }
 
+    @JsonIgnore
+    public JSONArray getConditionOptions() {
+        return conditionOptions;
+    }
+
+    @JsonIgnore
+    public JSONArray getConditionOptionsActive() {
+        JSONArray res = new JSONArray();
+        for (int i = 0; i < conditionOptions.length(); i++) {
+            try {
+                JSONObject jo = conditionOptions.getJSONObject(i);
+                if (jo.getBoolean("act")) {
+                    res.put(jo);
+                }
+            } catch (JSONException ex) {
+                LOG.error(ex);
+            }
+        }
+        return res;
+    }
+
+    public void setConditionOptions(JSONArray conditionOptions) {
+        this.conditionOptions = conditionOptions;
+    }
+
     public void setStepId(int stepId) {
         this.stepId = stepId;
     }
@@ -395,6 +423,7 @@ public class TestCaseStep {
             stepJson.put("conditionValue1", this.getConditionValue1());
             stepJson.put("conditionValue2", this.getConditionValue2());
             stepJson.put("conditionValue3", this.getConditionValue3());
+            stepJson.put("conditionOptions", this.getConditionOptions());
             stepJson.put("isUsingLibraryStep", this.isUsingLibraryStep());
             stepJson.put("isLibraryStep", this.isLibraryStep());
             stepJson.put("libraryStepTest", this.getLibraryStepTest());
@@ -419,8 +448,6 @@ public class TestCaseStep {
             stepJson.put("actions", stepsJson);
 
         } catch (JSONException ex) {
-            Logger LOG = LogManager.getLogger(TestCaseStep.class
-            );
             LOG.warn(ex);
         }
         return stepJson;

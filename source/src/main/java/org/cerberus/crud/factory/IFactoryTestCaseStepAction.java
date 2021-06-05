@@ -21,16 +21,65 @@ package org.cerberus.crud.factory;
 
 import java.sql.Timestamp;
 import org.cerberus.crud.entity.TestCaseStepAction;
+import org.json.JSONArray;
 
 /**
  * @author bcivel
  */
 public interface IFactoryTestCaseStepAction {
 
-    TestCaseStepAction create(String test, String testcase, int stepId, int actionId, int sort, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3,
-            String action, String value1, String value2, String value3, boolean isFatal, String description, String screenshotFilename);
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @param actionId
+     * @param sort
+     * @param conditionOperator
+     * @param conditionValue1
+     * @param conditionValue2
+     * @param conditionValue3
+     * @param conditionOptions
+     * @param action
+     * @param value1
+     * @param value2
+     * @param value3
+     * @param options
+     * @param isFatal
+     * @param description
+     * @param screenshotFilename
+     * @return
+     */
+    TestCaseStepAction create(String test, String testcase, int stepId, int actionId, int sort, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions,
+            String action, String value1, String value2, String value3, JSONArray options, boolean isFatal, String description, String screenshotFilename);
 
-    TestCaseStepAction create(String test, String testcase, int stepId, int actionId, int sort, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3,
-            String action, String value1, String value2, String value3, boolean isFatal, String description, String screenshotFilename, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @param actionId
+     * @param sort
+     * @param conditionOperator
+     * @param conditionValue1
+     * @param conditionValue2
+     * @param conditionValue3
+     * @param conditionOptions
+     * @param action
+     * @param value1
+     * @param value2
+     * @param value3
+     * @param options
+     * @param isFatal
+     * @param description
+     * @param screenshotFilename
+     * @param usrCreated
+     * @param dateCreated
+     * @param usrModif
+     * @param dateModif
+     * @return
+     */
+    TestCaseStepAction create(String test, String testcase, int stepId, int actionId, int sort, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions,
+            String action, String value1, String value2, String value3, JSONArray options, boolean isFatal, String description, String screenshotFilename, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
 }

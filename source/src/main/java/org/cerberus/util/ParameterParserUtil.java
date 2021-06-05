@@ -32,6 +32,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
@@ -159,6 +161,40 @@ public final class ParameterParserUtil {
         } catch (UnsupportedEncodingException e) {
             return defaultVal;
         }
+    }
+
+    /**
+     * Parses and decodes and Sanitize the given inParam
+     *
+     * @see #parseStringParam(String, String)
+     *
+     * @param inParam
+     * @param defaultVal
+     * @param charset
+     * @return
+     */
+    public static JSONArray parseJSONArrayParamAndDecode(String inParam, JSONArray defaultVal, String charset) {
+
+        if (StringUtil.isNullOrEmpty(inParam)) {
+            return defaultVal;
+        }
+
+        JSONArray condOpts = new JSONArray();
+
+        try {
+
+            String condOpt = URLDecoder.decode(inParam, charset);
+
+            try {
+                condOpts = new JSONArray(condOpt);
+            } catch (JSONException ex) {
+                LOG.error("Could not convert '" + inParam + "' to JSONArray.", ex);
+            }
+
+        } catch (UnsupportedEncodingException e) {
+            return defaultVal;
+        }
+        return condOpts;
     }
 
     /**

@@ -22,6 +22,7 @@ package org.cerberus.crud.factory.impl;
 import java.sql.Timestamp;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControl;
+import org.json.JSONArray;
 import org.springframework.stereotype.Service;
 
 /**
@@ -31,8 +32,8 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepActionControl implements IFactoryTestCaseStepActionControl {
 
     @Override
-    public TestCaseStepActionControl create(String test, String testcase, int stepId, int actionId, int controlId, int sort, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, String control, String value1,
-            String value2, String value3, boolean isFatal, String description, String screenshotFilename) {
+    public TestCaseStepActionControl create(String test, String testcase, int stepId, int actionId, int controlId, int sort, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions, String control, String value1,
+            String value2, String value3, JSONArray options, boolean isFatal, String description, String screenshotFilename) {
         TestCaseStepActionControl testCaseStepActionControl = new TestCaseStepActionControl();
         testCaseStepActionControl.setTest(test);
         testCaseStepActionControl.setTestcase(testcase);
@@ -44,10 +45,12 @@ public class FactoryTestCaseStepActionControl implements IFactoryTestCaseStepAct
         testCaseStepActionControl.setConditionValue1(conditionValue1);
         testCaseStepActionControl.setConditionValue2(conditionValue2);
         testCaseStepActionControl.setConditionValue3(conditionValue3);
+        testCaseStepActionControl.setConditionOptions(conditionOptions);
         testCaseStepActionControl.setControl(control);
         testCaseStepActionControl.setValue1(value1);
         testCaseStepActionControl.setValue2(value2);
         testCaseStepActionControl.setValue3(value3);
+        testCaseStepActionControl.setOptions(options);
         testCaseStepActionControl.setFatal(isFatal);
         testCaseStepActionControl.setDescription(description);
         testCaseStepActionControl.setScreenshotFilename(screenshotFilename);
@@ -56,8 +59,8 @@ public class FactoryTestCaseStepActionControl implements IFactoryTestCaseStepAct
     }
 
     @Override
-    public TestCaseStepActionControl create(String test, String testcase, int stepId, int actionId, int controlId, int sort, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, String control, String value1,
-            String value2, String value3, boolean isFatal, String description, String screenshotFilename, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
+    public TestCaseStepActionControl create(String test, String testcase, int stepId, int actionId, int controlId, int sort, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions, String control, String value1,
+            String value2, String value3, JSONArray options, boolean isFatal, String description, String screenshotFilename, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         TestCaseStepActionControl testCaseStepActionControl = new TestCaseStepActionControl();
         testCaseStepActionControl.setTest(test);
         testCaseStepActionControl.setTestcase(testcase);
@@ -69,10 +72,12 @@ public class FactoryTestCaseStepActionControl implements IFactoryTestCaseStepAct
         testCaseStepActionControl.setConditionValue1(conditionValue1);
         testCaseStepActionControl.setConditionValue2(conditionValue2);
         testCaseStepActionControl.setConditionValue3(conditionValue3);
+        testCaseStepActionControl.setConditionOptions(conditionOptions);
         testCaseStepActionControl.setControl(control);
         testCaseStepActionControl.setValue1(value1);
         testCaseStepActionControl.setValue2(value2);
         testCaseStepActionControl.setValue3(value3);
+        testCaseStepActionControl.setOptions(options);
         testCaseStepActionControl.setFatal(isFatal);
         testCaseStepActionControl.setDescription(description);
         testCaseStepActionControl.setScreenshotFilename(screenshotFilename);

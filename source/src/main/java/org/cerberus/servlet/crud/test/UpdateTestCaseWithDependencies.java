@@ -52,6 +52,7 @@ import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -295,7 +296,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
      * Get the highest controlId number from the given controls
      *
      * @param controls a collection of controls from which get the highest
- controlId number
+     * controlId number
      * @return the highest controlId number from the given controls
      */
     private int getMaxControlNumber(Collection<TestCaseStepActionControl> controls) {
@@ -312,7 +313,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
     private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(TestCase testcase, JSONArray properties) throws JSONException {
         List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList<>();
-       
+
         for (int i = 0; i < properties.length(); i++) {
             JSONObject propJson = properties.getJSONObject(i);
             boolean delete = propJson.getBoolean("toDelete");
@@ -357,6 +358,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionValue1 = step.getString("conditionValue1");
             String conditionValue2 = step.getString("conditionValue2");
             String conditionValue3 = step.getString("conditionValue3");
+            JSONArray conditionOptions = ParameterParserUtil.parseJSONArrayParamAndDecode("conditionOptions", new JSONArray(), "UTF8");
             String description = step.getString("description");
             boolean isUsingLibraryStep = step.getBoolean("isUsingLibraryStep");
             String libraryStepTest = step.getString("libraryStepTest");
@@ -367,7 +369,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             JSONArray stepActions = step.getJSONArray("actions");
 
             if (!delete) {
-                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepId, sort, loop, conditionOperator, conditionValue1, conditionValue2, conditionValue3, description, isUsingLibraryStep, libraryStepTest,
+                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepId, sort, loop, conditionOperator, conditionValue1, conditionValue2, conditionValue3, conditionOptions, description, isUsingLibraryStep, libraryStepTest,
                         libraryStepTestCase, libraryStepStepId, isLibraryStep, isExecutionForced, null, null, request.getUserPrincipal().getName(), null);
 
                 if (!isUsingLibraryStep) {
@@ -404,17 +406,19 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionValue1 = tcsaJson.getString("conditionValue1");
             String conditionValue2 = tcsaJson.getString("conditionValue2");
             String conditionValue3 = tcsaJson.getString("conditionValue3");
+            JSONArray condOptionsArray = tcsaJson.getJSONArray("conditionOptions");
             String action = tcsaJson.getString("action");
             String value1 = tcsaJson.getString("object");
             String value2 = tcsaJson.getString("property");
             String value3 = tcsaJson.getString("value3");
+            JSONArray optionsArray = tcsaJson.getJSONArray("options");
             boolean isFatal = tcsaJson.getBoolean("isFatal");
             String description = tcsaJson.getString("description");
             String screenshot = tcsaJson.getString("screenshotFileName");
             JSONArray controlArray = tcsaJson.getJSONArray("controls");
 
             if (!delete) {
-                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testcase, stepId, actionId, sort, conditionOperator, conditionValue1, conditionValue2, conditionValue3, action, value1, value2, value3, isFatal, description, screenshot);
+                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testcase, stepId, actionId, sort, conditionOperator, conditionValue1, conditionValue2, conditionValue3, condOptionsArray, action, value1, value2, value3, optionsArray, isFatal, description, screenshot);
                 tcsa.setControls(getTestCaseStepActionControlsFromParameter(request, appContext, test, testcase, controlArray));
                 testCaseStepAction.add(tcsa);
             }
@@ -438,16 +442,18 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionValue1 = controlJson.isNull("conditionValue1") ? "" : controlJson.getString("conditionValue1");
             String conditionValue2 = controlJson.isNull("conditionValue2") ? "" : controlJson.getString("conditionValue2");
             String conditionValue3 = controlJson.isNull("conditionValue3") ? "" : controlJson.getString("conditionValue3");
+            JSONArray conditionOptions = ParameterParserUtil.parseJSONArrayParamAndDecode("conditionOptions", new JSONArray(), "UTF8");
             //String type = controlJson.getString("objType");
             String controlValue = controlJson.getString("control");
             String value1 = controlJson.getString("value1");
             String value2 = controlJson.getString("value2");
             String value3 = controlJson.isNull("value3") ? "" : controlJson.getString("value3");
+            JSONArray options = ParameterParserUtil.parseJSONArrayParamAndDecode("options", new JSONArray(), "UTF8");
             boolean isFatal = controlJson.getBoolean("isFatal");
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");
             if (!delete) {
-                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, stepId, actionId, controlId, sort, conditionOperator, conditionValue1, conditionValue2, conditionValue3, controlValue, value1, value2, value3, isFatal, description, screenshot));
+                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, stepId, actionId, controlId, sort, conditionOperator, conditionValue1, conditionValue2, conditionValue3, conditionOptions, controlValue, value1, value2, value3, options, isFatal, description, screenshot));
             }
         }
         return testCaseStepActionControl;
@@ -468,9 +474,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
         }
     }
 
@@ -488,9 +494,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
         }
     }
 

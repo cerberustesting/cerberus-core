@@ -114,6 +114,7 @@ public class TestCaseExecution {
     private Integer numberOfRetries;
     private boolean synchroneous;
     private String timeout;
+    private JSONArray conditionOptions;
     // Objects.
     private TestCaseExecutionQueue testCaseExecutionQueue;
     private Application applicationObj;
@@ -207,6 +208,14 @@ public class TestCaseExecution {
     public static final String ROBOTPROVIDER_KOBITON = "KOBITON";
     public static final String ROBOTPROVIDER_LAMBDATEST = "LAMBDATEST";
     public static final String ROBOTPROVIDER_NONE = "NONE";
+
+    public JSONArray getConditionOptions() {
+        return conditionOptions;
+    }
+
+    public void setConditionOptions(JSONArray conditionOptions) {
+        this.conditionOptions = conditionOptions;
+    }
 
     public String getRobotProviderSessionID() {
         return robotProviderSessionID;

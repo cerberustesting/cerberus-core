@@ -175,11 +175,11 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                                 newTC.setStatus("WORKING");
                                 newTC.setUsrCreated(userCreated);
 
-                                for (Invariant country : countries) {
+                                countries.forEach(country -> {
                                     newTC.appendTestCaseCountries(testcaseCountryFactory.create(targetFolder, targetTestcase, country.getValue()));
-                                }
+                                });
                                 // Step
-                                TestCaseStep newStep = testcaseStepFactory.create(targetFolder, targetTestcase, 1, 1, TestCaseStep.LOOP_ONCEIFCONDITIONTRUE, "always", "", "", "", "", false, null, null, 0, false, false, userCreated, null, null, null);
+                                TestCaseStep newStep = testcaseStepFactory.create(targetFolder, targetTestcase, 1, 1, TestCaseStep.LOOP_ONCEIFCONDITIONTRUE, "always", "", "", "", new JSONArray(), "", false, null, null, 0, false, false, userCreated, null, null, null);
 
                                 // Action
                                 for (int j = 0; j < test.getJSONArray("commands").length(); j++) {
@@ -294,7 +294,7 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                     }
             }
             if (action != null) {
-                newAction = testcaseStepActionFactory.create(targetFolder, targetTestcase, 1, i, i, TestCaseStepAction.CONDITIONOPERATOR_ALWAYS, "", "", "", action, value1, value2, "", false, description, null);
+                newAction = testcaseStepActionFactory.create(targetFolder, targetTestcase, 1, i, i, TestCaseStepAction.CONDITIONOPERATOR_ALWAYS, "", "", "", new JSONArray(), action, value1, value2, "", new JSONArray(), false, description, null);
             }
         } catch (JSONException ex) {
             LOG.error(ex, ex);

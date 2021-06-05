@@ -169,6 +169,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 tCExecution.setConditionVal3Init(tCase.getConditionValue3());
                 tCExecution.setTestCaseVersion(tCase.getVersion());
                 tCExecution.setTestCasePriority(tCase.getPriority());
+                tCExecution.setConditionOptions(tCase.getConditionOptionsActive());
             } else {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
             }

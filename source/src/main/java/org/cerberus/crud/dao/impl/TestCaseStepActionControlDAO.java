@@ -39,8 +39,10 @@ import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControl;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.SqlUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -123,7 +125,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             preStat.setInt(4, actionId);
 
             try (ResultSet resultSet = preStat.executeQuery();) {
-                list = new ArrayList<TestCaseStepActionControl>();
+                list = new ArrayList<>();
 
                 while (resultSet.next()) {
                     list.add(loadFromResultSet(resultSet));
@@ -142,8 +144,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testcasestepactioncontrol (`test`, `testcase`, `stepId`, `actionId`, `controlId`, `sort`, ");
-        query.append("`conditionOperator`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `control`, `value1`, `value2`, `value3`, `isFatal`, `Description`, `screenshotfilename`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("`conditionOperator`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `conditionOptions`, `control`, `value1`, `value2`, `value3`, `options`, `isFatal`, `Description`, `screenshotfilename`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -164,10 +166,12 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             preStat.setString(i++, testCaseStepActionControl.getConditionValue1());
             preStat.setString(i++, testCaseStepActionControl.getConditionValue2());
             preStat.setString(i++, testCaseStepActionControl.getConditionValue3());
+            preStat.setString(i++, testCaseStepActionControl.getConditionOptions().toString());
             preStat.setString(i++, testCaseStepActionControl.getControl());
             preStat.setString(i++, testCaseStepActionControl.getValue1());
             preStat.setString(i++, testCaseStepActionControl.getValue2());
             preStat.setString(i++, testCaseStepActionControl.getValue3());
+            preStat.setString(i++, testCaseStepActionControl.getOptions().toString());
             preStat.setBoolean(i++, testCaseStepActionControl.isFatal());
             preStat.setString(i++, testCaseStepActionControl.getDescription());
             preStat.setString(i++, testCaseStepActionControl.getScreenshotFilename());
@@ -198,7 +202,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             preStat.setInt(3, stepId);
 
             try (ResultSet resultSet = preStat.executeQuery();) {
-                list = new ArrayList<TestCaseStepActionControl>();
+                list = new ArrayList<>();
 
                 while (resultSet.next()) {
                     list.add(loadFromResultSet(resultSet));
@@ -227,10 +231,12 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                 .append("`conditionValue1` = ?, ")
                 .append("`conditionValue2` = ?, ")
                 .append("`conditionValue3` = ?, ")
+                .append("`conditionOptions` = ?, ")
                 .append("`Control` = ?, ")
                 .append("`Value1` = ?, ")
                 .append("`Value2` = ?, ")
                 .append("`Value3` = ?, ")
+                .append("`Options` = ?, ")
                 .append("`Description` = ?, ")
                 .append("`IsFatal` = ?, ")
                 .append("`screenshotFilename` = ?, ")
@@ -258,10 +264,12 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             preStat.setString(i++, testCaseStepActionControl.getConditionValue1());
             preStat.setString(i++, testCaseStepActionControl.getConditionValue2());
             preStat.setString(i++, testCaseStepActionControl.getConditionValue3());
+            preStat.setString(i++, testCaseStepActionControl.getConditionOptions().toString());
             preStat.setString(i++, testCaseStepActionControl.getControl());
             preStat.setString(i++, testCaseStepActionControl.getValue1());
             preStat.setString(i++, testCaseStepActionControl.getValue2());
             preStat.setString(i++, testCaseStepActionControl.getValue3());
+            preStat.setString(i++, testCaseStepActionControl.getOptions().toString());
             preStat.setString(i++, testCaseStepActionControl.getDescription());
             preStat.setBoolean(i++, testCaseStepActionControl.isFatal());
             preStat.setString(i++, testCaseStepActionControl.getScreenshotFilename());
@@ -330,7 +338,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             preStat.setString(2, testcase);
 
             try (ResultSet resultSet = preStat.executeQuery();) {
-                list = new ArrayList<TestCaseStepActionControl>();
+                list = new ArrayList<>();
 
                 while (resultSet.next()) {
                     list.add(loadFromResultSet(resultSet));
@@ -477,9 +485,9 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testcasestepactioncontrol (`test`, `testcase`, `stepId`, `actionId`, `controlId`, `sort`, ");
-        query.append("`conditionOperator`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `control`, ");
-        query.append("`value1`, `value2`, `value3`, `isFatal`, `Description`, `screenshotfilename`, `usrCreated`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("`conditionOperator`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `conditionOptions`, `control`, ");
+        query.append("`value1`, `value2`, `value3`, `Options`, `isFatal`, `Description`, `screenshotfilename`, `usrCreated`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -500,10 +508,12 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             preStat.setString(i++, testCaseStepActionControl.getConditionValue1());
             preStat.setString(i++, testCaseStepActionControl.getConditionValue2());
             preStat.setString(i++, testCaseStepActionControl.getConditionValue3());
+            preStat.setString(i++, testCaseStepActionControl.getConditionOptions().toString());
             preStat.setString(i++, testCaseStepActionControl.getControl());
             preStat.setString(i++, testCaseStepActionControl.getValue1());
             preStat.setString(i++, testCaseStepActionControl.getValue2());
             preStat.setString(i++, testCaseStepActionControl.getValue3());
+            preStat.setString(i++, testCaseStepActionControl.getOptions().toString());
             preStat.setBoolean(i++, testCaseStepActionControl.isFatal());
             preStat.setString(i++, testCaseStepActionControl.getDescription());
             preStat.setString(i++, testCaseStepActionControl.getScreenshotFilename());
@@ -535,11 +545,13 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         String conditionValue1 = resultSet.getString("conditionValue1");
         String conditionValue2 = resultSet.getString("conditionValue2");
         String conditionValue3 = resultSet.getString("conditionValue3");
+        JSONArray conditionOptions = SqlUtil.getJSONArrayFromColumn(resultSet, "conditionOptions");
         String control = resultSet.getString("Control");
         boolean isFatal = resultSet.getBoolean("isFatal");
         String value1 = resultSet.getString("Value1");
         String value2 = resultSet.getString("Value2");
         String value3 = resultSet.getString("Value3");
+        JSONArray options = SqlUtil.getJSONArrayFromColumn(resultSet, "options");
         String description = resultSet.getString("Description");
         String screenshotFilename = resultSet.getString("screenshotFilename");
         String usrCreated = resultSet.getString("UsrCreated");
@@ -547,6 +559,6 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         String usrModif = resultSet.getString("UsrModif");
         Timestamp dateModif = resultSet.getTimestamp("DateModif");
 
-        return factoryTestCaseStepActionControl.create(test, testcase, stepId, actionId, controlId, sort, conditionOperator, conditionValue1, conditionValue2, conditionValue3, control, value1, value2, value3, isFatal, description, screenshotFilename, usrCreated, dateCreated, usrModif, dateModif);
+        return factoryTestCaseStepActionControl.create(test, testcase, stepId, actionId, controlId, sort, conditionOperator, conditionValue1, conditionValue2, conditionValue3, conditionOptions, control, value1, value2, value3, options, isFatal, description, screenshotFilename, usrCreated, dateCreated, usrModif, dateModif);
     }
 }

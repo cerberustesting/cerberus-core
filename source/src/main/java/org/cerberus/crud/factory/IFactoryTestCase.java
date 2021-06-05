@@ -33,99 +33,101 @@ import org.json.JSONArray;
  */
 public interface IFactoryTestCase {
 
-/**
- * 
- * @param test
- * @param testCase
- * @param origine
- * @param refOrigine
- * @param usrCreated
- * @param implementer
- * @param executor
- * @param usrModif
- * @param application
- * @param isActiveQA
- * @param isActiveUAT
- * @param isActivePROD
- * @param priority
- * @param type
- * @param status
- * @param description
- * @param detailedDescription
- * @param isActive
- * @param conditionOperator
- * @param conditionValue1
- * @param conditionValue2
- * @param conditionValue3
- * @param fromMajor
- * @param fromMinor
- * @param toMajor
- * @param toMinor
- * @param lastExecutionStatus
- * @param bugs
- * @param targetMajor
- * @param targetMinor
- * @param comment
- * @param userAgent
- * @param screenSize
- * @param testCaseCountry
- * @param testCaseCountryProperties
- * @param testCaseStep
- * @return 
- */
-    TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, 
-            String implementer, String executor, String usrModif, String application, boolean isActiveQA, boolean isActiveUAT, 
-            boolean isActivePROD, int priority, String type, String status, String description, String detailedDescription, 
-            boolean isActive, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param origine
+     * @param refOrigine
+     * @param usrCreated
+     * @param implementer
+     * @param executor
+     * @param usrModif
+     * @param application
+     * @param isActiveQA
+     * @param isActiveUAT
+     * @param isActivePROD
+     * @param priority
+     * @param type
+     * @param status
+     * @param description
+     * @param detailedDescription
+     * @param isActive
+     * @param conditionOperator
+     * @param conditionValue1
+     * @param conditionValue2
+     * @param conditionValue3
+     * @param conditionOptions
+     * @param fromMajor
+     * @param fromMinor
+     * @param toMajor
+     * @param toMinor
+     * @param lastExecutionStatus
+     * @param bugs
+     * @param targetMajor
+     * @param targetMinor
+     * @param comment
+     * @param userAgent
+     * @param screenSize
+     * @param testCaseCountry
+     * @param testCaseCountryProperties
+     * @param testCaseStep
+     * @return
+     */
+    TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
+            String implementer, String executor, String usrModif, String application, boolean isActiveQA, boolean isActiveUAT,
+            boolean isActivePROD, int priority, String type, String status, String description, String detailedDescription,
+            boolean isActive, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions,
             String fromMajor, String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugs,
-            String targetMajor, String targetMinor, String comment, String userAgent, String screenSize, 
-            List<TestCaseCountry> testCaseCountry, List<TestCaseCountryProperties> testCaseCountryProperties, 
+            String targetMajor, String targetMinor, String comment, String userAgent, String screenSize,
+            List<TestCaseCountry> testCaseCountry, List<TestCaseCountryProperties> testCaseCountryProperties,
             List<TestCaseStep> testCaseStep);
 
-/**
- * 
- * @param test
- * @param testCase
- * @param origine
- * @param refOrigine
- * @param usrCreated
- * @param implementer
- * @param executor
- * @param usrModif
- * @param application
- * @param isActiveQA
- * @param isActiveUAT
- * @param isActivePROD
- * @param priority
- * @param type
- * @param status
- * @param description
- * @param detailedDescription
- * @param isActive
- * @param conditionOperator
- * @param conditionValue1
- * @param conditionValue2
- * @param conditionValue3
- * @param fromMajor
- * @param fromMinor
- * @param toMajor
- * @param toMinor
- * @param lastExecutionStatus
- * @param bugs
- * @param targetMajor
- * @param targetMinor
- * @param comment
- * @param dateCreated
- * @param userAgent
- * @param screenSize
- * @param dateModif
- * @param version
- * @return 
- */
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param origine
+     * @param refOrigine
+     * @param usrCreated
+     * @param implementer
+     * @param executor
+     * @param usrModif
+     * @param application
+     * @param isActiveQA
+     * @param isActiveUAT
+     * @param isActivePROD
+     * @param priority
+     * @param type
+     * @param status
+     * @param description
+     * @param detailedDescription
+     * @param isActive
+     * @param conditionOperator
+     * @param conditionValue1
+     * @param conditionValue2
+     * @param conditionValue3
+     * @param conditionOptions
+     * @param fromMajor
+     * @param fromMinor
+     * @param toMajor
+     * @param toMinor
+     * @param lastExecutionStatus
+     * @param bugs
+     * @param targetMajor
+     * @param targetMinor
+     * @param comment
+     * @param dateCreated
+     * @param userAgent
+     * @param screenSize
+     * @param dateModif
+     * @param version
+     * @return
+     */
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
             String implementer, String executor, String usrModif, String application,
             boolean isActiveQA, boolean isActiveUAT, boolean isActivePROD, int priority, String type, String status,
-            String description, String detailedDescription, boolean isActive, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, String fromMajor,
+            String description, String detailedDescription, boolean isActive, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions, String fromMajor,
             String fromMinor, String toMajor, String toMinor, String lastExecutionStatus, JSONArray bugs,
             String targetMajor, String targetMinor, String comment, Timestamp dateCreated, String userAgent, String screenSize, Timestamp dateModif, int version);
 
