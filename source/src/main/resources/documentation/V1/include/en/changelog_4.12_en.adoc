@@ -18,7 +18,8 @@
 * New public servlet for getting campaign execution details /TagDetails. #2204
 * Added Step number in testcase script page. (Thanks @vitoo)
 * Executor checks before execution starts now timeout after 15 seconds (in stead of 2 minutes).
-* Support for highlighting selenium element using new parameter 'cerberus_selenium_highlightElement'
+* Support for highlighting selenium element using new parameter 'cerberus_selenium_highlightElement'.
+* Direct access to Last seen Executions, Testcases and Campaign from user menu. 
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

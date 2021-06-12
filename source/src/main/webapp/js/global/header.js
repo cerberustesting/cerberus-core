@@ -298,12 +298,13 @@ function displayHeaderLabel(doc) {
                 }
                 i++;
             }
-            aL = aL + "Logout.jsp"
+            aL = aL + "Logout.jsp";
             $("#menuLogout").attr("href", user.menu.logoutLink.replace('%LOGOUTURL%', encodeURIComponent(aL)));
             $("#menuLogout").attr("style", "display: block;");
-
         }
 
+        // Refresh History Menu
+        refreshHistoryMenu();
 
         // System menu
 //        var systems = getSystem();
@@ -342,6 +343,39 @@ function displayHeaderLabel(doc) {
         }
         $("#MyLang option[value=" + user.language + "]").attr("selected", "selected");
 
+    }
+}
+
+function refreshHistoryMenu() {
+    let entryList = localStorage.getItem("historyTestcases");
+    entryList = JSON.parse(entryList);
+
+    $(".histo").remove();
+
+    if (entryList !== null && entryList.length > 0) {
+        $("#userMenu").append("<li class='menuSeparator histo'><span>Last Seen Testcases</span></li>");
+        for (var item in entryList) {
+            let newitem = entryList.length - item - 1;
+            $("#userMenu").append("<li class='histo'><a name='menuitem' href='TestCaseScript.jsp?test=" + encodeURIComponent(entryList[newitem].test) + "&testcase=" + encodeURIComponent(entryList[newitem].testcase) + "'><i class='fa fa-bars'></i><span>  " + entryList[newitem].test + " " + entryList[newitem].testcase + "</span></a></li>");
+        }
+    }
+    entryList = localStorage.getItem("historyExecutions");
+    entryList = JSON.parse(entryList);
+    if (entryList !== null && entryList.length > 0) {
+        $("#userMenu").append("<li class='menuSeparator histo'><span>Last Seen Executions</span></li>");
+        for (var item in entryList) {
+            let newitem = entryList.length - item - 1;
+            $("#userMenu").append("<li class='histo'><a name='menuitem' href='TestCaseExecution.jsp?executionId=" + entryList[newitem].id + "'><i class='fa fa-gear'></i><span>  " + entryList[newitem].id + "</span></a></li>");
+        }
+    }
+    entryList = localStorage.getItem("historyCampaigns");
+    entryList = JSON.parse(entryList);
+    if (entryList !== null && entryList.length > 0) {
+        $("#userMenu").append("<li class='menuSeparator histo'><span>Last Seen Campaigns</span></li>");
+        for (var item in entryList) {
+            let newitem = entryList.length - item - 1;
+            $("#userMenu").append("<li class='histo'><a name='menuitem' href='ReportingExecutionByTag.jsp?Tag=" + encodeURIComponent(entryList[newitem].tag) + "'><i class='fa fa-gears'></i><span>  " + entryList[newitem].tag + "</span></a></li>");
+        }
     }
 }
 

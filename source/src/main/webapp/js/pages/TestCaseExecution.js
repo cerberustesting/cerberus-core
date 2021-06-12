@@ -183,6 +183,10 @@ function loadExecutionInformation(executionId, steps, sockets) {
                 isTheExecutionManual = true;
             updatePage(tce, steps);
 
+            // Save history of execution into sessionStorage.
+            saveHistory(getHistoryExecution(tce), "historyExecutions",5);
+            refreshHistoryMenu();
+
             if (tce.controlStatus === "PE") {
                 if (paramActivatewebsocketpush === "Y") {
                     var parser = document.createElement('a');
@@ -232,6 +236,19 @@ function loadExecutionInformation(executionId, steps, sockets) {
             });
         }
     });
+}
+
+function getHistoryExecution(tce) {
+    var result = {};
+    result.id = tce.id;
+    result.test = tce.test;
+    result.testcase = tce.testcase;
+    result.system = tce.system;
+    result.environment = tce.environment;
+    result.country = tce.country;
+    result.robot = tce.robot;
+    result.description = tce.description;
+    return result;
 }
 
 function initPage(id) {
