@@ -184,6 +184,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('buildrevisionbatch','build','','en','Build','Build during the excution of the Batch Event.',NULL)");
         b.append(",('buildrevisionbatch','build','','fr','Build','Build lors de l\\'éxecution de l\\'événement Batch.',NULL)");
         b.append(",('buildrevisionbatch','dateBatch','','en','Date','',NULL)");
+		b.append(",('buildrevisionbatch','dateBatch','','ru','Дата','',NULL)");
         b.append(",('buildrevisionbatch','dateBatch','','fr','Date','',NULL)");
         b.append(",('buildrevisionbatch','revision','','en','Revision','Revision during the excution of the Batch Event.',NULL)");
         b.append(",('buildrevisionbatch','revision','','fr','Revision','Revision lors de l\\'éxecution de l\\'événement Batch.',NULL)");
@@ -207,6 +208,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('buildrevisionparameters','Build','','en','Build','','_build_content')");
         b.append(",('buildrevisionparameters','Build','','fr','Build','','_contenu_des_builds')");
         b.append(",('buildrevisionparameters','datecre','','en','Creation Date','','_build_content')");
+		b.append(",('buildrevisionparameters','datecre','','ru','Дата создания','','_build_content')");
         b.append(",('buildrevisionparameters','datecre','','fr','Date de Création','','_contenu_des_builds')");
         b.append(",('buildrevisionparameters','id','','en','ID','','_build_content')");
         b.append(",('buildrevisionparameters','id','','fr','ID','','_contenu_des_builds')");
@@ -307,6 +309,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('countryenvparam_log','Creator','','en','User','',NULL)");
         b.append(",('countryenvparam_log','Creator','','fr','Utilisateur','',NULL)");
         b.append(",('countryenvparam_log','datecre','','en','Date & Time','',NULL)");
+		b.append(",('countryenvparam_log','datecre','','ru','Дата и время','',NULL)");
         b.append(",('countryenvparam_log','datecre','','fr','Date & Heure','',NULL)");
         b.append(",('countryenvparam_log','Description','','en','Description','',NULL)");
         b.append(",('countryenvparam_log','Description','','ru','Описание','',NULL)");
@@ -387,6 +390,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('logevent','remoteip','','en','Remote IP','IP from which the user connected to Cerberus to perform the action.',NULL)");
         b.append(",('logevent','remoteip','','fr','IP Distante','IP à partir de laquelle l\\'utilisateur s\\'est connecté à Cerberus.',NULL)");
         b.append(",('logevent','time','','en','Time','Timestamp of the log message.',NULL)");
+		b.append(",('logevent','time','','ru','Время','Метка времени сообщения в логе .',NULL)");
         b.append(",('logevent','time','','fr','Date','Date à laquelle l\\'action a été effectuée.',NULL)");
         b.append(",('myversion','key','','en','Key','This is the reference of the component inside Cerberus that we want to keep track of the version.',NULL)");
         b.append(",('myversion','key','','fr','Clé',NULL,NULL)");
@@ -495,6 +499,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('tag','campaign','','en','Campaign','Campaign that was at the origin of the creation of the Tag.',NULL)");
         b.append(",('tag','campaign','','fr','Campagne','Campagne à l\\'origine de la création du Tag',NULL)");
         b.append(",('tag','dateendqueue','','en','End Of Queue Date','Date and Time that correspond to the moment when all execution on the tag are finished. That means that there are no more PE execution and no more QUEUED execution in the queue.',NULL)");
+		b.append(",('tag','dateendqueue','','ru','Дата окончания очереди ','Дата и время когда все выполнения по тегу были завершены. That means that there are no more PE execution and no more QUEUED execution in the queue.',NULL)");
         b.append(",('tag','dateendqueue','','fr','Fin de Queue','Date et Heure de fin de l\\'ensemble des executions du tags. Sous entendu qu\\'ils n\\'y a plus d\\'éxecution en status PE ni d\\'execution en attente dans la queue.',NULL)");
         b.append(",('tag','nbexe','','en','Exe Nb','Total nb of execution done inside the tag. An execution that was retried 3 times will count as 3.',NULL)");
         b.append(",('tag','nbexe','','fr','Nb Exe','Nombre total d\\'éxécution associé au tag. Une éxécution qui a nécessité 3 retry compte pour 3.',NULL)");
@@ -511,6 +516,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('test','Automated','','en','Automated','Define if the test is automated or not.','_test')");
         b.append(",('test','Automated','','fr','Automatisé','Boléen qui définit si le test est automatisé ou non','_test')");
         b.append(",('test','dateCreation','','en','Creation date','The date when the test have been created','_test')");
+		b.append(",('test','dateCreation','','ru','Дата создания','Дата когда тест был создан','_test')");
         b.append(",('test','dateCreation','','fr','Date de création','Date à laquelle le test a été créé','_test')");
         b.append(",('test','description','','en','Folder Description','This is the description of the <code class=\\'doc-crbvvoca\\'>test</code>.','_test')");
         b.append(",('test','description','','ru','Описание папки','Это описание <code class=\\'doc-crbvvoca\\'>теста</code>.','_test')");
@@ -582,7 +588,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','IsActive','','en','Global Activation','This field define if the test is active or not. A <code class=\\'doc-crbvvoca\\'>test case</code> that is not active cannot be executed.','_testcase')");
         b.append(",('testcase','IsActive','','fr','Activation globale','','_cas_de_test')");
         b.append(",('testcase','TCDateCrea','','en','Creation Date','This is the <code class=\\'doc-crbvvoca\\'>test case</code> creation date.','_testcase')");
-        b.append(",('testcase','TCDateCrea','','fr','Date de création','','_cas_de_test')");
+        b.append(",('testcase','TCDateCrea','','ru','Дата создания','Это дата создания <code class=\\'doc-crbvvoca\\'>тестового случая</code>.','_testcase')");
+		b.append(",('testcase','TCDateCrea','','fr','Date de création','','_cas_de_test')");
         b.append(",('testcase','TestCase','','en','Testcase ID','A <code class=\\'doc-crbvvoca\\'>test case</code> is a scenario that test a specific feature of an <code class=\\'doc-crbvvoca\\'>application</code>.','_testcase')");
         b.append(",('testcase','TestCase','','fr','ID du Cas de test','','_cas_de_test')");
         b.append(",('testcase','version','','en','Version','Version number of the testcase.','_testcase')");
@@ -688,6 +695,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcaseexecutionqueuedep','status','','en','Status',NULL,NULL)");
         b.append(",('testcaseexecutionqueuedep','status','','fr','Status',NULL,NULL)");
         b.append(",('testcaseexecutionqueuedep','releaseDate','','en','Release Date',NULL,NULL)");
+		b.append(",('testcaseexecutionqueuedep','releaseDate','','ru','Дата выпуска',NULL,NULL)");
         b.append(",('testcaseexecutionqueuedep','releaseDate','','fr','Date de liberation',NULL,NULL)");
         b.append(",('testcaseexecutionqueuedep','comment','','en','Comment',NULL,NULL)");
         b.append(",('testcaseexecutionqueuedep','comment','','fr','Commentaire',NULL,NULL)");
@@ -840,6 +848,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalib','country','','en','Country','<p>Country where the entry is available. If not specified, then the data entry apply to ALL countries. </p>','_data_library')");
         b.append(",('testdatalib','country','','fr','Pays',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','created','','en','Creation Date','','_data_library')");
+		b.append(",('testdatalib','created','','ru','Дата создания','','_data_library')");
         b.append(",('testdatalib','created','','fr','Date de création',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','creator','','en','Creator','User who created the data.','_data_library')");
         b.append(",('testdatalib','creator','','fr','Créateur',NULL,'_librairie_de_données')");
@@ -861,6 +870,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalib','group','','en','Group','<p>Name that groups entries that are at some extent correlated. It is an <b>optional</b> attribute.</p>','_data_library')");
         b.append(",('testdatalib','group','','fr','Groupe',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','lastmodified','','en','Modification Date','','_data_library')");
+		b.append(",('testdatalib','lastmodified','','ru','Дата модификации','','_data_library')");
         b.append(",('testdatalib','lastmodified','','fr','Dernière modification',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','lastmodifier','','en','Last Modifier','User who last modified the data.','_data_library')");
         b.append(",('testdatalib','lastmodifier','','fr','Dernier modificateur','Utilisateur qui a modifié en dernier la donnée','_librairie_de_données')");
@@ -957,8 +967,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_applicationObject','createapplicationobjectfield','','ru','Создать объект приложения','',NULL)");
         b.append(",('page_applicationObject','createapplicationobjectfield','','fr','Créer un object d\\'application','',NULL)");
         b.append(",('page_applicationObject','DateCreated','','en','Creation date','',NULL)");
+		b.append(",('page_applicationObject','DateCreated','','ru','Дата создания','',NULL)");
         b.append(",('page_applicationObject','DateCreated','','fr','Date de création','',NULL)");
         b.append(",('page_applicationObject','DateModif','','en','Last modification date','',NULL)");
+		b.append(",('page_applicationObject','DateModif','','ru','Дата последней модификации','',NULL)");
         b.append(",('page_applicationObject','DateModif','','fr','Date de dernière modification','',NULL)");
         b.append(",('page_applicationObject','editapplicationobjectfield','','en','Edit Application Object','',NULL)");
         b.append(",('page_applicationObject','editapplicationobjectfield','','ru','Редактировать объект приложения','',NULL)");
@@ -2189,6 +2201,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaseexecutionqueue','processed_col','','en','Proceeded','',NULL)");
         b.append(",('page_testcaseexecutionqueue','processed_col','','fr','Traité','',NULL)");
         b.append(",('page_testcaseexecutionqueue','requestDate_col','','en','Last State Date','',NULL)");
+		b.append(",('page_testcaseexecutionqueue','requestDate_col','','ru','Дата последнего состояния','',NULL)");
         b.append(",('page_testcaseexecutionqueue','requestDate_col','','fr','Date du dernier Etat','',NULL)");
         b.append(",('page_testcaseexecutionqueue','retries_col','','en','Retries','',NULL)");
         b.append(",('page_testcaseexecutionqueue','retries_col','','fr','Tentatives','',NULL)");
@@ -2642,8 +2655,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('multiselect','select_all','','en','Select all','',NULL)");
         b.append(",('multiselect','select_all','','fr','Selectionner tous','',NULL)");
         b.append(",('transversal','DateCreated','','en','Creation Date','Date of the creation of the object.','_data_library')");
+		b.append(",('transversal','DateCreated','','ru','Дата создания','Дата создания объекта.','_data_library')");
         b.append(",('transversal','DateCreated','','fr','Date de Création','Date de création de l\\'objet.','_librairie_de_données')");
         b.append(",('transversal','DateModif','','en','Modification Date','Last modification Date of the object.','_data_library')");
+		b.append(",('transversal','DateModif','','ru','Дата модификации','Дата последней модификации объекта.','_data_library')");
         b.append(",('transversal','DateModif','','fr','Date de Modification','Date de dernière modification de l\\'objet.','_librairie_de_données')");
         b.append(",('transversal','UsrCreated','','en','Created by','User who created the object.','_data_library')");
         b.append(",('transversal','UsrCreated','','fr','Créé par','Utilisateur ayant créé l\\'objet.','_librairie_de_données')");
