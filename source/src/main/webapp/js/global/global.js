@@ -2820,3 +2820,32 @@ function get_Color_fromindex(index) {
     var colors = ['#3366FF', '#3498DB', 'blueviolet', 'midnightblue', 'salmon', 'olive', 'teal', 'grey', '#cad3f1', 'yellow', 'magenta', 'lightgreen', 'lightgrey', 'coral', 'violet', '#B91D0D', 'olive'];
     return colors[index % colors.length];
 }
+
+
+function saveHistory(tce, historyEntry, maxEntries) {
+
+    let entryList = localStorage.getItem(historyEntry);
+    entryList = JSON.parse(entryList);
+    if (entryList === null) {
+        entryList = [];
+        entryList.push(tce);
+        localStorage.setItem(historyEntry, JSON.stringify(entryList));
+    } else {
+        // Remove the entries that has the same id in order to avoid duplicates.
+        for (var item in entryList) {
+//            console.log(item);
+            if (tce.id === entryList[item].id) {
+                entryList.splice(item, 1);
+            }
+        }
+//        console.log(tce);
+//        console.log(entryList);
+        entryList.push(tce);
+        if (entryList.length > maxEntries) {
+            entryList.shift();
+        }
+
+        localStorage.setItem(historyEntry, JSON.stringify(entryList));
+    }
+
+}

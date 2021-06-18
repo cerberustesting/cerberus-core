@@ -358,7 +358,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionValue1 = step.getString("conditionValue1");
             String conditionValue2 = step.getString("conditionValue2");
             String conditionValue3 = step.getString("conditionValue3");
-            JSONArray conditionOptions = ParameterParserUtil.parseJSONArrayParamAndDecode("conditionOptions", new JSONArray(), "UTF8");
+            JSONArray conditionOptions = ParameterParserUtil.parseJSONArrayParamAndDecode(step.getString("conditionOptions"), new JSONArray(), "UTF8");
             String description = step.getString("description");
             boolean isUsingLibraryStep = step.getBoolean("isUsingLibraryStep");
             String libraryStepTest = step.getString("libraryStepTest");

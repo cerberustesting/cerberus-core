@@ -324,6 +324,10 @@ function loadReportingData(selectTag) {
 
         if (data.hasOwnProperty('tagObject')) {
 
+            // Save history entries
+            saveHistory(getHistoryCampaign(data.tagObject), "historyCampaigns",5);
+            refreshHistoryMenu();
+
             // Tag Detail feed.
             $("#startExe").val(data.tagObject.DateCreated);
             $("#endExe").val(getDateShort(data.tagObject.DateEndQueue));
@@ -406,6 +410,12 @@ function loadReportingData(selectTag) {
 
 }
 
+function getHistoryCampaign(object) {
+    var result = {};
+    result.id = object.id;
+    result.tag = object.tag;
+    return result;
+}
 
 function buildTagBar(obj) {
     var buildBar;
