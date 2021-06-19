@@ -358,7 +358,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionValue1 = step.getString("conditionValue1");
             String conditionValue2 = step.getString("conditionValue2");
             String conditionValue3 = step.getString("conditionValue3");
-            JSONArray conditionOptions = ParameterParserUtil.parseJSONArrayParamAndDecode(step.getString("conditionOptions"), new JSONArray(), "UTF8");
+//            JSONArray conditionOptions = ParameterParserUtil.parseJSONArrayParamAndDecode(step.getString("conditionOptions"), new JSONArray(), "UTF8");
+            JSONArray conditionOptions = step.getJSONArray("conditionOptions");
             String description = step.getString("description");
             boolean isUsingLibraryStep = step.getBoolean("isUsingLibraryStep");
             String libraryStepTest = step.getString("libraryStepTest");
@@ -442,13 +443,13 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionValue1 = controlJson.isNull("conditionValue1") ? "" : controlJson.getString("conditionValue1");
             String conditionValue2 = controlJson.isNull("conditionValue2") ? "" : controlJson.getString("conditionValue2");
             String conditionValue3 = controlJson.isNull("conditionValue3") ? "" : controlJson.getString("conditionValue3");
-            JSONArray conditionOptions = ParameterParserUtil.parseJSONArrayParamAndDecode("conditionOptions", new JSONArray(), "UTF8");
+            JSONArray conditionOptions = controlJson.getJSONArray("conditionOptions");
             //String type = controlJson.getString("objType");
             String controlValue = controlJson.getString("control");
             String value1 = controlJson.getString("value1");
             String value2 = controlJson.getString("value2");
             String value3 = controlJson.isNull("value3") ? "" : controlJson.getString("value3");
-            JSONArray options = ParameterParserUtil.parseJSONArrayParamAndDecode("options", new JSONArray(), "UTF8");
+            JSONArray options = controlJson.getJSONArray("options");
             boolean isFatal = controlJson.getBoolean("isFatal");
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");

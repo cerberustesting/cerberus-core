@@ -122,7 +122,7 @@
                                 <li class="active"><a data-toggle="tab" href="#tabSteps" id="editTabStep" name="tabSteps">Steps</a></li>
                                 <li><a data-toggle="tab" href="#tabProperties" id="editTabProperties" name="tabProperties">Properties</a></li>
                                 <li><a data-toggle="tab" href="#tabInheritedProperties" id="editTabInheritedProperties" name="tabInheritedProperties">InheritedProperties</a></li>
-<!--                                <li><a data-toggle="tab" href="#tabSchema" id="editTabSchema" name="tabSchema">Schema</a></li>-->
+                                <!--                                <li><a data-toggle="tab" href="#tabSchema" id="editTabSchema" name="tabSchema">Schema</a></li>-->
                             </ul>
                         </div>
                     </div>
@@ -146,6 +146,59 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                             data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade"  id="modalOptions" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Options</h5>
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table table-bordered table-hover nomarginbottom">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <div class="row">
+                                                        <div class="form-group col-sm-2"><input id="timeoutAct" type="checkbox"  class="form-control input-sm"></div>
+                                                        <div class="form-group col-sm-4"><input class="form-control input-sm" readonly value='timeout'></div>
+                                                        <div class="form-group col-sm-6"><input id="timeoutVal" class="form-control input-sm"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="row">
+                                                        <div class="form-group col-sm-2"><input id="minSimilarityAct" type="checkbox"  class="form-control input-sm"></div>
+                                                        <div class="form-group col-sm-4"><input class="form-control input-sm" readonly value='minSimilarity'></div>
+                                                        <div class="form-group col-sm-6"><input id="minSimilarityVal" class="form-control input-sm"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="row">
+                                                        <div class="form-group col-sm-2"><input id="highlightAct" type="checkbox"  class="form-control input-sm"></div>
+                                                        <div class="form-group col-sm-4"><input class="form-control input-sm" readonly value='highlight'></div>
+                                                        <div class="form-group col-sm-6"><input id="highlightVal" class="form-control input-sm"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div id="firstRowOptions"></div>
+                                    <div id="secondRowOptions"></div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal" id='optionsSave'>Save</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                 </div>
                             </div>
                         </div>
@@ -280,9 +333,9 @@
                                 </div>
                             </div>
                         </div>
-<!--                        <div class="center marginTop25 tab-pane fade" id="tabSchema">
-                            <div id="schemaDiv"></div>
-                        </div>-->
+                        <!--                        <div class="center marginTop25 tab-pane fade" id="tabSchema">
+                                                    <div id="schemaDiv"></div>
+                                                </div>-->
                     </div>
                 </div>
                 <datalist id="objects"></datalist>

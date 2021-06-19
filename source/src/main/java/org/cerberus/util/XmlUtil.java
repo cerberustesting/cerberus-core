@@ -68,6 +68,7 @@ import org.xml.sax.SAXException;
  */
 public final class XmlUtil {
 
+    private static final Logger LOG = LogManager.getLogger(XmlUtil.class);
     /**
      * If xml parsing has to be aware of namespaces
      */

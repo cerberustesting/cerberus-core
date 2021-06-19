@@ -177,13 +177,17 @@ public class XmlUnitService implements IXmlUnitService {
         }
 
         try {
+            
             final Document document = StringUtil.isURL(xmlToParse) ? XmlUtil.fromURL(new URL(xmlToParse)) : XmlUtil.fromString(xmlToParse);
             final String result = XmlUtil.evaluateString(document, xpath);
+            
             // Not that in case of multiple values then send the first one
             return result != null && result.length() > 0 ? result : DEFAULT_GET_FROM_XML_VALUE;
         } catch (XmlUtilException e) {
             LOG.warn("Unable to get from xml", e);
         } catch (MalformedURLException e) {
+            LOG.warn("Unable to get from xml", e);
+        } catch (Exception e) {
             LOG.warn("Unable to get from xml", e);
         }
 

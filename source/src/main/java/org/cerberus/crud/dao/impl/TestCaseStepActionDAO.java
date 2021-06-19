@@ -410,7 +410,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.debug("SQL.param.conditionOperator " + testCaseStepAction.getConditionOperator());
             LOG.debug("SQL.param.conditionValue1 " + testCaseStepAction.getConditionValue1());
             LOG.debug("SQL.param.conditionValue2 " + testCaseStepAction.getConditionValue2());
-            LOG.debug("SQL.param.conditionValue3 " + testCaseStepAction.getConditionValue3());
+            LOG.debug("SQL.param.options " + testCaseStepAction.getOptions().toString());
         }
 
         try (Connection connection = this.databaseSpring.connect();

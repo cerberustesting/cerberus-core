@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -401,6 +402,9 @@ public class TestCaseStep {
             return false;
         }
         if (this.isExecutionForced != other.isExecutionForced) {
+            return false;
+        }
+        if (!Objects.equals(this.conditionOptions, other.conditionOptions)) {
             return false;
         }
         return true;

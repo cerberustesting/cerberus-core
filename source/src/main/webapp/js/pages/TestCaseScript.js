@@ -3414,6 +3414,62 @@ Action.prototype.generateContent = function () {
         $(actions).parent().parent().find(".input-group-btn").remove();
     });
 
+
+
+    let defaultClass = "btn-default";
+    if (optionsEmpty(this.conditionOptions)) {
+        defaultClass = "btn-primary";
+    }
+    let defaultTitle = optionsActive(this.conditionOptions);
+    var conditionOptions = $("<button data-toggle='modal' data-target='#modalOptions' title='" + defaultTitle + "' type='button'></button>").addClass("buttonObject btn input-sm " + defaultClass).append("<span class='glyphicon glyphicon-list'></span>");
+    conditionOptions.val(JSON.stringify(this.conditionOptions));
+    conditionOptions.off("click").on("click", function () {
+
+        $("#modalOptions").find("h5").text("Overwride Option Values");
+
+        let valObj = JSON.parse(conditionOptions.val());
+        initOptionModal();
+
+        setOptionModal(valObj);
+
+        $("#optionsSave").off("click");
+        $("#optionsSave").click(function () {
+            let newOpts = getOptionValuesFromModal();
+            if (JSON.stringify(obj.conditionOptions) !== JSON.stringify(newOpts)) {
+                obj.conditionOptions = newOpts;
+                setModif(true);
+            }
+        });
+
+    });
+
+    defaultClass = "btn-default";
+    if (optionsEmpty(this.options)) {
+        defaultClass = "btn-primary";
+    }
+    defaultTitle = optionsActive(this.options);
+    var options = $("<button data-toggle='modal' data-target='#modalOptions' title='" + defaultTitle + "' type='button'></button>").addClass("buttonObject btn input-sm " + defaultClass).append("<span class='glyphicon glyphicon-list'></span>");
+    options.val(JSON.stringify(this.options));
+    options.off("click").on("click", function () {
+
+        $("#modalOptions").find("h5").text("Overwride Option Values");
+
+        let valObj = JSON.parse(options.val());
+        initOptionModal();
+
+        setOptionModal(valObj);
+
+        $("#optionsSave").off("click");
+        $("#optionsSave").click(function () {
+            let newOpts = getOptionValuesFromModal();
+            if (JSON.stringify(obj.options) !== JSON.stringify(newOpts)) {
+                obj.options = newOpts;
+                setModif(true);
+            }
+        });
+
+    });
+
     forceExeStatusList = getSelectInvariant("ACTIONFATAL", false, true).css("width", "100%");
     if (this.isFatal) {
         forceExeStatusList.val("true");
@@ -3446,7 +3502,7 @@ Action.prototype.generateContent = function () {
     });
 
     firstRow.append(descContainer);
-    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actions));
+    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actions).append(options));
     secondRow.append($("<div></div>").addClass("v1 col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(value1Field));
     /*
      * if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers
@@ -3454,7 +3510,7 @@ Action.prototype.generateContent = function () {
      */
     secondRow.append($("<div></div>").addClass("v2 col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Field));
     secondRow.append($("<div></div>").addClass("v3 col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value3_field"))).append(value3Field));
-    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoperator));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoperator).append(conditionOptions));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval2));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval3));
@@ -3482,6 +3538,79 @@ Action.prototype.generateContent = function () {
     return content;
 };
 
+function getOptionValuesFromModal() {
+    let newOpts = [];
+    let opt1 = {
+        "act": $("#timeoutAct").prop("checked"),
+        "value": $("#timeoutVal").val(),
+        "option": "timeout"
+    };
+    newOpts.push(opt1);
+    opt1 = {
+        "act": $("#minSimilarityAct").prop("checked"),
+        "value": $("#minSimilarityVal").val(),
+        "option": "minSimilarity"
+    };
+    newOpts.push(opt1);
+    opt1 = {
+        "act": $("#highlightAct").prop("checked"),
+        "value": $("#highlightVal").val(),
+        "option": "highlight"
+    };
+    newOpts.push(opt1);
+    return newOpts;
+}
+
+function initOptionModal() {
+    $("#timeoutVal").val("");
+    $("#timeoutAct").prop("checked", false);
+    $("#highlightVal").val("");
+    $("#highlightAct").prop("checked", false);
+    $("#minSimilarityVal").val("");
+    $("#minSimilarityAct").prop("checked", false);
+}
+
+function setOptionModal(valObj) {
+    for (var item in valObj) {
+        switch (valObj[item].option) {
+            case "timeout":
+                $("#timeoutVal").val(valObj[item].value);
+                $("#timeoutAct").prop("checked", valObj[item].act);
+                break;
+            case "highlight":
+                $("#highlightVal").val(valObj[item].value);
+                $("#highlightAct").prop("checked", valObj[item].act);
+
+                break;
+            case "minSimilarity":
+                $("#minSimilarityVal").val(valObj[item].value);
+                $("#minSimilarityAct").prop("checked", valObj[item].act);
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+function optionsEmpty(options) {
+    for (var item in options) {
+        if (options[item].act)
+            return true;
+    }
+    return false;
+}
+
+function optionsActive(options) {
+    let result = "";
+    for (var item in options) {
+        if (options[item].act)
+            result = result + options[item].option + "=" + options[item].value + " / ";
+    }
+    if (result === "") {
+        return "Configure Options";
+    }
+    return result.substring(0, result.length - 3);
+}
 
 function cleanErratum(oldValue) {
     if (oldValue.startsWith('erratum=')) {
@@ -3787,6 +3916,62 @@ Control.prototype.generateContent = function () {
         setPlaceholderControl($(this).parents(".control"));
     });
 
+
+    let defaultClass = "btn-default";
+    if (optionsEmpty(this.conditionOptions)) {
+        defaultClass = "btn-primary";
+    }
+    let defaultTitle = optionsActive(this.conditionOptions);
+    var conditionOptions = $("<button data-toggle='modal' data-target='#modalOptions' title='" + defaultTitle + "' type='button'></button>").addClass("buttonObject btn input-sm " + defaultClass).append("<span class='glyphicon glyphicon-list'></span>");
+    conditionOptions.val(JSON.stringify(this.conditionOptions));
+    conditionOptions.off("click").on("click", function () {
+
+        $("#modalOptions").find("h5").text("Overwride Option Values");
+
+        let valObj = JSON.parse(conditionOptions.val());
+        initOptionModal();
+
+        setOptionModal(valObj);
+
+        $("#optionsSave").off("click");
+        $("#optionsSave").click(function () {
+            let newOpts = getOptionValuesFromModal();
+            if (JSON.stringify(obj.conditionOptions) !== JSON.stringify(newOpts)) {
+                obj.conditionOptions = newOpts;
+                setModif(true);
+            }
+        });
+
+    });
+
+    defaultClass = "btn-default";
+    if (optionsEmpty(this.options)) {
+        defaultClass = "btn-primary";
+    }
+    defaultTitle = optionsActive(this.options);
+    var options = $("<button data-toggle='modal' data-target='#modalOptions' title='" + defaultTitle + "' type='button'></button>").addClass("buttonObject btn input-sm " + defaultClass).append("<span class='glyphicon glyphicon-list'></span>");
+    options.val(JSON.stringify(this.options));
+    options.off("click").on("click", function () {
+
+        $("#modalOptions").find("h5").text("Overwride Option Values");
+
+        let valObj = JSON.parse(options.val());
+        initOptionModal();
+
+        setOptionModal(valObj);
+
+        $("#optionsSave").off("click");
+        $("#optionsSave").click(function () {
+            let newOpts = getOptionValuesFromModal();
+            if (JSON.stringify(obj.options) !== JSON.stringify(newOpts)) {
+                obj.options = newOpts;
+                setModif(true);
+            }
+        });
+
+    });
+
+
     controlValue1Field.val(this.value1);
     controlValue1Field.css("width", "84%");
     controlValue1Field.on("change", function () {
@@ -3822,7 +4007,7 @@ Control.prototype.generateContent = function () {
 
     firstRow.append(descContainer);
 
-    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "control_field"))).append(controls));
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "control_field"))).append(controls).append(options));
     secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(controlValue1Field));
     secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(controlValue2Field));
     secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value3_field"))).append(controlValue3Field));
@@ -3832,7 +4017,7 @@ Control.prototype.generateContent = function () {
     thirdRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval3));
     thirdRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "fatal_field"))).append(fatalList));
 
-    thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(controlconditionoperator));
+    thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(controlconditionoperator).append(conditionOptions));
 
 
     if ((this.parentStep.isUsingLibraryStep) || (!obj.hasPermissionsUpdate)) {
@@ -4065,7 +4250,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                         viewEntry.find("button").off("click").on("click", function () {
                             let firstRow = $('<p style="text-align:center" > Type : ' + data[$(htmlElement).val()].type + '</p>');
                             let secondRow = $('<p style="text-align:center"> Value : ' + data[$(htmlElement).val()].value + '</p>');
-                            $("#modalProperty").find("h5").text("test");
+                            $("#modalProperty").find("h5").text("Property definition");
                             $("#modalProperty").find("#firstRowProperty").find("p").remove();
                             $("#modalProperty").find("#secondRowProperty").find("p").remove();
                             $("#modalProperty").find("#firstRowProperty").append(firstRow);

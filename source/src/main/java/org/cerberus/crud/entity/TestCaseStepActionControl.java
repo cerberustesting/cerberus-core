@@ -33,9 +33,8 @@ import org.json.JSONObject;
  */
 public class TestCaseStepActionControl {
 
-    
     private static final Logger LOG = LogManager.getLogger(TestCaseStepActionControl.class);
-    
+
     private String test;
     private String testcase;
     private int stepId;
@@ -325,7 +324,7 @@ public class TestCaseStepActionControl {
     public void setDateModif(Timestamp dateModif) {
         this.dateModif = dateModif;
     }
-    
+
     public boolean hasSameKey(TestCaseStepActionControl obj) {
         if (obj == null) {
             return false;
@@ -438,11 +437,14 @@ public class TestCaseStepActionControl {
         if (!Objects.equals(this.screenshotFilename, other.screenshotFilename)) {
             return false;
         }
+        if (!Objects.equals(this.conditionOptions, other.conditionOptions)) {
+            return false;
+        }
+        if (!Objects.equals(this.options, other.options)) {
+            return false;
+        }
         return true;
     }
-
-
-
 
     @Override
     public String toString() {

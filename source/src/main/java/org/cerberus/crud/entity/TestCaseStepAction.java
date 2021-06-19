@@ -475,6 +475,12 @@ public class TestCaseStepAction {
         if (!Objects.equals(this.screenshotFilename, other.screenshotFilename)) {
             return false;
         }
+        if (!Objects.equals(this.options, other.options)) {
+            return false;
+        }
+        if (!Objects.equals(this.conditionOptions, other.conditionOptions)) {
+            return false;
+        }
         return true;
     }
 
