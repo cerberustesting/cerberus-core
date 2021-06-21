@@ -3555,7 +3555,7 @@ function getOptionValuesFromModal() {
     opt1 = {
         "act": $("#highlightAct").prop("checked"),
         "value": $("#highlightVal").val(),
-        "option": "highlight"
+        "option": "highlightElement"
     };
     newOpts.push(opt1);
     return newOpts;
@@ -3577,7 +3577,7 @@ function setOptionModal(valObj) {
                 $("#timeoutVal").val(valObj[item].value);
                 $("#timeoutAct").prop("checked", valObj[item].act);
                 break;
-            case "highlight":
+            case "highlightElement":
                 $("#highlightVal").val(valObj[item].value);
                 $("#highlightAct").prop("checked", valObj[item].act);
 

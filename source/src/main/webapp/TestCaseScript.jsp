@@ -186,7 +186,7 @@
                                                 <td>
                                                     <div class="row">
                                                         <div class="form-group col-sm-2"><input id="highlightAct" type="checkbox"  class="form-control input-sm"></div>
-                                                        <div class="form-group col-sm-4"><input class="form-control input-sm" readonly value='highlight'></div>
+                                                        <div class="form-group col-sm-4"><input class="form-control input-sm" readonly value='highlightElement'></div>
                                                         <div class="form-group col-sm-6"><input id="highlightVal" class="form-control input-sm"></div>
                                                     </div>
                                                 </td>
