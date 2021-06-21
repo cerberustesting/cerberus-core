@@ -15,7 +15,7 @@
 * Avoid error on Condition evaluation that require Selenium engine when running testcase in manual mode. #2161
 * Improved NetworkTraffic for JSON Structure for GET requests. (Thanks @vitoo)
 * Added a default value for index name for network traffic.
-* New public servlet for getting campaign execution details /TagDetails. #2204
+* New public servlet for getting campaign execution details /GetTagDetailsV001. #2204
 * Added Step number in testcase script page. (Thanks @vitoo)
 * Executor checks before execution starts now timeout after 15 seconds (in stead of 2 minutes).
 * Support for highlighting selenium element using new parameter 'cerberus_selenium_highlightElement'.
