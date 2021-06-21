@@ -54,8 +54,8 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Nouxx
  */
-@WebServlet(name = "TagDetails", urlPatterns = { "/TagDetails" })
-public class TagDetails extends HttpServlet {
+@WebServlet(name = "GetTagDetailsV001", urlPatterns = { "/GetTagDetailsV001" })
+public class GetTagDetailsV001 extends HttpServlet {
 
     private ITestCaseExecutionService testCaseExecutionService;
     private IAPIKeyService apiKeyService;
@@ -63,7 +63,7 @@ public class TagDetails extends HttpServlet {
     private IParameterService parameterService;
     private IInvariantService invariantService;
 
-    private static final Logger LOG = LogManager.getLogger("TagDetails");
+    private static final Logger LOG = LogManager.getLogger("GetTagDetailsV001");
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -80,7 +80,7 @@ public class TagDetails extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createForPublicCalls("/TagDetails", "CALL", "TagDetails called : " + request.getRequestURL(),
+        logEventService.createForPublicCalls("/GetTagDetailsV001", "CALL", "TagDetails called : " + request.getRequestURL(),
                 request);
 
         apiKeyService = appContext.getBean(IAPIKeyService.class);

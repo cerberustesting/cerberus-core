@@ -24,6 +24,10 @@ This is the APi that can be used on the test perimeter (getting testcase informa
 
 | /GetTagExecutions | TBD. | **/GetTagExecutions**
 
+| /GetTagDetails
+| Provide all the information about a tag (with executions)
+| **/GetTagDetailsV001**
+
 | /GetTestCases 
 | Provide a list of test cases filtered by some criteria. 
 | **/GetTestCasesV001**
