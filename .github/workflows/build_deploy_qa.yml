@@ -24,5 +24,5 @@ jobs:
     - name: Build with Maven
       run: |
         cd source
-        mvn -Dcerberus.demo.qa.username=${{secrets.CERBERUS_QA_DEMO_USERNAME}} -Dcerberus.demo.qa.password=${{secrets.CERBERUS_QA_DEMO_P}} clean deploy -Pqa-demo-deploy --file pom.xml 
+        mvn -Dcerberus.demo.qa.username=${{secrets.CERBERUS_QA_DEMO_USERNAME}} -Dcerberus.demo.qa.password=${{secrets.CERBERUS_QA_DEMO_PASSWORD}} clean deploy -Pqa-demo-deploy --file pom.xml 
 
