@@ -42,6 +42,7 @@ import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.util.ParameterParserUtil;
 import org.json.JSONException;
+import java.text.ParseException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -62,6 +63,12 @@ public class GetTagDetailsV001 extends HttpServlet {
     private ITagService tagService;
     private IParameterService parameterService;
     private IInvariantService invariantService;
+
+    private List<Invariant> prioritiesList = new ArrayList<Invariant>();
+    private List<Invariant> countriesList = new ArrayList<Invariant>();
+    private List<Invariant> environmentsList = new ArrayList<Invariant>();
+
+    private String cerberusUrlParameter;
 
     private static final Logger LOG = LogManager.getLogger("GetTagDetailsV001");
 
@@ -88,16 +95,14 @@ public class GetTagDetailsV001 extends HttpServlet {
         if (apiKeyService.checkAPIKey(request, response)) {
             List<TestCaseExecution> listOfExecutions;
             List<JSONObject> listOfExecutionsJSON = new ArrayList<JSONObject>();
-            List<Invariant> prioritiesList = new ArrayList<Invariant>();
-            List<Invariant> countriesList = new ArrayList<Invariant>();
-            List<Invariant> environmentsList = new ArrayList<Invariant>();
             try {
+                // get invariants lists (priorities, countries and env)
                 prioritiesList = invariantService.readByIdName("PRIORITY");
                 countriesList = invariantService.readByIdName("COUNTRY");
                 environmentsList = invariantService.readByIdName("ENVIRONMENT");
                 JSONObject jsonResponse = new JSONObject();
                 Tag tag = tagService.convert(tagService.readByKey(Tag));
-                String cerberusUrlParameter = formatCerberusURL(
+                cerberusUrlParameter = formatCerberusURL(
                         parameterService.findParameterByKey("cerberus_url", "").getValue());
                 if (tag != null) {
                     jsonResponse.put("tag", Tag);
@@ -108,52 +113,10 @@ public class GetTagDetailsV001 extends HttpServlet {
                     jsonResponse.put("end", tag.getDateEndQueue());
                     JSONObject results = convertTagToResultsJSONObject(tag);
                     jsonResponse.put("results", results);
-                    listOfExecutions = testCaseExecutionService.convert(testCaseExecutionService.readByTag(Tag));
+                    listOfExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(Tag);
                     for (int i = 0; i < listOfExecutions.size(); i++) {
                         TestCaseExecution execution = listOfExecutions.get(i);
-                        JSONObject executionJSON = new JSONObject();
-                        String executionPriorityValue = Integer.toString(execution.getTestCaseObj().getPriority());
-                        String executionCountryValue = execution.getCountry();
-                        String executionEnvironmentValue = execution.getEnvironment();
-                        executionJSON.put("id", execution.getId());
-                        String executionLink = cerberusUrlParameter + "/TestCaseExecution.jsp?executionId="
-                                + execution.getId();
-                        executionJSON.put("link", executionLink);
-                        executionJSON.put("status", execution.getControlStatus());
-                        executionJSON.put("manualExecution", cerberusBooleanToBoolean(execution.getManualExecution()));
-                        executionJSON.put("message", JavaScriptUtils.javaScriptEscape(execution.getControlMessage()));
-                        executionJSON.put("priority",
-                                invariantToJSON(getInvariant(executionPriorityValue, prioritiesList)));
-                        executionJSON.put("country",
-                                invariantToJSON(getInvariant(executionCountryValue, countriesList)));
-                        executionJSON.put("environment",
-                                invariantToJSON(getInvariant(executionEnvironmentValue, environmentsList)));
-                        executionJSON.put("start", execution.getStart());
-                        executionJSON.put("end", execution.getEnd());
-                        executionJSON.put("durationInMs", execution.getEnd() - execution.getStart());
-                        JSONObject testcase = new JSONObject();
-                        testcase.put("description", execution.getTestCaseObj().getDescription());
-                        testcase.put("comment", execution.getTestCaseObj().getComment());
-                        testcase.put("description", execution.getTestCaseObj().getDescription());
-                        testcase.put("id", JavaScriptUtils.javaScriptEscape(execution.getTestCase()));
-                        testcase.put("folder", JavaScriptUtils.javaScriptEscape(execution.getTest()));
-                        testcase.put("system", execution.getSystem());
-                        testcase.put("application", execution.getApplication());
-                        testcase.put("status", execution.getTestCaseObj().getStatus());
-                        executionJSON.put("testcase", testcase);
-                        JSONObject robot = new JSONObject();
-                        robot.put("name", execution.getRobot());
-                        robot.put("executor", execution.getExecutor());
-                        robot.put("host", execution.getRobotHost());
-                        robot.put("port", execution.getRobotPort());
-                        robot.put("declination", execution.getRobotDecli());
-                        robot.put("sessionId", execution.getRobotSessionID());
-                        robot.put("provider", execution.getRobotProvider());
-                        robot.put("providerSessionId", execution.getRobotProviderSessionID());
-                        robot.put("browser", execution.getBrowser());
-                        robot.put("platform", execution.getPlatform());
-                        robot.put("executor", execution.getExecutor());
-                        executionJSON.put("robot", robot);
+                        JSONObject executionJSON = executionToJson(execution);
                         listOfExecutionsJSON.add(executionJSON);
                     }
                     jsonResponse.put("executions", listOfExecutionsJSON);
@@ -163,6 +126,8 @@ public class GetTagDetailsV001 extends HttpServlet {
             } catch (CerberusException ex) {
                 LOG.debug(ex.getMessageError().getDescription());
             } catch (JSONException ex) {
+                LOG.debug(ex.getMessage());
+            } catch (ParseException ex) {
                 LOG.debug(ex.getMessage());
             }
         }
@@ -228,6 +193,54 @@ public class GetTagDetailsV001 extends HttpServlet {
         } else {
             return url;
         }
+    }
+
+    private JSONObject executionToJson(TestCaseExecution execution) {
+        JSONObject result = new JSONObject();
+        Invariant priority = getInvariant(Integer.toString(execution.getTestCaseObj().getPriority()), prioritiesList);
+        Invariant country = getInvariant(execution.getCountry(), countriesList);
+        Invariant environment = getInvariant(execution.getEnvironment(), environmentsList);
+        try {
+            result.put("id", execution.getId());
+            result.put("status", execution.getControlStatus());
+            result.put("link", cerberusUrlParameter + "/TestCaseExecution.jsp?executionId="+ execution.getId());
+            result.put("manualExecution", cerberusBooleanToBoolean(execution.getManualExecution()));
+            result.put("message", JavaScriptUtils.javaScriptEscape(execution.getControlMessage()));        
+            result.put("priority",invariantToJSON(priority));
+            result.put("country", invariantToJSON(country));
+            result.put("environment",invariantToJSON(environment));
+            result.put("start", execution.getStart());
+            result.put("end", execution.getEnd());
+            result.put("durationInMs", execution.getEnd() - execution.getStart());
+            // build the test case JSON property
+            JSONObject testcaseJSON = new JSONObject();
+            testcaseJSON.put("description", execution.getTestCaseObj().getDescription());
+            testcaseJSON.put("comment", execution.getTestCaseObj().getComment());
+            testcaseJSON.put("description", execution.getTestCaseObj().getDescription());
+            testcaseJSON.put("id", JavaScriptUtils.javaScriptEscape(execution.getTestCase()));
+            testcaseJSON.put("folder", JavaScriptUtils.javaScriptEscape(execution.getTest()));
+            testcaseJSON.put("system", execution.getSystem());
+            testcaseJSON.put("application", execution.getApplication());
+            testcaseJSON.put("status", execution.getTestCaseObj().getStatus());
+            result.put("testcase", testcaseJSON);
+            // build the robot object
+            JSONObject robot = new JSONObject();
+            robot.put("name", execution.getRobot());
+            robot.put("executor", execution.getExecutor());
+            robot.put("host", execution.getRobotHost());
+            robot.put("port", execution.getRobotPort());
+            robot.put("declination", execution.getRobotDecli());
+            robot.put("sessionId", execution.getRobotSessionID());
+            robot.put("provider", execution.getRobotProvider());
+            robot.put("providerSessionId", execution.getRobotProviderSessionID());
+            robot.put("browser", execution.getBrowser());
+            robot.put("platform", execution.getPlatform());
+            robot.put("executor", execution.getExecutor());
+            result.put("robot", robot);
+        } catch (JSONException e) {
+            LOG.debug(e.toString());
+        }
+        return result;
     }
 
 }
