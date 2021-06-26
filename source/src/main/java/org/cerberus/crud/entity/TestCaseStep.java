@@ -335,6 +335,7 @@ public class TestCaseStep {
         hash = 29 * hash + this.sort;
         hash = 29 * hash + (this.loop != null ? this.loop.hashCode() : 0);
         hash = 29 * hash + (this.conditionOperator != null ? this.conditionOperator.hashCode() : 0);
+        hash = 29 * hash + (this.conditionOptions != null ? this.conditionOptions.hashCode() : 0);
         hash = 29 * hash + (this.conditionValue1 != null ? this.conditionValue1.hashCode() : 0);
         hash = 29 * hash + (this.conditionValue2 != null ? this.conditionValue2.hashCode() : 0);
         hash = 29 * hash + (this.conditionValue3 != null ? this.conditionValue3.hashCode() : 0);

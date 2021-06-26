@@ -237,6 +237,9 @@
                                                     <div class="col-lg-3 form-group">
                                                         <label>Step Condition Operation:</label>
                                                         <select class="form-control input-sm" id="stepConditionOperator"></select>
+                                                        <button data-toggle="modal" data-target="#modalOptions" type="button" class="buttonObject btn input-sm" id="stepConditionOption">
+                                                            <span class="glyphicon glyphicon-list"></span>
+                                                        </button>
                                                     </div>
                                                     <div class="col-lg-3 form-group">
                                                         <label>Step Condition Parameter:</label>

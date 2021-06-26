@@ -2273,6 +2273,7 @@ function returnMessageWritableForStep(object, field) {
 Step.prototype.getJsonData = function () {
     var json = {};
     json.conditionOperator = this.conditionOperator;
+    json.conditionOptions = this.conditionOptions;
     json.conditionVal1 = this.conditionVal1;
     json.conditionVal1Init = this.conditionVal1Init;
     json.conditionVal2 = this.conditionVal2;
