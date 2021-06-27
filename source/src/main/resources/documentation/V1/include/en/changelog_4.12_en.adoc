@@ -19,11 +19,11 @@
 * Added Step number in testcase script page. (Thanks @vitoo)
 * Executor checks before execution starts now timeout after 15 seconds (in stead of 2 minutes).
 * Support for highlighting selenium element using new parameter 'cerberus_selenium_highlightElement'.
-* Direct access to Last seen Executions, Testcases and Campaign from user menu. 
-* you can now overwrite for every step, action and control the timeout, maxSimilarity and highlightElement parameter. #2153
+* Direct access to Last seen Executions, Testcases and Campaign from user menu.
+* You can now overwrite timeout, maxSimilarity and highlightElement parameters for every step, action and control. #2153
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* updated Groovy library to 2.4.21. Check your script behavior before upgrading.
+* Updated Groovy library to 2.4.21. Check your script behavior before upgrading.
 * Database tables on testcase perimeter has been massively refactored. 
 * Expect some long ALTER queries on execution tables.
