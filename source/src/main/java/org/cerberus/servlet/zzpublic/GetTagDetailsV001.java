@@ -103,7 +103,7 @@ public class GetTagDetailsV001 extends HttpServlet {
                 JSONObject jsonResponse = new JSONObject();
                 Tag tag = tagService.convert(tagService.readByKey(Tag));
                 cerberusUrlParameter = formatCerberusURL(
-                        parameterService.findParameterByKey("cerberus_url", "").getValue());
+                        parameterService.findParameterByKey("cerberus_gui_url", "").getValue());
                 if (tag != null) {
                     jsonResponse.put("tag", Tag);
                     jsonResponse.put("tagDurationInMs",
