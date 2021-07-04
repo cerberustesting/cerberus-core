@@ -1911,6 +1911,7 @@ Step.prototype.show = function () {
         $("#addAction").prop("disabled", true);
         $("#addActionBottomBtn").hide();
         $("#isUseStep").show();
+        $("#stepConditionOption").prop("disabled", true);
     } else {
         $("#isLib").show();
         $("#UseStepRow").html("").hide();
@@ -1918,6 +1919,7 @@ Step.prototype.show = function () {
         $("#addAction").prop("disabled", false);
         $("#addActionBottomBtn").show();
         $("#isUseStep").hide();
+        $("#stepConditionOption").prop("disabled", false);
     }
 
     if (object.toDelete) {
@@ -2509,6 +2511,8 @@ Action.prototype.generateContent = function () {
         actionconditionval1.prop("readonly", true);
         actionconditionval2.prop("readonly", true);
         actionconditionval3.prop("readonly", true);
+        conditionOptions.prop("disabled", "disabled");
+        options.prop("disabled", "disabled");
     }
 
     content.append(firstRow);
@@ -3021,6 +3025,8 @@ Control.prototype.generateContent = function () {
         controlconditionval1.prop("readonly", true);
         controlconditionval2.prop("readonly", true);
         controlconditionval3.prop("readonly", true);
+        conditionOptions.prop("disabled", "disabled");
+        options.prop("disabled", "disabled");
     }
 
     content.append(firstRow);
