@@ -673,9 +673,13 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStep> stepList = new ArrayList<>();
         StringBuilder query = new StringBuilder();
-        query.append("SELECT tcs.*, CASE WHEN tcs1.test + tcs1.testcase + tcs1.stepId is NULL THEN 0 ELSE 1 END as isStepInUseByOtherTestCase "
-                + "FROM testcasestep tcs LEFT JOIN testcasestep tcs1 "
-                + "ON tcs1.isUsingLibraryStep = true AND tcs1.libraryStepTest = ? AND tcs1.libraryStepTestcase = ? AND tcs1.libraryStepStepId = tcs.stepId WHERE tcs.test = ? AND tcs.testcase = ? "
+        query.append("SELECT tcs.*, tcs2.sort as libraryStepSort, CASE WHEN tcs1.test + tcs1.testcase + tcs1.stepId is NULL THEN 0 ELSE 1 END as isStepInUseByOtherTestCase "
+                + "FROM testcasestep tcs "
+                + "LEFT JOIN testcasestep tcs1 "
+                + "ON tcs1.isUsingLibraryStep = true AND tcs1.libraryStepTest = ? AND tcs1.libraryStepTestcase = ? AND tcs1.libraryStepStepId = tcs.stepId "
+                + "LEFT OUTER JOIN testcasestep tcs2 "
+                + "ON tcs2.Test = tcs.libraryStepTest AND tcs2.Testcase = tcs.libraryStepTestcase AND tcs2.stepId = tcs.libraryStepStepId "
+                + "WHERE tcs.test = ? AND tcs.testcase = ? "
                 + "GROUP BY tcs.test, tcs.testcase, tcs.stepId ORDER BY tcs.sort");
 
         // Debug message on SQL.
@@ -960,15 +964,23 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         TestCaseStep tcs = factoryTestCaseStep.create(test, testcase, stepId, sort, loop, conditionOperator, conditionValue1, conditionValue2, conditionValue3, conditionOptions, description, isUsingLibraryStep, libraryStepTest, libraryStepTestcase, libraryStepStepId,
                 isLibraryStep, isExecutionForced, usrCreated, dateCreated, usrModif, dateModif);
 
-        LOG.debug(tcs.toJson());
-
         try {
-            resultSet.findColumn("isStepInUseByOtherTestCase");
+//            resultSet.findColumn("isStepInUseByOtherTestCase");
             boolean isStepInUseByOtherTestCase = resultSet.getInt("isStepInUseByOtherTestCase") == 1 ? true : false;
             tcs.setIsStepInUseByOtherTestcase(isStepInUseByOtherTestCase);
         } catch (SQLException sqlex) {
             // That means there is not this column, so nothing to do
         }
+
+        try {
+//            resultSet.findColumn("isStepInUseByOtherTestCase");
+            int libraryStepSort = resultSet.getInt("libraryStepSort");
+            tcs.setLibraryStepSort(libraryStepSort);
+        } catch (SQLException sqlex) {
+            // That means there is not this column, so nothing to do
+        }
+
+        LOG.debug(tcs.toJson());
 
         return tcs;
 

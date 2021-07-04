@@ -1467,7 +1467,8 @@ function createSteps(data, steps, stepIndex, canUpdate, hasPermissionsStepLibrar
     if (stepIndex !== undefined) {
         var find = false;
         for (var i = 0; i < steps.length; i++) {
-            if (steps[i].sort === stepIndex) {
+            // Use == in stead of ===
+            if (steps[i].sort == stepIndex) {
                 find = true;
                 $(steps[i].html[0]).click();
             }

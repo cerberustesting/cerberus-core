@@ -434,6 +434,8 @@ public class TestCaseStep {
             stepJson.put("libraryStepTest", this.getLibraryStepTest());
             stepJson.put("libraryStepTestCase", this.getLibraryStepTestcase());
             stepJson.put("libraryStepStepId", this.getLibraryStepStepId());
+            stepJson.put("libraryStepSort", this.getLibraryStepSort());
+            stepJson.put("isStepInUseByOtherTestCase", this.isIsStepInUseByOtherTestcase());
             stepJson.put("test", this.getTest());
             stepJson.put("testcase", this.getTestcase());
 //            stepJson.put("initialStep", this.getInitialStep());
@@ -441,8 +443,6 @@ public class TestCaseStep {
             stepJson.put("dateCreated", this.dateCreated);
             stepJson.put("usrModif", this.usrModif);
             stepJson.put("dateModif", this.dateModif);
-            stepJson.put("isStepInUseByOtherTestCase", this.isIsStepInUseByOtherTestcase());
-            stepJson.put("libraryStepSort", this.getLibraryStepSort());
 
             JSONArray stepsJson = new JSONArray();
             if (this.getActions() != null) {
