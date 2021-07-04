@@ -219,6 +219,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('buildrevisionparameters','mavenArtifactId','','en','Maven Artifact ID','','_build_content')");
         b.append(",('buildrevisionparameters','mavenArtifactId','','fr','Maven Artifact ID','','_contenu_des_builds')");
         b.append(",('buildrevisionparameters','mavenGroupId','','en','Maven Group ID','','_build_content')");
+		b.append(",('buildrevisionparameters','mavenGroupId','','ru','Идентификатор Maven Группы','','_build_content')");																															  
         b.append(",('buildrevisionparameters','mavenGroupId','','fr','ID du groupe Maven','','_contenu_des_builds')");
         b.append(",('buildrevisionparameters','mavenVersion','','en','Maven Version','','_build_content')");
         b.append(",('buildrevisionparameters','mavenVersion','','fr','Maven Version','','_contenu_des_builds')");
@@ -334,6 +335,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('invariant','COUNTRY','','en','Country','A <code class=\\'doc-crbvvoca\\'>country</code> is a declination of a <code class=\\'doc-crbvvoca\\'>system</code> in an <code class=\\'doc-crbvvoca\\'>environment</code> with a specific configuration.<br>This is called <code class=\\'doc-crbvvoca\\'>country</code> because for <code class=\\'doc-crbvvoca\\'>systems</code> that support multiple countries, every <code class=\\'doc-crbvvoca\\'>country</code> is deployed on different <code class=\\'doc-crbvvoca\\'>environments</code>. Each of them can have the same version of the <code class=\\'doc-crbvvoca\\'>application</code> but with different configuration. As a consequence, some <code class=\\'doc-crbvvoca\\'>test case</code> may or may not be relevant on that <code class=\\'doc-crbvvoca\\'>country</code>.',NULL)");
         b.append(",('invariant','COUNTRY','','fr','Pays','Un <code class=\\'doc-crbvvoca\\'>pays</code> est une declinaison d\\'un <code class=\\'doc-crbvvoca\\'>système</code> dans un <code class=\\'doc-crbvvoca\\'>environnement</code> avec une configuration specifique.<br>Ca porte le nom de <code class=\\'doc-crbvvoca\\'>pays</code> car pour les <code class=\\'doc-crbvvoca\\'>systèmes</code> qui supportent plusieurs pays, chaque <code class=\\'doc-crbvvoca\\'>pays</code> est deployé sur un <code class=\\'doc-crbvvoca\\'>environnement</code> different. Chacun d\\'entre eux peut avoir la même version de l\\'<code class=\\'doc-crbvvoca\\'>application</code> mais avec differentes configuration. En conséquence, certain <code class=\\'doc-crbvvoca\\'>cas de test</code> peuvent ou non etre pertinant sur ce <code class=\\'doc-crbvvoca\\'>pays</code>.',NULL)");
         b.append(",('invariant','ENVGP','','en','Environment Group','',NULL)");
+		b.append(",('invariant','ENVGP','','ru','Группа окружения','',NULL)");																			   
         b.append(",('invariant','ENVGP','','fr','Groupe d\\'Environnement','',NULL)");
         b.append(",('invariant','ENVIRONMENT','','en','Environment','',NULL)");
         b.append(",('invariant','ENVIRONMENT','','fr','Environnement','',NULL)");
@@ -364,6 +366,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('label','longdesc','','ru','Полное описание','',NULL)");
         b.append(",('label','longdesc','','fr','Description Longue','',NULL)");
         b.append(",('label','parentid','','en','Parent LabelID','<p>This value represent the labelID of the parent label. This allow to group or create hierachy in label</p>',NULL)");
+		b.append(",('label','parentid','','ru','Родительская метка идентификатора','<p>TЭто значение представляет собой идентификатор родительской метки. Это позволяет группировать или создавать иерархию меток</p>',NULL)");																																																																																						   
         b.append(",('label','parentid','','fr','ID du label parent','<p>Cette valeur est l\\'ID du label parent. Cela permet de grouper ou de créer une hiérarchie au sein des labels</p>',NULL)");
         b.append(",('label','reqcriticity','','en','Criticity','',NULL)");
         b.append(",('label','reqcriticity','','fr','Criticité','',NULL)");
@@ -744,6 +747,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcaselabel','labelId','','en','Label ID','',NULL)");
         b.append(",('testcaselabel','labelId','','fr','ID du label','',NULL)");
         b.append(",('testcasestep','step','','en','Step','A step is a group of actions.',NULL)");
+		b.append(",('testcasestep','step','','ru','Шаг','Шаг это группа действий.',NULL)");																									
         b.append(",('testcasestepaction','Action','','en','Action','It is the action that will be executed by Cerberus.<br><br>It can take the following values :',NULL)");
         b.append(",('testcasestepaction','Action','calculateProperty','en','Calculate a Cerberus property.','<code class=\\'doc-fixed\\'>calculateProperty</code> will allow you to calculate a property defined in the property section of the test case.\n\n<br/><br/>\n\nUsage :<br/>\n\n<doc class=\"usage\">\n <table>\n  <tr>\n   <th class=\\'ex\\'>Field</th>\n   <th class=\\'ex\\'>Usage</th>\n  </tr>\n  <tr>\n   <td class=\\'ex\\'>Value1</td>\n   <td class=\\'ex\\'>Property name to be calculated.</td>\n  </tr>\n  <tr>\n   <td class=\\'ex\\'>Value2</td>\n   <td class=\\'ex\\'>[Optional] Property name from which get value to affect property from Value1. Useful to override the one defined from the property section.</td>\n  </tr>\n </table>\n</doc>\n\n<br/><br/>\n\nExamples :<br/>\n\n<doc class=\"examples\">\n <table>\n  <tr>\n   <th class=\\'ex\\'>Value1</th>\n   <th class=\\'ex\\'>Value2</th>\n   <th class=\\'ex\\'>Result</th>\n  </tr>\n  <tr>\n   <td class=\\'ex\\'>PROPERTY_NAME</td>\n   <td class=\\'ex\\'></td>\n   <td class=\\'ex\\'>PROPERTY_NAME will be calculated</td>\n  </tr>\n  <tr>\n   <td class=\\'ex\\'>PROPERTY_NAME</td>\n   <td class=\\'ex\\'>OTHER_PROPERTY_NAME</td>\n   <td class=\\'ex\\'>PROPERTY_NAME will be affected by the calculated value of OTHER_PROPERTY_NAME</td>\n  </tr>\n </table>\n</doc>',NULL)");
         b.append(",('testcasestepaction','Action','callSoap','en','Call Soap.','TBD',NULL)");
@@ -868,6 +872,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalib','environment','','en','Environment','<p>Environment where the entry is available. If not specified, then the data entry apply to ALL environments.</p>','_data_library')");
         b.append(",('testdatalib','environment','','fr','Environnement',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','group','','en','Group','<p>Name that groups entries that are at some extent correlated. It is an <b>optional</b> attribute.</p>','_data_library')");
+		b.append(",('testdatalib','group','','ru','Группа','<p>Имя, которое группирует связанные записи. Это <b>не обязательный</b> атрибут.</p>','_data_library')");																																																						
         b.append(",('testdatalib','group','','fr','Groupe',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','lastmodified','','en','Modification Date','','_data_library')");
 		b.append(",('testdatalib','lastmodified','','ru','Дата модификации','','_data_library')");
@@ -1177,6 +1182,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_environment','to','','en','To','',NULL)");
         b.append(",('page_environment','to','','fr','Destinataire','',NULL)");
         b.append(",('page_environment','envgp','','en','Environment Group','',NULL)");
+		b.append(",('page_environment','envgp','','ru','Группа окружения','',NULL)");																					  
         b.append(",('page_environment','envgp','','fr','Groupe de l\\' environnement','',NULL)");
         b.append(",('page_executiondetail','action','','en','Action','',NULL)");
         b.append(",('page_executiondetail','action','','fr','Action','',NULL)");
