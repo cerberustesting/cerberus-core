@@ -156,7 +156,7 @@ Doc.prototype.getDocOnline = function(docTable, docField) {
             var linkToDoc = "";
             if (this.table[docTable][docField].haveDocAnchor) {
                 res = this.table[docTable][docField].docLabel +
-                        " <a tabindex='1' data-html='true' href='./Documentation.jsp#" + this.table[docTable][docField].docAnchor + "' class=\"docOnline\" onclick=\"window.open=('this.href'); target='_blank';stopPropagation(event)\" \n\
+                        " <a tabindex='1' data-html='true' href='./documentation/V1/documentation_en.html#" + this.table[docTable][docField].docAnchor + "' class=\"docOnline\" onclick=\"window.open=('this.href'); target='_blank';stopPropagation(event)\" \n\
                 data-toggle='popover' \n\
                 data-placement='auto' \n\
                 data-trigger='hover' \n\
