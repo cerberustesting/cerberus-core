@@ -238,11 +238,17 @@ public class RobotServerService implements IRobotServerService {
             session.setCerberus_selenium_action_click_timeout(cerberus_selenium_action_click_timeout);
             session.setCerberus_appium_action_longpress_wait(cerberus_appium_action_longpress_wait);
             session.setHost(tCExecution.getSeleniumIP());
+            session.setPort(tCExecution.getRobotPort());
             session.setHostUser(tCExecution.getSeleniumIPUser());
             session.setHostPassword(tCExecution.getSeleniumIPPassword());
-            session.setPort(tCExecution.getRobotPort());
             session.setNodeHost(tCExecution.getSeleniumIP());
             session.setNodePort(tCExecution.getSeleniumPort());
+            if (tCExecution.getRobotExecutorObj() != null) {
+                LOG.debug("Session node proxy set : " + tCExecution.getRobotExecutorObj().getNodeProxyPort());
+                session.setNodeProxyPort(tCExecution.getRobotExecutorObj().getNodeProxyPort());
+            } else {
+                session.setNodeProxyPort(0);
+            }
             session.setConsoleLogs(new JSONArray());
 
             tCExecution.setSession(session);

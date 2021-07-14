@@ -43,21 +43,30 @@ public class RobotExecutor {
     private String port;
     private String hostUser;
     private String hostPassword;
+    private Integer nodeProxyPort; // In case the node has a private IP, we can use that proxy in order to access it.
     private String deviceUdid;
     private String deviceName;
     private Integer devicePort;
     private String deviceLockUnlock;
     private String description;
     private long dateLastExeSubmitted;
+    private String executorProxyActive;
     private String executorExtensionHost;
     private Integer executorExtensionPort;
     private String executorProxyHost;
     private Integer executorProxyPort;
-    private String executorProxyActive;       
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
     private Timestamp DateModif;
+
+    public Integer getNodeProxyPort() {
+        return nodeProxyPort;
+    }
+
+    public void setNodeProxyPort(Integer nodeProxyPort) {
+        this.nodeProxyPort = nodeProxyPort;
+    }
 
     public Integer getID() {
         return ID;
@@ -206,7 +215,7 @@ public class RobotExecutor {
     public void setExecutorExtensionHost(String executorExtensionHost) {
         this.executorExtensionHost = executorExtensionHost;
     }
-    
+
     public Integer getExecutorExtensionPort() {
         return executorExtensionPort;
     }
@@ -238,8 +247,6 @@ public class RobotExecutor {
     public void setExecutorProxyActive(String executorProxyActive) {
         this.executorProxyActive = executorProxyActive;
     }
-    
-    
 
     /**
      * From here are data outside database model.

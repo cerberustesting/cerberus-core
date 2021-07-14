@@ -406,18 +406,18 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                         // Application require a robot so we can get the list of executors.
                         if (StringUtil.isNullOrEmpty(robot)) {
                             robotExelist = new ArrayList<>();
-                            robotExelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
+                            robotExelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", 0, "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
                         } else {
                             robotExelist = robot_executor.get(robot);
                             if (robotExelist == null || robotExelist.size() < 1) {
                                 robotExelist = new ArrayList<>();
-                                robotExelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
+                                robotExelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", 0, "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
                             }
                         }
                     } else {
                         // Application does not require a robot so we create a fake one with empty data.
                         robotExelist = new ArrayList<>();
-                        robotExelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
+                        robotExelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", 0, "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
                     }
 
                     // Looping other every potential executor on the corresponding robot.

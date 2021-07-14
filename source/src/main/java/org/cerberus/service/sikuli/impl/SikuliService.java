@@ -28,7 +28,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import org.apache.commons.codec.binary.Base64;
@@ -187,8 +189,16 @@ public class SikuliService implements ISikuliService {
              * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
              */
             url = new URL(urlToConnect);
-            LOG.debug("Open Connection to : " + urlToConnect);
-            connection = (HttpURLConnection) url.openConnection();
+            if (session.getNodeProxyPort() > 0) {
+                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(session.getHost(), session.getNodeProxyPort()));
+
+                LOG.debug("Open Connection to (using proxy : " + session.getHost() + ":" + session.getNodeProxyPort() + ") : " + urlToConnect);
+                connection = (HttpURLConnection) url.openConnection(proxy);
+
+            } else {
+                LOG.debug("Open Connection to : " + urlToConnect);
+                connection = (HttpURLConnection) url.openConnection();
+            }
             // We let Sikuli extension the sikuli timeout + 10 s to perform the action/control.
             connection.setReadTimeout(session.getCerberus_sikuli_wait_element() + 10000);
             connection.setConnectTimeout(session.getCerberus_sikuli_wait_element() + 10000);

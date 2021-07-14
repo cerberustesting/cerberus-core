@@ -5879,3 +5879,7 @@ ALTER TABLE `testcasestepactioncontrol`
 -- 1627
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `veryshortdesc`)
   VALUES ('LANGUAGE', 'ru', 300, 'русский', 'русский');
+
+-- 1628
+ALTER TABLE `robotexecutor` ADD COLUMN `NodeProxyPort` INT NULL DEFAULT 0 AFTER `host_password`;
+
