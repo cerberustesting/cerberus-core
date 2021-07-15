@@ -200,7 +200,9 @@ public class ReadAppService extends HttpServlet {
         }
         JSONObject item = convertAppServiceToJSONObject(p);
         response.put("contentTable", item);
-        item.put("hasPermissions", userHasPermissions);
+        if (p != null) {
+            item.put("hasPermissions", userHasPermissions);
+        }
         answerItem.setItem(response);
         answerItem.setResultMessage(resp.getResultMessage());
 

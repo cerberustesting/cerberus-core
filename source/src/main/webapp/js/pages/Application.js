@@ -323,6 +323,7 @@ function editEntryClick(id, system) {
         formEdit.find("#mavengroupid").prop("value", obj["mavengroupid"]);
 
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
+            formEdit.find("#application").prop("readonly", "readonly");
             formEdit.find("#description").prop("readonly", "readonly");
             //formEdit.find("#sort").prop("readonly", "readonly");
             formEdit.find("#type").prop("disabled", "disabled");

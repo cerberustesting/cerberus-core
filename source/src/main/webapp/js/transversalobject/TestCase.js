@@ -970,6 +970,10 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#conditionVal1").prop("disabled", "disabled");
         formEdit.find("#conditionVal2").prop("disabled", "disabled");
         formEdit.find("#conditionVal3").prop("disabled", "disabled");
+        formEdit.find("#comment").prop("readonly", "readonly");
+        formEdit.find("#addBug").prop("disabled", "disabled");
+        formEdit.find("#addTestCaseDependencyButton").prop("disabled", "disabled");
+        formEdit.find("#executor").prop("readonly", "readonly");
 //        formEdit.find("#bugId").prop("readonly", "readonly");
         // feed the country list.
         appendTestCaseCountries(testCase, true);
@@ -1007,6 +1011,9 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#conditionVal2").removeProp("disabled");
         formEdit.find("#conditionVal3").removeProp("disabled");
         formEdit.find("#comment").removeProp("readonly");
+        formEdit.find("#addBug").removeProp("disabled");
+        formEdit.find("#addTestCaseDependencyButton").removeProp("disabled");
+        formEdit.find("#executor").removeProp("disabled");
         // feed the country list.
         appendTestCaseCountries(testCase, false);
     }

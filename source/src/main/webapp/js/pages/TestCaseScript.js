@@ -3218,7 +3218,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                             success: function (data) {
                                 var dataContent = data.contentTable;
                                 if ($(htmlElement).parent().find(".v1").val() !== undefined) {
-                                    if (dataContent !== undefined) {
+                                    if (dataContent.hasPermissions !== undefined) {
                                         var editEntry = $('<span class="input-group-btn ' + encodeURIComponent(htmlElement.val()) + '"><button id="editEntry" onclick="openModalAppService(\'' + encodeURIComponent(htmlElement.val()) + '\',\'EDIT\'  ,\'TestCase\' );"\n\
         								class="buttonObject btn btn-default input-sm " \n\
         								title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\

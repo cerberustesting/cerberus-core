@@ -5,12 +5,13 @@
 * Fixed issue when using setNetworkTraffic with both urlFilter and index previously used during the test case.
 * Fixed properties autocomplete issue on testcase script page.
 * Fixed Robotdecli information when running testcase in manual mode. #2232
-* Cleaned extra Backslash on GetFromJSON properties when spash caracter is retreived inside an Array. #2242
+* Cleaned extra Backslash on GetFromJSON properties when slash character is retrieved inside an Array. #2242
+* Fixed Service creation button from Testcase Script page #2276
 
 *Improvements / New features*
 [square]
 * new property getOTP. That allow to get an OTP connection code from a secret key allowing to manage the Two Factor authentication use case. #2234
-* new Erratum element that allow selfhealing feature. #2252
+* new Erratum element that allow self-healing feature. #2252
 * Added all element indentifier on autocomplete on testcase script page.
 * Avoid error on Condition evaluation that require Selenium engine when running testcase in manual mode. #2161
 * Improved JSON Structure of Network Traffic for GET requests. (Thanks @vitoo)
