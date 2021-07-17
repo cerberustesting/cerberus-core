@@ -92,7 +92,8 @@ public class ReadCountryEnvParam extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String system = policy.sanitize(request.getParameter("system"));
+//        String systems = policy.sanitize(request.getParameter("system"));
+        List <String> systems = ParameterParserUtil.parseListParam(request.getParameterValues("system"), new ArrayList<String>(), "UTF8");
         String country = policy.sanitize(request.getParameter("country"));
         String environment = policy.sanitize(request.getParameter("environment"));
         String build = policy.sanitize(request.getParameter("build"));
@@ -112,13 +113,13 @@ public class ReadCountryEnvParam extends HttpServlet {
         try {
             JSONObject jsonResponse = new JSONObject();
             if ((request.getParameter("system") != null) && (request.getParameter("country") != null) && (request.getParameter("environment") != null) && !(forceList)) {
-                answer = findCountryEnvParamByKey(system, country, environment, appContext, userHasPermissions);
+                answer = findCountryEnvParamByKey(systems.get(0), country, environment, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (unique) {
-                answer = findUniqueEnvironmentList(system, active, appContext, userHasPermissions);
+                answer = findUniqueEnvironmentList(systems, active, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(columnName) && request.getParameter("system") != null) {
-                answer = findDistinctValuesOfColumn(system, appContext, request, columnName);
+                answer = findDistinctValuesOfColumn(systems.get(0), appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.
                 answer = findCountryEnvParamList(country, environment, build, revision, active, envGp, appContext, userHasPermissions, request);
@@ -236,12 +237,12 @@ public class ReadCountryEnvParam extends HttpServlet {
 
     }
 
-    private AnswerItem<JSONObject> findUniqueEnvironmentList(String system, String active, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem<JSONObject> findUniqueEnvironmentList(List<String> systems, String active, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         cepService = appContext.getBean(ICountryEnvParamService.class);
 
-        AnswerList<CountryEnvParam> resp = cepService.readDistinctEnvironmentByVarious(system, null, null, null, null, null);
+        AnswerList<CountryEnvParam> resp = cepService.readDistinctEnvironmentByVarious(systems, null, null, null, null, null);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

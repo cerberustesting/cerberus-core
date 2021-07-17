@@ -122,8 +122,8 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     }
 
     @Override
-    public AnswerList<CountryEnvParam> readDistinctEnvironmentByVarious(String system, String country, String environment, String build, String revision, String active) {
-        return countryEnvParamDao.readDistinctEnvironmentByVariousByCriteria(system, country, environment, build, revision, active, null, 0, 0, null, null, null, null);
+    public AnswerList<CountryEnvParam> readDistinctEnvironmentByVarious(List<String> systems, String country, String environment, String build, String revision, String active) {
+        return countryEnvParamDao.readDistinctEnvironmentByVariousByCriteria(systems, country, environment, build, revision, active, null, 0, 0, null, null, null, null);
     }
 
     @Override

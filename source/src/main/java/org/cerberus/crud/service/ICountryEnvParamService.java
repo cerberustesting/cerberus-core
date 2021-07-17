@@ -99,7 +99,7 @@ public interface ICountryEnvParamService {
 
     /**
      *
-     * @param system
+     * @param systems
      * @param country
      * @param environment
      * @param build
@@ -107,7 +107,7 @@ public interface ICountryEnvParamService {
      * @param Active
      * @return
      */
-    public AnswerList<CountryEnvParam> readDistinctEnvironmentByVarious(String system, String country, String environment, String build, String revision, String Active);
+    public AnswerList<CountryEnvParam> readDistinctEnvironmentByVarious(List<String> systems, String country, String environment, String build, String revision, String Active);
 
     /**
      *

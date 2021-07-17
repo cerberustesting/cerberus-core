@@ -270,7 +270,7 @@ function selectionManual(test, testcase, environment, country) {
             $("[name='environment']").append($('<option></option>').text(environment).val(environment));
             $("[name='environment']").val(environment);
         } else {
-            displayUniqueEnvList("environment", getUser().defaultSystem, environment);
+            displayUniqueEnvList("environment", getUser().defaultSystemsQuery, environment);
         }
 
         $("#testcaseSelectAll").prop("disabled", false);

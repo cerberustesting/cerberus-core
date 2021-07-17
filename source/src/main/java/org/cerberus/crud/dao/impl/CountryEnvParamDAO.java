@@ -403,9 +403,9 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         AnswerList<CountryEnvParam> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<CountryEnvParam> cepList = new ArrayList<CountryEnvParam>();
+        List<CountryEnvParam> cepList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
@@ -605,7 +605,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
     }
 
     @Override
-    public AnswerList<CountryEnvParam> readDistinctEnvironmentByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, String envGp, int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
+    public AnswerList<CountryEnvParam> readDistinctEnvironmentByVariousByCriteria(List<String> systems, String country, String environment, String build, String revision, String active, String envGp, int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
         AnswerList<CountryEnvParam> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -628,9 +628,12 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System` = ? )");
+        if ((systems != null) && (!systems.isEmpty())) {
+            searchSQL.append(" and (").append(SqlUtil.generateInClause("`System`", systems)).append(") ");
         }
+//        if (!StringUtil.isNullOrEmpty(system)) {
+//            searchSQL.append(" and (`System` = ? )");
+//        }
         if (!StringUtil.isNullOrEmpty(active)) {
             searchSQL.append(" and (`active` = ? )");
         }
@@ -663,7 +666,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
-            LOG.debug("SQL.system : " + system);
+            LOG.debug("SQL.system : " + systems);
             LOG.debug("SQL.active : " + active);
         }
         Connection connection = this.databaseSpring.connect();
@@ -671,9 +674,14 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isNullOrEmpty(system)) {
-                    preStat.setString(i++, system);
+                if ((systems != null) && (!systems.isEmpty())) {
+                    for (String mysystem : systems) {
+                        preStat.setString(i++, mysystem);
+                    }
                 }
+//                if (!StringUtil.isNullOrEmpty(system)) {
+//                    preStat.setString(i++, system);
+//                }
                 if (!StringUtil.isNullOrEmpty(active)) {
                     preStat.setString(i++, active);
                 }
