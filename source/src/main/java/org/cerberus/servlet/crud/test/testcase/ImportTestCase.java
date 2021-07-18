@@ -131,6 +131,7 @@ public class ImportTestCase extends HttpServlet {
                             TestCase tcInfo = mapper.readValue(tcJson.toString(), TestCase.class);
                             tcInfo.setBugs(bugs);
                             tcInfo.setConditionOptions(condOpts);
+                            LOG.debug(tcInfo.toJson().toString(1));
                             try {
                                 testcaseService.importWithDependency(tcInfo);
 

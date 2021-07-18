@@ -360,7 +360,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             preStat.setString(i++, testCaseStepAction.getConditionValue1());
             preStat.setString(i++, testCaseStepAction.getConditionValue2());
             preStat.setString(i++, testCaseStepAction.getConditionValue3());
-            preStat.setString(i++, testCaseStepAction.getConditionOptions().toString());
+            preStat.setString(i++, testCaseStepAction.getConditionOptions() == null ? "[]" : testCaseStepAction.getConditionOptions().toString());
             preStat.setString(i++, testCaseStepAction.getAction());
             preStat.setString(i++, testCaseStepAction.getValue1());
             preStat.setString(i++, testCaseStepAction.getValue2());
@@ -426,12 +426,12 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             preStat.setString(i++, testCaseStepAction.getConditionValue1());
             preStat.setString(i++, testCaseStepAction.getConditionValue2());
             preStat.setString(i++, testCaseStepAction.getConditionValue3());
-            preStat.setString(i++, testCaseStepAction.getConditionOptions().toString());
+            preStat.setString(i++, testCaseStepAction.getConditionOptions() == null ? "[]" : testCaseStepAction.getConditionOptions().toString());
             preStat.setString(i++, testCaseStepAction.getAction());
             preStat.setString(i++, testCaseStepAction.getValue1());
             preStat.setString(i++, testCaseStepAction.getValue2());
             preStat.setString(i++, testCaseStepAction.getValue3());
-            preStat.setString(i++, testCaseStepAction.getOptions().toString());
+            preStat.setString(i++, testCaseStepAction.getOptions() == null ? "[]" : testCaseStepAction.getOptions().toString());
             preStat.setBoolean(i++, testCaseStepAction.isFatal());
             preStat.setString(i++, testCaseStepAction.getDescription());
             preStat.setString(i++, testCaseStepAction.getScreenshotFilename());
@@ -531,12 +531,12 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             preStat.setString(i++, testCaseStepAction.getConditionValue1());
             preStat.setString(i++, testCaseStepAction.getConditionValue2());
             preStat.setString(i++, testCaseStepAction.getConditionValue3());
-            preStat.setString(i++, testCaseStepAction.getConditionOptions().toString());
+            preStat.setString(i++, testCaseStepAction.getConditionOptions() == null ? "[]" : testCaseStepAction.getConditionOptions().toString());
             preStat.setString(i++, testCaseStepAction.getAction());
             preStat.setString(i++, testCaseStepAction.getValue1());
             preStat.setString(i++, testCaseStepAction.getValue2());
             preStat.setString(i++, testCaseStepAction.getValue3());
-            preStat.setString(i++, testCaseStepAction.getOptions().toString());
+            preStat.setString(i++, testCaseStepAction.getOptions() == null ? "[]" : testCaseStepAction.getOptions().toString());
             preStat.setBoolean(i++, testCaseStepAction.isFatal());
             preStat.setString(i++, testCaseStepAction.getDescription());
             preStat.setString(i++, testCaseStepAction.getScreenshotFilename());

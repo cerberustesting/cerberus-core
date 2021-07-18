@@ -249,7 +249,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setInt(i++, tcs.getSort());
                 preStat.setString(i++, tcs.getLoop() == null ? "" : tcs.getLoop());
                 preStat.setString(i++, tcs.getConditionOperator() == null ? "" : tcs.getConditionOperator());
-                preStat.setString(i++, tcs.getConditionOptions().toString());
+                preStat.setString(i++, tcs.getConditionOptions() == null ? "[]" : tcs.getConditionOptions().toString());
                 preStat.setString(i++, tcs.getConditionValue1() == null ? "" : tcs.getConditionValue1());
                 preStat.setString(i++, tcs.getConditionValue2() == null ? "" : tcs.getConditionValue2());
                 preStat.setString(i++, tcs.getConditionValue3() == null ? "" : tcs.getConditionValue3());
@@ -912,7 +912,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             preStat.setBoolean(i++, testCaseStep.isLibraryStep());
             preStat.setString(i++, testCaseStep.getLoop() == null ? "" : testCaseStep.getLoop());
             preStat.setString(i++, testCaseStep.getConditionOperator() == null ? "" : testCaseStep.getConditionOperator());
-            preStat.setString(i++, testCaseStep.getConditionOptions().toString());
+            preStat.setString(i++, testCaseStep.getConditionOptions() == null ? "[]" : testCaseStep.getConditionOptions().toString());
             preStat.setString(i++, testCaseStep.getConditionValue1() == null ? "" : testCaseStep.getConditionValue1());
             preStat.setString(i++, testCaseStep.getConditionValue2() == null ? "" : testCaseStep.getConditionValue2());
             preStat.setString(i++, testCaseStep.getConditionValue3() == null ? "" : testCaseStep.getConditionValue3());
@@ -923,6 +923,10 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             // Set the final message
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                     .resolveDescription("OPERATION", "CREATE");
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
         } catch (Exception e) {
             LOG.warn("Unable to create TestCaseStep: " + e.getMessage(), e);
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",

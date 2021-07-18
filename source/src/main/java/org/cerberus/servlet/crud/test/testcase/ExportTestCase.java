@@ -92,6 +92,7 @@ public class ExportTestCase extends HttpServlet {
             tcInfoJSON.put("bugs", tcInfo.getBugs());
             tcInfoJSON.remove("conditionOptions");
             tcInfoJSON.put("conditionOptions", tcInfo.getConditionOptions());
+            
             JSONArray tcJA = new JSONArray();
             tcJA.add(tcInfoJSON);
             export.put("testcases", tcJA);
@@ -102,19 +103,19 @@ public class ExportTestCase extends HttpServlet {
             JSONObject app = new JSONObject(mapper.writeValueAsString(appInfo));
             export.put("application", app);
 
-            // ** SYSTEMS, COUNTRIES ** invariant.
+            // ** TODO : SYSTEMS, COUNTRIES ** invariant.
             export.put("invariants", new JSONArray());
 
-            // ** Application objects **.
+            // ** TODO : Application objects **.
             export.put("applicationsObjects", new JSONArray());
 
-            // ** Datalib **.
+            // ** TODO : Datalib **.
             export.put("datalibs", new JSONArray());
 
-            // ** Services **.
+            // ** TODO : Services **.
             export.put("services", new JSONArray());
 
-            // ** Libraries TestCases **.
+            // ** TODO : Libraries TestCases **.
             export.put("libraryTestcases", new JSONArray());
 
             httpServletResponse.setContentType("application/json");
