@@ -374,7 +374,6 @@ public class TestDAO implements ITestDAO {
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`test` like ?");
             searchSQL.append(" or `description` like ?");
-            searchSQL.append(" or `isActive` like ?");
             searchSQL.append(" or `datecreated` like ?) ");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
@@ -408,7 +407,6 @@ public class TestDAO implements ITestDAO {
             try {
                 int i = 1;
                 if (!Strings.isNullOrEmpty(searchTerm)) {
-                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");

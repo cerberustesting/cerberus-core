@@ -109,11 +109,11 @@ public class ReadTest extends HttpServlet {
             if (!test.equals("")) {
                 answer = findTestByKey(test, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (!system.equals("")) { // Test Folder
-                answer = findTestBySystem(system, appContext, userHasPermissions);
-                jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(columnName)) {
                 answer = findDistinctValuesOfColumn(appContext, request, columnName);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (!system.equals("")) { // Test Folder
+                answer = findTestBySystem(system, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // TestCaseScript
                 answer = findTestList(appContext, userHasPermissions, request);
