@@ -149,7 +149,13 @@ public class JsonService implements IJsonService {
                         return tryJSONArray.toString(JSONStyle.LT_COMPRESS);
 
                     } catch (Exception exArray) {
-                        return DEFAULT_GET_FROM_JSON_VALUE;
+                        try {
+                            LOG.debug("JSON PATH trying float : " + jsonPath);
+                            double tryFloat = JsonPath.read(document, jsonPath);
+                            return String.valueOf(tryFloat);
+                        } catch (Exception exFloat) {
+                            return DEFAULT_GET_FROM_JSON_VALUE;
+                        }   
                     }
                 }
             }
