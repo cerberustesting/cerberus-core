@@ -154,7 +154,13 @@ public class JsonService implements IJsonService {
                             double tryFloat = JsonPath.read(document, jsonPath);
                             return String.valueOf(tryFloat);
                         } catch (Exception exFloat) {
-                            return DEFAULT_GET_FROM_JSON_VALUE;
+                            try {
+                                LOG.debug("JSON PATH trying Object : " + jsonPath);
+                                Object tryObject = JsonPath.read(document, jsonPath);
+                                return tryObject.toString();
+                            } catch (Exception exObject) {
+                                return DEFAULT_GET_FROM_JSON_VALUE;
+                            }  
                         }   
                     }
                 }
